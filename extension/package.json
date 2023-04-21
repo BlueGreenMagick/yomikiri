@@ -1,0 +1,9 @@
+{
+  "name": "@yomikiri/extension",
+  "version": "0.0.1",
+  "description": "Web extension to view definition for Japanese words and add to Anki.",
+  "main": "index.js",
+  "author": "BlueGreenMagick",
+  "license": "MIT",
+  "scripts": {}
+}

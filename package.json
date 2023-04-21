@@ -1,0 +1,14 @@
+{
+  "name": "yomikiri",
+  "version": "0.0.1",
+  "description": "Web extension to view definition for Japanese words and add to Anki.",
+  "private": true,
+  "author": "BlueGreenMagick",
+  "license": "MIT",
+  "workspaces": [
+    "extension",
+    "safari",
+    "tokenizer"
+  ],
+  "scripts": {}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@yomikiri/tokenizer",
+  "version": "0.0.1",
+  "description": "Japanese word tokenizer used for Yomikiri",
+  "main": "index.js",
+  "author": "BlueGreenMagick",
+  "license": "MIT"
+}
