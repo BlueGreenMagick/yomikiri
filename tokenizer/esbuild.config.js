@@ -38,7 +38,7 @@ if (!development) {
 } else {
   await ctx.watch()
 
-  // watch and rebuild rust wasm
+  // watch and rebuild rust wasm. Doesn't seem to be working...
   fs.watch(
     path.join(__dirname, "lindera-wasm/src"), 
     { recursive: true },

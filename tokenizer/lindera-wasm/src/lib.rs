@@ -1,8 +1,9 @@
 mod utils;
 
+use serde::Serialize;
 use wasm_bindgen::prelude::*;
 use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
-use lindera::{LinderaResult, DictionaryKind};
+use lindera::{LinderaResult, DictionaryKind, Token as LToken};
 use lindera::dictionary::{DictionaryConfig};
 use lindera::mode::Mode;
 
@@ -18,9 +19,49 @@ pub struct Tokenizer {
 }
 
 
+#[derive(Serialize)]
+pub struct Token {
+    pub text: String,
+    /// defaults to `UNK`
+    pub part_of_speech: String,
+    /// defaults to `text`
+    pub base_form: String,
+    /// defaults to `*`
+    pub reading: String,
+}
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_TOKEN: &'static str = r#"
+export class Token {
+    text: string;
+    part_of_speech: string;
+    base_form: string;
+    reading: string;
+}
+"#;
+
+
+fn get_value_from_detail<S: Into<String>>(details: &Option<Vec<&str>>, index: usize, default: S) -> String {
+    details.as_deref().map(|d| d.get(index).map(|s| s.to_string())).flatten().unwrap_or_else(|| default.into())
+}
+
+impl From<&mut LToken<'_>> for Token {
+    fn from(tok: &mut LToken) -> Self {
+        let text = tok.text.to_string();
+        let details = tok.get_details();
+
+        Token {
+            base_form: get_value_from_detail(&details, 6, &text),
+            reading: get_value_from_detail(&details, 7, "*"),
+            part_of_speech: get_value_from_detail(&details, 0, "UNK"),
+            text: text,
+        }
+    }
+}
+
+
 #[wasm_bindgen]
 impl Tokenizer {
-    
     #[wasm_bindgen(constructor)]
     pub fn new() -> Tokenizer {
         utils::set_panic_hook();
@@ -40,29 +81,24 @@ impl Tokenizer {
         }
     }
 
-    pub fn tokenize(&self, sentence: &str) -> Vec<i32> {
-        self.tokenize_inner(sentence).unwrap()
-    }
-
-    fn tokenize_inner(&self, sentence: &str) -> LinderaResult<Vec<i32>> {
-        let tokens = self.tokenizer.tokenize(sentence)?;
-
-        let mut result = Vec::with_capacity(tokens.len());
-        let mut chars = sentence.chars();
-        let mut char_idx = 0;
-        let mut byte_idx = 0;
-        for token in tokens {
-            let start = token.byte_start;
-            while byte_idx < start {
-                let bytes = chars.next().unwrap().len_utf8();
-                byte_idx += bytes;
-                char_idx += 1;
-            }
-            result.push(char_idx);
-        }
+    fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
+        let mut tokens = self.tokenizer.tokenize(sentence)?;
+        let result = tokens.iter_mut().map(Token::from).collect();
         Ok(result)
     }
+
+    #[wasm_bindgen(skip_typescript)]
+    pub fn tokenize(&self, sentence: &str) -> Vec<JsValue> {
+        self.tokenize_inner(sentence).unwrap().iter().map(|s| serde_wasm_bindgen::to_value(s).unwrap()).collect()
+    }
 }
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_TOKENIZE: &'static str = r#"
+interface Tokenizer {
+    tokenize(sentence: string): Token[]
+}
+"#;
 
 #[cfg(test)]
 mod tests {
@@ -75,5 +111,15 @@ mod tests {
         
         let tokenizer = Tokenizer::new();
         tokenizer.tokenize("関西国際空港限定トートバッグ");
+    }
+
+    #[test]
+    fn print_details() {
+        let tokenizer = Tokenizer::new();
+        let tokens = tokenizer.tokenizer.tokenize("そのいじらしい姿が可愛かったので、hello.").unwrap();
+        for mut token in tokens {
+            let text = token.text.to_string();
+            println!("{}: {:?}", text, token.get_details());
+        }
     }
 }
