@@ -2,7 +2,26 @@
   "name": "@yomikiri/tokenizer",
   "version": "0.0.1",
   "description": "Japanese word tokenizer used for Yomikiri",
-  "main": "index.js",
   "author": "BlueGreenMagick",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "build:wasm": "(cd lindera-wasm && wasm-pack build --scope yomikiri)",
+    "build:ts": "cross-env NODE_ENV=production yarn run build:types && node esbuild.config.js",
+    "build:types": "rimraf ./build/types; tsc --emitDeclarationOnly --outDir ./build/types",
+    "build:all": "yarn build:wasm && yarn build:ts",
+    "dev": "cross-env NODE_ENV=development node esbuild.config.js"
+  },
+  "dependencies": {
+    "@yomikiri/lindera-wasm": "0.1.0"
+  },
+  "devDependencies": {
+    "@wasm-tool/wasm-pack-plugin": "^1.7.0",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.17.17",
+    "esbuild-plugin-wasm": "^1.0.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.4"
+  }
 }

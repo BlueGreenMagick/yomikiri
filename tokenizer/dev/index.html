@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <Title>Testing Lindera-js japanese word tokenization</Title>
+    </head>
+    <body>
+        <input id="input" type="text">
+        <button id="button">Tokenize</button>
+        <p id="output"></p>
+        <script type="module">
+            import { Tokenizer } from "../dist/tokenizer.js"
+            console.log(Tokenizer)
+            const tokenizer = new Tokenizer();
+            document.getElementById("button").addEventListener("click", () => {
+                const text = document.getElementById("input").value;
+                const words = tokenizer.tokenize(text);
+                let html = ""
+                for (const word of words) {
+                    html += word;
+                    html += ",";
+                }
+                document.getElementById("output").innerText = html;
+            })
+        </script>
+    </body>
+</html>

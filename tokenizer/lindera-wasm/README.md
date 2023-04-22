@@ -1,0 +1,1 @@
+Run `wasm-pack build` to build. Requires rust v1.66+
