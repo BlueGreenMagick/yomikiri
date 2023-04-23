@@ -3,16 +3,15 @@
   "name": "Yomikiri",
   "version": "0.0.1",
   "description": "Web extension to view definition for Japanese words and add to Anki.",
-  "default_locale": "en",
   "author": "BlueGreenMagick",
   "icons": {
-    "48": "images/icon48.png"
+    "48": "images/app/icon48.png"
   },
   "content_scripts": [
     {
       "all_frames": true,
       "js": [
-        "content/extension.js"
+        "content/tooltip.js"
       ],
       "matches": ["http://*/*", "https://*/*", "file:///*"]
     }
@@ -23,13 +22,13 @@
   },
   "action": {
     "default_icon": {
-      "48": "images/icon48.png"
+      "48": "images/app/icon48.png"
     },
     "default_title": "Yomikiri",
     "default_popup": "popup/index.html"
   },
   "permissions": [],
-  "optional_permissions": ["nativeMessaging"],
+  "optional_permissions": [""],
   "host_permissions": ["http://*/*", "https://*/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
