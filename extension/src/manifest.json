@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Yomikiri",
   "version": "0.0.1",
   "description": "Web extension to view definition for Japanese words and add to Anki.",
@@ -17,7 +17,8 @@
     }
   ],
   "background": {
-    "service_worker": "background.js",
+    "scripts": ["background.js"],
+    "persistent": false,
     "type": "module"
   },
   "action": {
@@ -30,7 +31,5 @@
   "permissions": [],
   "optional_permissions": [""],
   "host_permissions": ["http://*/*", "https://*/*"],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  }
+  "content_security_policy": "script-src 'self'; object-src 'self'"
 }
