@@ -10,10 +10,14 @@
     "dev": "rimraf build ; cross-env NODE_ENV=development node esbuild.config.mjs"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.233",
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.18",
     "esbuild-plugin-copy": "^2.1.1",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "pako": "^2.1.0"
   }
 }

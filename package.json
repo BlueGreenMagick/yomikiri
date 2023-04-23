@@ -9,7 +9,8 @@
     "extension",
     "safari",
     "tokenizer",
-    "tokenizer/lindera-wasm/pkg"
+    "tokenizer/lindera-wasm/pkg",
+    "prepare_dict"
   ],
   "scripts": {}
 }

@@ -33,11 +33,12 @@ const logRebuildPlugin = {
 const buildOptions = {
   entryPoints: [
     { in: "src/tooltip/content/index.ts", out: "content/tooltip" },
-    { in: "src/background/index.ts", out: "background" }
+    { in: "src/index.ts", out: "background" },
+    { in: "src/popup/index.ts", out: "popup/popup"}
   ],
   outdir: "build",
   target: "es6",
-  format: "esm",
+  format: "iife",
   bundle: true,
   logLevel: "info",
   plugins: [
@@ -45,9 +46,10 @@ const buildOptions = {
     setWatchOptionPlugin,
     copy({
       assets: [
-        { from: ["images/**/*"], to: ["images"] },
         { from: ["src/**/*.html"], to: ["./"] },
         { from: ["src/**/*.json"], to: ["./"] },
+        { from: ["src/images/**/*"], to: ["images"] },
+        { from: ["src/assets/**/*"], to: ["assets"] },
       ],
       watch: true,
       verbose: true

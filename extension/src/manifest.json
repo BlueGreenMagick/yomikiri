@@ -21,7 +21,7 @@
     "persistent": false,
     "type": "module"
   },
-  "action": {
+  "browser_action": {
     "default_icon": {
       "48": "images/app/icon48.png"
     },
@@ -29,7 +29,7 @@
     "default_popup": "popup/index.html"
   },
   "permissions": [],
-  "optional_permissions": [""],
+  "optional_permissions": [],
   "host_permissions": ["http://*/*", "https://*/*"],
   "content_security_policy": "script-src 'self'; object-src 'self'"
 }
