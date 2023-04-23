@@ -38,13 +38,18 @@
     <button id="button">Tokenize</button>
     <div id="output"></div>
     <script type="module">
-      import { Tokenizer } from "../dist/tokenizer.js";
-      console.log(Tokenizer);
-      const tokenizer = new Tokenizer();
-      document.getElementById("button").addEventListener("click", () => {
+      import load from "./tokenizer.js";
+
+      async function loadTokenizer() {
+        const Tokenizer = await load();
+        return new Tokenizer();
+      }
+      const tokenizer = loadTokenizer();
+
+      document.getElementById("button").addEventListener("click", async () => {
         const text = document.getElementById("input").value;
         const outputEl = document.getElementById("output");
-        const tokens = tokenizer.tokenize(text);
+        const tokens = (await tokenizer).tokenize(text);
 
         outputEl.innerHTML = "";
         for (const token of tokens) {

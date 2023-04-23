@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { exec } from "node:child_process";
+import { execSync } from "node:child_process";
 import { wasmLoader } from "esbuild-plugin-wasm";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,20 +12,19 @@ const development = process.env.NODE_ENV === "development";
 const production = process.env.NODE_ENV === "production";
 
 const buildOptions = {
-  entryPoints: ["src/index.ts"],
-  outfile: "dist/tokenizer.js",
+  entryPoints: [
+    { in: "src/index.ts", out: "tokenizer" },
+    { in: "public/index.html", out: "index" },
+  ],
+  outdir: "dist",
   target: "esnext",
   format: "esm",
   bundle: true,
-  plugins: [
-    wasmLoader({
-      mode: "embedded",
-    }),
-  ],
+  loader: { ".wasm": "file", ".html": "copy" },
 };
 
 const serveOptions = {
-  servedir: ".",
+  servedir: "dist",
 };
 
 const ctx = await esbuild.context(buildOptions);
@@ -37,19 +36,20 @@ if (!development) {
 } else {
   await ctx.watch();
 
-  // watch and rebuild rust wasm. Doesn't seem to be working...
   fs.watch(
     path.join(__dirname, "lindera-wasm/src"),
     { recursive: true },
     (eventType, fileName) => {
-      console.log("building wasm");
-      const result = exec("yarn build:wasm");
+      console.info("building wasm.....");
+      const result = execSync("yarn build:wasm");
       console.log(result.stdout);
+      console.log("rebuilding ts.....");
       ctx.rebuild();
+      console.log("ts rebuilt!");
     }
   );
 
   let { host, port } = await ctx.serve(serveOptions);
-  console.log(`esbuild: Serving at http://${host}:${port}/dev`);
+  console.log(`esbuild: Serving at http://${host}:${port}`);
   console.log("esbuild: Watching for changes to code...");
 }

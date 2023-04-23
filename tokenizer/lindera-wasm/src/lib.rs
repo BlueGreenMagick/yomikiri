@@ -31,7 +31,7 @@ pub struct Token {
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKEN: &'static str = r#"
-export class Token {
+export interface Token {
     text: string;
     part_of_speech: string;
     base_form: string;
