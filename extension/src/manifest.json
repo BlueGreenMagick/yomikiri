@@ -13,11 +13,17 @@
       "js": [
         "content/tooltip.js"
       ],
-      "matches": ["http://*/*", "https://*/*", "file:///*"]
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "file:///*"
+      ]
     }
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": [
+      "background.js"
+    ],
     "persistent": false,
     "type": "module"
   },
@@ -30,6 +36,9 @@
   },
   "permissions": [],
   "optional_permissions": [],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
   "content_security_policy": "script-src 'self'; object-src 'self'"
 }

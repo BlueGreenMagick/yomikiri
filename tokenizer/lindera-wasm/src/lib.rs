@@ -1,11 +1,11 @@
 mod utils;
 
+use lindera::dictionary::DictionaryConfig;
+use lindera::mode::Mode;
+use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
+use lindera::{DictionaryKind, LinderaResult, Token as LToken};
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
-use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
-use lindera::{LinderaResult, DictionaryKind, Token as LToken};
-use lindera::dictionary::{DictionaryConfig};
-use lindera::mode::Mode;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -15,9 +15,8 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 pub struct Tokenizer {
-    tokenizer: LTokenizer
+    tokenizer: LTokenizer,
 }
-
 
 #[derive(Serialize)]
 pub struct Token {
@@ -40,9 +39,16 @@ export class Token {
 }
 "#;
 
-
-fn get_value_from_detail<S: Into<String>>(details: &Option<Vec<&str>>, index: usize, default: S) -> String {
-    details.as_deref().map(|d| d.get(index).map(|s| s.to_string())).flatten().unwrap_or_else(|| default.into())
+fn get_value_from_detail<S: Into<String>>(
+    details: &Option<Vec<&str>>,
+    index: usize,
+    default: S,
+) -> String {
+    details
+        .as_deref()
+        .map(|d| d.get(index).map(|s| s.to_string()))
+        .flatten()
+        .unwrap_or_else(|| default.into())
 }
 
 impl From<&mut LToken<'_>> for Token {
@@ -58,7 +64,6 @@ impl From<&mut LToken<'_>> for Token {
         }
     }
 }
-
 
 #[wasm_bindgen]
 impl Tokenizer {
@@ -76,9 +81,7 @@ impl Tokenizer {
             mode: Mode::Normal,
         };
         let tokenizer = LTokenizer::from_config(config).unwrap();
-        Tokenizer { 
-            tokenizer
-        }
+        Tokenizer { tokenizer }
     }
 
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
@@ -89,7 +92,11 @@ impl Tokenizer {
 
     #[wasm_bindgen(skip_typescript)]
     pub fn tokenize(&self, sentence: &str) -> Vec<JsValue> {
-        self.tokenize_inner(sentence).unwrap().iter().map(|s| serde_wasm_bindgen::to_value(s).unwrap()).collect()
+        self.tokenize_inner(sentence)
+            .unwrap()
+            .iter()
+            .map(|s| serde_wasm_bindgen::to_value(s).unwrap())
+            .collect()
     }
 }
 
@@ -108,7 +115,7 @@ mod tests {
     #[wasm_bindgen_test]
     fn test_tokenize() {
         wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
-        
+
         let tokenizer = Tokenizer::new();
         tokenizer.tokenize("関西国際空港限定トートバッグ");
     }
@@ -116,7 +123,10 @@ mod tests {
     #[test]
     fn print_details() {
         let tokenizer = Tokenizer::new();
-        let tokens = tokenizer.tokenizer.tokenize("そのいじらしい姿が可愛かったので、hello.").unwrap();
+        let tokens = tokenizer
+            .tokenizer
+            .tokenize("そのいじらしい姿が可愛かったので、hello.")
+            .unwrap();
         for mut token in tokens {
             let text = token.text.to_string();
             println!("{}: {:?}", text, token.get_details());

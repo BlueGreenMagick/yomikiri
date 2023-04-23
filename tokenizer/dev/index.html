@@ -1,65 +1,69 @@
 <html>
-    <head>
-        <Title>Testing Lindera-js japanese word tokenization</Title>
-        <style>
-            .word {
-                position: relative;
-            }
+  <head>
+    <title>Testing Lindera-js japanese word tokenization</title>
+    <style>
+      .word {
+        position: relative;
+      }
 
-            .word::after {
-                content: "";
-                position: absolute;
-                left: 1px;
-                bottom: 0;
-                border-bottom: 1px solid black;
-                right: 1px;
-            }
+      .word::after {
+        content: "";
+        position: absolute;
+        left: 1px;
+        bottom: 0;
+        border-bottom: 1px solid black;
+        right: 1px;
+      }
 
-            .tooltip {
-                background-color: lightgray;
-                position: absolute;
-                z-index: 1;
-                top: 105%;
-                left: 0;
-                width: 200px
-            }
+      .tooltip {
+        background-color: lightgray;
+        position: absolute;
+        z-index: 1;
+        top: 105%;
+        left: 0;
+        width: 200px;
+      }
 
-            .tooltip {
-                display: none;
-            }
-            
-            .word:hover .tooltip {
-                display:inline;
-            }
-        </style>
-    </head>
-    <body>
-        <input id="input" type="text">
-        <button id="button">Tokenize</button>
-        <div id="output"></div>
-        <script type="module">
-            import { Tokenizer } from "../dist/tokenizer.js"
-            console.log(Tokenizer)
-            const tokenizer = new Tokenizer();
-            document.getElementById("button").addEventListener("click", () => {
-                const text = document.getElementById("input").value;
-                const outputEl = document.getElementById("output");
-                const tokens = tokenizer.tokenize(text);
+      .tooltip {
+        display: none;
+      }
 
-                outputEl.innerHTML = ""                
-                for (const token of tokens) {
-                    const span = document.createElement("span");
-                    span.classList.add("word");
-                    span.innerText = token.text;
-                    
-                    const tooltip = document.createElement("span");
-                    tooltip.classList.add("tooltip");
-                    tooltip.innerText = token.part_of_speech + ", " + token.base_form + ` [${token.reading}]` ;
-                    
-                    span.appendChild(tooltip);
-                    outputEl.appendChild(span);
-                }
-            })
-        </script>
-    </body>
+      .word:hover .tooltip {
+        display: inline;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="input" type="text" />
+    <button id="button">Tokenize</button>
+    <div id="output"></div>
+    <script type="module">
+      import { Tokenizer } from "../dist/tokenizer.js";
+      console.log(Tokenizer);
+      const tokenizer = new Tokenizer();
+      document.getElementById("button").addEventListener("click", () => {
+        const text = document.getElementById("input").value;
+        const outputEl = document.getElementById("output");
+        const tokens = tokenizer.tokenize(text);
+
+        outputEl.innerHTML = "";
+        for (const token of tokens) {
+          const span = document.createElement("span");
+          span.classList.add("word");
+          span.innerText = token.text;
+
+          const tooltip = document.createElement("span");
+          tooltip.classList.add("tooltip");
+          tooltip.innerText =
+            token.part_of_speech +
+            ", " +
+            token.base_form +
+            ` [${token.reading}]`;
+
+          span.appendChild(tooltip);
+          outputEl.appendChild(span);
+        }
+      });
+    </script>
+  </body>
 </html>

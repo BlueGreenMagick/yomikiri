@@ -3,13 +3,12 @@ use rustyxml::{Event, Parser};
 
 use std::borrow::Cow;
 
-use crate::{Result};
 use crate::jmdict::{Entry, Form, Reading, Sense};
+use crate::Result;
 
-
-/// RustyXML errors upon custom entity `&xx;` 
+/// RustyXML errors upon custom entity `&xx;`
 /// So unescape to `=xx=` before parsing
-pub fn unescape_entity<'a>(xml: &'a str) -> Cow<'a, str>{
+pub fn unescape_entity<'a>(xml: &'a str) -> Cow<'a, str> {
     let re = Regex::new(r#"&([\w\d-]+);"#).unwrap();
     re.replace_all(xml, "=$1=")
 }
@@ -24,7 +23,7 @@ pub fn parse_xml(xml_string: &str) -> Result<Vec<Entry>> {
                 if &tag.name == "JMdict" {
                     return parse_jmdict(&mut parser);
                 }
-            },
+            }
             _ => {}
         }
     }
@@ -171,26 +170,26 @@ fn parse_sense(parser: &mut Parser) -> Result<Sense> {
                 }
                 "ant" => {
                     sense.antonym.push(parse_characters(parser, "ant")?);
-                },
+                }
                 "field" => {
                     sense.field.push(parse_characters(parser, "field")?);
-                },
+                }
                 "misc" => {
                     sense.misc.push(parse_characters(parser, "misc")?);
-                },
+                }
                 "s_inf" => {
                     sense.info.push(parse_characters(parser, "s_inf")?);
-                },
+                }
                 "dial" => {
                     sense.dialect.push(parse_characters(parser, "dial")?);
-                },
+                }
                 "gloss" => {
                     sense.meaning.push(parse_characters(parser, "gloss")?);
-                },
+                }
                 "lsource" => {
                     // consume ending tag
                     parse_characters(parser, "lsource")?;
-                },
+                }
                 "example" => {
                     parse_characters(parser, "example")?;
                 }
@@ -220,7 +219,7 @@ pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
             }
             Event::ElementEnd(tag) => {
                 if &tag.name == in_tag {
-                    return Ok(characters)
+                    return Ok(characters);
                 }
                 let errmsg = format!("Expected character, received ending tag </{}>", &tag.name);
                 return Err(errmsg.into());
@@ -233,7 +232,6 @@ pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
     }
     Err(format!("Closing tag not found </{}>", in_tag).into())
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -276,45 +274,46 @@ mod tests {
 "#;
         let xml = unescape_entity(xml);
         let result = parse_xml(&xml).unwrap();
-        assert_eq!(result, vec![
-            Entry {
-                forms: vec![Form {
-                    form: "〃".to_string(),
-                    ..Form::default()
-                }],
-                readings: vec![
-                    Reading {
-                        reading: "おなじ".to_string(),
-                        ..Reading::default()
-                    },
-                    Reading {
-                        reading: "おなじく".to_string(),
-                        ..Reading::default()
-                    }
-                ],
-                sense: vec![
-                    Sense {
+        assert_eq!(
+            result,
+            vec![
+                Entry {
+                    forms: vec![Form {
+                        form: "〃".to_string(),
+                        ..Form::default()
+                    }],
+                    readings: vec![
+                        Reading {
+                            reading: "おなじ".to_string(),
+                            ..Reading::default()
+                        },
+                        Reading {
+                            reading: "おなじく".to_string(),
+                            ..Reading::default()
+                        }
+                    ],
+                    sense: vec![Sense {
                         part_of_speech: vec!["=n=".to_string()],
                         meaning: vec!["ditto mark".to_string()],
                         ..Sense::default()
-                    }
-                ]
-            },
-            Entry {
-                forms: vec![Form {
-                    form: "仝".to_string(),
-                    ..Form::default()
-                }],
-                readings: vec![Reading {
-                    reading: "どうじょう".to_string(),
-                    ..Reading::default()
-                }],
-                sense: vec![Sense {
-                    part_of_speech: vec!["=n=".to_string()],
-                    meaning: vec![r#""as above" mark"#.to_string()],
-                    ..Sense::default()
-                }]
-            }
-        ]);
+                    }]
+                },
+                Entry {
+                    forms: vec![Form {
+                        form: "仝".to_string(),
+                        ..Form::default()
+                    }],
+                    readings: vec![Reading {
+                        reading: "どうじょう".to_string(),
+                        ..Reading::default()
+                    }],
+                    sense: vec![Sense {
+                        part_of_speech: vec!["=n=".to_string()],
+                        meaning: vec![r#""as above" mark"#.to_string()],
+                        ..Sense::default()
+                    }]
+                }
+            ]
+        );
     }
 }

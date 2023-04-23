@@ -1,13 +1,13 @@
 mod jmdict;
 mod xml;
 
-use std::fmt::{Debug, Display};
-use std::path::{Path, PathBuf};
 use std::env;
+use std::fmt::{Debug, Display};
 use std::fs;
+use std::path::{Path, PathBuf};
 
 use crate::jmdict::Entry;
-use crate::xml::{unescape_entity, parse_xml};
+use crate::xml::{parse_xml, unescape_entity};
 
 type Result<T> = core::result::Result<T, CustomError>;
 
@@ -24,10 +24,13 @@ impl<D: Display> From<D> for CustomError {
     }
 }
 
-
 fn main() {
     let (input_path, output_path) = read_arguments();
-    println!("Reading from {}, writing to {}", input_path.to_string_lossy(), output_path.to_string_lossy());
+    println!(
+        "Reading from {}, writing to {}",
+        input_path.to_string_lossy(),
+        output_path.to_string_lossy()
+    );
     let entries = parse_xml_file(&input_path).unwrap();
     let json_str = serde_json::to_string(&entries).unwrap();
     fs::write(&output_path, json_str).unwrap();
@@ -46,7 +49,7 @@ fn read_arguments() -> (PathBuf, PathBuf) {
     (input_path, output_path)
 }
 
-fn parse_xml_file(input_path: &Path) -> Result<Vec<Entry>>{
+fn parse_xml_file(input_path: &Path) -> Result<Vec<Entry>> {
     let xml_str = fs::read_to_string(input_path).unwrap();
     let xml_str = unescape_entity(&xml_str);
     println!("Start parsing xml");

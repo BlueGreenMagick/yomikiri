@@ -1,2 +1,1 @@
-export { Tokenizer, Token } from "@yomikiri/lindera-wasm"
-
+export { Tokenizer, Token } from "@yomikiri/lindera-wasm";

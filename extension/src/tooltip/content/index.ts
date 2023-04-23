@@ -1,1 +1,1 @@
-console.log("Yomikiri Content script!")
+console.log("Yomikiri Content script!");

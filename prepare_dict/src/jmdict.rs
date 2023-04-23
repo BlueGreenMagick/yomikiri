@@ -1,4 +1,4 @@
-use serde::{Serialize};
+use serde::Serialize;
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
 pub struct Entry {
@@ -7,7 +7,7 @@ pub struct Entry {
     /// 1+ r_ele
     pub readings: Vec<Reading>,
     /// 1+ sense
-    pub sense: Vec<Sense>
+    pub sense: Vec<Sense>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
@@ -16,7 +16,7 @@ pub struct Form {
     /// 0+ ke_inf
     pub info: Vec<String>,
     /// 0+ ke_pri
-    pub priority: Vec<String>
+    pub priority: Vec<String>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
@@ -28,7 +28,7 @@ pub struct Reading {
     /// 0+ re_inf
     pub info: Vec<String>,
     /// 0+ re_pri
-    pub priority: Vec<String>
+    pub priority: Vec<String>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]

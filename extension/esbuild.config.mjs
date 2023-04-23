@@ -11,30 +11,29 @@ const setWatchOptionPlugin = {
       Object.defineProperty(build.initialOptions, "watch", {
         get() {
           return true;
-        }
-      })
+        },
+      });
     }
-  }
-}
+  },
+};
 
 const logRebuildPlugin = {
   name: "logRebuildPlugin",
   setup(build) {
     build.onStart(() => {
-      console.info("\n=====  esbuild: Build start  =====")
-    })
+      console.info("\n=====  esbuild: Build start  =====");
+    });
     build.onEnd(() => {
-      console.info("=====  esbuild: Build end  =====\n")
-    })
-  }
-}
-
+      console.info("=====  esbuild: Build end  =====\n");
+    });
+  },
+};
 
 const buildOptions = {
   entryPoints: [
     { in: "src/tooltip/content/index.ts", out: "content/tooltip" },
     { in: "src/index.ts", out: "background" },
-    { in: "src/popup/index.ts", out: "popup/popup"}
+    { in: "src/popup/index.ts", out: "popup/popup" },
   ],
   outdir: "build",
   target: "es6",
@@ -52,8 +51,8 @@ const buildOptions = {
         { from: ["src/assets/**/*"], to: ["assets"] },
       ],
       watch: true,
-      verbose: true
-    })
+      verbose: true,
+    }),
   ],
 };
 
@@ -61,14 +60,13 @@ const serveOptions = {
   servedir: ".",
 };
 
-
 const ctx = await esbuild.context(buildOptions);
 
-await ctx.rebuild()
+await ctx.rebuild();
 
 if (!DEVELOPMENT) {
-  ctx.dispose()
+  ctx.dispose();
 } else {
   console.info("esbuild: Watching for changes to code..");
-  await ctx.watch()
+  await ctx.watch();
 }
