@@ -54,6 +54,8 @@ const buildOptions = {
       verbose: true,
     }),
   ],
+  assetNames: "assets/[name]-[hash]",
+  loader: { ".wasm": "file" },
 };
 
 const serveOptions = {

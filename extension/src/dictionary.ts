@@ -88,7 +88,6 @@ export class Dictionary {
     const resp = await fetch(url);
     const data = await resp.arrayBuffer();
     const unzipped = pako.ungzip(data, { to: "string" }) as string;
-    console.log(unzipped);
     const entryObjects = JSON.parse(unzipped);
 
     const dictionary = new Dictionary();

@@ -2,11 +2,11 @@ import { Entry } from "../dictionary";
 import Api from "../api";
 
 async function searchClicked() {
-  const input = document.getElementById("search") as HTMLInputElement;
+  const input = document.getElementById("search-input") as HTMLInputElement;
   const term = input.value;
   let response = await Api.request("searchTerm", term);
 
-  const resultEl = document.getElementById("results") as HTMLElement;
+  const resultEl = document.getElementById("search-results") as HTMLElement;
   let text = "";
   for (const entry of response) {
     for (const sense of entry.sense) {
@@ -17,7 +17,22 @@ async function searchClicked() {
   resultEl.innerHTML = text;
 }
 
+async function tokenizeClicked() {
+  const inputEl = document.getElementById("tokenize-input") as HTMLInputElement;
+  const input = inputEl.value;
+  const response = await Api.request("tokenize", input);
+
+  const resultEl = document.getElementById("tokenize-results") as HTMLElement;
+  let text = "";
+  for (const token of response) {
+    text += token.text + ", ";
+  }
+  resultEl.textContent = text;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  const el = document.getElementById("search-button") as HTMLElement;
-  el.addEventListener("click", () => searchClicked());
+  const searchBtn = document.getElementById("search-button") as HTMLElement;
+  searchBtn.addEventListener("click", () => searchClicked());
+  const tokenizeBtn = document.getElementById("tokenize-button") as HTMLElement;
+  tokenizeBtn.addEventListener("click", () => tokenizeClicked());
 });
