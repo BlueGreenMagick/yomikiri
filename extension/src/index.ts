@@ -8,7 +8,6 @@ async function searchTerm(term: string): Promise<Entry[]> {
     return dict.search(term);
 }
 
-Api.addRequestHandler("searchTerm", async (term: string, respond ) => {
-    let result = await searchTerm(term);
-    respond(result);
+Api.handleRequest("searchTerm", async (term: string) => {
+    return await searchTerm(term);
 })
