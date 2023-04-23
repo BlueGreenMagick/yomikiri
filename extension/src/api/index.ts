@@ -32,9 +32,9 @@ export default class Api {
   static async request<K extends keyof MessageMap>(
     key: K,
     request: Request<K>
-  ): Promise<any> {
+  ): Promise<Response<K>> {
     let resolve, reject;
-    const promise = new Promise((res, rej) => {
+    const promise = new Promise((res: (value: Response<K>) => void, rej) => {
       resolve = res;
       reject = rej;
     });
@@ -58,6 +58,7 @@ export default class Api {
     key: K,
     handler: RequestHandler<K>
   ) {
+    // @ts-ignore
     Api.requestHandlers[key] = handler;
   }
 }
