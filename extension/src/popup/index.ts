@@ -1,4 +1,3 @@
-import { Entry } from "../dictionary";
 import Api from "../api";
 
 async function searchClicked() {
