@@ -11,7 +11,7 @@
     {
       "all_frames": true,
       "js": [
-        "content/tooltip.js"
+        "content.js"
       ],
       "matches": [
         "http://*/*",

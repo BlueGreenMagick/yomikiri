@@ -31,7 +31,7 @@ const logRebuildPlugin = {
 
 const buildOptions = {
   entryPoints: [
-    { in: "src/tooltip/content/index.ts", out: "content/tooltip" },
+    { in: "src/content/index.ts", out: "content" },
     { in: "src/index.ts", out: "background" },
     { in: "src/popup/index.ts", out: "popup/popup" },
   ],
