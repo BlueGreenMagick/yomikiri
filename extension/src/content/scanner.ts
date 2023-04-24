@@ -1,74 +1,118 @@
 import Api from "../api";
 import { Token } from "../tokenizer/tokenizer";
 
+/*
+Find token at point (x, y)
+*/
 export class Scanner {
+  // cache last scan.
+  /** last scanned Text node and its tokenized result */
+  private lastScannedText: [Text, Token[]] | null = null;
+  /** rect and token for the last scanned character */
+  private lastScannedChar: [DOMRect, Token] | null = null;
+
   async scanAt(x: number, y: number): Promise<Token | null> {
+    const token = this.withCache(x, y);
+    if (token !== null) return token;
+
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
+    const node = childTextAt(element, x, y);
+    if (node === null) return null;
 
-    // 1. if element has text node, and the Text contains position
-    const node = this.textChildNodeAt(element, x, y);
-    if (node !== null) {
-      return await this.scanTextNode(node, x, y);
-    } else {
-      // 2. TODO: if element is input or textarea
+    const text = node.nodeValue as string;
+    if (!stringContainsJapanese(text)) return null;
+    const tokens = await Api.request("tokenize", text);
+    this.lastScannedText = [node, tokens];
+
+    return this.tokenAt(node, tokens, x, y);
+  }
+
+  /** Try scanning with cache. If cache is invalid, clear it to null. */
+  private withCache(x: number, y: number): Token | null {
+    // check caches
+    if (this.lastScannedChar !== null) {
+      const [rect, token] = this.lastScannedChar;
+      if (rect && rectContainsPosition(rect, x, y)) {
+        return token;
+      }
     }
+    this.lastScannedChar = null;
 
+    if (this.lastScannedText !== null) {
+      const [node, tokens] = this.lastScannedText;
+      if (node && isAtTextNode(node, x, y)) {
+        return this.tokenAt(node, tokens, x, y);
+      }
+    }
+    this.lastScannedText = null;
     return null;
   }
-  /**
-   * When leaf node at (x, y) is a `Text`.
-   */
-  private async scanTextNode(node: Text, x: number, y: number) {
-    let text = node.nodeValue as string;
-    const tokensP = Api.request("tokenize", text);
 
-    if (!stringContainsJapanese(text)) return null;
-    const charIndex = this.indexOfCharacterAt(node, x, y);
-    if (charIndex === null) return null;
+  /** Sets this.lastScannedChar if token found. */
+  private tokenAt(
+    node: Text,
+    tokens: Token[],
+    x: number,
+    y: number
+  ): Token | null {
+    const result = indexOfCharacterAt(node, x, y);
+    if (result === null) return null;
 
-    const tokens = await tokensP;
+    const [rect, charIndex] = result;
     const token = tokenAtCharacterIndex(tokens, charIndex);
-
+    this.lastScannedChar = [rect, token];
     return token;
   }
+}
 
-  /** Find child `Text` node at (x, y) if it exists. */
-  private textChildNodeAt(parent: Element, x: number, y: number): Text | null {
-    parent.normalize(); // normalize splitted Text nodes
-    const range = new Range();
-    for (const child of parent.childNodes) {
-      if (!(child instanceof Text)) {
-        continue;
-      }
-      range.selectNodeContents(child);
-      const rects = range.getClientRects();
-      for (const rect of rects) {
-        if (rectContainsPosition(rect, x, y)) {
-          return child;
-        }
-      }
+/** Find child `Text` node at (x, y) if it exists. */
+function childTextAt(parent: Element, x: number, y: number): Text | null {
+  parent.normalize(); // normalize splitted Text nodes
+  for (const child of parent.childNodes) {
+    if (!(child instanceof Text)) {
+      continue;
     }
-    return null;
+    if (isAtTextNode(child, x, y)) {
+      return child;
+    }
   }
+  return null;
+}
 
-  /**
-   * Find character at (x, y) in `node` if it exists.
-   */
-  private indexOfCharacterAt(node: Text, x: number, y: number): number | null {
-    const range = new Range();
-    let text = node.nodeValue as string;
-    // TODO: use binary algorithm to reduce to O(logn)
-    for (let i = 0; i < text.length; i++) {
-      range.setStart(node, i);
-      range.setEnd(node, i + 1);
-      let rect = range.getBoundingClientRect();
-      if (rectContainsPosition(rect, x, y)) {
-        return i;
-      }
+/** (x,y) is inside `node` */
+function isAtTextNode(node: Text, x: number, y: number): boolean {
+  const range = new Range();
+  range.selectNodeContents(node);
+  const rects = range.getClientRects();
+  for (const rect of rects) {
+    if (rectContainsPosition(rect, x, y)) {
+      return true;
     }
-    return null; // is this reachable?
   }
+  return false;
+}
+
+/**
+ * Find character at (x, y) in `node` if it exists.
+ */
+function indexOfCharacterAt(
+  node: Text,
+  x: number,
+  y: number
+): [DOMRect, number] | null {
+  const range = new Range();
+  const text = node.nodeValue as string;
+  // TODO: use binary algorithm to reduce to O(logn)
+  for (let i = 0; i < text.length; i++) {
+    range.setStart(node, i);
+    range.setEnd(node, i + 1);
+    const rect = range.getBoundingClientRect();
+    if (rectContainsPosition(rect, x, y)) {
+      return [rect, i];
+    }
+  }
+  return null; // is this reachable?
 }
 
 function tokenAtCharacterIndex(tokens: Token[], charIndex: number): Token {
