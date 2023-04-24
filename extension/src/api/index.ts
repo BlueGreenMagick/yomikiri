@@ -11,7 +11,7 @@ interface SuccessfulRequestResponse<R> {
 }
 interface FailedRequestResponse {
   success: false;
-  resp: Error;
+  error: string; // JSON.stringify(error)
 }
 type RequestResponse<K extends keyof MessageMap> =
   | SuccessfulRequestResponse<Response<K>>
@@ -46,7 +46,12 @@ export default class Api {
       if (resp.success) {
         resolve(resp.resp);
       } else {
-        reject(resp.resp);
+        const obj = JSON.parse(resp.error);
+        const error = new Error();
+        for (const key in obj.getOwnPropertyNames()) {
+          error[key] = obj[key];
+        }
+        reject(error);
       }
     });
     return promise;
@@ -80,9 +85,10 @@ function attachRequestHandler() {
             resp: realResp,
           });
         } catch (e) {
+          console.error(`error while handling request '${message.key}':`, e);
           sendResponse({
             success: false,
-            resp: e,
+            error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
           });
         }
       }
