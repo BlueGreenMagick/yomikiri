@@ -1,4 +1,5 @@
 import type { MessageMap, Request, Response } from "./message";
+import Utils from "../utils";
 
 interface Message<K extends keyof MessageMap> {
   key: K;
@@ -27,22 +28,11 @@ export default class Api {
     [K in keyof MessageMap]: RequestHandler<K>;
   }> = {};
 
-  /// Send request to extension backend.
-  /// Returns the return value of the request handler.
-  static async request<K extends keyof MessageMap>(
-    key: K,
-    request: Request<K>
-  ): Promise<Response<K>> {
-    let resolve, reject;
-    const promise = new Promise((res: (value: Response<K>) => void, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-    const message = {
-      key,
-      request,
-    };
-    chrome.runtime.sendMessage(message, (resp: RequestResponse<K>) => {
+  private static createRequestResponseHandler<K extends keyof MessageMap>(
+    resolve: Utils.PromiseResolver<Response<K>>,
+    reject: (reason: Error) => void
+  ): (resp: RequestResponse<K>) => void {
+    return (resp: RequestResponse<K>) => {
       if (resp.success) {
         resolve(resp.resp);
       } else {
@@ -53,7 +43,44 @@ export default class Api {
         }
         reject(error);
       }
-    });
+    };
+  }
+
+  /// Send request to extension backend.
+  /// Returns the return value of the request handler.
+  static async request<K extends keyof MessageMap>(
+    key: K,
+    request: Request<K>
+  ): Promise<Response<K>> {
+    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+    const message = {
+      key,
+      request,
+    };
+    chrome.runtime.sendMessage(
+      message,
+      Api.createRequestResponseHandler(resolve, reject)
+    );
+    return promise;
+  }
+
+  /// Send request to extension backend.
+  /// Returns the return value of the request handler.
+  static async requestToTab<K extends keyof MessageMap>(
+    tabId: number,
+    key: K,
+    request: Request<K>
+  ): Promise<Response<K>> {
+    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+    const message = {
+      key,
+      request,
+    };
+    chrome.tabs.sendMessage(
+      tabId,
+      message,
+      Api.createRequestResponseHandler(resolve, reject)
+    );
     return promise;
   }
 
@@ -65,6 +92,18 @@ export default class Api {
   ) {
     // @ts-ignore
     Api.requestHandlers[key] = handler;
+  }
+
+  static async currentTab(): Promise<chrome.tabs.Tab> {
+    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab>();
+    const info = {
+      active: true,
+      currentWindow: true,
+    };
+    chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
+      resolve(result[0]);
+    });
+    return promise;
   }
 }
 
@@ -78,6 +117,7 @@ function attachRequestHandler() {
       let handler = Api.requestHandlers[message.key];
       if (handler) {
         try {
+          // @ts-ignore
           let resp = handler(message.request, sender);
           let realResp = resp instanceof Promise ? await resp : resp;
           sendResponse({

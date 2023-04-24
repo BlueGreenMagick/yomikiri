@@ -3,6 +3,7 @@ import type { Token } from "@yomikiri/tokenizer";
 
 /// Type map for `{ key: [request, response] }`
 /// Response type must not have Promise
+/// Request type cannot be void, but response can be void
 export interface MessageMap {
   searchTerm: [string, Entry[]];
   tokenize: [string, Token[]];
