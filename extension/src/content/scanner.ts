@@ -3,16 +3,15 @@ import { Token } from "../tokenizer/tokenizer";
 
 export interface ScanResult {
   token: Token;
-  rects: DOMRect[];
+  /** range that has token text selected */
+  range: Range;
 }
 
-/*
-Find token at point (x, y)
-*/
+/** Find token at point (x, y) */
 export class Scanner {
   // cache last scan.
   private lastScannedResult: ScanResult | null = null;
-  /** last scanned Text node and its tokenized result */
+  /** last scanned Text node and its tokenized tokens */
   private lastScannedText: [Text, Token[]] | null = null;
 
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
@@ -39,16 +38,16 @@ export class Scanner {
     // check caches
     if (this.lastScannedResult !== null) {
       const result = this.lastScannedResult;
-      for (const rect of result.rects) {
-        if (rectContainsPosition(rect, x, y)) {
-          return result;
-        }
+      if (rangeContainsPoint(result.range, x, y)) {
+        return result;
       }
     }
 
     if (this.lastScannedText !== null) {
       const [node, tokens] = this.lastScannedText;
-      if (node && isAtTextNode(node, x, y)) {
+      const range = new Range();
+      range.selectNodeContents(node);
+      if (rangeContainsPoint(range, x, y)) {
         const result = scanTokenAt(node, tokens, x, y);
         this.lastScannedResult = result;
         if (result !== null) {
@@ -69,8 +68,18 @@ function stringContainsJapanese(text: string): boolean {
   return JAPANESE_REGEX.test(text);
 }
 
-function rectContainsPosition(rect: DOMRect, x: number, y: number): boolean {
+function rectContainsPoint(rect: DOMRect, x: number, y: number): boolean {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+function rangeContainsPoint(range: Range, x: number, y: number): boolean {
+  const rects = range.getClientRects();
+  for (const rect of rects) {
+    if (rectContainsPoint(rect, x, y)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /** Find child `Text` node at (x, y) if it exists. */
@@ -80,24 +89,13 @@ function childTextAt(parent: Element, x: number, y: number): Text | null {
     if (!(child instanceof Text)) {
       continue;
     }
-    if (isAtTextNode(child, x, y)) {
+    const range = new Range();
+    range.selectNodeContents(child);
+    if (rangeContainsPoint(range, x, y)) {
       return child;
     }
   }
   return null;
-}
-
-/** (x,y) is inside `node` */
-function isAtTextNode(node: Text, x: number, y: number): boolean {
-  const range = new Range();
-  range.selectNodeContents(node);
-  const rects = range.getClientRects();
-  for (const rect of rects) {
-    if (rectContainsPosition(rect, x, y)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 /**
@@ -106,12 +104,11 @@ function isAtTextNode(node: Text, x: number, y: number): boolean {
 function indexOfCharacterAt(node: Text, x: number, y: number): number | null {
   const range = new Range();
   const text = node.nodeValue as string;
-  // TODO: use binary algorithm to reduce to O(logn)
+  // TODO: maybe on large texts use binary algorithm to reduce to O(logn)
   for (let i = 0; i < text.length; i++) {
     range.setStart(node, i);
     range.setEnd(node, i + 1);
-    const rect = range.getBoundingClientRect();
-    if (rectContainsPosition(rect, x, y)) {
+    if (rangeContainsPoint(range, x, y)) {
       return i;
     }
   }
@@ -120,8 +117,7 @@ function indexOfCharacterAt(node: Text, x: number, y: number): number | null {
 
 function tokenAtCharacterIndex(tokens: Token[], charIndex: number): Token {
   let currentIndex = 0;
-  let token;
-  for (token of tokens) {
+  for (let token of tokens) {
     currentIndex += token.text.length;
     if (currentIndex > charIndex) {
       return token;
@@ -140,15 +136,15 @@ function scanTokenAt(
   if (charIndex === null) return null;
   const token = tokenAtCharacterIndex(tokens, charIndex);
   if (token === null) return null;
-  const rects = findTokenRects(node, token, charIndex);
+  const range = selectTokenRange(node, token, charIndex);
 
-  return { token, rects };
+  return { token, range };
 }
 
-function findTokenRects(node: Text, token: Token, charIdx: number): DOMRect[] {
+function selectTokenRange(node: Text, token: Token, charIdx: number): Range {
   const endIdx = charIdx + token.text.length;
   const range = new Range();
   range.setStart(node, charIdx);
   range.setEnd(node, endIdx);
-  return [...range.getClientRects()];
+  return range;
 }
