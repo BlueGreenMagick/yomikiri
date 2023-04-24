@@ -1,19 +1,23 @@
 import Api from "../api";
 import { Token } from "../tokenizer/tokenizer";
 
+export interface ScanResult {
+  token: Token;
+  rects: DOMRect[];
+}
+
 /*
 Find token at point (x, y)
 */
 export class Scanner {
   // cache last scan.
+  private lastScannedResult: ScanResult | null = null;
   /** last scanned Text node and its tokenized result */
   private lastScannedText: [Text, Token[]] | null = null;
-  /** rect and token for the last scanned character */
-  private lastScannedChar: [DOMRect, Token] | null = null;
 
-  async scanAt(x: number, y: number): Promise<Token | null> {
-    const token = this.withCache(x, y);
-    if (token !== null) return token;
+  async scanAt(x: number, y: number): Promise<ScanResult | null> {
+    const cacheResult = this.withCache(x, y);
+    if (cacheResult !== null) return cacheResult;
 
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
@@ -25,45 +29,48 @@ export class Scanner {
     const tokens = await Api.request("tokenize", text);
     this.lastScannedText = [node, tokens];
 
-    return this.tokenAt(node, tokens, x, y);
+    const result = scanTokenAt(node, tokens, x, y);
+    this.lastScannedResult = result;
+    return result;
   }
 
   /** Try scanning with cache. If cache is invalid, clear it to null. */
-  private withCache(x: number, y: number): Token | null {
+  private withCache(x: number, y: number): ScanResult | null {
     // check caches
-    if (this.lastScannedChar !== null) {
-      const [rect, token] = this.lastScannedChar;
-      if (rect && rectContainsPosition(rect, x, y)) {
-        return token;
+    if (this.lastScannedResult !== null) {
+      const result = this.lastScannedResult;
+      for (const rect of result.rects) {
+        if (rectContainsPosition(rect, x, y)) {
+          return result;
+        }
       }
     }
-    this.lastScannedChar = null;
 
     if (this.lastScannedText !== null) {
       const [node, tokens] = this.lastScannedText;
       if (node && isAtTextNode(node, x, y)) {
-        return this.tokenAt(node, tokens, x, y);
+        const result = scanTokenAt(node, tokens, x, y);
+        this.lastScannedResult = result;
+        if (result !== null) {
+          return result;
+        }
       }
     }
     this.lastScannedText = null;
     return null;
   }
+}
 
-  /** Sets this.lastScannedChar if token found. */
-  private tokenAt(
-    node: Text,
-    tokens: Token[],
-    x: number,
-    y: number
-  ): Token | null {
-    const result = indexOfCharacterAt(node, x, y);
-    if (result === null) return null;
+// https://stackoverflow.com/a/15034560
+const JAPANESE_REGEX =
+  /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
 
-    const [rect, charIndex] = result;
-    const token = tokenAtCharacterIndex(tokens, charIndex);
-    this.lastScannedChar = [rect, token];
-    return token;
-  }
+function stringContainsJapanese(text: string): boolean {
+  return JAPANESE_REGEX.test(text);
+}
+
+function rectContainsPosition(rect: DOMRect, x: number, y: number): boolean {
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
 /** Find child `Text` node at (x, y) if it exists. */
@@ -96,11 +103,7 @@ function isAtTextNode(node: Text, x: number, y: number): boolean {
 /**
  * Find character at (x, y) in `node` if it exists.
  */
-function indexOfCharacterAt(
-  node: Text,
-  x: number,
-  y: number
-): [DOMRect, number] | null {
+function indexOfCharacterAt(node: Text, x: number, y: number): number | null {
   const range = new Range();
   const text = node.nodeValue as string;
   // TODO: use binary algorithm to reduce to O(logn)
@@ -109,7 +112,7 @@ function indexOfCharacterAt(
     range.setEnd(node, i + 1);
     const rect = range.getBoundingClientRect();
     if (rectContainsPosition(rect, x, y)) {
-      return [rect, i];
+      return i;
     }
   }
   return null; // is this reachable?
@@ -127,14 +130,25 @@ function tokenAtCharacterIndex(tokens: Token[], charIndex: number): Token {
   throw new Error("character index out of range");
 }
 
-function rectContainsPosition(rect: DOMRect, x: number, y: number): boolean {
-  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+function scanTokenAt(
+  node: Text,
+  tokens: Token[],
+  x: number,
+  y: number
+): ScanResult | null {
+  const charIndex = indexOfCharacterAt(node, x, y);
+  if (charIndex === null) return null;
+  const token = tokenAtCharacterIndex(tokens, charIndex);
+  if (token === null) return null;
+  const rects = findTokenRects(node, token, charIndex);
+
+  return { token, rects };
 }
 
-// https://stackoverflow.com/a/15034560
-const JAPANESE_REGEX =
-  /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
-
-function stringContainsJapanese(text: string): boolean {
-  return JAPANESE_REGEX.test(text);
+function findTokenRects(node: Text, token: Token, charIdx: number): DOMRect[] {
+  const endIdx = charIdx + token.text.length;
+  const range = new Range();
+  range.setStart(node, charIdx);
+  range.setEnd(node, endIdx);
+  return [...range.getClientRects()];
 }

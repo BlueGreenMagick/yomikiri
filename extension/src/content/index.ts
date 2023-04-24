@@ -3,8 +3,8 @@ import { Scanner } from "./scanner";
 const scanner = new Scanner();
 
 async function trigger(x: number, y: number) {
-  const token = await scanner.scanAt(x, y);
-  console.log(token);
+  const result = await scanner.scanAt(x, y);
+  console.log(result);
 }
 
 document.addEventListener("mousemove", (ev) => {
