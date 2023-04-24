@@ -3,11 +3,7 @@ import { Tokenizer, type Token } from "./tokenizer/tokenizer";
 import Api from "./api";
 
 let dictionaryP = Dictionary.loadFromUrl("assets/jmdict/en.json.gz");
-let tokenizerP = loadTokenizer();
-
-async function loadTokenizer() {
-  return Tokenizer.initialize(dictionaryP);
-}
+let tokenizerP = Tokenizer.initialize(dictionaryP);
 
 async function searchTerm(term: string): Promise<Entry[]> {
   let dictionary = await dictionaryP;
