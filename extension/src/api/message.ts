@@ -5,9 +5,13 @@ import type { Token } from "@yomikiri/tokenizer";
 /// Response type must not have Promise
 /// Request type cannot be void, but response can be void
 export interface MessageMap {
-  searchTerm: [string, Entry[]];
-  tokenize: [string, Token[]];
+  searchTerm: [string, ParsedClass<Entry>[]];
+  tokenize: [string, ParsedClass<Token>[]];
 }
+
+export type ParsedClass<T> = {
+  [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
 
 type First<T extends any[]> = T extends [infer FIRST, ...any[]] ? FIRST : never;
 type Second<T extends any[]> = T extends [any, infer SECOND, ...any[]]

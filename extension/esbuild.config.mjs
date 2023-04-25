@@ -1,5 +1,7 @@
 import esbuild from "esbuild";
 import { copy } from "esbuild-plugin-copy";
+import sveltePlugin from "esbuild-svelte";
+import sveltePreprocess from "svelte-preprocess";
 
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
@@ -40,6 +42,7 @@ const buildOptions = {
   format: "iife",
   bundle: true,
   logLevel: "info",
+  sourcemap: DEVELOPMENT,
   plugins: [
     logRebuildPlugin,
     setWatchOptionPlugin,
@@ -51,6 +54,10 @@ const buildOptions = {
       ],
       watch: true,
       verbose: true,
+    }),
+    sveltePlugin({
+      preprocess: sveltePreprocess(),
+      compilerOptions: { css: true },
     }),
   ],
   assetNames: "assets/[name]-[hash]",

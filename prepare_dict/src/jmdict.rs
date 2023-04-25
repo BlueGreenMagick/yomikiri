@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Entry {
     /// 0+ k_ele
     pub forms: Vec<Form>,
@@ -11,6 +12,7 @@ pub struct Entry {
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Form {
     pub form: String,
     /// 0+ ke_inf
@@ -20,6 +22,7 @@ pub struct Form {
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Reading {
     pub reading: String,
     pub nokanji: bool,
@@ -32,6 +35,7 @@ pub struct Reading {
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Sense {
     /// 0+ 'stagk'
     pub to_form: Vec<String>,

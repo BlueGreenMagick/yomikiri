@@ -1,5 +1,5 @@
 import Api from "../api";
-import { Token } from "../tokenizer/tokenizer";
+import type { Token } from "../tokenizer/tokenizer";
 
 export interface ScanResult {
   token: Token;
