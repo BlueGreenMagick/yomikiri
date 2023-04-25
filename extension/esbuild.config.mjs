@@ -46,16 +46,15 @@ const buildOptions = {
     copy({
       assets: [
         { from: ["src/**/*.html"], to: ["./"] },
-        { from: ["src/**/*.json"], to: ["./"] },
-        { from: ["src/images/**/*"], to: ["images"] },
-        { from: ["src/assets/**/*"], to: ["assets"] },
+        { from: ["src/*.json"], to: ["./"] },
+        { from: ["src/resources/**/*"], to: ["resources"] },
       ],
       watch: true,
       verbose: true,
     }),
   ],
   assetNames: "assets/[name]-[hash]",
-  loader: { ".wasm": "file" },
+  loader: { ".wasm": "file", ".json.gz": "file" },
 };
 
 const serveOptions = {

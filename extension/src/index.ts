@@ -1,8 +1,9 @@
 import { Dictionary, Entry } from "./dictionary";
 import { Tokenizer, type Token } from "./tokenizer/tokenizer";
 import Api from "./api";
+import EnJMDict from "./assets/jmdict/en.json.gz";
 
-let dictionaryP = Dictionary.loadFromUrl("assets/jmdict/en.json.gz");
+let dictionaryP = Dictionary.loadFromUrl(EnJMDict);
 let tokenizerP = Tokenizer.initialize(dictionaryP);
 
 async function searchTerm(term: string): Promise<Entry[]> {
