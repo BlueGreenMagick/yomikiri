@@ -18,3 +18,9 @@ async function tokenize(text: string): Promise<Token[]> {
 
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
+
+// expose object to window for debugging purposes
+// @ts-ignore
+window.dictionaryP = dictionaryP;
+// @ts-ignore
+window.tokenizerP = tokenizerP;
