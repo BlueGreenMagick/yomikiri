@@ -23,6 +23,30 @@ namespace Utils {
     }
     return true;
   }
+
+  export function rectContainsPoint(
+    rect: DOMRect,
+    x: number,
+    y: number
+  ): boolean {
+    return (
+      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+    );
+  }
+
+  export function rangeContainsPoint(
+    range: Range,
+    x: number,
+    y: number
+  ): boolean {
+    const rects = range.getClientRects();
+    for (const rect of rects) {
+      if (rectContainsPoint(rect, x, y)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 export default Utils;

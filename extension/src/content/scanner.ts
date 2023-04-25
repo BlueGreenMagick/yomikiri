@@ -1,5 +1,6 @@
 import Api from "../api";
 import type { Token } from "../tokenizer/tokenizer";
+import Utils from "../utils";
 
 export interface ScanResult {
   token: Token;
@@ -38,7 +39,7 @@ export class Scanner {
     // check caches
     if (this.lastScannedResult !== null) {
       const result = this.lastScannedResult;
-      if (rangeContainsPoint(result.range, x, y)) {
+      if (Utils.rangeContainsPoint(result.range, x, y)) {
         return result;
       }
     }
@@ -47,7 +48,7 @@ export class Scanner {
       const [node, tokens] = this.lastScannedText;
       const range = new Range();
       range.selectNodeContents(node);
-      if (rangeContainsPoint(range, x, y)) {
+      if (Utils.rangeContainsPoint(range, x, y)) {
         const result = scanTokenAt(node, tokens, x, y);
         this.lastScannedResult = result;
         if (result !== null) {
@@ -68,20 +69,6 @@ function stringContainsJapanese(text: string): boolean {
   return JAPANESE_REGEX.test(text);
 }
 
-function rectContainsPoint(rect: DOMRect, x: number, y: number): boolean {
-  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-}
-
-function rangeContainsPoint(range: Range, x: number, y: number): boolean {
-  const rects = range.getClientRects();
-  for (const rect of rects) {
-    if (rectContainsPoint(rect, x, y)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 /** Find child `Text` node at (x, y) if it exists. */
 function childTextAt(parent: Element, x: number, y: number): Text | null {
   parent.normalize(); // normalize splitted Text nodes
@@ -91,7 +78,7 @@ function childTextAt(parent: Element, x: number, y: number): Text | null {
     }
     const range = new Range();
     range.selectNodeContents(child);
-    if (rangeContainsPoint(range, x, y)) {
+    if (Utils.rangeContainsPoint(range, x, y)) {
       return child;
     }
   }
@@ -108,7 +95,7 @@ function indexOfCharacterAt(node: Text, x: number, y: number): number | null {
   for (let i = 0; i < text.length; i++) {
     range.setStart(node, i);
     range.setEnd(node, i + 1);
-    if (rangeContainsPoint(range, x, y)) {
+    if (Utils.rangeContainsPoint(range, x, y)) {
       return i;
     }
   }
