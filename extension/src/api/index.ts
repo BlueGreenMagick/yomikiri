@@ -39,6 +39,7 @@ export default class Api {
         const obj = JSON.parse(resp.error);
         const error = new Error();
         for (const key in obj.getOwnPropertyNames()) {
+          // @ts-ignore
           error[key] = obj[key];
         }
         reject(error);
@@ -117,7 +118,6 @@ function attachRequestHandler() {
       let handler = Api.requestHandlers[message.key];
       if (handler) {
         try {
-          // @ts-ignore
           let resp = handler(message.request, sender);
           let realResp = resp instanceof Promise ? await resp : resp;
           sendResponse({

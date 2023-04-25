@@ -1,9 +1,12 @@
 import Api from "../api";
+import { Entry } from "dictionary";
 
 async function searchClicked() {
   const input = document.getElementById("search-input") as HTMLInputElement;
   const term = input.value;
-  let response = await Api.request("searchTerm", term);
+  let response = (await Api.request("searchTerm", term)).map(
+    (e) => new Entry(e)
+  );
 
   const resultEl = document.getElementById("search-results") as HTMLElement;
   let text = "";

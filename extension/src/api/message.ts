@@ -6,7 +6,7 @@ import type { Token } from "@yomikiri/tokenizer";
 /// Request type cannot be void, but response can be void
 export interface MessageMap {
   searchTerm: [string, ParsedClass<Entry>[]];
-  tokenize: [string, ParsedClass<Token>[]];
+  tokenize: [string, Token[]];
 }
 
 export type ParsedClass<T> = {
