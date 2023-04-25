@@ -1,4 +1,5 @@
 import { Scanner } from "./scanner";
+import { highlightRange } from "./highlight";
 import { Entry } from "../dictionary";
 import Api from "../api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
@@ -17,6 +18,7 @@ async function trigger(x: number, y: number) {
   );
   if (entries.length === 0) return;
   tooltipSvelte.show(entries, result.range, x, y);
+  highlightRange(result.range);
 }
 
 document.addEventListener("mousemove", (ev) => {
