@@ -115,12 +115,16 @@ function indexOfCharacterAt(node: Text, x: number, y: number): number | null {
   return null; // is this reachable?
 }
 
-function tokenAtCharacterIndex(tokens: Token[], charIndex: number): Token {
+// returns [token, start character index of token]
+function tokenAtCharacterIndex(
+  tokens: Token[],
+  charIndex: number
+): [Token, number] {
   let currentIndex = 0;
   for (let token of tokens) {
     currentIndex += token.text.length;
     if (currentIndex > charIndex) {
-      return token;
+      return [token, currentIndex - token.text.length];
     }
   }
   throw new Error("character index out of range");
@@ -134,17 +138,12 @@ function scanTokenAt(
 ): ScanResult | null {
   const charIndex = indexOfCharacterAt(node, x, y);
   if (charIndex === null) return null;
-  const token = tokenAtCharacterIndex(tokens, charIndex);
+  const [token, tokenStartIndex] = tokenAtCharacterIndex(tokens, charIndex);
   if (token === null) return null;
-  const range = selectTokenRange(node, token, charIndex);
+  // token range
+  const range = new Range();
+  range.setStart(node, tokenStartIndex);
+  range.setEnd(node, tokenStartIndex + token.text.length);
 
   return { token, range };
-}
-
-function selectTokenRange(node: Text, token: Token, charIdx: number): Range {
-  const endIdx = charIdx + token.text.length;
-  const range = new Range();
-  range.setStart(node, charIdx);
-  range.setEnd(node, endIdx);
-  return range;
 }
