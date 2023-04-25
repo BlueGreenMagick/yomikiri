@@ -16,7 +16,7 @@ async function trigger(x: number, y: number) {
     (o) => new Entry(o)
   );
   if (entries.length === 0) return;
-  tooltipSvelte.show(x, y, entries[0]);
+  tooltipSvelte.show(entries, result.range);
 }
 
 document.addEventListener("mousemove", (ev) => {

@@ -5,13 +5,14 @@
   let x: number = 0;
   let y: number = 0;
   let visible: boolean = false;
-  let entry: Entry | null = null;
+  let entries: Entry[] = [];
 
-  export function show(xx: number, yy: number, e: Entry) {
-    x = xx;
-    y = yy;
+  export function show(e: Entry[], range: Range) {
+    const rect = range.getClientRects()[0];
+    x = rect.left;
+    y = rect.bottom + 5;
     visible = true;
-    entry = e;
+    entries = e;
   }
 
   export function hide() {
@@ -24,9 +25,9 @@
   style:left="{x}px"
   style:visibility={visible ? "visible" : "hidden"}
 >
-  {#if entry !== null}
+  {#each entries as entry}
     <EntryView {entry} />
-  {/if}
+  {/each}
 </div>
 
 <style>
@@ -37,5 +38,17 @@
     background-color: white;
     border: 1px solid black;
     z-index: 999;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  div > :global(div) {
+    border-top: 1px solid lightgray;
+    margin-top: 15px;
+  }
+
+  div > :global(div:first-child) {
+    border-top: none;
+    margin-top: 0px;
   }
 </style>

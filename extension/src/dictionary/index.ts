@@ -140,8 +140,26 @@ export class Dictionary {
     return [...result];
   }
 
-  entityInfo(entity: string): string | undefined {
-    return entities[entity];
+  /** Put in return value of .entityName() */
+  static entityInfo(entity: string): string | null {
+    let name = Dictionary.entityName(entity);
+    if (name === null) return null;
+    let info = entities[name] as string | undefined;
+    if (info === undefined) return null;
+    return info;
+  }
+
+  /** Returns entity name if s is an entity, else return null. */
+  static entityName(s: string): string | null {
+    if (
+      s.length > 2 &&
+      s[0] === "=" &&
+      s[s.length - 1] === "=" &&
+      s[1] !== "="
+    ) {
+      return s.substring(1, s.length - 1);
+    }
+    return null;
   }
 
   private generateSearchMap() {

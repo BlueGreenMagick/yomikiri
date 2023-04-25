@@ -1,15 +1,41 @@
 <script lang="ts">
-  import type { Entry } from "../dictionary";
+  import type { Entry, GroupedSense, Reading } from "../dictionary";
 
-  import Senses from "./Senses.svelte";
+  import GroupedSenseView from "./GroupedSenseView.svelte";
 
   export let entry: Entry;
 
+  let mainForm: string;
+  let readingsString: string;
+  let groups: GroupedSense[];
+
+  function makeReadingsString(readings: Reading[]): string {
+    return readings.map((r) => r.reading).join(", ");
+  }
+
   $: mainForm = entry.mainForm();
+  $: readingsString = makeReadingsString(entry.readings);
+  $: groups = entry.groupSenses();
 </script>
 
 <div>
-  <div class="mainForm">{mainForm}</div>
-  <div class="reading">{entry.readings[0].reading}</div>
-  <Senses {entry} />
+  <div class="header">
+    <span class="mainForm">{mainForm}</span>
+    <span class="reading">{readingsString}</span>
+  </div>
+  <div class="groups">
+    {#each groups as group}
+      <GroupedSenseView {group} />
+    {/each}
+  </div>
 </div>
+
+<style>
+  .mainForm {
+    font-size: 20px;
+  }
+  .reading {
+    color: grey;
+    font-size: 12px;
+  }
+</style>
