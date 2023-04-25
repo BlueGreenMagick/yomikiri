@@ -11,14 +11,16 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
+    "@types/pako": "^2.0.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.18",
     "esbuild-plugin-copy": "^2.1.1",
     "rimraf": "^5.0.0",
+    "svelte": "^3.58.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "pako": "^2.1.0",
-    "@yomikiri/tokenizer": "0.0.1"
+    "@yomikiri/tokenizer": "0.0.1",
+    "pako": "^2.1.0"
   }
 }
