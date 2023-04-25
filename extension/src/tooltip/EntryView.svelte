@@ -10,6 +10,9 @@
   let groups: GroupedSense[];
 
   function makeReadingsString(readings: Reading[]): string {
+    if (readings.length === 1 && readings[0].reading === mainForm) {
+      return "";
+    }
     return readings.map((r) => r.reading).join(", ");
   }
 
