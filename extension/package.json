@@ -2,12 +2,13 @@
   "name": "@yomikiri/extension",
   "version": "0.0.1",
   "description": "Web extension to view definition for Japanese words and add to Anki.",
-  "main": "index.js",
   "author": "BlueGreenMagick",
   "license": "MIT",
   "scripts": {
     "build": "cross-env NODE_ENV=production yarn run build:types && node esbuild.config.mjs",
-    "dev": "rimraf build ; cross-env NODE_ENV=development node esbuild.config.mjs"
+    "build:dependencies": "yarn workspace @yomikiri/tokenizer build:types",
+    "dev": "rimraf build ; cross-env NODE_ENV=development node esbuild.config.mjs",
+    "types": "svelte-check"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
@@ -18,6 +19,7 @@
     "esbuild-svelte": "^0.7.3",
     "rimraf": "^5.0.0",
     "svelte": "^3.58.0",
+    "svelte-check": "^3.2.0",
     "svelte-preprocess": "^5.0.3",
     "typescript": "^5.0.4"
   },

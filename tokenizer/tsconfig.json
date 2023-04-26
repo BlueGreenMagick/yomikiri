@@ -9,6 +9,7 @@
     "lib": ["es2015", "es2016", "es2017", "DOM", "DOM.Iterable"],
     "sourceMap": true,
     "declaration": true,
+    "composite": true,
     "esModuleInterop": true,
     "strict": true, 
     "verbatimModuleSyntax": true,

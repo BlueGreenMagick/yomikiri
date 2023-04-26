@@ -6,11 +6,12 @@
   "license": "MIT",
   "type": "module",
   "module": "src/index.ts",
-  "types": "src/index.ts",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "build:wasm": "(cd lindera-wasm && wasm-pack build --scope yomikiri --target web)",
-    "build:ts": "cross-env NODE_ENV=production node esbuild.config.js",
+    "build:ts": "cross-env NODE_ENV=production node esbuild.config.js && yarn build:types",
     "build:all": "yarn build:wasm && yarn build:ts",
+    "build:types": "tsc --emitDeclarationOnly --outDir ./dist/types",
     "dev": "cross-env NODE_ENV=development node esbuild.config.js"
   },
   "dependencies": {
