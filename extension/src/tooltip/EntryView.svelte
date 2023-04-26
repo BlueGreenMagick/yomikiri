@@ -21,7 +21,7 @@
   $: groups = entry.groupSenses();
 </script>
 
-<div>
+<div class="entryView">
   <div class="header">
     <span class="mainForm">{mainForm}</span>
     <span class="reading">{readingsString}</span>
@@ -34,6 +34,9 @@
 </div>
 
 <style>
+  .entryView {
+    padding: 8px;
+  }
   .mainForm {
     font-size: 20px;
   }

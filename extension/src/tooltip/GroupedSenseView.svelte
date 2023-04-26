@@ -33,12 +33,13 @@
 
 <style>
   .grouped-sense {
-    margin-top: 6px;
+    margin-top: 4px;
   }
 
   .part-of-speech {
     color: grey;
     font-size: 12px;
+    margin-bottom: 2px;
   }
 
   .meaning {

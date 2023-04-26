@@ -1,15 +1,17 @@
 <script lang="ts">
   import Utils from "utils";
   import type { Entry } from "../dictionary";
-  import EntryView from "./EntryView.svelte";
   import { tick, onMount, onDestroy } from "svelte";
+  import EntriesView from "./EntriesView.svelte";
 
   const BOTTOM_HEIGHT_THRESHOLD = 500;
 
   let visible: boolean = false;
-  let entries: Entry[] = [];
+  let width: number = 0;
+  let height: number = 0;
   let range: Range;
-  let tooltipEl: HTMLDivElement;
+  let tooltipEl: HTMLIFrameElement;
+  let entriesView: EntriesView;
 
   export async function show(
     e: Entry[],
@@ -19,8 +21,7 @@
   ) {
     visible = true;
     range = r;
-    entries = e;
-
+    entriesView.setEntries(e);
     const rect = findRectOfMouse(range, mouseX, mouseY);
     await position(rect);
   }
@@ -44,23 +45,31 @@
   }
 
   async function position(rect: DOMRect) {
-    console.log("position");
     // reset tooltipEl style beforehand so tooltip does not affect document size.
     tooltipEl.style.left = "0px";
     tooltipEl.style.top = "0px";
     tooltipEl.style.removeProperty("right");
     tooltipEl.style.removeProperty("transform");
+    width = Math.min(500, window.innerWidth);
 
     await tick(); // let browser calculate dimension
+
+    // calculate frame size
+    const dim = tooltipEl.contentDocument
+      ?.getElementById("yomikiri-entriesview")
+      ?.getBoundingClientRect() as DOMRect;
+    width = dim.width;
+    height = dim.height;
+
+    // calculate frame position
     const docRoot = document.documentElement;
-    const dim = tooltipEl.getBoundingClientRect();
     const rectLeft = rect.left + docRoot.scrollLeft - docRoot.clientLeft;
     const rectBottom = rect.bottom + docRoot.scrollTop - docRoot.clientTop;
     const rectTop = rect.top + docRoot.scrollTop - docRoot.clientTop;
     const spaceBottom = window.innerHeight - rect.bottom;
     const spaceTop = rect.top;
 
-    if (rectLeft + dim.width <= docRoot.scrollWidth) {
+    if (rectLeft + width <= docRoot.scrollWidth) {
       tooltipEl.style.left = rectLeft + "px";
     } else {
       tooltipEl.style.removeProperty("left");
@@ -68,7 +77,7 @@
     }
 
     if (
-      rectBottom + 5 + dim.height <= docRoot.scrollHeight &&
+      rectBottom + 5 + height <= docRoot.scrollHeight &&
       (spaceBottom > BOTTOM_HEIGHT_THRESHOLD + 5 || spaceBottom > spaceTop)
     ) {
       tooltipEl.style.top = rectBottom + 5 + "px";
@@ -76,6 +85,22 @@
       tooltipEl.style.top = rectTop - 5 + "px";
       tooltipEl.style.transform = "translateY(-100%)";
     }
+  }
+
+  function setupEntriesView(): EntriesView {
+    const doc = tooltipEl.contentDocument as Document;
+    const style = doc.createElement("style");
+    style.innerHTML = `
+html, body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}`;
+    doc.head.appendChild(style);
+
+    return new EntriesView({
+      target: (tooltipEl.contentDocument as Document).body,
+    });
   }
 
   onMount(() => {
@@ -90,22 +115,26 @@
         repositionRequested = false;
       });
     });
-
     resizeObserver.observe(document.documentElement);
+
+    entriesView = setupEntriesView();
+
     return () => {
       resizeObserver.disconnect();
     };
   });
 </script>
 
-<div bind:this={tooltipEl} style:visibility={visible ? "visible" : "hidden"}>
-  {#each entries as entry}
-    <EntryView {entry} />
-  {/each}
-</div>
+<iframe
+  title="Title"
+  bind:this={tooltipEl}
+  style:visibility={visible ? "visible" : "hidden"}
+  style:width="{width}px"
+  style:height="{height}px"
+/>
 
 <style>
-  div {
+  iframe {
     position: absolute;
     max-width: calc(min(500px, 100vw));
     min-width: 300px;
@@ -113,16 +142,6 @@
     border: 1px solid black;
     z-index: 999;
     max-height: 300px;
-    overflow-y: auto;
-  }
-
-  div > :global(div) {
-    border-top: 1px solid lightgray;
-    margin-top: 15px;
-  }
-
-  div > :global(div:first-child) {
-    border-top: none;
-    margin-top: 0px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
   }
 </style>

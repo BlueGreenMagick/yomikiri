@@ -18,14 +18,10 @@ async function trigger(x: number, y: number) {
 }
 
 /** Attach tooltip element to document */
-const tooltipElem = document.createElement("div");
-tooltipElem.id = "yomikiri-tooltip";
-const shadow = tooltipElem.attachShadow({ mode: "closed" });
 const tooltipSvelte = new TooltipSvelte({
-  target: shadow,
+  target: document.body,
   props: {},
 });
-document.body.appendChild(tooltipElem);
 
 document.addEventListener("mousemove", (ev) => {
   if (ev.shiftKey) {
