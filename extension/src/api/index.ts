@@ -110,27 +110,31 @@ export default class Api {
 
 function attachRequestHandler() {
   chrome.runtime.onMessage.addListener(
-    async (
+    (
       message: Message<keyof MessageMap>,
       sender: chrome.runtime.MessageSender,
       sendResponse: (response?: RequestResponse<keyof MessageMap>) => void
-    ) => {
+    ): boolean => {
       let handler = Api.requestHandlers[message.key];
       if (handler) {
-        try {
-          let resp = handler(message.request, sender);
-          let realResp = resp instanceof Promise ? await resp : resp;
-          sendResponse({
-            success: true,
-            resp: realResp,
-          });
-        } catch (e) {
-          console.error(`error while handling request '${message.key}':`, e);
-          sendResponse({
-            success: false,
-            error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-          });
-        }
+        (async () => {
+          try {
+            let resp = handler(message.request, sender);
+            let realResp = resp instanceof Promise ? await resp : resp;
+            sendResponse({
+              success: true,
+              resp: realResp,
+            });
+          } catch (e) {
+            sendResponse({
+              success: false,
+              error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+            });
+          }
+        })();
+        return true;
+      } else {
+        return false;
       }
     }
   );
