@@ -8,7 +8,8 @@
     "build": "cross-env NODE_ENV=production yarn run build:types && node esbuild.config.mjs",
     "build:dependencies": "yarn workspace @yomikiri/tokenizer build:types",
     "dev": "rimraf build ; cross-env NODE_ENV=development node esbuild.config.mjs",
-    "types": "svelte-check"
+    "types": "svelte-check",
+    "run:firefox": "yarn web-ext run -s ./build --devtools"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
@@ -21,7 +22,8 @@
     "svelte": "^3.58.0",
     "svelte-check": "^3.2.0",
     "svelte-preprocess": "^5.0.3",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "web-ext": "^7.6.2"
   },
   "dependencies": {
     "@yomikiri/tokenizer": "0.0.1",

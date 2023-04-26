@@ -24,6 +24,16 @@ export type RequestHandler<K extends keyof MessageMap> = (
 ) => Response<K> | Promise<Response<K>>;
 
 export default class Api {
+  static isSafariApi: boolean =
+    navigator.userAgent.indexOf(" Safari/") !== -1 &&
+    navigator.userAgent.indexOf(" Chrome/") === -1 &&
+    navigator.userAgent.indexOf(" Chromium/") === -1;
+  static isChromeApi: boolean =
+    !Api.isSafariApi && typeof chrome !== "undefined";
+  static isFirefoxOnAndroid: boolean =
+    navigator.userAgent.indexOf("Firefox/") !== -1 &&
+    navigator.userAgent.indexOf("Android") !== -1;
+
   static requestHandlers: Partial<{
     [K in keyof MessageMap]: RequestHandler<K>;
   }> = {};

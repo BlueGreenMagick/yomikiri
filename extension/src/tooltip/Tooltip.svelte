@@ -98,7 +98,7 @@ html, body {
 }`;
     doc.head.appendChild(style);
 
-    return new EntriesView({
+    entriesView = new EntriesView({
       target: (tooltipEl.contentDocument as Document).body,
     });
   }
@@ -117,7 +117,12 @@ html, body {
     });
     resizeObserver.observe(document.documentElement);
 
-    entriesView = setupEntriesView();
+    const iframeDoc = tooltipEl.contentDocument as Document;
+    if (iframeDoc.readyState !== "complete") {
+      tooltipEl.addEventListener("load", setupEntriesView);
+    } else {
+      setupEntriesView();
+    }
 
     return () => {
       resizeObserver.disconnect();
