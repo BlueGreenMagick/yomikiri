@@ -34,7 +34,9 @@
     "default_title": "Yomikiri",
     "default_popup": "popup/index.html"
   },
-  "permissions": [],
+  "permissions": [
+    "nativeMessaging"
+  ],
   "optional_permissions": [],
   "host_permissions": [
     "http://*/*",

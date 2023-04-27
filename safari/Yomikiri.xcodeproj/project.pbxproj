@@ -1,0 +1,947 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		69F2C25729FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25629FA4FA80088F503 /* AppDelegate.swift */; };
+		69F2C25929FA4FA80088F503 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25829FA4FA80088F503 /* SceneDelegate.swift */; };
+		69F2C25C29FA4FA80088F503 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C25A29FA4FA80088F503 /* LaunchScreen.storyboard */; };
+		69F2C25F29FA4FA80088F503 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C25D29FA4FA80088F503 /* Main.storyboard */; };
+		69F2C26829FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C26729FA4FA80088F503 /* AppDelegate.swift */; };
+		69F2C26B29FA4FA80088F503 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C26929FA4FA80088F503 /* Main.storyboard */; };
+		69F2C27229FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		69F2C27C29FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 69F2C27B29FA4FA80088F503 /* Yomikiri Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		69F2C28229FA4FA80088F503 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C23D29FA4FA80088F503 /* Main.html */; };
+		69F2C28329FA4FA80088F503 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C23D29FA4FA80088F503 /* Main.html */; };
+		69F2C28429FA4FA80088F503 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C23F29FA4FA80088F503 /* Icon.png */; };
+		69F2C28529FA4FA80088F503 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C23F29FA4FA80088F503 /* Icon.png */; };
+		69F2C28629FA4FA80088F503 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24029FA4FA80088F503 /* Style.css */; };
+		69F2C28729FA4FA80088F503 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24029FA4FA80088F503 /* Style.css */; };
+		69F2C28829FA4FA80088F503 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24129FA4FA80088F503 /* Script.js */; };
+		69F2C28929FA4FA80088F503 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24129FA4FA80088F503 /* Script.js */; };
+		69F2C28A29FA4FA80088F503 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24229FA4FA80088F503 /* ViewController.swift */; };
+		69F2C28B29FA4FA80088F503 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24229FA4FA80088F503 /* ViewController.swift */; };
+		69F2C28C29FA4FA80088F503 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Assets.xcassets */; };
+		69F2C28D29FA4FA80088F503 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Assets.xcassets */; };
+		69F2C28E29FA4FA80088F503 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24529FA4FA80088F503 /* SafariWebExtensionHandler.swift */; };
+		69F2C28F29FA4FA80088F503 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24529FA4FA80088F503 /* SafariWebExtensionHandler.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		69F2C27329FA4FA80088F503 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69F2C23729FA4FA70088F503 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69F2C27029FA4FA80088F503;
+			remoteInfo = "Yomikiri Extension (iOS)";
+		};
+		69F2C27D29FA4FA80088F503 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69F2C23729FA4FA70088F503 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69F2C27A29FA4FA80088F503;
+			remoteInfo = "Yomikiri Extension (macOS)";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		69F2C2A529FA4FA80088F503 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				69F2C27229FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C2AC29FA4FA80088F503 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				69F2C27C29FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
+		69F2C23F29FA4FA80088F503 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		69F2C24029FA4FA80088F503 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		69F2C24129FA4FA80088F503 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		69F2C24229FA4FA80088F503 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		69F2C24329FA4FA80088F503 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		69F2C24529FA4FA80088F503 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		69F2C25329FA4FA80088F503 /* Yomikiri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yomikiri.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F2C25629FA4FA80088F503 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		69F2C25829FA4FA80088F503 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		69F2C25B29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		69F2C25E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		69F2C26029FA4FA80088F503 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69F2C26529FA4FA80088F503 /* Yomikiri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yomikiri.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F2C26729FA4FA80088F503 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		69F2C26A29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		69F2C26C29FA4FA80088F503 /* Yomikiri.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yomikiri.entitlements; sourceTree = "<group>"; };
+		69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Yomikiri Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F2C27629FA4FA80088F503 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69F2C27B29FA4FA80088F503 /* Yomikiri Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Yomikiri Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F2C28029FA4FA80088F503 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69F2C28129FA4FA80088F503 /* Yomikiri.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yomikiri.entitlements; sourceTree = "<group>"; };
+		69F2C2F829FA56140088F503 /* copy_extension_files.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = copy_extension_files.sh; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		69F2C25029FA4FA80088F503 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C26229FA4FA80088F503 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C26E29FA4FA80088F503 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C27829FA4FA80088F503 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		69F2C23629FA4FA70088F503 = {
+			isa = PBXGroup;
+			children = (
+				69F2C2F929FA56BA0088F503 /* scripts */,
+				69F2C23B29FA4FA80088F503 /* Shared (App) */,
+				69F2C24429FA4FA80088F503 /* Shared (Extension) */,
+				69F2C25529FA4FA80088F503 /* iOS (App) */,
+				69F2C26629FA4FA80088F503 /* macOS (App) */,
+				69F2C27529FA4FA80088F503 /* iOS (Extension) */,
+				69F2C27F29FA4FA80088F503 /* macOS (Extension) */,
+				69F2C25429FA4FA80088F503 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		69F2C23B29FA4FA80088F503 /* Shared (App) */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C24229FA4FA80088F503 /* ViewController.swift */,
+				69F2C24329FA4FA80088F503 /* Assets.xcassets */,
+				69F2C23C29FA4FA80088F503 /* Resources */,
+			);
+			path = "Shared (App)";
+			sourceTree = "<group>";
+		};
+		69F2C23C29FA4FA80088F503 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C23D29FA4FA80088F503 /* Main.html */,
+				69F2C23F29FA4FA80088F503 /* Icon.png */,
+				69F2C24029FA4FA80088F503 /* Style.css */,
+				69F2C24129FA4FA80088F503 /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		69F2C24429FA4FA80088F503 /* Shared (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C24529FA4FA80088F503 /* SafariWebExtensionHandler.swift */,
+			);
+			path = "Shared (Extension)";
+			sourceTree = "<group>";
+		};
+		69F2C25429FA4FA80088F503 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C25329FA4FA80088F503 /* Yomikiri.app */,
+				69F2C26529FA4FA80088F503 /* Yomikiri.app */,
+				69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */,
+				69F2C27B29FA4FA80088F503 /* Yomikiri Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69F2C25529FA4FA80088F503 /* iOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C25629FA4FA80088F503 /* AppDelegate.swift */,
+				69F2C25829FA4FA80088F503 /* SceneDelegate.swift */,
+				69F2C25A29FA4FA80088F503 /* LaunchScreen.storyboard */,
+				69F2C25D29FA4FA80088F503 /* Main.storyboard */,
+				69F2C26029FA4FA80088F503 /* Info.plist */,
+			);
+			path = "iOS (App)";
+			sourceTree = "<group>";
+		};
+		69F2C26629FA4FA80088F503 /* macOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C26729FA4FA80088F503 /* AppDelegate.swift */,
+				69F2C26929FA4FA80088F503 /* Main.storyboard */,
+				69F2C26C29FA4FA80088F503 /* Yomikiri.entitlements */,
+			);
+			path = "macOS (App)";
+			sourceTree = "<group>";
+		};
+		69F2C27529FA4FA80088F503 /* iOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C27629FA4FA80088F503 /* Info.plist */,
+			);
+			path = "iOS (Extension)";
+			sourceTree = "<group>";
+		};
+		69F2C27F29FA4FA80088F503 /* macOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C28029FA4FA80088F503 /* Info.plist */,
+				69F2C28129FA4FA80088F503 /* Yomikiri.entitlements */,
+			);
+			path = "macOS (Extension)";
+			sourceTree = "<group>";
+		};
+		69F2C2F929FA56BA0088F503 /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				69F2C2F829FA56140088F503 /* copy_extension_files.sh */,
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		69F2C25229FA4FA80088F503 /* Yomikiri (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F2C2A629FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri (iOS)" */;
+			buildPhases = (
+				69F2C24F29FA4FA80088F503 /* Sources */,
+				69F2C25029FA4FA80088F503 /* Frameworks */,
+				69F2C25129FA4FA80088F503 /* Resources */,
+				69F2C2A529FA4FA80088F503 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				69F2C27429FA4FA80088F503 /* PBXTargetDependency */,
+			);
+			name = "Yomikiri (iOS)";
+			productName = "Yomikiri (iOS)";
+			productReference = 69F2C25329FA4FA80088F503 /* Yomikiri.app */;
+			productType = "com.apple.product-type.application";
+		};
+		69F2C26429FA4FA80088F503 /* Yomikiri (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F2C2AD29FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri (macOS)" */;
+			buildPhases = (
+				69F2C26129FA4FA80088F503 /* Sources */,
+				69F2C26229FA4FA80088F503 /* Frameworks */,
+				69F2C26329FA4FA80088F503 /* Resources */,
+				69F2C2AC29FA4FA80088F503 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				69F2C27E29FA4FA80088F503 /* PBXTargetDependency */,
+			);
+			name = "Yomikiri (macOS)";
+			productName = "Yomikiri (macOS)";
+			productReference = 69F2C26529FA4FA80088F503 /* Yomikiri.app */;
+			productType = "com.apple.product-type.application";
+		};
+		69F2C27029FA4FA80088F503 /* Yomikiri Extension (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F2C2A229FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (iOS)" */;
+			buildPhases = (
+				69F2C26D29FA4FA80088F503 /* Sources */,
+				69F2C26E29FA4FA80088F503 /* Frameworks */,
+				69F2C2F729FA54DC0088F503 /* Copy extension files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Yomikiri Extension (iOS)";
+			productName = "Yomikiri Extension (iOS)";
+			productReference = 69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		69F2C27A29FA4FA80088F503 /* Yomikiri Extension (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F2C2A929FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (macOS)" */;
+			buildPhases = (
+				69F2C27729FA4FA80088F503 /* Sources */,
+				69F2C27829FA4FA80088F503 /* Frameworks */,
+				69F2C2FA29FA570C0088F503 /* Copy extension files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Yomikiri Extension (macOS)";
+			productName = "Yomikiri Extension (macOS)";
+			productReference = 69F2C27B29FA4FA80088F503 /* Yomikiri Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		69F2C23729FA4FA70088F503 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					69F2C25229FA4FA80088F503 = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					69F2C26429FA4FA80088F503 = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					69F2C27029FA4FA80088F503 = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					69F2C27A29FA4FA80088F503 = {
+						CreatedOnToolsVersion = 14.3;
+					};
+				};
+			};
+			buildConfigurationList = 69F2C23A29FA4FA70088F503 /* Build configuration list for PBXProject "Yomikiri" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 69F2C23629FA4FA70088F503;
+			productRefGroup = 69F2C25429FA4FA80088F503 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				69F2C25229FA4FA80088F503 /* Yomikiri (iOS) */,
+				69F2C26429FA4FA80088F503 /* Yomikiri (macOS) */,
+				69F2C27029FA4FA80088F503 /* Yomikiri Extension (iOS) */,
+				69F2C27A29FA4FA80088F503 /* Yomikiri Extension (macOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		69F2C25129FA4FA80088F503 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2C28429FA4FA80088F503 /* Icon.png in Resources */,
+				69F2C25C29FA4FA80088F503 /* LaunchScreen.storyboard in Resources */,
+				69F2C28229FA4FA80088F503 /* Main.html in Resources */,
+				69F2C28829FA4FA80088F503 /* Script.js in Resources */,
+				69F2C28C29FA4FA80088F503 /* Assets.xcassets in Resources */,
+				69F2C25F29FA4FA80088F503 /* Main.storyboard in Resources */,
+				69F2C28629FA4FA80088F503 /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C26329FA4FA80088F503 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2C28529FA4FA80088F503 /* Icon.png in Resources */,
+				69F2C28729FA4FA80088F503 /* Style.css in Resources */,
+				69F2C26B29FA4FA80088F503 /* Main.storyboard in Resources */,
+				69F2C28929FA4FA80088F503 /* Script.js in Resources */,
+				69F2C28D29FA4FA80088F503 /* Assets.xcassets in Resources */,
+				69F2C28329FA4FA80088F503 /* Main.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		69F2C2F729FA54DC0088F503 /* Copy extension files */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy extension files";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/copy_extension_files.sh\n";
+		};
+		69F2C2FA29FA570C0088F503 /* Copy extension files */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy extension files";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/copy_extension_files.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		69F2C24F29FA4FA80088F503 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2C28A29FA4FA80088F503 /* ViewController.swift in Sources */,
+				69F2C25729FA4FA80088F503 /* AppDelegate.swift in Sources */,
+				69F2C25929FA4FA80088F503 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C26129FA4FA80088F503 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2C28B29FA4FA80088F503 /* ViewController.swift in Sources */,
+				69F2C26829FA4FA80088F503 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C26D29FA4FA80088F503 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2C28E29FA4FA80088F503 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2C27729FA4FA80088F503 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2C28F29FA4FA80088F503 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		69F2C27429FA4FA80088F503 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69F2C27029FA4FA80088F503 /* Yomikiri Extension (iOS) */;
+			targetProxy = 69F2C27329FA4FA80088F503 /* PBXContainerItemProxy */;
+		};
+		69F2C27E29FA4FA80088F503 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69F2C27A29FA4FA80088F503 /* Yomikiri Extension (macOS) */;
+			targetProxy = 69F2C27D29FA4FA80088F503 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		69F2C23D29FA4FA80088F503 /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				69F2C23E29FA4FA80088F503 /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		69F2C25A29FA4FA80088F503 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				69F2C25B29FA4FA80088F503 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		69F2C25D29FA4FA80088F503 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				69F2C25E29FA4FA80088F503 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		69F2C26929FA4FA80088F503 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				69F2C26A29FA4FA80088F503 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		69F2C2A029FA4FA80088F503 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		69F2C2A129FA4FA80088F503 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		69F2C2A329FA4FA80088F503 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Yomikiri Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
+				PRODUCT_NAME = "Yomikiri Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		69F2C2A429FA4FA80088F503 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Yomikiri Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
+				PRODUCT_NAME = "Yomikiri Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		69F2C2A729FA4FA80088F503 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Yomikiri;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri;
+				PRODUCT_NAME = Yomikiri;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		69F2C2A829FA4FA80088F503 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Yomikiri;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri;
+				PRODUCT_NAME = Yomikiri;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		69F2C2AA29FA4FA80088F503 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Yomikiri.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Yomikiri Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
+				PRODUCT_NAME = "Yomikiri Extension";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		69F2C2AB29FA4FA80088F503 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Yomikiri.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Yomikiri Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
+				PRODUCT_NAME = "Yomikiri Extension";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		69F2C2AE29FA4FA80088F503 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Yomikiri.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yomikiri;
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri;
+				PRODUCT_NAME = Yomikiri;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		69F2C2AF29FA4FA80088F503 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Yomikiri.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Yomikiri;
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri;
+				PRODUCT_NAME = Yomikiri;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		69F2C23A29FA4FA70088F503 /* Build configuration list for PBXProject "Yomikiri" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2C2A029FA4FA80088F503 /* Debug */,
+				69F2C2A129FA4FA80088F503 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F2C2A229FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2C2A329FA4FA80088F503 /* Debug */,
+				69F2C2A429FA4FA80088F503 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F2C2A629FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2C2A729FA4FA80088F503 /* Debug */,
+				69F2C2A829FA4FA80088F503 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F2C2A929FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2C2AA29FA4FA80088F503 /* Debug */,
+				69F2C2AB29FA4FA80088F503 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F2C2AD29FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2C2AE29FA4FA80088F503 /* Debug */,
+				69F2C2AF29FA4FA80088F503 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 69F2C23729FA4FA70088F503 /* Project object */;
+}
