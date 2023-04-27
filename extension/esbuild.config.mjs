@@ -50,7 +50,7 @@ const buildOptions = {
       assets: [
         { from: ["src/**/*.html"], to: ["./"] },
         { from: ["src/*.json"], to: ["./"] },
-        { from: ["src/resources/**/*"], to: ["resources"] },
+        { from: ["src/res/**/*"], to: ["res"] },
       ],
       watch: true,
       verbose: true,

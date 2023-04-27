@@ -5,7 +5,7 @@
   "description": "Web extension to view definition for Japanese words and add to Anki.",
   "author": "BlueGreenMagick",
   "icons": {
-    "48": "resources/images/icon48.png"
+    "48": "res/images/icon48.png"
   },
   "content_scripts": [
     {
@@ -29,7 +29,7 @@
   },
   "browser_action": {
     "default_icon": {
-      "48": "resources/images/icon48.png"
+      "48": "res/images/icon48.png"
     },
     "default_title": "Yomikiri",
     "default_popup": "popup/index.html"

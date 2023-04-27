@@ -5,8 +5,6 @@
 #
 # XCode is configured to run this script in the build phase
 
-echo $PWD
-
 COPY_FROM="$PROJECT_DIR/../extension/build/."
 COPY_TO="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 
