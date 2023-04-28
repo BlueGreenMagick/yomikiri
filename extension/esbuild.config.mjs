@@ -61,7 +61,7 @@ const buildOptions = {
     }),
   ],
   assetNames: "assets/[name]-[hash]",
-  loader: { ".wasm.gz": "file", ".json.gz": "file" },
+  loader: { ".wasm.gz": "file", ".json.gz": "file", ".svg": "text" },
 };
 
 const serveOptions = {

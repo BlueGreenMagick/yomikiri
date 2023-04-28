@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Entry, GroupedSense, Reading } from "../dictionary";
-
   import GroupedSenseView from "./GroupedSenseView.svelte";
 
   export let entry: Entry;
@@ -43,5 +42,11 @@
   .reading {
     color: grey;
     font-size: 12px;
+  }
+
+  .header {
+    height: var(--header-height);
+    position: sticky;
+    margin-right: var(--close-button-width);
   }
 </style>

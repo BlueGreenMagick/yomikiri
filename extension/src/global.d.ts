@@ -9,3 +9,8 @@ declare module "*.json" {
   let content: any;
   export default content;
 }
+
+declare module "*.svg" {
+  let content: any;
+  export default content;
+}

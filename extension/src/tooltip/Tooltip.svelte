@@ -87,7 +87,7 @@
     }
   }
 
-  function setupEntriesView(): EntriesView {
+  function setupEntriesView() {
     const doc = tooltipEl.contentDocument as Document;
     const style = doc.createElement("style");
     style.innerHTML = `
@@ -100,6 +100,9 @@ html, body {
 
     entriesView = new EntriesView({
       target: (tooltipEl.contentDocument as Document).body,
+    });
+    entriesView.$on("close", (ev: Event) => {
+      hide();
     });
   }
 
