@@ -19,7 +19,8 @@ const buildOptions = {
   target: "esnext",
   format: "esm",
   bundle: true,
-  loader: { ".wasm": "file", ".html": "copy" },
+  loader: { ".wasm.gz": "file", ".html": "copy" },
+  assetNames: "[name]",
 };
 
 const serveOptions = {

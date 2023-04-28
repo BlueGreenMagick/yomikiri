@@ -7,15 +7,19 @@
   "type": "module",
   "module": "src/index.ts",
   "types": "dist/types/index.d.ts",
+  "sideEffects": false,
   "scripts": {
-    "build:wasm": "(cd lindera-wasm && wasm-pack build --scope yomikiri --target web)",
+    "build:wasm": "(cd lindera-wasm && wasm-pack build --scope yomikiri --target web) && yarn build:gzip",
+    "build:gzip": "node gzip_wasm.js",
     "build:ts": "cross-env NODE_ENV=production node esbuild.config.js && yarn build:types",
     "build:all": "yarn build:wasm && yarn build:ts",
     "build:types": "tsc --emitDeclarationOnly --outDir ./dist/types",
+    "clean:dist": "rimraf dist",
     "dev": "cross-env NODE_ENV=development node esbuild.config.js"
   },
   "dependencies": {
-    "@yomikiri/lindera-wasm": "0.1.0"
+    "@yomikiri/lindera-wasm": "0.1.0",
+    "pako": "^2.1.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
