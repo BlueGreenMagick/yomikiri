@@ -9,9 +9,10 @@ export interface MessageMap {
   tokenize: [string, Token[]];
 }
 
-export type ParsedClass<T> = {
+type NonFunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends Function ? never : K;
 }[keyof T];
+type ParsedClass<T> = Pick<T, NonFunctionPropertyNames<T>>;
 
 type First<T extends any[]> = T extends [infer FIRST, ...any[]] ? FIRST : never;
 type Second<T extends any[]> = T extends [any, infer SECOND, ...any[]]
