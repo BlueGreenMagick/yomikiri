@@ -5,9 +5,9 @@
 
 <div class="option-item">
   <div class="left">
-    <div class="title">{title}</div>
+    <div class="title">{@html title}</div>
     {#if description}
-      <div class="description">{description}</div>
+      <div class="description">{@html description}</div>
     {/if}
   </div>
   <div class="right">
@@ -18,6 +18,7 @@
 <style>
   .option-item {
     display: flex;
+    justify-content: center;
     padding: 6px;
   }
   .left {

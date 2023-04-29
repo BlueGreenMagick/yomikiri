@@ -1,10 +1,10 @@
 export default class AnkiApi {
   static readonly ANKI_CONNECT_VER = 6;
 
-  static anki_connect_port: number = 8765;
+  static ankiConnectPort: number = 8765;
 
   static AnkiConnectUrl(): string {
-    return `http://127.0.0.1:${AnkiApi.anki_connect_port}`;
+    return `http://127.0.0.1:${AnkiApi.ankiConnectPort}`;
   }
 
   /** Send Anki-connect request */
@@ -38,6 +38,24 @@ export default class AnkiApi {
         JSON.stringify({ action, version: AnkiApi.ANKI_CONNECT_VER, params })
       );
     });
+  }
+
+  /** Returns null if successfully connected. Else returns an error string. */
+  static async checkConnection(): Promise<string | null> {
+    try {
+      const resp = await AnkiApi.request("requestPermission");
+      if (resp.permission === "granted") {
+        return null;
+      } else {
+        return "AnkiConnect did not allow this app to use its api.";
+      }
+    } catch (e) {
+      if (typeof e === "string") {
+        return e;
+      } else {
+        return "An unknown error occured.";
+      }
+    }
   }
 
   static async deckNames(): Promise<string[]> {
