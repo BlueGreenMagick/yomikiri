@@ -1,6 +1,6 @@
-import Api from "../api";
-import type { Token } from "../tokenizer/tokenizer";
-import Utils from "../utils";
+import Api from "~/api";
+import type { Token } from "~/tokenizer/tokenizer";
+import Utils from "~/utils";
 
 export interface ScanResult {
   token: Token;

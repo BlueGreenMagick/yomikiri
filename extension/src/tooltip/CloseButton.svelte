@@ -1,5 +1,5 @@
 <script lang="ts">
-  import IconClose from "../assets/icons/close.svg";
+  import IconClose from "@icons/close.svg";
 </script>
 
 <button on:click><span class="icon">{@html IconClose}</span></button>

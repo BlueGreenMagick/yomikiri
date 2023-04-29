@@ -1,4 +1,4 @@
-import type { Entry } from "../dictionary";
+import type { Entry } from "~/dictionary";
 import type { Token } from "@yomikiri/tokenizer";
 
 /// Type map for `{ key: [request, response] }`

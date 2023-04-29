@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Sense, type GroupedSense, Dictionary } from "../dictionary";
+  import { type Sense, type GroupedSense, Dictionary } from "~/dictionary";
 
   export let group: GroupedSense;
 

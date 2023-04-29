@@ -1,6 +1,6 @@
 <script lang="ts">
   import Utils from "utils";
-  import type { Entry } from "../dictionary";
+  import type { Entry } from "~/dictionary";
   import { tick, onMount, onDestroy } from "svelte";
   import EntriesView from "./EntriesView.svelte";
 

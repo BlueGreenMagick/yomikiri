@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AnkiApi from "../api/anki";
-  import Utils from "../utils";
+  import AnkiApi from "~/api/anki";
+  import Utils from "~/utils";
   import OptionsGroup from "./components/OptionsGroup.svelte";
   import OptionClick from "./components/OptionClick.svelte";
   import OptionNumber from "./components/OptionNumber.svelte";

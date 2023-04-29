@@ -1,7 +1,7 @@
 import { Scanner } from "./scanner";
 import { highlightRange } from "./highlight";
-import { Entry } from "../dictionary";
-import Api from "../api";
+import { Entry } from "~/dictionary";
+import Api from "~/api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
 
 const scanner = new Scanner();

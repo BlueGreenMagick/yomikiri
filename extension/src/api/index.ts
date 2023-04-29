@@ -1,5 +1,5 @@
 import type { MessageMap, Request, Response } from "./message";
-import Utils from "../utils";
+import Utils from "~/utils";
 
 interface Message<K extends keyof MessageMap> {
   key: K;

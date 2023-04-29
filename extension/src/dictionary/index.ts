@@ -1,7 +1,7 @@
 import pako from "pako";
 
 import entities from "./entities.json";
-import Utils from "../utils";
+import Utils from "~/utils";
 
 // list of tuple (pos sorted list, senses)
 export type GroupedSense = [string[], Sense[]];

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Entry, GroupedSense, Reading } from "../dictionary";
+  import type { Entry, GroupedSense, Reading } from "~/dictionary";
   import GroupedSenseView from "./GroupedSenseView.svelte";
 
   export let entry: Entry;

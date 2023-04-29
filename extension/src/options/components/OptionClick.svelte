@@ -1,6 +1,6 @@
 <script lang="ts">
   import OptionBase from "./OptionBase.svelte";
-  import IconCaretForward from "../../assets/icons/caret-forward.svg";
+  import IconCaretForward from "@icons/caret-forward.svg";
 
   export let title: string;
   export let description: string = "";

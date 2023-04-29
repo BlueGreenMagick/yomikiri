@@ -2,7 +2,7 @@ import loadTokenizerWasm, {
   type Token,
   type Tokenizer as TokenizerWasm,
 } from "@yomikiri/tokenizer";
-import type { Dictionary } from "../dictionary";
+import type { Dictionary } from "~/dictionary";
 
 export type { Token } from "@yomikiri/tokenizer";
 

@@ -21,7 +21,11 @@
         "../node_modules/@types",
         "./src/global.d.ts"
       ],
+      "paths": {
+        "~/*": ["./*"],
+        "@icons/*": ["assets/icons/*"]
+      }
     },
     "include": ["src"],
-    "exclude": ["../tokenizer"]
+    "exclude": ["../tokenizer"],
   }
