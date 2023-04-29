@@ -59,6 +59,10 @@ const buildOptions = {
     sveltePlugin({
       preprocess: sveltePreprocess(),
       compilerOptions: { css: true },
+      filterWarnings: (warning) => {
+        const ignore = ["a11y-no-noninteractive-tabindex"];
+        return !ignore.includes(warning.code);
+      },
     }),
   ],
   assetNames: "assets/[name]-[hash]",
