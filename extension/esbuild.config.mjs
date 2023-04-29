@@ -36,6 +36,7 @@ const buildOptions = {
     { in: "src/content/index.ts", out: "content" },
     { in: "src/index.ts", out: "background" },
     { in: "src/popup/index.ts", out: "popup/popup" },
+    { in: "src/options/index.ts", out: "options/options" },
   ],
   outdir: "build",
   target: "es6",
@@ -53,7 +54,7 @@ const buildOptions = {
         { from: ["src/res/**/*"], to: ["res"] },
       ],
       watch: true,
-      verbose: true,
+      // verbose: true,
     }),
     sveltePlugin({
       preprocess: sveltePreprocess(),
