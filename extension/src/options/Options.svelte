@@ -1,10 +1,9 @@
 <script lang="ts">
-  import OptionsGroup from "./OptionsGroup.svelte";
-  import { options } from "./types";
+  import OptionsAnki from "./OptionsAnki.svelte";
 </script>
 
 <div>
-  <OptionsGroup group={options[0]} />
+  <OptionsAnki />
 </div>
 
 <style>

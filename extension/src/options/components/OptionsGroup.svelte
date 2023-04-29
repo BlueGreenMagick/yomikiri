@@ -1,16 +1,11 @@
 <script lang="ts">
-  import type { Option, OptionsGroup } from "./types";
-  import OptionItem from "./OptionItem.svelte";
-
-  export let group: OptionsGroup;
+  export let title: string;
 </script>
 
 <div class="options-group">
-  <div class="title">{group.name}</div>
+  <div class="title">{title}</div>
   <div class="grouped">
-    {#each group.options as option}
-      <OptionItem {option} />
-    {/each}
+    <slot />
   </div>
 </div>
 
