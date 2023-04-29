@@ -1,6 +1,7 @@
 import { Dictionary, Entry } from "./dictionary";
 import { Tokenizer, type Token } from "./tokenizer/tokenizer";
 import Api from "./api";
+import AnkiApi from "./api/anki";
 import EnJMDict from "./assets/jmdict/en.json.gz";
 
 let dictionaryP = Dictionary.loadFromUrl(EnJMDict);
@@ -24,3 +25,5 @@ Api.handleRequest("tokenize", tokenize);
 window.dictionaryP = dictionaryP;
 // @ts-ignore
 window.tokenizerP = tokenizerP;
+//@ts-ignore
+window.AnkiApi = AnkiApi;
