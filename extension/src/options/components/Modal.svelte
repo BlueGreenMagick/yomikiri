@@ -39,32 +39,48 @@
   }
 
   .modal {
-    padding: 12px;
     display: flex;
     flex-flow: column nowrap;
     width: 600px;
     height: 400px;
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 90%;
+    max-height: 90%;
     border-radius: 8px;
     background-color: white;
   }
 
   .modal-header {
+    padding: 12px 12px 16px 12px;
     font-size: 20px;
   }
   .modal-content {
-    margin: 24px 0;
+    padding: 8px 12px;
     flex: 1 1 auto;
     overflow-y: auto;
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
   }
   .modal-footer {
-    height: 24px;
     display: flex;
     justify-content: flex-end;
+    padding: 8px;
   }
 
   button {
-    background-color: blue;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 8px;
+    background-color: #3d4dff;
+    color: white;
+  }
+
+  button:hover {
+    background-color: #4f5efe;
+    cursor: pointer;
+  }
+
+  button:active {
+    background-color: #6e7aff;
+    cursor: pointer;
   }
 </style>

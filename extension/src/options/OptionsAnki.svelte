@@ -29,11 +29,11 @@
   <OptionClick
     title="Test connection"
     description={testConnectionDescription}
-    on:click={testConnection}
+    on:trigger={testConnection}
   />
   <OptionClick
     title="Setup Anki template"
-    on:click={() => {
+    on:trigger={() => {
       modalAnkiTemplateHidden = false;
     }}
   />

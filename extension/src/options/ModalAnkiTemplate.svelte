@@ -94,6 +94,7 @@
     width: 100%;
     box-sizing: border-box;
     font-size: 1em;
+    padding: 1px 2px;
   }
   .error {
     color: red;
