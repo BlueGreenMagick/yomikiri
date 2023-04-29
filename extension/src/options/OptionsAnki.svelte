@@ -4,8 +4,10 @@
   import OptionsGroup from "./components/OptionsGroup.svelte";
   import OptionClick from "./components/OptionClick.svelte";
   import OptionNumber from "./components/OptionNumber.svelte";
+  import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
 
   let testConnectionDescription = "Click to test connection with AnkiConnect";
+  let modalAnkiTemplateHidden = true;
 
   async function testConnection() {
     const result = await AnkiApi.checkConnection();
@@ -29,5 +31,16 @@
     description={testConnectionDescription}
     on:click={testConnection}
   />
-  <OptionClick title="Setup Anki template" />
+  <OptionClick
+    title="Setup Anki template"
+    on:click={() => {
+      modalAnkiTemplateHidden = false;
+    }}
+  />
+  <ModalAnkiTemplate
+    hidden={modalAnkiTemplateHidden}
+    on:close={() => {
+      modalAnkiTemplateHidden = true;
+    }}
+  />
 </OptionsGroup>

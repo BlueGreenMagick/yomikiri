@@ -67,7 +67,7 @@ export default class AnkiApi {
   }
 
   static async nodeTypeFields(noteTypeName: string): Promise<string[]> {
-    return (await AnkiApi.request("modelFieldsNames", {
+    return (await AnkiApi.request("modelFieldNames", {
       modelName: noteTypeName,
     })) as string[];
   }
