@@ -39,7 +39,8 @@
     "open_in_tab": true
   },
   "permissions": [
-    "nativeMessaging"
+    "nativeMessaging",
+    "storage"
   ],
   "optional_permissions": [],
   "host_permissions": [

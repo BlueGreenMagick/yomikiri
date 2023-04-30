@@ -23,6 +23,7 @@
 
 <OptionsGroup title="Anki">
   <OptionNumber
+    key="anki.connect_port"
     title="AnkiConnect port number"
     description="This is the AnkiConnect config `webBindPort`"
   />

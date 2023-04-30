@@ -27,3 +27,5 @@ window.dictionaryP = dictionaryP;
 window.tokenizerP = tokenizerP;
 //@ts-ignore
 window.AnkiApi = AnkiApi;
+// @ts-ignore
+window.Api = Api;

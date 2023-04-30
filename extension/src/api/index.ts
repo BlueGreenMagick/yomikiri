@@ -23,6 +23,8 @@ export type RequestHandler<K extends keyof MessageMap> = (
   sender: chrome.runtime.MessageSender
 ) => Response<K> | Promise<Response<K>>;
 
+export type StorageHandler = (change: chrome.storage.StorageChange) => void;
+
 export default class Api {
   static isSafariApi: boolean =
     navigator.userAgent.indexOf(" Safari/") !== -1 &&
@@ -37,6 +39,14 @@ export default class Api {
   static requestHandlers: Partial<{
     [K in keyof MessageMap]: RequestHandler<K>;
   }> = {};
+
+  static storageHandlers: {
+    [key: string]: StorageHandler[];
+  } = {};
+
+  static storage(): chrome.storage.StorageArea {
+    return chrome.storage.sync;
+  }
 
   private static createRequestResponseHandler<K extends keyof MessageMap>(
     resolve: Utils.PromiseResolver<Response<K>>,
@@ -106,15 +116,58 @@ export default class Api {
   }
 
   static async currentTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab>();
+    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
     const info = {
       active: true,
       currentWindow: true,
     };
-    chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
-      resolve(result[0]);
-    });
+    try {
+      chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
+        resolve(result[0]);
+      });
+    } catch (e) {
+      reject(e);
+    }
     return promise;
+  }
+
+  static async getStorage<T>(key: string, or?: T): Promise<T> {
+    const [promise, resolve, reject] = Utils.createPromise<T>();
+    let req: string | { [key: string]: T } = key;
+    if (or !== undefined) {
+      req = {};
+      req[key] = or;
+    }
+    try {
+      // @ts-ignore
+      Api.storage().get(req, (obj) => {
+        resolve(obj[key]);
+      });
+    } catch (e) {
+      reject(e);
+    }
+    return promise;
+  }
+
+  /** value must be a JSON-stringifiable object */
+  static async setStorage(key: string, value: any) {
+    const [promise, resolve, reject] = Utils.createPromise<void>();
+    const object: { [key: string]: any } = {};
+    object[key] = value;
+    try {
+      Api.storage().set(object, resolve);
+    } catch (e) {
+      reject(e);
+    }
+    return promise;
+  }
+
+  static async handleStorageChange(key: string, handler: StorageHandler) {
+    if (Api.storageHandlers[key] === undefined) {
+      Api.storageHandlers[key] = [handler];
+    } else {
+      Api.storageHandlers[key].push(handler);
+    }
   }
 }
 
@@ -150,4 +203,17 @@ function attachRequestHandler() {
   );
 }
 
+function attachStorageChangeHandler() {
+  Api.storage().onChanged.addListener((changes) => {
+    for (const key in changes) {
+      const handlers = Api.storageHandlers[key];
+      if (handlers === undefined) continue;
+      for (const handler of handlers) {
+        handler(changes[key]);
+      }
+    }
+  });
+}
+
 attachRequestHandler();
+attachStorageChangeHandler();
