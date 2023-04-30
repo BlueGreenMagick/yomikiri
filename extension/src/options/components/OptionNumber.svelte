@@ -25,3 +25,9 @@
     <input type="number" bind:value />
   </OptionBase>
 </div>
+
+<style>
+  input {
+    padding: 2px 4px;
+  }
+</style>

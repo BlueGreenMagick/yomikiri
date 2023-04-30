@@ -26,6 +26,8 @@
   }
   .right {
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
   }
   .title {
   }
