@@ -1,43 +1,52 @@
+import Config from "~/config";
+import Utils from "~/utils";
+
 export default class AnkiApi {
   static readonly ANKI_CONNECT_VER = 6;
 
   static ankiConnectPort: number = 8765;
 
-  static AnkiConnectUrl(): string {
-    return `http://127.0.0.1:${AnkiApi.ankiConnectPort}`;
+  static async AnkiConnectUrl(): Promise<string> {
+    let url = await Config.get("anki.connect_url");
+    let port = await Config.get("anki.connect_port");
+    if (!url.includes("://")) {
+      url = "http://" + url;
+    }
+    return url + ":" + port;
   }
 
   /** Send Anki-connect request */
-  private static request(action: string, params?: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.addEventListener("error", () => reject("failed to issue request"));
-      xhr.addEventListener("load", () => {
-        try {
-          const response = JSON.parse(xhr.responseText);
-          if (Object.getOwnPropertyNames(response).length != 2) {
-            throw "response has an unexpected number of fields";
-          }
-          if (!response.hasOwnProperty("error")) {
-            throw "response is missing required error field";
-          }
-          if (!response.hasOwnProperty("result")) {
-            throw "response is missing required result field";
-          }
-          if (response.error) {
-            throw response.error;
-          }
-          resolve(response.result);
-        } catch (e) {
-          reject(e);
-        }
-      });
+  private static async request(action: string, params?: any): Promise<any> {
+    const [promise, resolve, reject] = Utils.createPromise();
+    const ankiConnectUrl = await AnkiApi.AnkiConnectUrl();
 
-      xhr.open("POST", AnkiApi.AnkiConnectUrl());
-      xhr.send(
-        JSON.stringify({ action, version: AnkiApi.ANKI_CONNECT_VER, params })
-      );
+    const xhr = new XMLHttpRequest();
+    xhr.addEventListener("error", () => reject("failed to issue request"));
+    xhr.addEventListener("load", () => {
+      try {
+        const response = JSON.parse(xhr.responseText);
+        if (Object.getOwnPropertyNames(response).length != 2) {
+          throw "response has an unexpected number of fields";
+        }
+        if (!response.hasOwnProperty("error")) {
+          throw "response is missing required error field";
+        }
+        if (!response.hasOwnProperty("result")) {
+          throw "response is missing required result field";
+        }
+        if (response.error) {
+          throw response.error;
+        }
+        resolve(response.result);
+      } catch (e) {
+        reject(e);
+      }
     });
+    xhr.open("POST", ankiConnectUrl);
+    xhr.send(
+      JSON.stringify({ action, version: AnkiApi.ANKI_CONNECT_VER, params })
+    );
+    return promise;
   }
 
   /** Returns null if successfully connected. Else returns an error string. */
