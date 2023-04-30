@@ -1,13 +1,16 @@
 import Api from "~/api";
+import type { Note } from "./api/anki";
 
 export interface ConfigTypes {
   "anki.connect_port": number;
   "anki.connect_url": string;
+  "anki.templates": Note[];
 }
 
 const defaultOptions: ConfigTypes = {
   "anki.connect_port": 8785,
   "anki.connect_url": "http://127.0.0.1",
+  "anki.templates": [],
 };
 
 /** Get union of config keys that extends type T. */

@@ -1,6 +1,19 @@
 import Config from "~/config";
 import Utils from "~/utils";
 
+export interface Field {
+  name: string;
+  value: string;
+}
+
+export interface Note {
+  deck: string;
+  notetype: string;
+  fields: Field[];
+  // space separated tags
+  tags: string;
+}
+
 export default class AnkiApi {
   static readonly ANKI_CONNECT_VER = 6;
 
@@ -71,7 +84,7 @@ export default class AnkiApi {
     return (await AnkiApi.request("deckNames")) as string[];
   }
 
-  static async noteTypeNames(): Promise<string[]> {
+  static async notetypeNames(): Promise<string[]> {
     return (await AnkiApi.request("modelNames")) as string[];
   }
 
