@@ -1,5 +1,6 @@
 <script lang="ts">
   import { type Sense, type GroupedSense, Dictionary } from "~/dictionary";
+  import IconAddCircle from "@icons/add-circle.svg";
 
   export let group: GroupedSense;
 
@@ -26,7 +27,10 @@
   </div>
   <div>
     {#each meaningTexts as text}
-      <div class="meaning">{text}</div>
+      <div class="meaning">
+        <div class="anki-add">{@html IconAddCircle}</div>
+        <div class="meaning-text">{text}</div>
+      </div>
     {/each}
   </div>
 </div>
@@ -40,9 +44,40 @@
     color: grey;
     font-size: 12px;
     margin-bottom: 2px;
+    padding: 0 8px;
   }
 
   .meaning {
+    display: flex;
+    gap: 2px;
     font-size: 14px;
+    align-items: center;
+    padding: 0 2px;
+  }
+
+  .meaning:hover {
+    background-color: rgb(236, 236, 236);
+  }
+
+  .anki-add {
+    width: 12px;
+    height: 12px;
+    fill: green;
+    visibility: hidden;
+  }
+
+  .meaning:hover .anki-add {
+    visibility: visible;
+    opacity: 0.3;
+  }
+
+  .anki-add:hover {
+    visibility: visible;
+    opacity: 0.6 !important;
+    cursor: pointer;
+  }
+
+  .meaning-text {
+    flex: 1 1 auto;
   }
 </style>

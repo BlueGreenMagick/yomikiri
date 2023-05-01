@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Entry, GroupedSense, Reading } from "~/dictionary";
   import GroupedSenseView from "./GroupedSenseView.svelte";
+  import IconAddCircle from "@icons/add-circle.svg";
 
   export let entry: Entry;
 
@@ -22,8 +23,11 @@
 
 <div class="entryView">
   <div class="header">
-    <span class="mainForm">{mainForm}</span>
-    <span class="reading">{readingsString}</span>
+    <div class="icon">{@html IconAddCircle}</div>
+    <div>
+      <span class="mainForm">{mainForm}</span>
+      <span class="reading">{readingsString}</span>
+    </div>
   </div>
   <div class="groups">
     {#each groups as group}
@@ -33,8 +37,24 @@
 </div>
 
 <style>
-  .entryView {
-    padding: 8px;
+  .header {
+    height: var(--header-height);
+    position: sticky;
+    margin-right: var(--close-button-width);
+    padding: 6px 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .icon {
+    width: 15px;
+    height: 15px;
+    opacity: 0.2;
+    fill: green;
+  }
+  .icon:hover {
+    opacity: 0.6;
+    cursor: pointer;
   }
   .mainForm {
     font-size: 20px;
@@ -42,11 +62,5 @@
   .reading {
     color: grey;
     font-size: 12px;
-  }
-
-  .header {
-    height: var(--header-height);
-    position: sticky;
-    margin-right: var(--close-button-width);
   }
 </style>
