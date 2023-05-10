@@ -1,5 +1,6 @@
 import type { Entry } from "~/dictionary";
 import type { Token } from "@yomikiri/tokenizer";
+import type { Note } from "./anki";
 
 /// Type map for `{ key: [request, response] }`
 /// Response type must not have Promise
@@ -7,6 +8,8 @@ import type { Token } from "@yomikiri/tokenizer";
 export interface MessageMap {
   searchTerm: [string, ParsedClass<Entry>[]];
   tokenize: [string, Token[]];
+  /** Note -> nid */
+  addAnkiNote: [Note, number];
 }
 
 type NonFunctionPropertyNames<T> = {

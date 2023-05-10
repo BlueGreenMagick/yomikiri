@@ -59,14 +59,15 @@
   async function saveTemplate(
     deck: string,
     notetype: string,
-    fields: { [name: string]: string }
+    fields: { [name: string]: string },
+    tags: string
   ) {
     if (!mounted) return;
     const template: Note = {
       deck,
       notetype,
       fields: [],
-      tags: ankiTags,
+      tags,
     };
     const fieldNames = await loadedFields;
     for (const fieldName of fieldNames) {
@@ -84,7 +85,7 @@
 
   loadedNames = loadNames();
   $: loadedFields = loadFields(selectedNotetype);
-  $: saveTemplate(selectedDeck, selectedNotetype, fieldTemplates);
+  $: saveTemplate(selectedDeck, selectedNotetype, fieldTemplates, ankiTags);
 </script>
 
 <Modal title="Anki Template" {hidden} on:close>

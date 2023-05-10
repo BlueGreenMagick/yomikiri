@@ -4,7 +4,12 @@
   import EntryView from "./EntryView.svelte";
   import CloseButton from "./CloseButton.svelte";
 
-  const dispatch = createEventDispatcher();
+  interface Events {
+    close: MouseEvent;
+  }
+
+  const dispatch = createEventDispatcher<Events>();
+
   let entries: Entry[] = [];
 
   export function setEntries(e: Entry[]) {
@@ -15,7 +20,7 @@
 <div id="yomikiri-entriesview">
   <CloseButton on:click={(ev) => dispatch("close", ev)} />
   {#each entries as entry}
-    <EntryView {entry} />
+    <EntryView {entry} on:addNote />
   {/each}
 </div>
 

@@ -1,24 +1,30 @@
 <script lang="ts">
   import { type Sense, type GroupedSense, Dictionary } from "~/dictionary";
   import IconAddCircle from "@icons/add-circle.svg";
+  import { createEventDispatcher } from "svelte";
+  import type { MarkerData } from "~/ankiNoteBuilder";
+
+  interface Events {
+    addNote: Partial<MarkerData>;
+  }
 
   export let group: GroupedSense;
 
+  const dispatch = createEventDispatcher<Events>();
+
   let posText: string;
-  let meaningTexts: string[];
 
   function makePosText(poss: string[]): string {
     return poss.map((pos) => Dictionary.entityInfo(pos)).join(", ");
   }
 
-  function makeMeaningTexts(senses: Sense[]): string[] {
-    return senses
-      .map((s) => s.meaning.join(", "))
-      .map((meanings, idx) => `${idx + 1}. ${meanings}`);
+  function addAnkiNote(sense: Sense) {
+    dispatch("addNote", {
+      selectedMeaning: sense,
+    });
   }
 
   $: posText = makePosText(group[0]);
-  $: meaningTexts = makeMeaningTexts(group[1]);
 </script>
 
 <div class="grouped-sense">
@@ -26,10 +32,12 @@
     {posText}
   </div>
   <div>
-    {#each meaningTexts as text}
+    {#each group[1] as sense, idx}
       <div class="meaning">
-        <div class="anki-add">{@html IconAddCircle}</div>
-        <div class="meaning-text">{text}</div>
+        <div class="anki-add" on:click={() => addAnkiNote(sense)}>
+          {@html IconAddCircle}
+        </div>
+        <div class="meaning-text">{idx + 1}. {sense.meaning.join(", ")}</div>
       </div>
     {/each}
   </div>

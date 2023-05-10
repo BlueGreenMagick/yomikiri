@@ -6,6 +6,7 @@ import Utils from "~/utils";
 // list of tuple (pos sorted list, senses)
 export type GroupedSense = [string[], Sense[]];
 
+export type DictionaryResult = Entry[];
 export class Entry {
   forms: Form[];
   readings: Reading[];

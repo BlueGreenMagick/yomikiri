@@ -182,6 +182,7 @@ function attachRequestHandler() {
       if (handler) {
         (async () => {
           try {
+            // @ts-ignore
             let resp = handler(message.request, sender);
             let realResp = resp instanceof Promise ? await resp : resp;
             sendResponse({

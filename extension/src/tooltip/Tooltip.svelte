@@ -1,28 +1,31 @@
 <script lang="ts">
   import Utils from "utils";
   import type { Entry } from "~/dictionary";
-  import { tick, onMount, onDestroy } from "svelte";
+  import { tick, onMount } from "svelte";
   import EntriesView from "./EntriesView.svelte";
+  import { AnkiNoteBuilder, type MarkerData } from "~/ankiNoteBuilder";
+  import type { ScanResult } from "~/content/scanner";
+  import Api from "~/api";
 
   const BOTTOM_HEIGHT_THRESHOLD = 500;
 
   let visible: boolean = false;
   let width: number = 0;
   let height: number = 0;
-  let range: Range;
+  let scanResult: ScanResult;
   let tooltipEl: HTMLIFrameElement;
   let entriesView: EntriesView;
 
   export async function show(
     e: Entry[],
-    r: Range,
+    scanned: ScanResult,
     mouseX: number,
     mouseY: number
   ) {
     visible = true;
-    range = r;
+    scanResult = scanned;
     entriesView.setEntries(e);
-    const rect = findRectOfMouse(range, mouseX, mouseY);
+    const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
     await position(rect);
   }
 
@@ -101,8 +104,15 @@ html, body {
     entriesView = new EntriesView({
       target: (tooltipEl.contentDocument as Document).body,
     });
-    entriesView.$on("close", (ev: Event) => {
+    entriesView.$on("close", (ev: CustomEvent<MouseEvent>) => {
       hide();
+    });
+    entriesView.$on("addNote", async (ev: CustomEvent<Partial<MarkerData>>) => {
+      const data = ev.detail;
+      data.scanned = scanResult;
+      const note = await AnkiNoteBuilder.buildNote(data as MarkerData);
+      const nid = await Api.request("addAnkiNote", note);
+      console.log("Note added: " + nid);
     });
   }
 
@@ -110,8 +120,8 @@ html, body {
     // add ResizeObserver to document and change position on document resize
     let repositionRequested: boolean = false;
     const resizeObserver = new ResizeObserver((_) => {
-      if (!range || repositionRequested) return;
-      const rect = range.getClientRects()[0];
+      if (!scanResult || repositionRequested) return;
+      const rect = scanResult.range.getClientRects()[0];
       repositionRequested = true;
       requestAnimationFrame(() => {
         position(rect);

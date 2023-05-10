@@ -1,7 +1,7 @@
 import { Dictionary, Entry } from "./dictionary";
 import { Tokenizer, type Token } from "./tokenizer/tokenizer";
 import Api from "./api";
-import AnkiApi from "./api/anki";
+import AnkiApi, { type Note } from "./api/anki";
 import EnJMDict from "./assets/jmdict/en.json.gz";
 
 let dictionaryP = Dictionary.loadFromUrl(EnJMDict);
@@ -17,8 +17,13 @@ async function tokenize(text: string): Promise<Token[]> {
   return tokenizer.tokenize(text);
 }
 
+async function addAnkiNote(note: Note): Promise<number> {
+  return await AnkiApi.addNote(note);
+}
+
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
+Api.handleRequest("addAnkiNote", addAnkiNote);
 
 // expose object to window for debugging purposes
 // @ts-ignore

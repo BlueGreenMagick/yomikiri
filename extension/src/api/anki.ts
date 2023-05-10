@@ -14,6 +14,11 @@ export interface Note {
   tags: string;
 }
 
+/**
+ * Uses Anki-Connect on desktop.
+ * Should not be used in content script
+ * as Anki-connect allows only calls from trusted origins.
+ */
 export default class AnkiApi {
   static readonly ANKI_CONNECT_VER = 6;
 
@@ -96,5 +101,24 @@ export default class AnkiApi {
 
   static async tags(): Promise<string[]> {
     return (await AnkiApi.request("getTags")) as string[];
+  }
+
+  /** Returns note id */
+  static async addNote(note: Note): Promise<number> {
+    const fields: { [key: string]: string } = {};
+    for (const field of note.fields) {
+      fields[field.name] = field.value;
+    }
+    return (await AnkiApi.request("addNote", {
+      note: {
+        deckName: note.deck,
+        modelName: note.notetype,
+        fields: fields,
+        tags: note.tags.split(" "),
+        options: {
+          allowDuplicate: true,
+        },
+      },
+    })) as number;
   }
 }

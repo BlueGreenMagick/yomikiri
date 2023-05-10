@@ -1,9 +1,17 @@
 <script lang="ts">
-  import type { Entry, GroupedSense, Reading } from "~/dictionary";
+  import type { Entry, GroupedSense, Reading, Sense } from "~/dictionary";
+  import type { MarkerData } from "~/ankiNoteBuilder";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircle from "@icons/add-circle.svg";
+  import { createEventDispatcher } from "svelte";
+
+  interface Events {
+    addNote: Partial<MarkerData>;
+  }
 
   export let entry: Entry;
+
+  const dispatch = createEventDispatcher<Events>();
 
   let mainForm: string;
   let readingsString: string;
@@ -16,6 +24,11 @@
     return readings.map((r) => r.reading).join(", ");
   }
 
+  function addNote(data: Partial<MarkerData>) {
+    data.entry = entry;
+    dispatch("addNote", data);
+  }
+
   $: mainForm = entry.mainForm();
   $: readingsString = makeReadingsString(entry.readings);
   $: groups = entry.groupSenses();
@@ -23,7 +36,7 @@
 
 <div class="entryView">
   <div class="header">
-    <div class="icon">{@html IconAddCircle}</div>
+    <div class="icon" on:click={() => addNote({})}>{@html IconAddCircle}</div>
     <div>
       <span class="mainForm">{mainForm}</span>
       <span class="reading">{readingsString}</span>
@@ -31,7 +44,12 @@
   </div>
   <div class="groups">
     {#each groups as group}
-      <GroupedSenseView {group} />
+      <GroupedSenseView
+        {group}
+        on:addNote={(ev) => {
+          addNote(ev.detail);
+        }}
+      />
     {/each}
   </div>
 </div>

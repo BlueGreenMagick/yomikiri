@@ -13,7 +13,7 @@ async function trigger(x: number, y: number) {
     (o) => new Entry(o)
   );
   if (entries.length === 0) return;
-  tooltipSvelte.show(entries, result.range, x, y);
+  tooltipSvelte.show(entries, result, x, y);
   highlightRange(result.range);
 }
 
