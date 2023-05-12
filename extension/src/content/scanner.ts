@@ -10,6 +10,7 @@ export interface ScanResult {
   sentence: string;
   startIdx: number;
   endIdx: number;
+  sentenceTokens: Token[];
 }
 
 /** prev + sentence + after is the constructed sentence */
@@ -195,6 +196,7 @@ export class Scanner {
     sentence: ScannedSentence
   ): ScanResult | null {
     const prev = sentence.prev ?? "";
+    const after = sentence.after ?? "";
     const node = sentence.node;
     const [token, tokenStartIndex] = tokenAtCharacterIndex(
       tokens,
@@ -232,9 +234,10 @@ export class Scanner {
     return {
       token,
       range,
-      sentence: sentence.curr,
+      sentence: prev + sentence.curr + after,
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
+      sentenceTokens: tokens,
     };
   }
 }

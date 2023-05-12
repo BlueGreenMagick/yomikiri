@@ -74,7 +74,16 @@ AnkiNoteBuilder.addMarker("word-dict", (data: MarkerData) => {
 AnkiNoteBuilder.addMarker("word-reading", (data: MarkerData) => {
   return data.scanned.token.reading;
 });
-
+AnkiNoteBuilder.addMarker("sentence-original", (data: MarkerData) => {
+  return data.scanned.sentence;
+});
+AnkiNoteBuilder.addMarker("sentence-reading", (data: MarkerData) => {
+  let reading = "";
+  for (const token of data.scanned.sentenceTokens) {
+    reading += token.reading;
+  }
+  return reading;
+});
 /*
 Dropdown menu:
 | sentence > | original |
