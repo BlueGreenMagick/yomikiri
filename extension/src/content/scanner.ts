@@ -15,9 +15,10 @@ export interface ScanResult {
 /** prev + sentence + after is the constructed sentence */
 interface ScannedSentence {
   node: Text;
+  // portion of sentence before, within, and after `node`
   prev?: string;
+  curr: string;
   after?: string;
-  sentence: string;
   /** sentence[idx] is the character at (x,y) */
   idx: number;
 }
@@ -26,27 +27,31 @@ interface ScannedSentence {
 export class Scanner {
   // cache last scan.
   private lastScannedResult: ScanResult | null = null;
-  /** last scanned Text node and its tokenized tokens */
-  private lastScannedText: [Text, Token[]] | null = null;
+  /** last scanned sentence and tokens */
+  private lastScannedSentence: [ScannedSentence, Token[]] | null = null;
 
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
-    const sentence = this.extractSentence(x, y);
+    if (this.lastScannedResult !== null) {
+      if (Utils.rangeContainsPoint(this.lastScannedResult.range, x, y)) {
+        return this.lastScannedResult;
+      }
+    }
+
+    const sentence = this.scanSentence(x, y);
     if (sentence === null) return null;
 
     const prev = sentence.prev ?? "";
     const after = sentence.after ?? "";
-    const tokens = await Api.request(
-      "tokenize",
-      prev + sentence.sentence + after
-    );
+    const tokens = await Api.request("tokenize", prev + sentence.curr + after);
+    this.lastScannedSentence = [sentence, tokens];
 
     const result = this.scanToken(tokens, sentence);
-
+    this.lastScannedResult = result;
     return result;
   }
 
   // within inline elements.
-  private extractSentence(x: number, y: number): null | ScannedSentence {
+  private scanSentence(x: number, y: number): null | ScannedSentence {
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
     const node = childTextAt(element, x, y);
@@ -76,7 +81,7 @@ export class Scanner {
           return {
             node,
             prev,
-            sentence: text.substring(stStart, i + 1),
+            curr: text.substring(stStart, i + 1),
             idx: foundChar,
           };
         }
@@ -96,7 +101,7 @@ export class Scanner {
       node,
       prev,
       after,
-      sentence: text.substring(stStart, text.length),
+      curr: text.substring(stStart, text.length),
       idx: foundChar,
     };
   }
@@ -227,7 +232,7 @@ export class Scanner {
     return {
       token,
       range,
-      sentence: sentence.sentence,
+      sentence: sentence.curr,
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
     };
