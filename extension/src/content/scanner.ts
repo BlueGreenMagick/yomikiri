@@ -6,6 +6,20 @@ export interface ScanResult {
   token: Token;
   /** range that has token text selected */
   range: Range;
+  /** sentence[startIdx, endIdx] is token text */
+  sentence: string;
+  startIdx: number;
+  endIdx: number;
+}
+
+/** prev + sentence + after is the constructed sentence */
+interface ScannedSentence {
+  node: Text;
+  prev?: string;
+  after?: string;
+  sentence: string;
+  /** sentence[idx] is the character at (x,y) */
+  idx: number;
 }
 
 /** Find token at point (x, y) */
@@ -16,48 +30,207 @@ export class Scanner {
   private lastScannedText: [Text, Token[]] | null = null;
 
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
-    const cacheResult = this.withCache(x, y);
-    if (cacheResult !== null) return cacheResult;
+    const sentence = this.extractSentence(x, y);
+    if (sentence === null) return null;
 
+    const prev = sentence.prev ?? "";
+    const after = sentence.after ?? "";
+    const tokens = await Api.request(
+      "tokenize",
+      prev + sentence.sentence + after
+    );
+
+    const result = this.scanToken(tokens, sentence);
+
+    return result;
+  }
+
+  // within inline elements.
+  private extractSentence(x: number, y: number): null | ScannedSentence {
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
     const node = childTextAt(element, x, y);
     if (node === null) return null;
 
-    const text = node.nodeValue as string;
+    const text = node.data;
     if (!stringContainsJapanese(text)) return null;
-    const tokens = await Api.request("tokenize", text);
-    this.lastScannedText = [node, tokens];
 
-    const result = scanTokenAt(node, tokens, x, y);
-    this.lastScannedResult = result;
-    return result;
-  }
+    let prev, after;
 
-  /** Try scanning with cache. If cache is invalid, clear it to null. */
-  private withCache(x: number, y: number): ScanResult | null {
-    // check caches
-    if (this.lastScannedResult !== null) {
-      const result = this.lastScannedResult;
-      if (Utils.rangeContainsPoint(result.range, x, y)) {
-        return result;
+    // split sentence and check if (x,y) is in range of sentence
+    const range = new Range();
+    let stStart = 0;
+    let foundChar = -1;
+    for (let i = 0; i < text.length; i++) {
+      range.setStart(node, i);
+      range.setEnd(node, i + 1);
+      if (Utils.rangeContainsPoint(range, x, y)) {
+        foundChar = i;
+      }
+
+      if (isSentenceEndChar(text[i])) {
+        if (foundChar >= 0) {
+          if (stStart === 0) {
+            prev = this.sentenceBeforeNode(node);
+          }
+          return {
+            node,
+            prev,
+            sentence: text.substring(stStart, i + 1),
+            idx: foundChar,
+          };
+        }
+
+        stStart = i + 1;
       }
     }
+    if (foundChar < 0) {
+      return null;
+    }
+    if (stStart === 0) {
+      prev = this.sentenceBeforeNode(node);
+    }
+    after = this.sencenceAfterNode(node);
 
-    if (this.lastScannedText !== null) {
-      const [node, tokens] = this.lastScannedText;
-      const range = new Range();
-      range.selectNodeContents(node);
-      if (Utils.rangeContainsPoint(range, x, y)) {
-        const result = scanTokenAt(node, tokens, x, y);
-        this.lastScannedResult = result;
-        if (result !== null) {
-          return result;
+    return {
+      node,
+      prev,
+      after,
+      sentence: text.substring(stStart, text.length),
+      idx: foundChar,
+    };
+  }
+
+  /** does not check if curr is inline. if PREV is false, get next node. */
+  private inlineTextNode(curr: Node, PREV: boolean): Text | null {
+    // get closest inline parent that has prev(next) sibling.
+    while ((PREV ? curr.previousSibling : curr.nextSibling) === null) {
+      if (curr.parentNode === null) return null;
+      curr = curr.parentNode;
+      if (!nodeIsInline(curr)) return null;
+    }
+    // get inline prev(next) sibling
+    curr = (PREV ? curr.previousSibling : curr.nextSibling) as ChildNode;
+    if (
+      !(curr instanceof Element || curr instanceof Text) ||
+      nodeIsOutOfFlow(curr)
+    ) {
+      return this.inlineTextNode(curr, PREV);
+    }
+    if (!nodeIsInline(curr)) return null;
+    if (curr.parentNode === null || nodeChildIsNotInline(curr.parentNode)) {
+      return null;
+    }
+    // get inline last(first) leaf node
+    while (curr.childNodes.length > 0) {
+      curr = curr.childNodes[PREV ? curr.childNodes.length - 1 : 0];
+      if (
+        !(curr instanceof Element || curr instanceof Text) ||
+        nodeIsOutOfFlow(curr)
+      ) {
+        return this.inlineTextNode(curr, PREV);
+      }
+      if (!nodeIsInline(curr)) return null;
+    }
+    if (!(curr instanceof Text)) {
+      return this.inlineTextNode(curr, PREV);
+    }
+    return curr;
+  }
+
+  private prevInlineTextNode(curr: Node) {
+    return this.inlineTextNode(curr, true);
+  }
+
+  private nextInlineTextNode(curr: Node) {
+    return this.inlineTextNode(curr, false);
+  }
+
+  /** Extract initial part of the sentence in nodes before `node`. */
+  private sentenceBeforeNode(t: Text): string {
+    let sentence = "";
+    let node: Text | null = t;
+    while (true) {
+      node = this.prevInlineTextNode(node);
+      if (node === null) {
+        return sentence;
+      }
+      const text = node.data;
+      for (let i = text.length - 1; i >= 0; i--) {
+        if (isSentenceEndChar(text[i])) {
+          return sentence;
+        } else {
+          sentence = text[i] + sentence;
         }
       }
     }
-    this.lastScannedText = null;
-    return null;
+  }
+
+  private sencenceAfterNode(t: Text): string {
+    let sentence = "";
+    let node: Text | null = t;
+    while (true) {
+      node = this.nextInlineTextNode(node);
+      if (node === null) {
+        return sentence;
+      }
+      const text = node.data;
+      for (let i = 0; i < text.length; i++) {
+        if (isSentenceEndChar(text[i])) {
+          return sentence;
+        } else {
+          sentence = sentence + text[i];
+        }
+      }
+    }
+  }
+
+  private scanToken(
+    tokens: Token[],
+    sentence: ScannedSentence
+  ): ScanResult | null {
+    const prev = sentence.prev ?? "";
+    const node = sentence.node;
+    const [token, tokenStartIndex] = tokenAtCharacterIndex(
+      tokens,
+      prev.length + sentence.idx
+    );
+    if (token === null) return null;
+    // token range
+    const range = new Range();
+    let startNode: Text = node;
+    let startIdx = tokenStartIndex - prev.length;
+    while (startIdx < 0) {
+      const prev = this.prevInlineTextNode(startNode);
+      if (prev === null) {
+        range.setStart(startNode, 0);
+      } else {
+        startNode = prev;
+        startIdx += startNode.data.length;
+      }
+    }
+    range.setStart(startNode, startIdx);
+
+    let endNode: Text = node;
+    let endIdx = tokenStartIndex - prev.length + token.text.length;
+    while (endIdx > endNode.data.length) {
+      const next = this.nextInlineTextNode(endNode);
+      if (next === null) {
+        range.setEnd(endNode, endNode.data.length);
+      } else {
+        endIdx -= endNode.data.length;
+        endNode = next;
+      }
+    }
+    range.setEnd(endNode, endIdx);
+
+    return {
+      token,
+      range,
+      sentence: sentence.sentence,
+      startIdx: tokenStartIndex,
+      endIdx: tokenStartIndex + token.text.length,
+    };
   }
 }
 
@@ -85,23 +258,6 @@ function childTextAt(parent: Element, x: number, y: number): Text | null {
   return null;
 }
 
-/**
- * Find character at (x, y) in `node` if it exists.
- */
-function indexOfCharacterAt(node: Text, x: number, y: number): number | null {
-  const range = new Range();
-  const text = node.nodeValue as string;
-  // TODO: maybe on large texts use binary algorithm to reduce to O(logn)
-  for (let i = 0; i < text.length; i++) {
-    range.setStart(node, i);
-    range.setEnd(node, i + 1);
-    if (Utils.rangeContainsPoint(range, x, y)) {
-      return i;
-    }
-  }
-  return null; // is this reachable?
-}
-
 // returns [token, start character index of token]
 function tokenAtCharacterIndex(
   tokens: Token[],
@@ -117,20 +273,41 @@ function tokenAtCharacterIndex(
   throw new Error("character index out of range");
 }
 
-function scanTokenAt(
-  node: Text,
-  tokens: Token[],
-  x: number,
-  y: number
-): ScanResult | null {
-  const charIndex = indexOfCharacterAt(node, x, y);
-  if (charIndex === null) return null;
-  const [token, tokenStartIndex] = tokenAtCharacterIndex(tokens, charIndex);
-  if (token === null) return null;
-  // token range
-  const range = new Range();
-  range.setStart(node, tokenStartIndex);
-  range.setEnd(node, tokenStartIndex + token.text.length);
+function isSentenceEndChar(char: string): boolean {
+  return "。？！｡.?!\n".includes(char);
+}
 
-  return { token, range };
+function nodeIsInline(node: Node): boolean {
+  if (!(node instanceof Element)) return true;
+  const styles = window.getComputedStyle(node);
+  return (
+    ["inline", "ruby", "ruby-base"].includes(styles.display) ||
+    styles.position === "static" ||
+    styles.position === "relative"
+  );
+}
+
+// It is not possible for a node to be both inline and out of flow.
+function nodeIsOutOfFlow(node: Node): boolean {
+  if (!(node instanceof Element)) return false;
+  const styles = window.getComputedStyle(node);
+  return (
+    styles.display === "none" ||
+    styles.display === "ruby-text" ||
+    !(styles.position === "static" || styles.position === "relative") ||
+    node.tagName === "RT"
+  );
+}
+
+/** Returns true if node is flex or grid in which its child is assumed not inline */
+function nodeChildIsNotInline(node: Node): boolean {
+  if (!(node instanceof Element)) return false;
+  const styles = window.getComputedStyle(node);
+  // support multi keyword display
+  for (const value of styles.display.split(" ")) {
+    if (["flex", "grid", "inline-flex", "inline-grid"].includes(value)) {
+      return true;
+    }
+  }
+  return false;
 }
