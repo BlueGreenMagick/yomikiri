@@ -183,6 +183,7 @@ export class Scanner {
       const text = node.data;
       for (let i = 0; i < text.length; i++) {
         if (isSentenceEndChar(text[i])) {
+          sentence = sentence + text[i];
           return sentence;
         } else {
           sentence = sentence + text[i];
@@ -231,10 +232,12 @@ export class Scanner {
     }
     range.setEnd(endNode, endIdx);
 
+    const sent = prev + sentence.curr + after;
+
     return {
       token,
       range,
-      sentence: prev + sentence.curr + after,
+      sentence: sent.trim(),
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
       sentenceTokens: tokens,
@@ -282,7 +285,7 @@ function tokenAtCharacterIndex(
 }
 
 function isSentenceEndChar(char: string): boolean {
-  return "。？！｡.?!\n".includes(char);
+  return "。？！｡.?!".includes(char);
 }
 
 function nodeIsInline(node: Node): boolean {
