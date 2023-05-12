@@ -23,8 +23,17 @@ const tooltipSvelte = new TooltipSvelte({
   props: {},
 });
 
-document.addEventListener("mousemove", (ev) => {
+let inProgress = false;
+
+document.addEventListener("mousemove", async (ev) => {
   if (ev.shiftKey) {
-    trigger(ev.clientX, ev.clientY);
+    if (!inProgress) {
+      try {
+        inProgress = true;
+        await trigger(ev.clientX, ev.clientY);
+      } finally {
+        inProgress = false;
+      }
+    }
   }
 });
