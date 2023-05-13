@@ -6,7 +6,7 @@ import TooltipSvelte from "tooltip/Tooltip.svelte";
 
 const scanner = new Scanner();
 
-async function trigger(x: number, y: number) {
+async function _trigger(x: number, y: number) {
   const result = await scanner.scanAt(x, y);
   if (result === null) return;
   let entries = (await Api.request("searchTerm", result.token.base_form)).map(
@@ -17,23 +17,35 @@ async function trigger(x: number, y: number) {
   highlightRange(result.range);
 }
 
+let running: boolean = false;
+let next: [number, number] | null = null;
+
+async function trigger(x: number, y: number) {
+  if (!running) {
+    running = true;
+    const ret = _trigger(x, y);
+    ret.finally(() => {
+      running = false;
+      if (next !== null) {
+        const [nx, ny] = next;
+        next = null;
+        trigger(nx, ny);
+      }
+    });
+    return ret;
+  } else {
+    next = [x, y];
+  }
+}
+
 /** Attach tooltip element to document */
 const tooltipSvelte = new TooltipSvelte({
   target: document.body,
   props: {},
 });
 
-let inProgress = false;
-
 document.addEventListener("mousemove", async (ev) => {
   if (ev.shiftKey) {
-    if (!inProgress) {
-      try {
-        inProgress = true;
-        await trigger(ev.clientX, ev.clientY);
-      } finally {
-        inProgress = false;
-      }
-    }
+    await trigger(ev.clientX, ev.clientY);
   }
 });
