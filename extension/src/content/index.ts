@@ -49,3 +49,9 @@ document.addEventListener("mousemove", async (ev) => {
     await trigger(ev.clientX, ev.clientY);
   }
 });
+
+document.addEventListener("click", async (ev: MouseEvent) => {
+  if (Api.isTouchScreen) {
+    await trigger(ev.clientX, ev.clientY);
+  }
+});
