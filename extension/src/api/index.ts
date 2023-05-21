@@ -26,14 +26,26 @@ export type RequestHandler<K extends keyof MessageMap> = (
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
 export default class Api {
-  static isSafariApi: boolean =
-    navigator.userAgent.indexOf(" Safari/") !== -1 &&
-    navigator.userAgent.indexOf(" Chrome/") === -1 &&
-    navigator.userAgent.indexOf(" Chromium/") === -1;
-  static isChromeApi: boolean =
-    !Api.isSafariApi && typeof chrome !== "undefined";
+  static isIOS: boolean;
   static isTouchScreen: boolean = navigator.maxTouchPoints > 0;
   static isNoHover: boolean = window.matchMedia("(hover: none)").matches;
+
+  static async initialize() {
+    await Api.loadPlatform();
+    attachRequestHandler();
+    attachStorageChangeHandler();
+  }
+
+  /** Only works in background context */
+  static loadPlatform(): Promise<void> {
+    const [promise, resolve, reject] = Utils.createPromise<void>();
+    chrome.runtime.getPlatformInfo((platform) => {
+      // @ts-ignore
+      Api.isIOS = platform.os === "ios";
+      resolve();
+    });
+    return promise;
+  }
 
   static requestHandlers: Partial<{
     [K in keyof MessageMap]: RequestHandler<K>;
@@ -112,6 +124,16 @@ export default class Api {
   ) {
     // @ts-ignore
     Api.requestHandlers[key] = handler;
+  }
+
+  static async requestToApp(
+    key: string,
+    message: { [key: string]: any }
+  ): Promise<any> {
+    return browser.runtime.sendNativeMessage("_", {
+      ...message,
+      key,
+    });
   }
 
   static async currentTab(): Promise<chrome.tabs.Tab> {
@@ -214,6 +236,3 @@ function attachStorageChangeHandler() {
     }
   });
 }
-
-attachRequestHandler();
-attachStorageChangeHandler();

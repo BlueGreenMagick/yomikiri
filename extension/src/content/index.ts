@@ -4,6 +4,8 @@ import { Entry } from "~/dictionary";
 import Api from "~/api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
 
+Api.initialize();
+
 const scanner = new Scanner();
 
 async function _trigger(x: number, y: number) {

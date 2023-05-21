@@ -32,6 +32,8 @@ async function tokenizeClicked() {
   resultEl.textContent = text;
 }
 
+Api.initialize();
+
 document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("search-button") as HTMLElement;
   searchBtn.addEventListener("click", () => searchClicked());

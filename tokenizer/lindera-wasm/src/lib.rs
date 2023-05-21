@@ -1,11 +1,13 @@
 mod utils;
 
+use std::sync::Arc;
+
 use lindera::dictionary::DictionaryConfig;
 use lindera::mode::Mode;
 use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
 use lindera::{DictionaryKind, LinderaResult, Token as LToken};
-use serde::Serialize;
-use wasm_bindgen::prelude::*;
+#[cfg(feature = "wasm")]
+use {serde::Serialize, wasm_bindgen::prelude::*};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -13,12 +15,14 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
+#[cfg_attr(feature = "wasm", wasm_bindgen)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Object))]
 pub struct Tokenizer {
     tokenizer: LTokenizer,
 }
 
-#[derive(Serialize)]
+#[cfg_attr(feature = "wasm", derive(Serialize))]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct Token {
     pub text: String,
     /// defaults to `UNK`
@@ -29,6 +33,7 @@ pub struct Token {
     pub reading: String,
 }
 
+#[cfg(feature = "wasm")]
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKEN: &'static str = r#"
 export interface Token {
@@ -65,12 +70,14 @@ impl From<&mut LToken<'_>> for Token {
     }
 }
 
-#[wasm_bindgen]
 impl Tokenizer {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Tokenizer {
-        utils::set_panic_hook();
+    pub fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
+        let mut tokens = self.tokenizer.tokenize(sentence)?;
+        let result = tokens.iter_mut().map(Token::from).collect();
+        Ok(result)
+    }
 
+    pub fn create() -> Tokenizer {
         let dictionary = DictionaryConfig {
             kind: Some(DictionaryKind::IPADIC),
             path: None,
@@ -83,11 +90,15 @@ impl Tokenizer {
         let tokenizer = LTokenizer::from_config(config).unwrap();
         Tokenizer { tokenizer }
     }
+}
 
-    fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
-        let mut tokens = self.tokenizer.tokenize(sentence)?;
-        let result = tokens.iter_mut().map(Token::from).collect();
-        Ok(result)
+#[cfg(feature = "wasm")]
+#[wasm_bindgen]
+impl Tokenizer {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Tokenizer {
+        utils::set_panic_hook();
+        Tokenizer::create()
     }
 
     #[wasm_bindgen(skip_typescript)]
@@ -100,6 +111,7 @@ impl Tokenizer {
     }
 }
 
+#[cfg(feature = "wasm")]
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKENIZE: &'static str = r#"
 interface Tokenizer {
@@ -107,22 +119,30 @@ interface Tokenizer {
 }
 "#;
 
+#[cfg(feature = "uniffi")]
+#[uniffi::export]
+impl Tokenizer {
+    #[uniffi::constructor]
+    fn new() -> Arc<Tokenizer> {
+        let this = Tokenizer::create();
+        Arc::new(this)
+    }
+
+    fn tokenize(&self, sentence: String) -> Vec<Token> {
+        self.tokenize_inner(&sentence).unwrap()
+    }
+}
+
+#[cfg(feature = "uniffi")]
+uniffi::include_scaffolding!("uniffi_lindera");
+
 #[cfg(test)]
 mod tests {
     use super::Tokenizer;
-    use wasm_bindgen_test::wasm_bindgen_test;
-
-    #[wasm_bindgen_test]
-    fn test_tokenize() {
-        wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
-
-        let tokenizer = Tokenizer::new();
-        tokenizer.tokenize("関西国際空港限定トートバッグ");
-    }
 
     #[test]
     fn print_details() {
-        let tokenizer = Tokenizer::new();
+        let tokenizer = Tokenizer::create();
         let tokens = tokenizer
             .tokenizer
             .tokenize("そのいじらしい姿が可愛かったので、hello.")
@@ -131,5 +151,20 @@ mod tests {
             let text = token.text.to_string();
             println!("{}: {:?}", text, token.get_details());
         }
+    }
+}
+
+#[cfg(test)]
+#[cfg(feature = "wasm")]
+mod wasm_tests {
+    use super::Tokenizer;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    #[wasm_bindgen_test]
+    fn test_tokenize() {
+        wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+        let tokenizer = Tokenizer::new();
+        tokenizer.tokenize_inner("関西国際空港限定トートバッグ");
     }
 }

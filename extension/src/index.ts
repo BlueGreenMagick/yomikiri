@@ -20,7 +20,7 @@ async function tokenize(text: string): Promise<Token[]> {
 async function addAnkiNote(note: Note): Promise<number> {
   return await AnkiApi.addNote(note);
 }
-
+Api.initialize();
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);

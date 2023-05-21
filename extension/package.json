@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.233",
+    "@types/firefox-webext-browser": "^111.0.1",
     "@types/pako": "^2.0.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.18",
