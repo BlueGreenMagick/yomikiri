@@ -18,13 +18,14 @@ required-features = ["uniffi"]
 
 [features]
 default=["wasm"]
-wasm = ["dep:wasm-bindgen", "dep:wee_alloc", "console_error_panic_hook", "dep:serde-wasm-bindgen", "dep:serde"]
+wasm = ["dep:wasm-bindgen", "dep:web-sys", "dep:wee_alloc", "console_error_panic_hook", "dep:serde-wasm-bindgen", "dep:serde"]
 uniffi = ["dep:uniffi"]
 
 [dependencies]
 lindera = { version = "0.23.1", features = ["ipadic"]}
 
 wasm-bindgen = { version="0.2.63", optional=true }
+web-sys = { version="0.3", features=["Window", "Performance", "console"], optional=true }
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for

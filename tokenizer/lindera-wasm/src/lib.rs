@@ -1,5 +1,6 @@
 mod utils;
 
+#[cfg(feature = "uniffi")]
 use std::sync::Arc;
 
 use lindera::dictionary::DictionaryConfig;
@@ -103,11 +104,16 @@ impl Tokenizer {
 
     #[wasm_bindgen(skip_typescript)]
     pub fn tokenize(&self, sentence: &str) -> Vec<JsValue> {
-        self.tokenize_inner(sentence)
+        // let start = utils::time_now();
+        let val = self
+            .tokenize_inner(sentence)
             .unwrap()
             .iter()
             .map(|s| serde_wasm_bindgen::to_value(s).unwrap())
-            .collect()
+            .collect();
+        // let end = utils::time_now();
+        // utils::log!("finally: {}", end - start);
+        return val;
     }
 }
 
