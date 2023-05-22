@@ -4,3 +4,5 @@ If using esbuild, add `loader: { ".wasm": "file" }` to the build options.
 See 'esbuild.config.js' file for more information.
 
 Run `yarn dev` to test changes.
+
+Run `yarn build:all` when rust code changes.
