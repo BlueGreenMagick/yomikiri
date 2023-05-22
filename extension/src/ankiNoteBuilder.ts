@@ -69,7 +69,7 @@ AnkiNoteBuilder.addMarker("word-original", (data: MarkerData) => {
   return data.scanned.token.text;
 });
 AnkiNoteBuilder.addMarker("word-dict", (data: MarkerData) => {
-  return data.scanned.token.base_form;
+  return data.scanned.token.baseForm;
 });
 AnkiNoteBuilder.addMarker("word-reading", (data: MarkerData) => {
   return data.scanned.token.reading;

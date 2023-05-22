@@ -26,25 +26,12 @@ export type RequestHandler<K extends keyof MessageMap> = (
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
 export default class Api {
-  static isIOS: boolean;
   static isTouchScreen: boolean = navigator.maxTouchPoints > 0;
   static isNoHover: boolean = window.matchMedia("(hover: none)").matches;
 
   static async initialize() {
-    await Api.loadPlatform();
     attachRequestHandler();
     attachStorageChangeHandler();
-  }
-
-  /** Only works in background context */
-  static loadPlatform(): Promise<void> {
-    const [promise, resolve, reject] = Utils.createPromise<void>();
-    chrome.runtime.getPlatformInfo((platform) => {
-      // @ts-ignore
-      Api.isIOS = platform.os === "ios";
-      resolve();
-    });
-    return promise;
   }
 
   static requestHandlers: Partial<{

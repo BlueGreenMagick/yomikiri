@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 mod utils;
 
 #[cfg(feature = "uniffi")]
@@ -27,9 +29,9 @@ pub struct Tokenizer {
 pub struct Token {
     pub text: String,
     /// defaults to `UNK`
-    pub part_of_speech: String,
+    pub partOfSpeech: String,
     /// defaults to `text`
-    pub base_form: String,
+    pub baseForm: String,
     /// defaults to `*`
     pub reading: String,
 }
@@ -39,8 +41,8 @@ pub struct Token {
 const TS_TOKEN: &'static str = r#"
 export interface Token {
     text: string;
-    part_of_speech: string;
-    base_form: string;
+    partOfSpeech: string;
+    baseForm: string;
     reading: string;
 }
 "#;
@@ -63,9 +65,9 @@ impl From<&mut LToken<'_>> for Token {
         let details = tok.get_details();
 
         Token {
-            base_form: get_value_from_detail(&details, 6, &text),
+            baseForm: get_value_from_detail(&details, 6, &text),
             reading: get_value_from_detail(&details, 7, "*"),
-            part_of_speech: get_value_from_detail(&details, 0, "UNK"),
+            partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
             text: text,
         }
     }

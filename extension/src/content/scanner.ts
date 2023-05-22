@@ -1,4 +1,5 @@
 import Api from "~/api";
+import { IS_IOS } from "@platform";
 import type { Token } from "~/tokenizer/tokenizer";
 import Utils from "~/utils";
 
@@ -43,7 +44,7 @@ export class Scanner {
 
     const prev = sentence.prev ?? "";
     const after = sentence.after ?? "";
-    const tokens = await this.tokenize(prev + sentence.curr + after);
+    const tokens = await Api.request("tokenize", prev + sentence.curr + after);
     this.lastScannedSentence = [sentence, tokens];
 
     const result = this.scanToken(tokens, sentence);
@@ -242,16 +243,6 @@ export class Scanner {
       endIdx: tokenStartIndex + token.text.length,
       sentenceTokens: tokens,
     };
-  }
-
-  private async tokenize(text: string): Promise<Token[]> {
-    if (Api.isIOS) {
-      console.log("ios");
-      return (await Api.requestToApp("tokenize", { text: text })) as Token[];
-    } else {
-      console.log("desktop");
-      return await Api.request("tokenize", text);
-    }
   }
 }
 

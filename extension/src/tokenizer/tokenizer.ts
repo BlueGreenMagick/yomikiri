@@ -1,29 +1,25 @@
-import loadTokenizerWasm, {
-  type Token,
-  type Tokenizer as TokenizerWasm,
-} from "@yomikiri/tokenizer";
+import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
 import type { Dictionary } from "~/dictionary";
 
 export type { Token } from "@yomikiri/tokenizer";
 
 export class Tokenizer {
   dictionary: Dictionary;
-  tokenizer: TokenizerWasm;
+  tokenizer: TokenizerInner;
 
   /// load wasm and initialize
   static async initialize(
     dictionaryPromise: Promise<Dictionary>
   ): Promise<Tokenizer> {
-    const [tokenizerWasm, dictionary] = await Promise.all([
-      Tokenizer.loadTokenizerWasm(),
+    const [tokenizerInner, dictionary] = await Promise.all([
+      TokenizerInner.initialize(),
       dictionaryPromise,
     ]);
-    return new Tokenizer(dictionary, tokenizerWasm);
+    return new Tokenizer(dictionary, tokenizerInner);
   }
 
-  tokenize(input: string): Token[] {
-    let tokens = this.tokenizer.tokenize(input);
-    console.log(tokens);
+  async tokenize(input: string): Promise<Token[]> {
+    let tokens = await this.tokenizer.tokenize(input);
     return this.joinTokens(tokens);
   }
 
@@ -52,7 +48,7 @@ export class Tokenizer {
       for (let i = index; i < to - 1; i++) {
         search += tokens[i].text;
       }
-      search += tokens[to - 1].base_form;
+      search += tokens[to - 1].baseForm;
       if (this.dictionary.search(search).length > 0) {
         const count = to - index;
         const joined = joinTokens(tokens, index, count);
@@ -62,32 +58,27 @@ export class Tokenizer {
     return [tokens[index], 1];
   }
 
-  private constructor(dictionary: Dictionary, tokenizer: TokenizerWasm) {
+  private constructor(dictionary: Dictionary, tokenizer: TokenizerInner) {
     this.dictionary = dictionary;
     this.tokenizer = tokenizer;
-  }
-
-  private static async loadTokenizerWasm(): Promise<TokenizerWasm> {
-    const TokenizerWasm = await loadTokenizerWasm();
-    return new TokenizerWasm();
   }
 }
 
 function extendToken(t: Token, other: Token): Token {
   let pos: string;
-  if (t.part_of_speech === other.part_of_speech) {
-    pos = t.part_of_speech;
-  } else if (other.part_of_speech === "動詞") {
-    pos = other.part_of_speech;
+  if (t.partOfSpeech === other.partOfSpeech) {
+    pos = t.partOfSpeech;
+  } else if (other.partOfSpeech === "動詞") {
+    pos = other.partOfSpeech;
   } else {
     pos = "UNK";
   }
 
   return {
     text: t.text + other.text,
-    base_form: t.text + other.base_form,
+    baseForm: t.text + other.baseForm,
     reading: t.reading + other.reading,
-    part_of_speech: pos,
+    partOfSpeech: pos,
   };
 }
 

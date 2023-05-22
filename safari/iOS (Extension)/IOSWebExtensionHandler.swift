@@ -27,7 +27,7 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 return
             }
             let tokens = tokenizer.tokenize(sentence: text)
-            response = ["tokens": [jsonSerialize(obj: tokens)]]
+            response = ["tokens": jsonSerialize(obj: tokens) as Any]
             break
         default:
             return

@@ -6,6 +6,15 @@ import sveltePreprocess from "svelte-preprocess";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
+if (!["desktop", "ios"].includes(process.env.TARGET_PLATFORM)) {
+  throw (
+    "TARGET_PLATFORM env variable must be set to either 'desktop'/'ios', but is set to: " +
+    process.env.TARGET_PLATFORM
+  );
+}
+
+const FOR_IOS = process.env.TARGET_PLATFORM === "ios";
+
 const setWatchOptionPlugin = {
   name: "setWatchOptionPlugin",
   setup(build) {
@@ -31,6 +40,27 @@ const logRebuildPlugin = {
   },
 };
 
+const platformAliasPlugin = {
+  name: "platformAliasPlugin",
+  setup(build) {
+    build.onResolve({ filter: /.*/ }, (args) => {
+      let replacement;
+      if (FOR_IOS) {
+        replacement = "platform/ios$1";
+      } else {
+        replacement = "platform/desktop$1";
+      }
+      const replaced = args.path.replace(/^@platform($|\/)/, replacement);
+      if (args.path === replaced) {
+        return;
+      }
+      delete args.path;
+      const resolved = build.resolve(replaced, args);
+      return resolved;
+    });
+  },
+};
+
 const buildOptions = {
   entryPoints: [
     { in: "src/content/index.ts", out: "content" },
@@ -47,6 +77,7 @@ const buildOptions = {
   plugins: [
     logRebuildPlugin,
     setWatchOptionPlugin,
+    platformAliasPlugin,
     copy({
       assets: [
         { from: ["src/**/*.html"], to: ["./"] },

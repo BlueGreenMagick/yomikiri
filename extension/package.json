@@ -5,9 +5,14 @@
   "author": "BlueGreenMagick",
   "license": "MIT",
   "scripts": {
-    "build": "cross-env NODE_ENV=production yarn run build:types && node esbuild.config.mjs",
+    "_build": "f() { rimraf build ; cross-env NODE_ENV=$1 TARGET_PLATFORM=$2 node esbuild.config.mjs; }; f",
+    "build:desktop": "yarn run _build production desktop",
+    "build:ios": "yarn run _build production ios",
+    "build": "yarn run build:desktop",
     "build:dependencies": "yarn workspace @yomikiri/tokenizer build:types",
-    "dev": "rimraf build ; cross-env NODE_ENV=development node esbuild.config.mjs",
+    "dev:desktop": "yarn run _build development desktop",
+    "dev:ios": "yarn run _build development ios",
+    "dev": "yarn run dev:desktop",
     "types": "svelte-check",
     "run:firefox": "yarn web-ext run -s ./build --devtools"
   },

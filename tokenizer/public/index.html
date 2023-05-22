@@ -60,10 +60,7 @@
           const tooltip = document.createElement("span");
           tooltip.classList.add("tooltip");
           tooltip.innerText =
-            token.part_of_speech +
-            ", " +
-            token.base_form +
-            ` [${token.reading}]`;
+            token.partOfSpeech + ", " + token.baseForm + ` [${token.reading}]`;
 
           span.appendChild(tooltip);
           outputEl.appendChild(span);

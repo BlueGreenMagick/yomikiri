@@ -23,7 +23,9 @@
       ],
       "paths": {
         "~/*": ["./*"],
-        "@icons/*": ["assets/icons/*"]
+        "@icons/*": ["assets/icons/*"],
+        "@platform": ["platform/desktop/index"],
+        "@platform/*": ["platform/desktop/*"]
       }
     },
     "include": ["src"],

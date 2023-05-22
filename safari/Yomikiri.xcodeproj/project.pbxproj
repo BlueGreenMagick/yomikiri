@@ -305,7 +305,7 @@
 				698038552A17B27500C93E3D /* Build Rust UniFFI */,
 				69F2C26D29FA4FA80088F503 /* Sources */,
 				69F2C26E29FA4FA80088F503 /* Frameworks */,
-				69F2C2F729FA54DC0088F503 /* Copy extension files */,
+				69F2C2F729FA54DC0088F503 /* Build extension files */,
 			);
 			buildRules = (
 			);
@@ -427,7 +427,7 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_uniffi.sh\n";
 		};
-		69F2C2F729FA54DC0088F503 /* Copy extension files */ = {
+		69F2C2F729FA54DC0088F503 /* Build extension files */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -437,14 +437,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Copy extension files";
+			name = "Build extension files";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/copy_extension_files.sh\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension_files.sh\n";
 		};
 		69F2C2FA29FA570C0088F503 /* Copy extension files */ = {
 			isa = PBXShellScriptBuildPhase;

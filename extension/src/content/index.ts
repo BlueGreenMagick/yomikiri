@@ -11,7 +11,7 @@ const scanner = new Scanner();
 async function _trigger(x: number, y: number) {
   const result = await scanner.scanAt(x, y);
   if (result === null) return;
-  let entries = (await Api.request("searchTerm", result.token.base_form)).map(
+  let entries = (await Api.request("searchTerm", result.token.baseForm)).map(
     (o) => new Entry(o)
   );
   if (entries.length === 0) return;
