@@ -1,13 +1,13 @@
 import type { Entry } from "~/dictionary";
-import type { Token } from "@yomikiri/tokenizer";
 import type { Note } from "./anki";
+import type { TokenizeRequest, TokenizeResult } from "~/tokenizer/tokenizer";
 
 /// Type map for `{ key: [request, response] }`
 /// Response type must not have Promise
 /// Request type cannot be void, but response can be void
 export interface MessageMap {
   searchTerm: [string, ParsedClass<Entry>[]];
-  tokenize: [string, Token[]];
+  tokenize: [TokenizeRequest, TokenizeResult];
   /** Note -> nid */
   addAnkiNote: [Note, number];
 }

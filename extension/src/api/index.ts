@@ -56,7 +56,7 @@ export default class Api {
       } else {
         const obj = JSON.parse(resp.error);
         const error = new Error();
-        for (const key in obj.getOwnPropertyNames()) {
+        for (const key in Object.getOwnPropertyNames(obj)) {
           // @ts-ignore
           error[key] = obj[key];
         }
@@ -76,10 +76,8 @@ export default class Api {
       key,
       request,
     };
-    chrome.runtime.sendMessage(
-      message,
-      Api.createRequestResponseHandler(resolve, reject)
-    );
+    const handler = Api.createRequestResponseHandler(resolve, reject);
+    chrome.runtime.sendMessage(message, handler);
     return promise;
   }
 

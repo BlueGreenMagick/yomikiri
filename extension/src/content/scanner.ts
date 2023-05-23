@@ -1,17 +1,18 @@
 import Api from "~/api";
-import { IS_IOS } from "@platform";
-import type { Token } from "~/tokenizer/tokenizer";
+import type { Token, TokenizeResult } from "~/tokenizer/tokenizer";
 import Utils from "~/utils";
+import { Entry } from "~/dictionary";
 
 export interface ScanResult {
   token: Token;
   /** range that has token text selected */
   range: Range;
-  /** sentence[startIdx, endIdx] is token text */
+  /** sentence[startIdx, endIdx) is token text */
   sentence: string;
   startIdx: number;
   endIdx: number;
   sentenceTokens: Token[];
+  dicEntries: Entry[];
 }
 
 /** prev + sentence + after is the constructed sentence */
@@ -21,7 +22,7 @@ interface ScannedSentence {
   prev?: string;
   curr: string;
   after?: string;
-  /** sentence[idx] is the character at (x,y) */
+  /** curr[idx] is the character at (x,y) */
   idx: number;
 }
 
@@ -29,8 +30,6 @@ interface ScannedSentence {
 export class Scanner {
   // cache last scan.
   private lastScannedResult: ScanResult | null = null;
-  /** last scanned sentence and tokens */
-  private lastScannedSentence: [ScannedSentence, Token[]] | null = null;
 
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
     if (this.lastScannedResult !== null) {
@@ -44,10 +43,15 @@ export class Scanner {
 
     const prev = sentence.prev ?? "";
     const after = sentence.after ?? "";
-    const tokens = await Api.request("tokenize", prev + sentence.curr + after);
-    this.lastScannedSentence = [sentence, tokens];
-
-    const result = this.scanToken(tokens, sentence);
+    const tokenizeReq = {
+      text: prev + sentence.curr + after,
+      selectedCharIdx: prev.length + sentence.idx,
+    };
+    const tokenizeResult = await Api.request("tokenize", tokenizeReq);
+    tokenizeResult.selectedDicEntry = tokenizeResult.selectedDicEntry?.map(
+      (e) => new Entry(e)
+    );
+    const result = this.scanToken(tokenizeResult, sentence);
     this.lastScannedResult = result;
     return result;
   }
@@ -194,14 +198,14 @@ export class Scanner {
   }
 
   private scanToken(
-    tokens: Token[],
+    tokenizeResult: TokenizeResult,
     sentence: ScannedSentence
   ): ScanResult | null {
     const prev = sentence.prev ?? "";
     const after = sentence.after ?? "";
     const node = sentence.node;
     const [token, tokenStartIndex] = tokenAtCharacterIndex(
-      tokens,
+      tokenizeResult.tokens,
       prev.length + sentence.idx
     );
     if (token === null) return null;
@@ -236,12 +240,13 @@ export class Scanner {
     const sent = prev + sentence.curr + after;
 
     return {
+      dicEntries: tokenizeResult.selectedDicEntry as Entry[],
       token,
       range,
       sentence: sent.trim(),
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
-      sentenceTokens: tokens,
+      sentenceTokens: tokenizeResult.tokens,
     };
   }
 }

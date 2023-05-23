@@ -4,9 +4,7 @@ import { Entry } from "dictionary";
 async function searchClicked() {
   const input = document.getElementById("search-input") as HTMLInputElement;
   const term = input.value;
-  let response = (await Api.request("searchTerm", term)).map(
-    (e) => new Entry(e)
-  );
+  let response = await Api.request("searchTerm", term);
 
   const resultEl = document.getElementById("search-results") as HTMLElement;
   let text = "";
@@ -22,11 +20,11 @@ async function searchClicked() {
 async function tokenizeClicked() {
   const inputEl = document.getElementById("tokenize-input") as HTMLInputElement;
   const input = inputEl.value;
-  const response = await Api.request("tokenize", input);
+  const response = await Api.request("tokenize", { text: input });
 
   const resultEl = document.getElementById("tokenize-results") as HTMLElement;
   let text = "";
-  for (const token of response) {
+  for (const token of response.tokens) {
     text += token.text + ", ";
   }
   resultEl.textContent = text;

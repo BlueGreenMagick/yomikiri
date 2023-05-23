@@ -1,5 +1,9 @@
 import { Dictionary, Entry } from "./dictionary";
-import { Tokenizer, type Token } from "./tokenizer/tokenizer";
+import {
+  Tokenizer,
+  type TokenizeResult,
+  type TokenizeRequest,
+} from "./tokenizer/tokenizer";
 import Api from "./api";
 import AnkiApi, { type Note } from "./api/anki";
 import EnJMDict from "./assets/jmdict/en.json.gz";
@@ -9,12 +13,13 @@ let tokenizerP = Tokenizer.initialize(dictionaryP);
 
 async function searchTerm(term: string): Promise<Entry[]> {
   let dictionary = await dictionaryP;
-  return dictionary.search(term);
+  let res = dictionary.search(term);
+  return res;
 }
 
-async function tokenize(text: string): Promise<Token[]> {
+async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   let tokenizer = await tokenizerP;
-  return tokenizer.tokenize(text);
+  return tokenizer.tokenize(req);
 }
 
 async function addAnkiNote(note: Note): Promise<number> {

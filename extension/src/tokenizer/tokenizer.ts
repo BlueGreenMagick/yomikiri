@@ -1,7 +1,20 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
-import type { Dictionary } from "~/dictionary";
+import type { Dictionary, Entry } from "~/dictionary";
 
 export type { Token } from "@yomikiri/tokenizer";
+
+export interface TokenizeRequest {
+  text: string;
+  selectedCharIdx?: number;
+}
+
+export interface TokenizeResult {
+  tokens: Token[];
+  selectedTokenIdx?: number;
+  selectedTokenStartCharIdx?: number;
+  selectedTokenEndCharIdx?: number;
+  selectedDicEntry?: Entry[];
+}
 
 export class Tokenizer {
   dictionary: Dictionary;
@@ -18,9 +31,37 @@ export class Tokenizer {
     return new Tokenizer(dictionary, tokenizerInner);
   }
 
-  async tokenize(input: string): Promise<Token[]> {
-    let tokens = await this.tokenizer.tokenize(input);
-    return this.joinTokens(tokens);
+  async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+    const tokens = await this.tokenizer.tokenize(req.text);
+    let result: TokenizeResult = { tokens };
+
+    if (req.selectedCharIdx !== undefined) {
+      if (req.selectedCharIdx < 0 || req.selectedCharIdx >= req.text.length) {
+        throw new RangeError(
+          `selectedCharIdx is out of range: ${req.selectedCharIdx}`
+        );
+      }
+      let startIdx = 0;
+      let endIdx = 0;
+      let tokenIdx;
+      for (tokenIdx = 0; tokenIdx < tokens.length; tokenIdx++) {
+        startIdx = endIdx;
+        endIdx = startIdx + tokens[tokenIdx].text.length;
+        if (endIdx > req.selectedCharIdx) {
+          break;
+        }
+      }
+      const entry = this.dictionary.search(tokens[tokenIdx].baseForm);
+      result = {
+        ...result,
+        selectedTokenStartCharIdx: startIdx,
+        selectedTokenEndCharIdx: endIdx,
+        selectedTokenIdx: tokenIdx,
+        selectedDicEntry: entry,
+      };
+    }
+
+    return result;
   }
 
   /// Try joining tokens if longer token exist in dictionary

@@ -1,6 +1,5 @@
 import { Scanner } from "./scanner";
 import { highlightRange } from "./highlight";
-import { Entry } from "~/dictionary";
 import Api from "~/api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
 
@@ -11,11 +10,8 @@ const scanner = new Scanner();
 async function _trigger(x: number, y: number) {
   const result = await scanner.scanAt(x, y);
   if (result === null) return;
-  let entries = (await Api.request("searchTerm", result.token.baseForm)).map(
-    (o) => new Entry(o)
-  );
-  if (entries.length === 0) return;
-  tooltipSvelte.show(entries, result, x, y);
+  if (result.dicEntries.length === 0) return;
+  tooltipSvelte.show(result.dicEntries, result, x, y);
   highlightRange(result.range);
 }
 
@@ -57,3 +53,6 @@ document.addEventListener("click", async (ev: MouseEvent) => {
     await trigger(ev.clientX, ev.clientY);
   }
 });
+
+// @ts-ignore
+window.Api = Api;
