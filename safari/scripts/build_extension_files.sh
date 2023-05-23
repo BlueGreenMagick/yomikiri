@@ -12,5 +12,13 @@ EXTENSION_DIR="$PROJECT_DIR/../extension"
 COPY_FROM="$EXTENSION_DIR/build/."
 COPY_TO="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 
-yarn --cwd $EXTENSION_DIR build:ios
+
+
+if [ "$CONFIGURATION" = "Debug" ]; then
+  YARN_CMD="dev:ios"
+else
+  YARN_CMD="build:ios"
+fi
+  
+yarn --cwd $EXTENSION_DIR $YARN_CMD
 cp -RpL "$COPY_FROM" "$COPY_TO"

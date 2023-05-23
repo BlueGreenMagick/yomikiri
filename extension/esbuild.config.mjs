@@ -12,13 +12,15 @@ if (!["desktop", "ios"].includes(process.env.TARGET_PLATFORM)) {
     process.env.TARGET_PLATFORM
   );
 }
-
+const FOR_DESKTOP = process.env.TARGET_PLATFORM === "desktop";
 const FOR_IOS = process.env.TARGET_PLATFORM === "ios";
+
+const WATCH = DEVELOPMENT && !FOR_IOS;
 
 const setWatchOptionPlugin = {
   name: "setWatchOptionPlugin",
   setup(build) {
-    if (DEVELOPMENT) {
+    if (WATCH) {
       Object.defineProperty(build.initialOptions, "watch", {
         get() {
           return true;
@@ -73,7 +75,7 @@ const buildOptions = {
   format: "iife",
   bundle: true,
   logLevel: "info",
-  sourcemap: DEVELOPMENT,
+  sourcemap: DEVELOPMENT ? "inline" : false,
   plugins: [
     logRebuildPlugin,
     setWatchOptionPlugin,
@@ -108,7 +110,7 @@ const ctx = await esbuild.context(buildOptions);
 
 await ctx.rebuild();
 
-if (!DEVELOPMENT) {
+if (!WATCH) {
   ctx.dispose();
 } else {
   console.info("esbuild: Watching for changes to code..");
