@@ -82,7 +82,7 @@ impl Tokenizer {
 
     pub fn create() -> Tokenizer {
         let dictionary = DictionaryConfig {
-            kind: Some(DictionaryKind::IPADIC),
+            kind: Some(DictionaryKind::UniDic),
             path: None,
         };
         let config = TokenizerConfig {

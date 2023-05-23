@@ -22,7 +22,7 @@ wasm = ["dep:wasm-bindgen", "dep:web-sys", "dep:wee_alloc", "console_error_panic
 uniffi = ["dep:uniffi"]
 
 [dependencies]
-lindera = { version = "0.23.1", features = ["ipadic"]}
+lindera = { version = "0.23.1", features = ["unidic"]}
 
 wasm-bindgen = { version="0.2.63", optional=true }
 web-sys = { version="0.3", features=["Window", "Performance", "console"], optional=true }
