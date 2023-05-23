@@ -13,13 +13,12 @@ let tokenizerP = Tokenizer.initialize(dictionaryP);
 
 async function searchTerm(term: string): Promise<Entry[]> {
   let dictionary = await dictionaryP;
-  let res = dictionary.search(term);
-  return res;
+  return await dictionary.search(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   let tokenizer = await tokenizerP;
-  return tokenizer.tokenize(req);
+  return await tokenizer.tokenize(req);
 }
 
 async function addAnkiNote(note: Note): Promise<number> {
