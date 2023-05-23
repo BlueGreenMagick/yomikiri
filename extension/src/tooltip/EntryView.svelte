@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Entry, GroupedSense, Reading, Sense } from "~/dictionary";
+  import { Entry, type GroupedSense, type Reading } from "~/dictionary";
   import type { MarkerData } from "~/ankiNoteBuilder";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircle from "@icons/add-circle.svg";
@@ -29,9 +29,9 @@
     dispatch("addNote", data);
   }
 
-  $: mainForm = entry.mainForm();
+  $: mainForm = Entry.mainForm(entry);
   $: readingsString = makeReadingsString(entry.readings);
-  $: groups = entry.groupSenses();
+  $: groups = Entry.groupSenses(entry);
 </script>
 
 <div class="entryView">

@@ -48,9 +48,6 @@ export class Scanner {
       selectedCharIdx: prev.length + sentence.idx,
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
-    tokenizeResult.selectedDicEntry = tokenizeResult.selectedDicEntry?.map(
-      (e) => new Entry(e)
-    );
     const result = this.scanToken(tokenizeResult, sentence);
     this.lastScannedResult = result;
     return result;

@@ -6,16 +6,11 @@ import type { TokenizeRequest, TokenizeResult } from "~/tokenizer/tokenizer";
 /// Response type must not have Promise
 /// Request type cannot be void, but response can be void
 export interface MessageMap {
-  searchTerm: [string, ParsedClass<Entry>[]];
+  searchTerm: [string, Entry[]];
   tokenize: [TokenizeRequest, TokenizeResult];
   /** Note -> nid */
   addAnkiNote: [Note, number];
 }
-
-type NonFunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? never : K;
-}[keyof T];
-type ParsedClass<T> = Pick<T, NonFunctionPropertyNames<T>>;
 
 type First<T extends any[]> = T extends [infer FIRST, ...any[]] ? FIRST : never;
 type Second<T extends any[]> = T extends [any, infer SECOND, ...any[]]

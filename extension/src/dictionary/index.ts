@@ -7,44 +7,50 @@ import Utils from "~/utils";
 export type GroupedSense = [string[], Sense[]];
 
 export type DictionaryResult = Entry[];
-export class Entry {
+export interface Entry {
   forms: Form[];
   readings: Reading[];
-  sense: Sense[];
+  senses: Sense[];
+}
 
-  constructor(obj: any) {
-    this.forms = [];
-    this.readings = [];
-    this.sense = [];
+export namespace Entry {
+  export function fromObject(obj: any): Entry {
+    const forms = [];
+    const readings = [];
+    const senses = [];
     for (const form of obj.forms ?? []) {
-      this.forms.push(new Form(form));
+      forms.push(Form.fromObject(form));
     }
     for (const reading of obj.readings ?? []) {
-      this.readings.push(new Reading(reading));
+      readings.push(Reading.fromObject(reading));
     }
     for (const sense of obj.sense ?? []) {
-      this.sense.push(new Sense(sense));
+      senses.push(Sense.fromObject(sense));
     }
+    return {
+      forms,
+      readings,
+      senses,
+    };
   }
 
-  mainForm(): string {
-    if (this.forms.length > 0) {
-      return this.forms[0].form;
+  export function mainForm(entry: Entry): string {
+    if (entry.forms.length > 0) {
+      return entry.forms[0].form;
     } else {
-      return this.readings[0].reading;
+      return entry.readings[0].reading;
     }
   }
-
   /** groups senses with same partOfSpeech. Preserves order. */
-  groupSenses(): GroupedSense[] {
+  export function groupSenses(entry: Entry): GroupedSense[] {
     const groups: GroupedSense[] = [];
-    for (const sense of this.sense) {
-      this.insertIntoGroupedSenses(groups, sense);
+    for (const sense of entry.senses) {
+      insertIntoGroupedSenses(groups, sense);
     }
     return groups;
   }
 
-  private insertIntoGroupedSenses(groups: GroupedSense[], sense: Sense) {
+  function insertIntoGroupedSenses(groups: GroupedSense[], sense: Sense) {
     const pos = sense.partOfSpeech;
     const sortedPos = [...pos].sort();
     for (const group of groups) {
@@ -58,35 +64,43 @@ export class Entry {
   }
 }
 
-export class Form {
+export interface Form {
   form: string;
   info: string[];
   priority: string[];
+}
 
-  constructor(obj: any) {
-    this.form = obj.form ?? "";
-    this.info = obj.info ?? [];
-    this.priority = obj.priority ?? [];
+export namespace Form {
+  export function fromObject(obj: any): Form {
+    return {
+      form: obj.form ?? "",
+      info: obj.info ?? [],
+      priority: obj.priority ?? [],
+    };
   }
 }
 
-export class Reading {
+export interface Reading {
   reading: string;
   nokanji: boolean;
   toForm: string[];
   info: string[];
   priority: string[];
+}
 
-  constructor(obj: any) {
-    this.reading = obj.reading ?? "";
-    this.nokanji = obj.nokanji ?? false;
-    this.toForm = obj.toForm ?? [];
-    this.info = obj.info ?? [];
-    this.priority = obj.priority ?? [];
+export namespace Reading {
+  export function fromObject(obj: any): Reading {
+    return {
+      reading: obj.reading ?? "",
+      nokanji: obj.nokanji ?? false,
+      toForm: obj.toForm ?? [],
+      info: obj.info ?? [],
+      priority: obj.priority ?? [],
+    };
   }
 }
 
-export class Sense {
+export interface Sense {
   toForm: string[];
   toReading: string[];
   partOfSpeech: string[];
@@ -97,18 +111,22 @@ export class Sense {
   info: string[];
   dialect: string[];
   meaning: string[];
+}
 
-  constructor(obj: any) {
-    this.toForm = obj.toForm ?? [];
-    this.toReading = obj.toReading ?? [];
-    this.partOfSpeech = obj.partOfSpeech ?? [];
-    this.reference = obj.reference ?? [];
-    this.antonym = obj.antonym ?? [];
-    this.field = obj.field ?? [];
-    this.misc = obj.misc ?? [];
-    this.info = obj.info ?? [];
-    this.dialect = obj.dialect ?? [];
-    this.meaning = obj.meaning ?? [];
+export namespace Sense {
+  export function fromObject(obj: any): Sense {
+    return {
+      toForm: obj.toForm ?? [],
+      toReading: obj.toReading ?? [],
+      partOfSpeech: obj.partOfSpeech ?? [],
+      reference: obj.reference ?? [],
+      antonym: obj.antonym ?? [],
+      field: obj.field ?? [],
+      misc: obj.misc ?? [],
+      info: obj.info ?? [],
+      dialect: obj.dialect ?? [],
+      meaning: obj.meaning ?? [],
+    };
   }
 }
 
@@ -129,7 +147,7 @@ export class Dictionary {
 
     const dictionary = new Dictionary();
     for (const entryObject of entryObjects) {
-      const entry = new Entry(entryObject);
+      const entry = Entry.fromObject(entryObject);
       dictionary.entries.push(entry);
     }
     dictionary.generateSearchMap();

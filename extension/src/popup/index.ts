@@ -9,7 +9,7 @@ async function searchClicked() {
   const resultEl = document.getElementById("search-results") as HTMLElement;
   let text = "";
   for (const entry of response) {
-    for (const sense of entry.sense) {
+    for (const sense of entry.senses) {
       text += sense.meaning.join(", ") + "<br/>";
     }
     text += "<br/>---<br/>";
