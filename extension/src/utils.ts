@@ -56,6 +56,21 @@ namespace Utils {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
+
+  let lastBench: number = performance.now();
+
+  export function benchStart() {
+    lastBench = performance.now();
+    return lastBench;
+  }
+
+  export function bench(msg: string): number {
+    const curr = performance.now();
+    const diff = curr - lastBench;
+    lastBench = curr;
+    console.log(msg, diff, Date.now());
+    return diff;
+  }
 }
 
 export default Utils;
