@@ -65,8 +65,8 @@ impl From<&mut LToken<'_>> for Token {
         let details = tok.get_details();
 
         Token {
-            baseForm: get_value_from_detail(&details, 6, &text),
-            reading: get_value_from_detail(&details, 7, "*"),
+            baseForm: get_value_from_detail(&details, 7, &text),
+            reading: get_value_from_detail(&details, 9, "*"),
             partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
             text: text,
         }
