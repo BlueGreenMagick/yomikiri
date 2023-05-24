@@ -79,7 +79,6 @@ impl From<&mut LToken<'_>> for Token {
 
 impl Tokenizer {
     pub fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
-        log::error!("tokenize");
         let mut tokens = self.tokenizer.tokenize(sentence)?;
         let result = tokens.iter_mut().map(Token::from).collect();
         Ok(result)

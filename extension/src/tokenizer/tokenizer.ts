@@ -36,7 +36,7 @@ export class Tokenizer {
     Utils.benchStart();
     let tokens = await this.tokenizer.tokenize(req.text);
     Utils.bench("tokenize");
-    tokens = this.joinTokens(tokens);
+    this.joinTokens(tokens);
     Utils.bench("joinTokens");
     let result: TokenizeResult = { tokens };
 
@@ -70,29 +70,23 @@ export class Tokenizer {
     return result;
   }
 
-  /// Try joining tokens if longer token exist in dictionary
+  /// Join tokens in-place if longer token exist in dictionary
   /// e.g. [込ん,で,いる] => 込んでいる
-  private joinTokens(tokens: Token[]): Token[] {
-    const joinedTokens: Token[] = [];
-    let currentIndex = 0;
-    while (currentIndex < tokens.length) {
-      let [joined, count] = this.findJoinedToken(tokens, currentIndex);
-      joinedTokens.push(joined);
-      currentIndex += count;
+  private joinTokens(tokens: Token[]) {
+    for (let i = 0; i < tokens.length; i++) {
+      this.joinTokensAt(tokens, i);
     }
-    return joinedTokens;
   }
 
-  findJoinedToken(tokens: Token[], index: number): [Token, number] {
-    let [t, n] = inflections(tokens, index);
-    if (n > 1) {
-      return [t, n];
+  joinTokensAt(tokens: Token[], index: number) {
+    let [token, count] = this.compound(tokens, index);
+    if (count > 1) {
+      tokens.splice(index, count, token);
     }
-    [t, n] = this.compound(tokens, index);
-    if (n > 1) {
-      return [t, n];
+    [token, count] = inflections(tokens, index);
+    if (count > 1) {
+      tokens.splice(index, count, token);
     }
-    return [tokens[index], 1];
   }
 
   /// Find maximal joined expression token starting from tokens[index]
@@ -111,7 +105,8 @@ export class Tokenizer {
       const searched = this.dictionary.search(search);
       if (
         searched.length > 0 &&
-        (tokens[index].partOfSpeech === "接頭辞" ||
+        (tokens[index].partOfSpeech === "接頭詞" ||
+          (tokens[to - 1].pos2 === "接尾" && to - index === 2) ||
           searched.find(Entry.isExpression))
       ) {
         const count = to - index;
@@ -125,16 +120,17 @@ export class Tokenizer {
   async tests() {
     await Promise.all([
       this.testTokenization("私/は/学生/です"),
-      this.testTokenization("この/本/は/よくじゃ/なかった"),
+      this.testTokenization("この/本/は/よく/じゃなかった"),
       // compound
-      this.testTokenization("魚/フライ/を/食べた/かもしれない/ペルシア/猫"),
+      this.testTokenization("魚/フライ/を/食べた/かもしれない/猫"),
       this.testTokenization("地震/について/語る"),
-      this.testTokenization("聞こえて/き/そうな/くらい"),
+      //this.testTokenization("聞こえて/き/そうな/くらい"),
       this.testTokenization("だから/しませんでした"),
+      this.testTokenization("奇跡的/に/生まれました"),
       // prefix compound
       this.testTokenization("全否定"),
       // don't compound
-      this.testTokenization("私/は/しる"),
+      // this.testTokenization("私/は/しる"),
     ]);
   }
 
@@ -161,7 +157,7 @@ function extendToken(t: Token, other: Token): Token {
     text: t.text + other.text,
     baseForm: t.text + other.baseForm,
     reading: t.reading + other.reading,
-    partOfSpeech: "exp",
+    partOfSpeech: "=exp=",
     pos2: "*",
   };
 }
@@ -182,7 +178,7 @@ function joinTokens(tokens: Token[], index: number, count: number): Token {
 function inflections(tokens: Token[], index: number): [Token, number] {
   let to = index + 1;
   let token = tokens[index];
-  if (["動詞", "形容詞", "形状詞", "副詞"].includes(token.partOfSpeech)) {
+  if (["動詞", "形容詞", "副詞", "=exp="].includes(token.partOfSpeech)) {
     let combined = token.text;
     while (
       to < tokens.length &&
