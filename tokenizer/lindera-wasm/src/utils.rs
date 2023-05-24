@@ -14,16 +14,18 @@ pub fn set_panic_hook() {
 }
 
 #[cfg(feature = "wasm")]
-macro_rules! log {
-    ($($t:tt)*) => (web_sys::console::log_1(&format_args!($($t)*).to_string().into()))
+pub fn setup_logger() {
+    wasm_logger::init(wasm_logger::Config::default());
 }
 
-#[cfg(feature = "uniffi")]
-macro_rules! log {
-    ($($t:tt)*) => (println!($($t)*))
+#[cfg(feature = "ios")]
+pub fn setup_logger() {
+    let logger = oslog::OsLogger::new("com.yoonchae.Yomikiri.Extension")
+        .level_filter(log::LevelFilter::Debug);
+    if logger.init().is_err() {
+        log::warn!("os_log was already initialized");
+    }
 }
-
-pub(crate) use log;
 
 #[cfg(feature = "wasm")]
 pub(crate) fn time_now() -> f64 {

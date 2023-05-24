@@ -1,5 +1,6 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
 import { Entry, type Dictionary } from "~/dictionary";
+import Utils from "~/utils";
 
 export type { Token } from "@yomikiri/tokenizer";
 
@@ -32,9 +33,11 @@ export class Tokenizer {
   }
 
   async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+    Utils.benchStart();
     let tokens = await this.tokenizer.tokenize(req.text);
+    Utils.bench("tokenize");
     tokens = this.joinTokens(tokens);
-
+    Utils.bench("joinTokens");
     let result: TokenizeResult = { tokens };
 
     if (req.selectedCharIdx !== undefined) {
@@ -62,6 +65,7 @@ export class Tokenizer {
         selectedDicEntry: entry,
       };
     }
+    Utils.bench("selectedCharIdx");
 
     return result;
   }

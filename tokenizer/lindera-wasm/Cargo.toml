@@ -13,12 +13,13 @@ crate-type = ["cdylib", "rlib", "staticlib"]
 [[bin]]
 name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
-required-features = ["uniffi", "uniffi/cli"]
+required-features = ["ios", "uniffi/cli"]
 
 [features]
 default=["wasm"]
-wasm = ["dep:wasm-bindgen", "dep:web-sys", "dep:wee_alloc", "console_error_panic_hook", "dep:serde-wasm-bindgen", "dep:serde"]
-uniffi = ["dep:uniffi"]
+wasm = ["dep:wasm-bindgen", "dep:web-sys", "dep:wee_alloc", "console_error_panic_hook", "dep:serde-wasm-bindgen", "dep:serde", "dep:wasm-logger"]
+uniffi = ["dep:uniffi", "dep:oslog"]
+ios = ["uniffi"]
 
 [dependencies]
 lindera = { version = "0.23.1", features = ["unidic"]}
@@ -36,9 +37,14 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 wee_alloc = { version = "0.4.5", optional = true }
 
 serde-wasm-bindgen = { version="0.5", optional=true }
-serde = { version = "1.0", features = ["derive"], optional=true}
+serde = { version = "1.0", features = ["derive"], optional=true }
 
-uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", optional=true}
+uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", optional=true }
+
+log = { version = "0.4" }
+oslog = { version = "0.2", optional=true }
+wasm-logger = { version = "0.2", optional=true }
+
 
 [build-dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [ "build" ], optional=true}

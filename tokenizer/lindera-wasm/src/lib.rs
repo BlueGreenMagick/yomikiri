@@ -79,6 +79,7 @@ impl From<&mut LToken<'_>> for Token {
 
 impl Tokenizer {
     pub fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
+        log::error!("tokenize");
         let mut tokens = self.tokenizer.tokenize(sentence)?;
         let result = tokens.iter_mut().map(Token::from).collect();
         Ok(result)
@@ -105,20 +106,18 @@ impl Tokenizer {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Tokenizer {
         utils::set_panic_hook();
+        utils::setup_logger();
         Tokenizer::create()
     }
 
     #[wasm_bindgen(skip_typescript)]
     pub fn tokenize(&self, sentence: &str) -> Vec<JsValue> {
-        // let start = utils::time_now();
         let val = self
             .tokenize_inner(sentence)
             .unwrap()
             .iter()
             .map(|s| serde_wasm_bindgen::to_value(s).unwrap())
             .collect();
-        // let end = utils::time_now();
-        // utils::log!("finally: {}", end - start);
         return val;
     }
 }
@@ -136,6 +135,7 @@ interface Tokenizer {
 impl Tokenizer {
     #[uniffi::constructor]
     fn new() -> Arc<Tokenizer> {
+        utils::setup_logger();
         let this = Tokenizer::create();
         Arc::new(this)
     }
