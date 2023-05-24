@@ -1,5 +1,5 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
-import type { Dictionary, Entry } from "~/dictionary";
+import { Entry, type Dictionary } from "~/dictionary";
 
 export type { Token } from "@yomikiri/tokenizer";
 
@@ -84,6 +84,37 @@ export class Tokenizer {
     if (n > 1) {
       return [t, n];
     }
+    [t, n] = this.compound(tokens, index);
+    if (n > 1) {
+      return [t, n];
+    }
+    return [tokens[index], 1];
+  }
+
+  /// Find maximal joined expression token starting from tokens[index]
+  /// return [joined token, number of tokens joined]
+  /// If such doesn't exist, return [tokens[index], 1]
+  compound(tokens: Token[], index: number): [Token, number] {
+    const MAXIMAL_FIND_LENGTH = 4;
+    const initialTo = Math.min(tokens.length, index + MAXIMAL_FIND_LENGTH);
+    // to = [index + 4 ..= index + 2]
+    for (let to = initialTo; to > index + 1; to--) {
+      let search = "";
+      for (let i = index; i < to - 1; i++) {
+        search += tokens[i].text;
+      }
+      search += tokens[to - 1].baseForm;
+      const searched = this.dictionary.search(search);
+      if (
+        searched.length > 0 &&
+        (tokens[index].partOfSpeech === "接頭辞" ||
+          searched.find(Entry.isExpression))
+      ) {
+        const count = to - index;
+        const joined = joinTokens(tokens, index, count);
+        return [joined, count];
+      }
+    }
     return [tokens[index], 1];
   }
 
@@ -91,9 +122,15 @@ export class Tokenizer {
     await Promise.all([
       this.testTokenization("私/は/学生/です"),
       this.testTokenization("この/本/は/よくじゃ/なかった"),
-      // 助詞 + 動詞
+      // compound
       this.testTokenization("魚/フライ/を/食べた/かもしれない/ペルシア/猫"),
       this.testTokenization("地震/について/語る"),
+      this.testTokenization("聞こえて/き/そうな/くらい"),
+      this.testTokenization("だから/しませんでした"),
+      // prefix compound
+      this.testTokenization("全否定"),
+      // don't compound
+      this.testTokenization("私/は/しる"),
     ]);
   }
 
@@ -109,28 +146,6 @@ export class Tokenizer {
     }
   }
 
-  /// Find maximal joined token starting from tokens[index]
-  /// return [joined token, number of tokens joined]
-  /// If such doesn't exist, return [tokens[index], 1]
-  _findJoinedToken(tokens: Token[], index: number): [Token, number] {
-    const MAXIMAL_FIND_LENGTH = 4;
-    const initialTo = Math.min(tokens.length, index + MAXIMAL_FIND_LENGTH);
-    // to = [index + 4 ..= index + 2]
-    for (let to = initialTo; to > index + 1; to--) {
-      let search = "";
-      for (let i = index; i < to - 1; i++) {
-        search += tokens[i].text;
-      }
-      search += tokens[to - 1].baseForm;
-      if (this.dictionary.search(search).length > 0) {
-        const count = to - index;
-        const joined = joinTokens(tokens, index, count);
-        return [joined, count];
-      }
-    }
-    return [tokens[index], 1];
-  }
-
   private constructor(dictionary: Dictionary, tokenizer: TokenizerInner) {
     this.dictionary = dictionary;
     this.tokenizer = tokenizer;
@@ -138,20 +153,12 @@ export class Tokenizer {
 }
 
 function extendToken(t: Token, other: Token): Token {
-  let pos: string;
-  if (t.partOfSpeech === other.partOfSpeech) {
-    pos = t.partOfSpeech;
-  } else if (other.partOfSpeech === "動詞") {
-    pos = other.partOfSpeech;
-  } else {
-    pos = "UNK";
-  }
-
   return {
     text: t.text + other.text,
     baseForm: t.text + other.baseForm,
     reading: t.reading + other.reading,
-    partOfSpeech: pos,
+    partOfSpeech: "exp",
+    pos2: "*",
   };
 }
 
@@ -173,7 +180,10 @@ function inflections(tokens: Token[], index: number): [Token, number] {
   let token = tokens[index];
   if (["動詞", "形容詞", "形状詞", "副詞"].includes(token.partOfSpeech)) {
     let combined = token.text;
-    while (to < tokens.length && tokens[to].partOfSpeech === "助動詞") {
+    while (
+      to < tokens.length &&
+      (tokens[to].partOfSpeech === "助動詞" || tokens[to].pos2 === "接続助詞")
+    ) {
       combined += tokens[to].text;
       to += 1;
     }

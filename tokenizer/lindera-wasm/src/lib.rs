@@ -34,6 +34,8 @@ pub struct Token {
     pub baseForm: String,
     /// defaults to `*`
     pub reading: String,
+    /// defaults to `*`
+    pub pos2: String,
 }
 
 #[cfg(feature = "wasm")]
@@ -44,6 +46,7 @@ export interface Token {
     partOfSpeech: string;
     baseForm: string;
     reading: string;
+    pos2: string;
 }
 "#;
 
@@ -68,6 +71,7 @@ impl From<&mut LToken<'_>> for Token {
             baseForm: get_value_from_detail(&details, 7, &text),
             reading: get_value_from_detail(&details, 9, "*"),
             partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
+            pos2: get_value_from_detail(&details, 1, "*"),
             text: text,
         }
     }

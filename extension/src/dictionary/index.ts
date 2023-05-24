@@ -41,6 +41,16 @@ export namespace Entry {
       return entry.readings[0].reading;
     }
   }
+
+  export function isExpression(entry: Entry): boolean {
+    for (const sense of entry.senses) {
+      if (sense.partOfSpeech.includes("=exp=")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** groups senses with same partOfSpeech. Preserves order. */
   export function groupSenses(entry: Entry): GroupedSense[] {
     const groups: GroupedSense[] = [];

@@ -11,7 +11,7 @@ Run `yarn build:all` when rust code changes.
 All possible POS in unidic v2.1.2 (extracted from lex.csv)
 
 ```
-- 名詞
+- 名詞 (noun)
   - 助動詞語幹
   - 固有名詞
     - 地名
@@ -25,19 +25,23 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
     - サ変形状詞可能
     - 副詞可能
   - 数詞
-- 助詞
+- 助詞 (particle)
   - 係助詞
   - 格助詞
-  - 接続助詞
+  - 接続助詞 (conjunctive particle)
   - 準体助詞
   - 終助詞
   - 副助詞
-- 動詞
+- 動詞 (verb)
   - 一般
   - 非自立可能
-- 形容詞
+- 形容詞 (adjective)
   - 非自立可能
   - 一般
+- 形状詞 (na-adjective)
+  - 助動詞語幹
+  - 一般
+  - タリ
 - 感動詞
   - 一般
   - フィラー
@@ -65,12 +69,8 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
 - 記号
   - 一般
   - 文字
-- 接続詞
-- 形状詞
-  - 助動詞語幹
-  - 一般
-  - タリ
-- 接頭辞
-- 連体詞
+- 接続詞 (conjunction, しかし)
+- 接頭辞 (prefix, お-, 真っ-)
+- 連体詞 (pre-noun adjectival, この)
 - 副詞
 ```
