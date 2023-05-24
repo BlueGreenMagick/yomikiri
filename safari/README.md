@@ -1,3 +1,5 @@
+You must run `yarn:build:all` in '/tokenizer' before building.
+
 Building for web extensions(ios and mac) run `scripts/copy_extension_files.sh` in build phase.
 
 ### UniFFI rust

@@ -8,9 +8,8 @@ PROJECT_DIR=${PROJECT_DIR:-'.'}
 
 TARGET_DIR="$PROJECT_DIR/../target"
 CRATE_DIR="$PROJECT_DIR/../tokenizer/lindera-wasm"
-MANIFEST_PATH="$CRATE_DIR/Cargo.toml"
 
-cargo run --no-default-features --features "uniffi uniffi/cli" --manifest-path "$MANIFEST_PATH" --bin uniffi-bindgen generate --language swift --lib-file "$TARGET_DIR/aarch64-apple-ios/release/liblindera_wasm.a" --out-dir "$PROJECT_DIR/rust" "$CRATE_DIR/src/uniffi_lindera.udl"
-
+rm -rf $PROJECT_DIR/rust
+cp -RpL $CRATE_DIR/ios/. $PROJECT_DIR/rust
 cp $TARGET_DIR/aarch64-apple-ios/release/liblindera_wasm.a "$PROJECT_DIR/rust/liblindera.a"
 cp $TARGET_DIR/aarch64-apple-ios-sim/release/liblindera_wasm.a "$PROJECT_DIR/rust/liblindera_sim.a"
