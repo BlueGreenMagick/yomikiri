@@ -32,7 +32,9 @@ export class Tokenizer {
   }
 
   async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-    const tokens = await this.tokenizer.tokenize(req.text);
+    let tokens = await this.tokenizer.tokenize(req.text);
+    tokens = this.joinTokens(tokens);
+
     let result: TokenizeResult = { tokens };
 
     if (req.selectedCharIdx !== undefined) {
@@ -77,10 +79,40 @@ export class Tokenizer {
     return joinedTokens;
   }
 
+  findJoinedToken(tokens: Token[], index: number): [Token, number] {
+    let [t, n] = inflections(tokens, index);
+    if (n > 1) {
+      return [t, n];
+    }
+    return [tokens[index], 1];
+  }
+
+  async tests() {
+    await Promise.all([
+      this.testTokenization("私/は/学生/です"),
+      this.testTokenization("この/本/は/よくじゃ/なかった"),
+      // 助詞 + 動詞
+      this.testTokenization("魚/フライ/を/食べた/かもしれない/ペルシア/猫"),
+      this.testTokenization("地震/について/語る"),
+    ]);
+  }
+
+  /** expected: text token-separated with '/'. */
+  async testTokenization(expected: string) {
+    const text = expected.replace(/\//g, "");
+    const result = await this.tokenize({ text });
+    const tokens = result.tokens;
+    const joinedTokens = tokens.map((v) => v.text).join("/");
+    if (joinedTokens !== expected) {
+      console.log(result);
+      throw new Error(`Expected ${expected}, got ${joinedTokens}`);
+    }
+  }
+
   /// Find maximal joined token starting from tokens[index]
   /// return [joined token, number of tokens joined]
   /// If such doesn't exist, return [tokens[index], 1]
-  findJoinedToken(tokens: Token[], index: number): [Token, number] {
+  _findJoinedToken(tokens: Token[], index: number): [Token, number] {
     const MAXIMAL_FIND_LENGTH = 4;
     const initialTo = Math.min(tokens.length, index + MAXIMAL_FIND_LENGTH);
     // to = [index + 4 ..= index + 2]
@@ -133,4 +165,24 @@ function joinTokens(tokens: Token[], index: number, count: number): Token {
     current = extendToken(current, tokens[i]);
   }
   return current;
+}
+
+/**  returns [combined token, number of joined tokens] */
+function inflections(tokens: Token[], index: number): [Token, number] {
+  let to = index + 1;
+  let token = tokens[index];
+  if (["動詞", "形容詞", "形状詞", "副詞"].includes(token.partOfSpeech)) {
+    let combined = token.text;
+    while (to < tokens.length && tokens[to].partOfSpeech === "助動詞") {
+      combined += tokens[to].text;
+      to += 1;
+    }
+    if (to - index > 1) {
+      token = {
+        ...token,
+        text: combined,
+      };
+    }
+  }
+  return [token, to - index];
 }
