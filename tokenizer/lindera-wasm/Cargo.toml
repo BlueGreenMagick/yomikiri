@@ -22,7 +22,7 @@ uniffi = ["dep:uniffi", "dep:oslog"]
 ios = ["uniffi"]
 
 [dependencies]
-lindera = { version = "0.23.1", features = ["unidic"]}
+lindera = { version = "0.23.1", features = ["ipadic"]}
 
 wasm-bindgen = { version="0.2.63", optional=true }
 web-sys = { version="0.3", features=["Window", "Performance", "console"], optional=true }
