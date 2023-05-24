@@ -11,10 +11,9 @@ license = "MIT"
 crate-type = ["cdylib", "rlib", "staticlib"]
 
 [[bin]]
-# This can be whatever name makes sense for your project, but the rest of this tutorial assumes uniffi-bindgen.
 name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
-required-features = ["uniffi"]
+required-features = ["uniffi", "uniffi/cli"]
 
 [features]
 default=["wasm"]
@@ -39,7 +38,7 @@ wee_alloc = { version = "0.4.5", optional = true }
 serde-wasm-bindgen = { version="0.5", optional=true }
 serde = { version = "1.0", features = ["derive"], optional=true}
 
-uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features=["cli"], optional=true}
+uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", optional=true}
 
 [build-dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [ "build" ], optional=true}
