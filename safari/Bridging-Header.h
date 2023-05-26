@@ -9,5 +9,6 @@
 #define Bridging_Header_h
 
 #import "uniffi_linderaFFI.h"
+#import "uniffi_ankiFFI.h"
 
 #endif /* Bridging_Header_h */

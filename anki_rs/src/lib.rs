@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex, MutexGuard};
 
 use anki::collection::{Collection, CollectionBuilder};
 use anki::sync::collection::normal::SyncActionRequired;
@@ -13,7 +14,10 @@ use serde::Serialize;
 use snafu::prelude::*;
 use tokio::runtime;
 
-#[derive(Debug, Snafu)]
+uniffi::include_scaffolding!("uniffi_anki");
+
+#[derive(Debug, Snafu, uniffi::Error)]
+#[uniffi(flat_error)]
 pub enum AnkiErr {
     #[snafu(context(false))]
     Anki {
@@ -45,13 +49,25 @@ pub enum AnkiErr {
 
 type Result<T> = std::result::Result<T, AnkiErr>;
 
-#[derive(Debug)]
+macro_rules! col {
+    ($self:ident) => {
+        $self.col().as_ref().ok_or(AnkiErr::NoCollection)
+    };
+}
+
+macro_rules! mut_col {
+    ($self:ident) => {
+        $self.col().as_mut().ok_or(AnkiErr::NoCollection)
+    };
+}
+
+#[derive(Debug, uniffi::Record)]
 pub struct Field {
     pub name: String,
     pub value: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, uniffi::Record)]
 pub struct NoteData {
     pub deck: String,
     pub notetype: String,
@@ -59,52 +75,48 @@ pub struct NoteData {
     pub tags: String,
 }
 
+#[derive(uniffi::Object)]
 pub struct AnkiManager {
     db_dir: PathBuf,
-    col: Option<Collection>,
+    col: Mutex<Option<Collection>>,
     // yomikiri-specific db
-    ydb: Connection,
+    ydb: Mutex<Connection>,
     runtime: runtime::Runtime,
-    endpoint: Option<String>,
+    endpoint: Mutex<Option<String>>,
 }
 
+#[uniffi::export]
 impl AnkiManager {
-    pub fn try_new<P: Into<PathBuf>>(db_dir: P) -> Result<Self> {
-        let db_dir = db_dir.into();
+    #[uniffi::constructor]
+    pub fn try_new(db_dir: String) -> Result<Arc<Self>> {
+        let db_dir = Path::new(&db_dir);
 
-        let col = open_collection(&db_dir)?;
-        let ydb = open_ydb(&db_dir)?;
+        let col = open_collection(db_dir)?;
+        let ydb = open_ydb(db_dir)?;
         let runtime = runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
             .unwrap();
 
-        let mut anki = AnkiManager {
-            db_dir: db_dir,
-            col: Some(col),
-            ydb,
+        let anki = AnkiManager {
+            db_dir: db_dir.to_owned(),
+            col: Mutex::new(Some(col)),
+            ydb: Mutex::new(ydb),
             runtime,
-            endpoint: None,
+            endpoint: Mutex::new(None),
         };
         anki.sync_meta()?;
-        Ok(anki)
+        Ok(Arc::new(anki))
     }
 
-    fn col(&self) -> Result<&Collection> {
-        self.col.as_ref().ok_or(AnkiErr::NoCollection)
-    }
+    pub fn add_note(&self, note_data: NoteData) -> Result<()> {
+        let mut col_guard = self.col();
+        let col = col_guard.as_mut().ok_or(AnkiErr::NoCollection)?;
 
-    fn mut_col(&mut self) -> Result<&mut Collection> {
-        self.col.as_mut().ok_or(AnkiErr::NoCollection)
-    }
-
-    pub fn add_note(&mut self, note_data: &NoteData) -> Result<()> {
-        let did = self
-            .col()?
+        let did = col
             .get_deck_id(&note_data.deck)?
             .ok_or(AnkiErr::InvalidDeckName)?;
-        let notetype = self
-            .mut_col()?
+        let notetype = col
             .get_notetype_by_name(&note_data.notetype)?
             .ok_or(AnkiErr::InvalidNotetypeName)?;
 
@@ -124,13 +136,12 @@ impl AnkiManager {
             note.set_field(*idx as usize, &field.value)?;
         }
 
-        self.mut_col()?.add_note(&mut note, did)?;
+        mut_col!(self)?.add_note(&mut note, did)?;
         Ok(())
     }
 
-    pub fn notetype_names(&mut self) -> Result<Vec<String>> {
-        let names = self
-            .mut_col()?
+    pub fn notetype_names(&self) -> Result<Vec<String>> {
+        let names = mut_col!(self)?
             .storage
             .get_all_notetype_names()?
             .into_iter()
@@ -139,8 +150,8 @@ impl AnkiManager {
         Ok(names)
     }
 
-    pub fn notetype_fields(&mut self, notetype: &str) -> Result<Vec<String>> {
-        let nt = self.mut_col()?.get_notetype_by_name(notetype)?;
+    pub fn notetype_fields(&self, notetype: String) -> Result<Vec<String>> {
+        let nt = mut_col!(self)?.get_notetype_by_name(&notetype)?;
         let fields = match nt {
             Some(nt) => nt.fields.iter().map(|f| f.name.to_string()).collect(),
             None => vec![],
@@ -148,9 +159,8 @@ impl AnkiManager {
         Ok(fields)
     }
 
-    pub fn deck_names(&mut self) -> Result<Vec<String>> {
-        let names = self
-            .mut_col()?
+    pub fn deck_names(&self) -> Result<Vec<String>> {
+        let names = mut_col!(self)?
             .get_all_normal_deck_names()?
             .into_iter()
             .map(|(_id, name)| name)
@@ -158,66 +168,45 @@ impl AnkiManager {
         Ok(names)
     }
 
+    pub fn sync(&self) -> Result<()> {
+        self.runtime().block_on(self.sync_inner())
+    }
+
+    /// login and save auth
+    pub fn login(&self, username: String, password: String) -> Result<()> {
+        let auth = self.runtime().block_on(sync_login(
+            &username,
+            &password,
+            Some(String::from("https://sync.ankiweb.net/")),
+        ))?;
+        log::info!("anki: Logged in to ankiweb with username {}", username);
+        self.set_config("auth_hkey", &auth.hkey)?;
+        self.set_config("auth_username", &username)?;
+        self.sync_meta()?;
+        Ok(())
+    }
+}
+
+impl AnkiManager {
     fn runtime(&self) -> runtime::Handle {
         self.runtime.handle().clone()
     }
 
-    // handle 308 redirects
-    // does nothing if no auth
-    fn sync_meta(&mut self) -> Result<()> {
-        let local = self.col()?.sync_meta()?;
-        let auth = self.auth()?;
-        if let Some(auth) = auth {
-            let mut client = HttpSyncClient::new(auth);
-            let state = self
-                .runtime()
-                .block_on(online_sync_status_check(local, &mut client))?;
-            if state.new_endpoint.is_some() {
-                self.endpoint = state.new_endpoint;
-            }
-        }
-        Ok(())
+    fn ydb(&self) -> MutexGuard<Connection> {
+        self.ydb.lock().unwrap()
     }
 
-    pub fn sync(&mut self) -> Result<()> {
-        self.runtime().block_on(self.sync_inner())
+    fn col(&self) -> MutexGuard<Option<Collection>> {
+        self.col.lock().unwrap()
     }
 
-    async fn sync_inner(&mut self) -> Result<()> {
-        let auth = self.auth()?;
-        if let Some(auth) = auth {
-            let out = self.mut_col()?.normal_sync(auth.clone(), |_, _| {}).await?;
-            if let SyncActionRequired::FullSyncRequired {
-                upload_ok: _,
-                download_ok,
-            } = out.required
-            {
-                if download_ok {
-                    self.col
-                        .take()
-                        .unwrap()
-                        .full_download(auth, Box::new(|_, _| {}))
-                        .await?;
-                    self.col = Some(open_collection(&self.db_dir)?);
-                    Ok(())
-                } else {
-                    Err(AnkiErr::Other {
-                        message: "No collection on AnkiWeb",
-                    })
-                }
-            } else {
-                Ok(())
-            }
-        } else {
-            Err(AnkiErr::InvalidAuth)
-        }
-    }
-
-    pub fn auth(&self) -> Result<Option<SyncAuth>> {
+    fn auth(&self) -> Result<Option<SyncAuth>> {
         let hkey = self.get_config_optional("auth_hkey")?;
         if let Some(hkey) = hkey {
             let endpoint = self
                 .endpoint
+                .lock()
+                .unwrap()
                 .as_ref()
                 .map(|e| Url::try_from(e.as_str()).ok())
                 .flatten();
@@ -232,23 +221,67 @@ impl AnkiManager {
         }
     }
 
-    /// login and save auth
-    pub fn login(&mut self, username: &str, password: &str) -> Result<SyncAuth> {
-        let auth = self.runtime().block_on(sync_login(
-            username,
-            password,
-            Some(String::from("https://sync.ankiweb.net/")),
-        ))?;
-        self.set_config("auth_hkey", &auth.hkey)?;
-        self.set_config("auth_username", &username)?;
-        self.sync_meta()?;
-        Ok(auth)
+    async fn sync_inner(&self) -> Result<()> {
+        let auth = self.auth()?;
+        if let Some(auth) = auth {
+            let mut col_guard = self.col();
+            let out = col_guard
+                .as_mut()
+                .ok_or(AnkiErr::NoCollection)?
+                .normal_sync(auth.clone(), |_, _| {})
+                .await?;
+
+            if let SyncActionRequired::FullSyncRequired {
+                upload_ok: _,
+                download_ok,
+            } = out.required
+            {
+                log::info!("anki: full sync required.");
+                if download_ok {
+                    log::info!("anki: full download starting");
+                    col_guard
+                        .take()
+                        .ok_or(AnkiErr::NoCollection)?
+                        .full_download(auth, Box::new(|_, _| {}))
+                        .await?;
+                    log::info!("anki: full download complete");
+                    col_guard.replace(open_collection(&self.db_dir)?);
+                    Ok(())
+                } else {
+                    log::warn!("No collection to full download on ankiweb.");
+                    Err(AnkiErr::Other {
+                        message: "No collection on AnkiWeb",
+                    })
+                }
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(AnkiErr::InvalidAuth)
+        }
+    }
+
+    // handle 308 redirects
+    // does nothing if no auth
+    fn sync_meta(&self) -> Result<()> {
+        let local = col!(self)?.sync_meta()?;
+        let auth = self.auth()?;
+        if let Some(auth) = auth {
+            let mut client = HttpSyncClient::new(auth);
+            let state = self
+                .runtime()
+                .block_on(online_sync_status_check(local, &mut client))?;
+            if let Some(new_endpoint) = state.new_endpoint {
+                self.endpoint.lock().unwrap().replace(new_endpoint);
+            }
+        }
+        Ok(())
     }
 
     fn set_config<'a, T: Serialize, K: Into<&'a str>>(&self, key: K, val: &T) -> Result<()> {
         let key = key.into();
         let val = serde_json::to_vec(val)?;
-        self.ydb
+        self.ydb()
             .prepare_cached("INSERT OR REPLACE INTO config (name, value) VALUES (?, ?)")?
             .execute(params![&key, &val])?;
         Ok(())
@@ -260,7 +293,7 @@ impl AnkiManager {
         K: Into<&'a str>,
     {
         let key = key.into();
-        self.ydb
+        self.ydb()
             .prepare_cached("SELECT value FROM config WHERE name = ?")?
             .query_and_then([key], |row| {
                 let blob = row.get_ref_unwrap(0).as_blob()?;
@@ -292,6 +325,7 @@ fn open_ydb(db_dir: &Path) -> Result<Connection> {
     Ok(ydb)
 }
 
+#[uniffi::export]
 pub fn setup_logger() {
     let logger = oslog::OsLogger::new("com.yoonchae.Yomikiri.Extension")
         .level_filter(log::LevelFilter::Debug);
@@ -303,7 +337,6 @@ pub fn setup_logger() {
 #[cfg(test)]
 mod tests {
     use std::env;
-    use std::path::Path;
 
     use crate::{AnkiManager, Field, NoteData};
 
@@ -312,8 +345,8 @@ mod tests {
         let username = env::var("USERNAME").unwrap();
         let password = env::var("PASSWORD").unwrap();
 
-        let mut anki = AnkiManager::try_new(Path::new("test")).unwrap();
-        anki.login(&username, &password).unwrap();
+        let anki = AnkiManager::try_new("test".to_string()).unwrap();
+        anki.login(username, password).unwrap();
         println!("logged in");
         anki.sync().unwrap();
         println!("syncing");
@@ -321,7 +354,7 @@ mod tests {
         println!("ntnames: {:?}", &ntnames);
         let decknames = anki.deck_names().unwrap();
         println!("decknames: {:?}", &decknames);
-        let ntfields = anki.notetype_fields(&ntnames[0]).unwrap();
+        let ntfields = anki.notetype_fields(ntnames[0].clone()).unwrap();
         println!("ntfields: {:?}", &ntfields);
         let mut note_data = NoteData {
             deck: decknames[0].clone(),
@@ -336,7 +369,7 @@ mod tests {
             };
             note_data.fields.push(field);
         }
-        anki.add_note(&note_data).unwrap();
+        anki.add_note(note_data).unwrap();
         println!("note added");
         anki.sync().unwrap();
     }

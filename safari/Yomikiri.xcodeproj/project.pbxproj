@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6909CA6D2A20804F0052FEF4 /* uniffi_anki.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6909CA692A20804F0052FEF4 /* uniffi_anki.swift */; };
 		698038692A17B45800C93E3D /* uniffi_lindera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 698038662A17B45800C93E3D /* uniffi_lindera.swift */; };
 		6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */; };
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
@@ -75,6 +76,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6909CA672A20804F0052FEF4 /* uniffi_ankiFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_ankiFFI.h; sourceTree = "<group>"; };
+		6909CA682A20804F0052FEF4 /* libanki_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libanki_rs.a; sourceTree = "<group>"; };
+		6909CA692A20804F0052FEF4 /* uniffi_anki.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = uniffi_anki.swift; sourceTree = "<group>"; };
+		6909CA6A2A20804F0052FEF4 /* libanki_rs_sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libanki_rs_sim.a; sourceTree = "<group>"; };
+		6909CA6B2A20804F0052FEF4 /* uniffi_ankiFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = uniffi_ankiFFI.modulemap; sourceTree = "<group>"; };
 		698038522A17AF8400C93E3D /* build_uniffi.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_uniffi.sh; sourceTree = "<group>"; };
 		698038562A17B2C600C93E3D /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		698038622A17B45800C93E3D /* uniffi_linderaFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_linderaFFI.h; sourceTree = "<group>"; };
@@ -143,6 +149,11 @@
 		698038612A17B45800C93E3D /* rust */ = {
 			isa = PBXGroup;
 			children = (
+				6909CA6A2A20804F0052FEF4 /* libanki_rs_sim.a */,
+				6909CA682A20804F0052FEF4 /* libanki_rs.a */,
+				6909CA692A20804F0052FEF4 /* uniffi_anki.swift */,
+				6909CA672A20804F0052FEF4 /* uniffi_ankiFFI.h */,
+				6909CA6B2A20804F0052FEF4 /* uniffi_ankiFFI.modulemap */,
 				698038622A17B45800C93E3D /* uniffi_linderaFFI.h */,
 				698038632A17B45800C93E3D /* liblindera_sim.a */,
 				698038642A17B45800C93E3D /* liblindera.a */,
@@ -493,6 +504,7 @@
 			files = (
 				698038692A17B45800C93E3D /* uniffi_lindera.swift in Sources */,
 				6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */,
+				6909CA6D2A20804F0052FEF4 /* uniffi_anki.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -695,12 +707,16 @@
 					SafariServices,
 					"-XLinker",
 					"$(PROJECT_DIR)/rust/liblindera.a",
+					"-XLinker",
+					"$(PROJECT_DIR)/rust/libanki_rs.a",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-framework",
 					SafariServices,
 					"-XLinker",
 					"$(PROJECT_DIR)/rust/liblindera_sim.a",
+					"-XLinker",
+					"$(PROJECT_DIR)/rust/libanki_rs_sim.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
 				PRODUCT_NAME = "Yomikiri Extension";
@@ -744,12 +760,16 @@
 					SafariServices,
 					"-XLinker",
 					"$(PROJECT_DIR)/rust/liblindera.a",
+					"-XLinker",
+					"$(PROJECT_DIR)/rust/libanki_rs.a",
 				);
 				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
 					"-framework",
 					SafariServices,
 					"-XLinker",
 					"$(PROJECT_DIR)/rust/liblindera_sim.a",
+					"-XLinker",
+					"$(PROJECT_DIR)/rust/libanki_rs_sim.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
 				PRODUCT_NAME = "Yomikiri Extension";
