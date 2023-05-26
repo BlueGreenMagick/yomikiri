@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "anki_rs",
     "tokenizer/lindera-wasm",
     "prepare_dict"
 ]
