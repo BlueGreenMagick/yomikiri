@@ -1,3 +1,4 @@
+import type { ITokenizerStatic, ITokenizer } from "../types/tokenizer";
 import loadTokenizerWasm, {
   type Token,
   type Tokenizer as TokenizerWasm,
@@ -5,7 +6,7 @@ import loadTokenizerWasm, {
 
 export type { Token } from "@yomikiri/tokenizer";
 
-export class Tokenizer {
+export class Tokenizer implements ITokenizer {
   wasm: TokenizerWasm;
 
   static async initialize(): Promise<Tokenizer> {
@@ -14,7 +15,7 @@ export class Tokenizer {
     return new Tokenizer(tokenizerWasm);
   }
 
-  constructor(wasm: TokenizerWasm) {
+  private constructor(wasm: TokenizerWasm) {
     this.wasm = wasm;
   }
 
@@ -22,3 +23,5 @@ export class Tokenizer {
     return this.wasm.tokenize(text);
   }
 }
+
+Tokenizer satisfies ITokenizerStatic;

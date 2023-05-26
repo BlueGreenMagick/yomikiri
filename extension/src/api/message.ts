@@ -1,5 +1,5 @@
 import type { Entry } from "~/dictionary";
-import type { Note } from "./anki";
+import type { NoteData } from "~/anki";
 import type { TokenizeRequest, TokenizeResult } from "~/tokenizer/tokenizer";
 
 /// Type map for `{ key: [request, response] }`
@@ -9,7 +9,7 @@ export interface MessageMap {
   searchTerm: [string, Entry[]];
   tokenize: [TokenizeRequest, TokenizeResult];
   /** Note -> nid */
-  addAnkiNote: [Note, number];
+  addAnkiNote: [NoteData, number];
 }
 
 type First<T extends any[]> = T extends [infer FIRST, ...any[]] ? FIRST : never;

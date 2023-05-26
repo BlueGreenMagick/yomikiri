@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AnkiApi from "~/api/anki";
+  import AnkiApi from "@platform/anki";
   import Utils from "~/utils";
   import OptionsGroup from "./components/OptionsGroup.svelte";
   import OptionClick from "./components/OptionClick.svelte";

@@ -3,7 +3,7 @@
   import type { Entry } from "~/dictionary";
   import { tick, onMount } from "svelte";
   import EntriesView from "./EntriesView.svelte";
-  import { AnkiNoteBuilder, type MarkerData } from "~/ankiNoteBuilder";
+  import { AnkiNoteBuilder, type MarkerData } from "~/anki";
   import type { ScanResult } from "~/content/scanner";
   import Api from "~/api";
 

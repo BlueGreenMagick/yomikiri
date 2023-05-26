@@ -1,18 +1,7 @@
+import type { IAnkiApiStatic } from "../types/anki";
 import Config from "~/config";
 import Utils from "~/utils";
-
-export interface Field {
-  name: string;
-  value: string;
-}
-
-export interface Note {
-  deck: string;
-  notetype: string;
-  fields: Field[];
-  // space separated tags
-  tags: string;
-}
+import type { NoteData } from "~/anki";
 
 /**
  * Uses Anki-Connect on desktop.
@@ -22,9 +11,7 @@ export interface Note {
 export default class AnkiApi {
   static readonly ANKI_CONNECT_VER = 6;
 
-  static ankiConnectPort: number = 8765;
-
-  static async AnkiConnectUrl(): Promise<string> {
+  private static async ankiConnectURL(): Promise<string> {
     let url = await Config.get("anki.connect_url");
     let port = await Config.get("anki.connect_port");
     if (!url.includes("://")) {
@@ -36,7 +23,7 @@ export default class AnkiApi {
   /** Send Anki-connect request */
   private static async request(action: string, params?: any): Promise<any> {
     const [promise, resolve, reject] = Utils.createPromise();
-    const ankiConnectUrl = await AnkiApi.AnkiConnectUrl();
+    const ankiConnectUrl = await AnkiApi.ankiConnectURL();
 
     const xhr = new XMLHttpRequest();
     xhr.addEventListener("error", () => reject("failed to issue request"));
@@ -104,7 +91,7 @@ export default class AnkiApi {
   }
 
   /** Returns note id */
-  static async addNote(note: Note): Promise<number> {
+  static async addNote(note: NoteData): Promise<number> {
     const fields: { [key: string]: string } = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
@@ -122,3 +109,5 @@ export default class AnkiApi {
     })) as number;
   }
 }
+
+AnkiApi satisfies IAnkiApiStatic;

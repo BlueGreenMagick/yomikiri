@@ -5,7 +5,8 @@ import {
   type TokenizeRequest,
 } from "./tokenizer/tokenizer";
 import Api from "./api";
-import AnkiApi, { type Note } from "./api/anki";
+import AnkiApi from "@platform/anki";
+import type { NoteData } from "~/anki";
 import EnJMDict from "./assets/jmdict/en.json.gz";
 
 let dictionaryP = Dictionary.loadFromUrl(EnJMDict);
@@ -21,7 +22,7 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   return await tokenizer.tokenize(req);
 }
 
-async function addAnkiNote(note: Note): Promise<number> {
+async function addAnkiNote(note: NoteData): Promise<number> {
   return await AnkiApi.addNote(note);
 }
 Api.initialize();

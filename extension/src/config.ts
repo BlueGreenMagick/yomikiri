@@ -1,10 +1,10 @@
 import Api from "~/api";
-import type { Note } from "./api/anki";
+import type { NoteData } from "~/anki";
 
 export interface ConfigTypes {
   "anki.connect_port": number;
   "anki.connect_url": string;
-  "anki.templates": Note[];
+  "anki.templates": NoteData[];
 }
 
 const defaultOptions: ConfigTypes = {

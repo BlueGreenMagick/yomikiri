@@ -1,2 +1,8 @@
-export const IS_DESKTOP = true;
-export const IS_IOS = false;
+import type { Module } from "../types";
+
+const module = {} as Module;
+
+module.IS_DESKTOP = true;
+module.IS_IOS = false;
+
+export default module;

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import AnkiApi, { type Note } from "~/api/anki";
+  import AnkiApi from "@platform/anki";
+  import type { NoteData } from "~/anki";
   import Config from "~/config";
   import Modal from "./components/Modal.svelte";
   import { onMount } from "svelte";
@@ -63,7 +64,7 @@
     tags: string
   ) {
     if (!mounted) return;
-    const template: Note = {
+    const template: NoteData = {
       deck,
       notetype,
       fields: [],
