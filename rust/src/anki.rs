@@ -1,7 +1,8 @@
+#![cfg(uniffi)]
+
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use anki::collection::{Collection, CollectionBuilder};
 use anki::sync::collection::normal::SyncActionRequired;
@@ -15,7 +16,7 @@ use serde::Serialize;
 use snafu::prelude::*;
 use tokio::runtime;
 
-uniffi::include_scaffolding!("uniffi_anki");
+use crate::utils;
 
 #[derive(Debug, Snafu, uniffi::Error)]
 #[uniffi(flat_error)]
@@ -90,8 +91,8 @@ pub struct AnkiManager {
 impl AnkiManager {
     #[uniffi::constructor]
     pub fn try_new(db_dir: String) -> Result<Arc<Self>> {
-        setup_logger();
-        log::info!("AnkiManager::try_new: {}", time_now());
+        utils::setup_logger();
+        log::info!("AnkiManager::try_new: {}", utils::time_now());
 
         let db_dir = Path::new(&db_dir);
 
@@ -330,28 +331,11 @@ fn open_ydb(db_dir: &Path) -> Result<Connection> {
     Ok(ydb)
 }
 
-#[uniffi::export]
-pub fn setup_logger() {
-    let logger = oslog::OsLogger::new("com.yoonchae.Yomikiri.Extension")
-        .level_filter(log::LevelFilter::Debug);
-    if logger.init().is_err() {
-        log::warn!("os_log was already initialized");
-    }
-}
-
-pub(crate) fn time_now() -> f64 {
-    let micro = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_micros();
-    (micro as f64) / 1000.0
-}
-
 #[cfg(test)]
 mod tests {
     use std::env;
 
-    use crate::{AnkiManager, Field, NoteData};
+    use super::{AnkiManager, Field, NoteData};
 
     #[test]
     fn test_add_note() {

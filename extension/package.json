@@ -9,7 +9,6 @@
     "build:desktop": "yarn run _build production desktop",
     "build:ios": "yarn run _build production ios",
     "build": "yarn run build:desktop",
-    "build:dependencies": "yarn workspace @yomikiri/tokenizer build:types",
     "dev:desktop": "yarn run _build development desktop",
     "dev:ios": "yarn run _build development ios",
     "dev": "yarn run dev:desktop",
@@ -32,7 +31,7 @@
     "web-ext": "^7.6.2"
   },
   "dependencies": {
-    "@yomikiri/tokenizer": "0.0.1",
-    "pako": "^2.1.0"
+    "pako": "^2.1.0",
+    "@yomikiri/yomikiri-rs": "^0.1.0"
   }
 }

@@ -1,8 +1,7 @@
 [workspace]
 members = [
-    "anki_rs",
-    "tokenizer/lindera-wasm",
-    "prepare_dict"
+    "prepare_dict",
+    "rust"
 ]
 
 [profile.release]

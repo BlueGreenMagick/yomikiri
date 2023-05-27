@@ -1,7 +1,5 @@
 #![allow(non_snake_case)]
 
-mod utils;
-
 #[cfg(uniffi)]
 use std::sync::Arc;
 
@@ -11,6 +9,8 @@ use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
 use lindera::{DictionaryKind, LinderaResult, Token as LToken};
 #[cfg(wasm)]
 use {serde::Serialize, wasm_bindgen::prelude::*};
+
+use crate::utils;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -143,9 +143,6 @@ impl Tokenizer {
         self.tokenize_inner(&sentence).unwrap()
     }
 }
-
-#[cfg(uniffi)]
-uniffi::include_scaffolding!("uniffi_lindera");
 
 #[cfg(test)]
 mod tests {

@@ -8,9 +8,8 @@
   "workspaces": [
     "extension",
     "safari",
-    "tokenizer",
-    "tokenizer/lindera-wasm/pkg",
-    "prepare_dict"
+    "prepare_dict",
+    "rust/pkg"
   ],
   "scripts": {}
 }

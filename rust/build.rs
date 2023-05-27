@@ -1,8 +1,18 @@
+use cfg_aliases::cfg_aliases;
 use std::process::Command;
 
 fn main() {
     set_env();
-    uniffi::generate_scaffolding("src/uniffi_anki.udl").unwrap();
+    cfg_aliases! {
+      wasm: { target_family="wasm" },
+      uniffi: { not(target_family="wasm") },
+      apple: { any(target_os="macos", target_os="ios") }
+    }
+
+    #[cfg(not(target_family = "wasm"))]
+    {
+        uniffi::generate_scaffolding("src/uniffi_yomikiri.udl").unwrap();
+    }
 }
 
 fn set_env() {

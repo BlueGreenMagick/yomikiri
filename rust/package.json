@@ -1,0 +1,12 @@
+{
+  "name": "@yomikiri/rust",
+  "version": "0.0.1",
+  "description": "JS build script used for yomikiri-rs",
+  "author": "BlueGreenMagick",
+  "license": "MIT",
+  "type": "module",
+  "module": "gzip_wasm.js",
+  "devDependencies": {
+    "pako": "^2.1.0"
+  }
+}

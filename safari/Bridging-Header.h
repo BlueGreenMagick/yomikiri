@@ -8,7 +8,6 @@
 #ifndef Bridging_Header_h
 #define Bridging_Header_h
 
-#import "uniffi_linderaFFI.h"
-#import "uniffi_ankiFFI.h"
+#import "uniffi_yomikiriFFI.h"
 
 #endif /* Bridging_Header_h */
