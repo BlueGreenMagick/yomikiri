@@ -2,14 +2,14 @@
 
 mod utils;
 
-#[cfg(feature = "uniffi")]
+#[cfg(uniffi)]
 use std::sync::Arc;
 
 use lindera::dictionary::DictionaryConfig;
 use lindera::mode::Mode;
 use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
 use lindera::{DictionaryKind, LinderaResult, Token as LToken};
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 use {serde::Serialize, wasm_bindgen::prelude::*};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -18,14 +18,14 @@ use {serde::Serialize, wasm_bindgen::prelude::*};
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[cfg_attr(feature = "wasm", wasm_bindgen)]
-#[cfg_attr(feature = "uniffi", derive(uniffi::Object))]
+#[cfg_attr(wasm, wasm_bindgen)]
+#[cfg_attr(uniffi, derive(uniffi::Object))]
 pub struct Tokenizer {
     tokenizer: LTokenizer,
 }
 
-#[cfg_attr(feature = "wasm", derive(Serialize))]
-#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
+#[cfg_attr(wasm, derive(Serialize))]
+#[cfg_attr(uniffi, derive(uniffi::Record))]
 pub struct Token {
     pub text: String,
     /// defaults to `UNK`
@@ -38,7 +38,7 @@ pub struct Token {
     pub pos2: String,
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKEN: &'static str = r#"
 export interface Token {
@@ -99,7 +99,7 @@ impl Tokenizer {
     }
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 #[wasm_bindgen]
 impl Tokenizer {
     #[wasm_bindgen(constructor)]
@@ -121,7 +121,7 @@ impl Tokenizer {
     }
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKENIZE: &'static str = r#"
 interface Tokenizer {
@@ -129,7 +129,7 @@ interface Tokenizer {
 }
 "#;
 
-#[cfg(feature = "uniffi")]
+#[cfg(uniffi)]
 #[uniffi::export]
 impl Tokenizer {
     #[uniffi::constructor]
@@ -144,7 +144,7 @@ impl Tokenizer {
     }
 }
 
-#[cfg(feature = "uniffi")]
+#[cfg(uniffi)]
 uniffi::include_scaffolding!("uniffi_lindera");
 
 #[cfg(test)]
@@ -166,7 +166,7 @@ mod tests {
 }
 
 #[cfg(test)]
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 mod wasm_tests {
     use super::Tokenizer;
     use wasm_bindgen_test::wasm_bindgen_test;

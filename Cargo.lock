@@ -553,6 +553,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "cfg_aliases"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
+
+[[package]]
 name = "chrono"
 version = "0.4.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1828,6 +1834,7 @@ dependencies = [
 name = "lindera-wasm"
 version = "0.1.0"
 dependencies = [
+ "cfg_aliases",
  "console_error_panic_hook",
  "lindera",
  "log",
@@ -2723,6 +2730,10 @@ dependencies = [
  "libsqlite3-sys",
  "smallvec",
 ]
+
+[[package]]
+name = "rust"
+version = "0.1.0"
 
 [[package]]
 name = "rustc-demangle"

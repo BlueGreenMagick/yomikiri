@@ -1,7 +1,7 @@
-#[cfg(feature = "uniffi")]
+#[cfg(uniffi)]
 use std::time::{SystemTime, UNIX_EPOCH};
 
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
     // `set_panic_hook` function at least once during initialization, and then
@@ -13,12 +13,12 @@ pub fn set_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(wasm)]
 pub fn setup_logger() {
     wasm_logger::init(wasm_logger::Config::default());
 }
 
-#[cfg(feature = "ios")]
+#[cfg(apple)]
 pub fn setup_logger() {
     let logger = oslog::OsLogger::new("com.yoonchae.Yomikiri.Extension")
         .level_filter(log::LevelFilter::Debug);
@@ -27,13 +27,18 @@ pub fn setup_logger() {
     }
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(not(any(wasm, apple)))]
+pub fn setup_logger() {
+    eprintln!("No logger configurable for targets not wasm nor apple")
+}
+
+#[cfg(wasm)]
 pub(crate) fn time_now() -> f64 {
     let window = web_sys::window().unwrap();
     window.performance().unwrap().now()
 }
 
-#[cfg(feature = "uniffi")]
+#[cfg(uniffi)]
 pub(crate) fn time_now() -> f64 {
     let micro = SystemTime::now()
         .duration_since(UNIX_EPOCH)
