@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6909CA742A223C010052FEF4 /* uniffi_yomikiri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6909CA702A223C010052FEF4 /* uniffi_yomikiri.swift */; };
+		6909CA792A22411D0052FEF4 /* libyomikiri_rs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6909CA722A223C010052FEF4 /* libyomikiri_rs.a */; };
 		6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */; };
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
 		69F2C25729FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25629FA4FA80088F503 /* AppDelegate.swift */; };
@@ -77,7 +78,6 @@
 /* Begin PBXFileReference section */
 		6909CA6F2A223C010052FEF4 /* uniffi_yomikiriFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = uniffi_yomikiriFFI.modulemap; sourceTree = "<group>"; };
 		6909CA702A223C010052FEF4 /* uniffi_yomikiri.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = uniffi_yomikiri.swift; sourceTree = "<group>"; };
-		6909CA712A223C010052FEF4 /* libyomikiri_rs_sim.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs_sim.a; sourceTree = "<group>"; };
 		6909CA722A223C010052FEF4 /* libyomikiri_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs.a; sourceTree = "<group>"; };
 		6909CA732A223C010052FEF4 /* uniffi_yomikiriFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_yomikiriFFI.h; sourceTree = "<group>"; };
 		698038522A17AF8400C93E3D /* build_uniffi.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_uniffi.sh; sourceTree = "<group>"; };
@@ -109,6 +109,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6909CA772A2241150052FEF4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6909CA792A22411D0052FEF4 /* libyomikiri_rs.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		69F2C25029FA4FA80088F503 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,10 +141,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6909CA782A22411D0052FEF4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		698038612A17B45800C93E3D /* rust */ = {
 			isa = PBXGroup;
 			children = (
-				6909CA712A223C010052FEF4 /* libyomikiri_rs_sim.a */,
 				6909CA722A223C010052FEF4 /* libyomikiri_rs.a */,
 				6909CA702A223C010052FEF4 /* uniffi_yomikiri.swift */,
 				6909CA732A223C010052FEF4 /* uniffi_yomikiriFFI.h */,
@@ -158,6 +172,7 @@
 				69F2C27529FA4FA80088F503 /* iOS (Extension) */,
 				69F2C27F29FA4FA80088F503 /* macOS (Extension) */,
 				69F2C25429FA4FA80088F503 /* Products */,
+				6909CA782A22411D0052FEF4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -298,6 +313,7 @@
 				698038552A17B27500C93E3D /* Build Rust UniFFI */,
 				69F2C26D29FA4FA80088F503 /* Sources */,
 				69F2C2F729FA54DC0088F503 /* Build extension files */,
+				6909CA772A2241150052FEF4 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -682,18 +698,6 @@
 					"-framework",
 					SafariServices,
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"-framework",
-					SafariServices,
-					"-XLinker",
-					"$(PROJECT_DIR)/rust/libyomikiri_rs.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"-framework",
-					SafariServices,
-					"-XLinker",
-					"$(PROJECT_DIR)/rust/libyomikiri_rs_sim.a",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
 				PRODUCT_NAME = "Yomikiri Extension";
 				SDKROOT = iphoneos;
@@ -730,18 +734,6 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
-				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"-framework",
-					SafariServices,
-					"-XLinker",
-					"$(PROJECT_DIR)/rust/libyomikiri_rs.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"-framework",
-					SafariServices,
-					"-XLinker",
-					"$(PROJECT_DIR)/rust/libyomikiri_rs_sim.a",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yoonchae.Yomikiri.Extension;
 				PRODUCT_NAME = "Yomikiri Extension";

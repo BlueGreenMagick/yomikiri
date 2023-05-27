@@ -6,14 +6,10 @@ Added build phase when building for web extensions(univ.) to run `scripts/copy_e
 
 ### UniFFI rust
 1. Run `scripts/build_uniffi.sh` before compiling sources, in build phases for ios extension.
-2. Added to `Build Settings > Other Linker flags` for ios extension:
 
-For any ios simulator: `-XLinker $(PROJECT_DIR)/rust/libyomikiri_sim.a`
-For any ios: `-XLinker $(PROJECT_DIR)/rust/libyomikiri_rs.a`
+2. Check that `libyomikiri_rs.a` is added to 'link binary with libraries' in build phase for ios extension.
 
-3. Removed from 'link binary with libraries' in build phase for ios extension.
-
-4. Created `Bridging-Header.h` with content
+3. Created `Bridging-Header.h` with content
 ```h
 #ifndef Bridging_Header_h
 #define Bridging_Header_h
@@ -23,9 +19,9 @@ For any ios: `-XLinker $(PROJECT_DIR)/rust/libyomikiri_rs.a`
 #endif /* Bridging_Header_h */
 ```
 
-5. Add `Bridging-Header.h ` to `Build Settings > Objective-C Bridging Header`
+4. Add `Bridging-Header.h ` to `Build Settings > Objective-C Bridging Header`
 
-6. run build, then on error, add all files in 'rust' folder to project in XCode.
+5. run build, then on error, add all files in 'rust' folder to project in XCode.
 
 ### Principal class
 
