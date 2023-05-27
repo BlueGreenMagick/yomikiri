@@ -30,6 +30,10 @@ async function tokenizeClicked() {
   resultEl.textContent = text;
 }
 
+async function openSettings() {
+  chrome.runtime.openOptionsPage();
+}
+
 Api.initialize();
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,4 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
   searchBtn.addEventListener("click", () => searchClicked());
   const tokenizeBtn = document.getElementById("tokenize-button") as HTMLElement;
   tokenizeBtn.addEventListener("click", () => tokenizeClicked());
+  const settingsBtn = document.getElementById("settings-button") as HTMLElement;
+  settingsBtn.addEventListener("click", openSettings);
 });
