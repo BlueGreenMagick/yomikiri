@@ -1,7 +1,7 @@
 fn main() {
-    #[cfg(not(uniffi))]
-    eprintln!("uniffi-bindgen must be called on non-wasm target.");
+    #[cfg(not(all(uniffi, feature = "uniffi-bindgen")))]
+    eprintln!("uniffi-bindgen must be called on non-wasm target, with feature 'uniffi-bindgen'");
 
-    #[cfg(uniffi)]
+    #[cfg(all(uniffi, feature = "uniffi-bindgen"))]
     uniffi::uniffi_bindgen_main()
 }
