@@ -10,8 +10,7 @@ export class Tokenizer implements ITokenizer {
   }
 
   async tokenize(text: string): Promise<Token[]> {
-    let result = await Api.requestToApp("tokenize", { text });
-    return JSON.parse(result.tokens) as Token[];
+    return await Api.requestToApp("tokenize", text);
   }
 }
 

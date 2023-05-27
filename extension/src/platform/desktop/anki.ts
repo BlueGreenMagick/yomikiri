@@ -90,7 +90,6 @@ export default class AnkiApi {
     return (await AnkiApi.request("getTags")) as string[];
   }
 
-  /** Returns note id */
   static async addNote(note: NoteData): Promise<number> {
     const fields: { [key: string]: string } = {};
     for (const field of note.fields) {

@@ -1,4 +1,11 @@
-import type { MessageMap, Request, Response } from "./message";
+import type {
+  AppMessageMap,
+  AppRequest,
+  AppResponse,
+  MessageMap,
+  Request,
+  Response,
+} from "./message";
 import Utils from "~/utils";
 
 interface Message<K extends keyof MessageMap> {
@@ -14,9 +21,7 @@ interface FailedRequestResponse {
   success: false;
   error: string; // JSON.stringify(error)
 }
-type RequestResponse<K extends keyof MessageMap> =
-  | SuccessfulRequestResponse<Response<K>>
-  | FailedRequestResponse;
+type RequestResponse<R> = SuccessfulRequestResponse<R> | FailedRequestResponse;
 
 export type RequestHandler<K extends keyof MessageMap> = (
   request: Request<K>,
@@ -46,20 +51,29 @@ export default class Api {
     return chrome.storage.sync;
   }
 
+  private static handleRequestResponse<R>(resp: RequestResponse<R>): R {
+    if (resp.success) {
+      return resp.resp;
+    } else {
+      const obj = JSON.parse(resp.error);
+      const error = new Error();
+      for (const key of Object.getOwnPropertyNames(obj)) {
+        // @ts-ignore
+        error[key] = obj[key];
+      }
+      throw error;
+    }
+  }
+
   private static createRequestResponseHandler<K extends keyof MessageMap>(
     resolve: Utils.PromiseResolver<Response<K>>,
     reject: (reason: Error) => void
-  ): (resp: RequestResponse<K>) => void {
-    return (resp: RequestResponse<K>) => {
-      if (resp.success) {
-        resolve(resp.resp);
-      } else {
-        const obj = JSON.parse(resp.error);
-        const error = new Error();
-        for (const key of Object.getOwnPropertyNames(obj)) {
-          // @ts-ignore
-          error[key] = obj[key];
-        }
+  ): (resp: RequestResponse<Response<K>>) => void {
+    return (resp: RequestResponse<Response<K>>) => {
+      try {
+        let response = Api.handleRequestResponse(resp);
+        resolve(response);
+      } catch (error: any) {
         reject(error);
       }
     };
@@ -111,14 +125,16 @@ export default class Api {
     Api.requestHandlers[key] = handler;
   }
 
-  static async requestToApp(
-    key: string,
-    message: { [key: string]: any }
-  ): Promise<any> {
-    return browser.runtime.sendNativeMessage("_", {
-      ...message,
+  static async requestToApp<K extends keyof AppMessageMap>(
+    key: K,
+    request: AppRequest<K>
+  ): Promise<AppResponse<K>> {
+    const resp = await browser.runtime.sendNativeMessage("_", {
       key,
+      request: JSON.stringify(request),
     });
+    const response = Api.handleRequestResponse<string>(resp);
+    return JSON.parse(response) as AppResponse<K>;
   }
 
   static async currentTab(): Promise<chrome.tabs.Tab> {
@@ -182,7 +198,9 @@ function attachRequestHandler() {
     (
       message: Message<keyof MessageMap>,
       sender: chrome.runtime.MessageSender,
-      sendResponse: (response?: RequestResponse<keyof MessageMap>) => void
+      sendResponse: (
+        response?: RequestResponse<Response<keyof MessageMap>>
+      ) => void
     ): boolean => {
       let handler = Api.requestHandlers[message.key];
       if (handler) {

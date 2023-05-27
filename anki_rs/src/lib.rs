@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use anki::collection::{Collection, CollectionBuilder};
 use anki::sync::collection::normal::SyncActionRequired;
@@ -89,6 +90,9 @@ pub struct AnkiManager {
 impl AnkiManager {
     #[uniffi::constructor]
     pub fn try_new(db_dir: String) -> Result<Arc<Self>> {
+        setup_logger();
+        log::info!("AnkiManager::try_new: {}", time_now());
+
         let db_dir = Path::new(&db_dir);
 
         let col = open_collection(db_dir)?;
@@ -109,7 +113,7 @@ impl AnkiManager {
         Ok(Arc::new(anki))
     }
 
-    pub fn add_note(&self, note_data: NoteData) -> Result<()> {
+    pub fn add_note(&self, note_data: NoteData) -> Result<i64> {
         let mut col_guard = self.col();
         let col = col_guard.as_mut().ok_or(AnkiErr::NoCollection)?;
 
@@ -137,7 +141,7 @@ impl AnkiManager {
         }
 
         mut_col!(self)?.add_note(&mut note, did)?;
-        Ok(())
+        Ok(note.id.0)
     }
 
     pub fn notetype_names(&self) -> Result<Vec<String>> {
@@ -150,6 +154,7 @@ impl AnkiManager {
         Ok(names)
     }
 
+    /// returns [] if notetype with name is not found.
     pub fn notetype_fields(&self, notetype: String) -> Result<Vec<String>> {
         let nt = mut_col!(self)?.get_notetype_by_name(&notetype)?;
         let fields = match nt {
@@ -332,6 +337,14 @@ pub fn setup_logger() {
     if logger.init().is_err() {
         log::warn!("os_log was already initialized");
     }
+}
+
+pub(crate) fn time_now() -> f64 {
+    let micro = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_micros();
+    (micro as f64) / 1000.0
 }
 
 #[cfg(test)]
