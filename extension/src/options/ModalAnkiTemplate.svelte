@@ -27,24 +27,27 @@
     if (templates.length === 0) {
       selectedNotetype = notetypeNames[0];
       selectedDeck = deckNames[0];
+      fieldTemplates = {};
       ankiTags = "";
-    }
-    const template = templates[0];
-    if (deckNames.includes(template.deck)) {
-      selectedDeck = template.deck;
     } else {
-      selectedDeck = deckNames[0];
+      const template = templates[0];
+      if (deckNames.includes(template.deck)) {
+        selectedDeck = template.deck;
+      } else {
+        selectedDeck = deckNames[0];
+      }
+      if (notetypeNames.includes(template.notetype)) {
+        selectedNotetype = template.notetype;
+      } else {
+        selectedNotetype = notetypeNames[0];
+      }
+      fieldTemplates = {};
+      for (const field of template.fields) {
+        fieldTemplates[field.name] = field.value;
+      }
+      ankiTags = template.tags;
     }
-    if (notetypeNames.includes(template.notetype)) {
-      selectedNotetype = template.notetype;
-    } else {
-      selectedNotetype = notetypeNames[0];
-    }
-    fieldTemplates = {};
-    for (const field of template.fields) {
-      fieldTemplates[field.name] = field.value;
-    }
-    ankiTags = template.tags;
+
     return [deckNames, notetypeNames];
   }
 
