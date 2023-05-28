@@ -58,6 +58,7 @@ namespace Utils {
   }
 
   let lastBench: number = performance.now();
+  let _benchLogs: string[] = [];
 
   export function benchStart() {
     lastBench = performance.now();
@@ -68,8 +69,14 @@ namespace Utils {
     const curr = performance.now();
     const diff = curr - lastBench;
     lastBench = curr;
+    _benchLogs.push(`${msg} ${diff} ${Date.now()}`);
     console.log(msg, diff, Date.now());
     return diff;
+  }
+
+  /** View logs from before console is opened */
+  export function benchLogs(): string[] {
+    return _benchLogs;
   }
 }
 
