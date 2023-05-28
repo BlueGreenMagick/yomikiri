@@ -1,11 +1,11 @@
-import type { ITokenizerStatic, ITokenizer } from "../types/tokenizer";
+import type { ITokenizerStatic, ITokenizer, Token } from "../types/tokenizer";
 
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm.gz";
 import initWasm from "@yomikiri/yomikiri-rs";
-import { Tokenizer as TokenizerWasm, type Token } from "@yomikiri/yomikiri-rs";
+import { Tokenizer as TokenizerWasm } from "@yomikiri/yomikiri-rs";
 import pako from "pako";
 
-export type { Token } from "@yomikiri/yomikiri-rs";
+export type { Token } from "../types/tokenizer";
 
 async function loadWasm(): Promise<typeof TokenizerWasm> {
   // @ts-ignore wasm is string

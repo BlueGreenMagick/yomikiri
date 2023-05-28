@@ -1,5 +1,5 @@
 import Api from "~/api";
-import type { Token, TokenizeResult } from "~/tokenizer/tokenizer";
+import type { Token, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
 import { Entry } from "~/dictionary";
 

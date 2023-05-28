@@ -1,7 +1,7 @@
 import type { Entry } from "~/dictionary";
 import type { NoteData } from "~/anki";
 import type { Token } from "@platform/tokenizer";
-import type { TokenizeRequest, TokenizeResult } from "~/tokenizer/tokenizer";
+import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
 
 /// Type map for `{ key: [request, response] }`
 /// Response type must not have Promise

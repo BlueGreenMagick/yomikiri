@@ -1,8 +1,7 @@
-import type { ITokenizerStatic, ITokenizer } from "../types/tokenizer";
+import type { ITokenizerStatic, ITokenizer, Token } from "../types/tokenizer";
 import Api from "~/api";
-import type { Token } from "@yomikiri/tokenizer";
 
-export type { Token } from "@yomikiri/tokenizer";
+export type { Token } from "../types/tokenizer";
 
 export class Tokenizer implements ITokenizer {
   static async initialize(): Promise<Tokenizer> {

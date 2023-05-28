@@ -2,7 +2,7 @@ import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
 import { Entry, type Dictionary } from "~/dictionary";
 import Utils from "~/utils";
 
-export type { Token } from "@yomikiri/tokenizer";
+export type { Token } from "@platform/tokenizer";
 
 export interface TokenizeRequest {
   text: string;

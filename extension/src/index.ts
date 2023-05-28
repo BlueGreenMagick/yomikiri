@@ -3,7 +3,7 @@ import {
   Tokenizer,
   type TokenizeResult,
   type TokenizeRequest,
-} from "./tokenizer/tokenizer";
+} from "./tokenizer";
 import Api from "./api";
 import AnkiApi from "@platform/anki";
 import type { NoteData } from "~/anki";
