@@ -6,15 +6,15 @@ export type { Token } from "@platform/tokenizer";
 
 export interface TokenizeRequest {
   text: string;
-  selectedCharIdx?: number;
+  selectedCharIdx: number;
 }
 
 export interface TokenizeResult {
   tokens: Token[];
-  selectedTokenIdx?: number;
-  selectedTokenStartCharIdx?: number;
-  selectedTokenEndCharIdx?: number;
-  selectedDicEntry?: Entry[];
+  selectedTokenIdx: number;
+  selectedTokenStartCharIdx: number;
+  selectedTokenEndCharIdx: number;
+  selectedDicEntry: Entry[];
 }
 
 export class Tokenizer {
@@ -38,36 +38,31 @@ export class Tokenizer {
     Utils.bench("tokenize");
     this.joinAllTokens(tokens);
     Utils.bench("joinTokens");
-    let result: TokenizeResult = { tokens };
 
-    if (req.selectedCharIdx !== undefined) {
-      if (req.selectedCharIdx < 0 || req.selectedCharIdx >= req.text.length) {
-        throw new RangeError(
-          `selectedCharIdx is out of range: ${req.selectedCharIdx}, ${req.text}`
-        );
-      }
-      let startIdx = 0;
-      let endIdx = 0;
-      let tokenIdx;
-      for (tokenIdx = 0; tokenIdx < tokens.length; tokenIdx++) {
-        startIdx = endIdx;
-        endIdx = startIdx + tokens[tokenIdx].text.length;
-        if (endIdx > req.selectedCharIdx) {
-          break;
-        }
-      }
-      const entry = await this.dictionary.search(tokens[tokenIdx].baseForm);
-      result = {
-        ...result,
-        selectedTokenStartCharIdx: startIdx,
-        selectedTokenEndCharIdx: endIdx,
-        selectedTokenIdx: tokenIdx,
-        selectedDicEntry: entry,
-      };
+    if (req.selectedCharIdx < 0 || req.selectedCharIdx >= req.text.length) {
+      throw new RangeError(
+        `selectedCharIdx is out of range: ${req.selectedCharIdx}, ${req.text}`
+      );
     }
-    Utils.bench("selectedCharIdx");
-
-    return result;
+    let startIdx = 0;
+    let endIdx = 0;
+    let tokenIdx;
+    for (tokenIdx = 0; tokenIdx < tokens.length; tokenIdx++) {
+      startIdx = endIdx;
+      endIdx = startIdx + tokens[tokenIdx].text.length;
+      if (endIdx > req.selectedCharIdx) {
+        break;
+      }
+    }
+    const entry = await this.dictionary.search(tokens[tokenIdx].baseForm);
+    Utils.bench("finish tokenize");
+    return {
+      tokens,
+      selectedTokenStartCharIdx: startIdx,
+      selectedTokenEndCharIdx: endIdx,
+      selectedTokenIdx: tokenIdx,
+      selectedDicEntry: entry,
+    };
   }
 
   /// Join tokens in-place if longer token exist in dictionary
@@ -142,7 +137,7 @@ export class Tokenizer {
   /** expected: text token-separated with '/'. */
   async testTokenization(expected: string) {
     const text = expected.replace(/\//g, "");
-    const result = await this.tokenize({ text });
+    const result = await this.tokenize({ text, selectedCharIdx: 0 });
     const tokens = result.tokens;
     const joinedTokens = tokens.map((v) => v.text).join("/");
     if (joinedTokens !== expected) {
