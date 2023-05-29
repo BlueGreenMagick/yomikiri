@@ -31,7 +31,8 @@
     "web-ext": "^7.6.2"
   },
   "dependencies": {
-    "pako": "^2.1.0",
-    "@yomikiri/yomikiri-rs": "^0.1.0"
+    "@yomikiri/yomikiri-rs": "^0.1.0",
+    "dexie": "^3.2.3",
+    "pako": "^2.1.0"
   }
 }

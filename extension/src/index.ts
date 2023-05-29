@@ -9,7 +9,7 @@ import AnkiApi from "@platform/anki";
 import Utils from "./utils";
 import type { NoteData } from "~/anki";
 
-let dictionaryP = Dictionary.loadFromUrl(EnJMDict);
+let dictionaryP = Dictionary.initialize();
 let tokenizerP = Tokenizer.initialize(dictionaryP);
 
 async function searchTerm(term: string): Promise<Entry[]> {

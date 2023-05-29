@@ -218,6 +218,7 @@ function attachRequestHandler() {
               success: false,
               error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
             });
+            console.error(e);
           }
         })();
         return true;

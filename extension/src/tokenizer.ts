@@ -56,7 +56,7 @@ export class Tokenizer {
           break;
         }
       }
-      const entry = this.dictionary.search(tokens[tokenIdx].baseForm);
+      const entry = await this.dictionary.search(tokens[tokenIdx].baseForm);
       result = {
         ...result,
         selectedTokenStartCharIdx: startIdx,
@@ -72,14 +72,14 @@ export class Tokenizer {
 
   /// Join tokens in-place if longer token exist in dictionary
   /// e.g. [込ん,で,いる] => 込んでいる
-  private joinTokens(tokens: Token[]) {
+  private async joinTokens(tokens: Token[]) {
     for (let i = 0; i < tokens.length; i++) {
-      this.joinTokensAt(tokens, i);
+      await this.joinTokensAt(tokens, i);
     }
   }
 
-  joinTokensAt(tokens: Token[], index: number) {
-    let [token, count] = this.compound(tokens, index);
+  async joinTokensAt(tokens: Token[], index: number) {
+    let [token, count] = await this.compound(tokens, index);
     if (count > 1) {
       tokens.splice(index, count, token);
     }
@@ -92,7 +92,7 @@ export class Tokenizer {
   /// Find maximal joined expression token starting from tokens[index]
   /// return [joined token, number of tokens joined]
   /// If such doesn't exist, return [tokens[index], 1]
-  compound(tokens: Token[], index: number): [Token, number] {
+  async compound(tokens: Token[], index: number): Promise<[Token, number]> {
     const MAXIMAL_FIND_LENGTH = 4;
     const initialTo = Math.min(tokens.length, index + MAXIMAL_FIND_LENGTH);
     // to = [index + 4 ..= index + 2]
@@ -102,7 +102,7 @@ export class Tokenizer {
         search += tokens[i].text;
       }
       search += tokens[to - 1].baseForm;
-      const searched = this.dictionary.search(search);
+      const searched = await this.dictionary.search(search);
       if (
         searched.length > 0 &&
         (tokens[index].partOfSpeech === "接頭詞" ||
