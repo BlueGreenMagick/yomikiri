@@ -113,8 +113,8 @@ export class Tokenizer {
       }
     }
 
-    const joined = joinTokens(tokens, index, to);
-    return [joined, to - index];
+    const joined = joinTokens(tokens, index, to - 1);
+    return [joined, to - index - 1];
   }
 
   async tests() {
