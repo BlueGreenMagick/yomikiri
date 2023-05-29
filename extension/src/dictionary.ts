@@ -84,6 +84,23 @@ export class Dictionary {
     return await this.db.table("entries").where("terms").equals(term).toArray();
   }
 
+  async hasStartsWith(
+    term: string,
+    filter?: (entry: Entry) => boolean
+  ): Promise<boolean> {
+    if (!filter) {
+      filter = (e: Entry) => true;
+    }
+    const entry = await this.db
+      .table("entries")
+      .where("terms")
+      .startsWith(term)
+      .distinct()
+      .filter(filter)
+      .first();
+    return entry !== undefined;
+  }
+
   /** Put in return value of .entityName() */
   static entityInfo(entity: string): string | null {
     let name = Dictionary.entityName(entity);
