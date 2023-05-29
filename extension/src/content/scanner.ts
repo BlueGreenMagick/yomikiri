@@ -295,9 +295,8 @@ function nodeIsInline(node: Node): boolean {
   if (!(node instanceof Element)) return true;
   const styles = window.getComputedStyle(node);
   return (
-    ["inline", "ruby", "ruby-base"].includes(styles.display) ||
-    styles.position === "static" ||
-    styles.position === "relative"
+    ["inline", "ruby", "ruby-base"].includes(styles.display) &&
+    (styles.position === "static" || styles.position === "relative")
   );
 }
 
