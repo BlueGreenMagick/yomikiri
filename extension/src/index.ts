@@ -6,8 +6,8 @@ import {
 } from "./tokenizer";
 import Api from "./api";
 import AnkiApi from "@platform/anki";
+import Utils from "./utils";
 import type { NoteData } from "~/anki";
-import EnJMDict from "./assets/jmdict/en.json.gz";
 
 let dictionaryP = Dictionary.loadFromUrl(EnJMDict);
 let tokenizerP = Tokenizer.initialize(dictionaryP);
@@ -39,3 +39,5 @@ window.tokenizerP = tokenizerP;
 window.AnkiApi = AnkiApi;
 // @ts-ignore
 window.Api = Api;
+// @ts-ignore
+window.Utils = Utils;
