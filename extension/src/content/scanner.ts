@@ -105,7 +105,7 @@ export class Scanner {
       prev,
       after,
       curr: text.substring(stStart, text.length),
-      idx: foundChar,
+      idx: foundChar - stStart,
     };
   }
 
