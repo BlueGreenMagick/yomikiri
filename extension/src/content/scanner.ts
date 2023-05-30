@@ -67,7 +67,9 @@ export class Scanner {
 
     // split sentence and check if (x,y) is in range of sentence
     const range = new Range();
+    // index of first char of current sentence
     let stStart = 0;
+    // index of character at (x,y)
     let foundChar = -1;
     for (let i = 0; i < text.length; i++) {
       range.setStart(node, i);
@@ -88,13 +90,13 @@ export class Scanner {
             idx: foundChar - stStart,
           };
         }
-
         stStart = i + 1;
       }
     }
     if (foundChar < 0) {
       return null;
     }
+    // sentenceEndChar not found after char at (x,y)
     if (stStart === 0) {
       prev = this.sentenceBeforeNode(node);
     }
@@ -109,7 +111,12 @@ export class Scanner {
     };
   }
 
-  /** does not check if curr is inline. if PREV is false, get next node. */
+  /**
+   * Get prev (next) Text node. (Which is not a child of curr)
+   * Does not check if curr is inline. if PREV is false, get next node.
+   */
+  // when it recursively calls itself, new curr is always before(after) old curr
+  // so recursion is guranteed to end.
   private inlineTextNode(curr: Node, PREV: boolean): Text | null {
     // get closest inline parent that has prev(next) sibling.
     while ((PREV ? curr.previousSibling : curr.nextSibling) === null) {
@@ -123,10 +130,11 @@ export class Scanner {
       !(curr instanceof Element || curr instanceof Text) ||
       nodeIsOutOfFlow(curr)
     ) {
+      // skip nodes that are removed from normal flow
       return this.inlineTextNode(curr, PREV);
     }
     if (!nodeIsInline(curr)) return null;
-    if (curr.parentNode === null || nodeChildIsNotInline(curr.parentNode)) {
+    if (curr.parentNode !== null && nodeChildIsNotInline(curr.parentNode)) {
       return null;
     }
     // get inline last(first) leaf node
@@ -194,7 +202,7 @@ export class Scanner {
     }
   }
 
-  /** Find token in DOM and highlight */
+  /** Find token in DOM and create range over it */
   private scanToken(
     tokenizeResult: TokenizeResult,
     sentence: ScannedSentence
@@ -297,7 +305,10 @@ function nodeIsInline(node: Node): boolean {
   );
 }
 
-// It is not possible for a node to be both inline and out of flow.
+/**
+ * Return true if node is removed from normal flow of document. (or is sticky)
+ * It is not possible for a node to be both isInline and isOutOfFlow
+ */
 function nodeIsOutOfFlow(node: Node): boolean {
   if (!(node instanceof Element)) return false;
   const styles = window.getComputedStyle(node);
