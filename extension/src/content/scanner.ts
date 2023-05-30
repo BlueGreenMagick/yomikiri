@@ -15,16 +15,28 @@ export interface ScanResult {
   dicEntries: Entry[];
 }
 
-/** prev + sentence + after is the constructed sentence */
-interface ScannedSentence {
+/**
+ * (prev, after) are portion of sentence before and after node
+ * prev + curr + after is the constructed sentence
+ * stStartIdx, stEndIdx are index of sentence start and end (excluding) in curr node.
+ */
+interface ScannedSentenceBase {
   node: Text;
   // portion of sentence before, within, and after `node`
-  prev?: string;
   curr: string;
-  after?: string;
   /** curr[idx] is the character at (x,y) */
   idx: number;
 }
+type ScannedSentencePrev =
+  | { prev: string; stStartIdx?: never }
+  | { prev?: never; stStartIdx: number };
+type ScannedSentenceNext =
+  | { next: string; stEndIdx?: never }
+  | { next?: never; stEndIdx: number };
+
+type ScannedSentence = ScannedSentenceBase &
+  ScannedSentencePrev &
+  ScannedSentenceNext;
 
 /** Find token at point (x, y) */
 export class Scanner {
@@ -42,9 +54,8 @@ export class Scanner {
     if (sentence === null) return null;
 
     const prev = sentence.prev ?? "";
-    const after = sentence.after ?? "";
     const tokenizeReq = {
-      text: prev + sentence.curr + after,
+      text: fullSentence(sentence),
       selectedCharIdx: prev.length + sentence.idx,
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
@@ -63,7 +74,8 @@ export class Scanner {
     const text = node.data;
     if (!stringContainsJapanese(text)) return null;
 
-    let prev, after;
+    let prev: string;
+    let next: string;
 
     // split sentence and check if (x,y) is in range of sentence
     const range = new Range();
@@ -80,15 +92,24 @@ export class Scanner {
 
       if (isSentenceEndChar(text[i])) {
         if (foundChar >= 0) {
-          if (stStart === 0) {
-            prev = this.sentenceBeforeNode(node);
-          }
-          return {
+          const partial = {
             node,
-            prev,
             curr: text.substring(stStart, i + 1),
             idx: foundChar - stStart,
+            stEndIdx: i + 1,
           };
+          if (stStart === 0) {
+            prev = this.sentenceBeforeNode(node);
+            return {
+              ...partial,
+              prev: prev,
+            };
+          } else {
+            return {
+              ...partial,
+              stStartIdx: stStart,
+            };
+          }
         }
         stStart = i + 1;
       }
@@ -96,19 +117,26 @@ export class Scanner {
     if (foundChar < 0) {
       return null;
     }
-    // sentenceEndChar not found after char at (x,y)
-    if (stStart === 0) {
-      prev = this.sentenceBeforeNode(node);
-    }
-    after = this.sencenceAfterNode(node);
-
-    return {
+    next = this.sencenceAfterNode(node);
+    const partial = {
       node,
-      prev,
-      after,
+      next,
       curr: text.substring(stStart, text.length),
       idx: foundChar - stStart,
     };
+    // sentenceEndChar not found after char at (x,y)
+    if (stStart === 0) {
+      prev = this.sentenceBeforeNode(node);
+      return {
+        ...partial,
+        prev,
+      };
+    } else {
+      return {
+        ...partial,
+        stStartIdx: stStart,
+      };
+    }
   }
 
   /**
@@ -207,45 +235,56 @@ export class Scanner {
     tokenizeResult: TokenizeResult,
     sentence: ScannedSentence
   ): ScanResult | null {
-    const prev = sentence.prev ?? "";
-    const after = sentence.after ?? "";
-    const node = sentence.node;
+    const range = new Range();
     const tokenStartIndex = tokenizeResult.selectedTokenStartCharIdx;
     const token = tokenizeResult.tokens[tokenizeResult.selectedTokenIdx];
 
-    const range = new Range();
-    let currNode: Text = node;
-    // number of characters in token that is in previous sentence
-    let prevChars = prev.length - tokenStartIndex;
-    let prevNode: Text = currNode;
-    while (prevChars > 0) {
-      const prev = this.prevInlineTextNode(prevNode);
-      if (prev === null) break;
-      prevNode = prev;
-      prevChars -= prevNode.data.length;
+    if (sentence.stStartIdx !== undefined) {
+      range.setStart(sentence.node, sentence.stStartIdx + tokenStartIndex);
+    } else {
+      // number of characters in token that is in previous nodes
+      let prevChars = sentence.prev.length - tokenStartIndex;
+      let prevNode: Text = sentence.node;
+      while (prevChars > 0) {
+        const prev = this.prevInlineTextNode(prevNode);
+        if (prev === null) break;
+        prevNode = prev;
+        prevChars -= prevNode.data.length;
+      }
+      range.setStart(prevNode, prevChars > 0 ? 0 : -1 * prevChars);
     }
-    range.setStart(prevNode, prevChars > 0 ? 0 : -1 * prevChars);
 
-    let nextNode: Text = currNode;
-    let nextChars =
-      tokenStartIndex + token.text.length - prev.length - sentence.curr.length;
-    while (nextChars > 0) {
-      const next = this.nextInlineTextNode(nextNode);
-      if (next === null) break;
-      nextNode = next;
-      nextChars -= nextNode.data.length;
+    const prev = sentence.prev ?? "";
+    const currTokenStartIdx = tokenStartIndex - prev.length;
+    if (sentence.stEndIdx !== undefined) {
+      const endIdx =
+        sentence.stEndIdx -
+        sentence.curr.length +
+        currTokenStartIdx +
+        token.text.length;
+      range.setEnd(sentence.node, endIdx);
+    } else {
+      let nextNode: Text = sentence.node;
+      // number of characters in token that is in next nodes
+      let nextChars =
+        currTokenStartIdx + token.text.length - sentence.curr.length;
+      while (nextChars > 0) {
+        const next = this.nextInlineTextNode(nextNode);
+        if (next === null) break;
+        nextNode = next;
+        nextChars -= nextNode.data.length;
+      }
+      range.setEnd(
+        nextNode,
+        nextNode.data.length + (nextChars > 0 ? 0 : nextChars)
+      );
     }
-    range.setEnd(
-      nextNode,
-      nextNode.data.length + (nextChars > 0 ? 0 : nextChars)
-    );
 
-    const sent = prev + sentence.curr + after;
     return {
       dicEntries: tokenizeResult.selectedDicEntry as Entry[],
       token,
       range,
-      sentence: sent.trim(),
+      sentence: fullSentence(sentence),
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
       sentenceTokens: tokenizeResult.tokens,
@@ -331,4 +370,10 @@ function nodeChildIsNotInline(node: Node): boolean {
     }
   }
   return false;
+}
+
+function fullSentence(st: ScannedSentence): string {
+  const prev = st.prev ?? "";
+  const next = st.next ?? "";
+  return prev + st.curr + next;
 }
