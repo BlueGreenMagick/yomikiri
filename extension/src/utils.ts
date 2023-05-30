@@ -34,12 +34,12 @@ namespace Utils {
     );
   }
 
-  export function rangeContainsPoint(
-    range: Range,
+  export function containsPoint(
+    obj: { getClientRects: () => DOMRectList },
     x: number,
     y: number
   ): boolean {
-    const rects = range.getClientRects();
+    const rects = obj.getClientRects();
     for (const rect of rects) {
       if (rectContainsPoint(rect, x, y)) {
         return true;

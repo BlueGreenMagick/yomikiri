@@ -20,7 +20,10 @@ async function searchClicked() {
 async function tokenizeClicked() {
   const inputEl = document.getElementById("tokenize-input") as HTMLInputElement;
   const input = inputEl.value;
-  const response = await Api.request("tokenize", { text: input });
+  const response = await Api.request("tokenize", {
+    text: input,
+    selectedCharIdx: 0,
+  });
 
   const resultEl = document.getElementById("tokenize-results") as HTMLElement;
   let text = "";

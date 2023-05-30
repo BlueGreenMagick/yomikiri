@@ -1,5 +1,4 @@
 import { Scanner } from "./scanner";
-import { highlightRange } from "./highlight";
 import Api from "~/api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
 
@@ -7,12 +6,14 @@ Api.initialize();
 
 const scanner = new Scanner();
 
+//@ts-ignore
+window.scanner = scanner;
+
 async function _trigger(x: number, y: number) {
   const result = await scanner.scanAt(x, y);
   if (result === null) return;
   if (result.dicEntries.length === 0) return;
   tooltipSvelte.show(result.dicEntries, result, x, y);
-  highlightRange(result.range);
 }
 
 let running: boolean = false;

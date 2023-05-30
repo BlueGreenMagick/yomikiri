@@ -3,6 +3,11 @@ import type { Token, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
 import { Entry } from "~/dictionary";
 
+const TAG_NAME = "yomikirihl";
+const HIGHLIGHT_CSS = `${TAG_NAME} {
+  background-color: lightgray !important;
+}`;
+
 export interface ScanResult {
   token: Token;
   /** range that has token text selected */
@@ -30,11 +35,37 @@ interface ScannedSentence {
 export class Scanner {
   // cache last scan.
   private lastScannedResult: ScanResult | null = null;
+  private highlighted: boolean = false;
+
+  constructor() {
+    this.setupCSS();
+  }
+
+  /** Insert HIGHLIGHT_CSS */
+  private setupCSS() {
+    const styling = document.createElement("style");
+    styling.innerHTML = HIGHLIGHT_CSS;
+    document.head.appendChild(styling);
+  }
+
+  unhighlightElement(elem: Element) {
+    const parent = elem.parentNode;
+    elem.replaceWith(...elem.childNodes);
+    parent?.normalize();
+  }
+
+  private highlightNode(node: Node) {
+    const parent = node.parentNode as Node;
+    const hl = document.createElement(TAG_NAME);
+    parent.insertBefore(hl, node);
+    hl.appendChild(node);
+  }
 
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
-    if (this.lastScannedResult !== null) {
-      if (Utils.rangeContainsPoint(this.lastScannedResult.range, x, y)) {
-        return this.lastScannedResult;
+    const currentHighlights = [...document.getElementsByTagName(TAG_NAME)];
+    for (const elem of currentHighlights) {
+      if (Utils.containsPoint(elem, x, y)) {
+        return null;
       }
     }
 
@@ -48,7 +79,7 @@ export class Scanner {
       selectedCharIdx: prev.length + sentence.idx,
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
-    const result = this.scanToken(tokenizeResult, sentence);
+    const result = this.scanAndHighlightToken(tokenizeResult, sentence);
     this.lastScannedResult = result;
     return result;
   }
@@ -72,7 +103,7 @@ export class Scanner {
     for (let i = 0; i < text.length; i++) {
       range.setStart(node, i);
       range.setEnd(node, i + 1);
-      if (Utils.rangeContainsPoint(range, x, y)) {
+      if (Utils.containsPoint(range, x, y)) {
         foundChar = i;
       }
 
@@ -194,48 +225,70 @@ export class Scanner {
     }
   }
 
-  private scanToken(
+  /** Find token in DOM and highlight */
+  private scanAndHighlightToken(
     tokenizeResult: TokenizeResult,
     sentence: ScannedSentence
   ): ScanResult | null {
     const prev = sentence.prev ?? "";
     const after = sentence.after ?? "";
     const node = sentence.node;
-    const [token, tokenStartIndex] = tokenAtCharacterIndex(
-      tokenizeResult.tokens,
-      prev.length + sentence.idx
-    );
-    if (token === null) return null;
-    // token range
-    const range = new Range();
-    let startNode: Text = node;
-    let startIdx = tokenStartIndex - prev.length;
-    while (startIdx < 0) {
-      const prev = this.prevInlineTextNode(startNode);
-      if (prev === null) {
-        range.setStart(startNode, 0);
-      } else {
-        startNode = prev;
-        startIdx += startNode.data.length;
-      }
-    }
-    range.setStart(startNode, startIdx);
+    const tokenStartIndex = tokenizeResult.selectedTokenStartCharIdx;
+    const token = tokenizeResult.tokens[tokenizeResult.selectedTokenIdx];
 
-    let endNode: Text = node;
-    let endIdx = tokenStartIndex - prev.length + token.text.length;
-    while (endIdx > endNode.data.length) {
-      const next = this.nextInlineTextNode(endNode);
-      if (next === null) {
-        range.setEnd(endNode, endNode.data.length);
-      } else {
-        endIdx -= endNode.data.length;
-        endNode = next;
-      }
+    const prevHighlights = [...document.getElementsByTagName(TAG_NAME)];
+
+    const nodesToHighlight: Text[] = [];
+    let currNode: Text = node;
+    // number of characters in token that is in previous sentence
+    let prevChars = prev.length - tokenStartIndex;
+    if (prevChars < 0) {
+      currNode = currNode.splitText(-1 * prevChars);
     }
-    range.setEnd(endNode, endIdx);
+    let prevNode: Text = currNode;
+    while (prevChars > 0) {
+      const prev = this.prevInlineTextNode(prevNode);
+      if (prev === null) break;
+      prevNode = prev;
+      if (prevChars < prevNode.data.length) {
+        prevNode = prevNode.splitText(prevNode.data.length - prevChars);
+      }
+      nodesToHighlight.push(prevNode);
+      prevChars -= prevNode.data.length;
+    }
+
+    let nextNode: Text = currNode;
+    let nextChars =
+      tokenStartIndex + token.text.length - prev.length - sentence.curr.length;
+    if (nextChars < 0) {
+      currNode.splitText(currNode.data.length + nextChars);
+    }
+    while (nextChars > 0) {
+      const next = this.nextInlineTextNode(nextNode);
+      if (next === null) break;
+      nextNode = next;
+      if (nextChars < nextNode.data.length) {
+        nextNode.splitText(nextChars);
+      }
+      nodesToHighlight.push(nextNode);
+      nextChars -= nextNode.data.length;
+    }
+    nodesToHighlight.push(currNode);
+
+    for (const node of nodesToHighlight) {
+      const highlighted = this.highlightNode(node);
+    }
+
+    for (const elem of prevHighlights) {
+      this.unhighlightElement(elem);
+    }
+
+    const range = new Range();
+    const hls = document.getElementsByTagName(TAG_NAME);
+    range.setStartBefore(hls[0]);
+    range.setEndAfter(hls[hls.length - 1]);
 
     const sent = prev + sentence.curr + after;
-
     return {
       dicEntries: tokenizeResult.selectedDicEntry as Entry[],
       token,
@@ -265,7 +318,7 @@ function childTextAt(parent: Element, x: number, y: number): Text | null {
     }
     const range = new Range();
     range.selectNodeContents(child);
-    if (Utils.rangeContainsPoint(range, x, y)) {
+    if (Utils.containsPoint(range, x, y)) {
       return child;
     }
   }
