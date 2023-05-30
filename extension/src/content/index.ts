@@ -1,10 +1,12 @@
 import { Scanner } from "./scanner";
 import Api from "~/api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
+import { Highlighter } from "./highlight";
 
 Api.initialize();
 
 const scanner = new Scanner();
+const highlighter = new Highlighter();
 
 //@ts-ignore
 window.scanner = scanner;
@@ -13,6 +15,7 @@ async function _trigger(x: number, y: number) {
   const result = await scanner.scanAt(x, y);
   if (result === null) return;
   if (result.dicEntries.length === 0) return;
+  highlighter.highlightRange(result.range);
   tooltipSvelte.show(result.dicEntries, result, x, y);
 }
 

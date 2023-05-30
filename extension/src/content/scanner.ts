@@ -3,11 +3,6 @@ import type { Token, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
 import { Entry } from "~/dictionary";
 
-const TAG_NAME = "yomikirihl";
-const HIGHLIGHT_CSS = `${TAG_NAME} {
-  background-color: lightgray !important;
-}`;
-
 export interface ScanResult {
   token: Token;
   /** range that has token text selected */
@@ -35,37 +30,11 @@ interface ScannedSentence {
 export class Scanner {
   // cache last scan.
   private lastScannedResult: ScanResult | null = null;
-  private highlighted: boolean = false;
-
-  constructor() {
-    this.setupCSS();
-  }
-
-  /** Insert HIGHLIGHT_CSS */
-  private setupCSS() {
-    const styling = document.createElement("style");
-    styling.innerHTML = HIGHLIGHT_CSS;
-    document.head.appendChild(styling);
-  }
-
-  unhighlightElement(elem: Element) {
-    const parent = elem.parentNode;
-    elem.replaceWith(...elem.childNodes);
-    parent?.normalize();
-  }
-
-  private highlightNode(node: Node) {
-    const parent = node.parentNode as Node;
-    const hl = document.createElement(TAG_NAME);
-    parent.insertBefore(hl, node);
-    hl.appendChild(node);
-  }
 
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
-    const currentHighlights = [...document.getElementsByTagName(TAG_NAME)];
-    for (const elem of currentHighlights) {
-      if (Utils.containsPoint(elem, x, y)) {
-        return null;
+    if (this.lastScannedResult !== null) {
+      if (Utils.containsPoint(this.lastScannedResult.range, x, y)) {
+        return this.lastScannedResult;
       }
     }
 
@@ -79,7 +48,7 @@ export class Scanner {
       selectedCharIdx: prev.length + sentence.idx,
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
-    const result = this.scanAndHighlightToken(tokenizeResult, sentence);
+    const result = this.scanToken(tokenizeResult, sentence);
     this.lastScannedResult = result;
     return result;
   }
@@ -226,7 +195,7 @@ export class Scanner {
   }
 
   /** Find token in DOM and highlight */
-  private scanAndHighlightToken(
+  private scanToken(
     tokenizeResult: TokenizeResult,
     sentence: ScannedSentence
   ): ScanResult | null {
@@ -236,57 +205,32 @@ export class Scanner {
     const tokenStartIndex = tokenizeResult.selectedTokenStartCharIdx;
     const token = tokenizeResult.tokens[tokenizeResult.selectedTokenIdx];
 
-    const prevHighlights = [...document.getElementsByTagName(TAG_NAME)];
-
-    const nodesToHighlight: Text[] = [];
+    const range = new Range();
     let currNode: Text = node;
     // number of characters in token that is in previous sentence
     let prevChars = prev.length - tokenStartIndex;
-    if (prevChars < 0) {
-      currNode = currNode.splitText(-1 * prevChars);
-    }
     let prevNode: Text = currNode;
     while (prevChars > 0) {
       const prev = this.prevInlineTextNode(prevNode);
       if (prev === null) break;
       prevNode = prev;
-      if (prevChars < prevNode.data.length) {
-        prevNode = prevNode.splitText(prevNode.data.length - prevChars);
-      }
-      nodesToHighlight.push(prevNode);
       prevChars -= prevNode.data.length;
     }
+    range.setStart(prevNode, prevChars > 0 ? 0 : -1 * prevChars);
 
     let nextNode: Text = currNode;
     let nextChars =
       tokenStartIndex + token.text.length - prev.length - sentence.curr.length;
-    if (nextChars < 0) {
-      currNode.splitText(currNode.data.length + nextChars);
-    }
     while (nextChars > 0) {
       const next = this.nextInlineTextNode(nextNode);
       if (next === null) break;
       nextNode = next;
-      if (nextChars < nextNode.data.length) {
-        nextNode.splitText(nextChars);
-      }
-      nodesToHighlight.push(nextNode);
       nextChars -= nextNode.data.length;
     }
-    nodesToHighlight.push(currNode);
-
-    for (const node of nodesToHighlight) {
-      const highlighted = this.highlightNode(node);
-    }
-
-    for (const elem of prevHighlights) {
-      this.unhighlightElement(elem);
-    }
-
-    const range = new Range();
-    const hls = document.getElementsByTagName(TAG_NAME);
-    range.setStartBefore(hls[0]);
-    range.setEndAfter(hls[hls.length - 1]);
+    range.setEnd(
+      nextNode,
+      nextNode.data.length + (nextChars > 0 ? 0 : nextChars)
+    );
 
     const sent = prev + sentence.curr + after;
     return {
