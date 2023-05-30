@@ -6,6 +6,7 @@
   import { AnkiNoteBuilder, type MarkerData } from "~/anki";
   import type { ScanResult } from "~/content/scanner";
   import Api from "~/api";
+  import { highlighter } from "@platform/highlight";
 
   const BOTTOM_HEIGHT_THRESHOLD = 500;
 
@@ -106,6 +107,7 @@ html, body {
     });
     entriesView.$on("close", (ev: CustomEvent<MouseEvent>) => {
       hide();
+      highlighter.unhighlight();
     });
     entriesView.$on("addNote", async (ev: CustomEvent<Partial<MarkerData>>) => {
       const data = ev.detail;

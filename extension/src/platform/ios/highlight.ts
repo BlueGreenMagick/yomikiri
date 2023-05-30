@@ -1,11 +1,4 @@
-/**
- * Highlights range using Selection API
- */
-
-import Platform from "@platform";
-
-const selectionStyleElemId = "yomikiri-selection-css";
-let ignoreNextSelectionEventFire = 0;
+import type { IHighlighter, IHighlighterStatic } from "../types/highlight";
 
 const TAG_NAME = "yomikirihl";
 
@@ -17,38 +10,18 @@ const HIGHLIGHT_CSS = `${TAG_NAME} {
   border: 0 !important;
 }`;
 
-export class Highlighter {
-  static useSelection(): boolean {
-    return Platform.IS_DESKTOP;
-  }
+export class Highlighter implements IHighlighter {
+  static readonly type = "wrap";
+  highlighted: boolean = false;
 
   constructor() {
-    if (!Highlighter.useSelection()) {
-      const style = document.createElement("style");
-      style.innerHTML = HIGHLIGHT_CSS;
-      document.head.appendChild(style);
-    }
+    const style = document.createElement("style");
+    style.innerHTML = HIGHLIGHT_CSS;
+    document.head.appendChild(style);
   }
 
   /** May modify range */
   highlightRange(range: Range) {
-    if (Highlighter.useSelection()) {
-      this.selHighlightRange(range);
-    } else {
-      this.elemHighlightRange(range);
-    }
-  }
-
-  selHighlightRange(range: Range) {
-    let selection = window.getSelection();
-    if (selection === null) return;
-    ignoreNextSelectionEventFire += 2;
-    selection.removeAllRanges();
-    selection.addRange(range);
-    changeSelectionColor();
-  }
-
-  elemHighlightRange(range: Range) {
     const existing = [...document.getElementsByTagName(TAG_NAME)];
     if (existing.length != 0 && range.intersectsNode(existing[0])) {
       return;
@@ -63,12 +36,29 @@ export class Highlighter {
     for (const node of existing) {
       unhighlightElement(node);
     }
+    this.highlighted = true;
+  }
+
+  /** Unhighlight all */
+  unhighlight() {
+    for (const node of document.getElementsByTagName(TAG_NAME)) {
+      unhighlightElement(node);
+    }
+    this.highlighted = false;
   }
 }
 
+Highlighter satisfies IHighlighterStatic;
+
 function textNodesInRange(range: Range): Text[] {
-  if (range.startContainer === range.endContainer) {
+  if (
+    range.startContainer === range.endContainer &&
+    range.startContainer instanceof Text
+  ) {
     let node = range.startContainer;
+    node.splitText(range.endOffset);
+    node = node.splitText(range.startOffset);
+    return [node];
   }
 
   // [startNode, endNode)
@@ -128,28 +118,4 @@ function unhighlightElement(elem: Element) {
   parent?.normalize();
 }
 
-function changeSelectionColor() {
-  if (document.getElementById(selectionStyleElemId)) return;
-
-  const styleEl = document.createElement("style");
-  styleEl.innerHTML = "::selection { background-color: lightgray }";
-  styleEl.id = selectionStyleElemId;
-  document.head.appendChild(styleEl);
-
-  const listener = () => {
-    if (ignoreNextSelectionEventFire) {
-      ignoreNextSelectionEventFire -= 1;
-      return;
-    }
-    revertSelectionColor();
-    document.removeEventListener("selectionchange", listener);
-  };
-  document.addEventListener("selectionchange", listener);
-}
-
-function revertSelectionColor() {
-  const elem = document.getElementById(selectionStyleElemId);
-  if (elem !== null) {
-    elem.parentElement?.removeChild(elem);
-  }
-}
+export const highlighter = new Highlighter();

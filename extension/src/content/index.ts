@@ -1,12 +1,11 @@
 import { Scanner } from "./scanner";
 import Api from "~/api";
 import TooltipSvelte from "tooltip/Tooltip.svelte";
-import { Highlighter } from "./highlight";
+import { highlighter } from "@platform/highlight";
 
 Api.initialize();
 
 const scanner = new Scanner();
-const highlighter = new Highlighter();
 
 //@ts-ignore
 window.scanner = scanner;
