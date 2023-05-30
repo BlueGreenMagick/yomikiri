@@ -6,20 +6,17 @@ let ignoreNextSelectionEventFire = 0;
 export class Highlighter implements IHighlighter {
   static readonly type = "selection";
   highlighted: boolean = false;
+  private hasListener: boolean = false;
 
   /** May modify range */
-  highlightRange(range: Range) {
-    let selection = window.getSelection();
-    if (selection === null) return;
+  highlight(range: Range) {
+    this.highlightRange(range);
+    this.changeSelectionColor("lightgray");
+  }
 
-    if (selection.rangeCount > 0) {
-      selection.removeAllRanges();
-      ignoreNextSelectionEventFire += 1;
-    }
-    selection.addRange(range);
-    ignoreNextSelectionEventFire += 1;
-    this.changeSelectionColor();
-    this.highlighted = true;
+  highlightRed(range: Range) {
+    this.highlightRange(range);
+    this.changeSelectionColor("red");
   }
 
   /** Unhighlight all */
@@ -34,23 +31,43 @@ export class Highlighter implements IHighlighter {
     revertSelectionColor();
   }
 
-  private changeSelectionColor() {
-    if (document.getElementById(STYLE_ID)) return;
+  /** Call this.changeSelectionColor afterwards */
+  private highlightRange(range: Range) {
+    let selection = window.getSelection();
+    if (selection === null) return;
 
-    const styleEl = document.createElement("style");
-    styleEl.innerHTML = "::selection { background-color: lightgray }";
+    if (selection.rangeCount > 0) {
+      selection.removeAllRanges();
+      ignoreNextSelectionEventFire += 1;
+    }
+    selection.addRange(range);
+    ignoreNextSelectionEventFire += 1;
+    this.highlighted = true;
+  }
+
+  private changeSelectionColor(color: string) {
+    let styleEl = document.getElementById(STYLE_ID);
+    if (styleEl === null) {
+      styleEl = document.createElement("style");
+    }
+    styleEl.innerHTML = `::selection { background-color: ${color} !important; }`;
     styleEl.id = STYLE_ID;
     document.head.appendChild(styleEl);
 
-    const listener = () => {
-      if (ignoreNextSelectionEventFire) {
-        ignoreNextSelectionEventFire -= 1;
-        return;
-      }
-      revertSelectionColor();
-      document.removeEventListener("selectionchange", listener);
-    };
-    document.addEventListener("selectionchange", listener);
+    if (!this.hasListener) {
+      const self = this;
+      const listener = () => {
+        if (ignoreNextSelectionEventFire) {
+          ignoreNextSelectionEventFire -= 1;
+          return;
+        }
+        revertSelectionColor();
+        document.removeEventListener("selectionchange", listener);
+        self.hasListener = false;
+      };
+      document.addEventListener("selectionchange", listener);
+      this.hasListener = true;
+    }
   }
 }
 

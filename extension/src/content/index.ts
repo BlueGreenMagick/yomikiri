@@ -13,8 +13,12 @@ window.scanner = scanner;
 async function _trigger(x: number, y: number) {
   const result = await scanner.scanAt(x, y);
   if (result === null) return;
-  if (result.dicEntries.length === 0) return;
-  highlighter.highlightRange(result.range);
+  if (result.dicEntries.length === 0) {
+    highlighter.highlightRed(result.range);
+    tooltipSvelte.hide();
+    return;
+  }
+  highlighter.highlight(result.range);
   tooltipSvelte.show(result.dicEntries, result, x, y);
 }
 

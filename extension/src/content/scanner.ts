@@ -43,6 +43,7 @@ export class Scanner {
   // cache last scan.
   private lastScannedResult: ScanResult | null = null;
 
+  /** Returns null if (x,y) is not pointing to valid japanese token */
   async scanAt(x: number, y: number): Promise<ScanResult | null> {
     if (this.lastScannedResult !== null) {
       if (Utils.containsPoint(this.lastScannedResult.range, x, y)) {
@@ -59,6 +60,7 @@ export class Scanner {
       selectedCharIdx: prev.length + sentence.idx,
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
+    if (!isValidJapaneseToken(tokenizeResult)) return null;
     const result = this.scanToken(tokenizeResult, sentence);
     this.lastScannedResult = result;
     return result;
@@ -376,4 +378,12 @@ function fullSentence(st: ScannedSentence): string {
   const prev = st.prev ?? "";
   const next = st.next ?? "";
   return prev + st.curr + next;
+}
+
+function isValidJapaneseToken(result: TokenizeResult) {
+  const token = result.tokens[result.selectedTokenIdx];
+  return !(
+    token.partOfSpeech === "記号" ||
+    (token.partOfSpeech === "UNK" && !stringContainsJapanese(token.text))
+  );
 }

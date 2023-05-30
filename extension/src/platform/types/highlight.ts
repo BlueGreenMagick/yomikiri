@@ -1,6 +1,8 @@
 export interface IHighlighter {
   highlighted: boolean;
-  highlightRange: (range: Range) => void;
+  highlight: (range: Range) => void;
+  /** For unknown tokens */
+  highlightRed: (range: Range) => void;
   /** Unhighlight all */
   unhighlight: () => void;
 }

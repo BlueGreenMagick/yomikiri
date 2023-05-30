@@ -8,7 +8,12 @@ const HIGHLIGHT_CSS = `${TAG_NAME} {
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
-}`;
+}
+
+${TAG_NAME}.unknown {
+  background-color: red !important;
+}
+`;
 
 export class Highlighter implements IHighlighter {
   static readonly type = "wrap";
@@ -21,22 +26,12 @@ export class Highlighter implements IHighlighter {
   }
 
   /** May modify range */
-  highlightRange(range: Range) {
-    const existing = [...document.getElementsByTagName(TAG_NAME)];
-    if (existing.length != 0 && range.intersectsNode(existing[0])) {
-      return;
-    }
-    const nodes = textNodesInRange(range);
-    const hls: Element[] = [];
-    for (const node of nodes) {
-      hls.push(highlightNode(node));
-    }
-    range.setStartBefore(hls[0]);
-    range.setStartBefore(hls[hls.length - 1]);
-    for (const node of existing) {
-      unhighlightElement(node);
-    }
-    this.highlighted = true;
+  highlight(range: Range) {
+    this.highlightRange(range, false);
+  }
+
+  highlightRed(range: Range) {
+    this.highlightRange(range, true);
   }
 
   /** Unhighlight all */
@@ -45,6 +40,25 @@ export class Highlighter implements IHighlighter {
       unhighlightElement(node);
     }
     this.highlighted = false;
+  }
+
+  /** unknown: highlight red for unknown tokens */
+  private highlightRange(range: Range, unknown: boolean) {
+    const existing = [...document.getElementsByTagName(TAG_NAME)];
+    if (existing.length != 0 && range.intersectsNode(existing[0])) {
+      return;
+    }
+    const nodes = textNodesInRange(range);
+    const hls: Element[] = [];
+    for (const node of nodes) {
+      hls.push(highlightNode(node, unknown));
+    }
+    range.setStartBefore(hls[0]);
+    range.setStartBefore(hls[hls.length - 1]);
+    for (const node of existing) {
+      unhighlightElement(node);
+    }
+    this.highlighted = true;
   }
 }
 
@@ -104,9 +118,12 @@ function textNodesInRange(range: Range): Text[] {
   return nodes as Text[];
 }
 
-function highlightNode(node: Node): Element {
+function highlightNode(node: Node, unknown: boolean): Element {
   const parent = node.parentNode as Node;
   const hl = document.createElement(TAG_NAME);
+  if (unknown) {
+    hl.classList.add("unknown");
+  }
   parent.insertBefore(hl, node);
   hl.appendChild(node);
   return hl;
