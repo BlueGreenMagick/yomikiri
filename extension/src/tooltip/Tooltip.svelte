@@ -158,7 +158,7 @@ html, body {
     min-width: 300px;
     background-color: white;
     border: 1px solid black;
-    z-index: 999;
+    z-index: 2147483647;
     max-height: 300px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
   }
