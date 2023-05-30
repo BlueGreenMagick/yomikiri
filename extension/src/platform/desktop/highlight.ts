@@ -11,12 +11,12 @@ export class Highlighter implements IHighlighter {
   /** May modify range */
   highlight(range: Range) {
     this.highlightRange(range);
-    this.changeSelectionColor("lightgray");
+    this.changeSelectionColor("#a0a0a0a0");
   }
 
   highlightRed(range: Range) {
     this.highlightRange(range);
-    this.changeSelectionColor("red");
+    this.changeSelectionColor("#ff2626a0");
   }
 
   /** Unhighlight all */

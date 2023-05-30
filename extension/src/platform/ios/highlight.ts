@@ -4,14 +4,14 @@ const TAG_NAME = "yomikirihl";
 
 const HIGHLIGHT_CSS = `${TAG_NAME} {
   display: inline;
-  background-color: lightgray !important;
+  background-color: #a0a0a0a0 !important;
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
 }
 
 ${TAG_NAME}.unknown {
-  background-color: red !important;
+  background-color: #ff2626a0 !important;
 }
 `;
 
