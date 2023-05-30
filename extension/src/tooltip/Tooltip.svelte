@@ -10,7 +10,6 @@
 
   const BOTTOM_HEIGHT_THRESHOLD = 500;
 
-  let visible: boolean = false;
   let width: number = 0;
   let height: number = 0;
   let scanResult: ScanResult;
@@ -23,7 +22,7 @@
     mouseX: number,
     mouseY: number
   ) {
-    visible = true;
+    tooltipEl.style.display = "block";
     scanResult = scanned;
     entriesView.setEntries(e);
     const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
@@ -31,7 +30,7 @@
   }
 
   export function hide() {
-    visible = false;
+    tooltipEl.style.display = "none";
   }
 
   function findRectOfMouse(
@@ -148,7 +147,6 @@ html, body {
 <iframe
   title="Title"
   bind:this={tooltipEl}
-  style:visibility={visible ? "visible" : "hidden"}
   style:width="{width}px"
   style:height="{height}px"
 />
