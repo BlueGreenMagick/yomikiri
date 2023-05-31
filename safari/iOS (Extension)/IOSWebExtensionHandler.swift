@@ -80,7 +80,7 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 errKind = ankiErr.variantName()
                 errMessage = ankiErr.message()
             } else {
-                errKind = "SwiftErr"
+                errKind = "SwiftError"
                 errMessage = error.localizedDescription
             }
             os_log(.error, "Error(%{public}s): %{public}s", errKind, errMessage)

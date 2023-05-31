@@ -28,7 +28,7 @@
     try {
       await AnkiApi.checkConnection();
       testConnectionDescription =
-        "<span style='color: green;'>Successfully connected!</span>";
+        "<span class='success'>Successfully connected!</span>";
     } catch (err) {
       console.error(err);
       let errorMsg;
@@ -37,7 +37,7 @@
       } else {
         errorMsg = "Unknown error: check the browser console for details";
       }
-      testConnectionDescription = `<span style='color: red;'>${errorMsg}</span>`;
+      testConnectionDescription = `<span class="warning">${errorMsg}</span>`;
     }
   }
 
