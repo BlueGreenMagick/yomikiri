@@ -22,10 +22,10 @@
     padding: 6px;
   }
   .left {
-    flex: 1 0 auto;
+    flex: 1 1 auto;
   }
   .right {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
     display: flex;
     align-items: center;
   }
