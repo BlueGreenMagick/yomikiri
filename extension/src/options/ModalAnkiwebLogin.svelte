@@ -35,7 +35,7 @@
   $: if (!hidden) onShown();
 </script>
 
-<Modal title="Ankiweb Log in" {hidden}>
+<Modal title="Ankiweb Log in" {hidden} on:close>
   <div>
     <div class="row">
       <span>Email:</span>

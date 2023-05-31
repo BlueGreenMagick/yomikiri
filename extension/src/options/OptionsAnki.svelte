@@ -78,6 +78,9 @@
         ankiwebUsername = ev.detail;
         modalLoginHidden = true;
       }}
+      on:close={() => {
+        modalLoginHidden = true;
+      }}
     />
   {:else}
     <OptionNumber
