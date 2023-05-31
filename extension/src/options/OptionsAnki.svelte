@@ -33,7 +33,7 @@
       console.error(err);
       let errorMsg;
       if (err instanceof Error) {
-        errorMsg = `${err.name}: ${err.message}`;
+        errorMsg = `${err.name}: ${Utils.escapeHTML(err.message)}`;
       } else {
         errorMsg = "Unknown error: check the browser console for details";
       }
