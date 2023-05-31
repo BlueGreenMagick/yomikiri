@@ -37,8 +37,7 @@ pub enum AnkiErr {
     FromSql {
         source: rusqlite::types::FromSqlError,
     },
-    InvalidAuth,
-    #[snafu(display("Unreachable: AnkiManager.col is None"))]
+    #[snafu(display("(Unreachable) AnkiManager.col is None"))]
     NoCollection,
     #[snafu(display("{message}"))]
     Other {
@@ -47,6 +46,8 @@ pub enum AnkiErr {
     InvalidDeckName,
     InvalidNotetypeName,
     InvalidNotetypeFieldName,
+    #[snafu(display("Not logged in"))]
+    NotLoggedIn,
 }
 
 type Result<T> = std::result::Result<T, AnkiErr>;
@@ -75,6 +76,12 @@ pub struct NoteData {
     pub notetype: String,
     pub fields: Vec<Field>,
     pub tags: String,
+}
+
+#[derive(uniffi::Record)]
+pub struct LoginStatus {
+    pub username: Option<String>,
+    pub logged_in: bool,
 }
 
 #[derive(uniffi::Object)]
@@ -191,6 +198,28 @@ impl AnkiManager {
         self.sync_meta()?;
         Ok(())
     }
+
+    pub fn logout(&self) -> Result<()> {
+        self.delete_config("auth_hkey")?;
+        Ok(())
+    }
+
+    pub fn login_status(&self) -> Result<LoginStatus> {
+        let username = self.get_config_optional("auth_username")?;
+        let hkey: Option<String> = self.get_config_optional("auth_hkey")?;
+        return Ok(LoginStatus {
+            username,
+            logged_in: hkey.is_some(),
+        });
+    }
+
+    pub fn check_connection(&self) -> Result<()> {
+        if self.auth()?.is_some() {
+            self.sync_meta()
+        } else {
+            Err(AnkiErr::NotLoggedIn)
+        }
+    }
 }
 
 impl AnkiManager {
@@ -263,7 +292,7 @@ impl AnkiManager {
                 Ok(())
             }
         } else {
-            Err(AnkiErr::InvalidAuth)
+            Err(AnkiErr::NotLoggedIn)
         }
     }
 
@@ -307,6 +336,17 @@ impl AnkiManager {
             })?
             .next()
             .transpose()
+    }
+
+    fn delete_config<'a, K>(&self, key: K) -> Result<()>
+    where
+        K: Into<&'a str>,
+    {
+        let key = key.into();
+        self.ydb()
+            .prepare_cached("DELETE from config WHERE name = ?")?
+            .execute(params![&key])?;
+        Ok(())
     }
 }
 

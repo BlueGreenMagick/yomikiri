@@ -3506,7 +3506,7 @@ checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
 [[package]]
 name = "uniffi"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "anyhow",
  "uniffi_build",
@@ -3517,7 +3517,7 @@ dependencies = [
 [[package]]
 name = "uniffi_bindgen"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "anyhow",
  "askama",
@@ -3539,7 +3539,7 @@ dependencies = [
 [[package]]
 name = "uniffi_build"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "anyhow",
  "camino",
@@ -3549,7 +3549,7 @@ dependencies = [
 [[package]]
 name = "uniffi_checksum_derive"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -3558,7 +3558,7 @@ dependencies = [
 [[package]]
 name = "uniffi_core"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "anyhow",
  "bytes",
@@ -3573,7 +3573,7 @@ dependencies = [
 [[package]]
 name = "uniffi_macros"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "bincode",
  "camino",
@@ -3591,7 +3591,7 @@ dependencies = [
 [[package]]
 name = "uniffi_meta"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "anyhow",
  "bytes",
@@ -3604,7 +3604,7 @@ dependencies = [
 [[package]]
 name = "uniffi_testing"
 version = "0.23.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "anyhow",
  "camino",
@@ -3810,7 +3810,7 @@ dependencies = [
 [[package]]
 name = "weedle2"
 version = "4.0.0"
-source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#a15e8ccfcc1e1229dc0fe7c3b7c836873ac92e88"
+source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#7f32bd8275306df38d6561a492cb97a71158b077"
 dependencies = [
  "nom",
 ]

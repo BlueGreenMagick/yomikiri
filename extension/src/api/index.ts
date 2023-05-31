@@ -55,7 +55,12 @@ export default class Api {
     if (resp.success) {
       return resp.resp;
     } else {
-      const obj = JSON.parse(resp.error);
+      let obj;
+      if (typeof resp.error === "string") {
+        obj = JSON.parse(resp.error);
+      } else {
+        obj = resp.error;
+      }
       const error = new Error();
       for (const key of Object.getOwnPropertyNames(obj)) {
         // @ts-ignore
@@ -133,6 +138,7 @@ export default class Api {
       key,
       request: JSON.stringify(request),
     });
+    console.log("resp", resp);
     const response = Api.handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }

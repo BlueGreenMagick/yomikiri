@@ -1,4 +1,4 @@
-import type { IAnkiApiStatic } from "../types/anki";
+import type { IAnkiApiStatic, LoginStatus } from "../types/anki";
 import Config from "~/config";
 import Utils from "~/utils";
 import type { NoteData } from "~/anki";
@@ -54,24 +54,6 @@ export default class AnkiApi {
     return promise;
   }
 
-  /** Returns null if successfully connected. Else returns an error string. */
-  static async checkConnection(): Promise<string | null> {
-    try {
-      const resp = await AnkiApi.request("requestPermission");
-      if (resp.permission === "granted") {
-        return null;
-      } else {
-        return "AnkiConnect did not allow this app to use its api.";
-      }
-    } catch (e) {
-      if (typeof e === "string") {
-        return e;
-      } else {
-        return "An unknown error occured.";
-      }
-    }
-  }
-
   static async deckNames(): Promise<string[]> {
     return (await AnkiApi.request("deckNames")) as string[];
   }
@@ -106,6 +88,28 @@ export default class AnkiApi {
         },
       },
     })) as number;
+  }
+
+  /** Throws an error if not successfully connected. */
+  static async checkConnection(): Promise<void> {
+    const resp = await AnkiApi.request("requestPermission");
+    if (resp.permission === "granted") {
+      return;
+    } else {
+      throw new Error("AnkiConnect did not allow this app to use its api.");
+    }
+  }
+
+  static async login(username: string, password: string) {
+    throw new Error("Invalid for desktop");
+  }
+
+  static async logout() {
+    throw new Error("Invalid for desktop");
+  }
+
+  static async loginStatus(): Promise<LoginStatus> {
+    throw new Error("Invalid for desktop");
   }
 }
 

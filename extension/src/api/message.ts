@@ -1,7 +1,8 @@
 import type { Entry } from "~/dictionary";
 import type { NoteData } from "~/anki";
-import type { Token } from "@platform/tokenizer";
+import type { Token } from "~/platform/types/tokenizer";
 import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
+import type { LoginStatus } from "~/platform/types/anki";
 
 /// Type map for `{ key: [request, response] }`
 /// Response type must not have Promise
@@ -22,6 +23,9 @@ export interface AppMessageMap {
   ankiSync: [null, null];
   // [username, password]
   ankiLogin: [[string, string], null];
+  ankiLogout: [null, null];
+  ankiLoginStatus: [null, LoginStatus];
+  ankiCheckConnection: [null, null];
 }
 
 type First<T extends any[]> = T extends [infer FIRST, ...any[]] ? FIRST : never;

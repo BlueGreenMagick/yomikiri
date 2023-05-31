@@ -59,12 +59,33 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             case "ankiSync":
                 try anki.sync()
                 break
+            case "ankiLogout":
+                try anki.logout()
+                break
+            case "ankiLoginStatus":
+                let status = try anki.loginStatus()
+                jsonResponse = try jsonSerialize(obj: status)
+                break
+            case "ankiCheckConnection":
+                try anki.checkConnection()
+                break
             default:
                 return
             }
             realResponse = ["success": true, "resp": jsonResponse]
         } catch {
-            realResponse = ["success": false, "error": ["message": error.localizedDescription]]
+            let errKind: String
+            let errMessage: String
+            if let ankiErr = error as? AnkiErr {
+                errKind = ankiErr.variantName()
+                errMessage = ankiErr.message()
+            } else {
+                errKind = "SwiftErr"
+                errMessage = error.localizedDescription
+            }
+            os_log(.error, "Error(%{public}s): %{public}s", errKind, errMessage)
+            realResponse = ["success": false, "error": ["name": errKind, "message": errMessage]]
+            
         }
         let resp = NSExtensionItem()
         resp.userInfo = [SFExtensionMessageKey: realResponse]
@@ -84,3 +105,4 @@ func jsonDeserialize<T: Decodable>(json: String) throws -> T {
     let decoder = JSONDecoder()
     return try decoder.decode(T.self, from: json.data(using: .utf8)!)
 }
+
