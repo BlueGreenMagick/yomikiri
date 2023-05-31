@@ -20,11 +20,9 @@
     } catch (err) {
       console.error(err);
       if (err instanceof Error) {
-        errorMsg = Utils.escapeHTML(err.message);
-      } else if (typeof err === "string") {
-        errorMsg = Utils.escapeHTML(err);
+        errorMsg = `${err.name}: ${err.message}`;
       } else {
-        errorMsg = "Unknown error. Check the browser console for details.";
+        errorMsg = "Unknown error: check the browser console for details";
       }
     }
   }

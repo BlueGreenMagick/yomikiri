@@ -30,21 +30,14 @@
       testConnectionDescription =
         "<span style='color: green;'>Successfully connected!</span>";
     } catch (err) {
+      console.error(err);
       let errorMsg;
       if (err instanceof Error) {
-        // if err.name and not Error.property.name
-        if (err.hasOwnProperty("name")) {
-          if (err.name === "NotLoggedIn") {
-            errorMsg = "You need to log in first";
-          }
-        }
-        if (errorMsg === undefined) {
-          errorMsg = Utils.escapeHTML(err.message);
-        }
+        errorMsg = `${err.name}: ${err.message}`;
       } else {
-        errorMsg = "Unknown error occured";
+        errorMsg = "Unknown error: check the browser console for details";
       }
-      testConnectionDescription = `<span style='color: red;'>Error: ${errorMsg}</span>`;
+      testConnectionDescription = `<span style='color: red;'>${errorMsg}</span>`;
     }
   }
 

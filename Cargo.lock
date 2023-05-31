@@ -4112,7 +4112,7 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
- "snafu",
+ "thiserror",
  "tokio",
  "uniffi",
  "wasm-bindgen",

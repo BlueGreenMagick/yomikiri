@@ -1,4 +1,5 @@
 mod anki;
+mod ankierror;
 mod tokenizer;
 mod utils;
 

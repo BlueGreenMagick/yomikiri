@@ -13,42 +13,10 @@ use reqwest::Url;
 use rusqlite::{params, Connection};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use snafu::prelude::*;
 use tokio::runtime;
 
+use crate::ankierror::AnkiErr;
 use crate::utils;
-
-#[derive(Debug, Snafu, uniffi::Error)]
-#[uniffi(flat_error)]
-pub enum AnkiErr {
-    #[snafu(context(false))]
-    Anki {
-        source: anki::error::AnkiError,
-    },
-    #[snafu(context(false))]
-    Sql {
-        source: rusqlite::Error,
-    },
-    #[snafu(context(false))]
-    SerdeJson {
-        source: serde_json::Error,
-    },
-    #[snafu(context(false))]
-    FromSql {
-        source: rusqlite::types::FromSqlError,
-    },
-    #[snafu(display("(Unreachable) AnkiManager.col is None"))]
-    NoCollection,
-    #[snafu(display("{message}"))]
-    Other {
-        message: &'static str,
-    },
-    InvalidDeckName,
-    InvalidNotetypeName,
-    InvalidNotetypeFieldName,
-    #[snafu(display("Not logged in"))]
-    NotLoggedIn,
-}
 
 type Result<T> = std::result::Result<T, AnkiErr>;
 
@@ -127,10 +95,14 @@ impl AnkiManager {
 
         let did = col
             .get_deck_id(&note_data.deck)?
-            .ok_or(AnkiErr::InvalidDeckName)?;
+            .ok_or_else(|| AnkiErr::DeckNotFound {
+                name: note_data.deck.clone(),
+            })?;
         let notetype = col
             .get_notetype_by_name(&note_data.notetype)?
-            .ok_or(AnkiErr::InvalidNotetypeName)?;
+            .ok_or_else(|| AnkiErr::NotetypeNotFound {
+                name: note_data.notetype.clone(),
+            })?;
 
         let mut note = notetype.new_note();
         note.tags = note_data.tags.split(' ').map(String::from).collect();
@@ -142,9 +114,12 @@ impl AnkiManager {
             }
         }
         for field in &note_data.fields {
-            let idx = field_name_to_idx
-                .get(field.name.as_str())
-                .ok_or(AnkiErr::InvalidNotetypeFieldName)?;
+            let idx = field_name_to_idx.get(field.name.as_str()).ok_or_else(|| {
+                AnkiErr::FieldNotFound {
+                    notetype: note_data.notetype.clone(),
+                    field: field.name.clone(),
+                }
+            })?;
             note.set_field(*idx as usize, &field.value)?;
         }
 
@@ -257,42 +232,38 @@ impl AnkiManager {
     }
 
     async fn sync_inner(&self) -> Result<()> {
-        let auth = self.auth()?;
-        if let Some(auth) = auth {
-            let mut col_guard = self.col();
-            let out = col_guard
-                .as_mut()
-                .ok_or(AnkiErr::NoCollection)?
-                .normal_sync(auth.clone(), |_, _| {})
-                .await?;
+        let auth = self.auth()?.ok_or(AnkiErr::NotLoggedIn)?;
+        let mut col_guard = self.col();
+        let out = col_guard
+            .as_mut()
+            .ok_or(AnkiErr::NoCollection)?
+            .normal_sync(auth.clone(), |_, _| {})
+            .await?;
 
-            if let SyncActionRequired::FullSyncRequired {
-                upload_ok: _,
-                download_ok,
-            } = out.required
-            {
-                log::info!("anki: full sync required.");
-                if download_ok {
-                    log::info!("anki: full download starting");
-                    col_guard
-                        .take()
-                        .ok_or(AnkiErr::NoCollection)?
-                        .full_download(auth, Box::new(|_, _| {}))
-                        .await?;
-                    log::info!("anki: full download complete");
-                    col_guard.replace(open_collection(&self.db_dir)?);
-                    Ok(())
-                } else {
-                    log::warn!("No collection to full download on ankiweb.");
-                    Err(AnkiErr::Other {
-                        message: "No collection on AnkiWeb",
-                    })
-                }
-            } else {
+        if let SyncActionRequired::FullSyncRequired {
+            upload_ok: _,
+            download_ok,
+        } = out.required
+        {
+            log::info!("anki: full sync required.");
+            if download_ok {
+                log::info!("anki: full download starting");
+                col_guard
+                    .take()
+                    .ok_or(AnkiErr::NoCollection)?
+                    .full_download(auth, Box::new(|_, _| {}))
+                    .await?;
+                log::info!("anki: full download complete");
+                col_guard.replace(open_collection(&self.db_dir)?);
                 Ok(())
+            } else {
+                log::warn!("No collection to full download on ankiweb.");
+                Err(AnkiErr::Other {
+                    message: "No collection on AnkiWeb",
+                })
             }
         } else {
-            Err(AnkiErr::NotLoggedIn)
+            Ok(())
         }
     }
 
