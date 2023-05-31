@@ -5,6 +5,7 @@
 
   export let title: string;
   export let description: string = "";
+  export let buttonText: string;
 
   const dispatch = createEventDispatcher();
 
@@ -15,34 +16,20 @@
   }
 </script>
 
-<div
-  tabindex="0"
-  on:keydown={onKeyDown}
-  on:click={() => {
-    dispatch("trigger");
-  }}
->
+<div on:keydown={onKeyDown}>
   <OptionBase {title} {description}>
-    <div class="icon">{@html IconCaretForward}</div>
+    <button
+      on:click={() => {
+        dispatch("trigger");
+      }}>{buttonText}</button
+    >
   </OptionBase>
 </div>
 
 <style>
-  div {
+  button {
+    padding: 2px 8px;
+    min-width: 120px;
     transition: background-color 0.125s ease-in-out;
-  }
-  div:hover,
-  div:active,
-  div:focus {
-    background-color: lightgray;
-  }
-  div:hover .icon :global(svg),
-  div:active .icon :global(svg),
-  div:focus .icon :global(svg) {
-    fill: blue;
-  }
-  .icon {
-    width: 16px;
-    height: 16px;
   }
 </style>

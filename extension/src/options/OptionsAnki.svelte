@@ -30,10 +30,12 @@
   <OptionClick
     title="Test connection"
     description={testConnectionDescription}
+    buttonText="Test"
     on:trigger={testConnection}
   />
   <OptionClick
-    title="Setup Anki template"
+    title="Configure Anki template"
+    buttonText="Configure"
     on:trigger={() => {
       modalAnkiTemplateHidden = false;
     }}
