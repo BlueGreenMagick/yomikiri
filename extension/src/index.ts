@@ -31,13 +31,13 @@ Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);
 
 // expose object to window for debugging purposes
-// @ts-ignore
-window.dictionaryP = dictionaryP;
-// @ts-ignore
-window.tokenizerP = tokenizerP;
 //@ts-ignore
-window.AnkiApi = AnkiApi;
+self.dictionaryP = dictionaryP;
+//@ts-ignore
+self.tokenizerP = tokenizerP;
+//@ts-ignore
+self.AnkiApi = AnkiApi;
 // @ts-ignore
-window.Api = Api;
+self.Api = Api;
 // @ts-ignore
-window.Utils = Utils;
+self.Utils = Utils;

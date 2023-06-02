@@ -1,18 +1,31 @@
+import fs from "node:fs";
+import path from "node:path";
 import esbuild from "esbuild";
 import { copy } from "esbuild-plugin-copy";
 import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
+import ejs from "ejs";
 
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
-if (!["desktop", "ios"].includes(process.env.TARGET_PLATFORM)) {
-  throw (
-    "TARGET_PLATFORM env variable must be set to either 'desktop'/'ios', but is set to: " +
+if (
+  !["chrome", "firefox", "safari_desktop", "ios"].includes(
     process.env.TARGET_PLATFORM
+  )
+) {
+  throw new Error(
+    "TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios, but is set to: " +
+      process.env.TARGET_PLATFORM
   );
 }
-const FOR_DESKTOP = process.env.TARGET_PLATFORM === "desktop";
+const FOR_CHROME = process.env.TARGET_PLATFORM === "chrome";
+const FOR_FIREFOX = process.env.TARGET_PLATFORM === "firefox";
+const FOR_SAFARI_DESKTOP = process.env.TARGET_PLATFORM === "safari_desktop";
+
+const FOR_DESKTOP = ["chrome", "firefox", "safari_desktop"].includes(
+  process.env.TARGET_PLATFORM
+);
 const FOR_IOS = process.env.TARGET_PLATFORM === "ios";
 
 const WATCH = DEVELOPMENT && !FOR_IOS;
@@ -63,6 +76,29 @@ const platformAliasPlugin = {
   },
 };
 
+const buildManifestPlugin = {
+  name: "buildManifestPlugin",
+  setup(build) {
+    const raw = fs.readFileSync("./src/manifest.json.ejs", {
+      encoding: "utf-8",
+    });
+    const rendered = ejs.render(raw, {
+      chrome: FOR_CHROME,
+      firefox: FOR_FIREFOX,
+      safari_desktop: FOR_SAFARI_DESKTOP,
+      desktop: FOR_DESKTOP,
+      ios: FOR_IOS,
+      v2: false,
+    });
+    const outdir = build.initialOptions.outdir;
+    if (!fs.existsSync(outdir)) {
+      fs.mkdirSync(outdir, { recursive: true });
+    }
+    const outPath = path.join(outdir, "manifest.json");
+    fs.writeFileSync(outPath, rendered);
+  },
+};
+
 const buildOptions = {
   entryPoints: [
     { in: "src/content/index.ts", out: "content" },
@@ -80,6 +116,7 @@ const buildOptions = {
     logRebuildPlugin,
     setWatchOptionPlugin,
     platformAliasPlugin,
+    buildManifestPlugin,
     copy({
       assets: [
         { from: ["src/**/*.html"], to: ["./"] },

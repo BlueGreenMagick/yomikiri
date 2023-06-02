@@ -22,36 +22,32 @@ export default class AnkiApi {
 
   /** Send Anki-connect request */
   private static async request(action: string, params?: any): Promise<any> {
-    const [promise, resolve, reject] = Utils.createPromise();
     const ankiConnectUrl = await AnkiApi.ankiConnectURL();
-
-    const xhr = new XMLHttpRequest();
-    xhr.addEventListener("error", () => reject("failed to issue request"));
-    xhr.addEventListener("load", () => {
-      try {
-        const response = JSON.parse(xhr.responseText);
-        if (Object.getOwnPropertyNames(response).length != 2) {
-          throw "response has an unexpected number of fields";
-        }
-        if (!response.hasOwnProperty("error")) {
-          throw "response is missing required error field";
-        }
-        if (!response.hasOwnProperty("result")) {
-          throw "response is missing required result field";
-        }
-        if (response.error) {
-          throw response.error;
-        }
-        resolve(response.result);
-      } catch (e) {
-        reject(e);
-      }
+    console.log("Abc");
+    const response = await fetch(ankiConnectUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        action,
+        version: AnkiApi.ANKI_CONNECT_VER,
+        params,
+      }),
     });
-    xhr.open("POST", ankiConnectUrl);
-    xhr.send(
-      JSON.stringify({ action, version: AnkiApi.ANKI_CONNECT_VER, params })
-    );
-    return promise;
+    const data = await response.json();
+    console.log(data);
+
+    if (Object.getOwnPropertyNames(data).length != 2) {
+      throw new Error("response has an unexpected number of fields");
+    }
+    if (!data.hasOwnProperty("error")) {
+      throw new Error("response is missing required error field");
+    }
+    if (!data.hasOwnProperty("result")) {
+      throw new Error("response is missing required result field");
+    }
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data.result;
   }
 
   static async deckNames(): Promise<string[]> {

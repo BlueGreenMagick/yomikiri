@@ -32,7 +32,6 @@ export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
 export default class Api {
   static isTouchScreen: boolean = navigator.maxTouchPoints > 0;
-  static isNoHover: boolean = window.matchMedia("(hover: none)").matches;
 
   static async initialize() {
     attachRequestHandler();

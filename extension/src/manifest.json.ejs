@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": <%- v2 ? 2 : 3 %>,
   "name": "Yomikiri",
   "version": "0.0.1",
   "description": "Web extension to view definition for Japanese words and add to Anki.",
@@ -21,13 +21,21 @@
     }
   ],
   "background": {
+<% if (firefox || v2) { -%>
     "scripts": [
       "background.js"
     ],
     "persistent": false,
+<% } else { -%>
+    "service_worker": "background.js",
+<% } -%>
     "type": "module"
   },
+<% if (v2) { -%>
   "browser_action": {
+<% } else { -%>
+  "action": {
+<% } -%>
     "default_icon": {
       "48": "res/images/icon48.png"
     },
@@ -39,7 +47,9 @@
     "open_in_tab": true
   },
   "permissions": [
+<% if (ios) { -%>
     "nativeMessaging",
+<% } -%>
     "storage"
   ],
   "optional_permissions": [],
@@ -47,5 +57,12 @@
     "http://*/*",
     "https://*/*"
   ],
-  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+<% const csp = "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"; -%>
+<% if (v2) { -%>
+  "content_security_policy": "<%- csp %>"
+<% } else { -%>
+  "content_security_policy": {
+    "extension_pages": "<%- csp %>"
+  }
+<% } -%>
 }
