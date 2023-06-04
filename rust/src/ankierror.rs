@@ -1,5 +1,3 @@
-#![cfg(uniffi)]
-
 use anki::error::SyncErrorKind;
 use anki::prelude::AnkiError;
 

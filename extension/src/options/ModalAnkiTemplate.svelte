@@ -3,14 +3,15 @@
   import type { NoteData } from "~/anki";
   import Config from "~/config";
   import Modal from "./components/Modal.svelte";
-  import { onMount } from "svelte";
+  import Utils from "~/utils";
 
   export let hidden: boolean;
 
-  let mounted: boolean = false;
+  const [initializePromise, initializeResolve] = Utils.createPromise<void>();
+  let initialized = false;
 
-  // [decks, note types]
-  let loadedNames: Promise<[string[], string[]]>;
+  let deckNames: string[];
+  let notetypeNames: string[];
   let loadedFields: Promise<string[]>;
 
   let selectedNotetype: string;
@@ -20,9 +21,10 @@
   let fieldTemplates: { [name: string]: string };
   let ankiTags: string;
 
-  async function loadNames(): Promise<[string[], string[]]> {
-    const deckNames = await AnkiApi.deckNames();
-    const notetypeNames = await AnkiApi.notetypeNames();
+  /** load deckNames and notetypeNames */
+  async function loadNames() {
+    deckNames = await AnkiApi.deckNames();
+    notetypeNames = await AnkiApi.notetypeNames();
     const templates = await Config.get("anki.templates");
     if (templates.length === 0) {
       selectedNotetype = notetypeNames[0];
@@ -47,8 +49,6 @@
       }
       ankiTags = template.tags;
     }
-
-    return [deckNames, notetypeNames];
   }
 
   async function loadFields(notetype: string) {
@@ -66,7 +66,7 @@
     fields: { [name: string]: string },
     tags: string
   ) {
-    if (!mounted) return;
+    if (!initialized) return;
     const template: NoteData = {
       deck,
       notetype,
@@ -83,19 +83,24 @@
     Config.set("anki.templates", [template]);
   }
 
-  onMount(() => {
-    mounted = true;
-  });
+  async function initialize(hidden: boolean) {
+    if (hidden) return;
+    await loadNames();
+    loadedFields = loadFields(selectedNotetype);
+    initializeResolve();
+    initialized = true;
+  }
 
-  loadedNames = loadNames();
   $: loadedFields = loadFields(selectedNotetype);
   $: saveTemplate(selectedDeck, selectedNotetype, fieldTemplates, ankiTags);
+  // Must come last so the above 2 is not be called on initialization
+  $: initialize(hidden);
 </script>
 
 <Modal title="Anki Template" {hidden} on:close>
-  {#await loadedNames}
+  {#await initializePromise}
     <div>Connecting to Anki...</div>
-  {:then [deckNames, noteTypeNames]}
+  {:then}
     <div class="selects">
       <div class="item-title">Deck</div>
       <select class="item-select" bind:value={selectedDeck}>
@@ -105,7 +110,7 @@
       </select>
       <div class="item-title">Note Type</div>
       <select class="item-select" bind:value={selectedNotetype}>
-        {#each noteTypeNames as name}
+        {#each notetypeNames as name}
           <option value={name}>{name}</option>
         {/each}
       </select>

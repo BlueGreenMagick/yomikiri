@@ -11,8 +11,8 @@ import os.log
 let SFExtensionMessageKey = "message"
 let tokenizer = Tokenizer()
 let appDir = try! FileManager.default.url(for:.applicationSupportDirectory, in:.userDomainMask, appropriateFor: nil, create: true).absoluteString
-let anki = try! AnkiManager.tryNew(dbDir: appDir)
 
+extension String: Error {}
 
 class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
     func beginRequest(with context: NSExtensionContext) {
@@ -33,59 +33,27 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 let text: String = try jsonDeserialize(json: request)
                 let tokens = tokenizer.tokenize(sentence: text)
                 jsonResponse = try jsonSerialize(obj: tokens)
-                break
             case "addNote":
-                let noteData: NoteData = try jsonDeserialize(json: request)
-                let nid = try anki.addNote(noteData: noteData)
-                jsonResponse = try jsonSerialize(obj: nid)
                 break
-            case "deckNames":
-                let names = try anki.deckNames()
-                jsonResponse = try jsonSerialize(obj: names)
-                break
-            case "notetypeNames":
-                let names = try anki.notetypeNames()
-                jsonResponse = try jsonSerialize(obj: names)
-                break
-            case "notetypeFields":
-                let name: String = try jsonDeserialize(json: request)
-                let fields = try anki.notetypeFields(notetype: name)
-                jsonResponse = try jsonSerialize(obj: fields)
-                break
-            case "ankiLogin":
-                let authInfo: [String] = try jsonDeserialize(json: request)
-                try anki.login(username: authInfo[0], password: authInfo[1])
-                break
-            case "ankiSync":
-                try anki.sync()
-                break
-            case "ankiLogout":
-                try anki.logout()
-                break
-            case "ankiLoginStatus":
-                let status = try anki.loginStatus()
-                jsonResponse = try jsonSerialize(obj: status)
-                break
-            case "ankiCheckConnection":
-                try anki.checkConnection()
-                break
+            case "ankiInfo":
+                guard let sharedDefault = UserDefaults(suiteName: "group.com.bluegreenmagick.yomikiri") else {
+                    throw "UserDefaults not found"
+                }
+                guard let ankiInfoData = sharedDefault.data(forKey: "ankiInfo") else {
+                    throw "ankiInfo not found"
+                }
+                guard let json = String(data: ankiInfoData, encoding: .utf8) else {
+                    throw "ankiInfoData could not be converted into JSON string";
+                }
+                sharedDefault.removeObject(forKey: "ankiInfo")
+                jsonResponse = json
             default:
                 return
             }
             realResponse = ["success": true, "resp": jsonResponse]
         } catch {
-            let errKind: String
-            let errMessage: String
-            if let ankiErr = error as? AnkiErr {
-                errKind = ankiErr.variantName()
-                errMessage = ankiErr.message()
-            } else {
-                errKind = "SwiftError"
-                errMessage = error.localizedDescription
-            }
-            os_log(.error, "Error(%{public}s): %{public}s", errKind, errMessage)
-            realResponse = ["success": false, "error": ["name": errKind, "message": errMessage]]
-            
+            os_log(.error, "Error: %{public}s", String(describing: error))
+            realResponse = ["success": false, "error": ["message": error.localizedDescription]]
         }
         let resp = NSExtensionItem()
         resp.userInfo = [SFExtensionMessageKey: realResponse]

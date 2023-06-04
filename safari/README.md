@@ -26,3 +26,11 @@ Added build phase when building for web extensions(univ.) to run `scripts/copy_e
 ### Principal class
 
 Changed `NSExtensionPrincipalClass` in Info.plist to IOSWebExtensionHandler for ios web extension, and `MacWebExtensionHandler` for mac
+
+### App groups
+
+Added `group.com.bluegreenmagick.yomikiri` app group to ios app and ios extension.
+
+### Custom url scheme
+
+Added URL types to ios app, to implement `yomikiri` url scheme

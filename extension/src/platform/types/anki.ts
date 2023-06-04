@@ -1,9 +1,5 @@
 import type { NoteData } from "~/anki";
-
-export interface LoginStatus {
-  username: string | null;
-  loggedIn: boolean;
-}
+import type { AnkiInfo } from "../ios/anki";
 
 export interface IAnkiApiStatic {
   /** Returns note id */
@@ -12,8 +8,6 @@ export interface IAnkiApiStatic {
   notetypeNames: () => Promise<string[]>;
   nodeTypeFields: (noteTypeName: string) => Promise<string[]>;
   checkConnection: () => Promise<void>;
-  // ios methods
-  loginStatus: () => Promise<LoginStatus>;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  /** iOS only */
+  onReceiveAnkiInfo: (handler: (ankiInfo: AnkiInfo) => void) => void;
 }

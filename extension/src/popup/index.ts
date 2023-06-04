@@ -37,7 +37,7 @@ async function openSettings() {
   chrome.runtime.openOptionsPage();
 }
 
-Api.initialize();
+Api.initialize({});
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("search-button") as HTMLElement;

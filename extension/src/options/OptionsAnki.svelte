@@ -6,22 +6,17 @@
   import OptionClick from "./components/OptionClick.svelte";
   import OptionNumber from "./components/OptionNumber.svelte";
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
-  import ModalAnkiwebLogin from "./ModalAnkiwebLogin.svelte";
-  import { onMount } from "svelte";
 
   //ios only
-  let ankiwebLoggedIn: boolean = false;
-  let ankiwebUsername: string | null = "";
-  let modalLoginHidden = true;
   let testConnectionDescription = Platform.IS_IOS
-    ? "Click to test connction with AnkiWeb"
+    ? "Click to test connction with AnkiMobile"
     : "Click to test connection with AnkiConnect";
   // shared
   let modalTemplateHidden = true;
 
   async function testConnection() {
     if (Platform.IS_IOS) {
-      testConnectionDescription = "Connecting to AnkiWeb...";
+      testConnectionDescription = "Connecting to AnkiMobile... (Unimplemented)";
     } else {
       testConnectionDescription = "Connecting to AnkiConnect...";
     }
@@ -41,48 +36,15 @@
     }
   }
 
-  async function getAnkiwebLoginStatus() {
-    let status = await AnkiApi.loginStatus();
-    ankiwebLoggedIn = status.loggedIn;
-    ankiwebUsername = status.username;
+  if (Platform.IS_IOS) {
+    AnkiApi.onReceiveAnkiInfo(() => {
+      modalTemplateHidden = false;
+    });
   }
-
-  onMount(async () => {
-    if (Platform.IS_IOS) {
-      await getAnkiwebLoginStatus();
-    }
-  });
 </script>
 
 <OptionsGroup title="Anki">
-  {#if Platform.IS_IOS}
-    <OptionClick
-      title="Ankiweb Account"
-      description={ankiwebLoggedIn
-        ? `Logged in as ${ankiwebUsername}`
-        : "Log in to Ankiweb"}
-      buttonText={ankiwebLoggedIn ? "Log out" : "Log in"}
-      on:trigger={async () => {
-        if (ankiwebLoggedIn) {
-          await AnkiApi.logout();
-          ankiwebLoggedIn = false;
-        } else {
-          modalLoginHidden = false;
-        }
-      }}
-    />
-    <ModalAnkiwebLogin
-      hidden={modalLoginHidden}
-      on:login={(ev) => {
-        ankiwebLoggedIn = true;
-        ankiwebUsername = ev.detail;
-        modalLoginHidden = true;
-      }}
-      on:close={() => {
-        modalLoginHidden = true;
-      }}
-    />
-  {:else}
+  {#if Platform.IS_DESKTOP}
     <OptionNumber
       key="anki.connect_port"
       title="AnkiConnect port number"

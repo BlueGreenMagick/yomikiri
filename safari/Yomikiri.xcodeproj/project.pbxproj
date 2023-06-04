@@ -80,6 +80,8 @@
 		6909CA702A223C010052FEF4 /* uniffi_yomikiri.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = uniffi_yomikiri.swift; sourceTree = "<group>"; };
 		6909CA722A223C010052FEF4 /* libyomikiri_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs.a; sourceTree = "<group>"; };
 		6909CA732A223C010052FEF4 /* uniffi_yomikiriFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_yomikiriFFI.h; sourceTree = "<group>"; };
+		69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri (iOS).entitlements"; sourceTree = "<group>"; };
+		69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri Extension (iOS).entitlements"; sourceTree = "<group>"; };
 		698038522A17AF8400C93E3D /* build_uniffi.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_uniffi.sh; sourceTree = "<group>"; };
 		698038562A17B2C600C93E3D /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSWebExtensionHandler.swift; sourceTree = "<group>"; };
@@ -162,6 +164,8 @@
 		69F2C23629FA4FA70088F503 = {
 			isa = PBXGroup;
 			children = (
+				69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */,
+				69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */,
 				698038612A17B45800C93E3D /* rust */,
 				698038562A17B2C600C93E3D /* Bridging-Header.h */,
 				69F2C2F929FA56BA0088F503 /* scripts */,
@@ -675,6 +679,7 @@
 		69F2C2A329FA4FA80088F503 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Yomikiri Extension (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
@@ -712,6 +717,7 @@
 		69F2C2A429FA4FA80088F503 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Yomikiri Extension (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
@@ -753,6 +759,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Yomikiri (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
@@ -764,7 +771,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -793,6 +800,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Yomikiri (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
@@ -804,7 +812,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -30,12 +30,26 @@ export type RequestHandler<K extends keyof MessageMap> = (
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
+export interface ApiInitializeOptions {
+  tab?: boolean;
+  handleRequests?: boolean;
+  handleStorageChange?: boolean;
+}
+
 export default class Api {
   static isTouchScreen: boolean = navigator.maxTouchPoints > 0;
+  static tabId?: number;
 
-  static async initialize() {
-    attachRequestHandler();
-    attachStorageChangeHandler();
+  static async initialize(opts: ApiInitializeOptions) {
+    if (opts.handleRequests) {
+      attachRequestHandler();
+    }
+    if (opts.handleStorageChange) {
+      attachStorageChangeHandler();
+    }
+    if (opts.tab) {
+      this.tabId = (await Api.currentTab()).id;
+    }
   }
 
   static requestHandlers: Partial<{
@@ -47,7 +61,7 @@ export default class Api {
   } = {};
 
   static storage(): chrome.storage.StorageArea {
-    return chrome.storage.sync;
+    return chrome.storage.local;
   }
 
   private static handleRequestResponse<R>(resp: RequestResponse<R>): R {
@@ -120,7 +134,7 @@ export default class Api {
   }
 
   /// Handle request by front-end for `key`. Return response in handler.
-  /// There must not be duplicate handlers for a certain `key`.
+  /// If there is an existing handler for `key`, replaces it.
   static handleRequest<K extends keyof MessageMap>(
     key: K,
     handler: RequestHandler<K>
@@ -129,6 +143,7 @@ export default class Api {
     Api.requestHandlers[key] = handler;
   }
 
+  /** Only supported in iOS */
   static async requestToApp<K extends keyof AppMessageMap>(
     key: K,
     request: AppRequest<K>
@@ -137,24 +152,50 @@ export default class Api {
       key,
       request: JSON.stringify(request),
     });
-    console.log("resp", resp);
     const response = Api.handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }
 
+  /** Must be called from within a tab, and not in a content script */
   static async currentTab(): Promise<chrome.tabs.Tab> {
+    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
+    chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
+      if (result === undefined) {
+        reject(new Error("currentTab() must be called from a tab context."));
+      } else {
+        resolve(result);
+      }
+    });
+    return promise;
+  }
+
+  /** Must not be called from a content script. */
+  static async activeTab(): Promise<chrome.tabs.Tab> {
     const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
     const info = {
       active: true,
       currentWindow: true,
     };
-    try {
-      chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
-        resolve(result[0]);
-      });
-    } catch (e) {
-      reject(e);
-    }
+
+    chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
+      resolve(result[0]);
+    });
+    return promise;
+  }
+
+  static async goToTab(tabId: number): Promise<void> {
+    const [promise, resolve, reject] = Utils.createPromise<void>();
+    chrome.tabs.update(tabId, { active: true }, () => {
+      resolve();
+    });
+    return promise;
+  }
+
+  static async removeTab(tabId: number): Promise<void> {
+    const [promise, resolve, reject] = Utils.createPromise<void>();
+    chrome.tabs.remove(tabId, () => {
+      resolve();
+    });
     return promise;
   }
 
@@ -176,13 +217,23 @@ export default class Api {
     return promise;
   }
 
-  /** value must be a JSON-stringifiable object */
-  static async setStorage(key: string, value: any) {
+  /** value cannot be undefined or null */
+  static async setStorage(key: string, value: NonNullable<any>) {
     const [promise, resolve, reject] = Utils.createPromise<void>();
     const object: { [key: string]: any } = {};
     object[key] = value;
     try {
       Api.storage().set(object, resolve);
+    } catch (e) {
+      reject(e);
+    }
+    return promise;
+  }
+
+  static async removeStorage(key: string) {
+    const [promise, resolve, reject] = Utils.createPromise<void>();
+    try {
+      Api.storage().remove(key, resolve);
     } catch (e) {
       reject(e);
     }

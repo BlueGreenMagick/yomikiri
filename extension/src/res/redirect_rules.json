@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "extensionPath": "/x-callback.html"
+      }
+    },
+    "condition": {
+      "urlFilter": "yomikiri-redirect.bluegreenmagick.com",
+      "resourceTypes": [
+        "main_frame"
+      ]
+    }
+  }
+]

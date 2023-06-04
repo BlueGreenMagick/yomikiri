@@ -40,22 +40,41 @@
       "48": "res/images/icon48.png"
     },
     "default_title": "Yomikiri",
-    "default_popup": "popup/index.html"
+    "default_popup": "popup.html"
   },
   "options_ui": {
-    "page": "options/index.html",
+    "page": "options.html",
     "open_in_tab": true
   },
+<% if (ios) { -%>
+  "declarative_net_request": {
+    "rule_resources" : [{
+      "id": "redirect_rule",
+      "enabled": true,
+      "path": "res/redirect_rules.json"
+    }]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "x-callback.html"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+<% } -%>
   "permissions": [
 <% if (ios) { -%>
     "nativeMessaging",
+    "declarativeNetRequest",
 <% } -%>
     "storage"
   ],
   "optional_permissions": [],
   "host_permissions": [
-    "http://*/*",
-    "https://*/*"
+    "<all_urls>"
   ],
 <% const csp = "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"; -%>
 <% if (v2) { -%>

@@ -88,6 +88,7 @@ const buildManifestPlugin = {
       safari_desktop: FOR_SAFARI_DESKTOP,
       desktop: FOR_DESKTOP,
       ios: FOR_IOS,
+      // v2 is not supported for ios
       v2: false,
     });
     const outdir = build.initialOptions.outdir;
@@ -103,8 +104,9 @@ const buildOptions = {
   entryPoints: [
     { in: "src/content/index.ts", out: "content" },
     { in: "src/index.ts", out: "background" },
-    { in: "src/popup/index.ts", out: "popup/popup" },
-    { in: "src/options/index.ts", out: "options/options" },
+    { in: "src/popup/index.ts", out: "popup" },
+    { in: "src/options/index.ts", out: "options" },
+    { in: "src/x-callback/index.ts", out: "x-callback" },
   ],
   outdir: "build",
   target: "es6",
@@ -119,7 +121,9 @@ const buildOptions = {
     buildManifestPlugin,
     copy({
       assets: [
-        { from: ["src/**/*.html"], to: ["./"] },
+        { from: ["src/options/index.html"], to: ["./options.html"] },
+        { from: ["src/popup/index.html"], to: ["./popup.html"] },
+        { from: ["src/x-callback/index.html"], to: ["./x-callback.html"] },
         { from: ["src/*.json"], to: ["./"] },
         { from: ["src/res/**/*"], to: ["res"] },
       ],

@@ -4,6 +4,8 @@ import OptionsSvelte from "./Options.svelte";
 import Utils from "~/utils";
 import AnkiApi from "@platform/anki";
 
+Api.initialize({ tab: true });
+
 const optionsSvelte = new OptionsSvelte({
   target: document.body,
   props: {},

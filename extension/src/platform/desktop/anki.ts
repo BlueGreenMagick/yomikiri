@@ -1,4 +1,4 @@
-import type { IAnkiApiStatic, LoginStatus } from "../types/anki";
+import type { IAnkiApiStatic } from "../types/anki";
 import Config from "~/config";
 import Utils from "~/utils";
 import type { NoteData } from "~/anki";
@@ -96,16 +96,8 @@ export default class AnkiApi {
     }
   }
 
-  static async login(username: string, password: string) {
-    throw new Error("Invalid for desktop");
-  }
-
-  static async logout() {
-    throw new Error("Invalid for desktop");
-  }
-
-  static async loginStatus(): Promise<LoginStatus> {
-    throw new Error("Invalid for desktop");
+  static async onReceiveAnkiInfo(handler: any) {
+    throw new Error("Only implemented on IOS");
   }
 }
 

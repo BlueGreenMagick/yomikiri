@@ -8,6 +8,9 @@ import Api from "./api";
 import AnkiApi from "@platform/anki";
 import Utils from "./utils";
 import type { NoteData } from "~/anki";
+import Config from "./config";
+
+type MessageSender = chrome.runtime.MessageSender;
 
 let dictionaryP = Dictionary.initialize();
 let tokenizerP = Tokenizer.initialize(dictionaryP);
@@ -25,7 +28,16 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
 async function addAnkiNote(note: NoteData): Promise<number> {
   return await AnkiApi.addNote(note);
 }
-Api.initialize();
+
+async function ankiUrl(_: null, sender: MessageSender) {
+  await chrome.tabs.create({
+    url:
+      "anki://x-callback-url/infoForAdding?x-success=https://google.com/x-callback-url/openTab?tab=" +
+      sender.tab?.id,
+  });
+}
+
+Api.initialize({ handleRequests: true });
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);
