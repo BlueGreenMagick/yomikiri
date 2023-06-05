@@ -198,7 +198,7 @@ export default class Api {
 
   /** Must not be called from a content script. */
   static async activeTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
+    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab>();
     const info = {
       active: true,
       currentWindow: true,
@@ -211,7 +211,7 @@ export default class Api {
   }
 
   static async goToTab(tabId: number): Promise<void> {
-    const [promise, resolve, reject] = Utils.createPromise<void>();
+    const [promise, resolve] = Utils.createPromise<void>();
     chrome.tabs.update(tabId, { active: true }, () => {
       resolve();
     });
@@ -219,7 +219,7 @@ export default class Api {
   }
 
   static async removeTab(tabId: number): Promise<void> {
-    const [promise, resolve, reject] = Utils.createPromise<void>();
+    const [promise, resolve] = Utils.createPromise<void>();
     chrome.tabs.remove(tabId, () => {
       resolve();
     });
@@ -227,43 +227,30 @@ export default class Api {
   }
 
   static async getStorage<T>(key: string, or?: T): Promise<T> {
-    const [promise, resolve, reject] = Utils.createPromise<T>();
+    const [promise, resolve] = Utils.createPromise<T>();
     let req: string | { [key: string]: T } = key;
     if (or !== undefined) {
       req = {};
       req[key] = or;
     }
-    try {
-      // @ts-ignore
-      Api.storage().get(req, (obj) => {
-        resolve(obj[key]);
-      });
-    } catch (e) {
-      reject(e);
-    }
+    Api.storage().get(req, (obj) => {
+      resolve(obj[key]);
+    });
     return promise;
   }
 
   /** value cannot be undefined or null */
   static async setStorage(key: string, value: NonNullable<any>) {
-    const [promise, resolve, reject] = Utils.createPromise<void>();
+    const [promise, resolve] = Utils.createPromise<void>();
     const object: { [key: string]: any } = {};
     object[key] = value;
-    try {
-      Api.storage().set(object, resolve);
-    } catch (e) {
-      reject(e);
-    }
+    Api.storage().set(object, resolve);
     return promise;
   }
 
   static async removeStorage(key: string) {
-    const [promise, resolve, reject] = Utils.createPromise<void>();
-    try {
-      Api.storage().remove(key, resolve);
-    } catch (e) {
-      reject(e);
-    }
+    const [promise, resolve] = Utils.createPromise<void>();
+    Api.storage().remove(key, resolve);
     return promise;
   }
 
