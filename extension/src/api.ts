@@ -16,10 +16,6 @@ export interface MessageMap {
   tokenize: [TokenizeRequest, TokenizeResult];
   /** Note -> nid */
   addAnkiNote: [NoteData, number];
-  goToTab: [number, void];
-  ankiUrl: [null, void];
-  /** messaged to tab that opened anki:// url on x-success */
-  xSuccess: [null, void];
 }
 
 /** Type map for messages sent with `requestToApp()`*/
