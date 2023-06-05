@@ -1,4 +1,13 @@
 namespace Utils {
+  export type First<T extends any[]> = T extends [infer FIRST, ...any[]]
+    ? FIRST
+    : never;
+  export type Second<T extends any[]> = T extends [any, infer SECOND, ...any[]]
+    ? SECOND
+    : never;
+  export type PromiseResolver<K> = (value: K | PromiseLike<K>) => void;
+  export type PromiseRejector = (reason?: any) => void;
+
   export function createPromise<V>(): [
     Promise<V>,
     PromiseResolver<V>,
@@ -12,9 +21,6 @@ namespace Utils {
     // @ts-ignore
     return [promise, resolve, reject];
   }
-
-  export type PromiseResolver<K> = (value: K | PromiseLike<K>) => void;
-  export type PromiseRejector = (reason?: any) => void;
 
   export function listIsIdentical(l1: any[], l2: any[]) {
     if (l1.length != l2.length) return false;

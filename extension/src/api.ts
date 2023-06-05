@@ -1,12 +1,42 @@
-import type {
-  AppMessageMap,
-  AppRequest,
-  AppResponse,
-  MessageMap,
-  Request,
-  Response,
-} from "./message";
+import type { Entry } from "~/dictionary";
+import type { NoteData } from "~/anki";
+import type { Token } from "~/platform/types/tokenizer";
+import type { AnkiInfo } from "~/platform/ios/anki";
+import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
+
+/**
+ * Type map for messages between extension processes
+ * Format: `{ key: [request, response] }`
+ * Response type must not have Promise
+ * Request type cannot be void, but response can be void
+ */
+export interface MessageMap {
+  searchTerm: [string, Entry[]];
+  tokenize: [TokenizeRequest, TokenizeResult];
+  /** Note -> nid */
+  addAnkiNote: [NoteData, number];
+  goToTab: [number, void];
+  ankiUrl: [null, void];
+  /** messaged to tab that opened anki:// url on x-success */
+  xSuccess: [null, void];
+}
+
+/** Type map for messages sent with `requestToApp()`*/
+export interface AppMessageMap {
+  tokenize: [string, Token[]];
+  addNote: [NoteData, number];
+  ankiInfo: [null, AnkiInfo];
+}
+
+export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
+export type Response<K extends keyof MessageMap> = Utils.Second<MessageMap[K]>;
+export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
+  AppMessageMap[K]
+>;
+export type AppResponse<K extends keyof AppMessageMap> = Utils.Second<
+  AppMessageMap[K]
+>;
 
 interface Message<K extends keyof MessageMap> {
   key: K;

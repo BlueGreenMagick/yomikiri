@@ -103,7 +103,7 @@ const buildManifestPlugin = {
 const buildOptions = {
   entryPoints: [
     { in: "src/content/index.ts", out: "content" },
-    { in: "src/index.ts", out: "background" },
+    { in: "src/background/index.ts", out: "background" },
     { in: "src/popup/index.ts", out: "popup" },
     { in: "src/options/index.ts", out: "options" },
     { in: "src/x-callback/index.ts", out: "x-callback" },
