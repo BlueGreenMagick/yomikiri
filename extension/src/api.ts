@@ -61,6 +61,7 @@ export type RequestHandler<K extends keyof MessageMap> = (
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
 export interface ApiInitializeOptions {
+  /** Only for extension pages. Content scritps cannot access tabs api. */
   tab?: boolean;
   handleRequests?: boolean;
   handleStorageChange?: boolean;
