@@ -90,6 +90,11 @@ export default class AnkiApi {
     return await Api.requestToApp("addNote", note);
   }
 
+  static async profiles(): Promise<string[]> {
+    const ankiInfo = await AnkiApi.maybeGetInfo();
+    return ankiInfo.profiles.map((obj) => obj.name);
+  }
+
   /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
   static async deckNames(): Promise<string[]> {
     const ankiInfo = await AnkiApi.maybeGetInfo();

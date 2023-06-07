@@ -15,6 +15,7 @@ export interface Field {
 }
 
 export interface NoteData {
+  profile: string;
   deck: string;
   notetype: string;
   fields: Field[];

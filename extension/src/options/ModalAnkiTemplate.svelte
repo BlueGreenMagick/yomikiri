@@ -10,12 +10,14 @@
   const [initializePromise, initializeResolve] = Utils.createPromise<void>();
   let initialized = false;
 
+  let profiles: string[];
   let deckNames: string[];
   let notetypeNames: string[];
   let loadedFields: Promise<string[]>;
 
-  let selectedNotetype: string;
+  let selectedProfile: string;
   let selectedDeck: string;
+  let selectedNotetype: string;
   // fieldTemplates should not reload on note type change
   // so accidentally changing note type does not clear all data
   let fieldTemplates: { [name: string]: string };
@@ -23,16 +25,23 @@
 
   /** load deckNames and notetypeNames */
   async function loadNames() {
+    profiles = await AnkiApi.profiles();
     deckNames = await AnkiApi.deckNames();
     notetypeNames = await AnkiApi.notetypeNames();
     const templates = await Config.get("anki.templates");
     if (templates.length === 0) {
+      selectedProfile = profiles[0];
       selectedNotetype = notetypeNames[0];
       selectedDeck = deckNames[0];
       fieldTemplates = {};
       ankiTags = "";
     } else {
       const template = templates[0];
+      if (profiles.includes(template.profile)) {
+        selectedProfile = template.profile;
+      } else {
+        selectedProfile = profiles[0];
+      }
       if (deckNames.includes(template.deck)) {
         selectedDeck = template.deck;
       } else {
@@ -61,6 +70,7 @@
   }
 
   async function saveTemplate(
+    profile: string,
     deck: string,
     notetype: string,
     fields: { [name: string]: string },
@@ -68,6 +78,7 @@
   ) {
     if (!initialized) return;
     const template: NoteData = {
+      profile,
       deck,
       notetype,
       fields: [],
@@ -92,7 +103,13 @@
   }
 
   $: loadedFields = loadFields(selectedNotetype);
-  $: saveTemplate(selectedDeck, selectedNotetype, fieldTemplates, ankiTags);
+  $: saveTemplate(
+    selectedProfile,
+    selectedDeck,
+    selectedNotetype,
+    fieldTemplates,
+    ankiTags
+  );
   // Must come last so the above 2 is not be called on initialization
   $: initialize(hidden);
 </script>
@@ -102,6 +119,14 @@
     <div>Connecting to Anki...</div>
   {:then}
     <div class="selects">
+      {#if profiles.length > 1}
+        <div class="item-title">Profile</div>
+        <select class="item-select" bind:value={selectedProfile}>
+          {#each profiles as profile}
+            <option value={profile}>{profile}</option>
+          {/each}
+        </select>
+      {/if}
       <div class="item-title">Deck</div>
       <select class="item-select" bind:value={selectedDeck}>
         {#each deckNames as name}
