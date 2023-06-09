@@ -72,12 +72,12 @@ export default class AnkiApi {
     return (await AnkiApi.request("getTags")) as string[];
   }
 
-  static async addNote(note: NoteData): Promise<number> {
+  static async addNote(note: NoteData): Promise<void> {
     const fields: { [key: string]: string } = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
     }
-    return (await AnkiApi.request("addNote", {
+    await AnkiApi.request("addNote", {
       note: {
         deckName: note.deck,
         modelName: note.notetype,
@@ -87,7 +87,7 @@ export default class AnkiApi {
           allowDuplicate: true,
         },
       },
-    })) as number;
+    });
   }
 
   /** Throws an error if not successfully connected. */

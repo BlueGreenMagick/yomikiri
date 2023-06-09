@@ -29,7 +29,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         os_log(.default, "Opened url (scene): %{public}s", url.absoluteString)
         do {
             switch(url.path) {
-            case "/ankiInfo":
+            case "/infoForAdding":
                 try storeAnkiData()
                 let yomikiriRedirectUrl = URL(string: "http://yomikiri-redirect.bluegreenmagick.com")!
                 UIApplication.shared.open(yomikiriRedirectUrl)

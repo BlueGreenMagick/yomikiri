@@ -22,11 +22,11 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   return await tokenizer.tokenize(req);
 }
 
-async function addAnkiNote(note: NoteData): Promise<number> {
+async function addAnkiNote(note: NoteData): Promise<void> {
   return await AnkiApi.addNote(note);
 }
 
-Api.initialize({ handleRequests: true });
+Api.initialize({ handleRequests: true, context: "background" });
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);

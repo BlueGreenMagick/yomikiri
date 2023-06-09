@@ -25,12 +25,12 @@ const receivedAnkiInfoHandler: ((ankiInfo: AnkiInfo) => void)[] = [];
 
 export default class AnkiApi {
   private static async requestAnkiInfo(): Promise<AnkiInfo> {
-    const currentTab = await chrome.tabs.getCurrent();
-    if (currentTab === undefined || currentTab.id === undefined) {
+    const currentTab = await Api.currentTab();
+    if (currentTab.id === undefined) {
       throw new Error("Tab does not have any id");
     }
     await Config.set("x-callback.tabId", currentTab.id);
-    const redirectTo = "yomikiri://x-callback-url/ankiInfo";
+    const redirectTo = "yomikiri://x-callback-url/infoForAdding";
     const ankiLink = `anki://x-callback-url/infoForAdding?x-success=${redirectTo}`;
 
     // This promise is resolved when response is received from Anki
@@ -57,7 +57,7 @@ export default class AnkiApi {
    */
   static onReceiveAnkiInfo(handler: (ankiInfo: AnkiInfo) => void) {
     if (receivedAnkiInfoHandler.length === 0) {
-      AnkiApi.listenXSuccess(async () => {
+      AnkiApi.pollXSuccess(async () => {
         ankiInfo = await Api.requestToApp("ankiInfo", null);
         for (const handler of receivedAnkiInfoHandler) {
           handler(ankiInfo);
@@ -67,27 +67,54 @@ export default class AnkiApi {
     receivedAnkiInfoHandler.push(handler);
   }
 
-  private static listenXSuccess(handler: () => any) {
-    const CHECK_INTERVAL = 20;
+  private static pollXSuccess(handler: () => any) {
+    const POLL_INTERVAL = 20;
 
     const check = async () => {
       if (Api.tabId === undefined) return;
       let tabId = await Config.get("x-callback.successTabId");
       if (Api.tabId !== tabId) return;
       await Config.set("x-callback.successTabId", null);
-      await handler();
+      handler();
     };
 
-    // setInterval can have multiple poll function running concurrently
+    // only have one poll function running concurrently
     const poll = async () => {
       await check();
-      setTimeout(poll, CHECK_INTERVAL);
+      setTimeout(poll, POLL_INTERVAL);
     };
-    setTimeout(poll, CHECK_INTERVAL);
+    setTimeout(poll, POLL_INTERVAL);
   }
 
-  static async addNote(note: NoteData): Promise<number> {
-    return await Api.requestToApp("addNote", note);
+  /**
+   * This function must not be called in content script context.
+   * Does not wait for note to actually be added to Anki.
+   */
+  static async addNote(note: NoteData): Promise<void> {
+    const currentTab = await Api.currentTab();
+    if (currentTab.id === undefined) {
+      throw new Error("Current tab does not have an id");
+    }
+    await Config.set("x-callback.tabId", currentTab.id);
+
+    const fields: Record<string, string> = {};
+    for (const field of note.fields) {
+      const queryKey = "fld" + field.name;
+      fields[queryKey] = field.value;
+    }
+    const params = new URLSearchParams({
+      profile: note.profile,
+      type: note.notetype,
+      deck: note.deck,
+      tags: note.tags,
+      // allow duplicate
+      dupes: "1",
+      ...fields,
+      "x-success": "http://yomikiri-redirect.bluegreenmagick.com",
+    });
+    const ankiLink = "anki://x-callback-url/addnote?" + params.toString();
+    console.log(ankiLink);
+    Api.updateTab(currentTab.id, { url: ankiLink });
   }
 
   static async profiles(): Promise<string[]> {

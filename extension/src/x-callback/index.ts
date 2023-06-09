@@ -18,6 +18,6 @@ async function goToLastTab() {
   await Api.removeTab(currentTab.id);
 }
 
-Api.initialize({}).then(() => {
+Api.initialize({ context: "page" }).then(() => {
   goToLastTab();
 });

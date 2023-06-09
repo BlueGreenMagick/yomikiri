@@ -14,14 +14,12 @@ import Utils from "~/utils";
 export interface MessageMap {
   searchTerm: [string, Entry[]];
   tokenize: [TokenizeRequest, TokenizeResult];
-  /** Note -> nid */
-  addAnkiNote: [NoteData, number];
+  addAnkiNote: [NoteData, void];
 }
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
   tokenize: [string, Token[]];
-  addNote: [NoteData, number];
   ankiInfo: [null, AnkiInfo];
 }
 
@@ -49,23 +47,29 @@ interface FailedRequestResponse {
 }
 type RequestResponse<R> = SuccessfulRequestResponse<R> | FailedRequestResponse;
 
+export type MessageSender = chrome.runtime.MessageSender;
+
 export type RequestHandler<K extends keyof MessageMap> = (
   request: Request<K>,
-  sender: chrome.runtime.MessageSender
+  sender: MessageSender
 ) => Response<K> | Promise<Response<K>>;
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
+export type ExecutionContext = "contentScript" | "background" | "page";
+
 export interface ApiInitializeOptions {
-  /** Only for extension pages. Content scritps cannot access tabs api. */
+  /** Only for page context. Content scripts cannot access tabs api. */
   tab?: boolean;
   handleRequests?: boolean;
   handleStorageChange?: boolean;
+  context: ExecutionContext;
 }
 
 export default class Api {
   static isTouchScreen: boolean = navigator.maxTouchPoints > 0;
   static tabId?: number;
+  static readonly context: ExecutionContext;
 
   static async initialize(opts: ApiInitializeOptions) {
     if (opts.handleRequests) {
@@ -77,6 +81,8 @@ export default class Api {
     if (opts.tab) {
       this.tabId = (await Api.currentTab()).id;
     }
+    // @ts-ignore
+    Api.context = opts.context;
   }
 
   static requestHandlers: Partial<{
@@ -188,7 +194,7 @@ export default class Api {
     const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
     chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
       if (result === undefined) {
-        reject(new Error("currentTab() must be called from a tab context."));
+        reject(new Error("Could not get current tab"));
       } else {
         resolve(result);
       }
@@ -221,6 +227,17 @@ export default class Api {
   static async removeTab(tabId: number): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
     chrome.tabs.remove(tabId, () => {
+      resolve();
+    });
+    return promise;
+  }
+
+  static async updateTab(
+    tabId: number,
+    properties: chrome.tabs.UpdateProperties
+  ): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    chrome.tabs.update(tabId, properties, () => {
       resolve();
     });
     return promise;
@@ -267,7 +284,7 @@ function attachRequestHandler() {
   chrome.runtime.onMessage.addListener(
     (
       message: Message<keyof MessageMap>,
-      sender: chrome.runtime.MessageSender,
+      sender: MessageSender,
       sendResponse: (
         response?: RequestResponse<Response<keyof MessageMap>>
       ) => void

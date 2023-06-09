@@ -7,6 +7,7 @@
   import type { ScanResult } from "~/content/scanner";
   import Api from "~/api";
   import { highlighter } from "@platform/highlight";
+  import AnkiApi from "@platform/anki";
 
   const BOTTOM_HEIGHT_THRESHOLD = 500;
 
@@ -114,8 +115,7 @@
       const data = ev.detail;
       data.scanned = scanResult;
       const note = await AnkiNoteBuilder.buildNote(data as MarkerData);
-      const nid = await Api.request("addAnkiNote", note);
-      console.log("Note added: " + nid);
+      await Api.request("addAnkiNote", note);
     });
   }
 
