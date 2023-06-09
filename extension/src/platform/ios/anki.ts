@@ -60,6 +60,7 @@ export default class AnkiApi {
       AnkiApi.pollXSuccess(async () => {
         ankiInfo = await Api.requestToApp("ankiInfo", null);
         for (const handler of receivedAnkiInfoHandler) {
+          console.log(ankiInfo);
           handler(ankiInfo);
         }
       });
@@ -103,7 +104,6 @@ export default class AnkiApi {
       fields[queryKey] = field.value;
     }
     const params = new URLSearchParams({
-      profile: note.profile,
       type: note.notetype,
       deck: note.deck,
       tags: note.tags,
@@ -115,11 +115,6 @@ export default class AnkiApi {
     const ankiLink = "anki://x-callback-url/addnote?" + params.toString();
     console.log(ankiLink);
     Api.updateTab(currentTab.id, { url: ankiLink });
-  }
-
-  static async profiles(): Promise<string[]> {
-    const ankiInfo = await AnkiApi.maybeGetInfo();
-    return ankiInfo.profiles.map((obj) => obj.name);
   }
 
   /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */

@@ -4,7 +4,6 @@ import type { AnkiInfo } from "../ios/anki";
 export interface IAnkiApiStatic {
   /** Returns note id */
   addNote: (note: NoteData, tabId?: number) => Promise<void>;
-  profiles: () => Promise<string[]>;
   deckNames: () => Promise<string[]>;
   notetypeNames: () => Promise<string[]>;
   nodeTypeFields: (noteTypeName: string) => Promise<string[]>;

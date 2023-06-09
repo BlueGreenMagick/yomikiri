@@ -50,10 +50,6 @@ export default class AnkiApi {
     return data.result;
   }
 
-  static async profiles(): Promise<string[]> {
-    return (await AnkiApi.request("getProfiles")) as string[];
-  }
-
   static async deckNames(): Promise<string[]> {
     return (await AnkiApi.request("deckNames")) as string[];
   }
