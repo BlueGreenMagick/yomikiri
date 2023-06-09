@@ -3,7 +3,7 @@ import type { Entry } from "~/dictionary";
 import EntriesView from "./EntriesView.svelte";
 import { AnkiNoteBuilder, type MarkerData } from "~/anki";
 import type { ScanResult } from "~/content/scanner";
-import Api from "~/api";
+import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 
 export namespace Tooltip {

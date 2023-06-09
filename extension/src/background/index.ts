@@ -4,7 +4,7 @@ import {
   type TokenizeResult,
   type TokenizeRequest,
 } from "../tokenizer";
-import Api from "../api";
+import { Api, type MessageSender } from "~/api";
 import AnkiApi from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/anki";
@@ -26,10 +26,15 @@ async function addAnkiNote(note: NoteData): Promise<void> {
   return await AnkiApi.addNote(note);
 }
 
+function tabId(req: null, sender: MessageSender): number | undefined {
+  return sender.tab?.id;
+}
+
 Api.initialize({ handleRequests: true, context: "background" });
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);
+Api.handleRequest("tabId", tabId);
 
 // expose object to window for debugging purposes
 //@ts-ignore

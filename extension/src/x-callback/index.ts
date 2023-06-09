@@ -1,6 +1,6 @@
 /// For IOS
 
-import Api from "~/api";
+import { Api } from "~/api";
 import Config from "~/config";
 
 /// Used for x-callback-url as x-success value to return back to current page.

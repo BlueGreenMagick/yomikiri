@@ -1,5 +1,5 @@
 import { Scanner } from "./scanner";
-import Api from "~/api";
+import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Tooltip } from "~/tooltip/tooltip";
 

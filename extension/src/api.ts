@@ -15,6 +15,7 @@ export interface MessageMap {
   searchTerm: [string, Entry[]];
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [NoteData, void];
+  tabId: [null, number | undefined];
 }
 
 /** Type map for messages sent with `requestToApp()`*/
@@ -59,45 +60,39 @@ export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 export type ExecutionContext = "contentScript" | "background" | "page";
 
 export interface ApiInitializeOptions {
-  /** Only for page context. Content scripts cannot access tabs api. */
-  tab?: boolean;
   handleRequests?: boolean;
   handleStorageChange?: boolean;
   context: ExecutionContext;
 }
 
-export default class Api {
-  static isTouchScreen: boolean = navigator.maxTouchPoints > 0;
-  static tabId?: number;
-  static readonly context: ExecutionContext;
+export namespace Api {
+  export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
+  export let context: ExecutionContext;
 
-  static async initialize(opts: ApiInitializeOptions) {
+  export async function initialize(opts: ApiInitializeOptions) {
     if (opts.handleRequests) {
       attachRequestHandler();
     }
     if (opts.handleStorageChange) {
       attachStorageChangeHandler();
     }
-    if (opts.tab) {
-      this.tabId = (await Api.currentTab()).id;
-    }
     // @ts-ignore
-    Api.context = opts.context;
+    context = opts.context;
   }
 
-  static requestHandlers: Partial<{
+  const _requestHandlers: Partial<{
     [K in keyof MessageMap]: RequestHandler<K>;
   }> = {};
 
-  static storageHandlers: {
+  const _storageHandlers: {
     [key: string]: StorageHandler[];
   } = {};
 
-  static storage(): chrome.storage.StorageArea {
+  export function storage(): chrome.storage.StorageArea {
     return chrome.storage.local;
   }
 
-  private static handleRequestResponse<R>(resp: RequestResponse<R>): R {
+  function handleRequestResponse<R>(resp: RequestResponse<R>): R {
     if (resp.success) {
       return resp.resp;
     } else {
@@ -116,13 +111,13 @@ export default class Api {
     }
   }
 
-  private static createRequestResponseHandler<K extends keyof MessageMap>(
+  function createRequestResponseHandler<K extends keyof MessageMap>(
     resolve: Utils.PromiseResolver<Response<K>>,
     reject: (reason: Error) => void
   ): (resp: RequestResponse<Response<K>>) => void {
     return (resp: RequestResponse<Response<K>>) => {
       try {
-        let response = Api.handleRequestResponse(resp);
+        let response = handleRequestResponse(resp);
         resolve(response);
       } catch (error: any) {
         reject(error);
@@ -132,7 +127,7 @@ export default class Api {
 
   /// Send request to extension backend.
   /// Returns the return value of the request handler.
-  static async request<K extends keyof MessageMap>(
+  export async function request<K extends keyof MessageMap>(
     key: K,
     request: Request<K>
   ): Promise<Response<K>> {
@@ -141,14 +136,14 @@ export default class Api {
       key,
       request,
     };
-    const handler = Api.createRequestResponseHandler(resolve, reject);
+    const handler = createRequestResponseHandler(resolve, reject);
     chrome.runtime.sendMessage(message, handler);
     return promise;
   }
 
   /// Send request to extension backend.
   /// Returns the return value of the request handler.
-  static async requestToTab<K extends keyof MessageMap>(
+  export async function requestToTab<K extends keyof MessageMap>(
     tabId: number,
     key: K,
     request: Request<K>
@@ -161,23 +156,23 @@ export default class Api {
     chrome.tabs.sendMessage(
       tabId,
       message,
-      Api.createRequestResponseHandler(resolve, reject)
+      createRequestResponseHandler(resolve, reject)
     );
     return promise;
   }
 
   /// Handle request by front-end for `key`. Return response in handler.
   /// If there is an existing handler for `key`, replaces it.
-  static handleRequest<K extends keyof MessageMap>(
+  export function handleRequest<K extends keyof MessageMap>(
     key: K,
     handler: RequestHandler<K>
   ) {
     // @ts-ignore
-    Api.requestHandlers[key] = handler;
+    _requestHandlers[key] = handler;
   }
 
   /** Only supported in iOS */
-  static async requestToApp<K extends keyof AppMessageMap>(
+  export async function requestToApp<K extends keyof AppMessageMap>(
     key: K,
     request: AppRequest<K>
   ): Promise<AppResponse<K>> {
@@ -185,12 +180,12 @@ export default class Api {
       key,
       request: JSON.stringify(request),
     });
-    const response = Api.handleRequestResponse<string>(resp);
+    const response = handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }
 
   /** Must be called from within a tab, and not in a content script */
-  static async currentTab(): Promise<chrome.tabs.Tab> {
+  export async function currentTab(): Promise<chrome.tabs.Tab> {
     const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
     chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
       if (result === undefined) {
@@ -203,7 +198,7 @@ export default class Api {
   }
 
   /** Must not be called from a content script. */
-  static async activeTab(): Promise<chrome.tabs.Tab> {
+  export async function activeTab(): Promise<chrome.tabs.Tab> {
     const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab>();
     const info = {
       active: true,
@@ -216,7 +211,7 @@ export default class Api {
     return promise;
   }
 
-  static async goToTab(tabId: number): Promise<void> {
+  export async function goToTab(tabId: number): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
     chrome.tabs.update(tabId, { active: true }, () => {
       resolve();
@@ -224,7 +219,7 @@ export default class Api {
     return promise;
   }
 
-  static async removeTab(tabId: number): Promise<void> {
+  export async function removeTab(tabId: number): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
     chrome.tabs.remove(tabId, () => {
       resolve();
@@ -232,7 +227,7 @@ export default class Api {
     return promise;
   }
 
-  static async updateTab(
+  export async function updateTab(
     tabId: number,
     properties: chrome.tabs.UpdateProperties
   ): Promise<void> {
@@ -243,7 +238,7 @@ export default class Api {
     return promise;
   }
 
-  static async getStorage<T>(key: string, or?: T): Promise<T> {
+  export async function getStorage<T>(key: string, or?: T): Promise<T> {
     const [promise, resolve] = Utils.createPromise<T>();
     let req: string | { [key: string]: T } = key;
     if (or !== undefined) {
@@ -257,7 +252,7 @@ export default class Api {
   }
 
   /** value cannot be undefined or null */
-  static async setStorage(key: string, value: NonNullable<any>) {
+  export async function setStorage(key: string, value: NonNullable<any>) {
     const [promise, resolve] = Utils.createPromise<void>();
     const object: { [key: string]: any } = {};
     object[key] = value;
@@ -265,65 +260,68 @@ export default class Api {
     return promise;
   }
 
-  static async removeStorage(key: string) {
+  export async function removeStorage(key: string) {
     const [promise, resolve] = Utils.createPromise<void>();
     Api.storage().remove(key, resolve);
     return promise;
   }
 
-  static async handleStorageChange(key: string, handler: StorageHandler) {
-    if (Api.storageHandlers[key] === undefined) {
-      Api.storageHandlers[key] = [handler];
+  export async function handleStorageChange(
+    key: string,
+    handler: StorageHandler
+  ) {
+    if (_storageHandlers[key] === undefined) {
+      _storageHandlers[key] = [handler];
     } else {
-      Api.storageHandlers[key].push(handler);
+      _storageHandlers[key].push(handler);
     }
   }
-}
 
-function attachRequestHandler() {
-  chrome.runtime.onMessage.addListener(
-    (
-      message: Message<keyof MessageMap>,
-      sender: MessageSender,
-      sendResponse: (
-        response?: RequestResponse<Response<keyof MessageMap>>
-      ) => void
-    ): boolean => {
-      let handler = Api.requestHandlers[message.key];
-      if (handler) {
-        (async () => {
-          try {
-            // @ts-ignore
-            let resp = handler(message.request, sender);
-            let realResp = resp instanceof Promise ? await resp : resp;
-            sendResponse({
-              success: true,
-              resp: realResp,
-            });
-          } catch (e) {
-            sendResponse({
-              success: false,
-              error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-            });
-            console.error(e);
-          }
-        })();
-        return true;
-      } else {
-        return false;
+  function attachRequestHandler() {
+    chrome.runtime.onMessage.addListener(
+      (
+        message: Message<keyof MessageMap>,
+        sender: MessageSender,
+        sendResponse: (
+          response?: RequestResponse<Response<keyof MessageMap>>
+        ) => void
+      ): boolean => {
+        let handler = _requestHandlers[message.key];
+        if (handler) {
+          (async () => {
+            try {
+              // @ts-ignore
+              let resp = handler(message.request, sender);
+              let realResp = resp instanceof Promise ? await resp : resp;
+              sendResponse({
+                success: true,
+                resp: realResp,
+              });
+            } catch (e) {
+              sendResponse({
+                success: false,
+                error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+              });
+              console.error(e);
+            }
+          })();
+          return true;
+        } else {
+          return false;
+        }
       }
-    }
-  );
-}
+    );
+  }
 
-function attachStorageChangeHandler() {
-  Api.storage().onChanged.addListener((changes) => {
-    for (const key in changes) {
-      const handlers = Api.storageHandlers[key];
-      if (handlers === undefined) continue;
-      for (const handler of handlers) {
-        handler(changes[key]);
+  function attachStorageChangeHandler() {
+    Api.storage().onChanged.addListener((changes) => {
+      for (const key in changes) {
+        const handlers = _storageHandlers[key];
+        if (handlers === undefined) continue;
+        for (const handler of handlers) {
+          handler(changes[key]);
+        }
       }
-    }
-  });
+    });
+  }
 }

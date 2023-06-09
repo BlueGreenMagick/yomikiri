@@ -1,4 +1,4 @@
-import Api from "~/api";
+import { Api } from "~/api";
 import type { NoteData } from "~/anki";
 
 /** Cannot distinguish between null and undefined */

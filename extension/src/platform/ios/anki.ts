@@ -1,4 +1,4 @@
-import Api from "~/api";
+import { Api } from "~/api";
 import type { IAnkiApiStatic } from "../types/anki";
 import type { NoteData } from "~/anki";
 import Config from "~/config";
@@ -67,13 +67,16 @@ export default class AnkiApi {
     receivedAnkiInfoHandler.push(handler);
   }
 
-  private static pollXSuccess(handler: () => any) {
+  private static async pollXSuccess(handler: () => any) {
     const POLL_INTERVAL = 20;
+    const thisTab = await Api.request("tabId", null);
+    if (thisTab === undefined) {
+      throw new Error("Could not get tab Id (Unreachable)");
+    }
 
     const check = async () => {
-      if (Api.tabId === undefined) return;
-      let tabId = await Config.get("x-callback.successTabId");
-      if (Api.tabId !== tabId) return;
+      let tab = await Config.get("x-callback.successTabId");
+      if (thisTab !== tab) return;
       await Config.set("x-callback.successTabId", null);
       handler();
     };

@@ -1,5 +1,5 @@
 import type { ITokenizerStatic, ITokenizer, Token } from "../types/tokenizer";
-import Api from "~/api";
+import { Api } from "~/api";
 
 export type { Token } from "../types/tokenizer";
 
