@@ -26,11 +26,12 @@ async function addAnkiNote(note: NoteData): Promise<void> {
   return await AnkiApi.addNote(note);
 }
 
-function tabId(req: null, sender: MessageSender): number | undefined {
+function tabId(_req: null, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
 
 Api.initialize({ handleRequests: true, context: "background" });
+
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);

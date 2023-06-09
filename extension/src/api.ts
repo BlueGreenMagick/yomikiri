@@ -68,6 +68,7 @@ export interface ApiInitializeOptions {
 export namespace Api {
   export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
   export let context: ExecutionContext;
+  let _tabId: number | undefined;
 
   export async function initialize(opts: ApiInitializeOptions) {
     if (opts.handleRequests) {
@@ -195,6 +196,17 @@ export namespace Api {
       }
     });
     return promise;
+  }
+
+  export async function currentTabId(): Promise<number> {
+    if (_tabId === undefined) {
+      const tab = await currentTab();
+      if (tab.id === undefined) {
+        throw new Error("Current tab does not have an id");
+      }
+      _tabId = tab.id;
+    }
+    return _tabId;
   }
 
   /** Must not be called from a content script. */

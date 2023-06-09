@@ -25,11 +25,8 @@ const receivedAnkiInfoHandler: ((ankiInfo: AnkiInfo) => void)[] = [];
 
 export default class AnkiApi {
   private static async requestAnkiInfo(): Promise<AnkiInfo> {
-    const currentTab = await Api.currentTab();
-    if (currentTab.id === undefined) {
-      throw new Error("Tab does not have any id");
-    }
-    await Config.set("x-callback.tabId", currentTab.id);
+    const currentTabId = await Api.currentTabId();
+    await Config.set("x-callback.tabId", currentTabId);
     const redirectTo = "yomikiri://x-callback-url/infoForAdding";
     const ankiLink = `anki://x-callback-url/infoForAdding?x-success=${redirectTo}`;
 
@@ -69,14 +66,11 @@ export default class AnkiApi {
 
   private static async pollXSuccess(handler: () => any) {
     const POLL_INTERVAL = 20;
-    const thisTab = await Api.request("tabId", null);
-    if (thisTab === undefined) {
-      throw new Error("Could not get tab Id (Unreachable)");
-    }
+    const thisTabId = await Api.currentTabId();
 
     const check = async () => {
-      let tab = await Config.get("x-callback.successTabId");
-      if (thisTab !== tab) return;
+      let id = await Config.get("x-callback.successTabId");
+      if (thisTabId !== id) return;
       await Config.set("x-callback.successTabId", null);
       handler();
     };
