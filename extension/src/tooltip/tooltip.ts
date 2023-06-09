@@ -17,11 +17,10 @@ export namespace Tooltip {
     mouseX: number,
     mouseY: number
   ) {
-    _scanResult = scanned;
     if (_tooltipEl === undefined) {
       await createTooltipIframe();
     }
-
+    _scanResult = scanned;
     _tooltipEl.style.display = "block";
     _entriesView.setEntries(e);
     const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
