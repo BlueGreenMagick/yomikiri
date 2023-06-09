@@ -60,7 +60,6 @@ export default class AnkiApi {
       AnkiApi.pollXSuccess(async () => {
         ankiInfo = await Api.requestToApp("ankiInfo", null);
         for (const handler of receivedAnkiInfoHandler) {
-          console.log(ankiInfo);
           handler(ankiInfo);
         }
       });
@@ -113,7 +112,6 @@ export default class AnkiApi {
       "x-success": "http://yomikiri-redirect.bluegreenmagick.com",
     });
     const ankiLink = "anki://x-callback-url/addnote?" + params.toString();
-    console.log(ankiLink);
     Api.updateTab(currentTab.id, { url: ankiLink });
   }
 

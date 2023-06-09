@@ -23,7 +23,6 @@ export default class AnkiApi {
   /** Send Anki-connect request */
   private static async request(action: string, params?: any): Promise<any> {
     const ankiConnectUrl = await AnkiApi.ankiConnectURL();
-    console.log("Abc");
     const response = await fetch(ankiConnectUrl, {
       method: "POST",
       body: JSON.stringify({
@@ -33,7 +32,6 @@ export default class AnkiApi {
       }),
     });
     const data = await response.json();
-    console.log(data);
 
     if (Object.getOwnPropertyNames(data).length != 2) {
       throw new Error("response has an unexpected number of fields");
