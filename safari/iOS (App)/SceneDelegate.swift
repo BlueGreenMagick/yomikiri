@@ -24,32 +24,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         _ scene: UIScene,
         openURLContexts urlContexts: Set<UIOpenURLContext>
     ) {
-        guard let url = urlContexts.first?.url else {
-            return
-        }
-        // let openingProcess = urlContexts.first?.options.sourceApplication
-        os_log(.default, "Opened url (scene): %{public}s", url.absoluteString)
-        do {
-            switch(url.path) {
-            case "/infoForAdding":
-                try storeAnkiData()
-                let yomikiriRedirectUrl = URL(string: "http://yomikiri-redirect.bluegreenmagick.com")!
-                UIApplication.shared.open(yomikiriRedirectUrl)
-            default:
-                os_log(.error, "No x-callback-url action found")
+        Task {
+            guard let url = urlContexts.first?.url else {
+                return
             }
-        } catch {
-            os_log(.error, "%s", error.localizedDescription)
+            // let openingProcess = urlContexts.first?.options.sourceApplication
+            os_log(.default, "Opened url (scene): %{public}s", url.absoluteString)
+            do {
+                switch(url.path) {
+                case "/infoForAdding":
+                    try await storeAnkiData()
+                    let yomikiriRedirectUrl = URL(string: "http://yomikiri-redirect.bluegreenmagick.com")!
+                    await UIApplication.shared.open(yomikiriRedirectUrl)
+                default:
+                    os_log(.error, "No x-callback-url action found")
+                }
+            } catch {
+                os_log(.error, "ERROR: %s", error.localizedDescription)
+            }
         }
     }
 }
 
 // store anki info data into UserDefaults
-func storeAnkiData() throws {
+func storeAnkiData() async throws {
     let PASTEBOARD_TYPE = "net.ankimobile.json"
     guard let sharedDefault = UserDefaults(suiteName: "group.com.bluegreenmagick.yomikiri") else {
         throw "Could not retrieve UserDefaults"
     }
+    try await Task.sleep(nanoseconds: 10 * 1000)
     guard let data = UIPasteboard.general.data(forPasteboardType: PASTEBOARD_TYPE) else {
         throw "Anki data not found in clipboard"
     }
