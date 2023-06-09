@@ -1,7 +1,7 @@
 import { Scanner } from "./scanner";
 import Api from "~/api";
-import TooltipSvelte from "tooltip/Tooltip.svelte";
 import { highlighter } from "@platform/highlight";
+import { Tooltip } from "~/tooltip/tooltip";
 
 Api.initialize({ tab: false, context: "contentScript" });
 
@@ -15,11 +15,11 @@ async function _trigger(x: number, y: number) {
   if (result === null) return;
   if (result.dicEntries.length === 0) {
     highlighter.highlightRed(result.range);
-    tooltipSvelte.hide();
+    Tooltip.hide();
     return;
   }
   highlighter.highlight(result.range);
-  tooltipSvelte.show(result.dicEntries, result, x, y);
+  await Tooltip.show(result.dicEntries, result, x, y);
 }
 
 let running: boolean = false;
@@ -42,12 +42,6 @@ async function trigger(x: number, y: number) {
     next = [x, y];
   }
 }
-
-/** Attach tooltip element to document */
-const tooltipSvelte = new TooltipSvelte({
-  target: document.body,
-  props: {},
-});
 
 document.addEventListener("mousemove", async (ev) => {
   if (ev.shiftKey) {
