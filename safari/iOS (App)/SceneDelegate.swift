@@ -8,7 +8,9 @@
 import UIKit
 import os.log
 
-extension String: Error {}
+extension String: LocalizedError {
+    public var errorDescription: String? { return self }
+}
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
