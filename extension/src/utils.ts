@@ -84,6 +84,12 @@ namespace Utils {
   export function benchLogs(): string[] {
     return _benchLogs;
   }
+
+  export function awaitTime(ms: number): Promise<void> {
+    const [promise, resolve] = createPromise<void>();
+    setTimeout(resolve, ms);
+    return promise;
+  }
 }
 
 export default Utils;
