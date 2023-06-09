@@ -6,8 +6,6 @@ import type { ScanResult } from "~/content/scanner";
 import Api from "~/api";
 import { highlighter } from "@platform/highlight";
 
-const BOTTOM_HEIGHT_THRESHOLD = 500;
-
 export namespace Tooltip {
   let _scanResult: ScanResult;
   let _tooltipEl: HTMLIFrameElement;
@@ -98,44 +96,50 @@ export namespace Tooltip {
     return rects[0];
   }
 
+  /** position tooltip next to rect */
   async function position(rect: DOMRect) {
     const tooltip = getTooltipEl();
     // reset tooltipEl style beforehand so tooltip does not affect document size.
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
-    tooltip.style.removeProperty("right");
-    tooltip.style.removeProperty("transform");
     tooltip.style.width = Math.min(500, window.innerWidth) + "px";
+    tooltip.style.removeProperty("transform");
 
     // calculate frame size
-    const dim = tooltip.contentDocument
-      ?.getElementById("yomikiri-entriesview")
-      ?.getBoundingClientRect() as DOMRect;
-    tooltip.style.width = dim.width + "px";
-    tooltip.style.height = dim.height + "px";
+    let content = tooltip.contentDocument?.getElementById(
+      "yomikiri-entriesview"
+    ) as HTMLElement;
+    const width = content.scrollWidth;
+    const height = content.scrollHeight;
+    tooltip.style.width = width + "px";
+    tooltip.style.height = height + "px";
 
     // calculate frame position
-    const docRoot = document.documentElement;
-    const rectLeft = rect.left + docRoot.scrollLeft - docRoot.clientLeft;
-    const rectBottom = rect.bottom + docRoot.scrollTop - docRoot.clientTop;
-    const rectTop = rect.top + docRoot.scrollTop - docRoot.clientTop;
-    const spaceBottom = window.innerHeight - rect.bottom;
+    const rootRect = document.documentElement.getBoundingClientRect();
+    const rectLeft = rect.left - rootRect.left;
+    const rectTop = rect.top - rootRect.top;
+    const rectBottom = rectTop + rect.height;
     const spaceTop = rect.top;
+    const spaceBottom = window.innerHeight - rect.bottom;
+    // min margin between tooltip and window
+    const MARGIN = 10;
+    // space between highlighted rect and tooltip
+    const VERTICAL_SPACE = 6;
+    const MAX_HEIGHT = 300;
+    const BOTTOM_ADVANTAGE = 150;
 
-    if (rectLeft + dim.width <= docRoot.scrollWidth) {
-      tooltip.style.left = rectLeft + "px";
-    } else {
-      tooltip.style.removeProperty("left");
-      tooltip.style.right = "0px";
-    }
-
+    tooltip.style.left =
+      Math.min(rectLeft, rootRect.width - MARGIN - width) + "px";
+    // default to below text, but above text if space is too small
     if (
-      rectBottom + 5 + dim.height <= docRoot.scrollHeight &&
-      (spaceBottom > BOTTOM_HEIGHT_THRESHOLD + 5 || spaceBottom > spaceTop)
+      (spaceBottom > MAX_HEIGHT ||
+        spaceTop < MAX_HEIGHT + MARGIN ||
+        spaceTop < spaceBottom + BOTTOM_ADVANTAGE) &&
+      rectBottom + VERTICAL_SPACE + height <= rootRect.height
     ) {
-      tooltip.style.top = rectBottom + 5 + "px";
+      tooltip.style.top = rectBottom + VERTICAL_SPACE + "px";
     } else {
-      tooltip.style.top = rectTop - 5 + "px";
+      tooltip.style.top = rectTop - VERTICAL_SPACE + "px";
       tooltip.style.transform = "translateY(-100%)";
     }
   }
@@ -156,7 +160,6 @@ border: 0;
     _entriesView = new EntriesView({
       target: doc.body,
     });
-    console.log(typeof doc.getElementById("yomikiri-entriesview"));
     _entriesView.$on("close", (ev: CustomEvent<MouseEvent>) => {
       hide();
       highlighter.unhighlight();
