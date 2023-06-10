@@ -1,5 +1,5 @@
 import { Api } from "~/api";
-import type { NoteData } from "~/anki";
+import type { NoteData } from "~/ankiNoteBuilder";
 
 /** Cannot distinguish between null and undefined */
 export interface ConfigTypes {

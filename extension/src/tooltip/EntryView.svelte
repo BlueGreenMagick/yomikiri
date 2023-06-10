@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Entry, type GroupedSense, type Reading } from "~/dictionary";
-  import type { MarkerData } from "~/anki";
+  import type { MarkerData } from "~/ankiNoteBuilder";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";

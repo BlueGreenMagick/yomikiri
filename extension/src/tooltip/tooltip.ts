@@ -1,7 +1,7 @@
 import Utils from "utils";
 import type { Entry } from "~/dictionary";
 import EntriesView from "./EntriesView.svelte";
-import { AnkiNoteBuilder, type MarkerData } from "~/anki";
+import { AnkiNoteBuilder, type MarkerData } from "~/ankiNoteBuilder";
 import type { ScanResult } from "~/content/scanner";
 import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";

@@ -7,7 +7,7 @@ import {
 import { Api, type MessageSender } from "~/api";
 import AnkiApi from "@platform/anki";
 import Utils from "../utils";
-import type { NoteData } from "~/anki";
+import type { NoteData } from "~/ankiNoteBuilder";
 
 let dictionaryP = Dictionary.initialize();
 let tokenizerP = Tokenizer.initialize(dictionaryP);

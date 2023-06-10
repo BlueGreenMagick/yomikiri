@@ -1,7 +1,6 @@
 import Config from "./config";
 import type { ScanResult } from "./content/scanner";
-import { Scanner } from "./content/scanner";
-import type { DictionaryResult, Entry, Sense } from "./dictionary";
+import type { Entry, Sense } from "./dictionary";
 
 export interface MarkerData {
   scanned: ScanResult;
@@ -21,31 +20,31 @@ export interface NoteData {
   tags: string;
 }
 
-export class AnkiNoteBuilder {
-  private static markerHandlers: {
+export namespace AnkiNoteBuilder {
+  const _markerHandlers: {
     [marker: string]: (data: MarkerData) => string;
   } = {};
-  private static cachedValue: { [marker: string]: string } = {};
+  let _cachedValue: { [marker: string]: string } = {};
 
-  static addMarker(marker: string, fn: (data: MarkerData) => string) {
-    AnkiNoteBuilder.markerHandlers[marker] = fn;
+  export function addMarker(marker: string, fn: (data: MarkerData) => string) {
+    _markerHandlers[marker] = fn;
   }
 
-  private static markerValue(data: MarkerData, marker: string): string {
-    if (this.cachedValue[marker] !== undefined) return this.cachedValue[marker];
+  function markerValue(data: MarkerData, marker: string): string {
+    if (_cachedValue[marker] !== undefined) return _cachedValue[marker];
 
-    const handler = AnkiNoteBuilder.markerHandlers[marker];
+    const handler = _markerHandlers[marker];
     let value = "";
     if (handler !== undefined) {
       value = handler(data);
     } else {
       console.error(`Invalid marker in Anki note template: {{${marker}}}`);
     }
-    this.cachedValue[marker] = value;
+    _cachedValue[marker] = value;
     return value;
   }
 
-  private static cloneNote(n: NoteData): NoteData {
+  function cloneNote(n: NoteData): NoteData {
     const note: NoteData = {
       ...n,
       fields: [],
@@ -58,17 +57,17 @@ export class AnkiNoteBuilder {
     return note;
   }
 
-  static async buildNote(data: MarkerData): Promise<NoteData> {
-    AnkiNoteBuilder.cachedValue = {};
+  export async function buildNote(data: MarkerData): Promise<NoteData> {
+    _cachedValue = {};
     const templates = await Config.get("anki.templates");
     const template = templates[0];
-    const note = AnkiNoteBuilder.cloneNote(template);
+    const note = cloneNote(template);
     for (const field of note.fields) {
       console.log(field.value);
       field.value = field.value.replace(
         /{{([^{}<>\s]+)}}/g,
         (match, marker) => {
-          return AnkiNoteBuilder.markerValue(data, marker);
+          return markerValue(data, marker);
         }
       );
     }

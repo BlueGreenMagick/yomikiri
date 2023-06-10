@@ -1,6 +1,6 @@
 import { Api } from "~/api";
 import type { IAnkiApiStatic } from "../types/anki";
-import type { NoteData } from "~/anki";
+import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import Utils from "~/utils";
 

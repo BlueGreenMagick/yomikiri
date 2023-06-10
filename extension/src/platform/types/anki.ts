@@ -1,4 +1,4 @@
-import type { NoteData } from "~/anki";
+import type { NoteData } from "~/ankiNoteBuilder";
 import type { AnkiInfo } from "../ios/anki";
 
 export interface IAnkiApiStatic {

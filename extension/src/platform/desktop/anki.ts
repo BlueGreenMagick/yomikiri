@@ -1,7 +1,7 @@
 import type { IAnkiApiStatic } from "../types/anki";
 import Config from "~/config";
 import Utils from "~/utils";
-import type { NoteData } from "~/anki";
+import type { NoteData } from "~/ankiNoteBuilder";
 
 /**
  * Uses Anki-Connect on desktop.

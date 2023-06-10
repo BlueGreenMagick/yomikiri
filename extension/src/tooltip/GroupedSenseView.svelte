@@ -2,7 +2,7 @@
   import { type Sense, type GroupedSense, Dictionary } from "~/dictionary";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
-  import type { MarkerData } from "~/anki";
+  import type { MarkerData } from "~/ankiNoteBuilder";
 
   interface Events {
     addNote: Partial<MarkerData>;

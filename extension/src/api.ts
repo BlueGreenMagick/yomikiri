@@ -1,5 +1,5 @@
 import type { Entry } from "~/dictionary";
-import type { NoteData } from "~/anki";
+import type { NoteData } from "~/ankiNoteBuilder";
 import type { Token } from "~/platform/types/tokenizer";
 import type { AnkiInfo } from "~/platform/ios/anki";
 import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
