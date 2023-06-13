@@ -32,6 +32,10 @@ export class Tokenizer {
     return new Tokenizer(dictionary, tokenizerInner);
   }
 
+  async tokenizeText(text: string): Promise<TokenizeResult> {
+    return await this.tokenize({ text, selectedCharIdx: 0 });
+  }
+
   async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
     Utils.benchStart();
     let tokens = await this.tokenizer.tokenize(req.text);
