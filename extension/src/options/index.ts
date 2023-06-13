@@ -4,7 +4,7 @@ import OptionsSvelte from "./Options.svelte";
 import Utils from "~/utils";
 import AnkiApi from "@platform/anki";
 
-Api.initialize({ tab: true, context: "page" });
+Api.initialize({ context: "page" });
 
 const optionsSvelte = new OptionsSvelte({
   target: document.body,

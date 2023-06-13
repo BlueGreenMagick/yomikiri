@@ -3,7 +3,7 @@ import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Tooltip } from "~/tooltip/tooltip";
 
-Api.initialize({ tab: false, context: "contentScript" });
+Api.initialize({ context: "contentScript" });
 
 const scanner = new Scanner();
 
