@@ -21,18 +21,26 @@ export interface NoteData {
 }
 
 export namespace AnkiNoteBuilder {
+  export const MARKERS = [
+    "",
+    "word",
+    "word-furigana",
+    "word-kana",
+    "dict",
+    "sentence",
+    "sentence-kana",
+  ] as const;
+  export type Marker = (typeof MARKERS)[number];
+
   const _markerHandlers: {
     [marker: string]: (data: MarkerData) => string;
   } = {};
-  let _cachedValue: { [marker: string]: string } = {};
 
-  export function addMarker(marker: string, fn: (data: MarkerData) => string) {
+  export function addMarker(marker: Marker, fn: (data: MarkerData) => string) {
     _markerHandlers[marker] = fn;
   }
 
-  function markerValue(data: MarkerData, marker: string): string {
-    if (_cachedValue[marker] !== undefined) return _cachedValue[marker];
-
+  function markerValue(marker: string, data: MarkerData): string {
     const handler = _markerHandlers[marker];
     let value = "";
     if (handler !== undefined) {
@@ -40,7 +48,6 @@ export namespace AnkiNoteBuilder {
     } else {
       console.error(`Invalid marker in Anki note template: {{${marker}}}`);
     }
-    _cachedValue[marker] = value;
     return value;
   }
 
@@ -58,42 +65,40 @@ export namespace AnkiNoteBuilder {
   }
 
   export async function buildNote(data: MarkerData): Promise<NoteData> {
-    _cachedValue = {};
     const templates = await Config.get("anki.templates");
     const template = templates[0];
     const note = cloneNote(template);
     for (const field of note.fields) {
-      console.log(field.value);
-      field.value = field.value.replace(
-        /{{([^{}<>\s]+)}}/g,
-        (match, marker) => {
-          return markerValue(data, marker);
-        }
-      );
+      const marker = field.value;
+      field.value = markerValue(marker, data);
     }
     return note;
   }
+
+  addMarker("", (_data: MarkerData) => {
+    return "";
+  });
+  addMarker("word", (data: MarkerData) => {
+    return data.scanned.token.text;
+  });
+  addMarker("dict", (data: MarkerData) => {
+    return data.scanned.token.baseForm;
+  });
+  addMarker("word-kana", (data: MarkerData) => {
+    return data.scanned.token.reading;
+  });
+  addMarker("sentence", (data: MarkerData) => {
+    return data.scanned.sentence;
+  });
+  addMarker("sentence-kana", (data: MarkerData) => {
+    let reading = "";
+    for (const token of data.scanned.sentenceTokens) {
+      reading += token.reading;
+    }
+    return reading;
+  });
 }
 
-AnkiNoteBuilder.addMarker("word-original", (data: MarkerData) => {
-  return data.scanned.token.text;
-});
-AnkiNoteBuilder.addMarker("word-dict", (data: MarkerData) => {
-  return data.scanned.token.baseForm;
-});
-AnkiNoteBuilder.addMarker("word-reading", (data: MarkerData) => {
-  return data.scanned.token.reading;
-});
-AnkiNoteBuilder.addMarker("sentence-original", (data: MarkerData) => {
-  return data.scanned.sentence;
-});
-AnkiNoteBuilder.addMarker("sentence-reading", (data: MarkerData) => {
-  let reading = "";
-  for (const token of data.scanned.sentenceTokens) {
-    reading += token.reading;
-  }
-  return reading;
-});
 /*
 Dropdown menu:
 | sentence > | original |

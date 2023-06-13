@@ -4,6 +4,7 @@
   import Config from "~/config";
   import Modal from "./components/Modal.svelte";
   import Utils from "~/utils";
+  import { AnkiNoteBuilder } from "~/ankiNoteBuilder";
 
   export let hidden: boolean;
 
@@ -121,7 +122,11 @@
       {:then fieldNames}
         {#each fieldNames as field}
           <div class="field-name">{field}</div>
-          <input type="text" bind:value={fieldTemplates[field]} />
+          <select class="field-marker" bind:value={fieldTemplates[field]}>
+            {#each AnkiNoteBuilder.MARKERS as marker}
+              <option>{marker}</option>
+            {/each}
+          </select>
         {/each}
       {:catch err}
         <div class="error">{err.toString()}</div>
@@ -139,6 +144,9 @@
 </Modal>
 
 <style>
+  input {
+    width: 100%;
+  }
   .selects {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -165,7 +173,7 @@
     grid-column: 1 / 2;
     font-size: 1em;
   }
-  input {
+  .field-marker {
     grid-column: 2 / 3;
     width: 100%;
     box-sizing: border-box;
