@@ -16,6 +16,10 @@ describe("RubyString", () => {
       { base: "切", ruby: "き" },
       { base: "り" },
     ]);
+    expect(RubyString.generate("お客", "おきゃく")).toEqual([
+      { base: "お" },
+      { base: "客", ruby: "きゃく" },
+    ]);
   });
 
   test("generate complex", () => {

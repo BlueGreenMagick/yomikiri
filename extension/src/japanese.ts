@@ -40,16 +40,18 @@ export namespace RubyString {
         ruby: reading,
       });
     } else {
+      let first = 0;
       if (splitted[0] !== "") {
         rubyString.push({
           base: splitted[0],
           ruby: matches[1],
         });
+        first = 1;
       }
       for (let i = 1; i < splitted.length; i++) {
         rubyString.push({
           base: splitted[i],
-          ruby: i % 2 === 0 ? matches[i / 2 + 1] : undefined,
+          ruby: i % 2 === 0 ? matches[i / 2 + first] : undefined,
         });
       }
     }
