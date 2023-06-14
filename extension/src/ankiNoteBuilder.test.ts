@@ -58,6 +58,7 @@ const scanResult: ScanResult = {
       pos2: "自立",
     },
   ],
+  tokenIdx: 4,
   dicEntries: [
     {
       terms: ["読む", "讀む", "よむ"],
@@ -201,14 +202,14 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("sentence", () => {
     const value = AnkiNoteBuilder.markerValue("sentence", data);
-    expect(value).toBe("わやしは本が読みたい");
+    expect(value).toBe("わやしは本が<b>読みたい</b>");
   });
   test("sentence-furigana", () => {
     const value = AnkiNoteBuilder.markerValue("sentence-furigana", data);
-    expect(value).toBe("わやしは 本[ほん]が 読[よ]みたい");
+    expect(value).toBe("わやしは 本[ほん]が<b>読[よ]みたい</b>");
   });
   test("sentence-kana", () => {
     const value = AnkiNoteBuilder.markerValue("sentence-kana", data);
-    expect(value).toBe("わやしはほんがよみたい");
+    expect(value).toBe("わやしはほんが<b>よみたい</b>");
   });
 });

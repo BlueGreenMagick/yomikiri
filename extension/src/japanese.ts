@@ -67,7 +67,7 @@ export namespace RubyString {
       if (unit.ruby === undefined) {
         ankiString += unit.base;
       } else {
-        if (ankiString !== "") {
+        if (ankiString !== "" && ankiString[ankiString.length - 1] !== ">") {
           ankiString += " ";
         }
         ankiString += unit.base;

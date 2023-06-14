@@ -104,21 +104,51 @@ export namespace AnkiNoteBuilder {
     return RubyString.toAnki(rubies);
   });
   addMarker("sentence", (data: MarkerData) => {
-    return data.scanned.sentence;
+    let sentence = "";
+    const tokens = data.scanned.sentenceTokens;
+    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+      sentence += tokens[i].text;
+    }
+    sentence += "<b>";
+    sentence += data.scanned.token.text;
+    sentence += "</b>";
+    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+      sentence += tokens[i].text;
+    }
+    return sentence;
   });
   addMarker("sentence-furigana", (data: MarkerData) => {
     let rubies: RubyString = [];
-    for (const token of data.scanned.sentenceTokens) {
-      rubies.push(...RubyString.generate(token.text, token.reading));
+    const tokens = data.scanned.sentenceTokens;
+    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+      rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
+    }
+    rubies.push({ base: "<b>" });
+    rubies.push(
+      ...RubyString.generate(
+        data.scanned.token.text,
+        data.scanned.token.reading
+      )
+    );
+    rubies.push({ base: "</b>" });
+    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+      rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     return RubyString.toAnki(rubies);
   });
   addMarker("sentence-kana", (data: MarkerData) => {
-    let reading = "";
-    for (const token of data.scanned.sentenceTokens) {
-      reading += token.reading;
+    let sentence = "";
+    const tokens = data.scanned.sentenceTokens;
+    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+      sentence += tokens[i].reading;
     }
-    return reading;
+    sentence += "<b>";
+    sentence += data.scanned.token.reading;
+    sentence += "</b>";
+    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+      sentence += tokens[i].reading;
+    }
+    return sentence;
   });
 }
 

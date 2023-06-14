@@ -12,6 +12,7 @@ export interface ScanResult {
   startIdx: number;
   endIdx: number;
   sentenceTokens: Token[];
+  tokenIdx: number;
   dicEntries: Entry[];
 }
 
@@ -290,6 +291,7 @@ export class Scanner {
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
       sentenceTokens: tokenizeResult.tokens,
+      tokenIdx: tokenizeResult.selectedTokenIdx,
     };
   }
 }
