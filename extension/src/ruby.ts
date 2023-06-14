@@ -15,21 +15,21 @@ export namespace RubyString {
   // https://japanese.stackexchange.com/questions/61993/are-there-any-words-that-are-longer-in-kanji-than-in-hiragana
   // 1. split kanji into blocks of pure kanji and kana.
   // 2. use regex to split reading into parts.
-  // e.g. [読,み,切,り] => "よみきり".match(/(\w+)み(\w+)り/)
+  // e.g. [読,み,切,り] => "よみきり".match(/(.+)み(.+)り/)
+  // This might be inaccurate for long test
+  // TODO: can text be in katakana but reading in hiragana
   /**
-   * Generate furigana from kanji and its reading.
-   * What if part of kanji is in katakana, but reading in hiragana?
-   * kanji and reading should be normalized
-   *
+   * Generate furigana from text and its reading.
+   * Assumes text and reading is normalized
    */
   export function generate(text: string, reading: string): RubyString {
     const splitted = splitKanjiKana(text);
     let regexp = "";
     if (splitted[0] !== "") {
-      regexp += "(\\w+)";
+      regexp += "(.+)";
     }
     for (let i = 1; i < splitted.length; i++) {
-      regexp += i % 2 === 0 ? "(\\w+)" : splitted[i];
+      regexp += i % 2 === 0 ? "(.+)" : splitted[i];
     }
     const r = new RegExp("^" + regexp + "$", "u");
     const matches = reading.match(r);
@@ -95,5 +95,6 @@ function splitKanjiKana(text: string): string[] {
       chars = char;
     }
   }
+  splitted.push(chars);
   return splitted;
 }
