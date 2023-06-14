@@ -187,16 +187,19 @@ function joinInflections(tokens: Token[], index: number): [Token, number] {
   let token = tokens[index];
   if (["動詞", "形容詞", "副詞", "=exp="].includes(token.partOfSpeech)) {
     let combined = token.text;
+    let reading = token.reading;
     while (
       to < tokens.length &&
       (tokens[to].partOfSpeech === "助動詞" || tokens[to].pos2 === "接続助詞")
     ) {
       combined += tokens[to].text;
+      reading += tokens[to].reading;
       to += 1;
     }
     if (to - index > 1) {
       token = {
         ...token,
+        reading,
         text: combined,
       };
     }
