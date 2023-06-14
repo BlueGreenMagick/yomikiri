@@ -17,7 +17,6 @@ export namespace RubyString {
   // 2. use regex to split reading into parts.
   // e.g. [読,み,切,り] => "よみきり".match(/(.+)み(.+)り/)
   // This might be inaccurate for long test
-  // TODO: can text be in katakana but reading in hiragana
   /**
    * Generate furigana from text and its reading.
    * Assumes text and reading is normalized
@@ -97,4 +96,40 @@ function splitKanjiKana(text: string): string[] {
   }
   splitted.push(chars);
   return splitted;
+}
+
+// (u+30a1ァ -> u+3041ぁ) (u+30f6ヶ -> u+3096ゖ)
+// charcode: u+30a1 = 12449, u+30f6 = 12534, (-96)
+/**
+ * Convert all katakana to hiragana
+ * `katakana` should be normalized
+ */
+export function toHiragana(katakana: string): string {
+  let hiragana = "";
+  for (let i = 0; i < katakana.length; i++) {
+    const char = katakana.charCodeAt(i);
+    if (char >= 12449 && char <= 12534) {
+      hiragana += String.fromCharCode(char - 96);
+    } else {
+      hiragana += katakana[i];
+    }
+  }
+  return hiragana;
+}
+
+/**
+ * Convert all hiragana to katakana.
+ * `hiragana` should be normalized.
+ */
+export function toKatakana(hiragana: string): string {
+  let katakana = "";
+  for (let i = 0; i < hiragana.length; i++) {
+    const char = hiragana.charCodeAt(i);
+    if (char >= 12353 && char <= 12438) {
+      katakana += String.fromCharCode(char + 96);
+    } else {
+      katakana += hiragana[i];
+    }
+  }
+  return katakana;
 }

@@ -1,6 +1,7 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
 import { Entry, type Dictionary } from "~/dictionary";
 import Utils from "~/utils";
+import { toHiragana } from "./japanese";
 
 export type { Token } from "@platform/tokenizer";
 
@@ -39,6 +40,9 @@ export class Tokenizer {
   async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
     Utils.benchStart();
     let tokens = await this.tokenizer.tokenize(req.text);
+    tokens.forEach((token) => {
+      token.reading = toHiragana(token.reading);
+    });
     Utils.bench("tokenize");
     this.joinAllTokens(tokens);
     Utils.bench("joinTokens");

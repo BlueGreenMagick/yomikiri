@@ -1,7 +1,7 @@
 import Config from "./config";
 import type { ScanResult } from "./content/scanner";
 import type { Entry, Sense } from "./dictionary";
-import { RubyString } from "./ruby";
+import { RubyString } from "./japanese";
 
 export interface MarkerData {
   scanned: ScanResult;
