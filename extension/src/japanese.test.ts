@@ -7,8 +7,10 @@ import { RubyString, toHiragana, toKatakana } from "./japanese";
 describe("RubyString", () => {
   test("generate", () => {
     expect(RubyString.generate("", "")).toEqual([]);
-    expect(RubyString.generate("あエw1.", "あエw1.")).toEqual([
-      { base: "あエw1." },
+    expect(RubyString.generate("あエ本w1。", "あえほんw1。")).toEqual([
+      { base: "あエ" },
+      { base: "本", ruby: "ほん" },
+      { base: "w1。" },
     ]);
     expect(RubyString.generate("読み切り", "よみきり")).toEqual([
       { base: "読", ruby: "よ" },

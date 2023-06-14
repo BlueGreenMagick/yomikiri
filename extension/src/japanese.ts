@@ -19,7 +19,9 @@ export namespace RubyString {
   // This might be inaccurate for long test
   /**
    * Generate furigana from text and its reading.
-   * Assumes text and reading is normalized
+   * Assumes `text` and `reading` is normalized
+   * Assumes `text` to not contain any regex special characters.
+   * (No JMDict entry forms contains regex special characters)
    */
   export function generate(text: string, reading: string): RubyString {
     const splitted = splitKanjiKana(text);
