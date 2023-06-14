@@ -199,6 +199,24 @@ export namespace Entry {
     const group: [string[], Sense[]] = [sortedPos, [sense]];
     groups.push(group);
   }
+
+  /** if `nokanji` is true, include readings that aren't true readings of kanji */
+  export function readingForForm(
+    entry: Entry,
+    form: string,
+    nokanji: boolean = true
+  ): Reading {
+    for (const reading of entry.readings) {
+      if (nokanji && reading.nokanji) continue;
+      if (reading.toForm.length == 0 || reading.toForm.includes(form)) {
+        return reading;
+      }
+    }
+    console.error(
+      `Entry ${Entry.mainForm(entry)} has no reading for form: ${form}`
+    );
+    return entry.readings[0];
+  }
 }
 
 export interface Form {

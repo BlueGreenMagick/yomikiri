@@ -1,6 +1,7 @@
 import Config from "./config";
 import type { ScanResult } from "./content/scanner";
 import type { Entry, Sense } from "./dictionary";
+import { RubyString } from "./ruby";
 
 export interface MarkerData {
   scanned: ScanResult;
@@ -86,6 +87,13 @@ export namespace AnkiNoteBuilder {
   });
   addMarker("word-kana", (data: MarkerData) => {
     return data.scanned.token.reading;
+  });
+  addMarker("word-furigana", (data: MarkerData) => {
+    let rubies = RubyString.generate(
+      data.scanned.token.text,
+      data.scanned.token.reading
+    );
+    return RubyString.toAnki(rubies);
   });
   addMarker("sentence", (data: MarkerData) => {
     return data.scanned.sentence;
