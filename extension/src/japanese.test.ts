@@ -30,6 +30,7 @@ describe("RubyString", () => {
         { base: "形式", ruby: "けいしき" },
       ]
     );
+
     return;
     // TODO: furigana for joined-tokens may generate incorrectly
     // Below fails even though '配信の否認不能' is an entry in jmdict.
@@ -39,6 +40,15 @@ describe("RubyString", () => {
       { base: "配信", ruby: "はいしん" },
       { base: "の" },
       { base: "否認不能", ruby: "ひにんふのう" },
+    ]);
+  });
+
+  test("generate katakana", () => {
+    expect(RubyString.generate("ド真ん中", "どまんなか")).toEqual([
+      { base: "ド" },
+      { base: "真", ruby: "ま" },
+      { base: "ん" },
+      { base: "中", ruby: "なか" },
     ]);
   });
 

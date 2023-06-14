@@ -28,7 +28,7 @@ export namespace RubyString {
       regexp += "(.+)";
     }
     for (let i = 1; i < splitted.length; i++) {
-      regexp += i % 2 === 0 ? "(.+)" : splitted[i];
+      regexp += i % 2 === 0 ? "(.+)" : toHiragana(splitted[i]);
     }
     const r = new RegExp("^" + regexp + "$", "u");
     const matches = reading.match(r);
