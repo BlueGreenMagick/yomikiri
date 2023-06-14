@@ -130,6 +130,8 @@ export interface Entry {
   forms: Form[];
   readings: Reading[];
   senses: Sense[];
+  /** if retrieved from db */
+  id?: number;
 }
 
 export namespace Entry {

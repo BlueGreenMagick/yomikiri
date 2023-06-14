@@ -41,7 +41,7 @@ export namespace AnkiNoteBuilder {
     _markerHandlers[marker] = fn;
   }
 
-  function markerValue(marker: string, data: MarkerData): string {
+  export function markerValue(marker: string, data: MarkerData): string {
     const handler = _markerHandlers[marker];
     let value = "";
     if (handler !== undefined) {
