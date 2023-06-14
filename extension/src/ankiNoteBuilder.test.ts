@@ -1,10 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
-jest.mock("dexie");
-jest.mock("pako");
-
 import { test, expect, describe, jest } from "@jest/globals";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
 import type { ScanResult } from "./content/scanner";

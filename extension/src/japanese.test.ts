@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import { test, expect, describe } from "@jest/globals";
 import { RubyString, toHiragana, toKatakana } from "./japanese";
 
