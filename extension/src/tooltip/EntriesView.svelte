@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import type { Entry } from "~/dictionary";
+  import type { Entry } from "~/dicEntry";
   import EntryView from "./EntryView.svelte";
   import CloseButton from "./CloseButton.svelte";
 

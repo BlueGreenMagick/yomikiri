@@ -1,6 +1,6 @@
 import Config from "./config";
 import type { ScanResult } from "./content/scanner";
-import type { Entry, Sense } from "./dictionary";
+import { Entry, type Sense } from "./dicEntry";
 import { RubyString } from "./japanese";
 
 export interface MarkerData {
@@ -28,7 +28,9 @@ export namespace AnkiNoteBuilder {
     "word-furigana",
     "word-kana",
     "dict",
+    "dict-furigana",
     "sentence",
+    "sentence-furigana",
     "sentence-kana",
   ] as const;
   export type Marker = (typeof MARKERS)[number];
@@ -82,9 +84,6 @@ export namespace AnkiNoteBuilder {
   addMarker("word", (data: MarkerData) => {
     return data.scanned.token.text;
   });
-  addMarker("dict", (data: MarkerData) => {
-    return data.scanned.token.baseForm;
-  });
   addMarker("word-kana", (data: MarkerData) => {
     return data.scanned.token.reading;
   });
@@ -95,8 +94,24 @@ export namespace AnkiNoteBuilder {
     );
     return RubyString.toAnki(rubies);
   });
+  addMarker("dict", (data: MarkerData) => {
+    return data.scanned.token.baseForm;
+  });
+  addMarker("dict-furigana", (data: MarkerData) => {
+    const form = data.scanned.token.baseForm;
+    const reading = Entry.readingForForm(data.entry, form, false).reading;
+    const rubies = RubyString.generate(form, reading);
+    return RubyString.toAnki(rubies);
+  });
   addMarker("sentence", (data: MarkerData) => {
     return data.scanned.sentence;
+  });
+  addMarker("sentence-furigana", (data: MarkerData) => {
+    let rubies: RubyString = [];
+    for (const token of data.scanned.sentenceTokens) {
+      rubies.push(...RubyString.generate(token.text, token.reading));
+    }
+    return RubyString.toAnki(rubies);
   });
   addMarker("sentence-kana", (data: MarkerData) => {
     let reading = "";

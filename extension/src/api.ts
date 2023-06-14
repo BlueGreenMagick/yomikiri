@@ -1,4 +1,4 @@
-import type { Entry } from "~/dictionary";
+import type { Entry } from "~/dicEntry";
 import type { NoteData } from "~/ankiNoteBuilder";
 import type { Token } from "~/platform/types/tokenizer";
 import type { AnkiInfo } from "~/platform/ios/anki";

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Sense, type GroupedSense, Dictionary } from "~/dictionary";
+  import { Entry, type Sense, type GroupedSense } from "~/dicEntry";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
   import type { MarkerData } from "~/ankiNoteBuilder";
@@ -15,7 +15,7 @@
   let posText: string;
 
   function makePosText(poss: string[]): string {
-    return poss.map((pos) => Dictionary.entityInfo(pos)).join(", ");
+    return poss.map((pos) => Entry.entityInfo(pos)).join(", ");
   }
 
   function addAnkiNote(sense: Sense) {

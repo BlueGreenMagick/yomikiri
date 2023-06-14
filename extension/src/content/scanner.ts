@@ -1,7 +1,7 @@
 import { Api } from "~/api";
 import type { Token, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
-import { Entry } from "~/dictionary";
+import { Entry } from "~/dicEntry";
 
 export interface ScanResult {
   token: Token;

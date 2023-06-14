@@ -1,7 +1,11 @@
 /**
  * @jest-environment jsdom
  */
-import { test, expect, describe } from "@jest/globals";
+
+jest.mock("dexie");
+jest.mock("pako");
+
+import { test, expect, describe, jest } from "@jest/globals";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
 import type { ScanResult } from "./content/scanner";
 
@@ -191,9 +195,17 @@ describe("AnkiNoteBuilder marker", () => {
     const value = AnkiNoteBuilder.markerValue("dict", data);
     expect(value).toBe("読む");
   });
+  test("dict-furigana", () => {
+    const value = AnkiNoteBuilder.markerValue("dict-furigana", data);
+    expect(value).toBe("読[よ]む");
+  });
   test("sentence", () => {
     const value = AnkiNoteBuilder.markerValue("sentence", data);
     expect(value).toBe("わやしは本が読みたい");
+  });
+  test("sentence-furigana", () => {
+    const value = AnkiNoteBuilder.markerValue("sentence-furigana", data);
+    expect(value).toBe("わやしは 本[ほん]が 読[よ]みたい");
   });
   test("sentence-kana", () => {
     const value = AnkiNoteBuilder.markerValue("sentence-kana", data);

@@ -1,4 +1,5 @@
-import { Dictionary, Entry } from "../dictionary";
+import { Dictionary } from "../dictionary";
+import type { Entry } from "../dicEntry";
 import {
   Tokenizer,
   type TokenizeResult,

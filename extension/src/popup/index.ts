@@ -1,5 +1,4 @@
 import { Api } from "~/api";
-import { Entry } from "~/dictionary";
 
 async function searchClicked() {
   const input = document.getElementById("search-input") as HTMLInputElement;
