@@ -29,9 +29,12 @@ export namespace AnkiNoteBuilder {
     "word-kana",
     "dict",
     "dict-furigana",
+    "dict-kana",
     "sentence",
     "sentence-furigana",
     "sentence-kana",
+    "url",
+    "link",
   ] as const;
   export type Marker = (typeof MARKERS)[number];
 
@@ -81,11 +84,9 @@ export namespace AnkiNoteBuilder {
   addMarker("", (_data: MarkerData) => {
     return "";
   });
+
   addMarker("word", (data: MarkerData) => {
     return data.scanned.token.text;
-  });
-  addMarker("word-kana", (data: MarkerData) => {
-    return data.scanned.token.reading;
   });
   addMarker("word-furigana", (data: MarkerData) => {
     let rubies = RubyString.generate(
@@ -94,6 +95,10 @@ export namespace AnkiNoteBuilder {
     );
     return RubyString.toAnki(rubies);
   });
+  addMarker("word-kana", (data: MarkerData) => {
+    return data.scanned.token.reading;
+  });
+
   addMarker("dict", (data: MarkerData) => {
     return data.scanned.token.baseForm;
   });
@@ -103,6 +108,11 @@ export namespace AnkiNoteBuilder {
     const rubies = RubyString.generate(form, reading);
     return RubyString.toAnki(rubies);
   });
+  addMarker("dict-kana", (data: MarkerData) => {
+    const form = data.scanned.token.baseForm;
+    return Entry.readingForForm(data.entry, form, false).reading;
+  });
+
   addMarker("sentence", (data: MarkerData) => {
     let sentence = "";
     const tokens = data.scanned.sentenceTokens;
@@ -150,37 +160,15 @@ export namespace AnkiNoteBuilder {
     }
     return sentence;
   });
+
+  addMarker("url", (_data: MarkerData) => {
+    return window.location.href;
+  });
+  addMarker("link", (_data: MarkerData) => {
+    const el = document.createElement("a");
+    el.textContent = document.title;
+    el.href = window.location.href;
+    return el.outerHTML;
+  });
+  // TODO: meaning, translation, maybe sentence-cloze
 }
-
-/*
-Dropdown menu:
-| sentence > | original |
-             | furigana |
-             | reading  |
-             
-| word     > | original |
-             | dict    |
-             | reading  |
-             | original-furigana |
-             | dict-furigana |
-
-| translation |
-| cloze |
-| meaning  > | selected |
-             | full  | full meanings 
-             | short | if on specific, first 2. Otherwise first 3
-
-| url |
-
-
-
-For 'sentence' does it bold word, or wrap it in a span? 
-Do I add an option for that as well?
-
-Options
-1. selection in sentence: <b>{{selection}}</b>
-2. translation service: google translate
-3. furigana mode: plain / html (plain: 日本語[にほんご])
-4. 
-
-*/

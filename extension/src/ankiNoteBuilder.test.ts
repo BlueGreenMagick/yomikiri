@@ -193,6 +193,10 @@ describe("AnkiNoteBuilder marker", () => {
     const value = AnkiNoteBuilder.markerValue("dict-furigana", data);
     expect(value).toBe("読[よ]む");
   });
+  test("dict-kana", () => {
+    const value = AnkiNoteBuilder.markerValue("dict-kana", data);
+    expect(value).toBe("よむ");
+  });
   test("sentence", () => {
     const value = AnkiNoteBuilder.markerValue("sentence", data);
     expect(value).toBe("わやしは本が<b>読みたい</b>");
@@ -204,5 +208,15 @@ describe("AnkiNoteBuilder marker", () => {
   test("sentence-kana", () => {
     const value = AnkiNoteBuilder.markerValue("sentence-kana", data);
     expect(value).toBe("わやしはほんが<b>よみたい</b>");
+  });
+  test("url", () => {
+    const value = AnkiNoteBuilder.markerValue("url", data);
+    expect(value).toBe("https://yomikiri.jest/");
+  });
+  test("link", () => {
+    document.title = "Yomikiri tests";
+    console.log();
+    const value = AnkiNoteBuilder.markerValue("link", data);
+    expect(value).toBe('<a href="https://yomikiri.jest/">Yomikiri tests</a>');
   });
 });
