@@ -1,5 +1,5 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
-import { type Dictionary } from "~/dictionary";
+import type { Dictionary } from "~/dictionary";
 import { Entry } from "dicEntry";
 import Utils from "~/utils";
 import { toHiragana } from "./japanese";

@@ -1,6 +1,8 @@
 import { test, expect, describe, jest } from "@jest/globals";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
 import type { ScanResult } from "./content/scanner";
+import type { Token } from "~/tokenizer";
+import { Entry } from "./dicEntry";
 
 const scanResult: ScanResult = {
   token: {
@@ -13,7 +15,7 @@ const scanResult: ScanResult = {
   range: new Range(),
   sentence: "わやしは本が読みたい",
   startIdx: 6,
-  endIdx: 8,
+  endIdx: 10,
   sentenceTokens: [
     {
       text: "わや",
@@ -246,5 +248,93 @@ describe("AnkiNoteBuilder marker", () => {
     console.log();
     const value = AnkiNoteBuilder.markerValue("link", data);
     expect(value).toBe('<a href="https://yomikiri.jest/">Yomikiri tests</a>');
+  });
+});
+
+const escapeScanResult: ScanResult = {
+  token: {
+    text: "図書",
+    partOfSpeech: "名詞",
+    baseForm: "図書",
+    reading: "としょ",
+    pos2: "一般",
+  },
+  range: new Range(),
+  sentence: "図書<",
+  startIdx: 0,
+  endIdx: 2,
+  sentenceTokens: [
+    {
+      text: "図書",
+      partOfSpeech: "名詞",
+      baseForm: "図書",
+      reading: "としょ",
+      pos2: "一般",
+    },
+    {
+      text: "<",
+      partOfSpeech: "UNK",
+      baseForm: "<",
+      reading: "*",
+      pos2: "*",
+    },
+  ],
+  tokenIdx: 0,
+  dicEntries: [
+    Entry.fromObject({
+      forms: [
+        {
+          form: "図書",
+          priority: ["ichi1", "news1", "nf09"],
+        },
+      ],
+      readings: [
+        {
+          reading: "としょ",
+          priority: ["ichi1", "news1", "nf09"],
+        },
+        {
+          reading: "ずしょ",
+        },
+      ],
+      sense: [
+        {
+          partOfSpeech: ["=n="],
+          meaning: ["books<"],
+        },
+      ],
+    }),
+  ],
+};
+const escapedData: MarkerData = {
+  scanned: escapeScanResult,
+  entry: escapeScanResult.dicEntries[0],
+  selectedMeaning: escapeScanResult.dicEntries[0].senses[0],
+};
+
+describe("AnkiNoteBuilder escape HTML", () => {
+  test("sentence", () => {
+    const value = AnkiNoteBuilder.markerValue("sentence", escapedData);
+    expect(value).toBe("<b>図書</b>&lt;");
+  });
+  test("sentence-furigana", () => {
+    const value = AnkiNoteBuilder.markerValue("sentence-furigana", escapedData);
+    expect(value).toBe("<b>図書[としょ]</b>&lt;");
+  });
+  test("sentence-kana", () => {
+    const value = AnkiNoteBuilder.markerValue("sentence-kana", escapedData);
+    expect(value).toBe("<b>としょ</b>&lt;");
+  });
+  test("meaning", () => {
+    const value = AnkiNoteBuilder.markerValue("meaning", escapedData);
+    expect(value).toBe("books&lt;");
+  });
+  test("meaning-full", () => {
+    const value = AnkiNoteBuilder.markerValue("meaning-full", escapedData);
+    expect(value).toBe('<span class="yk-meaning">books&lt;</span>');
+  });
+  test("meaning-short", () => {
+    const value = AnkiNoteBuilder.markerValue("meaning-short", escapedData);
+    expect(value).toBe("books&lt;");
   });
 });

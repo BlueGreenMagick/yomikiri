@@ -54,13 +54,13 @@ namespace Utils {
     return false;
   }
 
+  // https://stackoverflow.com/a/25612313/15537371
+  /**
+   * Replaces '&' and '<' for use inside HTML tag.
+   * Not suitable for HTML attributes
+   */
   export function escapeHTML(input: string): string {
-    return input
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return input.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
   let lastBench: number = performance.now();
