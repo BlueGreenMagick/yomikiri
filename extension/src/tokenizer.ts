@@ -42,7 +42,8 @@ export class Tokenizer {
     Utils.benchStart();
     let tokens = await this.tokenizer.tokenize(req.text);
     tokens.forEach((token) => {
-      token.reading = toHiragana(token.reading);
+      const reading = token.reading === "*" ? token.text : token.reading;
+      token.reading = toHiragana(reading);
     });
     Utils.bench("tokenize");
     this.joinAllTokens(tokens);

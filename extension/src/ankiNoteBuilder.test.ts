@@ -275,7 +275,7 @@ const escapeScanResult: ScanResult = {
       text: "<",
       partOfSpeech: "UNK",
       baseForm: "<",
-      reading: "*",
+      reading: "<",
       pos2: "*",
     },
   ],
