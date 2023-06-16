@@ -33,6 +33,9 @@ export namespace AnkiNoteBuilder {
     "sentence",
     "sentence-furigana",
     "sentence-kana",
+    "meaning",
+    "meaning-full",
+    "meaning-short",
     "url",
     "link",
   ] as const;
@@ -159,6 +162,38 @@ export namespace AnkiNoteBuilder {
       sentence += tokens[i].reading;
     }
     return sentence;
+  });
+
+  addMarker("meaning", (data: MarkerData) => {
+    if (data.selectedMeaning === undefined) {
+      return markerValue("meaning-full", data);
+    } else {
+      return data.selectedMeaning.meaning.join(", ");
+    }
+  });
+  addMarker("meaning-full", (data: MarkerData) => {
+    const lines = [];
+    const grouped = Entry.groupSenses(data.entry);
+    for (const group of grouped) {
+      for (const meaning of group[1]) {
+        lines.push(
+          `<span class="yk-meaning">${meaning.meaning.join(", ")}</span>`
+        );
+      }
+    }
+    return lines.join("<br>");
+  });
+  addMarker("meaning-short", (data: MarkerData) => {
+    if (data.selectedMeaning === undefined) {
+      let meanings = [];
+      const cnt = Math.min(3, data.entry.senses.length);
+      for (let i = 0; i < cnt; i++) {
+        meanings.push(data.entry.senses[i].meaning[0]);
+      }
+      return meanings.join("; ");
+    } else {
+      return data.selectedMeaning.meaning.slice(0, 2).join(", ");
+    }
   });
 
   addMarker("url", (_data: MarkerData) => {

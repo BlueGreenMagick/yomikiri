@@ -165,7 +165,7 @@ const scanResult: ScanResult = {
 const data: MarkerData = {
   scanned: scanResult,
   entry: scanResult.dicEntries[0],
-  selectedMeaning: scanResult.dicEntries[0].senses[1],
+  selectedMeaning: scanResult.dicEntries[0].senses[2],
 };
 
 describe("AnkiNoteBuilder marker", () => {
@@ -208,6 +208,34 @@ describe("AnkiNoteBuilder marker", () => {
   test("sentence-kana", () => {
     const value = AnkiNoteBuilder.markerValue("sentence-kana", data);
     expect(value).toBe("わやしはほんが<b>よみたい</b>");
+  });
+  test("meaning", () => {
+    const value = AnkiNoteBuilder.markerValue("meaning", data);
+    expect(value).toBe(
+      "to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine"
+    );
+  });
+  test("meaning-full", () => {
+    const value = AnkiNoteBuilder.markerValue("meaning-full", data);
+    expect(value).toBe(
+      [
+        "to read",
+        "to recite (e.g. a sutra), to chant",
+        "to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine",
+        "to decipher",
+        "to count, to estimate",
+        "to read (a kanji) with its native Japanese reading",
+      ]
+        .map((v) => `<span class="yk-meaning">${v}</span>`)
+        .join("<br>")
+    );
+  });
+  test("meaning-short", () => {
+    const value = AnkiNoteBuilder.markerValue("meaning-short", data);
+    expect(value).toBe("to predict, to guess");
+    delete data.selectedMeaning;
+    const valueFull = AnkiNoteBuilder.markerValue("meaning-short", data);
+    expect(valueFull).toBe("to read; to recite (e.g. a sutra); to predict");
   });
   test("url", () => {
     const value = AnkiNoteBuilder.markerValue("url", data);
