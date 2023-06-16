@@ -13,4 +13,7 @@ module.exports = {
     url: "https://yomikiri.jest/",
     html: "<!DOCTYPE html><html><head></head><body></body></html>",
   },
+  globals: {
+    fetch: global.fetch,
+  },
 };

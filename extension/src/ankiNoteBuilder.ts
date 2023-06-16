@@ -2,6 +2,7 @@ import Config from "./config";
 import type { ScanResult } from "./content/scanner";
 import { Entry, type Sense } from "./dicEntry";
 import { RubyString } from "./japanese";
+import { translate } from "./translate";
 import Utils from "./utils";
 
 export interface MarkerData {
@@ -34,6 +35,7 @@ export namespace AnkiNoteBuilder {
     "sentence",
     "sentence-furigana",
     "sentence-kana",
+    "sentence-translate",
     "meaning",
     "meaning-full",
     "meaning-short",
@@ -43,18 +45,24 @@ export namespace AnkiNoteBuilder {
   export type Marker = (typeof MARKERS)[number];
 
   const _markerHandlers: {
-    [marker: string]: (data: MarkerData) => string;
+    [marker: string]: (data: MarkerData) => string | Promise<string>;
   } = {};
 
-  export function addMarker(marker: Marker, fn: (data: MarkerData) => string) {
+  export function addMarker(
+    marker: Marker,
+    fn: (data: MarkerData) => string | Promise<string>
+  ) {
     _markerHandlers[marker] = fn;
   }
 
-  export function markerValue(marker: string, data: MarkerData): string {
+  export async function markerValue(
+    marker: string,
+    data: MarkerData
+  ): Promise<string> {
     const handler = _markerHandlers[marker];
     let value = "";
     if (handler !== undefined) {
-      value = handler(data);
+      value = await handler(data);
     } else {
       console.error(`Invalid marker in Anki note template: {{${marker}}}`);
     }
@@ -80,7 +88,7 @@ export namespace AnkiNoteBuilder {
     const note = cloneNote(template);
     for (const field of note.fields) {
       const marker = field.value;
-      field.value = markerValue(marker, data);
+      field.value = await markerValue(marker, data);
     }
     return note;
   }
@@ -169,6 +177,9 @@ export namespace AnkiNoteBuilder {
     }
 
     return sentence;
+  });
+  addMarker("sentence-translate", async (data: MarkerData) => {
+    return await translate(data.scanned.sentence);
   });
 
   addMarker("meaning", (data: MarkerData) => {
