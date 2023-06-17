@@ -214,6 +214,17 @@ describe("AnkiNoteBuilder marker", () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-translate", data);
     expect(typeof value).toBe("string");
   });
+  test("sentence-cloze", async () => {
+    const value = await AnkiNoteBuilder.markerValue("sentence-cloze", data);
+    expect(value).toBe("わやしは本が{{c1::読みたい}}");
+  });
+  test("sentence-cloze-furigana", async () => {
+    const value = await AnkiNoteBuilder.markerValue(
+      "sentence-cloze-furigana",
+      data
+    );
+    expect(value).toBe("わやしは 本[ほん]が{{c1::読[よ]みたい}}");
+  });
   test("meaning", async () => {
     const value = await AnkiNoteBuilder.markerValue("meaning", data);
     expect(value).toBe(
@@ -326,6 +337,13 @@ describe("AnkiNoteBuilder escape HTML", () => {
       escapedData
     );
     expect(value).toBe("<b>図書[としょ]</b>&lt;");
+  });
+  test("sentence-cloze-furigana", async () => {
+    const value = await AnkiNoteBuilder.markerValue(
+      "sentence-cloze-furigana",
+      escapedData
+    );
+    expect(value).toBe("{{c1::図書[としょ]}}&lt;");
   });
   test("sentence-kana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
