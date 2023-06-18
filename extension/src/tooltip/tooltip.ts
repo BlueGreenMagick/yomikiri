@@ -21,8 +21,10 @@ export namespace Tooltip {
       await createTooltipIframe();
     }
     _scanResult = scanned;
+    _tooltipEl.contentDocument?.scrollingElement?.scrollTo(0, 0);
     _tooltipEl.style.display = "block";
     _entriesView.setEntries(e);
+
     const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
     await position(rect);
   }
