@@ -24,7 +24,8 @@ export namespace Tooltip {
     _tooltipEl.contentDocument?.scrollingElement?.scrollTo(0, 0);
     _tooltipEl.style.display = "block";
     _entriesView.setEntries(e);
-
+    // fix bug where tooltip height is previous entry's height
+    await 0;
     const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
     await position(rect);
   }
