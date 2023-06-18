@@ -1,3 +1,4 @@
+import { Tooltip } from "~/tooltip/tooltip";
 import type { IHighlighter, IHighlighterStatic } from "../types/highlight";
 
 const STYLE_ID = "yomikiri-selection-css";
@@ -62,6 +63,7 @@ export class Highlighter implements IHighlighter {
           return;
         }
         revertSelectionColor();
+        Tooltip.hide();
         document.removeEventListener("selectionchange", listener);
         self.hasListener = false;
       };
