@@ -99,7 +99,7 @@ export default class AnkiApi {
       const queryKey = "fld" + field.name;
       fields[queryKey] = field.value;
     }
-    const params = new URLSearchParams({
+    const params = {
       type: note.notetype,
       deck: note.deck,
       tags: note.tags,
@@ -107,8 +107,9 @@ export default class AnkiApi {
       dupes: "1",
       ...fields,
       "x-success": "http://yomikiri-redirect.bluegreenmagick.com",
-    });
-    const ankiLink = "anki://x-callback-url/addnote?" + params.toString();
+    };
+    const ankiLink = "anki://x-callback-url/addnote?" + Utils.urlParams(params);
+    console.log(ankiLink);
     Api.updateTab(currentTab.id, { url: ankiLink });
   }
 

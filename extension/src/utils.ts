@@ -63,6 +63,16 @@ namespace Utils {
     return input.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
+  /** "http://url?" + Utils.urlParams({key: value}) */
+  export function urlParams(params: { [key: string]: string }): string {
+    return Object.entries(params)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+      )
+      .join("&");
+  }
+
   interface QueueItem<I extends any[], R> {
     inp: I;
     resolve: PromiseResolver<R>;
