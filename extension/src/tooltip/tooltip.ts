@@ -30,6 +30,7 @@ export namespace Tooltip {
   export function hide() {
     const tooltip = getTooltipEl();
     tooltip.style.display = "none";
+    tooltip.contentWindow?.getSelection()?.empty();
   }
 
   async function createTooltipIframe(): Promise<HTMLIFrameElement> {
