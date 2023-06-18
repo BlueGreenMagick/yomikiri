@@ -63,6 +63,62 @@ namespace Utils {
     return input.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
+  interface QueueItem<I extends any[], R> {
+    inp: I;
+    resolve: PromiseResolver<R>;
+    reject: PromiseRejector;
+  }
+
+  /**
+   * Returns an async function that is executed consequently.
+   * Execution starts when previous call of this function finishes.
+   *
+   * If there is an existing queue, it is replaced with new input and previous queued call returns with `null`.
+   */
+  export function SingleQueued<I extends any[], R>(
+    fn: (...inp: I) => Promise<R>
+  ): (...inp: I) => Promise<R | null> {
+    let queue: QueueItem<I, R | null> | null = null;
+    let running = false;
+
+    // pop from queue and run
+    const run = async () => {
+      if (queue === null) {
+        return;
+      }
+      let inp = queue.inp;
+      let resolve = queue.resolve;
+      let reject = queue.reject;
+      running = true;
+      queue = null;
+      try {
+        const result = await fn(...inp);
+        running = false;
+        resolve(result);
+      } catch (e) {
+        running = false;
+        reject(e);
+      }
+      run();
+    };
+
+    return (...inp: I) => {
+      if (queue !== null) {
+        queue.resolve(null);
+      }
+      const [promise, resolve, reject] = createPromise<R | null>();
+      queue = {
+        inp,
+        resolve,
+        reject,
+      };
+      if (!running) {
+        run();
+      }
+      return promise;
+    };
+  }
+
   let lastBench: number = performance.now();
   let _benchLogs: string[] = [];
 
