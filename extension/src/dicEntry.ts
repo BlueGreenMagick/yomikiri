@@ -2,7 +2,10 @@ import Utils from "./utils";
 import ENTITIES from "./assets/dicEntities.json";
 
 // list of tuple (pos sorted list, senses)
-export type GroupedSense = [string[], Sense[]];
+export interface GroupedSense {
+  pos: string[];
+  senses: Sense[];
+}
 export type DictionaryResult = Entry[];
 
 export interface Entry {
@@ -74,12 +77,15 @@ export namespace Entry {
     const pos = sense.partOfSpeech;
     const sortedPos = [...pos].sort();
     for (const group of groups) {
-      if (Utils.listIsIdentical(group[0], sortedPos)) {
-        group[1].push(sense);
+      if (Utils.listIsIdentical(group.pos, sortedPos)) {
+        group.senses.push(sense);
         return;
       }
     }
-    const group: [string[], Sense[]] = [sortedPos, [sense]];
+    const group: GroupedSense = {
+      pos: sortedPos,
+      senses: [sense],
+    };
     groups.push(group);
   }
 

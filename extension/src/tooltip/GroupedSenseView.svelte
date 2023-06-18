@@ -24,7 +24,7 @@
     });
   }
 
-  $: posText = makePosText(group[0]);
+  $: posText = makePosText(group.pos);
 </script>
 
 <div class="grouped-sense">
@@ -32,7 +32,7 @@
     {posText}
   </div>
   <div>
-    {#each group[1] as sense, idx}
+    {#each group.senses as sense, idx}
       <div class="meaning">
         <div class="anki-add" on:click={() => addAnkiNote(sense)}>
           {@html IconAddCircle}
