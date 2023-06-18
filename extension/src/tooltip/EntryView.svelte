@@ -4,6 +4,7 @@
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
+  import { RubyString } from "~/japanese";
 
   interface Events {
     addNote: Partial<MarkerData>;
@@ -18,10 +19,10 @@
   let groups: GroupedSense[];
 
   function makeReadingsString(readings: Reading[]): string {
-    if (readings.length === 1 && readings[0].reading === mainForm) {
-      return "";
-    }
-    return readings.map((r) => r.reading).join(", ");
+    return readings
+      .slice(1)
+      .map((r) => r.reading)
+      .join(", ");
   }
 
   function addNote(data: Partial<MarkerData>) {
@@ -30,6 +31,9 @@
   }
 
   $: mainForm = Entry.mainForm(entry);
+  $: mainFormRuby = RubyString.toHtml(
+    RubyString.generate(mainForm, entry.readings[0].reading)
+  );
   $: readingsString = makeReadingsString(entry.readings);
   $: groups = Entry.groupSenses(entry);
 </script>
@@ -38,7 +42,7 @@
   <div class="header">
     <div class="icon" on:click={() => addNote({})}>{@html IconAddCircle}</div>
     <div>
-      <span class="mainForm">{mainForm}</span>
+      <span class="mainForm">{@html mainFormRuby}</span>
       <span class="reading">{readingsString}</span>
     </div>
   </div>
@@ -80,5 +84,6 @@
   .reading {
     color: grey;
     font-size: 12px;
+    margin-left: 4px;
   }
 </style>

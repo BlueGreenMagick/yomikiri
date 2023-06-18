@@ -49,6 +49,9 @@ describe("RubyString", () => {
       { base: "ん" },
       { base: "中", ruby: "なか" },
     ]);
+    expect(RubyString.generate("ホーム", "ホーム")).toEqual([
+      { base: "ホーム" },
+    ]);
   });
 
   test("to Anki", () => {
@@ -60,6 +63,20 @@ describe("RubyString", () => {
       { base: "屋", ruby: "や" },
     ];
     expect(RubyString.toAnki(rubies)).toEqual("本[ほん] 屋[や]");
+  });
+
+  test("to HTML", () => {
+    let rubies: RubyString;
+    rubies = [{ base: "読", ruby: "よ" }, { base: "む" }];
+    expect(RubyString.toHtml(rubies)).toEqual("<ruby>読<rt>よ</rt></ruby>む");
+    rubies = [
+      { base: "本", ruby: "ほん" },
+      { base: "<" },
+      { base: "話", ruby: "<" },
+    ];
+    expect(RubyString.toHtml(rubies)).toEqual(
+      "<ruby>本<rt>ほん</rt></ruby>&lt;<ruby>話<rt>&lt;</rt></ruby>"
+    );
   });
 });
 

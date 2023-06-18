@@ -1,3 +1,5 @@
+import Utils from "./utils";
+
 export interface RubyUnit {
   base: string;
   ruby?: string;
@@ -24,13 +26,20 @@ export namespace RubyString {
    * (No JMDict entry forms contains regex special characters)
    */
   export function generate(text: string, reading: string): RubyString {
+    let inKatakana = isKatakana(reading);
     const splitted = splitKanjiKana(text);
     let regexp = "";
     if (splitted[0] !== "") {
       regexp += "(.+)";
     }
+    // Should written kana be converted to hiragana/katakana based on reading?
     for (let i = 1; i < splitted.length; i++) {
-      regexp += i % 2 === 0 ? "(.+)" : toHiragana(splitted[i]);
+      regexp +=
+        i % 2 === 0
+          ? "(.+)"
+          : inKatakana
+          ? toKatakana(splitted[i])
+          : toHiragana(splitted[i]);
     }
     const r = new RegExp("^" + regexp + "$", "u");
     const matches = reading.match(r);
@@ -61,6 +70,7 @@ export namespace RubyString {
     return rubyString;
   }
 
+  /** Ruby string in Anki furigana style `漢字[かんじ]`*/
   export function toAnki(rubyString: RubyString): string {
     let ankiString = "";
     for (const unit of rubyString) {
@@ -77,6 +87,21 @@ export namespace RubyString {
       }
     }
     return ankiString;
+  }
+
+  /** Ruby string in HTML: `<ruby>漢字<rt>かんじ</rt></ruby>`*/
+  export function toHtml(rubyString: RubyString): string {
+    let html = "";
+    for (const unit of rubyString) {
+      if (unit.ruby === undefined) {
+        html += Utils.escapeHTML(unit.base);
+      } else {
+        const base = Utils.escapeHTML(unit.base);
+        const ruby = Utils.escapeHTML(unit.ruby);
+        html += `<ruby>${base}<rt>${ruby}</rt></ruby>`;
+      }
+    }
+    return html;
   }
 }
 
@@ -100,6 +125,20 @@ function splitKanjiKana(text: string): string[] {
   }
   splitted.push(chars);
   return splitted;
+}
+
+/** First char of text is hiragana. Return false if text is "" */
+export function isHiragana(text: string): boolean {
+  if (text === "") return false;
+  const char = text.charCodeAt(0);
+  return char >= 12353 && char <= 12438;
+}
+
+/** First char of text is hiragana. Return false if text is "" */
+export function isKatakana(text: string): boolean {
+  if (text === "") return false;
+  const char = text.charCodeAt(0);
+  return char >= 12449 && char <= 12534;
 }
 
 // (u+30a1ァ -> u+3041ぁ) (u+30f6ヶ -> u+3096ゖ)
