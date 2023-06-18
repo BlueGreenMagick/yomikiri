@@ -106,10 +106,11 @@ export namespace Tooltip {
     tooltip.style.removeProperty("transform");
 
     // calculate frame size
+    let tooltipWindow = tooltip.contentWindow as Window;
     let content = tooltip.contentDocument?.getElementById(
       "yomikiri-entriesview"
     ) as HTMLElement;
-    const width = content.scrollWidth;
+    const width = tooltipWindow.innerWidth;
     const height = content.scrollHeight;
     tooltip.style.width = width + "px";
     tooltip.style.height = height + "px";
