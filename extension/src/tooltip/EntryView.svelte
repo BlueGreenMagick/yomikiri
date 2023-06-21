@@ -47,6 +47,9 @@
 </div>
 
 <style>
+  .entryView {
+    overflow: hidden;
+  }
   .header {
     height: var(--header-height);
     position: sticky;
