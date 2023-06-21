@@ -62,13 +62,11 @@
   }
 
   .searchbar {
-    flex: 0 0;
-
     display: flex;
     align-items: center;
     height: 28px;
-    padding: 2px;
-    margin: 4px;
+    padding: 2px 4px;
+    margin: 6px;
     border-radius: 6px;
     border: 1px solid grey;
   }
@@ -80,22 +78,32 @@
   .icon {
     width: 16px;
     fill: grey;
+    padding-top: 1px;
   }
 
   .tokensview {
     flex: 0 0;
     max-height: 120px;
     overflow-y: auto;
+    padding: 6px;
+    border-bottom: 1px solid lightgray;
   }
   input {
-    flex: 1 1;
+    flex: 1;
     margin: 2px;
     line-height: 20px;
     border: 0;
     outline: none;
   }
+
   .entries {
     flex: 1 1;
     overflow-y: auto;
+  }
+  .entries > :global(div) {
+    border-top: 1px solid lightgray;
+  }
+  .entries > :global(div:first-child) {
+    border-top: none;
   }
 </style>

@@ -23,11 +23,11 @@
 
 <style>
   div {
-    margin: 4px 2px;
     font-size: 16px;
   }
   .token {
     display: inline-block;
+    margin: 2px;
   }
   .token.selected a {
     color: blue;

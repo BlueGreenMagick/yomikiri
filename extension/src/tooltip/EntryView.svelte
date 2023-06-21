@@ -72,4 +72,7 @@
   .mainForm {
     font-size: 24px;
   }
+  .groups {
+    margin-bottom: 4px;
+  }
 </style>
