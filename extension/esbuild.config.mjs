@@ -125,7 +125,7 @@ const buildOptions = {
         { from: ["src/popup/index.html"], to: ["./popup.html"] },
         { from: ["src/x-callback/index.html"], to: ["./x-callback.html"] },
         { from: ["src/*.json"], to: ["./"] },
-        { from: ["src/res/**/*"], to: ["res"] },
+        { from: ["src/assets/static/**/*"], to: ["assets/static"] },
       ],
       watch: true,
       // verbose: true,
