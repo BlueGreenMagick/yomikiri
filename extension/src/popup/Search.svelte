@@ -35,7 +35,7 @@
   $: getEntries(searchTokens, selectedTokenIdx);
 </script>
 
-<div>
+<div class="search">
   <div class="searchbar">
     <div class="icon">{@html IconSearch}</div>
     <input
@@ -44,7 +44,9 @@
       placeholder="Enter japanese word or sentence."
     />
   </div>
-  <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
+  <div class="tokensview">
+    <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
+  </div>
   <div class="entries">
     {#each entries as entry}
       <EntryView {entry} />
@@ -53,7 +55,15 @@
 </div>
 
 <style>
+  .search {
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+  }
+
   .searchbar {
+    flex: 0 0;
+
     display: flex;
     align-items: center;
     height: 28px;
@@ -72,6 +82,11 @@
     fill: grey;
   }
 
+  .tokensview {
+    flex: 0 0;
+    max-height: 120px;
+    overflow-y: auto;
+  }
   input {
     flex: 1 1;
     margin: 2px;
@@ -80,6 +95,7 @@
     outline: none;
   }
   .entries {
+    flex: 1 1;
     overflow-y: auto;
   }
 </style>
