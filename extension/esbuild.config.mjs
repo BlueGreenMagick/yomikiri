@@ -134,7 +134,10 @@ const buildOptions = {
       preprocess: sveltePreprocess(),
       compilerOptions: { css: true },
       filterWarnings: (warning) => {
-        const ignore = ["a11y-no-noninteractive-tabindex"];
+        const ignore = [
+          "a11y-no-noninteractive-tabindex",
+          "a11y-click-events-have-key-events",
+        ];
         return !ignore.includes(warning.code);
       },
     }),

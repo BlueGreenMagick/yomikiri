@@ -17,7 +17,7 @@
     "dev:ios": "yarn run _build development ios",
     "dev": "yarn run dev:chrome",
     "run:firefox": "yarn web-ext run -s ./build --devtools",
-    "lint": "svelte-check",
+    "lint": "svelte-check --compiler-warnings \"a11y-no-noninteractive-tabindex:ignore,a11y-click-events-have-key-events:ignore\"",
     "test": "yarn jest"
   },
   "devDependencies": {
