@@ -163,7 +163,7 @@ border: 0;
 
     _entriesView = new EntriesView({
       target: doc.body,
-      props: { entries: [] },
+      props: {},
     });
     _entriesView.$on("close", (ev: CustomEvent<MouseEvent>) => {
       hide();

@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Token } from "~/tokenizer";
+  import type { Entry } from "~/dicEntry";
+  import { Api } from "~/api";
+  import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
   import TokensView from "./TokensView.svelte";
-  import { Api } from "~/api";
-  import EntriesView from "~/tooltip/EntriesView.svelte";
-  import type { Entry } from "~/dicEntry";
-  import Utils from "~/utils";
+  import EntryView from "~/tooltip/EntryView.svelte";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
@@ -46,7 +46,9 @@
   </div>
   <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
   <div class="entries">
-    <EntriesView {entries} />
+    {#each entries as entry}
+      <EntryView {entry} />
+    {/each}
   </div>
 </div>
 

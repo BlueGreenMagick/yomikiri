@@ -10,7 +10,7 @@
 
   const dispatch = createEventDispatcher<Events>();
 
-  export let entries: Entry[] = [];
+  let entries: Entry[] = [];
 
   export function setEntries(e: Entry[]) {
     entries = e;
