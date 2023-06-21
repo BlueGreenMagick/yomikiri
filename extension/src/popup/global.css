@@ -1,0 +1,14 @@
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  width: 300px;
+  min-height: 200px;
+}

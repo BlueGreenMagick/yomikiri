@@ -1,4 +1,6 @@
+import "./global.css";
 import { Api } from "~/api";
+import Search from "./Search.svelte";
 
 async function searchClicked() {
   const input = document.getElementById("search-input") as HTMLInputElement;
@@ -38,11 +40,4 @@ async function openSettings() {
 
 Api.initialize({ context: "page" });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const searchBtn = document.getElementById("search-button") as HTMLElement;
-  searchBtn.addEventListener("click", () => searchClicked());
-  const tokenizeBtn = document.getElementById("tokenize-button") as HTMLElement;
-  tokenizeBtn.addEventListener("click", () => tokenizeClicked());
-  const settingsBtn = document.getElementById("settings-button") as HTMLElement;
-  settingsBtn.addEventListener("click", openSettings);
-});
+const searchSvelte = new Search({ target: document.body, props: {} });

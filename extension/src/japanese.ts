@@ -1,3 +1,4 @@
+import type { Token } from "~/tokenizer";
 import Utils from "./utils";
 
 export interface RubyUnit {
@@ -68,6 +69,10 @@ export namespace RubyString {
     }
 
     return rubyString;
+  }
+
+  export function fromToken(token: Token): RubyString {
+    return RubyString.generate(token.text, token.reading);
   }
 
   /** Ruby string in Anki furigana style `漢字[かんじ]`*/
