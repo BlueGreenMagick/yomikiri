@@ -4,6 +4,7 @@
   import { Api } from "~/api";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
+  import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
   import EntryView from "~/tooltip/EntryView.svelte";
 
@@ -37,12 +38,20 @@
 
 <div class="search">
   <div class="searchbar">
-    <div class="icon">{@html IconSearch}</div>
+    <div class="icon-search">{@html IconSearch}</div>
     <input
       type="text"
       bind:value={searchText}
       placeholder="Enter japanese word or sentence."
     />
+    <div
+      class="icon-close"
+      on:click={() => {
+        searchText = "";
+      }}
+    >
+      {@html IconCloseCircle}
+    </div>
   </div>
   <div class="tokensview">
     <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
@@ -75,10 +84,19 @@
     outline: #0969da;
   }
 
-  .icon {
+  .icon-search {
     width: 16px;
     fill: grey;
-    padding-top: 1px;
+    margin-top: 1px;
+  }
+  .icon-close {
+    width: 12px;
+    fill: grey;
+    margin-top: 2px;
+  }
+  .icon-close:hover {
+    opacity: 0.8;
+    cursor: pointer;
   }
 
   .tokensview {
