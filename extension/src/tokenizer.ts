@@ -1,6 +1,6 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
 import type { Dictionary } from "~/dictionary";
-import { Entry } from "dicEntry";
+import { Entry } from "./dicEntry";
 import Utils from "~/utils";
 import { toHiragana } from "./japanese";
 
@@ -125,35 +125,6 @@ export class Tokenizer {
 
     const joined = joinTokens(tokens, index, to - 1);
     return [joined, to - index - 1];
-  }
-
-  async tests() {
-    await Promise.all([
-      this.testTokenization("私/は/学生/です"),
-      this.testTokenization("この/本/は/よく/じゃなかった"),
-      // compound
-      this.testTokenization("魚/フライ/を/食べた/かもしれない/猫"),
-      this.testTokenization("地震/について/語る"),
-      //this.testTokenization("聞こえて/き/そうな/くらい"),
-      this.testTokenization("だから/しませんでした"),
-      this.testTokenization("奇跡的/に/生まれました"),
-      // prefix compound
-      this.testTokenization("全否定"),
-      // don't compound
-      // this.testTokenization("私/は/しる"),
-    ]);
-  }
-
-  /** expected: text token-separated with '/'. */
-  async testTokenization(expected: string) {
-    const text = expected.replace(/\//g, "");
-    const result = await this.tokenize({ text, selectedCharIdx: 0 });
-    const tokens = result.tokens;
-    const joinedTokens = tokens.map((v) => v.text).join("/");
-    if (joinedTokens !== expected) {
-      console.log(result);
-      throw new Error(`Expected ${expected}, got ${joinedTokens}`);
-    }
   }
 
   private constructor(dictionary: Dictionary, tokenizer: TokenizerInner) {

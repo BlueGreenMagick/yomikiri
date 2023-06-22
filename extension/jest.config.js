@@ -1,19 +1,21 @@
 module.exports = {
   transform: {
-    "^.+\\.(t|j)sx?$": "@swc/jest",
+    "\\.(t|j|mj)sx?$": "@swc/jest",
+    "\\.gz$": "<rootDir>/scripts/jestFileTransformer.js",
   },
   moduleNameMapper: {
-    "^~/(.*)$": "./$1",
-    "^@icons/(.*)$": "assets/icons/$1",
-    "^@platform$": "platform/desktop/index",
-    "^@platform/(.*)$": "platform/desktop/$1",
+    "^~/(.*)$": "<rootDir>/src/$1",
+    "^@icons/(.*)$": "<rootDir>/src/assets/icons/$1",
+    "^@platform$": "<rootDir>/src/platform/desktop/index",
+    "^@platform/(.*)$": "<rootDir>/src/platform/desktop/$1",
+    "^@yomikiri/yomikiri-rs$":
+      "<rootDir>/../node_modules/@yomikiri/yomikiri-rs/yomikiri_rs.js",
   },
-  testEnvironment: "jsdom",
+  testEnvironment: "<rootDir>/scripts/jestEnvironment.js",
   testEnvironmentOptions: {
     url: "https://yomikiri.jest/",
     html: "<!DOCTYPE html><html><head></head><body></body></html>",
   },
-  globals: {
-    fetch: global.fetch,
-  },
+  setupFiles: ["<rootDir>/scripts/jestSetup.mjs"],
+  transformIgnorePatterns: ["node_modules/(?!dexie)/"],
 };
