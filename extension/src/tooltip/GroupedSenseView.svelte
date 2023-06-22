@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Entry, type Sense, type GroupedSense } from "~/dicEntry";
+  import { Entry, Sense, type GroupedSense } from "~/dicEntry";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
   import type { MarkerData } from "~/ankiNoteBuilder";
@@ -10,21 +10,16 @@
 
   export let group: GroupedSense;
 
-  const dispatch = createEventDispatcher<Events>();
-
   let posText: string;
 
-  function makePosText(poss: string[]): string {
-    return poss.map((pos) => Entry.entityInfo(pos)).join(", ");
-  }
+  const dispatch = createEventDispatcher<Events>();
 
   function addAnkiNote(sense: Sense) {
     dispatch("addNote", {
       selectedMeaning: sense,
     });
   }
-
-  $: posText = makePosText(group.pos);
+  $: posText = group.simplePos.join(", ");
 </script>
 
 <div class="grouped-sense">

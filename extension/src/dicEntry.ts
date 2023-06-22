@@ -4,6 +4,7 @@ import ENTITIES from "./assets/dicEntities.json";
 // list of tuple (pos sorted list, senses)
 export interface GroupedSense {
   pos: string[];
+  simplePos: string[];
   senses: Sense[];
 }
 export type DictionaryResult = Entry[];
@@ -76,6 +77,13 @@ export namespace Entry {
   function insertIntoGroupedSenses(groups: GroupedSense[], sense: Sense) {
     const pos = sense.partOfSpeech;
     const sortedPos = [...pos].sort();
+    const simplePoss: string[] = [];
+    for (const p of sortedPos) {
+      const simplePos = Sense.entityToSimplePos(p);
+      if (!simplePoss.includes(simplePos)) {
+        simplePoss.push(simplePos);
+      }
+    }
     for (const group of groups) {
       if (Utils.listIsIdentical(group.pos, sortedPos)) {
         group.senses.push(sense);
@@ -84,6 +92,7 @@ export namespace Entry {
     }
     const group: GroupedSense = {
       pos: sortedPos,
+      simplePos: simplePoss,
       senses: [sense],
     };
     groups.push(group);
@@ -108,9 +117,7 @@ export namespace Entry {
   }
 
   /** Put in return value of .entityName() */
-  export function entityInfo(entity: string): string | null {
-    let name = entityName(entity);
-    if (name === null) return null;
+  export function entityInfo(name: string): string | null {
     let info = ENTITIES[name] as string | undefined;
     if (info === undefined) return null;
     return info;
@@ -193,5 +200,49 @@ export namespace Sense {
       dialect: obj.dialect ?? [],
       meaning: obj.meaning ?? [],
     };
+  }
+
+  export function simplePos(sense: Sense): string[] {
+    const simplePoss: string[] = [];
+    for (const posEntity of sense.partOfSpeech) {
+      const simplePos = entityToSimplePos(posEntity);
+      if (!simplePoss.includes(simplePos)) {
+        simplePoss.push(simplePos);
+      }
+    }
+    return simplePoss;
+  }
+
+  const ENTITY_SIMPLE_POS_MAP: { [ent: string]: string } = {
+    "=n=": "noun",
+    "=n-pref=": "noun",
+    "=n-suf=": "noun",
+    "=vs=": "noun",
+    "=aux-v=": "verb",
+    "=aux-adj=": "adjective",
+    "=adv=": "adverb",
+    "=adv-to=": "adverb",
+    "=int=": "interjection",
+    "=unc=": "unclassified",
+  };
+
+  export function entityToSimplePos(posEntity: string): string {
+    if (posEntity in ENTITY_SIMPLE_POS_MAP) {
+      return ENTITY_SIMPLE_POS_MAP[posEntity];
+    } else if (posEntity.startsWith("=v")) {
+      return "verb";
+    } else if (posEntity.startsWith("=adj")) {
+      return "adjective";
+    } else {
+      const posName = Entry.entityName(posEntity);
+      if (posName === null) {
+        throw Error(`Invalid POS entity: ${posEntity}`);
+      }
+      const val = Entry.entityInfo(posName);
+      if (val === null) {
+        throw Error(`Invalid POS: ${posName}`);
+      }
+      return val;
+    }
   }
 }
