@@ -28,7 +28,7 @@
   </div>
   <div>
     {#each group.senses as sense, idx}
-      <div class="meaning">
+      <div class="meaning" tabindex="-1">
         <div class="anki-add" on:click={() => addAnkiNote(sense)}>
           {@html IconAddCircle}
         </div>
@@ -62,8 +62,12 @@
     background-color: rgb(236, 236, 236);
   }
 
+  .meaning:focus-visible {
+    outline: none;
+  }
+
   .anki-add {
-    width: 12px;
+    flex: 0 0 12px;
     height: 12px;
     fill: green;
     visibility: hidden;
