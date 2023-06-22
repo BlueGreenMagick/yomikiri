@@ -101,11 +101,18 @@ export namespace Tooltip {
 
   /** position tooltip next to rect */
   async function position(rect: DOMRect) {
+    // min margin between tooltip and window
+    const MARGIN = 10;
+    // space between highlighted rect and tooltip
+    const VERTICAL_SPACE = 6;
+    const MAX_HEIGHT = 300;
+    const BOTTOM_ADVANTAGE = 150;
+
     const tooltip = getTooltipEl();
     // reset tooltipEl style beforehand so tooltip does not affect document size.
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
-    tooltip.style.width = Math.min(500, window.innerWidth) + "px";
+    tooltip.style.width = Math.min(500, window.innerWidth - 2 * MARGIN) + "px";
     tooltip.style.removeProperty("transform");
 
     // calculate frame size
@@ -125,12 +132,6 @@ export namespace Tooltip {
     const rectBottom = rectTop + rect.height;
     const spaceTop = rect.top;
     const spaceBottom = window.innerHeight - rect.bottom;
-    // min margin between tooltip and window
-    const MARGIN = 10;
-    // space between highlighted rect and tooltip
-    const VERTICAL_SPACE = 6;
-    const MAX_HEIGHT = 300;
-    const BOTTOM_ADVANTAGE = 150;
 
     tooltip.style.left =
       Math.min(rectLeft, rootRect.width - MARGIN - width) + "px";
