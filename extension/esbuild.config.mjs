@@ -114,6 +114,7 @@ const buildOptions = {
   bundle: true,
   logLevel: "info",
   sourcemap: DEVELOPMENT ? "inline" : false,
+  conditions: ["svelte"],
   plugins: [
     logRebuildPlugin,
     setWatchOptionPlugin,

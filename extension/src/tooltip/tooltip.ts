@@ -1,10 +1,15 @@
 import Utils from "utils";
 import type { Entry } from "~/dicEntry";
 import EntriesView from "./EntriesView.svelte";
-import { AnkiNoteBuilder, type MarkerData } from "~/ankiNoteBuilder";
+import {
+  AnkiNoteBuilder,
+  type MarkerData,
+  type NoteData,
+} from "~/ankiNoteBuilder";
 import type { ScanResult } from "~/content/scanner";
 import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
+import { Toast } from "~/toast";
 
 export namespace Tooltip {
   let _scanResult: ScanResult;
@@ -175,8 +180,24 @@ border: 0;
       async (ev: CustomEvent<Partial<MarkerData>>) => {
         const data = ev.detail;
         data.scanned = _scanResult;
-        const note = await AnkiNoteBuilder.buildNote(data as MarkerData);
-        await Api.request("addAnkiNote", note);
+        const toast = Toast.loading("Preparing Anki note");
+        let note: NoteData;
+        try {
+          note = await AnkiNoteBuilder.buildNote(data as MarkerData);
+        } catch (err) {
+          let errMsg = err instanceof Error ? err.message : "Invalid error";
+          toast.error(errMsg);
+          throw err;
+        }
+        toast.update("Adding note to Anki");
+        try {
+          await Api.request("addAnkiNote", note);
+        } catch (err) {
+          let errMsg = err instanceof Error ? err.message : "Invalid error";
+          toast.error(errMsg);
+          throw err;
+        }
+        toast.success("Added note to Anki!");
       }
     );
   }
