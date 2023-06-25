@@ -1,20 +1,21 @@
-import { Dictionary } from "../dictionary";
+import { Dictionary, type InstallProgress } from "../dictionary";
 import type { Entry } from "../dicEntry";
 import {
   Tokenizer,
   type TokenizeResult,
   type TokenizeRequest,
 } from "../tokenizer";
-import { Api, type MessageSender } from "~/api";
+import { Api, type MessageSender, type Port } from "~/api";
 import AnkiApi from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 
-let dictionaryP = Dictionary.initialize();
-let tokenizerP = Tokenizer.initialize(dictionaryP);
+let dictionary = new Dictionary();
+let dictionaryLoadedP = dictionary.initialize();
+let tokenizerP = Tokenizer.initialize(dictionaryLoadedP);
 
 async function searchTerm(term: string): Promise<Entry[]> {
-  let dictionary = await dictionaryP;
+  await dictionaryLoadedP;
   return await dictionary.search(term);
 }
 
@@ -31,16 +32,47 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
 
-Api.initialize({ handleRequests: true, context: "background" });
+function dictionaryCheckInstall(port: Port) {
+  if (dictionary.installed) {
+    port.disconnect();
+  } else {
+    const lastUpdateProgress = dictionary.lastUpdateProgress;
+    if (lastUpdateProgress !== undefined) {
+      port.postMessage(lastUpdateProgress);
+    }
+    const onProgress = (progress: InstallProgress) => {
+      port.postMessage(progress);
+    };
+    dictionary.installProgressHandlers.push(onProgress);
+    port.onDisconnect.addListener((port) => {
+      const idx = dictionary.installProgressHandlers.indexOf(onProgress);
+      if (idx !== -1) {
+        dictionary.installProgressHandlers.splice(idx, 1);
+      }
+    });
+
+    dictionaryLoadedP.then(() => {
+      port.disconnect();
+    });
+  }
+}
+
+Api.initialize({
+  handleRequests: true,
+  handleConnection: true,
+  context: "background",
+});
 
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);
 Api.handleRequest("addAnkiNote", addAnkiNote);
 Api.handleRequest("tabId", tabId);
 
+Api.handleConnection("dictionaryCheckInstall", dictionaryCheckInstall);
+
 // expose object to window for debugging purposes
 //@ts-ignore
-self.dictionaryP = dictionaryP;
+self.dictionary = dictionary;
 //@ts-ignore
 self.tokenizerP = tokenizerP;
 //@ts-ignore

@@ -1,6 +1,6 @@
 import "./global.css";
 import { Api } from "~/api";
-import Search from "./Search.svelte";
+import Popup from "./Popup.svelte";
 
 async function searchClicked() {
   const input = document.getElementById("search-input") as HTMLInputElement;
@@ -40,4 +40,4 @@ async function openSettings() {
 
 Api.initialize({ context: "page" });
 
-const searchSvelte = new Search({ target: document.body, props: {} });
+const svelte = new Popup({ target: document.body, props: {} });

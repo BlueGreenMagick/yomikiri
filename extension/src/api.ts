@@ -59,9 +59,12 @@ export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
 export type ExecutionContext = "contentScript" | "background" | "page";
 
+export type Port = chrome.runtime.Port;
+
 export interface ApiInitializeOptions {
   handleRequests?: boolean;
   handleStorageChange?: boolean;
+  handleConnection?: boolean;
   context: ExecutionContext;
 }
 
@@ -76,6 +79,9 @@ export namespace Api {
     }
     if (opts.handleStorageChange) {
       attachStorageChangeHandler();
+    }
+    if (opts.handleConnection) {
+      attachConnectionHandler();
     }
     // @ts-ignore
     context = opts.context;
@@ -289,6 +295,29 @@ export namespace Api {
     }
   }
 
+  type ConnectionKey = "dictionaryCheckInstall";
+  type ConnectionHandler = (port: chrome.runtime.Port) => void;
+
+  const _connectionHandlers: {
+    [K in ConnectionKey]?: ConnectionHandler[];
+  } = {};
+
+  export function connect(name: ConnectionKey) {
+    return chrome.runtime.connect({ name });
+  }
+
+  export function handleConnection(
+    name: ConnectionKey,
+    handler: ConnectionHandler
+  ) {
+    const handlers = _connectionHandlers[name];
+    if (handlers === undefined) {
+      _connectionHandlers[name] = [handler];
+    } else {
+      handlers.push(handler);
+    }
+  }
+
   function attachRequestHandler() {
     chrome.runtime.onMessage.addListener(
       (
@@ -333,6 +362,17 @@ export namespace Api {
         for (const handler of handlers) {
           handler(changes[key]);
         }
+      }
+    });
+  }
+
+  function attachConnectionHandler() {
+    chrome.runtime.onConnect.addListener((port) => {
+      if (!_connectionHandlers.hasOwnProperty(port.name)) return;
+      const handlers = _connectionHandlers[port.name as ConnectionKey];
+      if (handlers === undefined) return;
+      for (const handler of handlers) {
+        handler(port);
       }
     });
   }

@@ -24,11 +24,21 @@ interface Config {
   name: string;
   value: any;
 }
+export type ProgressFn = (progress: InstallProgress) => void;
+
+/** If total === -1, it means entries were not loaded yet */
+export interface InstallProgress {
+  current: number;
+  total: number;
+}
 
 export class Dictionary {
   db: Dexie;
+  installed: boolean = false;
+  lastUpdateProgress?: InstallProgress;
+  installProgressHandlers: ProgressFn[] = [];
 
-  private constructor() {
+  constructor() {
     this.db = new Dexie("Dictionary");
     this.setupDB();
   }
@@ -49,30 +59,48 @@ export class Dictionary {
     });
   }
 
-  private async install(url: string): Promise<void> {
+  async requiresInstall(): Promise<boolean> {
+    const dic_ver = await this.getConfig("dic_ver");
+    console.log(dic_ver);
+    return !(typeof dic_ver === "object" && dic_ver.value === DIC_VER);
+  }
+
+  private async install(): Promise<void> {
     Utils.bench("Installing dictionary");
+    this.updateProgress({ current: 0, total: -1 });
     const db = this.db;
-    const entries = await Dictionary.downloadFromUrl(url);
+    const entries = await Dictionary.downloadFromUrl(EnJMDict);
+    const BULK_CNT = 100;
     await db.transaction("rw", "entries", "config", async () => {
       await db.table("config").put({ name: "dic_ver", value: DIC_VER });
       await db.table("config").put({ name: "dic_name", value: "English" });
       await db.table("entries").clear();
-      await db.table("entries").bulkAdd(entries);
+      for (let i = 0; i < entries.length / BULK_CNT; i++) {
+        this.updateProgress({ current: BULK_CNT * i, total: entries.length });
+        const slice = entries.slice(BULK_CNT * i, BULK_CNT * i + BULK_CNT);
+        await db.table("entries").bulkAdd(slice);
+      }
     });
     Utils.bench("Installed dictionary");
+  }
+
+  private updateProgress(progress: InstallProgress): void {
+    this.lastUpdateProgress = progress;
+    for (const handler of this.installProgressHandlers) {
+      handler(progress);
+    }
   }
 
   private async getConfig(name: string): Promise<any> {
     return await this.db.table("config").get(name);
   }
 
-  static async initialize(): Promise<Dictionary> {
-    const dic = new Dictionary();
-    const dic_ver = await dic.getConfig("dic_ver");
-    if (!(typeof dic_ver === "object" && dic_ver.value === DIC_VER)) {
-      await dic.install(EnJMDict);
+  async initialize(): Promise<Dictionary> {
+    if (await this.requiresInstall()) {
+      await this.install();
     }
-    return dic;
+    this.installed = true;
+    return this;
   }
 
   async search(term: string): Promise<Entry[]> {
