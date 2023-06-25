@@ -37,10 +37,15 @@
 
 <style>
   .container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
+    position: relative;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
   }
