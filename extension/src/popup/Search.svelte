@@ -14,6 +14,11 @@
   let entries: Entry[] = [];
 
   async function _tokenize(searchText: string) {
+    if (searchText === "") {
+      searchTokens = [];
+      return;
+    }
+
     let result = await Api.request("tokenize", {
       text: searchText,
       selectedCharIdx: 0,
