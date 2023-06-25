@@ -6,7 +6,7 @@
   import IconSearch from "@icons/search.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
-  import EntryView from "~/tooltip/EntryView.svelte";
+  import DicEntryView from "~/components/DicEntryView.svelte";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
@@ -58,7 +58,7 @@
   </div>
   <div class="entries">
     {#each entries as entry}
-      <EntryView {entry} />
+      <DicEntryView {entry} />
     {/each}
   </div>
 </div>

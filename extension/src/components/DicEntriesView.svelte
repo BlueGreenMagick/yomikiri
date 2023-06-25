@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import type { Entry } from "~/dicEntry";
-  import EntryView from "./EntryView.svelte";
+  import DicEntryView from "./DicEntryView.svelte";
   import CloseButton from "./CloseButton.svelte";
 
   interface Events {
@@ -17,10 +17,10 @@
   }
 </script>
 
-<div id="yomikiri-entriesview">
+<div id="yomikiri-entries">
   <CloseButton on:click={(ev) => dispatch("close", ev)} />
   {#each entries as entry}
-    <EntryView {entry} on:addNote />
+    <DicEntryView {entry} on:addNote />
   {/each}
 </div>
 

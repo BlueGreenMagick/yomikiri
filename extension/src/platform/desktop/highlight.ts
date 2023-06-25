@@ -1,4 +1,4 @@
-import { Tooltip } from "~/tooltip/tooltip";
+import { Tooltip } from "~/content/tooltip";
 import type { IHighlighter, IHighlighterStatic } from "../types/highlight";
 
 const STYLE_ID = "yomikiri-selection-css";

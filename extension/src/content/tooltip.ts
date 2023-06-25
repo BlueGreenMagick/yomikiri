@@ -1,6 +1,6 @@
 import Utils from "utils";
 import type { Entry } from "~/dicEntry";
-import EntriesView from "./EntriesView.svelte";
+import DicEntriesView from "../components/DicEntriesView.svelte";
 import {
   AnkiNoteBuilder,
   type MarkerData,
@@ -14,7 +14,7 @@ import { Toast } from "~/toast";
 export namespace Tooltip {
   let _scanResult: ScanResult;
   let _tooltipEl: HTMLIFrameElement;
-  let _entriesView: EntriesView;
+  let _entriesView: DicEntriesView;
 
   export async function show(
     e: Entry[],
@@ -123,7 +123,7 @@ export namespace Tooltip {
     // calculate frame size
     let tooltipWindow = tooltip.contentWindow as Window;
     let content = tooltip.contentDocument?.getElementById(
-      "yomikiri-entriesview"
+      "yomikiri-entries"
     ) as HTMLElement;
     const width = tooltipWindow.innerWidth;
     const height = content.scrollHeight;
@@ -167,7 +167,7 @@ border: 0;
 </style>
 `;
 
-    _entriesView = new EntriesView({
+    _entriesView = new DicEntriesView({
       target: doc.body,
       props: {},
     });

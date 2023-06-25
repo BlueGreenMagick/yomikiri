@@ -1,7 +1,7 @@
 import { Scanner } from "./scanner";
 import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
-import { Tooltip } from "~/tooltip/tooltip";
+import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
 
 Api.initialize({ context: "contentScript" });
