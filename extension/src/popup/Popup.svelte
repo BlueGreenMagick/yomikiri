@@ -21,8 +21,17 @@
   dictionaryCheckInstall();
 </script>
 
-{#if dictionaryInstalled}
-  <Search />
-{:else}
-  <InstallingDictionary progress={dictionaryInstallProgress} />
-{/if}
+<div class="container">
+  {#if dictionaryInstalled}
+    <Search />
+  {:else}
+    <InstallingDictionary progress={dictionaryInstallProgress} />
+  {/if}
+</div>
+
+<style>
+  .container {
+    min-width: 300px;
+    margin: 0 auto;
+  }
+</style>
