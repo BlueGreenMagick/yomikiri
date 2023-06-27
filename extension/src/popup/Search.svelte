@@ -132,7 +132,7 @@
   }
   .icon-clear {
     width: 14px;
-    height: 15px;
+    height: 14px;
     fill: #666666;
     opacity: 0.8;
   }
