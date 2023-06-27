@@ -98,7 +98,7 @@
 
   .header {
     display: flex;
-    height: 28px;
+    align-items: center;
     margin: 6px 0 6px 6px;
   }
 
@@ -118,11 +118,16 @@
 
   input {
     flex: 1;
-    margin: 2px;
+    margin: 4px;
+    padding: 0px;
     border: 0;
     outline: none;
-    line-height: 20px;
     background-color: #f6f6f6;
+    font-size: 1em;
+  }
+
+  .icon > :global(svg) {
+    display: block;
   }
 
   .icon-search {
@@ -150,14 +155,14 @@
   }
 
   .settings-button {
-    flex: 0 0 28px;
-    width: 100%;
-    height: 100%;
+    flex: 0 0 auto;
     margin: 0 2px;
     padding: 0;
     border: none;
     border-radius: 4px;
     outline: none;
+    width: 28px;
+    height: 28px;
 
     display: flex;
     align-items: center;
