@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Search from "./Search.svelte";
-  import InstallingDictionary from "./InstallingDictionary.svelte";
   import { Api } from "~/api";
   import type { InstallProgress } from "~/dictionary";
+  import Search from "./Search.svelte";
+  import InstallingDictionary from "./InstallingDictionary.svelte";
 
   let dictionaryInstalled = true;
   let dictionaryInstallProgress: InstallProgress = { current: 0, total: 0 };
@@ -31,7 +31,10 @@
 
 <style>
   .container {
+    height: 100%;
+    min-height: 200px;
     min-width: 300px;
     margin: 0 auto;
+    padding: 0;
   }
 </style>

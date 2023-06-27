@@ -80,10 +80,20 @@
 </div>
 
 <style>
+  /** In desktop, window size changes based on content, but is fixed in ios */
+  :global(.ios) .search {
+    max-height: 100%;
+  }
+
+  :global(.desktop) .search {
+    max-height: 600px;
+  }
+
   .search {
     display: flex;
     flex-direction: column;
-    max-height: 600px;
+
+    overflow-y: hidden;
   }
 
   .header {
@@ -163,7 +173,7 @@
   }
 
   .tokensview {
-    flex: 0 0;
+    flex: 0 0 auto;
     max-height: 120px;
     overflow-y: auto;
     padding: 6px;

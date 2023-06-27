@@ -8,6 +8,7 @@ html, body {
   border: 0;
 }
 
-body {
-  min-height: 200px;
+html.ios, 
+html.ios body {
+  height: 100%;
 }

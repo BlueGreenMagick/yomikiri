@@ -1,37 +1,13 @@
 import "./global.css";
 import { Api } from "~/api";
 import Popup from "./Popup.svelte";
+import Platform from "@platform";
 
-async function searchClicked() {
-  const input = document.getElementById("search-input") as HTMLInputElement;
-  const term = input.value;
-  let response = await Api.request("searchTerm", term);
-
-  const resultEl = document.getElementById("search-results") as HTMLElement;
-  let text = "";
-  for (const entry of response) {
-    for (const sense of entry.senses) {
-      text += sense.meaning.join(", ") + "<br/>";
-    }
-    text += "<br/>---<br/>";
-  }
-  resultEl.innerHTML = text;
+if (Platform.IS_IOS) {
+  document.documentElement.classList.add("ios");
 }
-
-async function tokenizeClicked() {
-  const inputEl = document.getElementById("tokenize-input") as HTMLInputElement;
-  const input = inputEl.value;
-  const response = await Api.request("tokenize", {
-    text: input,
-    selectedCharIdx: 0,
-  });
-
-  const resultEl = document.getElementById("tokenize-results") as HTMLElement;
-  let text = "";
-  for (const token of response.tokens) {
-    text += token.text + ", ";
-  }
-  resultEl.textContent = text;
+if (Platform.IS_DESKTOP) {
+  document.documentElement.classList.add("desktop");
 }
 
 Api.initialize({ context: "page" });
