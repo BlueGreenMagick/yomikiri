@@ -1,6 +1,6 @@
 import Utils from "utils";
 import type { Entry } from "~/dicEntry";
-import DicEntriesView from "../components/DicEntriesView.svelte";
+import DicEntriesView from "../components/dictionary/DicEntriesView.svelte";
 import {
   AnkiNoteBuilder,
   type MarkerData,
