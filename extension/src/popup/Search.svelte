@@ -49,14 +49,15 @@
 <div class="search">
   <div class="header">
     <div class="searchbar">
-      <div class="icon-search">{@html IconSearch}</div>
+      <div class="icon icon-search">{@html IconSearch}</div>
       <input
         type="text"
         bind:value={searchText}
         placeholder="Enter japanese word or sentence."
       />
       <div
-        class="icon-close"
+        class="icon icon-clear"
+        class:hidden={searchText === ""}
         on:click={() => {
           searchText = "";
         }}
@@ -65,7 +66,7 @@
       </div>
     </div>
     <button class="settings-button" on:click={openSettings}>
-      <div class="icon-settings">{@html IconSettings}</div>
+      <div class="icon icon-settings">{@html IconSettings}</div>
     </button>
   </div>
   <div class="tokensview">
@@ -101,48 +102,59 @@
     border: 1px solid grey;
     background-color: #f6f6f6;
   }
-
   .searchbar:focus {
     outline: #0969da;
   }
 
+  input {
+    flex: 1;
+    margin: 2px;
+    border: 0;
+    outline: none;
+    line-height: 20px;
+    background-color: #f6f6f6;
+  }
+
   .icon-search {
     width: 16px;
-    fill: grey;
-    margin-top: 1px;
+    height: 16px;
+    fill: #666666;
   }
-  .icon-close {
+  .icon-clear {
     width: 14px;
+    height: 15px;
     fill: #666666;
     opacity: 0.8;
-    margin-top: 2px;
   }
-  .icon-close:hover {
+  .icon-clear:hover {
     opacity: 1;
     cursor: pointer;
+  }
+  .icon-clear.hidden {
+    visibility: hidden;
   }
   .icon-settings {
     width: 14px;
     height: 14px;
     fill: #666666;
   }
+
   .settings-button {
     flex: 0 0 28px;
+    width: 100%;
+    height: 100%;
     margin: 0 2px;
     padding: 0;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
-    border-radius: 4px;
-    padding: 4px;
-    opacity: 0.8;
-    outline: none;
     background: none;
-    border: none;
+    opacity: 0.8;
   }
-
   .settings-button:hover,
   .settings-button:focus {
     opacity: 1;
@@ -156,14 +168,6 @@
     overflow-y: auto;
     padding: 6px;
     border-bottom: 1px solid lightgray;
-  }
-  input {
-    flex: 1;
-    margin: 2px;
-    line-height: 20px;
-    border: 0;
-    outline: none;
-    background-color: #f6f6f6;
   }
 
   .entries {
