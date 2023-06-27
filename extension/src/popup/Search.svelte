@@ -4,6 +4,7 @@
   import { Api } from "~/api";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
+  import IconSettings from "@icons/settings.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
   import DicEntryView from "~/components/dictionary/DicEntryView.svelte";
@@ -37,26 +38,35 @@
 
   const getEntries = Utils.SingleQueued(_getEntries);
 
+  function openSettings() {
+    chrome.runtime.openOptionsPage();
+  }
+
   $: tokenize(searchText);
   $: getEntries(searchTokens, selectedTokenIdx);
 </script>
 
 <div class="search">
-  <div class="searchbar">
-    <div class="icon-search">{@html IconSearch}</div>
-    <input
-      type="text"
-      bind:value={searchText}
-      placeholder="Enter japanese word or sentence."
-    />
-    <div
-      class="icon-close"
-      on:click={() => {
-        searchText = "";
-      }}
-    >
-      {@html IconCloseCircle}
+  <div class="header">
+    <div class="searchbar">
+      <div class="icon-search">{@html IconSearch}</div>
+      <input
+        type="text"
+        bind:value={searchText}
+        placeholder="Enter japanese word or sentence."
+      />
+      <div
+        class="icon-close"
+        on:click={() => {
+          searchText = "";
+        }}
+      >
+        {@html IconCloseCircle}
+      </div>
     </div>
+    <button class="settings-button" on:click={openSettings}>
+      <div class="icon-settings">{@html IconSettings}</div>
+    </button>
   </div>
   <div class="tokensview">
     <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
@@ -75,14 +85,21 @@
     max-height: 600px;
   }
 
+  .header {
+    display: flex;
+    height: 28px;
+    margin: 6px 0 6px 6px;
+  }
+
   .searchbar {
+    flex: 1 1;
     display: flex;
     align-items: center;
-    height: 28px;
+    height: 100%;
     padding: 2px 4px;
-    margin: 6px;
     border-radius: 6px;
     border: 1px solid grey;
+    background-color: #f6f6f6;
   }
 
   .searchbar:focus {
@@ -95,12 +112,41 @@
     margin-top: 1px;
   }
   .icon-close {
-    width: 12px;
-    fill: grey;
+    width: 14px;
+    fill: #666666;
+    opacity: 0.8;
     margin-top: 2px;
   }
   .icon-close:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+  .icon-settings {
+    width: 14px;
+    height: 14px;
+    fill: #666666;
+  }
+  .settings-button {
+    flex: 0 0 28px;
+    margin: 0 2px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    padding: 4px;
     opacity: 0.8;
+    outline: none;
+    background: none;
+    border: none;
+  }
+
+  .settings-button:hover,
+  .settings-button:focus {
+    opacity: 1;
+    background: lightgray;
     cursor: pointer;
   }
 
@@ -117,6 +163,7 @@
     line-height: 20px;
     border: 0;
     outline: none;
+    background-color: #f6f6f6;
   }
 
   .entries {

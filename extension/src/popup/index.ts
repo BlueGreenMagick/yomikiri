@@ -34,10 +34,6 @@ async function tokenizeClicked() {
   resultEl.textContent = text;
 }
 
-async function openSettings() {
-  chrome.runtime.openOptionsPage();
-}
-
 Api.initialize({ context: "page" });
 
 const svelte = new Popup({ target: document.body, props: {} });
