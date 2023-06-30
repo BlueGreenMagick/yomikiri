@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DicEntriesView from "~/components/dictionary/DicEntriesView.svelte";
+  import DicEntriesView from "~/components/DicEntriesView.svelte";
   import { Entry } from "~/dicEntry";
 
   // change this variable when config updates

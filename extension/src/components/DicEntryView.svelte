@@ -51,10 +51,7 @@
     overflow: hidden;
   }
   .header {
-    height: var(--header-height);
-    position: sticky;
-    margin-right: var(--close-button-width);
-    padding: 10px 0 0 4px;
+    margin: 10px 64px 0 4px;
     display: flex;
     align-items: center;
     gap: 3px;

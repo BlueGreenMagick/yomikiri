@@ -1,14 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import type { Entry } from "~/dicEntry";
   import DicEntryView from "./DicEntryView.svelte";
-  import CloseButton from "./CloseButton.svelte";
-
-  interface Events {
-    close: MouseEvent;
-  }
-
-  const dispatch = createEventDispatcher<Events>();
 
   export let entries: Entry[] = [];
 
@@ -18,7 +10,6 @@
 </script>
 
 <div id="yomikiri-entries">
-  <CloseButton on:click={(ev) => dispatch("close", ev)} />
   {#each entries as entry}
     <DicEntryView {entry} on:addNote />
   {/each}
@@ -29,9 +20,6 @@
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     padding-bottom: 4px;
-
-    --header-height: 32px;
-    --close-button-width: 64px;
   }
 
   div > :global(div) {

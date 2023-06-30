@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Entry, Sense, type GroupedSense } from "~/dicEntry";
+  import { Sense, type GroupedSense } from "~/dicEntry";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
   import type { MarkerData } from "~/ankiNoteBuilder";

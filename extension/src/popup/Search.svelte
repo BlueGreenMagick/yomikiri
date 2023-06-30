@@ -7,7 +7,7 @@
   import IconSettings from "@icons/settings.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
-  import DicEntryView from "~/components/dictionary/DicEntryView.svelte";
+  import DicEntryView from "~/components/DicEntryView.svelte";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];

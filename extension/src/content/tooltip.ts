@@ -1,6 +1,6 @@
 import Utils from "utils";
 import type { Entry } from "~/dicEntry";
-import DicEntriesView from "../components/dictionary/DicEntriesView.svelte";
+import DicEntriesView from "../components/DicEntriesView.svelte";
 import {
   AnkiNoteBuilder,
   type MarkerData,
@@ -10,11 +10,12 @@ import type { ScanResult } from "~/content/scanner";
 import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Toast } from "~/toast";
+import TooltipSvelte from "./Tooltip.svelte";
 
 export namespace Tooltip {
   let _scanResult: ScanResult;
   let _tooltipEl: HTMLIFrameElement;
-  let _entriesView: DicEntriesView;
+  let _tooltipSvelte: TooltipSvelte;
 
   export async function show(
     e: Entry[],
@@ -28,7 +29,7 @@ export namespace Tooltip {
     _scanResult = scanned;
     _tooltipEl.contentDocument?.scrollingElement?.scrollTo(0, 0);
     _tooltipEl.style.display = "block";
-    _entriesView.setEntries(e);
+    _tooltipSvelte.setEntries(e);
     // fix bug where tooltip height is previous entry's height
     await 0;
     const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
@@ -164,18 +165,21 @@ margin: 0;
 padding: 0;
 border: 0;
 }
+* {
+  box-sizing: border-box;
+}
 </style>
 `;
 
-    _entriesView = new DicEntriesView({
+    _tooltipSvelte = new TooltipSvelte({
       target: doc.body,
       props: {},
     });
-    _entriesView.$on("close", (ev: CustomEvent<MouseEvent>) => {
+    _tooltipSvelte.$on("close", (ev: CustomEvent<MouseEvent>) => {
       hide();
       highlighter.unhighlight();
     });
-    _entriesView.$on(
+    _tooltipSvelte.$on(
       "addNote",
       async (ev: CustomEvent<Partial<MarkerData>>) => {
         const data = ev.detail;
