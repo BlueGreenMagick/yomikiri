@@ -31,7 +31,7 @@
   <div class="header">
     <div class="icon" on:click={() => addNote({})}>{@html IconAddCircle}</div>
     <div>
-      <span class="mainForm">{@html mainFormRuby}</span>
+      <span class="g-japanese-font mainForm">{@html mainFormRuby}</span>
     </div>
   </div>
   <div class="groups">

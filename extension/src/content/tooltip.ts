@@ -11,6 +11,7 @@ import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Toast } from "~/toast";
 import TooltipSvelte from "./Tooltip.svelte";
+import { Theme } from "~/theme";
 
 export namespace Tooltip {
   let _scanResult: ScanResult;
@@ -170,6 +171,7 @@ border: 0;
 }
 </style>
 `;
+    Theme.insertStyleElement(doc);
 
     _tooltipSvelte = new TooltipSvelte({
       target: doc.body,
