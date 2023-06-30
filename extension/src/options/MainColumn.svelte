@@ -1,13 +1,15 @@
 <script lang="ts">
-  import OptionsAnki from "./OptionsAnki.svelte";
+  import GroupAppearance from "./GroupAppearance.svelte";
+  import GroupAnki from "./GroupAnki.svelte";
 </script>
 
 <div>
-  <OptionsAnki />
+  <GroupAppearance />
+  <GroupAnki />
 </div>
 
 <style>
   div {
-    margin: 8px;
+    margin: 12px;
   }
 </style>

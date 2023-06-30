@@ -10,6 +10,10 @@
 </div>
 
 <style>
+  .options-group {
+    margin-top: 8px;
+  }
+
   .title {
     font-size: 2em;
   }
