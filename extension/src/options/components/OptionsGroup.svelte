@@ -19,7 +19,7 @@
   }
   .grouped {
     margin-top: 8px;
-    border-radius: 6px;
+    border-radius: 4px;
 
     font-size: 1.2em;
 

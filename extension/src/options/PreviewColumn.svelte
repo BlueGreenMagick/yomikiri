@@ -78,6 +78,8 @@
     max-height: 300px;
     overflow: hidden auto;
     background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px gray;
     will-change: transform;
   }
 </style>
