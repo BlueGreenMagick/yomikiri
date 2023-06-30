@@ -17,6 +17,8 @@
 
   .container {
     display: flex;
+    margin: 12px;
+    gap: 12px;
   }
 
   #main-column {

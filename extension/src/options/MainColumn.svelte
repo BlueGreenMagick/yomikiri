@@ -7,9 +7,3 @@
   <GroupAppearance />
   <GroupAnki />
 </div>
-
-<style>
-  div {
-    margin: 12px;
-  }
-</style>
