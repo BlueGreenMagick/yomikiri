@@ -1,6 +1,7 @@
 <script lang="ts">
-  import OptionBase from "./OptionBase.svelte";
   import { type ConfigTypes, type ConfigKeysOfType, Config } from "~/config";
+  import { updateConfig } from "../stores";
+  import OptionBase from "./OptionBase.svelte";
 
   export let key: ConfigKeysOfType<number>;
   export let title: string;
@@ -14,6 +15,7 @@
 
   function onValueChange(value: number) {
     Config.set(key, value);
+    updateConfig();
   }
 
   load();

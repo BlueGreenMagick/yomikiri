@@ -2,9 +2,6 @@
   import DicEntriesView from "~/components/DicEntriesView.svelte";
   import { Entry } from "~/dicEntry";
 
-  // change this variable when config updates
-  export let update = false;
-
   const entriesData: Entry[] = [
     {
       terms: ["読む", "讀む", "よむ"],

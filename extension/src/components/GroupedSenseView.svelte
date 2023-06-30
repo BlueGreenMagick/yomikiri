@@ -45,7 +45,7 @@
 
   .part-of-speech {
     color: grey;
-    font-size: 12px;
+    font-size: 0.9em;
     margin-bottom: 2px;
     padding: 0 8px;
   }
@@ -53,7 +53,7 @@
   .meaning {
     display: flex;
     gap: 2px;
-    font-size: 14px;
+    font-size: 1em;
     align-items: center;
     padding: 0 2px;
   }

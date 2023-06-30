@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
-  import IconCaretForward from "@icons/caret-forward.svg";
 
   export let title: string;
   export let description: string = "";
@@ -12,6 +12,7 @@
   function onKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Enter" || ev.key === " ") {
       dispatch("trigger");
+      updateConfig();
     }
   }
 </script>

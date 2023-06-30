@@ -2,11 +2,15 @@ import { Api } from "./api";
 import Config from "./config";
 
 export namespace Theme {
+  let styleEl: HTMLStyleElement | undefined;
+
   export async function insertStyleElement(document: Document) {
     const css = await generateCss();
-    const styleEl = document.createElement("style");
+    if (styleEl === undefined) {
+      styleEl = document.createElement("style");
+      document.head.appendChild(styleEl);
+    }
     styleEl.textContent = css;
-    document.head.appendChild(styleEl);
   }
 
   export async function generateCss(): Promise<string> {
@@ -21,7 +25,7 @@ body {
 }
 
 .g-japanese-font {
-  font-family: "${escapedFont}", "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP";
+  font-family: "${escapedFont}", "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP" sans-serif;
 }
 `;
   }

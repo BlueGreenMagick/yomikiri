@@ -23,7 +23,7 @@
 
 <style>
   div {
-    font-size: 16px;
+    font-size: 1.2em;
   }
   .token {
     display: inline-block;

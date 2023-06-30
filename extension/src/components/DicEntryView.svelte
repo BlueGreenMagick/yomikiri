@@ -67,7 +67,7 @@
     cursor: pointer;
   }
   .mainForm {
-    font-size: 24px;
+    font-size: 1.5em;
   }
   .groups {
     margin-bottom: 4px;

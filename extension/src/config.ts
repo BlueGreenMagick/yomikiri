@@ -13,7 +13,7 @@ export interface ConfigTypes {
 }
 
 const defaultOptions: ConfigTypes = {
-  "general.font_size": 16,
+  "general.font_size": 14,
   "general.font": "Meiryo",
   "anki.connect_port": 8785,
   "anki.connect_url": "http://127.0.0.1",

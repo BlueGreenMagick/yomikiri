@@ -17,7 +17,7 @@
 
 <style>
   div {
-    font-size: 14px;
+    font-size: 1em;
     padding-bottom: 4px;
   }
 
