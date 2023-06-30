@@ -296,9 +296,8 @@ export class Scanner {
   }
 }
 
-// https://stackoverflow.com/a/15034560
 const JAPANESE_REGEX =
-  /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
+  /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f]/;
 
 function stringContainsJapanese(text: string): boolean {
   return JAPANESE_REGEX.test(text);
