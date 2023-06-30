@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import IconClose from "@icons/close.svg";
 
   const dispatch = createEventDispatcher();
 
@@ -9,15 +10,16 @@
 
 <div class="modal-container" class:hidden>
   <div class="modal">
-    <div class="modal-header">{title}</div>
-    <div class="modal-content"><slot /></div>
-    <div class="modal-footer">
+    <div class="modal-header">
+      <div class="modal-title">{title}</div>
       <button
+        class="close-button"
         on:click={() => {
           dispatch("close");
-        }}>Close</button
+        }}><div class="icon-close">{@html IconClose}</div></button
       >
     </div>
+    <div class="modal-content"><slot /></div>
   </div>
 </div>
 
@@ -51,8 +53,10 @@
   }
 
   .modal-header {
-    padding: 12px 12px 16px 12px;
+    margin: 12px;
     font-size: 20px;
+    display: flex;
+    align-items: center;
   }
   .modal-content {
     padding: 8px 12px;
@@ -61,27 +65,23 @@
     border-top: 1px solid lightgray;
     border-bottom: 1px solid lightgray;
   }
-  .modal-footer {
+
+  .modal-title {
+    flex: 1 1 auto;
+  }
+
+  .close-button {
+    flex: 0 0 auto;
+    padding: 6px 18px;
+
     display: flex;
-    justify-content: flex-end;
-    padding: 8px;
+    justify-content: center;
+    align-items: center;
   }
 
-  button {
-    border: none;
-    border-radius: 4px;
-    padding: 6px 8px;
-    background-color: #3d4dff;
-    color: white;
-  }
-
-  button:hover {
-    background-color: #4f5efe;
-    cursor: pointer;
-  }
-
-  button:active {
-    background-color: #6e7aff;
-    cursor: pointer;
+  .icon-close {
+    width: 18px;
+    height: 18px;
+    fill: black;
   }
 </style>

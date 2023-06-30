@@ -8,6 +8,18 @@ body {
   background-color: #eeeeee;
 }
 
+button {
+  border: 1px solid black;
+  outline: none;
+  border-radius: 3px;
+  background-color: #eeeeee;
+}
+
+button:hover, button:active {
+  cursor: pointer;
+  filter: brightness(0.9);
+}
+
 .warning {
   color: red;
 }
