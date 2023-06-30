@@ -21,7 +21,7 @@ export interface Entry {
 
 export namespace Entry {
   export function fromObject(obj: any): Entry {
-    const terms = [];
+    let terms = obj.terms;
     const forms = [];
     const readings = [];
     const senses = [];
@@ -34,11 +34,14 @@ export namespace Entry {
     for (const sense of obj.sense ?? []) {
       senses.push(Sense.fromObject(sense));
     }
-    for (const form of forms) {
-      terms.push(form.form);
-    }
-    for (const reading of readings) {
-      terms.push(reading.reading);
+    if (terms === undefined) {
+      terms = [];
+      for (const form of forms) {
+        terms.push(form.form);
+      }
+      for (const reading of readings) {
+        terms.push(reading.reading);
+      }
     }
     return {
       terms,

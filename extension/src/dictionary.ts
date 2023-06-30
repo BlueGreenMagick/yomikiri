@@ -43,12 +43,24 @@ export class Dictionary {
     this.setupDB();
   }
 
-  private static async downloadFromUrl(url: string): Promise<Entry[]> {
+  private static async downloadFromUrl(url: string): Promise<any[]> {
     const resp = await fetch(url);
     const data = await resp.arrayBuffer();
     const unzipped = pako.ungzip(data, { to: "string" }) as string;
     const entryObjects = JSON.parse(unzipped) as any[];
-    return entryObjects.map(Entry.fromObject);
+    for (const entry of entryObjects) {
+      const terms = [];
+      if (entry.forms !== undefined) {
+        for (const form of entry.forms) {
+          terms.push(form.form);
+        }
+      }
+      for (const reading of entry.readings) {
+        terms.push(reading.reading);
+      }
+      entry.terms = terms;
+    }
+    return entryObjects;
   }
 
   private setupDB() {
@@ -104,7 +116,12 @@ export class Dictionary {
   }
 
   async search(term: string): Promise<Entry[]> {
-    return await this.db.table("entries").where("terms").equals(term).toArray();
+    const objs = await this.db
+      .table("entries")
+      .where("terms")
+      .equals(term)
+      .toArray();
+    return objs.map(Entry.fromObject);
   }
 
   async hasStartsWith(
