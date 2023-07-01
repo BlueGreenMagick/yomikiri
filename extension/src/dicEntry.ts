@@ -15,6 +15,7 @@ export interface Entry {
   forms: Form[];
   readings: Reading[];
   senses: Sense[];
+  priority: number;
   /** if retrieved from db */
   id?: number;
 }
@@ -25,6 +26,7 @@ export namespace Entry {
     const forms = [];
     const readings = [];
     const senses = [];
+    const priority = obj.priority ?? 0;
     for (const form of obj.forms ?? []) {
       forms.push(Form.fromObject(form));
     }
@@ -48,6 +50,7 @@ export namespace Entry {
       forms,
       readings,
       senses,
+      priority,
     };
   }
 
@@ -142,16 +145,17 @@ export namespace Entry {
 
 export interface Form {
   form: string;
+  // not a commonly used form
+  uncommon: boolean;
   info: string[];
-  priority: string[];
 }
 
 export namespace Form {
   export function fromObject(obj: any): Form {
     return {
       form: obj.form ?? "",
+      uncommon: obj.uncommon ?? false,
       info: obj.info ?? [],
-      priority: obj.priority ?? [],
     };
   }
 }
@@ -159,9 +163,9 @@ export namespace Form {
 export interface Reading {
   reading: string;
   nokanji: boolean;
+  uncommon: boolean;
   toForm: string[];
   info: string[];
-  priority: string[];
 }
 
 export namespace Reading {
@@ -169,9 +173,9 @@ export namespace Reading {
     return {
       reading: obj.reading ?? "",
       nokanji: obj.nokanji ?? false,
+      uncommon: obj.uncommon ?? false,
       toForm: obj.toForm ?? [],
       info: obj.info ?? [],
-      priority: obj.priority ?? [],
     };
   }
 }

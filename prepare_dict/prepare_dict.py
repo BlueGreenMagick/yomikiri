@@ -29,11 +29,36 @@ class JMEntry:
             d[p] = []
             for item in getattr(self, p):
                 d[p].append(item.to_dict())
+        priority = self.calculate_priority()
+        if priority:
+            d["priority"] = priority
+
         return d
 
     def assert_valid(self) -> None:
         assert len(self.readings) > 0
         assert len(self.senses) > 0
+
+    def calculate_priority(self) -> int:
+        """An entry is considered common if priority > 100"""
+        # priority is identical across all forms and readings of a same entry.
+        priorities = self.readings[0].priority
+        priority = 0
+        for p in priorities:
+            # common ~20k entries
+            if p in ["news1", "ichi1", "spec1", "gai1"]:
+                if priority < 100:
+                    priority += 100
+                else:
+                    priority += 25
+            # common ~30k entries
+            elif p in ["news2", "ichi2", "spec2", "gai2"]:
+                priority += 5
+            elif p.startswith("nf"):
+                # 01 ~ 48, each with ~500 entries
+                freq = int(p[2:])
+                priority += 50 - freq
+        return priority
 
 
 class JMForm:
@@ -51,11 +76,20 @@ class JMForm:
     def to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {}
         d["form"] = self.form
-        for p in ["info", "priority"]:
+        for p in ["info"]:
             if len(getattr(self, p)) == 0:
                 continue
             d[p] = getattr(self, p)
+        is_uncommon = self.is_uncommon()
+        if is_uncommon:
+            d["uncommon"] = is_uncommon
         return d
+
+    def is_uncommon(self) -> bool:
+        for f in ["=oK=", "=rK=", "=sK="]:
+            if f in self.info:
+                return True
+        return False
 
     def assert_valid(self) -> None:
         assert self.form != ""
@@ -83,21 +117,20 @@ class JMReading:
         d["reading"] = self.reading
         if self.nokanji:
             d["nokanji"] = self.nokanji
-        for p in ["to_form", "info", "priority"]:
+        for p in ["to_form", "info"]:
             if len(getattr(self, p)) == 0:
                 continue
             d[p] = getattr(self, p)
+        is_uncommon = self.is_uncommon()
+        if is_uncommon:
+            d["uncommon"] = is_uncommon
         return d
 
-    def clean(self) -> None:
-        if self.nokanji == False:
-            del self.nokanji
-        if len(self.to_form) == 0:
-            del self.to_form
-        if len(self.info) == 0:
-            del self.info
-        if len(self.priority) == 0:
-            del self.priority
+    def is_uncommon(self) -> bool:
+        for f in ["=ok=", "=sk="]:
+            if f in self.info:
+                return True
+        return False
 
     def assert_valid(self) -> None:
         assert self.reading != ""
