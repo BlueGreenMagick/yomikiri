@@ -25,7 +25,7 @@ body {
 }
 
 .g-japanese-font {
-  font-family: "${escapedFont}", "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP" sans-serif;
+  font-family: "${escapedFont}", "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", sans-serif;
 }
 `;
   }
