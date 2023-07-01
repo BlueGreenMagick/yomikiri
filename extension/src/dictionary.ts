@@ -121,7 +121,7 @@ export class Dictionary {
       .where("terms")
       .equals(term)
       .toArray();
-    return objs.map(Entry.fromObject);
+    return objs.map(Entry.fromObject).sort((a, b) => b.priority - a.priority);
   }
 
   async hasStartsWith(
