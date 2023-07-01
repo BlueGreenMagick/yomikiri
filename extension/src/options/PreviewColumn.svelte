@@ -8,20 +8,19 @@
       forms: [
         {
           form: "読む",
-          priority: ["ichi1", "news1", "nf12"],
         },
         {
           form: "讀む",
+          uncommon: true,
           info: ["=sK="],
         },
       ],
       readings: [
         {
           reading: "よむ",
-          priority: ["ichi1", "news1", "nf12"],
         },
       ],
-      sense: [
+      senses: [
         {
           partOfSpeech: ["=v5m=", "=vt="],
           meaning: ["to read"],
@@ -47,18 +46,16 @@
         },
         {
           partOfSpeech: ["=v5m=", "=vt="],
-          reference: ["さばを読む"],
           info: ["now mostly used in idioms"],
           meaning: ["to count", "to estimate"],
         },
         {
           partOfSpeech: ["=v5m=", "=vt="],
-          reference: ["訓む"],
           info: ["also written as 訓む"],
           meaning: ["to read (a kanji) with its native Japanese reading"],
         },
       ],
-      id: 441534,
+      priority: 163,
     },
   ].map(Entry.fromObject);
 </script>
