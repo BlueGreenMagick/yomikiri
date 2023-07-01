@@ -31,7 +31,7 @@ export namespace Entry {
     for (const reading of obj.readings ?? []) {
       readings.push(Reading.fromObject(reading));
     }
-    for (const sense of obj.sense ?? []) {
+    for (const sense of obj.senses ?? []) {
       senses.push(Sense.fromObject(sense));
     }
     if (terms === undefined) {

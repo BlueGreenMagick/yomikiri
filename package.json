@@ -8,7 +8,6 @@
   "workspaces": [
     "extension",
     "safari",
-    "prepare_dict",
     "rust/pkg"
   ],
   "scripts": {}
