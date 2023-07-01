@@ -122,6 +122,10 @@ export namespace Entry {
     return entry.readings[0];
   }
 
+  export function isCommon(entry: Entry): boolean {
+    return entry.priority >= 100;
+  }
+
   /** Put in return value of .entityName() */
   export function entityInfo(name: string): string | null {
     let info = ENTITIES[name] as string | undefined;

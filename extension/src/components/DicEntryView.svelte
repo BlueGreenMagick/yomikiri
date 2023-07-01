@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Entry } from "~/dicEntry";
+  import { Entry, type GroupedSense } from "~/dicEntry";
   import type { MarkerData } from "~/ankiNoteBuilder";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircle from "@icons/add-circle.svg";
@@ -14,6 +14,12 @@
 
   const dispatch = createEventDispatcher<Events>();
 
+  let mainForm: string;
+  let readingForForm: string;
+  let mainFormRuby: string;
+  let groups: GroupedSense[];
+  let isCommon: boolean;
+
   function addNote(data: Partial<MarkerData>) {
     data.entry = entry;
     dispatch("addNote", data);
@@ -25,6 +31,7 @@
     RubyString.generate(mainForm, readingForForm)
   );
   $: groups = Entry.groupSenses(entry);
+  $: isCommon = Entry.isCommon(entry);
 </script>
 
 <div class="entryView">
@@ -34,6 +41,9 @@
       <span class="g-japanese-font mainForm">{@html mainFormRuby}</span>
     </div>
   </div>
+  {#if isCommon}
+    <div class="badge">common</div>
+  {/if}
   <div class="groups">
     {#each groups as group}
       <GroupedSenseView
@@ -68,6 +78,17 @@
   }
   .mainForm {
     font-size: 1.5em;
+  }
+  .badge {
+    width: max-content;
+    font-size: 0.6em;
+    color: #8db38d;
+
+    margin-top: 1px;
+    margin-left: 8px;
+    padding: 1px 4px;
+    border: 1px solid #8db38d;
+    border-radius: 3px;
   }
   .groups {
     margin-bottom: 4px;
