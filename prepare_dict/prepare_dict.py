@@ -110,12 +110,6 @@ class JMSense:
     to_reading: list[str]
     # pos
     part_of_speech: list[str]
-    # xref
-    reference: list[str]
-    # ant
-    antonym: list[str]
-    # field
-    field: list[str]
     # misc
     misc: list[str]
     # s_inf
@@ -129,9 +123,6 @@ class JMSense:
         self.to_form = []
         self.to_reading = []
         self.part_of_speech = []
-        self.reference = []
-        self.antonym = []
-        self.field = []
         self.misc = []
         self.info = []
         self.dialect = []
@@ -143,9 +134,6 @@ class JMSense:
             "to_form",
             "to_reading",
             "part_of_speech",
-            "reference",
-            "antonym",
-            "field",
             "misc",
             "info",
             "dialect",
@@ -219,12 +207,6 @@ def parse_jm_sense(elem: ET.Element) -> JMSense:
             sense.to_reading.append(xml_text(child))
         elif child.tag == "pos":
             sense.part_of_speech.append(xml_text(child))
-        elif child.tag == "xref":
-            sense.reference.append(xml_text(child))
-        elif child.tag == "ant":
-            sense.antonym.append(xml_text(child))
-        elif child.tag == "field":
-            sense.field.append(xml_text(child))
         elif child.tag == "misc":
             sense.misc.append(xml_text(child))
         elif child.tag == "s_inf":
@@ -233,7 +215,7 @@ def parse_jm_sense(elem: ET.Element) -> JMSense:
             sense.dialect.append(xml_text(child))
         elif child.tag == "gloss":
             sense.meaning.append(xml_text(child))
-        elif child.tag == "lsource" or child.tag == "example":
+        elif child.tag in ["lsource", "example", "xref", "ant", "field"]:
             pass
         else:
             raise Exception("Unknown tag in <sense>: " + child.tag)

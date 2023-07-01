@@ -180,9 +180,6 @@ export interface Sense {
   toForm: string[];
   toReading: string[];
   partOfSpeech: string[];
-  reference: string[];
-  antonym: string[];
-  field: string[];
   misc: string[];
   info: string[];
   dialect: string[];
@@ -195,9 +192,6 @@ export namespace Sense {
       toForm: obj.toForm ?? [],
       toReading: obj.toReading ?? [],
       partOfSpeech: obj.partOfSpeech ?? [],
-      reference: obj.reference ?? [],
-      antonym: obj.antonym ?? [],
-      field: obj.field ?? [],
       misc: obj.misc ?? [],
       info: obj.info ?? [],
       dialect: obj.dialect ?? [],
