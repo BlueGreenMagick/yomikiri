@@ -7,6 +7,7 @@
 
 import SafariServices
 import os.log
+import YomikiriTokenizer
 
 let SFExtensionMessageKey = "message"
 let tokenizer = Tokenizer()
