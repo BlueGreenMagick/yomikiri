@@ -22,7 +22,9 @@ uniffi-bindgen = []
 uniffi-anki = ["dep:anki", "rusqlite", "serde_json", "futures", "tokio", "reqwest"]
 
 [dependencies]
-lindera = { version = "0.23.1", features = ["ipadic"]}
+lindera-tokenizer = { version = "0.25.0", features = ["ipadic"]}
+lindera-dictionary = "0.25.0"
+lindera-core = "0.25.0"
 unicode-normalization = "0.1.22"
 unicode-segmentation = "1.9.0"
 log = { version = "0.4" }

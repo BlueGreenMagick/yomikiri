@@ -1,13 +1,11 @@
 #![allow(non_snake_case)]
 
+use lindera_core::error::LinderaError;
+use lindera_core::mode::Mode;
+use lindera_dictionary::{DictionaryConfig, DictionaryKind};
+use lindera_tokenizer::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
 #[cfg(uniffi)]
 use std::sync::Arc;
-
-use lindera::dictionary::DictionaryConfig;
-use lindera::error::LinderaError;
-use lindera::mode::Mode;
-use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
-use lindera::DictionaryKind;
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
 #[cfg(wasm)]
