@@ -1,4 +1,11 @@
-import { test, expect, describe, beforeAll, jest } from "@jest/globals";
+import {
+  test,
+  expect,
+  describe,
+  beforeAll,
+  beforeEach,
+  jest,
+} from "@jest/globals";
 import fs from "node:fs";
 import path from "node:path";
 import pako from "pako";
@@ -47,7 +54,7 @@ MockDictionary.initialize = async () => {
 beforeAll(async () => {
   const dictP = MockDictionary.initialize();
   dictionary = await dictP;
-  console.log("Installed dictionary");
+  console.debug("Jest setup: Installed dictionary");
   tokenizer = await Tokenizer.initialize(dictP);
 }, 990000);
 
@@ -59,12 +66,17 @@ async function testTokenSplit(expected: string) {
   expect(joinedTokens).toBe(expected);
 }
 
-describe.skip("tokenizer", () => {
+beforeEach(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {});
+});
+
+describe("tokenizer", () => {
   test("MockDictionary", async () => {
     expect(await dictionary.hasStartsWith("だかいさ")).toBe(true);
   });
 
-  describe("token split", () => {
+  // TODO: fix
+  describe.skip("token split", () => {
     const cases = [
       "私/は/学生/です",
       "この/本/は/よく/じゃなかった",
@@ -84,5 +96,18 @@ describe.skip("tokenizer", () => {
         await testTokenSplit(c);
       });
     }
+  });
+
+  test("decomposed unicode", async () => {
+    // て\u3099 = で
+    const result = await tokenizer.tokenize({
+      text: "本か\u3099好きだ",
+      selectedCharIdx: 2,
+    });
+    const startIdx = result.tokens.map((t) => t.start);
+    expect(startIdx[0]).toBe(0);
+    expect(startIdx[1]).toBe(1);
+    expect(startIdx[2]).toBe(3);
+    expect(result.tokens[1].text).toBe("が");
   });
 });

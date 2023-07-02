@@ -42,7 +42,7 @@
     chrome.runtime.openOptionsPage();
   }
 
-  $: tokenize(searchText);
+  $: tokenize(searchText.normalize("NFC"));
   $: getEntries(searchTokens, selectedTokenIdx);
 </script>
 

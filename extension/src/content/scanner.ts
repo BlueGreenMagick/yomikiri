@@ -239,8 +239,8 @@ export class Scanner {
     sentence: ScannedSentence
   ): ScanResult | null {
     const range = new Range();
-    const tokenStartIndex = tokenizeResult.selectedTokenStartCharIdx;
     const token = tokenizeResult.tokens[tokenizeResult.selectedTokenIdx];
+    const tokenStartIndex = token.start;
 
     if (sentence.stStartIdx !== undefined) {
       range.setStart(sentence.node, sentence.stStartIdx + tokenStartIndex);
@@ -287,7 +287,7 @@ export class Scanner {
       dicEntries: tokenizeResult.selectedDicEntry as Entry[],
       token,
       range,
-      sentence: fullSentence(sentence),
+      sentence: fullSentence(sentence).normalize("NFC"),
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
       sentenceTokens: tokenizeResult.tokens,

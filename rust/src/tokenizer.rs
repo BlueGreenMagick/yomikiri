@@ -4,9 +4,12 @@
 use std::sync::Arc;
 
 use lindera::dictionary::DictionaryConfig;
+use lindera::error::LinderaError;
 use lindera::mode::Mode;
 use lindera::tokenizer::{Tokenizer as LTokenizer, TokenizerConfig};
-use lindera::{DictionaryKind, LinderaResult, Token as LToken};
+use lindera::DictionaryKind;
+use unicode_normalization::UnicodeNormalization;
+use unicode_segmentation::UnicodeSegmentation;
 #[cfg(wasm)]
 use {serde::Serialize, wasm_bindgen::prelude::*};
 
@@ -30,6 +33,18 @@ pub struct Token {
     pub reading: String,
     /// defaults to `*`
     pub pos2: String,
+    /// start idx
+    pub start: i32,
+}
+
+#[derive(Debug, thiserror::Error)]
+#[cfg_attr(uniffi, derive(uniffi::Error))]
+#[cfg_attr(uniffi, uniffi(flat_error))]
+pub enum TError {
+    #[error("{0}")]
+    TokenizeError(#[from] LinderaError),
+    #[error("(Unreachable) Invalid unicode byte position")]
+    BytePositionError,
 }
 
 #[cfg(wasm)]
@@ -41,6 +56,7 @@ export interface Token {
     baseForm: string;
     reading: string;
     pos2: string;
+    start: number;
 }
 "#;
 
@@ -56,26 +72,54 @@ fn get_value_from_detail<S: Into<String>>(
         .unwrap_or_else(|| default.into())
 }
 
-impl From<&mut LToken<'_>> for Token {
-    fn from(tok: &mut LToken) -> Self {
-        let text = tok.text.to_string();
-        let details = tok.get_details();
-
-        Token {
-            baseForm: get_value_from_detail(&details, 6, &text),
-            reading: get_value_from_detail(&details, 7, "*"),
-            partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
-            pos2: get_value_from_detail(&details, 1, "*"),
-            text: text,
-        }
-    }
-}
-
 impl Tokenizer {
-    pub fn tokenize_inner<'a>(&self, sentence: &'a str) -> LinderaResult<Vec<Token>> {
-        let mut tokens = self.tokenizer.tokenize(sentence)?;
-        let result = tokens.iter_mut().map(Token::from).collect();
-        Ok(result)
+    pub fn tokenize_inner<'a>(&self, sentence: &'a str) -> Result<Vec<Token>, TError> {
+        let normalized_sentence = sentence.nfc().collect::<String>();
+        let already_normalized: bool = sentence == normalized_sentence;
+
+        let mut ltokens = self.tokenizer.tokenize(&normalized_sentence)?;
+        let mut tokens = Vec::with_capacity(ltokens.capacity());
+
+        // iterator of starting indices of each graphemes
+        let original_graphemes = sentence.grapheme_indices(true);
+        let normalized_graphemes = normalized_sentence.grapheme_indices(true);
+        let mut graphemes = original_graphemes.zip(normalized_graphemes);
+
+        let mut orig_char_indices = sentence.char_indices().enumerate();
+
+        for tok in &mut ltokens {
+            let byte_start = if already_normalized {
+                tok.byte_start
+            } else {
+                graphemes
+                    .find_map(|((original_idx, _), (normalized_idx, _))| {
+                        if normalized_idx == tok.byte_start {
+                            Some(original_idx)
+                        } else {
+                            None
+                        }
+                    })
+                    .ok_or(TError::BytePositionError)?
+            };
+            let char_start = orig_char_indices
+                .find_map(|(i, (a, _))| if a == byte_start { Some(i) } else { None })
+                .ok_or(TError::BytePositionError)?;
+
+            let text = tok.text.to_string();
+            let details = tok.get_details();
+
+            let token = Token {
+                baseForm: get_value_from_detail(&details, 6, &text),
+                reading: get_value_from_detail(&details, 7, "*"),
+                partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
+                pos2: get_value_from_detail(&details, 1, "*"),
+                text: text,
+                start: char_start as i32,
+            };
+            tokens.push(token)
+        }
+
+        Ok(tokens)
     }
 
     pub fn create() -> Tokenizer {

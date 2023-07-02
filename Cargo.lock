@@ -4099,6 +4099,8 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
+ "unicode-normalization",
+ "unicode-segmentation",
  "uniffi",
  "wasm-bindgen",
  "wasm-bindgen-test",

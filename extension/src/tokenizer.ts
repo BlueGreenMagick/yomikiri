@@ -14,8 +14,6 @@ export interface TokenizeRequest {
 export interface TokenizeResult {
   tokens: Token[];
   selectedTokenIdx: number;
-  selectedTokenStartCharIdx: number;
-  selectedTokenEndCharIdx: number;
   selectedDicEntry: Entry[];
 }
 
@@ -39,6 +37,11 @@ export class Tokenizer {
   }
 
   async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+    if (req.selectedCharIdx < 0 || req.selectedCharIdx >= req.text.length) {
+      throw new RangeError(
+        `selectedCharIdx is out of range: ${req.selectedCharIdx}, ${req.text}`
+      );
+    }
     Utils.benchStart();
     let tokens = await this.tokenizer.tokenize(req.text);
     tokens.forEach((token) => {
@@ -49,27 +52,14 @@ export class Tokenizer {
     this.joinAllTokens(tokens);
     Utils.bench("joinTokens");
 
-    if (req.selectedCharIdx < 0 || req.selectedCharIdx >= req.text.length) {
-      throw new RangeError(
-        `selectedCharIdx is out of range: ${req.selectedCharIdx}, ${req.text}`
-      );
-    }
-    let startIdx = 0;
-    let endIdx = 0;
-    let tokenIdx;
-    for (tokenIdx = 0; tokenIdx < tokens.length; tokenIdx++) {
-      startIdx = endIdx;
-      endIdx = startIdx + tokens[tokenIdx].text.length;
-      if (endIdx > req.selectedCharIdx) {
-        break;
-      }
-    }
+    let tokenIdx =
+      tokens.findIndex((token) => token.start > req.selectedCharIdx) - 1;
+    tokenIdx = tokenIdx === -2 ? tokens.length - 1 : tokenIdx;
+
     const entry = await this.dictionary.search(tokens[tokenIdx].baseForm);
     Utils.bench("finish tokenize");
     return {
       tokens,
-      selectedTokenStartCharIdx: startIdx,
-      selectedTokenEndCharIdx: endIdx,
       selectedTokenIdx: tokenIdx,
       selectedDicEntry: entry,
     };
@@ -155,6 +145,7 @@ function joinTokens(tokens: Token[], from: number, to: number): Token {
     reading,
     partOfSpeech: "=exp=",
     pos2: "*",
+    start: tokens[from].start,
   };
 }
 
