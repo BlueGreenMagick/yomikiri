@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import esbuild from "esbuild";
+import esbuild, { BuildOptions, Plugin } from "esbuild";
 import { copy } from "esbuild-plugin-copy";
 import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
@@ -11,7 +11,10 @@ const PRODUCTION = process.env.NODE_ENV === "production";
 
 const TARGET = process.env.TARGET_PLATFORM;
 
-if (!["chrome", "firefox", "safari_desktop", "ios"].includes(TARGET)) {
+if (
+  TARGET === undefined ||
+  !["chrome", "firefox", "safari_desktop", "ios"].includes(TARGET)
+) {
   throw new Error(
     "TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios, but is set to: " +
       TARGET
@@ -26,20 +29,7 @@ const FOR_IOS = TARGET === "ios";
 
 const WATCH = DEVELOPMENT && !FOR_IOS;
 
-const setWatchOptionPlugin = {
-  name: "setWatchOptionPlugin",
-  setup(build) {
-    if (WATCH) {
-      Object.defineProperty(build.initialOptions, "watch", {
-        get() {
-          return true;
-        },
-      });
-    }
-  },
-};
-
-const logRebuildPlugin = {
+const logRebuildPlugin: Plugin = {
   name: "logRebuildPlugin",
   setup(build) {
     build.onStart(() => {
@@ -51,7 +41,7 @@ const logRebuildPlugin = {
   },
 };
 
-const platformAliasPlugin = {
+const platformAliasPlugin: Plugin = {
   name: "platformAliasPlugin",
   setup(build) {
     build.onResolve({ filter: /.*/ }, (args) => {
@@ -65,14 +55,13 @@ const platformAliasPlugin = {
       if (args.path === replaced) {
         return;
       }
-      delete args.path;
-      const resolved = build.resolve(replaced, args);
-      return resolved;
+      const { path: _, ...opts } = { ...args };
+      return build.resolve(replaced, opts);
     });
   },
 };
 
-const buildManifestPlugin = {
+const buildManifestPlugin: Plugin = {
   name: "buildManifestPlugin",
   setup(build) {
     const raw = fs.readFileSync("./src/manifest.json.ejs", {
@@ -88,6 +77,9 @@ const buildManifestPlugin = {
       v2: false,
     });
     const outdir = build.initialOptions.outdir;
+    if (outdir === undefined) {
+      throw new Error("outdir must be set to build manifest!");
+    }
     if (!fs.existsSync(outdir)) {
       fs.mkdirSync(outdir, { recursive: true });
     }
@@ -96,7 +88,7 @@ const buildManifestPlugin = {
   },
 };
 
-const buildOptions = {
+const buildOptions: BuildOptions = {
   entryPoints: [
     { in: "src/content/index.ts", out: "res/content" },
     { in: "src/background/index.ts", out: "res/background" },
@@ -113,7 +105,6 @@ const buildOptions = {
   conditions: ["svelte"],
   plugins: [
     logRebuildPlugin,
-    setWatchOptionPlugin,
     platformAliasPlugin,
     buildManifestPlugin,
     copy({
@@ -151,18 +142,23 @@ const serveOptions = {
 
 function cleanDirectory(dir) {
   if (fs.existsSync(dir)) {
-    fs.rmdirSync(dir, { recursive: true, force: true });
+    fs.rmdirSync(dir, { recursive: true });
   }
 }
-cleanDirectory(buildOptions.outdir);
 
-const ctx = await esbuild.context(buildOptions);
+async function main() {
+  cleanDirectory(buildOptions.outdir);
 
-await ctx.rebuild();
+  const ctx = await esbuild.context(buildOptions);
 
-if (!WATCH) {
-  ctx.dispose();
-} else {
-  console.info("esbuild: Watching for changes to code..");
-  await ctx.watch();
+  await ctx.rebuild();
+
+  if (!WATCH) {
+    ctx.dispose();
+  } else {
+    console.info("esbuild: Watching for changes to code..");
+    await ctx.watch();
+  }
 }
+
+main();
