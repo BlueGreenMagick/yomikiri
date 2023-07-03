@@ -9,24 +9,20 @@ import ejs from "ejs";
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
 
-if (
-  !["chrome", "firefox", "safari_desktop", "ios"].includes(
-    process.env.TARGET_PLATFORM
-  )
-) {
+const TARGET = process.env.TARGET_PLATFORM;
+
+if (!["chrome", "firefox", "safari_desktop", "ios"].includes(TARGET)) {
   throw new Error(
     "TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios, but is set to: " +
-      process.env.TARGET_PLATFORM
+      TARGET
   );
 }
-const FOR_CHROME = process.env.TARGET_PLATFORM === "chrome";
-const FOR_FIREFOX = process.env.TARGET_PLATFORM === "firefox";
-const FOR_SAFARI_DESKTOP = process.env.TARGET_PLATFORM === "safari_desktop";
+const FOR_CHROME = TARGET === "chrome";
+const FOR_FIREFOX = TARGET === "firefox";
+const FOR_SAFARI_DESKTOP = TARGET === "safari_desktop";
 
-const FOR_DESKTOP = ["chrome", "firefox", "safari_desktop"].includes(
-  process.env.TARGET_PLATFORM
-);
-const FOR_IOS = process.env.TARGET_PLATFORM === "ios";
+const FOR_DESKTOP = ["chrome", "firefox", "safari_desktop"].includes(TARGET);
+const FOR_IOS = TARGET === "ios";
 
 const WATCH = DEVELOPMENT && !FOR_IOS;
 
@@ -108,7 +104,7 @@ const buildOptions = {
     { in: "src/options/index.ts", out: "options" },
     { in: "src/x-callback/index.ts", out: "x-callback" },
   ],
-  outdir: "build",
+  outdir: `build/${TARGET}`,
   target: "es6",
   format: "iife",
   bundle: true,
@@ -150,6 +146,13 @@ const buildOptions = {
 const serveOptions = {
   servedir: ".",
 };
+
+function cleanDirectory(dir) {
+  if (fs.existsSync(dir)) {
+    fs.rmdirSync(dir, { recursive: true, force: true });
+  }
+}
+cleanDirectory(buildOptions.outdir);
 
 const ctx = await esbuild.context(buildOptions);
 
