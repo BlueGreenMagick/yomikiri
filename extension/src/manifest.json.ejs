@@ -5,13 +5,13 @@
   "description": "Web extension to view definition for Japanese words and add to Anki.",
   "author": "BlueGreenMagick",
   "icons": {
-    "48": "assets/static/images/icon48.png"
+    "48": "res/assets/static/images/icon48.png"
   },
   "content_scripts": [
     {
       "all_frames": true,
       "js": [
-        "content.js"
+        "res/content.js"
       ],
       "matches": [
         "http://*/*",
@@ -23,11 +23,11 @@
   "background": {
 <% if (firefox || ios || v2) { -%>
     "scripts": [
-      "background.js"
+      "res/background.js"
     ],
     "persistent": false,
 <% } else { -%>
-    "service_worker": "background.js",
+    "service_worker": "res/background.js",
 <% } -%>
     "type": "module"
   },
@@ -37,13 +37,13 @@
   "action": {
 <% } -%>
     "default_icon": {
-      "48": "assets/static/images/icon48.png"
+      "48": "res/assets/static/images/icon48.png"
     },
     "default_title": "Yomikiri",
-    "default_popup": "popup.html"
+    "default_popup": "res/popup.html"
   },
   "options_ui": {
-    "page": "options.html",
+    "page": "res/options.html",
     "open_in_tab": true
   },
 <% if (ios) { -%>
@@ -51,13 +51,13 @@
     "rule_resources" : [{
       "id": "redirect_rule",
       "enabled": true,
-      "path": "assets/static/redirect_rules.json"
+      "path": "res/assets/static/redirect_rules.json"
     }]
   },
   "web_accessible_resources": [
     {
       "resources": [
-        "x-callback.html"
+        "res/x-callback.html"
       ],
       "matches": [
         "<all_urls>"

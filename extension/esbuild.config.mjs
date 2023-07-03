@@ -98,11 +98,11 @@ const buildManifestPlugin = {
 
 const buildOptions = {
   entryPoints: [
-    { in: "src/content/index.ts", out: "content" },
-    { in: "src/background/index.ts", out: "background" },
-    { in: "src/popup/index.ts", out: "popup" },
-    { in: "src/options/index.ts", out: "options" },
-    { in: "src/x-callback/index.ts", out: "x-callback" },
+    { in: "src/content/index.ts", out: "res/content" },
+    { in: "src/background/index.ts", out: "res/background" },
+    { in: "src/popup/index.ts", out: "res/popup" },
+    { in: "src/options/index.ts", out: "res/options" },
+    { in: "src/x-callback/index.ts", out: "res/x-callback" },
   ],
   outdir: `build/${TARGET}`,
   target: "es6",
@@ -118,11 +118,13 @@ const buildOptions = {
     buildManifestPlugin,
     copy({
       assets: [
-        { from: ["src/options/index.html"], to: ["./options.html"] },
-        { from: ["src/popup/index.html"], to: ["./popup.html"] },
-        { from: ["src/x-callback/index.html"], to: ["./x-callback.html"] },
-        { from: ["src/*.json"], to: ["./"] },
-        { from: ["src/assets/static/**/*"], to: ["assets/static"] },
+        // html
+        { from: ["src/options/index.html"], to: ["./res/options.html"] },
+        { from: ["src/popup/index.html"], to: ["./res/popup.html"] },
+        { from: ["src/x-callback/index.html"], to: ["./res/x-callback.html"] },
+        // manifest.json and static assets
+        { from: ["src/manifest.json"], to: ["./manifest.json"] },
+        { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
       ],
       watch: true,
       // verbose: true,
@@ -139,7 +141,7 @@ const buildOptions = {
       },
     }),
   ],
-  assetNames: "assets/[name]-[hash]",
+  assetNames: "res/assets/[name]-[hash]",
   loader: { ".wasm.gz": "file", ".json.gz": "file", ".svg": "text" },
 };
 

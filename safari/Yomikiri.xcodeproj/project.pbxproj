@@ -13,6 +13,8 @@
 		699B7D792A519B2C00E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		699B7D7B2A519B3000E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
 		699B7D7C2A519B3000E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		699B7DFA2A52C9D900E506F2 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DEC2A52C9D900E506F2 /* manifest.json */; };
+		699B7DFC2A52C9E500E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DFB2A52C9E500E506F2 /* res */; };
 		69F2C25729FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25629FA4FA80088F503 /* AppDelegate.swift */; };
 		69F2C25929FA4FA80088F503 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25829FA4FA80088F503 /* SceneDelegate.swift */; };
 		69F2C25C29FA4FA80088F503 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C25A29FA4FA80088F503 /* LaunchScreen.storyboard */; };
@@ -113,6 +115,8 @@
 		6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacWebExtensionHandler.swift; sourceTree = "<group>"; };
 		699B7D702A519ADE00E506F2 /* YomikiriTokenizer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YomikiriTokenizer.xcodeproj; path = YomikiriTokenizer/YomikiriTokenizer.xcodeproj; sourceTree = "<group>"; };
 		699B7D8B2A519C6100E506F2 /* build_extension_files.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_extension_files.sh; sourceTree = "<group>"; };
+		699B7DEC2A52C9D900E506F2 /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		699B7DFB2A52C9E500E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		69F2C23F29FA4FA80088F503 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		69F2C24029FA4FA80088F503 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -193,9 +197,20 @@
 			path = scripts;
 			sourceTree = "<group>";
 		};
+		699B7DDA2A52C9D900E506F2 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				699B7DFB2A52C9E500E506F2 /* res */,
+				699B7DEC2A52C9D900E506F2 /* manifest.json */,
+			);
+			name = ios;
+			path = ../extension/build/ios;
+			sourceTree = "<group>";
+		};
 		69F2C23629FA4FA70088F503 = {
 			isa = PBXGroup;
 			children = (
+				699B7DDA2A52C9D900E506F2 /* ios */,
 				699B7D702A519ADE00E506F2 /* YomikiriTokenizer.xcodeproj */,
 				69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */,
 				69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */,
@@ -337,10 +352,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 69F2C2A229FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (iOS)" */;
 			buildPhases = (
+				699B7DD12A52C2BA00E506F2 /* Build extension */,
 				69F2C26D29FA4FA80088F503 /* Sources */,
-				69F2C2F729FA54DC0088F503 /* Build extension files */,
 				6909CA772A2241150052FEF4 /* Frameworks */,
 				699B7D7D2A519B3000E506F2 /* Embed Frameworks */,
+				699B7DD32A52C33A00E506F2 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -356,8 +372,8 @@
 			buildConfigurationList = 69F2C2A929FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (macOS)" */;
 			buildPhases = (
 				69F2C27729FA4FA80088F503 /* Sources */,
+				699B7DD42A52C33E00E506F2 /* Resources */,
 				69F2C27829FA4FA80088F503 /* Frameworks */,
-				69F2C2FA29FA570C0088F503 /* Copy extension files */,
 			);
 			buildRules = (
 			);
@@ -430,6 +446,22 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		699B7DD32A52C33A00E506F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				699B7DFA2A52C9D900E506F2 /* manifest.json in Resources */,
+				699B7DFC2A52C9E500E506F2 /* res in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		699B7DD42A52C33E00E506F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		69F2C25129FA4FA80088F503 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -460,9 +492,8 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		69F2C2F729FA54DC0088F503 /* Build extension files */ = {
+		699B7DD12A52C2BA00E506F2 /* Build extension */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -470,33 +501,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Build extension files";
+			name = "Build extension";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension_files.sh\n";
-		};
-		69F2C2FA29FA570C0088F503 /* Copy extension files */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy extension files";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/copy_extension_files.sh\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
