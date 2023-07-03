@@ -1,8 +1,8 @@
 import type { Module } from "../types";
 
-const module = {} as Module;
+export namespace Platform {
+  export const IS_DESKTOP = false;
+  export const IS_IOS = true;
+}
 
-module.IS_DESKTOP = false;
-module.IS_IOS = true;
-
-export default module;
+Platform satisfies Module;

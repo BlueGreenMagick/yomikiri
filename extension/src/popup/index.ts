@@ -1,7 +1,7 @@
 import "./global.css";
+import { Platform } from "@platform";
 import { Api } from "~/api";
 import Popup from "./Popup.svelte";
-import Platform from "@platform";
 import { Theme } from "~/theme";
 
 if (Platform.IS_IOS) {

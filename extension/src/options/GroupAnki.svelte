@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Platform from "@platform";
+  import { Platform } from "@platform";
   import AnkiApi from "@platform/anki";
   import Utils from "~/utils";
   import OptionsGroup from "./components/OptionsGroup.svelte";
