@@ -18,6 +18,7 @@
 		699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DCC2A52BEA100E506F2 /* WebView.swift */; };
 		699B7DFA2A52C9D900E506F2 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DEC2A52C9D900E506F2 /* manifest.json */; };
 		699B7DFC2A52C9E500E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DFB2A52C9E500E506F2 /* res */; };
+		699B7E082A52F00400E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
 		69F2C25729FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25629FA4FA80088F503 /* AppDelegate.swift */; };
 		69F2C25929FA4FA80088F503 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C25829FA4FA80088F503 /* SceneDelegate.swift */; };
 		69F2C26829FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C26729FA4FA80088F503 /* AppDelegate.swift */; };
@@ -121,6 +122,7 @@
 		699B7DEC2A52C9D900E506F2 /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
 		699B7DFB2A52C9E500E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		699B7DFD2A52DD0500E506F2 /* build_extension.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_extension.sh; sourceTree = "<group>"; };
+		699B7E072A52F00400E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		69F2C23F29FA4FA80088F503 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		69F2C24029FA4FA80088F503 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -209,9 +211,19 @@
 			path = ../extension/build/ios;
 			sourceTree = "<group>";
 		};
+		699B7DFF2A52EFF000E506F2 /* iosapp */ = {
+			isa = PBXGroup;
+			children = (
+				699B7E072A52F00400E506F2 /* res */,
+			);
+			name = iosapp;
+			path = ../extension/build/iosapp;
+			sourceTree = "<group>";
+		};
 		69F2C23629FA4FA70088F503 = {
 			isa = PBXGroup;
 			children = (
+				699B7DFF2A52EFF000E506F2 /* iosapp */,
 				699B7DDA2A52C9D900E506F2 /* ios */,
 				699B7D702A519ADE00E506F2 /* YomikiriTokenizer.xcodeproj */,
 				69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */,
@@ -472,6 +484,7 @@
 				69F2C28429FA4FA80088F503 /* Icon.png in Resources */,
 				69F2C28229FA4FA80088F503 /* Main.html in Resources */,
 				69F2C28829FA4FA80088F503 /* Script.js in Resources */,
+				699B7E082A52F00400E506F2 /* res in Resources */,
 				69F2C28C29FA4FA80088F503 /* Assets.xcassets in Resources */,
 				69F2C28629FA4FA80088F503 /* Style.css in Resources */,
 			);

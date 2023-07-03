@@ -12,4 +12,5 @@ else
   YARN_CMD="build:ios"
 fi
 
+yarn --cwd "$EXTENSION_DIR" "build:iosapp"
 yarn --cwd "$EXTENSION_DIR" "$YARN_CMD"

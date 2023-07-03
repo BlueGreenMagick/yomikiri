@@ -10,7 +10,7 @@ import SwiftUI
 struct OptionsView: View {
     var body: some View {
         VStack {
-            WebView(url: Bundle.main.url(forResource: "Main", withExtension: "html")!){vmsg in
+            WebView(url: Bundle.main.url(forResource: "options", withExtension: "html", subdirectory: "res")!){v in
                 1}
         }
     }

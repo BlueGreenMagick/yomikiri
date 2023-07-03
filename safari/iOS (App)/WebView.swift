@@ -14,7 +14,10 @@ struct WebView: UIViewRepresentable {
     let messageHandler: (Any) throws -> Any
     
     func makeUIView(context: Context) -> WKWebView {
-        let webview = WKWebView(frame: .zero)
+        let configs = WKWebViewConfiguration()
+        configs.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
+        let webview = WKWebView(frame: .zero, configuration: configs)
+        
         let request = URLRequest(url: url)
         webview.load(request)
         return webview

@@ -11,6 +11,7 @@
     "build:chrome": "yarn run _build production chrome",
     "build:safari_desktop": "yarn run _build production safari_desktop",
     "build:ios": "yarn run _build production ios",
+    "build:iosapp": "yarn run _build production iosapp",
     "build": "yarn run build:chrome",
     "dev:chrome": "yarn run _build development chrome",
     "dev:firefox": "yarn run _build development firefox",
