@@ -1,10 +1,10 @@
 <script lang="ts">
   import OptionNumber from "./components/OptionNumber.svelte";
   import OptionText from "./components/OptionText.svelte";
-  import OptionsGroup from "./components/OptionsGroup.svelte";
+  import GroupedOptions from "./components/GroupedOptions.svelte";
 </script>
 
-<OptionsGroup title="Appearance">
+<GroupedOptions title="Appearance">
   <OptionNumber
     key="general.font_size"
     title="Font size"
@@ -15,4 +15,4 @@
     title="Japanese Font"
     description="For japanese text only."
   />
-</OptionsGroup>
+</GroupedOptions>

@@ -3,7 +3,6 @@
   import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
 
-  export let changed: boolean;
   export let key: ConfigKeysOfType<string>;
   export let title: string;
   export let description: string = "";

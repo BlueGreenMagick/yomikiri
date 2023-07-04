@@ -2,7 +2,7 @@
   export let title: string;
 </script>
 
-<div class="options-group">
+<div class="grouped-options">
   <div class="title">{title}</div>
   <div class="grouped">
     <slot />
@@ -10,20 +10,16 @@
 </div>
 
 <style>
-  .options-group {
+  .grouped-options {
     margin-top: 8px;
   }
 
   .title {
-    font-size: 2em;
+    font-size: 1.6em;
   }
   .grouped {
     margin-top: 8px;
     border-radius: 4px;
-
-    font-size: 1.2em;
-
     background-color: white;
-    box-shadow: 0 1px 4px gray;
   }
 </style>

@@ -67,13 +67,12 @@
 <style>
   div {
     position: sticky;
-    top: 40px;
+    top: 45px;
     margin-top: 40px;
     max-height: 300px;
     overflow: hidden auto;
     background-color: white;
     border-radius: 4px;
-    box-shadow: 0 1px 4px gray;
     will-change: transform;
   }
 </style>

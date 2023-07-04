@@ -2,7 +2,7 @@
   import { Platform } from "@platform";
   import AnkiApi from "@platform/anki";
   import Utils from "~/utils";
-  import OptionsGroup from "./components/OptionsGroup.svelte";
+  import GroupedOptions from "./components/GroupedOptions.svelte";
   import OptionClick from "./components/OptionClick.svelte";
   import OptionNumber from "./components/OptionNumber.svelte";
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
@@ -38,7 +38,7 @@
   }
 </script>
 
-<OptionsGroup title="Anki">
+<GroupedOptions title="Anki">
   {#if Platform.IS_DESKTOP}
     <OptionNumber
       key="anki.connect_port"
@@ -66,10 +66,10 @@
       }
     }}
   />
-  <ModalAnkiTemplate
-    hidden={$ankiTemplateModalHidden}
-    on:close={() => {
-      $ankiTemplateModalHidden = true;
-    }}
-  />
-</OptionsGroup>
+</GroupedOptions>
+<ModalAnkiTemplate
+  hidden={$ankiTemplateModalHidden}
+  on:close={() => {
+    $ankiTemplateModalHidden = true;
+  }}
+/>

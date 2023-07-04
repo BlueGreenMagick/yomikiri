@@ -21,7 +21,7 @@
 
   .container {
     display: flex;
-    margin: 12px;
+    margin: 0px 12px;
     gap: 12px;
   }
 
