@@ -1,5 +1,5 @@
+import { Platform } from ".";
 import type { ITokenizerStatic, ITokenizer, Token } from "../types/tokenizer";
-import { Api } from "~/api";
 
 export type { Token } from "../types/tokenizer";
 
@@ -9,7 +9,7 @@ export class Tokenizer implements ITokenizer {
   }
 
   async tokenize(text: string): Promise<Token[]> {
-    return await Api.requestToApp("tokenize", text);
+    return await Platform.requestToApp("tokenize", text);
   }
 }
 

@@ -1,6 +1,5 @@
 import type { Entry } from "~/dicEntry";
 import type { NoteData } from "~/ankiNoteBuilder";
-import type { Token } from "~/platform/types/tokenizer";
 import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "./config";
@@ -18,21 +17,8 @@ export interface MessageMap {
   tabId: [null, number | undefined];
 }
 
-/** Type map for messages sent with `requestToApp()`*/
-export interface AppMessageMap {
-  tokenize: [string, Token[]];
-  loadConfig: [null, StoredConfiguration];
-  saveConfig: [StoredConfiguration, void];
-}
-
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
 export type Response<K extends keyof MessageMap> = Utils.Second<MessageMap[K]>;
-export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
-  AppMessageMap[K]
->;
-export type AppResponse<K extends keyof AppMessageMap> = Utils.Second<
-  AppMessageMap[K]
->;
 
 interface Message<K extends keyof MessageMap> {
   key: K;
@@ -100,7 +86,7 @@ export namespace Api {
     return chrome.storage.local;
   }
 
-  function handleRequestResponse<R>(resp: RequestResponse<R>): R {
+  export function handleRequestResponse<R>(resp: RequestResponse<R>): R {
     if (resp.success) {
       return resp.resp;
     } else {
@@ -177,19 +163,6 @@ export namespace Api {
   ) {
     // @ts-ignore
     _requestHandlers[key] = handler;
-  }
-
-  /** Only supported in iOS */
-  export async function requestToApp<K extends keyof AppMessageMap>(
-    key: K,
-    request: AppRequest<K>
-  ): Promise<AppResponse<K>> {
-    const resp = await browser.runtime.sendNativeMessage("_", {
-      key,
-      request: JSON.stringify(request),
-    });
-    const response = handleRequestResponse<string>(resp);
-    return JSON.parse(response) as AppResponse<K>;
   }
 
   /** Must be called from within a tab, and not in a content script */
