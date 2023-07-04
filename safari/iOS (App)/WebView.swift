@@ -12,39 +12,37 @@ import WebKit
 private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
 
 struct WebView: UIViewRepresentable {
-    let url: URL
-    let messageHandler: MessageHandler
     @ObservedObject var viewModel: ViewModel
-    
     
     func makeUIView(context: Context) -> WKWebView {
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(context.coordinator, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
         let webview = WKWebView(frame: .zero, configuration: webConfiguration)
-        viewModel.webview = webview
+        self.viewModel.webview = webview
         webview.navigationDelegate = context.coordinator
         
-        let request = URLRequest(url: url)
+        let request = URLRequest(url: viewModel.url)
         webview.load(request)
         return webview
     }
     
-    func updateUIView(_ webview: WKWebView, context: Context) {
-    }
-    
+    func updateUIView(_ webview: WKWebView, context: Context) {}
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(self, messageHandler: messageHandler)
+        Coordinator(self, messageHandler: self.viewModel.messageHandler)
     }
-    
     
     class ViewModel: ObservableObject {
         var webview: WKWebView?
-        var loadCompleteRunnableFunctions: [() -> Void] = []
+        fileprivate let messageHandler: MessageHandler
+        fileprivate let url: URL
+        private var loadCompleteRunnableFunctions: [() -> Void] = []
         private var loadStatus: LoadStatus = .loading
         
-        init() {
+        init(url: URL, messageHandler: @escaping MessageHandler) {
+            self.url = url
+            self.messageHandler = messageHandler
         }
         
         func runOnLoadComplete(fn: @escaping () -> Void) {
@@ -57,7 +55,7 @@ struct WebView: UIViewRepresentable {
         
         func setLoadStatus(status: LoadStatus) {
             self.loadStatus = status
-            if (status == .complete) {
+            if status == .complete {
                 let functions = self.loadCompleteRunnableFunctions
                 self.loadCompleteRunnableFunctions = []
                 for function in functions {
@@ -95,13 +93,15 @@ struct WebView: UIViewRepresentable {
         }
         
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            parent.viewModel.setLoadStatus(status: .complete)
+            self.parent.viewModel.setLoadStatus(status: .complete)
         }
+
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            parent.viewModel.setLoadStatus(status: .loading)
+            self.parent.viewModel.setLoadStatus(status: .loading)
         }
+
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            parent.viewModel.setLoadStatus(status: .failed)
+            self.parent.viewModel.setLoadStatus(status: .failed)
         }
     }
 }
