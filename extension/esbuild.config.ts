@@ -113,6 +113,9 @@ function generateBuildOptions(): BuildOptions {
     sourcemap: DEVELOPMENT ? "inline" : false,
     conditions: ["svelte"],
     assetNames: "res/assets/[name]-[hash]",
+    // make file import URL absolute path
+    // relative path is incorrect from background pages
+    publicPath: "/",
     loader: { ".wasm.gz": "file", ".json.gz": "file", ".svg": "text" },
   };
 
