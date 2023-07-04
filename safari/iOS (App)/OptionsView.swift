@@ -10,11 +10,42 @@ import SwiftUI
 import WebKit
 
 struct OptionsView: View {
-    @EnvironmentObject var globalState: GlobalState
     @ObservedObject var viewModel: ViewModel
 
+    static let BACKGROUND_COLOR = Color(red: 0.933, green: 0.933, blue: 0.933)
+
     var body: some View {
-        WebView(viewModel: self.viewModel.webViewModel).onOpenURL(perform: self.handleOpenUrl)
+        NavigationView {
+            WebView(viewModel: self.viewModel.webViewModel).onOpenURL(perform: self.handleOpenUrl)
+                .navigationTitle("Settings")
+                .navigationBarTitleDisplayMode(.inline)
+                .background(OptionsView.BACKGROUND_COLOR)
+        }
+    }
+
+    init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+
+        let appearance = UINavigationBarAppearance()
+        appearance.shadowColor = .darkGray
+        appearance.backgroundColor = UIColor(OptionsView.BACKGROUND_COLOR)
+
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
+
+    private func handleOpenUrl(url: URL) {
+        guard url.isAnkiInfo else {
+            return
+        }
+        Task {
+            do {
+                let ankiInfo = try await getAnkiInfoFromPasteboard()
+                try viewModel.openAnkiInfoModal(ankiInfo: ankiInfo)
+            } catch {
+                os_log(.error, "ERROR %{public}s", error.localizedDescription)
+            }
+        }
     }
 }
 
@@ -47,20 +78,6 @@ extension OptionsView {
                     }
                     webview.evaluateJavaScript(script)
                 })
-            }
-        }
-    }
-
-    private func handleOpenUrl(url: URL) {
-        guard url.isAnkiInfo else {
-            return
-        }
-        Task {
-            do {
-                let ankiInfo = try await getAnkiInfoFromPasteboard()
-                try viewModel.openAnkiInfoModal(ankiInfo: ankiInfo)
-            } catch {
-                os_log(.error, "ERROR %{public}s", error.localizedDescription)
             }
         }
     }

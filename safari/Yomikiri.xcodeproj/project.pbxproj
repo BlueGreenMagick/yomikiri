@@ -19,7 +19,6 @@
 		699B7DFA2A52C9D900E506F2 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DEC2A52C9D900E506F2 /* manifest.json */; };
 		699B7DFC2A52C9E500E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DFB2A52C9E500E506F2 /* res */; };
 		699B7E082A52F00400E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
-		699B7E0A2A53C4C600E506F2 /* GlobalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E092A53C4C600E506F2 /* GlobalState.swift */; };
 		699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
 		699EF6722A540C0400ECA9D1 /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
 		699EF6732A540C0400ECA9D1 /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
@@ -125,7 +124,6 @@
 		699B7DFB2A52C9E500E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		699B7DFD2A52DD0500E506F2 /* build_extension.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_extension.sh; sourceTree = "<group>"; };
 		699B7E072A52F00400E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
-		699B7E092A53C4C600E506F2 /* GlobalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalState.swift; sourceTree = "<group>"; };
 		699B7E0B2A53DCE500E506F2 /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		699EF6712A540C0400ECA9D1 /* SharedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStorage.swift; sourceTree = "<group>"; };
 		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
@@ -298,7 +296,6 @@
 				699B7DC52A52B07C00E506F2 /* OptionsView.swift */,
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
 				699B7DCC2A52BEA100E506F2 /* WebView.swift */,
-				699B7E092A53C4C600E506F2 /* GlobalState.swift */,
 				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
 			);
 			path = "iOS (App)";
@@ -547,7 +544,6 @@
 				699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */,
 				699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */,
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,
-				699B7E0A2A53C4C600E506F2 /* GlobalState.swift in Sources */,
 				699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */,
 				699EF6722A540C0400ECA9D1 /* SharedStorage.swift in Sources */,
 			);
