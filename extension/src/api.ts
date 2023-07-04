@@ -15,6 +15,8 @@ export interface MessageMap {
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [NoteData, void];
   tabId: [null, number | undefined];
+  // ios
+  loadConfig: [null, StoredConfiguration];
 }
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
@@ -60,7 +62,7 @@ export namespace Api {
   export let context: ExecutionContext;
   let _tabId: number | undefined;
 
-  export async function initialize(opts: ApiInitializeOptions) {
+  export function initialize(opts: ApiInitializeOptions) {
     if (opts.handleRequests) {
       attachRequestHandler();
     }
@@ -87,6 +89,7 @@ export namespace Api {
   }
 
   export function handleRequestResponse<R>(resp: RequestResponse<R>): R {
+    console.log(resp);
     if (resp.success) {
       return resp.resp;
     } else {
@@ -306,11 +309,10 @@ export namespace Api {
           (async () => {
             try {
               // @ts-ignore
-              let resp = handler(message.request, sender);
-              let realResp = resp instanceof Promise ? await resp : resp;
+              let resp = await handler(message.request, sender);
               sendResponse({
                 success: true,
-                resp: realResp,
+                resp,
               });
             } catch (e) {
               sendResponse({

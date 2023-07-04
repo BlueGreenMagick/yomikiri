@@ -1,5 +1,5 @@
 import type { StoredConfiguration } from "~/config";
-import type Utils from "~/utils";
+import Utils from "~/utils";
 import { Api } from "~/api";
 import type { Module } from "../types";
 import type { Token } from "./tokenizer";
@@ -13,7 +13,6 @@ export namespace Platform {
   export interface AppMessageMap {
     tokenize: [string, Token[]];
     loadConfig: [null, StoredConfiguration];
-    saveConfig: [StoredConfiguration, void];
   }
 
   export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
@@ -23,7 +22,7 @@ export namespace Platform {
     AppMessageMap[K]
   >;
 
-  /** Only supported in iOS */
+  /** Only works in background & page */
   export async function requestToApp<K extends keyof AppMessageMap>(
     key: K,
     request: AppRequest<K>
@@ -36,13 +35,22 @@ export namespace Platform {
     return JSON.parse(response) as AppResponse<K>;
   }
 
-  export function loadConfig(): Promise<StoredConfiguration> {
-    return Platform.requestToApp("loadConfig", null);
+  export async function loadConfig(): Promise<StoredConfiguration> {
+    if (Api.context === "contentScript") {
+      return Api.request("loadConfig", null);
+    } else {
+      return Platform.requestToApp("loadConfig", null);
+    }
   }
 
   export function saveConfig(config: StoredConfiguration): Promise<void> {
-    return Platform.requestToApp("saveConfig", config);
+    throw new Error("saveConfig should not be called in ios");
   }
+}
+if (Api.context === "background") {
+  Api.handleRequest("loadConfig", () => {
+    return Platform.loadConfig();
+  });
 }
 
 Platform satisfies Module;

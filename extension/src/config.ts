@@ -1,5 +1,6 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
+import Utils from "./utils";
 
 /** Cannot distinguish between null and undefined */
 export interface Configuration {
@@ -32,14 +33,19 @@ export type ConfigKeysOfType<T> = {
 }[keyof Configuration];
 
 export namespace Config {
-  let storage: StoredConfiguration;
+  let _storage: StoredConfiguration | undefined;
 
-  /** Api.initialize() before calling */
-  export async function initialize(): Promise<void> {
-    storage = await Platform.loadConfig();
+  async function getStorage(): Promise<StoredConfiguration> {
+    if (_storage === undefined) {
+      _storage = await Platform.loadConfig();
+    }
+    return _storage;
   }
 
-  export function get<K extends keyof Configuration>(key: K): Configuration[K] {
+  export async function get<K extends keyof Configuration>(
+    key: K
+  ): Promise<Configuration[K]> {
+    let storage = await getStorage();
     const value = storage[key];
     return value !== undefined
       ? (value as Configuration[K])
@@ -51,6 +57,7 @@ export namespace Config {
     key: K,
     value: Configuration[K]
   ) {
+    let storage = await getStorage();
     if (value === undefined) {
       delete storage[key];
     } else {

@@ -5,13 +5,13 @@
 //  Created by Yoonchae Lee on 2023/05/19.
 //
 
-import SafariServices
 import os.log
+import SafariServices
 import YomikiriTokenizer
 
 let SFExtensionMessageKey = "message"
 let tokenizer = Tokenizer()
-let appDir = try! FileManager.default.url(for:.applicationSupportDirectory, in:.userDomainMask, appropriateFor: nil, create: true).absoluteString
+let appDir = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).absoluteString
 
 extension String: Error {}
 
@@ -26,10 +26,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             return
         }
         let realResponse: [String: Any]
-        var jsonResponse: String = "null"
-        
+        var jsonResponse = "null"
+
         do {
-            switch(key) {
+            switch key {
             case "tokenize":
                 let text: String = try jsonDeserialize(json: request)
                 let tokens = tokenizer.tokenize(sentence: text)
@@ -37,9 +37,8 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             case "addNote":
                 break
             case "loadConfig":
+                // already stored in json
                 jsonResponse = try SharedStorage.loadConfig()
-            case "saveConfig":
-                try SharedStorage.saveConfig(configJson: request)
             default:
                 return
             }
@@ -51,9 +50,7 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         let resp = NSExtensionItem()
         resp.userInfo = [SFExtensionMessageKey: realResponse]
         context.completeRequest(returningItems: [resp], completionHandler: nil)
-
     }
-
 }
 
 func jsonSerialize<T: Encodable>(obj: T?) throws -> String {
@@ -66,4 +63,3 @@ func jsonDeserialize<T: Decodable>(json: String) throws -> T {
     let decoder = JSONDecoder()
     return try decoder.decode(T.self, from: json.data(using: .utf8)!)
 }
-
