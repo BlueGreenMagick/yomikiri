@@ -21,6 +21,8 @@
 		699B7E082A52F00400E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
 		699B7E0A2A53C4C600E506F2 /* GlobalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E092A53C4C600E506F2 /* GlobalState.swift */; };
 		699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
+		699EF6722A540C0400ECA9D1 /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
+		699EF6732A540C0400ECA9D1 /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
 		69F2C26829FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C26729FA4FA80088F503 /* AppDelegate.swift */; };
 		69F2C26B29FA4FA80088F503 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C26929FA4FA80088F503 /* Main.storyboard */; };
 		69F2C27229FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -125,6 +127,7 @@
 		699B7E072A52F00400E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		699B7E092A53C4C600E506F2 /* GlobalState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalState.swift; sourceTree = "<group>"; };
 		699B7E0B2A53DCE500E506F2 /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		699EF6712A540C0400ECA9D1 /* SharedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStorage.swift; sourceTree = "<group>"; };
 		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		69F2C23F29FA4FA80088F503 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		69F2C24029FA4FA80088F503 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -220,6 +223,14 @@
 			path = ../extension/build/iosapp;
 			sourceTree = "<group>";
 		};
+		699EF6702A540BE600ECA9D1 /* Shared (iOS) */ = {
+			isa = PBXGroup;
+			children = (
+				699EF6712A540C0400ECA9D1 /* SharedStorage.swift */,
+			);
+			path = "Shared (iOS)";
+			sourceTree = "<group>";
+		};
 		69F2C23629FA4FA70088F503 = {
 			isa = PBXGroup;
 			children = (
@@ -230,6 +241,7 @@
 				69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */,
 				69F2C23B29FA4FA80088F503 /* Shared (App) */,
 				69F2C24429FA4FA80088F503 /* Shared (Extension) */,
+				699EF6702A540BE600ECA9D1 /* Shared (iOS) */,
 				69F2C25529FA4FA80088F503 /* iOS (App) */,
 				69F2C26629FA4FA80088F503 /* macOS (App) */,
 				69F2C27529FA4FA80088F503 /* iOS (Extension) */,
@@ -537,6 +549,7 @@
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,
 				699B7E0A2A53C4C600E506F2 /* GlobalState.swift in Sources */,
 				699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */,
+				699EF6722A540C0400ECA9D1 /* SharedStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,6 +566,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				699EF6732A540C0400ECA9D1 /* SharedStorage.swift in Sources */,
 				6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

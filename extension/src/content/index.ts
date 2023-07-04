@@ -3,8 +3,14 @@ import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
+import Config from "~/config";
 
-Api.initialize({ context: "contentScript" });
+async function initialize() {
+  await Api.initialize({ context: "contentScript" });
+  await Config.initialize();
+}
+
+initialize();
 
 const scanner = new Scanner();
 

@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 extension URL {
   var isDeeplink: Bool {
     return scheme == "yomikiri"
@@ -20,3 +21,4 @@ extension URL {
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
 }
+

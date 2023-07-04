@@ -47,8 +47,10 @@ const platformAliasPlugin: Plugin = {
   setup(build) {
     build.onResolve({ filter: /.*/ }, (args) => {
       let replacement;
-      if (FOR_IOS || FOR_IOSAPP) {
+      if (FOR_IOS) {
         replacement = "platform/ios$1";
+      } else if (FOR_IOSAPP) {
+        replacement = "platform/iosapp$1";
       } else {
         replacement = "platform/desktop$1";
       }
@@ -164,6 +166,7 @@ function generateBuildOptions(): BuildOptions {
           { from: ["src/options/index.html"], to: ["./res/options.html"] },
         ],
       }),
+      platformAliasPlugin,
       svelteConfiguredPlugin,
     ],
   };

@@ -1,4 +1,4 @@
-import type { IAnkiApiStatic } from "../types/anki";
+import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import Config from "~/config";
 import type { NoteData } from "~/ankiNoteBuilder";
 
@@ -45,6 +45,14 @@ export default class AnkiApi {
       throw new Error(data.error);
     }
     return data.result;
+  }
+
+  static requestAnkiInfo(): void {
+    throw new Error("Unimplemented for desktop");
+  }
+
+  static canGetAnkiInfo(): boolean {
+    return true;
   }
 
   static async deckNames(): Promise<string[]> {
@@ -94,4 +102,5 @@ export default class AnkiApi {
   }
 }
 
-AnkiApi satisfies IAnkiApiStatic;
+AnkiApi satisfies IAnkiAddNotes;
+AnkiApi satisfies IAnkiOptions;

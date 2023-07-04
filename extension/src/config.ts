@@ -1,8 +1,8 @@
-import { Api } from "~/api";
 import type { NoteData } from "~/ankiNoteBuilder";
+import { Platform } from "@platform";
 
 /** Cannot distinguish between null and undefined */
-export interface ConfigTypes {
+export interface Configuration {
   "general.font_size": number;
   "general.font": string;
   "anki.connect_port": number;
@@ -12,7 +12,7 @@ export interface ConfigTypes {
   "x-callback.successTabId": number | null;
 }
 
-const defaultOptions: ConfigTypes = {
+const defaultOptions: Configuration = {
   "general.font_size": 14,
   "general.font": "Meiryo",
   "anki.connect_port": 8785,
@@ -22,28 +22,46 @@ const defaultOptions: ConfigTypes = {
   "x-callback.successTabId": null,
 };
 
+export interface StoredConfiguration extends Partial<Configuration> {
+  [key: string]: any;
+}
+
 /** Get union of config keys that extends type T. */
 export type ConfigKeysOfType<T> = {
-  [K in keyof ConfigTypes]: ConfigTypes[K] extends T ? K : never;
-}[keyof ConfigTypes];
+  [K in keyof Configuration]: Configuration[K] extends T ? K : never;
+}[keyof Configuration];
 
-export class Config {
-  static async get<K extends keyof ConfigTypes>(key: K) {
-    return await Api.getStorage<ConfigTypes[K]>(key, defaultOptions[key]);
+export namespace Config {
+  let storage: StoredConfiguration;
+
+  /** Api.initialize() before calling */
+  export async function initialize(): Promise<void> {
+    storage = await Platform.loadConfig();
   }
 
-  /** If value is null or undefined, removes from storage*/
-  static async set<K extends keyof ConfigTypes>(key: K, value: ConfigTypes[K]) {
-    if (value === null || value === undefined) {
-      await Api.removeStorage(key);
+  export function get<K extends keyof Configuration>(key: K): Configuration[K] {
+    const value = storage[key];
+    return value !== undefined
+      ? (value as Configuration[K])
+      : defaultOptions[key];
+  }
+
+  /** If value is undefined, removes from storage*/
+  export async function set<K extends keyof Configuration>(
+    key: K,
+    value: Configuration[K]
+  ) {
+    if (value === undefined) {
+      delete storage[key];
     } else {
-      await Api.setStorage(key, value);
+      storage[key] = value;
     }
+    await Platform.saveConfig(storage);
   }
 
-  static async default<K extends keyof ConfigTypes>(
+  export function defaultValue<K extends keyof Configuration>(
     key: K
-  ): Promise<ConfigTypes[K]> {
+  ): Configuration[K] {
     return defaultOptions[key];
   }
 }

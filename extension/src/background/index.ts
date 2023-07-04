@@ -9,22 +9,36 @@ import { Api, type MessageSender, type Port } from "~/api";
 import AnkiApi from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
+import Config from "~/config";
 
 let dictionary = new Dictionary();
-let dictionaryLoadedP = dictionary.initialize();
-let tokenizerP = Tokenizer.initialize(dictionaryLoadedP);
+let dictionaryLoadedP: Promise<Dictionary> = dictionary.initialize();
+let tokenizerP: Promise<Tokenizer> = Tokenizer.initialize(dictionaryLoadedP);
+let initializingP = initialize();
+
+async function initialize() {
+  await Api.initialize({
+    handleRequests: true,
+    handleConnection: true,
+    context: "background",
+  });
+  await Config.initialize();
+}
 
 async function searchTerm(term: string): Promise<Entry[]> {
+  await initializingP;
   await dictionaryLoadedP;
   return await dictionary.search(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+  await initializingP;
   let tokenizer = await tokenizerP;
   return await tokenizer.tokenize(req);
 }
 
 async function addAnkiNote(note: NoteData): Promise<void> {
+  await initializingP;
   return await AnkiApi.addNote(note);
 }
 
@@ -32,7 +46,8 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
 
-function dictionaryCheckInstall(port: Port) {
+async function dictionaryCheckInstall(port: Port) {
+  await initializingP;
   if (dictionary.installed) {
     port.disconnect();
   } else {
@@ -56,12 +71,6 @@ function dictionaryCheckInstall(port: Port) {
     });
   }
 }
-
-Api.initialize({
-  handleRequests: true,
-  handleConnection: true,
-  context: "background",
-});
 
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);

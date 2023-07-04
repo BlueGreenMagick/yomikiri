@@ -1,12 +1,16 @@
 <script lang="ts">
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
+
+  export let initializing: Promise<any>;
 </script>
 
-<div class="container">
-  <div id="main-column"><MainColumn /></div>
-  <div id="preview-column"><PreviewColumn /></div>
-</div>
+{#await initializing then}
+  <div class="container">
+    <div id="main-column"><MainColumn /></div>
+    <div id="preview-column"><PreviewColumn /></div>
+  </div>
+{/await}
 
 <style>
   @media (max-width: 900px) {

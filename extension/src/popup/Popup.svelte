@@ -4,6 +4,8 @@
   import Search from "./Search.svelte";
   import InstallingDictionary from "./InstallingDictionary.svelte";
 
+  export let initializing: Promise<any>;
+
   let dictionaryInstalled = true;
   let dictionaryInstallProgress: InstallProgress = { current: 0, total: 0 };
 
@@ -21,13 +23,15 @@
   dictionaryCheckInstall();
 </script>
 
-<div class="container">
-  {#if dictionaryInstalled}
-    <Search />
-  {:else}
-    <InstallingDictionary progress={dictionaryInstallProgress} />
-  {/if}
-</div>
+{#await initializing then}
+  <div class="container">
+    {#if dictionaryInstalled}
+      <Search />
+    {:else}
+      <InstallingDictionary progress={dictionaryInstallProgress} />
+    {/if}
+  </div>
+{/await}
 
 <style>
   .container {

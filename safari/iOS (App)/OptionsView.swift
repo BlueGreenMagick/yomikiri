@@ -28,7 +28,7 @@ extension OptionsView {
         // ankiInfo: JSON string
         func openAnkiInfoModal(ankiInfo: String) {
             let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
-            self.webViewModel.webview!.evaluateJavaScript("openAnkiInfoModal(`\(escaped)`)")
+            self.webViewModel.webview!.evaluateJavaScript("setAnkiInfo(`\(escaped)`);openAnkiInfoModal();")
         }
     }
     
@@ -48,6 +48,13 @@ extension OptionsView {
             return ankiIsInstalled()
         case "ankiInfo":
             return await requestAnkiInfo()
+        case "loadConfig":
+            return try SharedStorage.loadConfig()
+        case "saveConfig":
+            guard let configJson = request as? String else {
+                throw "setConfig tequest body must be JSON string"
+            }
+            return try SharedStorage.saveConfig(configJson: configJson)
         default:
             throw "Unknown key \(key)"
         }
@@ -78,11 +85,8 @@ extension OptionsView {
     }
 }
 
-func getAnkiInfoFromPasteboard() async throws -> String {
+private func getAnkiInfoFromPasteboard() async throws -> String {
     let PASTEBOARD_TYPE = "net.ankimobile.json"
-    guard let sharedDefault = UserDefaults(suiteName: "group.com.bluegreenmagick.yomikiri") else {
-        throw "Could not retrieve UserDefaults"
-    }
     var tries = 0;
     var data: Data?
     // sometimes takes some time for clipboard data to appear

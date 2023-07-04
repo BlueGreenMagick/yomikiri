@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type ConfigTypes, type ConfigKeysOfType, Config } from "~/config";
+  import { type Configuration, type ConfigKeysOfType, Config } from "~/config";
   import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
 

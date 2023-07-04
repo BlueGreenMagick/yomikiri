@@ -36,6 +36,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 jsonResponse = try jsonSerialize(obj: tokens)
             case "addNote":
                 break
+            case "loadConfig":
+                jsonResponse = try SharedStorage.loadConfig()
+            case "saveConfig":
+                try SharedStorage.saveConfig(configJson: request)
             default:
                 return
             }

@@ -1,7 +1,6 @@
 import type { Entry } from "~/dicEntry";
 import type { NoteData } from "~/ankiNoteBuilder";
 import type { Token } from "~/platform/types/tokenizer";
-import type { AnkiInfo } from "~/platform/ios/anki";
 import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
 
@@ -21,6 +20,8 @@ export interface MessageMap {
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
   tokenize: [string, Token[]];
+  loadConfig: [null, string];
+  saveConfig: [string, void];
 }
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;

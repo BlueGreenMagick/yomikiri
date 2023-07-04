@@ -6,6 +6,7 @@
   import OptionClick from "./components/OptionClick.svelte";
   import OptionNumber from "./components/OptionNumber.svelte";
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
+  import { ankiTemplateModalHidden } from "./stores";
 
   //ios only
   let testConnectionDescription = Platform.IS_IOS
@@ -35,14 +36,6 @@
       testConnectionDescription = `<span class="warning">${errorMsg}</span>`;
     }
   }
-
-  // @ts-ignore
-  window.openAnkiInfoModal = (ankiInfo: string) => {
-    const d = document.createElement("div");
-    d.innerText = ankiInfo;
-    document.body.appendChild(d);
-    modalTemplateHidden = false;
-  };
 </script>
 
 <OptionsGroup title="Anki">
@@ -65,13 +58,18 @@
     title="Configure Anki template"
     buttonText="Configure"
     on:trigger={() => {
-      modalTemplateHidden = false;
+      if (AnkiApi.canGetAnkiInfo()) {
+        $ankiTemplateModalHidden = false;
+      } else {
+        // @ts-ignore
+        AnkiApi.requestAnkiInfo();
+      }
     }}
   />
   <ModalAnkiTemplate
-    hidden={modalTemplateHidden}
+    hidden={$ankiTemplateModalHidden}
     on:close={() => {
-      modalTemplateHidden = true;
+      $ankiTemplateModalHidden = true;
     }}
   />
 </OptionsGroup>
