@@ -117,7 +117,7 @@ private func getAnkiInfoFromPasteboard() async throws -> String {
             data = d
             break;
         }
-        try await Task.sleep(nanoseconds: 10 * 1000)
+        try await Task.sleep(nanoseconds: 1000 * 1000)
         tries += 1
     }
     // tries >= 25
