@@ -7,6 +7,7 @@
 
 import SwiftUI
 import WebKit
+import os.log
 
 struct OptionsView: View {
     @EnvironmentObject var globalState: GlobalState
@@ -26,9 +27,27 @@ extension OptionsView {
         }
         
         // ankiInfo: JSON string
-        func openAnkiInfoModal(ankiInfo: String) {
+        func openAnkiInfoModal(ankiInfo: String) throws {
             let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
-            self.webViewModel.webview!.evaluateJavaScript("setAnkiInfo(`\(escaped)`);openAnkiInfoModal();")
+            let script = """
+                setTimeout(() => {
+                    setAnkiInfo(`\(escaped)`);
+                    openAnkiInfoModal();
+                }, 50);
+                """
+            if self.webViewModel.getLoadStatus() == .complete {
+                guard let webview = self.webViewModel.webview else {
+                    throw "Webview not initialized"
+                }
+                webview.evaluateJavaScript(script)
+            } else {
+                self.webViewModel.runOnLoadComplete(fn: {
+                    guard let webview = self.webViewModel.webview else {
+                        return
+                    }
+                    webview.evaluateJavaScript(script)
+                })
+            }
         }
     }
     
@@ -42,7 +61,8 @@ extension OptionsView {
         guard let request = msg["request"] else {
             throw "Message does not have 'request'"
         }
-        print("handleMessage: \(key), \(request)")
+        
+        os_log("%{public}s", "handleMessage: \(key), \(request)")
         switch(key) {
         case "ankiIsInstalled":
             return ankiIsInstalled()
@@ -77,9 +97,9 @@ extension OptionsView {
         Task {
             do {
                 let ankiInfo = try await getAnkiInfoFromPasteboard()
-                viewModel.openAnkiInfoModal(ankiInfo: ankiInfo)
+                try viewModel.openAnkiInfoModal(ankiInfo: ankiInfo)
             } catch {
-                print(error)
+                os_log(.error, "ERROR %{public}s", error.localizedDescription)
             }
         }
     }

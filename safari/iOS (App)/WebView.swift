@@ -23,6 +23,7 @@ struct WebView: UIViewRepresentable {
         webConfiguration.userContentController.addScriptMessageHandler(context.coordinator, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
         let webview = WKWebView(frame: .zero, configuration: webConfiguration)
         viewModel.webview = webview
+        webview.navigationDelegate = context.coordinator
         
         let request = URLRequest(url: url)
         webview.load(request)
@@ -40,16 +41,39 @@ struct WebView: UIViewRepresentable {
     
     class ViewModel: ObservableObject {
         var webview: WKWebView?
+        var loadCompleteRunnableFunctions: [() -> Void] = []
+        private var loadStatus: LoadStatus = .loading
         
         init() {
         }
+        
+        func runOnLoadComplete(fn: @escaping () -> Void) {
+            self.loadCompleteRunnableFunctions.append(fn)
+        }
+        
+        func getLoadStatus() -> LoadStatus {
+            return self.loadStatus
+        }
+        
+        func setLoadStatus(status: LoadStatus) {
+            self.loadStatus = status
+            if (status == .complete) {
+                let functions = self.loadCompleteRunnableFunctions
+                self.loadCompleteRunnableFunctions = []
+                for function in functions {
+                    function()
+                }
+            }
+        }
     }
-    
-    
     
     typealias MessageHandler = (Any) async throws -> Any?
     
-    class Coordinator: NSObject, WKUIDelegate, WKScriptMessageHandlerWithReply {
+    enum LoadStatus {
+        case loading, complete, failed
+    }
+    
+    class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandlerWithReply {
         let parent: WebView
         let messageHandler: MessageHandler
         
@@ -68,6 +92,16 @@ struct WebView: UIViewRepresentable {
                     replyHandler(nil, error.localizedDescription)
                 }
             }
+        }
+        
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            parent.viewModel.setLoadStatus(status: .complete)
+        }
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            parent.viewModel.setLoadStatus(status: .loading)
+        }
+        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            parent.viewModel.setLoadStatus(status: .failed)
         }
     }
 }
