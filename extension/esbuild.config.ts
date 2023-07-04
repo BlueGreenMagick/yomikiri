@@ -47,7 +47,7 @@ const platformAliasPlugin: Plugin = {
   setup(build) {
     build.onResolve({ filter: /.*/ }, (args) => {
       let replacement;
-      if (FOR_IOS) {
+      if (FOR_IOS || FOR_IOSAPP) {
         replacement = "platform/ios$1";
       } else {
         replacement = "platform/desktop$1";

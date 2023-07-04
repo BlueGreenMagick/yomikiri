@@ -36,11 +36,13 @@
     }
   }
 
-  if (Platform.IS_IOS) {
-    AnkiApi.onReceiveAnkiInfo(() => {
-      modalTemplateHidden = false;
-    });
-  }
+  // @ts-ignore
+  window.openAnkiInfoModal = (ankiInfo: string) => {
+    const d = document.createElement("div");
+    d.innerText = ankiInfo;
+    document.body.appendChild(d);
+    modalTemplateHidden = false;
+  };
 </script>
 
 <OptionsGroup title="Anki">

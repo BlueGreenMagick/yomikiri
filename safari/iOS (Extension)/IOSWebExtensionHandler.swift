@@ -36,18 +36,6 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 jsonResponse = try jsonSerialize(obj: tokens)
             case "addNote":
                 break
-            case "ankiInfo":
-                guard let sharedDefault = UserDefaults(suiteName: "group.com.bluegreenmagick.yomikiri") else {
-                    throw "UserDefaults not found"
-                }
-                guard let ankiInfoData = sharedDefault.data(forKey: "ankiInfo") else {
-                    throw "ankiInfo not found"
-                }
-                guard let json = String(data: ankiInfoData, encoding: .utf8) else {
-                    throw "ankiInfoData could not be converted into JSON string";
-                }
-                sharedDefault.removeObject(forKey: "ankiInfo")
-                jsonResponse = json
             default:
                 return
             }

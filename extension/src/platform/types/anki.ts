@@ -8,6 +8,4 @@ export interface IAnkiApiStatic {
   notetypeNames: () => Promise<string[]>;
   nodeTypeFields: (noteTypeName: string) => Promise<string[]>;
   checkConnection: () => Promise<void>;
-  /** iOS only */
-  onReceiveAnkiInfo: (handler: (ankiInfo: AnkiInfo) => void) => void;
 }

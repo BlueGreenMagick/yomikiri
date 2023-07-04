@@ -3,6 +3,7 @@ import type { IAnkiApiStatic } from "../types/anki";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import Utils from "~/utils";
+import { Platform } from ".";
 
 interface Named {
   name: string;
@@ -21,66 +22,15 @@ export interface AnkiInfo {
 }
 
 let ankiInfo: AnkiInfo | undefined;
-const receivedAnkiInfoHandler: ((ankiInfo: AnkiInfo) => void)[] = [];
 
 export default class AnkiApi {
-  private static async requestAnkiInfo(): Promise<AnkiInfo> {
-    const currentTabId = await Api.currentTabId();
-    await Config.set("x-callback.tabId", currentTabId);
-    const redirectTo = "yomikiri://x-callback-url/infoForAdding";
-    const ankiLink = `anki://x-callback-url/infoForAdding?x-success=${redirectTo}`;
-
-    // This promise is resolved when response is received from Anki
-    const [promise, resolve] = Utils.createPromise<AnkiInfo>();
-    AnkiApi.onReceiveAnkiInfo((info) => {
-      resolve(info);
-    });
-    // make request to Anki
-    location.replace(ankiLink);
-    return promise;
-  }
-
+  /** Should only be called in app */
   private static async maybeGetInfo(): Promise<AnkiInfo> {
     if (ankiInfo === undefined) {
-      return await AnkiApi.requestAnkiInfo();
+      return await Platform.messageWebview("ankiInfo", null);
     } else {
       return ankiInfo;
     }
-  }
-
-  /**
-   * Must be called on startup because
-   * execution context may have been restarted
-   */
-  static onReceiveAnkiInfo(handler: (ankiInfo: AnkiInfo) => void) {
-    if (receivedAnkiInfoHandler.length === 0) {
-      AnkiApi.pollXSuccess(async () => {
-        ankiInfo = await Api.requestToApp("ankiInfo", null);
-        for (const handler of receivedAnkiInfoHandler) {
-          handler(ankiInfo);
-        }
-      });
-    }
-    receivedAnkiInfoHandler.push(handler);
-  }
-
-  private static async pollXSuccess(handler: () => any) {
-    const POLL_INTERVAL = 20;
-    const thisTabId = await Api.currentTabId();
-
-    const check = async () => {
-      let id = await Config.get("x-callback.successTabId");
-      if (thisTabId !== id) return;
-      await Config.set("x-callback.successTabId", null);
-      handler();
-    };
-
-    // only have one poll function running concurrently
-    const poll = async () => {
-      await check();
-      setTimeout(poll, POLL_INTERVAL);
-    };
-    setTimeout(poll, POLL_INTERVAL);
   }
 
   /**

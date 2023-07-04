@@ -9,12 +9,23 @@ import SwiftUI
 
 @main
 struct YomikiriApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @StateObject private var globalState = GlobalState()
+    @StateObject private var viewModel = ViewModel()
     
     var body: some Scene {
-        print("app");
         return WindowGroup {
-            OptionsView()
+            OptionsView(viewModel: viewModel.optionsViewModel)
+                .environmentObject(globalState)
+                .onOpenURL{ url in
+                    print("global")
+                }
+        }
+    }
+    
+    class ViewModel: ObservableObject {
+        var optionsViewModel = OptionsView.ViewModel()
+        
+        init() {
         }
     }
 }

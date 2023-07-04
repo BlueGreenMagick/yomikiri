@@ -21,7 +21,6 @@ export interface MessageMap {
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
   tokenize: [string, Token[]];
-  ankiInfo: [null, AnkiInfo];
 }
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;

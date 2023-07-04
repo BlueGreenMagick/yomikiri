@@ -1,6 +1,5 @@
 import type { IAnkiApiStatic } from "../types/anki";
 import Config from "~/config";
-import Utils from "~/utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 
 /**
@@ -92,10 +91,6 @@ export default class AnkiApi {
     } else {
       throw new Error("AnkiConnect did not allow this app to use its api.");
     }
-  }
-
-  static async onReceiveAnkiInfo(handler: any) {
-    throw new Error("Only implemented on IOS");
   }
 }
 
