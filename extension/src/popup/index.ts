@@ -11,12 +11,13 @@ if (Platform.IS_IOS) {
 if (Platform.IS_DESKTOP) {
   document.documentElement.classList.add("desktop");
 }
-Theme.insertStyleElement(document);
 
 async function initialize() {
   await Api.initialize({ context: "page" });
   await Config.initialize();
+  Theme.insertStyleElement(document);
 }
 
 let initializing = initialize();
+
 const svelte = new Popup({ target: document.body, props: { initializing } });

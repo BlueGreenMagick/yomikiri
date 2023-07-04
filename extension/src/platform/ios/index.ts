@@ -7,14 +7,12 @@ export namespace Platform {
   export const IS_IOS = true;
   export const IS_IOSAPP = false;
 
-  export async function loadConfig(): Promise<StoredConfiguration> {
-    const configJson = await Api.requestToApp("loadConfig", null);
-    return JSON.parse(configJson);
+  export function loadConfig(): Promise<StoredConfiguration> {
+    return Api.requestToApp("loadConfig", null);
   }
 
-  export async function saveConfig(config: StoredConfiguration) {
-    const configJson = JSON.stringify(config);
-    await Api.requestToApp("saveConfig", configJson);
+  export function saveConfig(config: StoredConfiguration): Promise<void> {
+    return Api.requestToApp("saveConfig", config);
   }
 }
 

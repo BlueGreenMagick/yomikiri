@@ -3,6 +3,7 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import type { Token } from "~/platform/types/tokenizer";
 import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
+import type { StoredConfiguration } from "./config";
 
 /**
  * Type map for messages between extension processes
@@ -20,8 +21,8 @@ export interface MessageMap {
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
   tokenize: [string, Token[]];
-  loadConfig: [null, string];
-  saveConfig: [string, void];
+  loadConfig: [null, StoredConfiguration];
+  saveConfig: [StoredConfiguration, void];
 }
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
