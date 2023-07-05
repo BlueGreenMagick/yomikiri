@@ -24,6 +24,10 @@ button:hover, button:active {
   filter: brightness(0.9);
 }
 
+input:focus-visible {
+  border-color: transparent;
+}
+
 .warning {
   color: red;
 }
