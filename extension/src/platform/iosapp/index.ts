@@ -46,6 +46,10 @@ export namespace Platform {
     const configJson = JSON.stringify(config);
     await messageWebview("saveConfig", configJson);
   }
+
+  export async function openOptionsPage(): Promise<void> {
+    throw new Error("Not implemented for iosapp");
+  }
 }
 
 Platform satisfies Module;

@@ -1,3 +1,3 @@
 import { Api } from "~/api";
 
-Api.initialize({ context: "page" });
+Api.initialize({ context: "popup" });

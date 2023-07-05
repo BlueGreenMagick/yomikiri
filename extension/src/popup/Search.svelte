@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Token } from "~/tokenizer";
   import type { Entry } from "~/dicEntry";
+  import { Platform } from "@platform";
   import { Api } from "~/api";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
@@ -39,7 +40,7 @@
   const getEntries = Utils.SingleQueued(_getEntries);
 
   function openSettings() {
-    chrome.runtime.openOptionsPage();
+    Platform.openOptionsPage();
   }
 
   $: tokenize(searchText.normalize("NFC"));

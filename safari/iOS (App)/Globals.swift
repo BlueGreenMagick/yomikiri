@@ -7,18 +7,20 @@
 
 import Foundation
 
-
 extension URL {
-  var isDeeplink: Bool {
-    return scheme == "yomikiri"
-  }
+    var isDeeplink: Bool {
+        return scheme == "yomikiri"
+    }
 
-  var isAnkiInfo: Bool {
-    isDeeplink && host == "ankiInfo"
-  }
+    var isAnkiInfo: Bool {
+        isDeeplink && host == "ankiInfo"
+    }
+
+    var isOptions: Bool {
+        isDeeplink && host == "options"
+    }
 }
 
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
 }
-

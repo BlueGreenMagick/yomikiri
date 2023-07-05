@@ -46,7 +46,11 @@ export type RequestHandler<K extends keyof MessageMap> = (
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
-export type ExecutionContext = "contentScript" | "background" | "page";
+export type ExecutionContext =
+  | "contentScript"
+  | "background"
+  | "page"
+  | "popup";
 
 export type Port = chrome.runtime.Port;
 

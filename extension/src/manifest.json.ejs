@@ -1,4 +1,13 @@
 <%#
+  # Variables
+    - v2: boolean
+    - chrome: boolean
+    - firefox: boolean
+    - safari_desktop: boolean
+    - desktop: boolean
+    - ios: boolean
+
+  # Notes
   v2 is not supported for ios because it requires declarative_net_requests api
 -%>
 {
@@ -46,10 +55,12 @@
     "default_title": "Yomikiri",
     "default_popup": "res/popup.html"
   },
+<% if (!ios) { -%>
   "options_ui": {
     "page": "res/options.html",
     "open_in_tab": true
   },
+<% } -%>
 <% if (ios) { -%>
   "declarative_net_request": {
     "rule_resources" : [{

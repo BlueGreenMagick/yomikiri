@@ -14,6 +14,10 @@ export namespace Platform {
   export function saveConfig(config: StoredConfiguration): Promise<void> {
     return Api.setStorage("config", config);
   }
+
+  export function openOptionsPage() {
+    chrome.runtime.openOptionsPage();
+  }
 }
 
 Platform satisfies Module;

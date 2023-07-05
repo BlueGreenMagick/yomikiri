@@ -46,11 +46,26 @@ export namespace Platform {
   export function saveConfig(config: StoredConfiguration): Promise<void> {
     throw new Error("saveConfig should not be called in ios");
   }
+
+  export async function openOptionsPage() {
+    const OPTIONS_URL = "yomikiri://options";
+    if (Api.context !== "popup") {
+      location.href = OPTIONS_URL;
+    } else {
+      const currentTab = await Api.currentTab();
+      if (currentTab.id === undefined) {
+        throw new Error("Current tab does not have an id");
+      }
+      await Api.updateTab(currentTab.id, { url: OPTIONS_URL });
+      window.close();
+    }
+  }
 }
+
+Platform satisfies Module;
+
 if (Api.context === "background") {
   Api.handleRequest("loadConfig", () => {
     return Platform.loadConfig();
   });
 }
-
-Platform satisfies Module;
