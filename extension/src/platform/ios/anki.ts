@@ -14,7 +14,7 @@ export namespace AnkiApi {
     if (currentTab.id === undefined) {
       throw new Error("Current tab does not have an id");
     }
-    await Config.set("x-callback.tabId", currentTab.id);
+    await Api.setStorage("x-callback.tabId", currentTab.id);
 
     const fields: Record<string, string> = {};
     for (const field of note.fields) {

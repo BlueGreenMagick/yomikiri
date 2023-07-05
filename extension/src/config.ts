@@ -9,8 +9,6 @@ export interface Configuration {
   "anki.connect_port": number;
   "anki.connect_url": string;
   "anki.templates": NoteData[];
-  "x-callback.tabId": number | null;
-  "x-callback.successTabId": number | null;
 }
 
 const defaultOptions: Configuration = {
@@ -19,8 +17,6 @@ const defaultOptions: Configuration = {
   "anki.connect_port": 8785,
   "anki.connect_url": "http://127.0.0.1",
   "anki.templates": [],
-  "x-callback.tabId": null,
-  "x-callback.successTabId": null,
 };
 
 export interface StoredConfiguration extends Partial<Configuration> {
