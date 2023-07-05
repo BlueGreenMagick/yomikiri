@@ -4,12 +4,12 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import Utils from "~/utils";
 
-export default class AnkiApi {
+export namespace AnkiApi {
   /**
    * This function must not be called in content script context.
    * Does not wait for note to actually be added to Anki.
    */
-  static async addNote(note: NoteData): Promise<void> {
+  export async function addNote(note: NoteData): Promise<void> {
     const currentTab = await Api.currentTab();
     if (currentTab.id === undefined) {
       throw new Error("Current tab does not have an id");

@@ -3,7 +3,7 @@ import "./global.css";
 import "./initial";
 import { Api } from "~/api";
 import OptionsSvelte from "./Options.svelte";
-import AnkiApi from "@platform/anki";
+import { AnkiApi } from "@platform/anki";
 import { Theme } from "~/theme";
 import { updated, ankiTemplateModalHidden } from "./stores";
 

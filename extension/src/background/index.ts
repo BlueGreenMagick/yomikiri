@@ -8,7 +8,7 @@ import {
   type TokenizeRequest,
 } from "../tokenizer";
 import { Api, type MessageSender, type Port } from "~/api";
-import AnkiApi from "@platform/anki";
+import { AnkiApi } from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 

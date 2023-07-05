@@ -28,16 +28,16 @@ window.setAnkiInfo = (ankiInfoJson: string) => {
   ankiInfo = JSON.parse(ankiInfoJson);
 };
 
-export default class AnkiApi {
-  static requestAnkiInfo(): Promise<boolean> {
+export namespace AnkiApi {
+  export function requestAnkiInfo(): Promise<boolean> {
     return Platform.messageWebview("ankiInfo", null);
   }
 
-  static canGetAnkiInfo(): boolean {
+  export function canGetAnkiInfo(): boolean {
     return ankiInfo !== undefined;
   }
 
-  private static getAnkiInfo(): AnkiInfo {
+  function getAnkiInfo(): AnkiInfo {
     if (ankiInfo === undefined) {
       throw new Error("Did not get anki info");
     } else {
@@ -46,20 +46,22 @@ export default class AnkiApi {
   }
 
   /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
-  static async deckNames(): Promise<string[]> {
-    const ankiInfo = await AnkiApi.getAnkiInfo();
+  export async function deckNames(): Promise<string[]> {
+    const ankiInfo = getAnkiInfo();
     return ankiInfo.decks.map((obj) => obj.name);
   }
 
   /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
-  static async notetypeNames(): Promise<string[]> {
-    const ankiInfo = await AnkiApi.getAnkiInfo();
+  export async function notetypeNames(): Promise<string[]> {
+    const ankiInfo = getAnkiInfo();
     return ankiInfo.notetypes.map((obj) => obj.name);
   }
 
   /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
-  static async nodeTypeFields(notetypeName: string): Promise<string[]> {
-    const ankiInfo = await AnkiApi.getAnkiInfo();
+  export async function nodeTypeFields(
+    notetypeName: string
+  ): Promise<string[]> {
+    const ankiInfo = getAnkiInfo();
     const notetype = ankiInfo.notetypes.find((nt) => nt.name === notetypeName);
     if (notetype === undefined) {
       return [];
@@ -67,7 +69,7 @@ export default class AnkiApi {
     return notetype.fields.map((f) => f.name);
   }
 
-  static async checkConnection(): Promise<void> {
+  export async function checkConnection(): Promise<void> {
     throw new Error("Unimplemented");
   }
 }

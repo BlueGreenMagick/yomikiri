@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Platform } from "@platform";
-  import AnkiApi from "@platform/anki";
+  import { AnkiApi } from "@platform/anki";
   import Utils from "~/utils";
   import GroupedOptions from "./components/GroupedOptions.svelte";
   import OptionClick from "./components/OptionClick.svelte";

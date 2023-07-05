@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AnkiApi from "@platform/anki";
+  import { AnkiApi } from "@platform/anki";
   import type { NoteData } from "~/ankiNoteBuilder";
   import Config from "~/config";
   import Modal from "./components/Modal.svelte";

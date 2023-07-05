@@ -7,10 +7,10 @@ import type { NoteData } from "~/ankiNoteBuilder";
  * Should not be used in content script
  * as Anki-connect allows only calls from trusted origins.
  */
-export default class AnkiApi {
-  static readonly ANKI_CONNECT_VER = 6;
+export namespace AnkiApi {
+  const ANKI_CONNECT_VER = 6;
 
-  private static async ankiConnectURL(): Promise<string> {
+  async function ankiConnectURL(): Promise<string> {
     let url = await Config.get("anki.connect_url");
     let port = await Config.get("anki.connect_port");
     if (!url.includes("://")) {
@@ -20,13 +20,13 @@ export default class AnkiApi {
   }
 
   /** Send Anki-connect request */
-  private static async request(action: string, params?: any): Promise<any> {
-    const ankiConnectUrl = await AnkiApi.ankiConnectURL();
+  async function request(action: string, params?: any): Promise<any> {
+    const ankiConnectUrl = await ankiConnectURL();
     const response = await fetch(ankiConnectUrl, {
       method: "POST",
       body: JSON.stringify({
         action,
-        version: AnkiApi.ANKI_CONNECT_VER,
+        version: ANKI_CONNECT_VER,
         params,
       }),
     });
@@ -47,38 +47,40 @@ export default class AnkiApi {
     return data.result;
   }
 
-  static requestAnkiInfo(): void {
+  export function requestAnkiInfo(): void {
     throw new Error("Unimplemented for desktop");
   }
 
-  static canGetAnkiInfo(): boolean {
+  export function canGetAnkiInfo(): boolean {
     return true;
   }
 
-  static async deckNames(): Promise<string[]> {
-    return (await AnkiApi.request("deckNames")) as string[];
+  export async function deckNames(): Promise<string[]> {
+    return (await request("deckNames")) as string[];
   }
 
-  static async notetypeNames(): Promise<string[]> {
-    return (await AnkiApi.request("modelNames")) as string[];
+  export async function notetypeNames(): Promise<string[]> {
+    return (await request("modelNames")) as string[];
   }
 
-  static async nodeTypeFields(noteTypeName: string): Promise<string[]> {
-    return (await AnkiApi.request("modelFieldNames", {
+  export async function nodeTypeFields(
+    noteTypeName: string
+  ): Promise<string[]> {
+    return (await request("modelFieldNames", {
       modelName: noteTypeName,
     })) as string[];
   }
 
-  static async tags(): Promise<string[]> {
-    return (await AnkiApi.request("getTags")) as string[];
+  export async function tags(): Promise<string[]> {
+    return (await request("getTags")) as string[];
   }
 
-  static async addNote(note: NoteData): Promise<void> {
+  export async function addNote(note: NoteData): Promise<void> {
     const fields: { [key: string]: string } = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
     }
-    await AnkiApi.request("addNote", {
+    await request("addNote", {
       note: {
         deckName: note.deck,
         modelName: note.notetype,
@@ -92,8 +94,8 @@ export default class AnkiApi {
   }
 
   /** Throws an error if not successfully connected. */
-  static async checkConnection(): Promise<void> {
-    const resp = await AnkiApi.request("requestPermission");
+  export async function checkConnection(): Promise<void> {
+    const resp = await request("requestPermission");
     if (resp.permission === "granted") {
       return;
     } else {
