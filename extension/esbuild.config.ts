@@ -76,8 +76,7 @@ const buildManifestPlugin: Plugin = {
       safari_desktop: FOR_SAFARI_DESKTOP,
       desktop: FOR_DESKTOP,
       ios: FOR_IOS,
-      // v2 is not supported for ios
-      v2: false,
+      v2: FOR_FIREFOX || FOR_SAFARI_DESKTOP,
     });
     const outdir = build.initialOptions.outdir;
     if (outdir === undefined) {
@@ -106,7 +105,13 @@ const svelteConfiguredPlugin: Plugin = sveltePlugin({
 function generateBuildOptions(): BuildOptions {
   const baseBuildOptions: BuildOptions = {
     outdir: `build/${TARGET}`,
-    target: "es6",
+    target: [
+      "es2017",
+      ...(FOR_IOS || FOR_IOSAPP ? ["safari15.4"] : []),
+      ...(FOR_CHROME ? ["chrome99"] : []),
+      ...(FOR_FIREFOX ? ["firefox55"] : []),
+      ...(FOR_SAFARI_DESKTOP ? ["safari14.1"] : []),
+    ],
     format: "iife",
     bundle: true,
     logLevel: "info",

@@ -1,3 +1,6 @@
+<%#
+  v2 is not supported for ios because it requires declarative_net_requests api
+-%>
 {
   "manifest_version": <%- v2 ? 2 : 3 %>,
   "name": "Yomikiri",
@@ -17,7 +20,9 @@
         "http://*/*",
         "https://*/*",
         "file:///*"
-      ]
+      ],
+      "match_about_blank": true,
+      "run_at": "document_end"
     }
   ],
   "background": {
@@ -25,11 +30,10 @@
     "scripts": [
       "res/background.js"
     ],
-    "persistent": false,
+    "persistent": false
 <% } else { -%>
-    "service_worker": "res/background.js",
+    "service_worker": "res/background.js"
 <% } -%>
-    "type": "module"
   },
 <% if (v2) { -%>
   "browser_action": {
@@ -73,9 +77,6 @@
     "storage"
   ],
   "optional_permissions": [],
-  "host_permissions": [
-    "<all_urls>"
-  ],
 <% const csp = "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"; -%>
 <% if (v2) { -%>
   "content_security_policy": "<%- csp %>"
