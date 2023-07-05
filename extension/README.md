@@ -1,19 +1,25 @@
-Currently only working for chrome.
-
 ### Development
 
 Go to `/rust` and run `./build.sh`. You only need to do this once.
 
+**Chrome**
+
 1. Run `yarn dev`
-2. Add `build/` directory as extension. ([Chrome](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked))
+2. Add `build/chrome` directory as extension. ([Chrome](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked))
+
+**Firefox**
+
+1. Run `yarn dev:firefox`
+2. Go to `about:debugging` > `This firefox`
+3. Click `Load Temporary Add-on` and add `build/firefox/manifest.json`
 
 ### Structure
 
 'assets/static' directory stores assets that has to be copied into build.
 Other assets in 'assets' directory are 'imported' by code.
 
-
 ### Minimum Target
+
 ios 15.1: web extension memory limit increased to 80MB ([source](https://developer.apple.com/forums/thread/687642))
 ios 15.4 (2022 Mar): declarative_net_request redirect rule supported ([source](https://developer.apple.com/documentation/safariservices/safari_web_extensions/blocking_content_with_your_safari_web_extension))
 chrome 88: manifest v3
