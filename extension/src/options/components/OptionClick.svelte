@@ -29,7 +29,7 @@
 
 <style>
   button {
-    padding: 2px 8px;
+    padding: 2px 4px;
     min-width: 120px;
     transition: background-color 0.125s ease-in-out;
   }

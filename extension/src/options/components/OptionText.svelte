@@ -30,6 +30,7 @@
 
 <style>
   input {
+    width: 120px;
     padding: 2px 4px;
   }
 </style>
