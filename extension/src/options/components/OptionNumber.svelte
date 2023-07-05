@@ -6,6 +6,8 @@
   export let key: ConfigKeysOfType<number>;
   export let title: string;
   export let description: string = "";
+  export let min: number | null = null;
+  export let max: number | null = null;
 
   let value: number;
 
@@ -24,7 +26,7 @@
 
 <div>
   <OptionBase {title} {description}>
-    <input type="number" bind:value />
+    <input type="number" bind:value {min} {max} />
   </OptionBase>
 </div>
 

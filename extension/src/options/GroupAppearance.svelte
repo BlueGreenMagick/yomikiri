@@ -9,6 +9,8 @@
     key="general.font_size"
     title="Font size"
     description="Text size in pixels"
+    min={9}
+    max={24}
   />
   <OptionText
     key="general.font"
