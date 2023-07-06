@@ -153,7 +153,9 @@ function joinTokens(tokens: Token[], from: number, to: number): Token {
 function joinInflections(tokens: Token[], index: number): [Token, number] {
   let to = index + 1;
   let token = tokens[index];
-  if (["動詞", "形容詞", "副詞", "=exp="].includes(token.partOfSpeech)) {
+  if (
+    ["動詞", "形容詞", "形状詞", "副詞", "=exp="].includes(token.partOfSpeech)
+  ) {
     let combined = token.text;
     let reading = token.reading;
     while (
