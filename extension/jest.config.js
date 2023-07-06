@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   transform: {
     "\\.(t|j|mj)sx?$": "@swc/jest",
     "\\.gz$": "<rootDir>/scripts/jestFileTransformer.js",
@@ -16,6 +16,6 @@ module.exports = {
     url: "https://yomikiri.jest/",
     html: "<!DOCTYPE html><html><head></head><body></body></html>",
   },
-  setupFiles: ["<rootDir>/scripts/jestSetup.mjs"],
+  setupFiles: ["<rootDir>/scripts/jestSetup.js"],
   transformIgnorePatterns: ["node_modules/(?!dexie)/"],
 };

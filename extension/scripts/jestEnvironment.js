@@ -1,17 +1,12 @@
 // https://github.com/jsdom/jsdom/issues/2524#issuecomment-1480930523
 "use strict";
 
-const { TextEncoder, TextDecoder } = require("util");
-const {
-  default: $JSDOMEnvironment,
-  TestEnvironment,
-} = require("jest-environment-jsdom");
+import { TextEncoder, TextDecoder } from "util";
+import $JSDOMEnvironment, {
+  TestEnvironment as JTestEnvironment,
+} from "jest-environment-jsdom";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true,
-});
-
-class JSDOMEnvironment extends $JSDOMEnvironment {
+export default class JSDOMEnvironment extends $JSDOMEnvironment.default {
   constructor(...args) {
     const { global } = super(...args);
     if (!global.TextEncoder) global.TextEncoder = TextEncoder;
@@ -20,6 +15,5 @@ class JSDOMEnvironment extends $JSDOMEnvironment {
   }
 }
 
-exports.default = JSDOMEnvironment;
-exports.TestEnvironment =
-  TestEnvironment === $JSDOMEnvironment ? JSDOMEnvironment : TestEnvironment;
+export const TestEnvironment =
+  JTestEnvironment === $JSDOMEnvironment ? JSDOMEnvironment : JTestEnvironment;
