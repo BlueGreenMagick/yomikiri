@@ -49,7 +49,7 @@ export class Tokenizer {
       token.reading = toHiragana(reading);
     });
     Utils.bench("tokenize");
-    this.joinAllTokens(tokens);
+    await this.joinAllTokens(tokens);
     Utils.bench("joinTokens");
 
     let tokenIdx =
