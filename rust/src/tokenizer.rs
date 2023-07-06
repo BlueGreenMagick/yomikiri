@@ -107,8 +107,8 @@ impl Tokenizer {
             let details = tok.get_details();
 
             let token = Token {
-                baseForm: get_value_from_detail(&details, 6, &text),
-                reading: get_value_from_detail(&details, 7, "*"),
+                baseForm: get_value_from_detail(&details, 10, &text),
+                reading: get_value_from_detail(&details, 9, "*"),
                 partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
                 pos2: get_value_from_detail(&details, 1, "*"),
                 text: text,
@@ -122,7 +122,7 @@ impl Tokenizer {
 
     pub fn create() -> Tokenizer {
         let dictionary = DictionaryConfig {
-            kind: Some(DictionaryKind::IPADIC),
+            kind: Some(DictionaryKind::UniDic),
             path: None,
         };
         let config = TokenizerConfig {

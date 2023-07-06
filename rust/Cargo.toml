@@ -22,9 +22,10 @@ uniffi-bindgen = []
 uniffi-anki = ["dep:anki", "rusqlite", "serde_json", "futures", "tokio", "reqwest"]
 
 [dependencies]
-lindera-tokenizer = { version = "0.25.0", features = ["ipadic"]}
-lindera-dictionary = "0.25.0"
-lindera-core = "0.25.0"
+# switch back to crates.io crate when commit 1fd5848 is released
+lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", features = ["unidic"]}
+lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git" }
 unicode-normalization = "0.1.22"
 unicode-segmentation = "1.9.0"
 log = { version = "0.4" }
