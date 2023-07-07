@@ -48,6 +48,7 @@ export class Tokenizer {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
     });
+    manualPatches(tokens);
     Utils.bench("tokenize");
     await this.joinAllTokens(tokens);
     Utils.bench("joinTokens");
@@ -294,5 +295,33 @@ function joinInflections(tokens: Token[], index: number): boolean {
     return true;
   } else {
     return false;
+  }
+}
+
+function manualPatches(tokens: Token[]) {
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    if (token.text === "じゃ") {
+      // "じゃない" 「じゃ」 -> 「じゃ」 instead of 「だ」
+      tokens[i] = {
+        text: "じゃ",
+        baseForm: "じゃ",
+        partOfSpeech: "接続詞",
+        pos2: "*",
+        reading: "ジャ",
+        start: token.start,
+      };
+    } else if (token.text === "じゃあ") {
+      // "じゃあ、" 「じゃあ」 -> 「じゃあ」, instead of 「で」
+      tokens[i] = {
+        text: "じゃあ",
+        baseForm: "じゃあ",
+        partOfSpeech: "接続詞",
+        pos2: "*",
+        reading: "ジャー",
+        start: token.start,
+      };
+    }
   }
 }
