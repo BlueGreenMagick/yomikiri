@@ -345,7 +345,7 @@ function nodeIsInline(node: Node): boolean {
  * Return true if node is removed from normal flow of document. (or is sticky)
  * It is not possible for a node to be both isInline and isOutOfFlow
  */
-function nodeIsOutOfFlow(node: Node): boolean {
+export function nodeIsOutOfFlow(node: Node): boolean {
   if (!(node instanceof Element)) return false;
   const styles = window.getComputedStyle(node);
   return (

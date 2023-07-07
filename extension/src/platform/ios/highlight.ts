@@ -1,4 +1,5 @@
 import type { IHighlighter, IHighlighterStatic } from "../types/highlight";
+import { nodeIsOutOfFlow } from "~/content/scanner";
 
 const TAG_NAME = "yomikirihl";
 
@@ -96,26 +97,44 @@ function textNodesInRange(range: Range): Text[] {
     if (range.endOffset < endContainer.childNodes.length) {
       endNode = endContainer.childNodes[range.endOffset];
     } else {
-      endNode = endContainer.nextSibling;
+      // endNode = next node of endContainer
+      let parent = endContainer;
+      while (parent.nextSibling === null) {
+        if (parent.parentNode === null) {
+          endNode = null;
+          break;
+        }
+        parent = parent.parentNode;
+      }
+      endNode = parent.nextSibling;
     }
   }
-  const nodes = [startNode];
+  const nodes: Text[] = [];
 
   const walker = document.createTreeWalker(
     range.commonAncestorContainer,
-    NodeFilter.SHOW_ALL
+    NodeFilter.SHOW_ALL,
+    (node) => {
+      if (nodeIsOutOfFlow(node)) {
+        return NodeFilter.FILTER_REJECT;
+      } else {
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    }
   );
   walker.currentNode = startNode;
-  let node: Node | null;
-  while ((node = walker.nextNode())) {
-    if (node === endNode) {
+
+  let node: Node | null = startNode;
+  while (node !== null) {
+    if (range.comparePoint(node, 0) > 0) {
       break;
     }
     if (node instanceof Text) {
       nodes.push(node);
     }
+    node = walker.nextNode();
   }
-  return nodes as Text[];
+  return nodes;
 }
 
 function highlightNode(node: Node, unknown: boolean): Element {
