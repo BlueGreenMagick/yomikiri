@@ -377,8 +377,5 @@ function fullSentence(st: ScannedSentence): string {
 
 function isValidJapaneseToken(result: TokenizeResult) {
   const token = result.tokens[result.selectedTokenIdx];
-  return !(
-    token.partOfSpeech === "記号" ||
-    (token.partOfSpeech === "UNK" && !containsJapaneseContent(token.text))
-  );
+  return containsJapaneseContent(token.text);
 }

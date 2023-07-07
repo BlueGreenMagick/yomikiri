@@ -40,15 +40,6 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
 - 感動詞 (exclamation / interjection)
   - 一般
   - フィラー
-- 補助記号 (supplemantary symbol)
-  - 読点
-  - 一般
-  - 括弧開
-  - 括弧閉
-  - ＡＡ
-    - 顔文字
-    - 一般
-  - 句点
 - 接尾辞 (suffix)
   - 名詞的
     - 副詞可能
@@ -64,6 +55,15 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
 - 記号 (symbol)
   - 一般
   - 文字
+- 補助記号 (supplemantary symbol)
+  - 読点
+  - 一般
+  - 括弧開
+  - 括弧閉
+  - ＡＡ
+    - 顔文字
+    - 一般
+  - 句点
 - 接続詞 (conjunction, しかし)
 - 接頭辞 (prefix, お-, 真っ-)
 - 連体詞 (pre-noun adjectival, この)
