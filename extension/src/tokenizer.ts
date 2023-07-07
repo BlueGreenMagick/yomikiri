@@ -76,6 +76,7 @@ export class Tokenizer {
   async joinTokensAt(tokens: Token[], index: number) {
     await this.joinPrefix(tokens, index);
     await this.joinCompoundsMulti(tokens, index);
+    await this.joinConjunction(tokens, index);
     await this.joinSuffix(tokens, index);
     joinInflections(tokens, index);
   }
@@ -147,7 +148,7 @@ export class Tokenizer {
   }
 
   /** (接頭詞) (any) => (any) */
-  private async joinPrefix(tokens: Token[], from: number) {
+  private async joinPrefix(tokens: Token[], from: number): Promise<boolean> {
     if (from + 1 >= tokens.length) {
       return false;
     }
@@ -166,12 +167,12 @@ export class Tokenizer {
   /**
    * (any) (接尾辞) => (any)
    */
-  private async joinSuffix(tokens: Token[], from: number) {
+  private async joinSuffix(tokens: Token[], from: number): Promise<boolean> {
     if (from + 1 >= tokens.length) {
       return false;
     }
     const nextToken = tokens[from + 1];
-    if (nextToken.partOfSpeech !== "接尾辞") return;
+    if (nextToken.partOfSpeech !== "接尾辞") return false;
 
     const token = tokens[from];
     const compound = token.text + nextToken.baseForm;
@@ -190,6 +191,30 @@ export class Tokenizer {
       poS = "形容";
     }
     joinTokens(tokens, from, from + 2, poS, true);
+    return true;
+  }
+
+  /**
+   * (any) (助詞) => conj
+   *
+   * Join any that ends with 助詞 because
+   * unidic is not good at determining if a given 助詞 is 接続助詞
+   */
+  private async joinConjunction(
+    tokens: Token[],
+    from: number
+  ): Promise<boolean> {
+    if (from + 1 >= tokens.length) {
+      return false;
+    }
+    const nextToken = tokens[from + 1];
+    if (nextToken.partOfSpeech !== "助詞") return false;
+
+    const token = tokens[from];
+    const compound = token.text + nextToken.text;
+    const search = await this.dictionary.search(compound, Entry.isConjunction);
+    if (search.length === 0) return false;
+    joinTokens(tokens, from, from + 2, "接続詞", false);
     return true;
   }
 

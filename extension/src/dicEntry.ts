@@ -92,6 +92,16 @@ export namespace Entry {
     return false;
   }
 
+  /** Returns true if entry contains 'connjunction' sense */
+  export function isConjunction(entry: Entry): boolean {
+    for (const sense of entry.senses) {
+      if (Sense.simplePos(sense).includes("conjunction")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** groups senses with same partOfSpeech. Preserves order. */
   export function groupSenses(entry: Entry): GroupedSense[] {
     const groups: GroupedSense[] = [];
