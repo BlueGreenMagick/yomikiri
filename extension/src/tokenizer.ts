@@ -101,6 +101,7 @@ export class Tokenizer {
 
     let lastFoundTo = to;
     let lastFoundIsBase: boolean = true;
+    let lastFoundPoS: string = token.partOfSpeech;
 
     const filter = (entry: Entry) => {
       return (
@@ -120,6 +121,7 @@ export class Tokenizer {
       if (foundBase.length > 0) {
         lastFoundTo = to + 1;
         lastFoundIsBase = true;
+        lastFoundPoS = allNoun ? "名詞" : allParticle ? "助詞" : "=exp=";
       }
 
       const joinedText = joinedTextPrev + tokens[to].text;
@@ -127,11 +129,12 @@ export class Tokenizer {
       if (found.length > 0) {
         lastFoundTo = to + 1;
         lastFoundIsBase = false;
+        lastFoundPoS = allNoun ? "名詞" : allParticle ? "助詞" : "=exp=";
       }
 
       const foundNext = await this.dictionary.hasStartsWith(joinedText, filter);
       if (foundNext === false) {
-        joinTokens(tokens, from, lastFoundTo, lastFoundIsBase);
+        joinTokens(tokens, from, lastFoundTo, lastFoundPoS, lastFoundIsBase);
         return lastFoundTo - from > 1;
       }
 
@@ -139,7 +142,7 @@ export class Tokenizer {
       to += 1;
     }
 
-    joinTokens(tokens, from, to, false);
+    joinTokens(tokens, from, to, lastFoundPoS, false);
     return to - from > 1;
   }
 
@@ -156,7 +159,7 @@ export class Tokenizer {
     const search = await this.dictionary.search(compound);
     if (search.length === 0) return false;
 
-    joinTokens(tokens, from, from + 2, true);
+    joinTokens(tokens, from, from + 2, nextToken.partOfSpeech, true);
     return true;
   }
 
@@ -175,7 +178,18 @@ export class Tokenizer {
     const search = await this.dictionary.search(compound);
     if (search.length === 0) return false;
 
-    joinTokens(tokens, from, from + 2, true);
+    const poS2 = nextToken.pos2;
+    let poS = token.partOfSpeech;
+    if (poS2 === "名詞的") {
+      poS = "名詞";
+    } else if (poS2 === "形容詞的") {
+      poS = "形容詞";
+    } else if (poS2 === "動詞的") {
+      poS = "動詞";
+    } else if (poS2 === "形状詞") {
+      poS = "形容";
+    }
+    joinTokens(tokens, from, from + 2, poS, true);
     return true;
   }
 
@@ -190,6 +204,7 @@ function joinTokens(
   tokens: Token[],
   from: number,
   to: number,
+  poS: string = "=exp=",
   lastAsBase: boolean = true
 ): Token {
   if (to - from === 1) {
@@ -217,7 +232,7 @@ function joinTokens(
     text,
     baseForm,
     reading,
-    partOfSpeech: "=exp=",
+    partOfSpeech: poS,
     pos2: "*",
     start: tokens[from].start,
   };

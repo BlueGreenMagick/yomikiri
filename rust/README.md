@@ -49,7 +49,7 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
     - 顔文字
     - 一般
   - 句点
-- 接尾辞
+- 接尾辞 (suffix)
   - 名詞的
     - 副詞可能
     - サ変可能
