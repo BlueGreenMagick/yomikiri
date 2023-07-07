@@ -37,10 +37,10 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
   - 助動詞語幹
   - 一般
   - タリ
-- 感動詞
+- 感動詞 (exclamation / interjection)
   - 一般
   - フィラー
-- 補助記号
+- 補助記号 (supplemantary symbol)
   - 読点
   - 一般
   - 括弧開
@@ -59,13 +59,13 @@ All possible POS in unidic v2.1.2 (extracted from lex.csv)
   - 動詞的
   - 形状詞的
 - 助動詞 (auxilliary verb)
-- 空白
-- 代名詞
-- 記号
+- 空白 (whitespace)
+- 代名詞 (pronoun)
+- 記号 (symbol)
   - 一般
   - 文字
 - 接続詞 (conjunction, しかし)
 - 接頭辞 (prefix, お-, 真っ-)
 - 連体詞 (pre-noun adjectival, この)
-- 副詞
+- 副詞 (adverb)
 ```

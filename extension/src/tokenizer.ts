@@ -75,8 +75,9 @@ export class Tokenizer {
   }
 
   async joinTokensAt(tokens: Token[], index: number) {
-    await this.joinPrefix(tokens, index);
     await this.joinCompoundsMulti(tokens, index);
+    await this.joinPrefix(tokens, index);
+    await this.joinPreNoun(tokens, index);
     await this.joinConjunction(tokens, index);
     await this.joinSuffix(tokens, index);
     joinInflections(tokens, index);
@@ -148,7 +149,9 @@ export class Tokenizer {
     return to - from > 1;
   }
 
-  /** (接頭詞) (any) => (any) */
+  /**
+   * (接頭詞) (any) => (any)
+   */
   private async joinPrefix(tokens: Token[], from: number): Promise<boolean> {
     if (from + 1 >= tokens.length) {
       return false;
@@ -165,8 +168,28 @@ export class Tokenizer {
     return true;
   }
 
+  /** (連体詞) (名詞 | 代名詞 | 接頭辞) => (any) */
+  private async joinPreNoun(tokens: Token[], from: number): Promise<boolean> {
+    if (from + 1 >= tokens.length) {
+      return false;
+    }
+    const token = tokens[from];
+    if (token.partOfSpeech !== "連体詞") return false;
+    const nextToken = tokens[from + 1];
+    const nextPoS = nextToken.partOfSpeech;
+    if (nextPoS !== "名詞" && nextPoS !== "代名詞" && nextPoS !== "接頭辞")
+      return false;
+
+    const compound = token.text + nextToken.baseForm;
+    const search = await this.dictionary.search(compound);
+    if (search.length === 0) return false;
+
+    joinTokens(tokens, from, from + 2, nextToken.partOfSpeech, true);
+    return true;
+  }
+
   /**
-   * (any) (接尾辞) => (any)
+   * (any) (接尾辞) => (any)　e.g. "この/間"
    */
   private async joinSuffix(tokens: Token[], from: number): Promise<boolean> {
     if (from + 1 >= tokens.length) {
