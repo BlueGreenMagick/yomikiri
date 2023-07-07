@@ -3,6 +3,7 @@
   import type { Token } from "~/tokenizer";
 
   export let tokens: Token[];
+  // may be bigger than entries.length
   export let selectedIdx: number = 0;
 
   let invalidTokens: boolean[];

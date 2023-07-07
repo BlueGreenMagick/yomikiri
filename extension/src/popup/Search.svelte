@@ -12,6 +12,7 @@
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
+  // may be bigger than entries.length
   let selectedTokenIdx: number;
   let entries: Entry[] = [];
 
@@ -30,7 +31,7 @@
   const tokenize = Utils.SingleQueued(_tokenize);
 
   async function _getEntries(tokens: Token[], idx: number) {
-    if (tokens.length === 0) {
+    if (idx >= tokens.length) {
       entries = [];
       return;
     }
