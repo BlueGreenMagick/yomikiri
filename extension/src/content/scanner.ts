@@ -2,6 +2,7 @@ import { Api } from "~/api";
 import type { Token, TokenizeResult } from "~/tokenizer";
 import Utils from "~/utils";
 import { Entry } from "~/dicEntry";
+import { containsJapaneseContent } from "~/japanese";
 
 export interface ScanResult {
   token: Token;
@@ -75,7 +76,7 @@ export class Scanner {
     if (node === null) return null;
 
     const text = node.data;
-    if (!stringContainsJapanese(text)) return null;
+    if (!containsJapaneseContent(text)) return null;
 
     let prev: string;
     let next: string;
@@ -296,13 +297,6 @@ export class Scanner {
   }
 }
 
-const JAPANESE_REGEX =
-  /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f]/;
-
-function stringContainsJapanese(text: string): boolean {
-  return JAPANESE_REGEX.test(text);
-}
-
 /** Find child `Text` node at (x, y) if it exists. */
 function childTextAt(parent: Element, x: number, y: number): Text | null {
   parent.normalize(); // normalize splitted Text nodes
@@ -385,6 +379,6 @@ function isValidJapaneseToken(result: TokenizeResult) {
   const token = result.tokens[result.selectedTokenIdx];
   return !(
     token.partOfSpeech === "記号" ||
-    (token.partOfSpeech === "UNK" && !stringContainsJapanese(token.text))
+    (token.partOfSpeech === "UNK" && !containsJapaneseContent(token.text))
   );
 }

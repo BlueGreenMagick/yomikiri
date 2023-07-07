@@ -9,9 +9,15 @@ export interface RubyUnit {
 export type RubyString = RubyUnit[];
 
 const RE_HIRAGANA = /[\u3041-\u309F]/u;
+// including '゠', 'ー'
 const RE_KATAKANA = /[\u30A0-\u30FF]/u;
-const RE_KANJI = /[\u4e00-\u9faf]/u;
-const RE_NOKANJI = /[^\u4e00-\u9faf]/u;
+const RE_KANJI = /[\u4e00-\u9fff\uf900-\ufaff]/u;
+const RE_NOKANJI = /[^\u4e00-\u9fff\uf900-\ufaff]/u;
+// including symbols
+const RE_JAPANESE_ALL =
+  /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f]/u;
+// excluding symbols
+const RE_JAPANESE_CONTENT = /[\u3040-\u30ff\u4e00-\u9fff\uf900-\ufaff]/u;
 
 export namespace RubyString {
   // Some words are longer in kanji
@@ -144,6 +150,10 @@ export function isKatakana(text: string): boolean {
   if (text === "") return false;
   const char = text.charCodeAt(0);
   return char >= 12449 && char <= 12534;
+}
+
+export function containsJapaneseContent(text: string): boolean {
+  return RE_JAPANESE_CONTENT.test(text);
 }
 
 // (u+30a1ァ -> u+3041ぁ) (u+30f6ヶ -> u+3096ゖ)
