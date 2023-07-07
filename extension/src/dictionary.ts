@@ -115,12 +115,16 @@ export class Dictionary {
     return this;
   }
 
-  async search(term: string): Promise<Entry[]> {
-    const objs = await this.db
-      .table("entries")
-      .where("terms")
-      .equals(term)
-      .toArray();
+  async search(
+    term: string,
+    filter?: (entry: Entry) => boolean
+  ): Promise<Entry[]> {
+    let col = this.db.table("entries").where("terms").equals(term);
+    if (filter !== undefined) {
+      col = col.filter(filter);
+    }
+
+    const objs = await col.toArray();
     return objs.map(Entry.fromObject).sort((a, b) => b.priority - a.priority);
   }
 

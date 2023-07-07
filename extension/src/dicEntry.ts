@@ -62,9 +62,30 @@ export namespace Entry {
     }
   }
 
+  /** Returns true if entry contains 'expression' sense */
   export function isExpression(entry: Entry): boolean {
     for (const sense of entry.senses) {
       if (sense.partOfSpeech.includes("=exp=")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Returns true if entry contains 'noun' sense */
+  export function isNoun(entry: Entry): boolean {
+    for (const sense of entry.senses) {
+      if (Sense.simplePos(sense).includes("noun")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Returns true if entry contains 'particle' sense */
+  export function isParticle(entry: Entry): boolean {
+    for (const sense of entry.senses) {
+      if (Sense.simplePos(sense).includes("particle")) {
         return true;
       }
     }

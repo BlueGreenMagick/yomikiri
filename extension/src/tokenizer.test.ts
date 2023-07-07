@@ -19,8 +19,15 @@ let dictionary: Dictionary;
 const MockDictionary = (ents: Entry[]): Dictionary => {
   const entries = ents;
   return {
-    search: async (term: string): Promise<Entry[]> => {
-      return entries.filter((e) => e.terms.includes(term));
+    search: async (
+      term: string,
+      filter?: (entry: Entry) => boolean
+    ): Promise<Entry[]> => {
+      let result = entries.filter((e) => e.terms.includes(term));
+      if (filter !== undefined) {
+        result = result.filter(filter);
+      }
+      return result;
     },
     hasStartsWith: async (
       term: string,
@@ -30,8 +37,7 @@ const MockDictionary = (ents: Entry[]): Dictionary => {
         filter = (e: Entry) => true;
       }
       const f = filter;
-      const entry = entries.find((e) => {
-        if (!f(e)) return false;
+      const entry = entries.filter(f).find((e) => {
         for (const t of e.terms) {
           if (t.startsWith(term)) return true;
         }
@@ -75,27 +81,35 @@ describe("tokenizer", () => {
     expect(await dictionary.hasStartsWith("だかいさ")).toBe(true);
   });
 
-  // TODO: fix
-  describe.skip("token split", () => {
-    const cases = [
-      "私/は/学生/です",
-      "この/本/は/よく/じゃなかった",
-      // compound
-      "魚/フライ/を/食べた/かもしれない/猫",
-      "地震/について/語る",
-      "聞こえて/き/そうな/くらい",
-      "だから/しませんでした",
-      "奇跡的/に/生まれました",
-      // prefix compound
-      "全否定",
-      // don't compound
-      "私/は/しる",
-    ];
-    for (const c of cases) {
-      test(c, async () => {
-        await testTokenSplit(c);
-      });
-    }
+  describe.each([
+    "私/は/学生/です",
+    //　「じゃ」 is mistakenly recognized as 「だ」 with unidic
+    // 「ではない」(exp,adj-i)＜助動詞「じゃ｜だ」＋形容詞「なかっ」＋助動詞「た」>
+    "この/本/は/よく/じゃなかった",
+    // 「かもしれない」(exp)＜副助詞「か」係助詞「も」動詞「しれ」助動詞「ない」＞
+    "魚フライ/を/食べた/かもしれない/猫",
+    // 「について」(exp)＜格助詞「に」動詞「つい」接続助詞「て」＞
+    "地震/について/語る",
+    // 「には」(prt)<助詞「に」助詞「は」＞
+    "街/には/行く",
+    /// # Inflection
+    // 「そう」＜形状詞「そう」助動詞「な」＞
+    "聞こえて/き/そうな/くらい",
+    // 「生まれる」＜動詞「生まれ」、助動詞「まし」、助動詞「た」＞
+    "奇跡的/に/生まれました",
+    // 「する」＜動詞「し」、助動詞「ませ」、助動詞「ん」、助動詞「でし」助動詞「た」＞
+    "だから/しませんでした",
+    /// # Prefix
+    // 「全否定」＜接頭辞「全」名詞「否定」＞
+    "全否定",
+    // 「お母さん」（n)＜接頭辞「お」名詞「母」接尾辞「さん」＞
+    "お母さん/だ",
+    // don't compound (not 私/はしる)
+    "私/は/しる",
+  ])("join tokens", (c: string) => {
+    test(c, async () => {
+      await testTokenSplit(c);
+    });
   });
 
   test("decomposed unicode", async () => {

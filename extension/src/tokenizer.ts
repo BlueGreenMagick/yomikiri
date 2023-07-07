@@ -1,6 +1,6 @@
 import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
 import type { Dictionary } from "~/dictionary";
-import { Entry } from "./dicEntry";
+import { Entry, Sense } from "./dicEntry";
 import Utils from "~/utils";
 import { toHiragana } from "./japanese";
 
@@ -74,47 +74,109 @@ export class Tokenizer {
   }
 
   async joinTokensAt(tokens: Token[], index: number) {
-    let [token, count] = await this.joinCompounds(tokens, index);
-    if (count > 1) {
-      tokens.splice(index, count, token);
-    }
-    [token, count] = joinInflections(tokens, index);
-    if (count > 1) {
-      tokens.splice(index, count, token);
-    }
+    await this.joinPrefix(tokens, index);
+    await this.joinCompoundsMulti(tokens, index);
+    await this.joinSuffix(tokens, index);
+    joinInflections(tokens, index);
   }
 
-  /// Find maximal joined expression token starting from tokens[index]
-  /// return [joined token, number of tokens joined]
-  /// If such doesn't exist, return [tokens[index], 1]
-  async joinCompounds(
+  /**
+   * Join maximal expression tokens starting from tokens[index]
+   *
+   * Handles cases:
+   *   1. (any)+ => (expression)
+   *   2. (名詞)+ => (名詞)
+   *   3. (助詞)+ => (助詞) e.g.　「かも」、「では」
+   */
+  private async joinCompoundsMulti(
     tokens: Token[],
-    index: number
-  ): Promise<[Token, number]> {
-    let to: number;
-    for (to = index + 2; to < tokens.length; to++) {
-      let search = "";
-      for (let i = index; i < to - 1; i++) {
-        search += tokens[i].text;
+    from: number
+  ): Promise<boolean> {
+    const token = tokens[from];
+    let allNoun = token.partOfSpeech === "名詞";
+    let allParticle = token.partOfSpeech === "助詞";
+
+    let to = from + 1;
+    let joinedTextPrev = tokens[from].text;
+
+    let lastFoundTo = to;
+    let lastFoundIsBase: boolean = true;
+
+    const filter = (entry: Entry) => {
+      return (
+        Entry.isExpression(entry) ||
+        (allNoun === true && Entry.isNoun(entry)) ||
+        (allParticle === true && Entry.isParticle(entry))
+      );
+    };
+
+    while (to < tokens.length) {
+      const token = tokens[to];
+      allNoun &&= token.partOfSpeech === "名詞";
+      allParticle &&= token.partOfSpeech === "助詞";
+
+      const joinedTextBase = joinedTextPrev + tokens[to].baseForm;
+      const foundBase = await this.dictionary.search(joinedTextBase, filter);
+      if (foundBase.length > 0) {
+        lastFoundTo = to + 1;
+        lastFoundIsBase = true;
       }
-      search += tokens[to - 1].baseForm;
-      let found: boolean;
-      if (
-        to - index === 2 &&
-        (tokens[index].partOfSpeech === "接頭詞" ||
-          tokens[to - 1].pos2 === "接尾")
-      ) {
-        found = await this.dictionary.hasStartsWith(search);
-      } else {
-        found = await this.dictionary.hasStartsWith(search, Entry.isExpression);
+
+      const joinedText = joinedTextPrev + tokens[to].text;
+      const found = await this.dictionary.search(joinedText, filter);
+      if (found.length > 0) {
+        lastFoundTo = to + 1;
+        lastFoundIsBase = false;
       }
-      if (!found) {
-        break;
+
+      const foundNext = await this.dictionary.hasStartsWith(joinedText, filter);
+      if (foundNext === false) {
+        joinTokens(tokens, from, lastFoundTo, lastFoundIsBase);
+        return lastFoundTo - from > 1;
       }
+
+      joinedTextPrev = joinedText;
+      to += 1;
     }
 
-    const joined = joinTokens(tokens, index, to - 1);
-    return [joined, to - index - 1];
+    joinTokens(tokens, from, to, false);
+    return to - from > 1;
+  }
+
+  /** (接頭詞) (any) => (any) */
+  private async joinPrefix(tokens: Token[], from: number) {
+    if (from + 1 >= tokens.length) {
+      return false;
+    }
+    const token = tokens[from];
+    if (token.partOfSpeech !== "接頭辞") return false;
+
+    const nextToken = tokens[from + 1];
+    const compound = token.text + nextToken.baseForm;
+    const search = await this.dictionary.search(compound);
+    if (search.length === 0) return false;
+
+    joinTokens(tokens, from, from + 2, true);
+    return true;
+  }
+
+  /**
+   * (any) (接尾辞) => (any)
+   */
+  private async joinSuffix(tokens: Token[], from: number) {
+    if (from + 1 >= tokens.length) {
+      return false;
+    }
+    const nextToken = tokens[from + 1];
+    if (nextToken.partOfSpeech !== "接尾辞") return;
+
+    const token = tokens[from];
+    const compound = token.text + nextToken.baseForm;
+    const search = await this.dictionary.search(compound);
+    if (search.length === 0) return false;
+
+    joinTokens(tokens, from, from + 2, true);
+    return true;
   }
 
   private constructor(dictionary: Dictionary, tokenizer: TokenizerInner) {
@@ -123,8 +185,13 @@ export class Tokenizer {
   }
 }
 
-/// count must be bigger than 1
-function joinTokens(tokens: Token[], from: number, to: number): Token {
+/** Splice and join tokens[from..<to], and return joined */
+function joinTokens(
+  tokens: Token[],
+  from: number,
+  to: number,
+  lastAsBase: boolean = true
+): Token {
   if (to - from === 1) {
     return tokens[from];
   }
@@ -135,11 +202,18 @@ function joinTokens(tokens: Token[], from: number, to: number): Token {
     text += tokens[i].text;
     reading += tokens[i].reading;
   }
-  let baseForm = text + tokens[to - 1].baseForm;
+
+  let baseForm = text;
+  if (lastAsBase === true) {
+    baseForm += tokens[to - 1].baseForm;
+  } else {
+    baseForm += tokens[to - 1].text;
+  }
+
   text += tokens[to - 1].text;
   reading += tokens[to - 1].reading;
 
-  return {
+  const joined = {
     text,
     baseForm,
     reading,
@@ -147,32 +221,38 @@ function joinTokens(tokens: Token[], from: number, to: number): Token {
     pos2: "*",
     start: tokens[from].start,
   };
+  tokens.splice(from, to - from, joined);
+  return joined;
 }
 
 /**  returns [combined token, number of joined tokens] */
-function joinInflections(tokens: Token[], index: number): [Token, number] {
+function joinInflections(tokens: Token[], index: number): boolean {
   let to = index + 1;
   let token = tokens[index];
   if (
     ["動詞", "形容詞", "形状詞", "副詞", "=exp="].includes(token.partOfSpeech)
   ) {
-    let combined = token.text;
-    let reading = token.reading;
+    let joinedText = token.text;
+    let joinedReading = token.reading;
     while (
       to < tokens.length &&
       (tokens[to].partOfSpeech === "助動詞" || tokens[to].pos2 === "接続助詞")
     ) {
-      combined += tokens[to].text;
-      reading += tokens[to].reading;
+      joinedText += tokens[to].text;
+      joinedReading += tokens[to].reading;
       to += 1;
     }
-    if (to - index > 1) {
-      token = {
-        ...token,
-        reading,
-        text: combined,
-      };
-    }
+    token = {
+      ...token,
+      text: joinedText,
+      reading: joinedReading,
+    };
   }
-  return [token, to - index];
+
+  if (to - index > 1) {
+    tokens.splice(index, to - index, token);
+    return true;
+  } else {
+    return false;
+  }
 }
