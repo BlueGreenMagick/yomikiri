@@ -11,4 +11,3 @@ cargo build --release --lib --target "aarch64-apple-ios-sim"
 
 # build wasm
 wasm-pack build --scope yomikiri --target web
-node gzip_wasm.js

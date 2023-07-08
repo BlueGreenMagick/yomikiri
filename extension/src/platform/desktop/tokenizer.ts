@@ -1,9 +1,8 @@
 import type { ITokenizerStatic, ITokenizer, Token } from "../types/tokenizer";
 
-import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm.gz";
+import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import initWasm from "@yomikiri/yomikiri-rs";
 import { Tokenizer as TokenizerWasm } from "@yomikiri/yomikiri-rs";
-import pako from "pako";
 
 export type { Token } from "../types/tokenizer";
 
@@ -11,8 +10,7 @@ async function loadWasm(): Promise<typeof TokenizerWasm> {
   // @ts-ignore wasm is string
   const resp = await fetch(wasm);
   const data = await resp.arrayBuffer();
-  const uncompressed = pako.ungzip(data);
-  await initWasm(uncompressed);
+  await initWasm(data);
 
   return TokenizerWasm;
 }
