@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "rust"
+    "rust",
+    "dictionary"
 ]
 
 [profile.release]
