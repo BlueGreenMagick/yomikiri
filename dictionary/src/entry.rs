@@ -4,6 +4,7 @@ use crate::jmdict::{JMEntry, JMForm, JMReading, JMSense};
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub forms: Vec<Form>,
     pub readings: Vec<Reading>,
     pub senses: Vec<Sense>,
@@ -69,7 +70,9 @@ impl From<JMEntry> for Entry {
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Form {
     pub form: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub info: Vec<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
     pub uncommon: bool,
 }
 
@@ -98,9 +101,13 @@ impl From<JMForm> for Form {
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Reading {
     pub reading: String,
+    #[serde(default, skip_serializing_if = "is_false")]
     pub nokanji: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub info: Vec<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
     pub uncommon: bool,
 }
 
@@ -130,12 +137,19 @@ impl From<JMReading> for Reading {
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Sense {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub to_reading: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub part_of_speech: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub misc: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub info: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dialect: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub meaning: Vec<String>,
 }
 
@@ -184,4 +198,8 @@ impl PartialEq for DictIndexItem {
     fn eq(&self, other: &Self) -> bool {
         self.key == other.key
     }
+}
+
+fn is_false(a: &bool) -> bool {
+    return !*a;
 }

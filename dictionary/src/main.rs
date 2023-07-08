@@ -60,8 +60,9 @@ fn main() {
     }
     output_writer.flush().unwrap();
 
-    let entry_index_bytes = bincode::serialize(&dict_index).unwrap();
-    fs::write(&output_index_path, &entry_index_bytes).unwrap();
+    let output_index_file = File::create(&output_index_path).unwrap();
+    let output_index_writer = BufWriter::new(output_index_file);
+    bincode::serialize_into(output_index_writer, &dict_index).unwrap();
 
     println!("Data writing complete.");
 }
