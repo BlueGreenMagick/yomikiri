@@ -1,4 +1,3 @@
-mod entry;
 mod jmdict;
 mod xml;
 
@@ -8,7 +7,7 @@ use std::fs::{self, File};
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 
-use entry::{DictIndexItem, Entry};
+use yomikiri_dictionary_types::{DictIndexItem, Entry};
 
 use crate::xml::{parse_xml, remove_doctype, unescape_entity};
 

@@ -4124,6 +4124,14 @@ dependencies = [
  "bincode",
  "regex",
  "serde",
+ "yomikiri-dictionary-types",
+]
+
+[[package]]
+name = "yomikiri-dictionary-types"
+version = "0.1.0"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
