@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+// largest entry binary size is 3529
+const ENTRY_BUFFER_LEN: u16 = 3600;
+
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -66,13 +69,15 @@ pub struct Sense {
 pub struct DictIndexItem {
     pub key: String,
     pub offsets: Vec<u64>,
+    pub sizes: Vec<u16>,
 }
 
 impl DictIndexItem {
-    pub fn new(key: String, offset: u64) -> DictIndexItem {
+    pub fn new(key: String, offset: u64, size: u16) -> DictIndexItem {
         DictIndexItem {
             key,
             offsets: vec![offset],
+            sizes: vec![size],
         }
     }
 }

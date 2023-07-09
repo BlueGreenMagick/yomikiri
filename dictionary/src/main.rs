@@ -41,21 +41,28 @@ fn main() {
     let mut output_writer = BufWriter::new(output_file);
     let mut dict_index: Vec<DictIndexItem> = Vec::new();
     let mut offset: u64 = 0;
+    let mut largest_size: u64 = 0;
     // write outputs and build entry_index
     for entry in &entries {
         let serialized = bincode::serialize(entry).unwrap();
         output_writer.write(&serialized).unwrap();
+        let size = serialized.len() as u64;
+        largest_size = largest_size.max(size);
         for term in entry.terms() {
             match dict_index.binary_search_by_key(&term, |item| &item.key) {
                 Ok(idx) => {
                     dict_index.get_mut(idx).unwrap().offsets.push(offset);
+                    dict_index.get_mut(idx).unwrap().sizes.push(size as u16);
                 }
                 Err(idx) => {
-                    dict_index.insert(idx, DictIndexItem::new(term.to_string(), offset));
+                    dict_index.insert(
+                        idx,
+                        DictIndexItem::new(term.to_string(), offset, size as u16),
+                    );
                 }
             };
         }
-        offset += serialized.len() as u64;
+        offset += size as u64;
     }
     output_writer.flush().unwrap();
 
@@ -64,6 +71,7 @@ fn main() {
     bincode::serialize_into(output_index_writer, &dict_index).unwrap();
 
     println!("Data writing complete.");
+    println!("Largest entry binary size is {}", largest_size);
 }
 
 fn read_arguments() -> (PathBuf, PathBuf, PathBuf) {
