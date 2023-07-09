@@ -25,17 +25,24 @@ uniffi-bindgen = []
 lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", features = ["unidic"]}
 lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git" }
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+yomikiri-dictionary-types = { path = "../dictionary-types" }
 unicode-normalization = "0.1.22"
 unicode-segmentation = "1.9.0"
 log = { version = "0.4" }
 serde = { version="1.0", features=["derive"] }
+bincode = "1.0"
 thiserror = "1.0"
 
 [target.'cfg(target_family="wasm")'.dependencies]
 serde-wasm-bindgen = { version="0.5"}
 wasm-bindgen = { version="0.2.63" }
 wasm-logger = { version = "0.2" }
-web-sys = { version="0.3", features=["Window", "Performance", "console"] }
+web-sys = { version="0.3", features=[
+  "Window", 
+  "Performance", 
+  "console"
+  ]}
+js-sys="0.3"
 console_error_panic_hook = { version = "0.1.6" }
 
 [target.'cfg(not(target_family="wasm"))'.dependencies]

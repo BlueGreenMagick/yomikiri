@@ -43,6 +43,13 @@ export class Dictionary {
     this.setupDB();
   }
 
+  private async fetchEntries() {
+    const resp = await fetch(EnJMDict);
+    const buf = await resp.arrayBuffer();
+    const bytes = new Uint8Array(buf, 0, buf.byteLength);
+    throw new Error("unimplemented");
+  }
+
   private static async downloadFromUrl(url: string): Promise<any[]> {
     const resp = await fetch(url);
     const data = await resp.arrayBuffer();

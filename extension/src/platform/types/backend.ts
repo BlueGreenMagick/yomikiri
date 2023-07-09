@@ -2,10 +2,10 @@ import type { Token } from "@yomikiri/yomikiri-rs";
 
 export type { Token } from "@yomikiri/yomikiri-rs";
 
-export interface ITokenizer {
+export interface IBackend {
   tokenize(text: string): Promise<Token[]>;
 }
 
-export interface ITokenizerStatic {
-  initialize(): Promise<ITokenizer>;
+export interface IBackendStatic {
+  initialize(): Promise<IBackend>;
 }

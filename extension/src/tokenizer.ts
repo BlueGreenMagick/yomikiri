@@ -1,10 +1,10 @@
-import { Tokenizer as TokenizerInner, type Token } from "@platform/tokenizer";
+import { Backend, type Token } from "~/platform/desktop/backend";
 import type { Dictionary } from "~/dictionary";
 import { Entry, Sense } from "./dicEntry";
 import Utils from "~/utils";
 import { toHiragana } from "./japanese";
 
-export type { Token } from "@platform/tokenizer";
+export type { Token } from "~/platform/desktop/backend";
 
 export interface TokenizeRequest {
   text: string;
@@ -19,14 +19,14 @@ export interface TokenizeResult {
 
 export class Tokenizer {
   dictionary: Dictionary;
-  tokenizer: TokenizerInner;
+  tokenizer: Backend;
 
   /// load wasm and initialize
   static async initialize(
     dictionaryPromise: Promise<Dictionary>
   ): Promise<Tokenizer> {
     const [tokenizerInner, dictionary] = await Promise.all([
-      TokenizerInner.initialize(),
+      Backend.initialize(),
       dictionaryPromise,
     ]);
     return new Tokenizer(dictionary, tokenizerInner);
@@ -242,7 +242,7 @@ export class Tokenizer {
     return true;
   }
 
-  private constructor(dictionary: Dictionary, tokenizer: TokenizerInner) {
+  private constructor(dictionary: Dictionary, tokenizer: Backend) {
     this.dictionary = dictionary;
     this.tokenizer = tokenizer;
   }

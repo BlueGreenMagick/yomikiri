@@ -121,7 +121,13 @@ function generateBuildOptions(): BuildOptions {
     // make file import URL absolute path
     // relative path is incorrect from background pages
     publicPath: "/",
-    loader: { ".wasm": "file", ".json.gz": "file", ".svg": "text" },
+    loader: {
+      ".wasm": "file",
+      ".json.gz": "file",
+      ".svg": "text",
+      ".yomikiridict": "file",
+      ".yomikiriindex": "file",
+    },
   };
 
   const buildOptions: BuildOptions = {

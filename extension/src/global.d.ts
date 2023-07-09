@@ -5,6 +5,16 @@ declare module "*.json.gz" {
   export default url;
 }
 
+declare module "*.yomikiridict" {
+  let url: string;
+  export default url;
+}
+
+declare module "*.yomikiriindex" {
+  let url: string;
+  export default url;
+}
+
 declare module "*.json" {
   let content: any;
   export default content;

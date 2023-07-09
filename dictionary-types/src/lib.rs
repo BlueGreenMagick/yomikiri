@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 // largest entry binary size is 3529
-const ENTRY_BUFFER_LEN: u16 = 3600;
+pub const ENTRY_BUFFER_SIZE: usize = 3600;
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
