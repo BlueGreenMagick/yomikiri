@@ -6,7 +6,6 @@ fn main() {
     cfg_aliases! {
       wasm: { target_family="wasm" },
       uniffi: { not(target_family="wasm") },
-      anki: { all(not(target_family="wasm"), feature="uniffi-anki") },
       apple: { any(target_os="macos", target_os="ios") }
     }
 

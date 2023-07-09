@@ -19,7 +19,6 @@ path = "uniffi-bindgen.rs"
 # but the the lint tool does not know that
 # So we set below feature to skip type checking code that uses uniffi/cli
 uniffi-bindgen = []
-uniffi-anki = ["dep:anki", "rusqlite", "serde_json", "futures", "tokio", "reqwest"]
 
 [dependencies]
 # switch back to crates.io crate when commit 1fd5848 is released
@@ -41,24 +40,15 @@ console_error_panic_hook = { version = "0.1.6" }
 
 [target.'cfg(not(target_family="wasm"))'.dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom" }
-# reqwest/native-tls support iOS as well as macOS
-anki = { git = "https://github.com/blueGreenMagick/anki", branch = "yomikiri", features = ["native-tls"], optional=true }
-rusqlite = { version = "0.29.0", features = ["trace", "functions", "collation", "bundled"], optional=true }
-serde_json = {version = "1.0", optional=true}
-futures = { version = "0.3", optional=true }
-tokio = { version = "1", features = ["rt-multi-thread"], optional=true }
-reqwest = { version = "0.11", optional=true }
 
 [target.'cfg(any(target_os="macos", target_os="ios"))'.dependencies]
 oslog = { version = "0.2"}
-
 
 [build-dependencies]
 cfg_aliases = "0.1.0"
 
 [target.'cfg(not(target_family="wasm"))'.build-dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [ "build" ]}
-
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
