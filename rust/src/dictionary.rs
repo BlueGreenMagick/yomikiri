@@ -44,7 +44,21 @@ impl<R: Seek + Read> Dictionary<R> {
             }
             Ok(entries)
         } else {
-            Ok(vec![])
+            Ok(Vec::with_capacity(0))
+        }
+    }
+
+    /// Returns true only if there is a dictionary term
+    /// that starts with `prefix` and is not `prefix`
+    pub fn has_starts_with_excluding(&mut self, prefix: &str) -> bool {
+        let next_idx = match self.index.binary_search_by_key(&prefix, |item| &item.key) {
+            Ok(idx) => idx + 1,
+            Err(idx) => idx,
+        };
+        if next_idx == self.index.len() {
+            false
+        } else {
+            self.index[next_idx].key.starts_with(prefix)
         }
     }
 }
