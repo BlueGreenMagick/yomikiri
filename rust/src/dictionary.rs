@@ -1,5 +1,5 @@
 use crate::error::{YResult, YomikiriError};
-use crate::SharedBackend;
+use crate::{utils, SharedBackend};
 use std::io::{Read, Seek, SeekFrom};
 use yomikiri_dictionary_types::{DictIndexItem, Entry, ENTRY_BUFFER_SIZE};
 
@@ -32,10 +32,14 @@ impl<R: Seek + Read> Dictionary<R> {
                 let offset = item.offsets[i];
                 let size = item.sizes[i];
                 let buf_entry = &mut self.buf[0..(size as usize)];
-                self.entries_reader.seek(SeekFrom::Start(offset))?;
+                self.entries_reader.seek(SeekFrom::Start(offset as u64))?;
                 self.entries_reader.read_exact(buf_entry)?;
-                let entry: Entry = bincode::deserialize(buf_entry)
-                    .map_err(|_| YomikiriError::invalid_dictionary_file("entries"))?;
+                let entry: Entry = serde_json::from_slice(buf_entry).map_err(|e| {
+                    YomikiriError::invalid_dictionary_file(format!(
+                        "Error deserializing bincode: {}",
+                        e.to_string()
+                    ))
+                })?;
                 entries.push(entry)
             }
             Ok(entries)

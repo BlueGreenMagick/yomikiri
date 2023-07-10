@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-// largest entry binary size is 3529
+// largest entry binary size is 3336
 pub const ENTRY_BUFFER_SIZE: usize = 3600;
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -68,12 +68,12 @@ pub struct Sense {
 #[derive(Debug, Eq)]
 pub struct DictIndexItem {
     pub key: String,
-    pub offsets: Vec<u64>,
+    pub offsets: Vec<u32>,
     pub sizes: Vec<u16>,
 }
 
 impl DictIndexItem {
-    pub fn new(key: String, offset: u64, size: u16) -> DictIndexItem {
+    pub fn new(key: String, offset: u32, size: u16) -> DictIndexItem {
         DictIndexItem {
             key,
             offsets: vec![offset],
@@ -114,7 +114,7 @@ impl<'de> Deserialize<'de> for DictIndexItem {
     where
         D: serde::Deserializer<'de>,
     {
-        let (key, offsets, sizes) = <(String, Vec<u64>, Vec<u16>)>::deserialize(deserializer)?;
+        let (key, offsets, sizes) = <(String, Vec<u32>, Vec<u16>)>::deserialize(deserializer)?;
         Ok(DictIndexItem {
             key,
             offsets,

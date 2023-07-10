@@ -1689,6 +1689,7 @@ dependencies = [
  "bincode",
  "regex",
  "serde",
+ "serde_json",
  "yomikiri-dictionary-types",
 ]
 
@@ -1714,6 +1715,7 @@ dependencies = [
  "oslog",
  "serde",
  "serde-wasm-bindgen",
+ "serde_json",
  "thiserror",
  "unicode-normalization",
  "unicode-segmentation",

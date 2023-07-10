@@ -16,13 +16,13 @@ pub enum YomikiriError {
     BytePositionError,
     #[error("{0}")]
     IOError(#[from] io::Error),
-    #[error("Invalid dictionary file: {path}")]
-    InvalidDictionaryFile { path: String },
+    #[error("Invalid dictionary file: {0}")]
+    InvalidDictionaryFile(String),
 }
 
 impl YomikiriError {
-    pub fn invalid_dictionary_file<S: Into<String>>(path: S) -> YomikiriError {
-        YomikiriError::InvalidDictionaryFile { path: path.into() }
+    pub fn invalid_dictionary_file<S: Into<String>>(msg: S) -> YomikiriError {
+        YomikiriError::InvalidDictionaryFile(msg.into())
     }
 }
 

@@ -39,30 +39,28 @@ fn main() {
     println!("Start writing yomikiridict and yomikiriindex");
     let output_file = File::create(&output_path).unwrap();
     let mut output_writer = BufWriter::new(output_file);
-    let mut dict_index: Vec<DictIndexItem> = Vec::new();
-    let mut offset: u64 = 0;
-    let mut largest_size: u64 = 0;
+    let mut dict_index: Vec<DictIndexItem> = Vec::with_capacity(entries.len());
+    let mut offset: u32 = 0;
+    let mut largest_size: u32 = 0;
     // write outputs and build entry_index
     for entry in &entries {
-        let serialized = bincode::serialize(entry).unwrap();
+        let serialized = serde_json::to_vec(entry).unwrap();
         output_writer.write(&serialized).unwrap();
-        let size = serialized.len() as u64;
-        largest_size = largest_size.max(size);
+        let size = u16::try_from(serialized.len()).unwrap();
+        largest_size = largest_size.max(size as u32);
         for term in entry.terms() {
             match dict_index.binary_search_by_key(&term, |item| &item.key) {
                 Ok(idx) => {
-                    dict_index.get_mut(idx).unwrap().offsets.push(offset);
-                    dict_index.get_mut(idx).unwrap().sizes.push(size as u16);
+                    let item = dict_index.get_mut(idx).unwrap();
+                    item.offsets.push(offset);
+                    item.sizes.push(size);
                 }
                 Err(idx) => {
-                    dict_index.insert(
-                        idx,
-                        DictIndexItem::new(term.to_string(), offset, size as u16),
-                    );
+                    dict_index.insert(idx, DictIndexItem::new(term.to_string(), offset, size));
                 }
             };
         }
-        offset += size as u64;
+        offset += size as u32;
     }
     output_writer.flush().unwrap();
 
