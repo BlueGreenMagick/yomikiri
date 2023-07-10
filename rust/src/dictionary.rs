@@ -36,7 +36,7 @@ impl<R: Seek + Read> Dictionary<R> {
                 self.entries_reader.read_exact(buf_entry)?;
                 let entry: Entry = serde_json::from_slice(buf_entry).map_err(|e| {
                     YomikiriError::invalid_dictionary_file(format!(
-                        "Error deserializing bincode: {}",
+                        "Error deserializing json: {}",
                         e.to_string()
                     ))
                 })?;

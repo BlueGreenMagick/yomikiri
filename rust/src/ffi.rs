@@ -36,7 +36,7 @@ impl Backend {
 impl Dictionary<File> {
     pub fn try_new(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
         let index_file = File::open(index_path)?;
-        let index: Vec<DictIndexItem> = bincode::deserialize_from(&index_file)
+        let index: Vec<DictIndexItem> = serde_json::from_reader(&index_file)
             .map_err(|_| YomikiriError::invalid_dictionary_file(index_path))?;
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))
