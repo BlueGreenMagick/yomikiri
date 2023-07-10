@@ -3,6 +3,7 @@ use crate::error::{YResult, YomikiriError};
 use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
+use bincode::Options;
 use js_sys::Uint8Array;
 use std::io::Cursor;
 use wasm_bindgen::prelude::*;
@@ -83,8 +84,13 @@ impl Dictionary<Cursor<&[u8]>> {
         index_bytes: &[u8],
         entries_bytes: &Uint8Array,
     ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let index: Vec<DictIndexItem> = bincode::deserialize_from(index_bytes)
-            .map_err(|_| YomikiriError::invalid_dictionary_file("index"))?;
+        let options = bincode::DefaultOptions::new();
+        let index: Vec<DictIndexItem> = options.deserialize_from(index_bytes).map_err(|e| {
+            YomikiriError::InvalidDictionaryFile(format!(
+                "Failed to parse dictionary index file. {}",
+                e.to_string()
+            ))
+        })?;
         let cursor = Cursor::new(entries_bytes.to_vec());
         Ok(Dictionary::new(index, cursor))
     }

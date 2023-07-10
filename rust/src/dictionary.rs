@@ -1,4 +1,5 @@
 use crate::error::{YResult, YomikiriError};
+use bincode::Options;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use yomikiri_dictionary_types::{DictIndexItem, Entry, ENTRY_BUFFER_SIZE};
@@ -84,7 +85,9 @@ impl Dictionary<File> {
     pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
         let index_file = File::open(index_path)?;
         let reader = BufReader::new(index_file);
-        let index: Vec<DictIndexItem> = bincode::deserialize_from(reader)
+        let options = bincode::DefaultOptions::new();
+        let index: Vec<DictIndexItem> = options
+            .deserialize_from(reader)
             .map_err(|_| YomikiriError::invalid_dictionary_file(index_path))?;
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))

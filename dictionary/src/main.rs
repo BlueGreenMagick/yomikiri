@@ -7,6 +7,7 @@ use std::fs::{self, File};
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 
+use bincode::Options;
 use yomikiri_dictionary_types::{DictIndexItem, Entry};
 
 use crate::xml::{parse_xml, remove_doctype, unescape_entity};
@@ -66,7 +67,11 @@ fn main() {
 
     let output_index_file = File::create(&output_index_path).unwrap();
     let output_index_writer = BufWriter::new(output_index_file);
-    bincode::serialize_into(output_index_writer, &dict_index).unwrap();
+    // use varint encoding
+    let options = bincode::DefaultOptions::new();
+    options
+        .serialize_into(output_index_writer, &dict_index)
+        .unwrap();
 
     println!("Data writing complete.");
     println!("Largest entry binary size is {}", largest_size);

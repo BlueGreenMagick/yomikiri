@@ -130,7 +130,7 @@ pub enum PartOfSpeech {
     Unclassified,
 }
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq, Serialize, Deserialize)]
 pub struct DictIndexItem {
     pub key: String,
     pub offsets: Vec<u32>,
@@ -162,29 +162,6 @@ impl PartialOrd for DictIndexItem {
 impl PartialEq for DictIndexItem {
     fn eq(&self, other: &Self) -> bool {
         self.key == other.key
-    }
-}
-
-impl Serialize for DictIndexItem {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        (&self.key, &self.offsets, &self.sizes).serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for DictIndexItem {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let (key, offsets, sizes) = <(String, Vec<u32>, Vec<u16>)>::deserialize(deserializer)?;
-        Ok(DictIndexItem {
-            key,
-            offsets,
-            sizes,
-        })
     }
 }
 
