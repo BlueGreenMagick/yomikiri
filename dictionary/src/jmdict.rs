@@ -1,5 +1,5 @@
 use serde::Serialize;
-use yomikiri_dictionary_types::{Entry, Form, Reading, Sense};
+use yomikiri_dictionary_types::{Entry, Form, PartOfSpeech, Reading, Sense};
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -156,11 +156,42 @@ impl From<JMSense> for Sense {
         Sense {
             to_form: jm_sense.to_form,
             to_reading: jm_sense.to_reading,
-            part_of_speech: jm_sense.part_of_speech,
+            part_of_speech: jm_sense
+                .part_of_speech
+                .iter()
+                .map(|s| parse_part_of_speech(s))
+                .collect(),
             misc: jm_sense.misc,
             info: jm_sense.info,
             dialect: jm_sense.dialect,
             meaning: jm_sense.meaning,
         }
+    }
+}
+
+fn parse_part_of_speech(value: &str) -> PartOfSpeech {
+    // strip '=' from '=XXX='
+    let value = &value[1..value.len() - 1];
+    match value {
+        "vs" | "n" => PartOfSpeech::Noun,
+        "aux" => PartOfSpeech::Auxiliary,
+        "aux-v" => PartOfSpeech::Verb,
+        "aux-adj" => PartOfSpeech::Adjective,
+        "adv" | "adv-to" => PartOfSpeech::Adverb,
+        "int" => PartOfSpeech::Interjection,
+        "conj" => PartOfSpeech::Conjunction,
+        "cop" => PartOfSpeech::Copula,
+        "ctr" => PartOfSpeech::Counter,
+        "exp" => PartOfSpeech::Expression,
+        "num" => PartOfSpeech::Numeric,
+        "pn" => PartOfSpeech::Pronoun,
+        "pref" => PartOfSpeech::Prefix,
+        "prt" => PartOfSpeech::Particle,
+        "suf" => PartOfSpeech::Suffix,
+        "unc" => PartOfSpeech::Unclassified,
+        s if s.starts_with("v") => PartOfSpeech::Verb,
+        s if s.starts_with("adj-") => PartOfSpeech::Adjective,
+        s if s.starts_with("n-") => PartOfSpeech::Noun,
+        other => panic!("Unknown part of speech: {}", other),
     }
 }

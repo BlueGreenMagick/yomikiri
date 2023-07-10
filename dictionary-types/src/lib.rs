@@ -23,6 +23,28 @@ impl Entry {
         }
         terms
     }
+
+    pub fn is_expression(&self) -> bool {
+        self.senses.iter().any(|s| {
+            s.part_of_speech
+                .iter()
+                .any(|p| *p == PartOfSpeech::Expression)
+        })
+    }
+
+    pub fn is_noun(&self) -> bool {
+        self.senses
+            .iter()
+            .any(|s| s.part_of_speech.iter().any(|p| *p == PartOfSpeech::Noun))
+    }
+
+    pub fn is_particle(&self) -> bool {
+        self.senses.iter().any(|s| {
+            s.part_of_speech
+                .iter()
+                .any(|p| *p == PartOfSpeech::Particle)
+        })
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -54,7 +76,7 @@ pub struct Sense {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub to_reading: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub part_of_speech: Vec<String>,
+    pub part_of_speech: Vec<PartOfSpeech>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub misc: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -63,6 +85,27 @@ pub struct Sense {
     pub dialect: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub meaning: Vec<String>,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum PartOfSpeech {
+    Noun,
+    Verb,
+    Adjective,
+    Adverb,
+    Auxiliary,
+    Conjunction,
+    Copula,
+    Pronoun,
+    Numeric,
+    Prefix,
+    Particle,
+    Suffix,
+    Counter,
+    Interjection,
+    Expression,
+    Unclassified,
 }
 
 #[derive(Debug, Eq)]
