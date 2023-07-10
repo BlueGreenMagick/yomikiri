@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use serde::Serialize;
 use yomikiri_dictionary_types::{Entry, Form, PartOfSpeech, Reading, Sense};
 
@@ -160,6 +161,7 @@ impl From<JMSense> for Sense {
                 .part_of_speech
                 .iter()
                 .map(|s| parse_part_of_speech(s))
+                .unique()
                 .collect(),
             misc: jm_sense.misc,
             info: jm_sense.info,

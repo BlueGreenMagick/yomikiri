@@ -94,7 +94,7 @@ pub struct Sense {
     pub meaning: Vec<String>,
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash)]
 pub enum PartOfSpeech {
     #[serde(rename = "n")]
     Noun,
