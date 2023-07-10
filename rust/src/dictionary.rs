@@ -8,7 +8,7 @@ pub struct Dictionary<R: Seek + Read> {
     index: Vec<DictIndexItem>,
     entries_reader: R,
     // buffer for reading entry
-    buf: Vec<u8>,
+    buf: Box<[u8; ENTRY_BUFFER_SIZE]>,
 }
 
 impl<R: Seek + Read> Dictionary<R> {
@@ -16,7 +16,7 @@ impl<R: Seek + Read> Dictionary<R> {
         Dictionary {
             index,
             entries_reader,
-            buf: vec![0; ENTRY_BUFFER_SIZE],
+            buf: Box::new([0; ENTRY_BUFFER_SIZE]),
         }
     }
 
