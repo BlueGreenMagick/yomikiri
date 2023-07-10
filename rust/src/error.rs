@@ -24,12 +24,6 @@ pub enum YomikiriError {
     OtherError(String),
 }
 
-impl YomikiriError {
-    pub fn invalid_dictionary_file<S: Into<String>>(msg: S) -> YomikiriError {
-        YomikiriError::InvalidDictionaryFile(msg.into())
-    }
-}
-
 #[cfg(wasm)]
 impl Into<JsValue> for YomikiriError {
     fn into(self) -> JsValue {

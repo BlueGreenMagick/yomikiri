@@ -56,7 +56,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(RawTokenizeResult {
             tokens,
             tokenIdx: token_idx.try_into().map_err(|_| {
-                YomikiriError::OtherError("Could not represent selectedTokenIdx as u32".into())
+                YomikiriError::ConversionError("Failed to convert tokenIdx as u32.".into())
             })?,
             entriesJson: dict_jsons,
         })
@@ -371,7 +371,7 @@ pub fn create_tokenizer() -> Tokenizer {
         user_dictionary: None,
         mode: Mode::Normal,
     };
-    Tokenizer::from_config(config).unwrap()
+    Tokenizer::from_config(config).expect("Failed to create lindera Tokenizer")
 }
 
 fn get_value_from_detail<S: Into<String>>(

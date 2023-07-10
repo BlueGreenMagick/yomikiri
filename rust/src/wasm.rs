@@ -61,7 +61,12 @@ impl Backend {
     #[wasm_bindgen(skip_typescript)]
     pub fn tokenize(&mut self, sentence: &str, char_idx: usize) -> YResult<JsValue> {
         let result = self.inner.tokenize(sentence, char_idx)?;
-        Ok(serde_wasm_bindgen::to_value(&result).unwrap())
+        serde_wasm_bindgen::to_value(&result).map_err(|e| {
+            YomikiriError::ConversionError(format!(
+                "Failed to serialize tokenizer result.\n{}",
+                e.to_string()
+            ))
+        })
     }
 
     /// Search dictionary term and return JSON strings
@@ -84,8 +89,7 @@ impl Dictionary<Cursor<&[u8]>> {
         index_bytes: &[u8],
         entries_bytes: &Uint8Array,
     ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictIndexItem> = options.deserialize_from(index_bytes).map_err(|e| {
+        let index: Vec<DictIndexItem> = bincode::deserialize_from(index_bytes).map_err(|e| {
             YomikiriError::InvalidDictionaryFile(format!(
                 "Failed to parse dictionary index file. {}",
                 e.to_string()

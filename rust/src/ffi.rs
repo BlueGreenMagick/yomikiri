@@ -30,7 +30,7 @@ impl Backend {
     pub fn tokenize(&self, sentence: String, char_idx: u32) -> YResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
         let char_idx = usize::try_from(char_idx).map_err(|_| {
-            YomikiriError::OtherError("char_idx cannot be converted to usize".into())
+            YomikiriError::ConversionError("Failed to convert char_idx to usize".into())
         })?;
         backend.tokenize(&sentence, char_idx)
     }

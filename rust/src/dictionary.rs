@@ -31,8 +31,8 @@ impl<R: Seek + Read> Dictionary<R> {
                 self.entries_reader.seek(SeekFrom::Start(offset as u64))?;
                 self.entries_reader.read_exact(buf_entry)?;
                 let entry: Entry = serde_json::from_slice(buf_entry).map_err(|e| {
-                    YomikiriError::invalid_dictionary_file(format!(
-                        "Error deserializing json: {}",
+                    YomikiriError::InvalidDictionaryFile(format!(
+                        "Failed to parse dictionary entry JSON. {}",
                         e.to_string()
                     ))
                 })?;
@@ -70,7 +70,10 @@ impl<R: Seek + Read> Dictionary<R> {
                 self.entries_reader.seek(SeekFrom::Start(offset as u64))?;
                 self.entries_reader.read_exact(buf_entry)?;
                 let entry_json = String::from_utf8(buf_entry.to_vec()).map_err(|_| {
-                    YomikiriError::invalid_dictionary_file("Could not parse as UTF-8.")
+                    YomikiriError::InvalidDictionaryFile(format!(
+                        "Failed to parse dictionary entry JSON at offset {} as UTF-8.",
+                        offset
+                    ))
                 })?;
                 entries.push(entry_json);
             }
@@ -86,9 +89,12 @@ impl Dictionary<File> {
         let index_file = File::open(index_path)?;
         let reader = BufReader::new(index_file);
         let options = bincode::DefaultOptions::new();
-        let index: Vec<DictIndexItem> = options
-            .deserialize_from(reader)
-            .map_err(|_| YomikiriError::invalid_dictionary_file(index_path))?;
+        let index: Vec<DictIndexItem> = options.deserialize_from(reader).map_err(|e| {
+            YomikiriError::InvalidDictionaryFile(format!(
+                "Failed to parse dictionary index file. {}",
+                e.to_string()
+            ))
+        })?;
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))
     }
