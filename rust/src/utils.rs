@@ -26,14 +26,14 @@ pub fn setup_logger() {
 }
 
 #[cfg(wasm)]
-#[warn(dead_code)]
+#[allow(dead_code)]
 pub(crate) fn time_now() -> f64 {
     let window = web_sys::window().unwrap();
     window.performance().unwrap().now()
 }
 
 #[cfg(uniffi)]
-#[warn(dead_code)]
+#[allow(dead_code)]
 pub(crate) fn time_now() -> f64 {
     let micro = SystemTime::now()
         .duration_since(UNIX_EPOCH)
