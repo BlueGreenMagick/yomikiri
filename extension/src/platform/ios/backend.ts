@@ -2,7 +2,6 @@ import { Platform } from ".";
 import type {
   IBackendStatic,
   IBackend,
-  Token,
   TokenizeRequest,
   TokenizeResult,
 } from "../types/backend";
@@ -20,8 +19,8 @@ export class Backend implements IBackend {
     let rawResult = await Platform.requestToApp("tokenize", req);
     return {
       tokens: rawResult.tokens,
-      selectedTokenIdx: rawResult.selectedTokenIdx,
-      selectedDicEntry: rawResult.dicEntriesJson
+      tokenIdx: rawResult.tokenIdx,
+      entries: rawResult.entriesJson
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
     };

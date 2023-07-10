@@ -181,7 +181,7 @@ export namespace Sense {
     return {
       toForm: obj.tf ?? obj.toForm ?? [],
       toReading: obj.tr ?? obj.toReading ?? [],
-      pos: (obj.p ?? obj.partOfSpeech ?? []).map(parsePos),
+      pos: (obj.p ?? obj.pos ?? []).map(parsePos),
       misc: obj.mc ?? obj.misc ?? [],
       info: obj.i ?? obj.info ?? [],
       dialect: obj.d ?? obj.dialect ?? [],

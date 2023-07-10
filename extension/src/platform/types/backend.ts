@@ -1,7 +1,7 @@
 import type { Token } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 
-export type { Token } from "@yomikiri/yomikiri-rs";
+export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
 export interface TokenizeRequest {
   text: string;
@@ -10,8 +10,8 @@ export interface TokenizeRequest {
 
 export interface TokenizeResult {
   tokens: Token[];
-  selectedTokenIdx: number;
-  selectedDicEntry: Entry[];
+  tokenIdx: number;
+  entries: Entry[];
 }
 
 export interface IBackend {

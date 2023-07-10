@@ -240,7 +240,7 @@ export class Scanner {
     sentence: ScannedSentence
   ): ScanResult | null {
     const range = new Range();
-    const token = tokenizeResult.tokens[tokenizeResult.selectedTokenIdx];
+    const token = tokenizeResult.tokens[tokenizeResult.tokenIdx];
     const tokenStartIndex = token.start;
 
     if (sentence.stStartIdx !== undefined) {
@@ -285,14 +285,14 @@ export class Scanner {
     }
 
     return {
-      dicEntries: tokenizeResult.selectedDicEntry as Entry[],
+      dicEntries: tokenizeResult.entries as Entry[],
       token,
       range,
       sentence: fullSentence(sentence).normalize("NFC"),
       startIdx: tokenStartIndex,
       endIdx: tokenStartIndex + token.text.length,
       sentenceTokens: tokenizeResult.tokens,
-      tokenIdx: tokenizeResult.selectedTokenIdx,
+      tokenIdx: tokenizeResult.tokenIdx,
     };
   }
 }
@@ -376,6 +376,6 @@ function fullSentence(st: ScannedSentence): string {
 }
 
 function isValidJapaneseToken(result: TokenizeResult) {
-  const token = result.tokens[result.selectedTokenIdx];
+  const token = result.tokens[result.tokenIdx];
   return containsJapaneseContent(token.text);
 }

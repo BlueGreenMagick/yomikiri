@@ -26,8 +26,8 @@ export class BackendWrapper {
     if (text.length === 0) {
       return {
         tokens: [],
-        selectedTokenIdx: 0,
-        selectedDicEntry: [],
+        tokenIdx: 0,
+        entries: [],
       };
     }
     return await this.tokenize({ text, charIdx: 0 });

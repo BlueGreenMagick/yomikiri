@@ -114,16 +114,16 @@ export namespace AnkiNoteBuilder {
   });
 
   addMarker("dict", (data: MarkerData) => {
-    return Utils.escapeHTML(data.scanned.token.baseForm);
+    return Utils.escapeHTML(data.scanned.token.base);
   });
   addMarker("dict-furigana", (data: MarkerData) => {
-    const form = data.scanned.token.baseForm;
+    const form = data.scanned.token.base;
     const reading = Entry.readingForForm(data.entry, form, false).reading;
     const rubies = RubyString.generate(form, reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
   addMarker("dict-kana", (data: MarkerData) => {
-    const form = data.scanned.token.baseForm;
+    const form = data.scanned.token.base;
     const kana = Entry.readingForForm(data.entry, form, false).reading;
     return Utils.escapeHTML(kana);
   });

@@ -44,8 +44,8 @@ export class Backend implements IBackend {
     let rawResult = this.wasm.tokenize(text, charIdx);
     return {
       tokens: rawResult.tokens,
-      selectedTokenIdx: rawResult.selectedTokenIdx,
-      selectedDicEntry: rawResult.dicEntriesJson
+      tokenIdx: rawResult.tokenIdx,
+      entries: rawResult.entriesJson
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
     };

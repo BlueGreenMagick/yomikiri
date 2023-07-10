@@ -2,14 +2,8 @@ import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { Api } from "~/api";
 import type { Module } from "../types";
-import type { Token } from "./backend";
+import type { RawTokenizeResult } from "../types/backend";
 import type { TokenizeRequest } from "~/background/backend";
-
-interface IOSTokenizeResult {
-  tokens: Token[];
-  selectedTokenIdx: number;
-  dicEntriesJson: string[];
-}
 
 export namespace Platform {
   export const IS_DESKTOP = false;
@@ -18,7 +12,7 @@ export namespace Platform {
 
   /** Type map for messages sent with `requestToApp()`*/
   export interface AppMessageMap {
-    tokenize: [TokenizeRequest, IOSTokenizeResult];
+    tokenize: [TokenizeRequest, RawTokenizeResult];
     loadConfig: [null, StoredConfiguration];
     search: [string, string[]];
   }

@@ -35,7 +35,7 @@
       entries = [];
       return;
     }
-    entries = await Api.request("searchTerm", tokens[idx].baseForm);
+    entries = await Api.request("searchTerm", tokens[idx].base);
   }
 
   const getEntries = Utils.SingleQueued(_getEntries);

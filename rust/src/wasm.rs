@@ -12,10 +12,10 @@ use yomikiri_dictionary_types::DictIndexItem;
 const TS_TOKEN: &'static str = r#"
 export interface Token {
     text: string;
-    partOfSpeech: string;
-    baseForm: string;
-    reading: string;
+    pos: string;
     pos2: string;
+    base: string;
+    reading: string;
     start: number;
 }
 "#;
@@ -24,8 +24,8 @@ export interface Token {
 const TS_RAW_TOKENIZE_RESULT: &'static str = r#"
 export interface RawTokenizeResult {
     tokens: Token[];
-    selectedTokenIdx: number;
-    dicEntriesJson: string[];
+    tokenIdx: number;
+    entriesJson: string[];
 }
 "
 
