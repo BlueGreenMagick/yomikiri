@@ -232,7 +232,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
         let token = &tokens[from];
-        if token.partOfSpeech == "連体詞" {
+        if token.partOfSpeech != "連体詞" {
             return Ok(false);
         }
         let next_token = &tokens[from + 1];
@@ -324,7 +324,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             && (tokens[to].partOfSpeech == "助動詞" || tokens[to].pos2 == "接続助詞")
         {
             joined_text += &tokens[to].text;
-            joined_text += &tokens[to].reading;
+            joined_reading += &tokens[to].reading;
             to += 1;
         }
         if to - from == 1 {
