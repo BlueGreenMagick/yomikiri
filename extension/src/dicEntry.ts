@@ -4,7 +4,6 @@ import ENTITIES from "./assets/dicEntities.json";
 // list of tuple (pos sorted list, senses)
 export interface GroupedSense {
   pos: string[];
-  simplePos: string[];
   senses: Sense[];
 }
 export type DictionaryResult = Entry[];
@@ -26,14 +25,14 @@ export namespace Entry {
     const forms = [];
     const readings = [];
     const senses = [];
-    const priority = obj.priority ?? 0;
-    for (const form of obj.forms ?? []) {
+    const priority = obj.p ?? obj.priority ?? 0;
+    for (const form of obj.f ?? obj.forms ?? []) {
       forms.push(Form.fromObject(form));
     }
-    for (const reading of obj.readings ?? []) {
+    for (const reading of obj.r ?? obj.readings ?? []) {
       readings.push(Reading.fromObject(reading));
     }
-    for (const sense of obj.senses ?? []) {
+    for (const sense of obj.s ?? obj.senses ?? []) {
       senses.push(Sense.fromObject(sense));
     }
     if (terms === undefined) {
@@ -62,46 +61,6 @@ export namespace Entry {
     }
   }
 
-  /** Returns true if entry contains 'expression' sense */
-  export function isExpression(entry: Entry): boolean {
-    for (const sense of entry.senses) {
-      if (sense.partOfSpeech.includes("=exp=")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /** Returns true if entry contains 'noun' sense */
-  export function isNoun(entry: Entry): boolean {
-    for (const sense of entry.senses) {
-      if (Sense.simplePos(sense).includes("noun")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /** Returns true if entry contains 'particle' sense */
-  export function isParticle(entry: Entry): boolean {
-    for (const sense of entry.senses) {
-      if (Sense.simplePos(sense).includes("particle")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /** Returns true if entry contains 'connjunction' sense */
-  export function isConjunction(entry: Entry): boolean {
-    for (const sense of entry.senses) {
-      if (Sense.simplePos(sense).includes("conjunction")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /** groups senses with same partOfSpeech. Preserves order. */
   export function groupSenses(entry: Entry): GroupedSense[] {
     const groups: GroupedSense[] = [];
@@ -112,15 +71,8 @@ export namespace Entry {
   }
 
   function insertIntoGroupedSenses(groups: GroupedSense[], sense: Sense) {
-    const pos = sense.partOfSpeech;
+    const pos = sense.pos;
     const sortedPos = [...pos].sort();
-    const simplePoss: string[] = [];
-    for (const p of sortedPos) {
-      const simplePos = Sense.entityToSimplePos(p);
-      if (!simplePoss.includes(simplePos)) {
-        simplePoss.push(simplePos);
-      }
-    }
     for (const group of groups) {
       if (Utils.listIsIdentical(group.pos, sortedPos)) {
         group.senses.push(sense);
@@ -129,7 +81,6 @@ export namespace Entry {
     }
     const group: GroupedSense = {
       pos: sortedPos,
-      simplePos: simplePoss,
       senses: [sense],
     };
     groups.push(group);
@@ -188,9 +139,9 @@ export interface Form {
 export namespace Form {
   export function fromObject(obj: any): Form {
     return {
-      form: obj.form ?? "",
-      uncommon: obj.uncommon ?? false,
-      info: obj.info ?? [],
+      form: obj.f ?? obj.form ?? "",
+      uncommon: obj.u ?? obj.uncommon ?? false,
+      info: obj.i ?? obj.info ?? [],
     };
   }
 }
@@ -206,11 +157,11 @@ export interface Reading {
 export namespace Reading {
   export function fromObject(obj: any): Reading {
     return {
-      reading: obj.reading ?? "",
-      nokanji: obj.nokanji ?? false,
-      uncommon: obj.uncommon ?? false,
-      toForm: obj.toForm ?? [],
-      info: obj.info ?? [],
+      reading: obj.r ?? obj.reading ?? "",
+      nokanji: obj.nk ?? obj.nokanji ?? false,
+      uncommon: obj.u ?? obj.uncommon ?? false,
+      toForm: obj.tf ?? obj.toForm ?? [],
+      info: obj.i ?? obj.info ?? [],
     };
   }
 }
@@ -218,7 +169,7 @@ export namespace Reading {
 export interface Sense {
   toForm: string[];
   toReading: string[];
-  partOfSpeech: string[];
+  pos: string[];
   misc: string[];
   info: string[];
   dialect: string[];
@@ -228,57 +179,36 @@ export interface Sense {
 export namespace Sense {
   export function fromObject(obj: any): Sense {
     return {
-      toForm: obj.toForm ?? [],
-      toReading: obj.toReading ?? [],
-      partOfSpeech: obj.partOfSpeech ?? [],
-      misc: obj.misc ?? [],
-      info: obj.info ?? [],
-      dialect: obj.dialect ?? [],
-      meaning: obj.meaning ?? [],
+      toForm: obj.tf ?? obj.toForm ?? [],
+      toReading: obj.tr ?? obj.toReading ?? [],
+      pos: (obj.p ?? obj.partOfSpeech ?? []).map(parsePos),
+      misc: obj.mc ?? obj.misc ?? [],
+      info: obj.i ?? obj.info ?? [],
+      dialect: obj.d ?? obj.dialect ?? [],
+      meaning: obj.m ?? obj.meaning ?? [],
     };
   }
 
-  export function simplePos(sense: Sense): string[] {
-    const simplePoss: string[] = [];
-    for (const posEntity of sense.partOfSpeech) {
-      const simplePos = entityToSimplePos(posEntity);
-      if (!simplePoss.includes(simplePos)) {
-        simplePoss.push(simplePos);
-      }
-    }
-    return simplePoss;
-  }
-
-  const ENTITY_SIMPLE_POS_MAP: { [ent: string]: string } = {
-    "=n=": "noun",
-    "=n-pref=": "noun",
-    "=n-suf=": "noun",
-    "=vs=": "noun",
-    "=aux-v=": "verb",
-    "=aux-adj=": "adjective",
-    "=adv=": "adverb",
-    "=adv-to=": "adverb",
-    "=int=": "interjection",
-    "=unc=": "unclassified",
+  const tinyPosMap: { [key: string]: string } = {
+    n: "noun",
+    v: "verb",
+    a: "adjective",
+    p: "particle",
+    av: "adverb",
+    ax: "auxiliary",
+    cj: "conjunction",
+    cp: "copula",
+    pn: "pronoun",
+    nm: "numeric",
+    pf: "prefix",
+    sf: "suffix",
+    cn: "counter",
+    in: "interjection",
+    e: "expression",
+    u: "unclassified",
   };
 
-  export function entityToSimplePos(posEntity: string): string {
-    if (posEntity in ENTITY_SIMPLE_POS_MAP) {
-      return ENTITY_SIMPLE_POS_MAP[posEntity];
-    } else if (posEntity.startsWith("=v")) {
-      return "verb";
-    } else if (posEntity.startsWith("=adj")) {
-      return "adjective";
-    } else {
-      const posName = Entry.entityName(posEntity);
-      if (posName === null) {
-        throw Error(`Invalid POS entity: ${posEntity}`);
-      }
-      const val = Entry.entityInfo(posName);
-      if (val === null) {
-        throw Error(`Invalid POS: ${posName}`);
-      }
-      return val;
-    }
+  function parsePos(tinyPos: string): string {
+    return tinyPosMap[tinyPos];
   }
 }

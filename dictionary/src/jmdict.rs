@@ -156,7 +156,7 @@ impl From<JMSense> for Sense {
         Sense {
             to_form: jm_sense.to_form,
             to_reading: jm_sense.to_reading,
-            part_of_speech: jm_sense
+            pos: jm_sense
                 .part_of_speech
                 .iter()
                 .map(|s| parse_part_of_speech(s))

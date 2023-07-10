@@ -19,7 +19,7 @@
       selectedMeaning: sense,
     });
   }
-  $: posText = group.simplePos.join(", ");
+  $: posText = group.pos.join(", ");
 </script>
 
 <div class="grouped-sense">
