@@ -33,6 +33,7 @@ export interface RawTokenizeResult {
 const TS_TOKENIZE: &'static str = r#"
 interface Backend {
     tokenize(sentence: string, charIdx: number): RawTokenizeResult;
+    search(term: string): string[]
 }
 "#;
 
@@ -62,12 +63,16 @@ impl Backend {
         Ok(serde_wasm_bindgen::to_value(&result).unwrap())
     }
 
-    pub fn search(&mut self, term: &str) -> YResult<Vec<JsValue>> {
-        let entries = self.inner.dictionary.search(term)?;
-        Ok(entries
-            .iter()
-            .map(|e| serde_wasm_bindgen::to_value(e).unwrap())
-            .collect())
+    /// Search dictionary term and return JSON strings
+    #[wasm_bindgen(skip_typescript)]
+    pub fn search(&mut self, term: &str) -> YResult<JsValue> {
+        let entries_json = self.inner.dictionary.search_json(term)?;
+        serde_wasm_bindgen::to_value(&entries_json).map_err(|e| {
+            YomikiriError::ConversionError(format!(
+                "Failed to serialize dictionary entries.\n{}",
+                e.to_string()
+            ))
+        })
     }
 }
 

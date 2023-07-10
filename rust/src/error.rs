@@ -18,6 +18,8 @@ pub enum YomikiriError {
     IOError(#[from] io::Error),
     #[error("[Invalid Dictionary File] {0}")]
     InvalidDictionaryFile(String),
+    #[error("[Conversion Error] {0}")]
+    ConversionError(String),
     #[error("[Other Error] {0}")]
     OtherError(String),
 }

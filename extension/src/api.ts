@@ -1,6 +1,6 @@
 import type { Entry } from "~/dicEntry";
 import type { NoteData } from "~/ankiNoteBuilder";
-import type { TokenizeRequest, TokenizeResult } from "~/tokenizer";
+import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "./config";
 

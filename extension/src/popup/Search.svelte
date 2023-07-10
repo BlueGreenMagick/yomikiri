@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Token } from "~/tokenizer";
+  import type { Token } from "@platform/backend";
   import type { Entry } from "~/dicEntry";
   import { Platform } from "@platform";
   import { Api } from "~/api";

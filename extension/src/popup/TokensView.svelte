@@ -1,6 +1,6 @@
 <script lang="ts">
   import { RubyString, containsJapaneseContent } from "~/japanese";
-  import type { Token } from "~/tokenizer";
+  import type { Token } from "@platform/backend";
 
   export let tokens: Token[];
   // may be bigger than entries.length

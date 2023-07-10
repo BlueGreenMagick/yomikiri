@@ -1,14 +1,14 @@
-import type { TokenizeRequest } from "~/tokenizer";
 import { Platform } from ".";
 import type {
   IBackendStatic,
   IBackend,
   Token,
+  TokenizeRequest,
   TokenizeResult,
 } from "../types/backend";
 import { Entry } from "~/dicEntry";
 
-export type { Token, TokenizeResult } from "../types/backend";
+export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
 
 export class Backend implements IBackend {
   static async initialize(): Promise<Backend> {
@@ -25,6 +25,12 @@ export class Backend implements IBackend {
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
     };
+  }
+
+  async search(term: string): Promise<Entry[]> {
+    return (await Platform.requestToApp("search", term))
+      .map((json) => JSON.parse(json))
+      .map(Entry.fromObject);
   }
 }
 

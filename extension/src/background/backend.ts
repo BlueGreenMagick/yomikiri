@@ -1,15 +1,15 @@
-import { Backend, type TokenizeResult } from "@platform/backend";
+import {
+  Backend,
+  type TokenizeResult,
+  type TokenizeRequest,
+} from "@platform/backend";
 import Utils from "~/utils";
-import { toHiragana } from "./japanese";
+import { toHiragana } from "../japanese";
+import type { Entry } from "~/dicEntry";
 
-export type { Token, TokenizeResult } from "@platform/backend";
+export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
-export interface TokenizeRequest {
-  text: string;
-  charIdx: number;
-}
-
-export class Tokenizer {
+export class BackendWrapper {
   backend: Backend;
 
   private constructor(backend: Backend) {
@@ -17,8 +17,8 @@ export class Tokenizer {
   }
 
   /// load wasm and initialize
-  static async initialize(): Promise<Tokenizer> {
-    return new Tokenizer(await Backend.initialize());
+  static async initialize(): Promise<BackendWrapper> {
+    return new BackendWrapper(await Backend.initialize());
   }
 
   /** text should not be empty */
@@ -46,5 +46,9 @@ export class Tokenizer {
       token.reading = toHiragana(reading);
     });
     return result;
+  }
+
+  async searchTerm(term: string): Promise<Entry[]> {
+    return this.backend.search(term);
   }
 }

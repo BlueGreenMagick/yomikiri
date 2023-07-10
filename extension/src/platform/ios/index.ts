@@ -3,7 +3,7 @@ import Utils from "~/utils";
 import { Api } from "~/api";
 import type { Module } from "../types";
 import type { Token } from "./backend";
-import type { TokenizeRequest } from "~/tokenizer";
+import type { TokenizeRequest } from "~/background/backend";
 
 interface IOSTokenizeResult {
   tokens: Token[];
@@ -20,6 +20,7 @@ export namespace Platform {
   export interface AppMessageMap {
     tokenize: [TokenizeRequest, IOSTokenizeResult];
     loadConfig: [null, StoredConfiguration];
+    search: [string, string[]];
   }
 
   export type AppRequest<K extends keyof AppMessageMap> = Utils.First<

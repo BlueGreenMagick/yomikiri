@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import pako from "pako";
 import type { Dictionary } from "./dictionary";
-import { Tokenizer } from "./tokenizer";
+import { Tokenizer } from "./background/backend";
 import { Entry } from "../src/dicEntry";
 
 let tokenizer: Tokenizer;

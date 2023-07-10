@@ -1,4 +1,4 @@
-import type { Token } from "~/tokenizer";
+import type { Token } from "~/background/backend";
 import Utils from "./utils";
 
 export interface RubyUnit {

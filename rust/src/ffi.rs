@@ -14,7 +14,7 @@ pub struct Backend {
 #[uniffi::export]
 impl Backend {
     #[uniffi::constructor]
-    fn new(index_path: String, entries_path: String) -> YResult<Arc<Backend>> {
+    pub fn new(index_path: String, entries_path: String) -> YResult<Arc<Backend>> {
         utils::setup_logger();
         let tokenizer = create_tokenizer();
         let dictionary = Dictionary::from_paths(&index_path, &entries_path)?;
@@ -27,11 +27,16 @@ impl Backend {
         Ok(Arc::new(backend))
     }
 
-    fn tokenize(&self, sentence: String, char_idx: u32) -> YResult<RawTokenizeResult> {
+    pub fn tokenize(&self, sentence: String, char_idx: u32) -> YResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
         let char_idx = usize::try_from(char_idx).map_err(|_| {
             YomikiriError::OtherError("char_idx cannot be converted to usize".into())
         })?;
         backend.tokenize(&sentence, char_idx)
+    }
+
+    pub fn search(&self, term: String) -> YResult<Vec<String>> {
+        let mut backend = self.inner.lock().unwrap();
+        backend.dictionary.search_json(&term)
     }
 }
