@@ -66,7 +66,7 @@ beforeAll(async () => {
 
 async function testTokenSplit(expected: string) {
   const text = expected.replace(/\//g, "");
-  const result = await tokenizer.tokenize({ text, selectedCharIdx: 0 });
+  const result = await tokenizer.tokenize({ text, charIdx: 0 });
   const tokens = result.tokens;
   const joinedTokens = tokens.map((v) => v.text).join("/");
   expect(joinedTokens).toBe(expected);
@@ -120,7 +120,7 @@ describe("tokenizer", () => {
     // て\u3099 = で
     const result = await tokenizer.tokenize({
       text: "本か\u3099好きだ",
-      selectedCharIdx: 2,
+      charIdx: 2,
     });
     const startIdx = result.tokens.map((t) => t.start);
     expect(startIdx[0]).toBe(0);

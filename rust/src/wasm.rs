@@ -69,7 +69,7 @@ impl Dictionary<Cursor<&[u8]>> {
         index_bytes: &[u8],
         entries_bytes: &Uint8Array,
     ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let index: Vec<DictIndexItem> = serde_json::from_slice(index_bytes)
+        let index: Vec<DictIndexItem> = bincode::deserialize_from(index_bytes)
             .map_err(|_| YomikiriError::invalid_dictionary_file("index"))?;
         let cursor = Cursor::new(entries_bytes.to_vec());
         Ok(Dictionary::new(index, cursor))

@@ -1,6 +1,6 @@
 use crate::error::{YResult, YomikiriError};
 use std::fs::File;
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{BufReader, Read, Seek, SeekFrom};
 use yomikiri_dictionary_types::{DictIndexItem, Entry, ENTRY_BUFFER_SIZE};
 
 pub struct Dictionary<R: Seek + Read> {
@@ -83,7 +83,8 @@ impl<R: Seek + Read> Dictionary<R> {
 impl Dictionary<File> {
     pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
         let index_file = File::open(index_path)?;
-        let index: Vec<DictIndexItem> = serde_json::from_reader(&index_file)
+        let reader = BufReader::new(index_file);
+        let index: Vec<DictIndexItem> = bincode::deserialize_from(reader)
             .map_err(|_| YomikiriError::invalid_dictionary_file(index_path))?;
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))

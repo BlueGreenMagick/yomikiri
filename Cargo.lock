@@ -1686,6 +1686,7 @@ name = "yomikiri-dictionary"
 version = "0.1.0"
 dependencies = [
  "RustyXML",
+ "bincode",
  "regex",
  "serde",
  "serde_json",
@@ -1703,6 +1704,7 @@ dependencies = [
 name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
+ "bincode",
  "cfg_aliases",
  "console_error_panic_hook",
  "js-sys",

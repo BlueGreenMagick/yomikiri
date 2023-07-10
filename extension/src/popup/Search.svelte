@@ -24,7 +24,7 @@
 
     let result = await Api.request("tokenize", {
       text: searchText,
-      selectedCharIdx: 0,
+      charIdx: 0,
     });
     searchTokens = result.tokens;
   }

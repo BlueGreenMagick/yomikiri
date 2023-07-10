@@ -1,14 +1,14 @@
-import { Backend, type Token } from "~/platform/desktop/backend";
+import { Backend, type Token } from "@platform/backend";
 import type { Dictionary } from "~/dictionary";
 import { Entry, Sense } from "./dicEntry";
 import Utils from "~/utils";
 import { toHiragana } from "./japanese";
 
-export type { Token } from "~/platform/desktop/backend";
+export type { Token } from "@platform/backend";
 
 export interface TokenizeRequest {
   text: string;
-  selectedCharIdx: number;
+  charIdx: number;
 }
 
 export interface TokenizeResult {
@@ -33,17 +33,17 @@ export class Tokenizer {
   }
 
   async tokenizeText(text: string): Promise<TokenizeResult> {
-    return await this.tokenize({ text, selectedCharIdx: 0 });
+    return await this.tokenize({ text, charIdx: 0 });
   }
 
   async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-    if (req.selectedCharIdx < 0 || req.selectedCharIdx >= req.text.length) {
+    if (req.charIdx < 0 || req.charIdx >= req.text.length) {
       throw new RangeError(
-        `selectedCharIdx is out of range: ${req.selectedCharIdx}, ${req.text}`
+        `selectedCharIdx is out of range: ${req.charIdx}, ${req.text}`
       );
     }
     Utils.benchStart();
-    let tokens = await this.tokenizer.tokenize(req.text);
+    let tokens = await this.tokenizer.tokenize(req.text, req.charIdx);
     tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
@@ -53,8 +53,7 @@ export class Tokenizer {
     await this.joinAllTokens(tokens);
     Utils.bench("joinTokens");
 
-    let tokenIdx =
-      tokens.findIndex((token) => token.start > req.selectedCharIdx) - 1;
+    let tokenIdx = tokens.findIndex((token) => token.start > req.charIdx) - 1;
     tokenIdx = tokenIdx === -2 ? tokens.length - 1 : tokenIdx;
 
     const entry = await this.dictionary.search(tokens[tokenIdx].baseForm);

@@ -66,7 +66,7 @@ fn main() {
 
     let output_index_file = File::create(&output_index_path).unwrap();
     let output_index_writer = BufWriter::new(output_index_file);
-    serde_json::to_writer(output_index_writer, &dict_index).unwrap();
+    bincode::serialize_into(output_index_writer, &dict_index).unwrap();
 
     println!("Data writing complete.");
     println!("Largest entry binary size is {}", largest_size);

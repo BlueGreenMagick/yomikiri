@@ -10,8 +10,14 @@ import SafariServices
 import YomikiriTokenizer
 
 let SFExtensionMessageKey = "message"
-let tokenizer = Tokenizer()
-let appDir = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).absoluteString
+let tokenizer = try! newBackend()
+
+func newBackend() throws -> Backend {
+    os_log(.error, "start creating backend")
+    let result = try createBackend()
+    os_log(.error, "finish creating backend")
+    return result
+}
 
 extension String: Error {}
 
@@ -31,9 +37,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         do {
             switch key {
             case "tokenize":
-                let text: String = try jsonDeserialize(json: request)
-                let tokens = tokenizer.tokenize(sentence: text)
-                jsonResponse = try jsonSerialize(obj: tokens)
+                let req: TokenizeRequest = try jsonDeserialize(json: request)
+                let result = try tokenizer.tokenize(sentence: req.text, charIdx: req.charIdx)
+                jsonResponse = try jsonSerialize(obj: result)
             case "addNote":
                 break
             case "loadConfig":
@@ -62,4 +68,9 @@ func jsonSerialize<T: Encodable>(obj: T?) throws -> String {
 func jsonDeserialize<T: Decodable>(json: String) throws -> T {
     let decoder = JSONDecoder()
     return try decoder.decode(T.self, from: json.data(using: .utf8)!)
+}
+
+private struct TokenizeRequest: Codable {
+    var text: String
+    var charIdx: UInt32
 }

@@ -46,8 +46,8 @@ export class Backend implements IBackend {
     this.wasm = wasm;
   }
 
-  async tokenize(text: string): Promise<Token[]> {
-    return this.wasm.tokenize(text);
+  async tokenize(text: string, charIdx: number): Promise<Token[]> {
+    return this.wasm.tokenize(text, charIdx);
   }
 }
 

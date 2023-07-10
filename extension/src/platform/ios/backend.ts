@@ -1,3 +1,4 @@
+import type { TokenizeRequest } from "~/tokenizer";
 import { Platform } from ".";
 import type { IBackendStatic, IBackend, Token } from "../types/backend";
 
@@ -8,8 +9,9 @@ export class Backend implements IBackend {
     return new Backend();
   }
 
-  async tokenize(text: string): Promise<Token[]> {
-    return await Platform.requestToApp("tokenize", text);
+  async tokenize(text: string, charIdx: number): Promise<Token[]> {
+    let req: TokenizeRequest = { text, charIdx };
+    return await Platform.requestToApp("tokenize", req);
   }
 }
 

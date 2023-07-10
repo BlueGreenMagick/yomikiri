@@ -3,6 +3,7 @@ import Utils from "~/utils";
 import { Api } from "~/api";
 import type { Module } from "../types";
 import type { Token } from "./backend";
+import type { TokenizeRequest } from "~/tokenizer";
 
 export namespace Platform {
   export const IS_DESKTOP = false;
@@ -11,7 +12,7 @@ export namespace Platform {
 
   /** Type map for messages sent with `requestToApp()`*/
   export interface AppMessageMap {
-    tokenize: [string, Token[]];
+    tokenize: [TokenizeRequest, Token[]];
     loadConfig: [null, StoredConfiguration];
   }
 
