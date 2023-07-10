@@ -51,7 +51,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             Some(i) => i - 1,
             None => tokens.len() - 1,
         };
-        let dict_jsons = self.dictionary.search_json(&tokens[token_idx].text)?;
+        let dict_jsons = self.dictionary.search_json(&tokens[token_idx].baseForm)?;
 
         Ok(RawTokenizeResult {
             tokens,
