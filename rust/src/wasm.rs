@@ -21,9 +21,18 @@ export interface Token {
 "#;
 
 #[wasm_bindgen(typescript_custom_section)]
+const TS_RAW_TOKENIZE_RESULT: &'static str = r#"
+export interface RawTokenizeResult {
+    tokens: Token[];
+    selectedTokenIdx: number;
+    dicEntriesJson: string[];
+}
+"
+
+#[wasm_bindgen(typescript_custom_section)]
 const TS_TOKENIZE: &'static str = r#"
 interface Backend {
-    tokenize(sentence: string, charIdx: number): Token[]
+    tokenize(sentence: string, charIdx: number): RawTokenizeResult;
 }
 "#;
 

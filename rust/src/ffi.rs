@@ -1,6 +1,6 @@
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
-use crate::tokenize::{create_tokenizer, TokenizeResult};
+use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 use std::fs::File;
 use std::sync::{Arc, Mutex};
@@ -27,7 +27,7 @@ impl Backend {
         Ok(Arc::new(backend))
     }
 
-    fn tokenize(&self, sentence: String, char_idx: u32) -> YResult<TokenizeResult> {
+    fn tokenize(&self, sentence: String, char_idx: u32) -> YResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
         let char_idx = usize::try_from(char_idx).map_err(|_| {
             YomikiriError::OtherError("char_idx cannot be converted to usize".into())

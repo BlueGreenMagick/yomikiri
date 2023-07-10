@@ -5,12 +5,12 @@ use crate::SharedBackend;
 use lindera_core::mode::Mode;
 use lindera_dictionary::{DictionaryConfig, DictionaryKind};
 use lindera_tokenizer::tokenizer::{Tokenizer, TokenizerConfig};
-#[cfg(wasm)]
-use serde::Serialize;
 use std::io::{Read, Seek};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_dictionary_types::PartOfSpeech;
+
+#[cfg(wasm)]
+use serde::Serialize;
 
 #[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
@@ -31,7 +31,7 @@ pub struct Token {
 
 #[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
-pub struct TokenizeResult {
+pub struct RawTokenizeResult {
     pub tokens: Vec<Token>,
     pub selectedTokenIdx: u32,
     // entries in JSON
@@ -39,7 +39,11 @@ pub struct TokenizeResult {
 }
 
 impl<R: Read + Seek> SharedBackend<R> {
-    pub fn tokenize<'a>(&mut self, sentence: &'a str, char_idx: usize) -> YResult<TokenizeResult> {
+    pub fn tokenize<'a>(
+        &mut self,
+        sentence: &'a str,
+        char_idx: usize,
+    ) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
         self.manual_patches(&mut tokens);
         self.join_all_tokens(&mut tokens)?;
@@ -49,7 +53,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         };
         let dict_jsons = self.dictionary.search_json(&tokens[token_idx].text)?;
 
-        Ok(TokenizeResult {
+        Ok(RawTokenizeResult {
             tokens,
             selectedTokenIdx: token_idx.try_into().map_err(|_| {
                 YomikiriError::OtherError("Could not represent selectedTokenIdx as u32".into())

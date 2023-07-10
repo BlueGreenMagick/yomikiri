@@ -5,6 +5,12 @@ import type { Module } from "../types";
 import type { Token } from "./backend";
 import type { TokenizeRequest } from "~/tokenizer";
 
+interface IOSTokenizeResult {
+  tokens: Token[];
+  selectedTokenIdx: number;
+  dicEntriesJson: string[];
+}
+
 export namespace Platform {
   export const IS_DESKTOP = false;
   export const IS_IOS = true;
@@ -12,7 +18,7 @@ export namespace Platform {
 
   /** Type map for messages sent with `requestToApp()`*/
   export interface AppMessageMap {
-    tokenize: [TokenizeRequest, Token[]];
+    tokenize: [TokenizeRequest, IOSTokenizeResult];
     loadConfig: [null, StoredConfiguration];
   }
 

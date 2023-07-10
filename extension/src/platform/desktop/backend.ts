@@ -2,17 +2,16 @@ import type {
   IBackendStatic as IBackendStatic,
   IBackend as IBackend,
   Token,
+  TokenizeResult,
 } from "../types/backend";
-
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
-
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import Utils from "~/utils";
+import { Entry } from "~/dicEntry";
 
-export type { Token } from "../types/backend";
+export type { Token, TokenizeResult } from "../types/backend";
 
 async function loadWasm(): Promise<typeof BackendWasm> {
   // @ts-ignore wasm is string
@@ -42,8 +41,15 @@ export class Backend implements IBackend {
     this.wasm = wasm;
   }
 
-  async tokenize(text: string, charIdx: number): Promise<Token[]> {
-    return this.wasm.tokenize(text, charIdx);
+  async tokenize(text: string, charIdx: number): Promise<TokenizeResult> {
+    let rawResult = this.wasm.tokenize(text, charIdx);
+    return {
+      tokens: rawResult.tokens,
+      selectedTokenIdx: rawResult.selectedTokenIdx,
+      selectedDicEntry: rawResult.dicEntriesJson
+        .map((json) => JSON.parse(json))
+        .map(Entry.fromObject),
+    };
   }
 }
 

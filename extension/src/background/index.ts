@@ -14,7 +14,7 @@ import type { NoteData } from "~/ankiNoteBuilder";
 
 let dictionary = new Dictionary();
 let dictionaryLoadedP: Promise<Dictionary> = dictionary.initialize();
-let tokenizerP: Promise<Tokenizer> = Tokenizer.initialize(dictionaryLoadedP);
+let tokenizerP: Promise<Tokenizer> = Tokenizer.initialize();
 
 async function searchTerm(term: string): Promise<Entry[]> {
   await dictionaryLoadedP;
