@@ -1,6 +1,6 @@
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
-use crate::tokenizer::createTokenizer;
+use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 use js_sys::Uint8Array;
@@ -23,7 +23,7 @@ export interface Token {
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKENIZE: &'static str = r#"
 interface Backend {
-    tokenize(sentence: string): Token[]
+    tokenize(sentence: string, charIdx: number): Token[]
 }
 "#;
 
@@ -38,7 +38,7 @@ impl Backend {
     pub fn new(index_bytes: &[u8], entries_bytes: &Uint8Array) -> YResult<Backend> {
         utils::set_panic_hook();
         utils::setup_logger();
-        let tokenizer = createTokenizer();
+        let tokenizer = create_tokenizer();
         let dictionary = Dictionary::try_new(index_bytes, entries_bytes)?;
         let inner = SharedBackend {
             tokenizer,
@@ -48,19 +48,13 @@ impl Backend {
     }
 
     #[wasm_bindgen(skip_typescript)]
-    pub fn tokenize(&self, sentence: &str) -> Vec<JsValue> {
-        let val = self
-            .inner
-            .tokenize_inner(sentence)
-            .unwrap()
-            .iter()
-            .map(|s| serde_wasm_bindgen::to_value(s).unwrap())
-            .collect();
-        return val;
+    pub fn tokenize(&mut self, sentence: &str, char_idx: usize) -> YResult<JsValue> {
+        let result = self.inner.tokenize(sentence, char_idx)?;
+        Ok(serde_wasm_bindgen::to_value(&result).unwrap())
     }
 
     pub fn search(&mut self, term: &str) -> YResult<Vec<JsValue>> {
-        let entries = self.inner.search(term)?;
+        let entries = self.inner.dictionary.search(term)?;
         Ok(entries
             .iter()
             .map(|e| serde_wasm_bindgen::to_value(e).unwrap())

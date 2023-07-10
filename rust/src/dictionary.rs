@@ -1,12 +1,7 @@
 use crate::error::{YResult, YomikiriError};
-use crate::{utils, SharedBackend};
+use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use yomikiri_dictionary_types::{DictIndexItem, Entry, ENTRY_BUFFER_SIZE};
-
-#[cfg(uniffi)]
-use std::fs::File;
-#[cfg(uniffi)]
-use std::io::BufReader;
 
 pub struct Dictionary<R: Seek + Read> {
     index: Vec<DictIndexItem>,
@@ -61,10 +56,36 @@ impl<R: Seek + Read> Dictionary<R> {
             self.index[next_idx].key.starts_with(prefix)
         }
     }
+
+    /// Returns json text of entries
+    pub fn search_json(&mut self, term: &str) -> YResult<Vec<String>> {
+        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.key) {
+            let item = &self.index[idx];
+            let mut entries = Vec::<String>::with_capacity(item.offsets.len());
+            for i in 0..item.offsets.len() {
+                let offset = item.offsets[i];
+                let size = item.sizes[i];
+                let buf_entry = &mut self.buf[0..(size as usize)];
+                self.entries_reader.seek(SeekFrom::Start(offset as u64))?;
+                self.entries_reader.read_exact(buf_entry)?;
+                let entry_json = String::from_utf8(buf_entry.to_vec()).map_err(|_| {
+                    YomikiriError::invalid_dictionary_file("Could not parse as UTF-8.")
+                })?;
+                entries.push(entry_json);
+            }
+            Ok(entries)
+        } else {
+            Ok(Vec::with_capacity(0))
+        }
+    }
 }
 
-impl<R: Read + Seek> SharedBackend<R> {
-    pub fn search(&mut self, term: &str) -> YResult<Vec<Entry>> {
-        self.dictionary.search(term)
+impl Dictionary<File> {
+    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
+        let index_file = File::open(index_path)?;
+        let index: Vec<DictIndexItem> = serde_json::from_reader(&index_file)
+            .map_err(|_| YomikiriError::invalid_dictionary_file(index_path))?;
+        let entries_file = File::open(entries_path)?;
+        Ok(Dictionary::new(index, entries_file))
     }
 }

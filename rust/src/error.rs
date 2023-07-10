@@ -10,14 +10,16 @@ pub type YResult<T> = Result<T, YomikiriError>;
 #[cfg_attr(uniffi, derive(uniffi::Error))]
 #[cfg_attr(uniffi, uniffi(flat_error))]
 pub enum YomikiriError {
-    #[error("{0}")]
+    #[error("[Tokenize Error] {0}")]
     TokenizeError(#[from] LinderaError),
-    #[error("(Unreachable) Invalid unicode byte position")]
+    #[error("[Byte Position Error] (Unreachable) Invalid unicode byte position")]
     BytePositionError,
-    #[error("{0}")]
+    #[error("[IOError] {0}")]
     IOError(#[from] io::Error),
-    #[error("Invalid dictionary file: {0}")]
+    #[error("[Invalid Dictionary File] {0}")]
     InvalidDictionaryFile(String),
+    #[error("[Other Error] {0}")]
+    OtherError(String),
 }
 
 impl YomikiriError {

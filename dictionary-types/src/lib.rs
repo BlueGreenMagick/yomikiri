@@ -45,6 +45,14 @@ impl Entry {
                 .any(|p| *p == PartOfSpeech::Particle)
         })
     }
+
+    pub fn is_conjunction(&self) -> bool {
+        self.senses.iter().any(|s| {
+            s.part_of_speech
+                .iter()
+                .any(|p| *p == PartOfSpeech::Conjunction)
+        })
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]

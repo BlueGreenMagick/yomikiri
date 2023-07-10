@@ -2,7 +2,7 @@ import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { Api } from "~/api";
 import type { Module } from "../types";
-import type { Token } from "./tokenizer";
+import type { Token } from "./backend";
 
 export namespace Platform {
   export const IS_DESKTOP = false;

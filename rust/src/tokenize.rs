@@ -26,22 +26,36 @@ pub struct Token {
     /// defaults to `*`
     pub pos2: String,
     /// start idx
-    pub start: i32,
+    pub start: u32,
 }
 
 #[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
 pub struct TokenizeResult {
-    tokens: Vec<Token>,
-    selectedTokenIdx: usize,
-    dicEntriesJson: String,
+    pub tokens: Vec<Token>,
+    pub selectedTokenIdx: u32,
+    // entries in JSON
+    pub dicEntriesJson: Vec<String>,
 }
 
 impl<R: Read + Seek> SharedBackend<R> {
-    pub fn tokenize<'a>(&self, sentence: &'a str) -> YResult<TokenizeResult> {
+    pub fn tokenize<'a>(&mut self, sentence: &'a str, char_idx: usize) -> YResult<TokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
+        self.manual_patches(&mut tokens);
         self.join_all_tokens(&mut tokens)?;
-        unimplemented!()
+        let token_idx = match tokens.iter().position(|t| (t.start as usize) > char_idx) {
+            Some(i) => i - 1,
+            None => tokens.len() - 1,
+        };
+        let dict_jsons = self.dictionary.search_json(&tokens[token_idx].text)?;
+
+        Ok(TokenizeResult {
+            tokens,
+            selectedTokenIdx: token_idx.try_into().map_err(|_| {
+                YomikiriError::OtherError("Could not represent selectedTokenIdx as u32".into())
+            })?,
+            dicEntriesJson: dict_jsons,
+        })
     }
 
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
@@ -85,7 +99,7 @@ impl<R: Read + Seek> SharedBackend<R> {
                 partOfSpeech: get_value_from_detail(&details, 0, "UNK"),
                 pos2: get_value_from_detail(&details, 1, "*"),
                 text: text,
-                start: char_start as i32,
+                start: char_start as u32,
             };
             tokens.push(token)
         }
@@ -95,9 +109,10 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// Join tokens in-place if longer token exist in dictionary
     /// /// e.g. [込ん,で,いる] => 込んでいる
     fn join_all_tokens(&mut self, tokens: &mut Vec<Token>) -> YResult<()> {
-        let i = 0;
+        let mut i = 0;
         while i < tokens.len() {
-            self.join_tokens_from(tokens, i)?
+            self.join_tokens_from(tokens, i)?;
+            i += 1;
         }
         Ok(())
     }
@@ -119,7 +134,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///     2. (名詞)+ => (名詞)
     ///     3. (助詞)+ => (助詞) e.g.　「かも」、「では」
     fn join_compounds_multi(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
-        let token = tokens[from];
+        let token = &tokens[from];
         let mut all_noun = token.partOfSpeech == "名詞";
         let mut all_particle = token.partOfSpeech == "助詞";
 
@@ -131,12 +146,12 @@ impl<R: Read + Seek> SharedBackend<R> {
         let mut last_found_pos: &str = &token.partOfSpeech;
 
         while to < tokens.len() {
-            let token = tokens[to];
+            let token = &tokens[to];
             all_noun = all_noun && token.partOfSpeech == "名詞";
             all_particle = all_particle && token.partOfSpeech == "助詞";
 
-            let mut joined_text = concat_string(&joined_text_prev, &token.text);
-            let found = self.search(&joined_text)?.iter().any(|e| {
+            let joined_text = concat_string(&joined_text_prev, &token.text);
+            let found = self.dictionary.search(&joined_text)?.iter().any(|e| {
                 e.is_expression() || (all_noun && e.is_noun()) || (all_particle && e.is_particle())
             });
 
@@ -151,8 +166,8 @@ impl<R: Read + Seek> SharedBackend<R> {
                     "=exp="
                 }
             } else {
-                let mut joined_text_base = concat_string(&joined_text_prev, &token.baseForm);
-                let found_base = self.search(&joined_text_base)?.iter().any(|e| {
+                let joined_text_base = concat_string(&joined_text_prev, &token.baseForm);
+                let found_base = self.dictionary.search(&joined_text_base)?.iter().any(|e| {
                     e.is_expression()
                         || (all_noun && e.is_noun())
                         || (all_particle && e.is_particle())
@@ -172,20 +187,16 @@ impl<R: Read + Seek> SharedBackend<R> {
             }
             let found_next = self.dictionary.has_starts_with_excluding(&joined_text);
             if !found_next {
-                join_tokens(
-                    tokens,
-                    from,
-                    last_found_to,
-                    last_found_pos,
-                    last_found_is_base,
-                );
+                let pos = String::from(last_found_pos);
+                join_tokens(tokens, from, last_found_to, pos, last_found_is_base);
                 return Ok(last_found_to - from > 1);
             }
             joined_text_prev = joined_text;
             to += 1;
         }
 
-        join_tokens(tokens, from, to, last_found_pos, false);
+        let pos = String::from(last_found_pos);
+        join_tokens(tokens, from, to, pos, false);
         return Ok(to - from > 1);
     }
 
@@ -206,7 +217,8 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        join_tokens(tokens, from, from + 2, next_token.partOfSpeech, true);
+        let pos = String::from(&next_token.partOfSpeech);
+        join_tokens(tokens, from, from + 2, pos, true);
         return Ok(true);
     }
 
@@ -220,7 +232,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
         let next_token = &tokens[from + 1];
-        let next_pos = next_token.partOfSpeech;
+        let next_pos = &next_token.partOfSpeech;
         if next_pos != "名詞" && next_pos != "代名詞" && next_pos != "接頭辞" {
             return Ok(false);
         }
@@ -231,7 +243,8 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        join_tokens(tokens, from, from + 2, next_token.partOfSpeech, true);
+        let pos = String::from(next_pos);
+        join_tokens(tokens, from, from + 2, pos, true);
         return Ok(true);
     }
 
@@ -243,12 +256,12 @@ impl<R: Read + Seek> SharedBackend<R> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
-        let next_token = tokens[from + 1];
+        let next_token = &tokens[from + 1];
         if next_token.partOfSpeech != "助詞" {
             return Ok(false);
         }
 
-        let token = tokens[from];
+        let token = &tokens[from];
         let compound = concat_string(&token.text, &next_token.text);
         let search = self
             .dictionary
@@ -272,7 +285,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        let token = tokens[from];
+        let token = &tokens[from];
         let compound = concat_string(&token.text, &next_token.baseForm);
         let search = self.dictionary.search(&compound)?;
         if search.is_empty() {
@@ -285,14 +298,15 @@ impl<R: Read + Seek> SharedBackend<R> {
             "動詞的" => "動詞",
             "形状詞" => "形容",
             _ => &token.partOfSpeech,
-        };
+        }
+        .to_string();
         join_tokens(tokens, from, from + 2, new_pos, true);
         Ok(true)
     }
 
     fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
-        let mut token = &tokens[from];
+        let token = &tokens[from];
         if !(["動詞", "形容詞", "形状詞", "副詞", "=exp="].contains(&token.partOfSpeech.as_str()))
         {
             return Ok(false);
@@ -316,7 +330,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         let joined = Token {
             text: joined_text,
             reading: joined_reading,
-            partOfSpeech: token.partOfSpeech,
+            partOfSpeech: token.partOfSpeech.clone(),
             baseForm: token.baseForm.clone(),
             pos2: token.pos2.clone(),
             start: token.start,
@@ -324,9 +338,27 @@ impl<R: Read + Seek> SharedBackend<R> {
         tokens.splice(from..to, [joined]);
         return Ok(true);
     }
+
+    fn manual_patches(&mut self, tokens: &mut Vec<Token>) {
+        for token in tokens {
+            // "じゃない" 「じゃ」 -> 「じゃ」 instead of 「だ」
+            if &token.text == "じゃ" {
+                token.baseForm = String::from("じゃ");
+                token.partOfSpeech = String::from("接続詞");
+                token.pos2 = String::from("*");
+                token.reading = String::from("ジャ");
+            // "じゃあ、" 「じゃあ」 -> 「じゃあ」, instead of 「で」
+            } else if token.text == "じゃあ" {
+                token.baseForm = String::from("じゃあ");
+                token.partOfSpeech = String::from("接続詞");
+                token.pos2 = String::from("*");
+                token.reading = String::from("ジャー");
+            }
+        }
+    }
 }
 
-pub fn createTokenizer() -> Tokenizer {
+pub fn create_tokenizer() -> Tokenizer {
     let dictionary = DictionaryConfig {
         kind: Some(DictionaryKind::UniDic),
         path: None,
