@@ -1,0 +1,16 @@
+{
+  "name": "@yomikiri/dictionary",
+  "collaborators": [
+    "BlueGreenMagick <bluegreenmagick@gmail.com>"
+  ],
+  "description": "generated JMDict format usable in Yomikiri",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": {
+    "./*": "./resources/*"
+  },
+  "files": [
+    "resources/english.yomikiridict",
+    "resources/english.yomikiriindex"
+  ]
+}

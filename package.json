@@ -8,7 +8,8 @@
   "workspaces": [
     "extension",
     "safari",
-    "rust/pkg"
+    "rust/pkg",
+    "dictionary"
   ],
   "scripts": {}
 }

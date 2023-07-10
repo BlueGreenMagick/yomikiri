@@ -1,6 +1,9 @@
 ### Development
 
-Go to `/rust` and run `./build.sh`. You only need to do this once.
+**Building required files**
+You only need to do this once.
+1. Go to `/dictionary`, download JMDict_e from web and run `cargo run -- "./resources/JMdict_e" "./resources/english.yomikiridict" "./resources/english.yomikiriindex"`.
+2. Go to `/rust` and run `./build.sh`.
 
 **Chrome**
 
