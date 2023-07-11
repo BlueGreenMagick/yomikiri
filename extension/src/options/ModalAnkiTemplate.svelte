@@ -22,6 +22,9 @@
   let fieldTemplates: { [name: string]: string };
   let ankiTags: string;
 
+  let invalidDeck: boolean;
+  let invalidNotetype: boolean;
+
   /** load deckNames and notetypeNames */
   async function loadNames() {
     deckNames = await AnkiApi.deckNames();
@@ -34,16 +37,8 @@
       ankiTags = "";
     } else {
       const template = templates[0];
-      if (deckNames.includes(template.deck)) {
-        selectedDeck = template.deck;
-      } else {
-        selectedDeck = deckNames[0];
-      }
-      if (notetypeNames.includes(template.notetype)) {
-        selectedNotetype = template.notetype;
-      } else {
-        selectedNotetype = notetypeNames[0];
-      }
+      selectedDeck = template.deck;
+      selectedNotetype = template.notetype;
       fieldTemplates = {};
       for (const field of template.fields) {
         fieldTemplates[field.name] = field.value;
@@ -52,8 +47,13 @@
     }
   }
 
-  async function loadFields(notetype: string) {
+  async function loadFields(notetype: string, invalid: boolean) {
     if (notetype === undefined) return [];
+    if (invalid) {
+      const templates = await Config.get("anki.templates");
+      const template = templates[0];
+      return template.fields.map((f) => f.name);
+    }
     const fields = await AnkiApi.nodeTypeFields(notetype);
     for (const field of fields) {
       fieldTemplates[field] ??= "";
@@ -87,12 +87,19 @@
   async function initialize(hidden: boolean) {
     if (hidden) return;
     await loadNames();
-    loadedFields = loadFields(selectedNotetype);
+    let invalidDeck = !deckNames.includes(selectedDeck);
+    let invalidNotetype = !notetypeNames.includes(selectedNotetype);
+    loadedFields = loadFields(selectedNotetype, invalidDeck || invalidNotetype);
     initializeResolve();
     initialized = true;
   }
 
-  $: loadedFields = loadFields(selectedNotetype);
+  $: invalidDeck = initialized && !deckNames.includes(selectedDeck);
+  $: invalidNotetype = initialized && !notetypeNames.includes(selectedNotetype);
+  $: loadedFields = loadFields(
+    selectedNotetype,
+    invalidDeck || invalidNotetype
+  );
   $: saveTemplate(selectedDeck, selectedNotetype, fieldTemplates, ankiTags);
   // Must come last so the above 2 is not be called on initialization
   $: initialize(hidden);
@@ -104,16 +111,30 @@
   {:then}
     <div class="selects">
       <div class="item-title">Deck</div>
-      <select class="item-select" bind:value={selectedDeck}>
+      <select
+        class="item-select"
+        bind:value={selectedDeck}
+        class:invalid={invalidDeck}
+      >
         {#each deckNames as name}
           <option value={name}>{name}</option>
         {/each}
+        {#if invalidDeck}
+          <option value={selectedDeck}>(Invalid) {selectedDeck}</option>
+        {/if}
       </select>
       <div class="item-title">Note Type</div>
-      <select class="item-select" bind:value={selectedNotetype}>
+      <select
+        class="item-select"
+        bind:value={selectedNotetype}
+        class:invalid={invalidNotetype}
+      >
         {#each notetypeNames as name}
           <option value={name}>{name}</option>
         {/each}
+        {#if invalidNotetype}
+          <option value={selectedNotetype}>(Invalid) {selectedNotetype}</option>
+        {/if}
       </select>
     </div>
     <div class="fields">
@@ -160,6 +181,9 @@
   .item-select {
     grid-column: 2 / 3;
     font-size: 1em;
+  }
+  .item-select.invalid {
+    color: red;
   }
   .fields {
     display: grid;
