@@ -5,89 +5,118 @@ import { Entry } from "~/dicEntry";
 const scanData: ScanResult = {
   dicEntries: [
     {
-      terms: ["食べる", "喰べる", "たべる"],
+      terms: ["見る", "観る", "視る", "覧る", "みる"],
       forms: [
         {
-          form: "食べる",
+          form: "見る",
         },
         {
-          form: "喰べる",
-          info: ["=iK="],
+          form: "観る",
+        },
+        {
+          form: "視る",
+        },
+        {
+          form: "覧る",
+          uncommon: true,
+          info: ["=sK="],
         },
       ],
       readings: [
         {
-          reading: "たべる",
+          reading: "みる",
         },
       ],
       senses: [
         {
           pos: ["verb"],
-          meaning: ["to eat"],
+          meaning: ["to see", "to look", "to watch", "to view", "to observe"],
         },
         {
           pos: ["verb"],
           meaning: [
-            "to live on (e.g. a salary)",
-            "to live off",
-            "to subsist on",
+            "to examine",
+            "to look over",
+            "to assess",
+            "to check",
+            "to judge",
           ],
         },
+        {
+          pos: ["verb"],
+          meaning: [
+            "to look after",
+            "to attend to",
+            "to take care of",
+            "to keep an eye on",
+          ],
+        },
+        {
+          pos: ["verb"],
+          meaning: [
+            "to experience",
+            "to meet with (misfortune, success, etc.)",
+          ],
+        },
+        {
+          pos: ["verb"],
+          misc: ["=uk="],
+          info: ["after the -te form of a verb"],
+          meaning: ["to try ...", "to have a go at ...", "to give ... a try"],
+        },
+        {
+          pos: ["verb"],
+          misc: ["=uk="],
+          info: ["as 〜てみると, 〜てみたら, 〜てみれば, etc."],
+          meaning: ["to see (that) ...", "to find (that) ..."],
+        },
       ],
-      priority: 130,
+      priority: 161,
     },
   ].map(Entry.fromObject),
   token: {
-    text: "喰べたい",
+    text: "観たい",
     pos: "動詞",
-    base: "喰べる",
-    reading: "たべたい",
-    pos2: "一般",
+    base: "観る",
+    reading: "みたい",
+    pos2: "非自立可能",
     start: 6,
   },
   range: new Range(),
-  sentence: "本好きが本が喰べたい。",
+  sentence: "面白い映画を観たい。",
   startIdx: 6,
-  endIdx: 10,
+  endIdx: 9,
   sentenceTokens: [
     {
-      text: "本好き",
-      pos: "形状詞",
-      base: "本好き",
-      reading: "ほんずき",
+      text: "面白い",
+      pos: "形容詞",
+      base: "面白い",
+      reading: "おもしろい",
       pos2: "一般",
       start: 0,
     },
     {
-      text: "が",
-      pos: "助詞",
-      base: "が",
-      reading: "が",
-      pos2: "格助詞",
+      text: "映画",
+      pos: "名詞",
+      base: "映画",
+      reading: "えーが",
+      pos2: "普通名詞",
       start: 3,
     },
     {
-      text: "本",
-      pos: "名詞",
-      base: "本",
-      reading: "ほん",
-      pos2: "普通名詞",
-      start: 4,
-    },
-    {
-      text: "が",
+      text: "を",
       pos: "助詞",
-      base: "が",
-      reading: "が",
+      base: "を",
+      reading: "お",
       pos2: "格助詞",
       start: 5,
     },
     {
-      text: "喰べたい",
+      text: "観たい",
       pos: "動詞",
-      base: "喰べる",
-      reading: "たべたい",
-      pos2: "一般",
+      base: "観る",
+      reading: "みたい",
+      pos2: "非自立可能",
       start: 6,
     },
     {
@@ -96,10 +125,10 @@ const scanData: ScanResult = {
       base: "。",
       reading: "",
       pos2: "句点",
-      start: 10,
+      start: 9,
     },
   ],
-  tokenIdx: 4,
+  tokenIdx: 3,
 };
 
 export const exampleMarkerData: MarkerData = {
@@ -108,4 +137,5 @@ export const exampleMarkerData: MarkerData = {
   selectedMeaning: scanData.dicEntries[0].senses[0],
 };
 
-export const exampleTranslatedSentence = "Book lovers want to eat books.";
+export const exampleTranslatedSentence =
+  "I want to watch an interesting movie.";
