@@ -154,8 +154,15 @@
       </select>
     </div>
     <div class="preview-toggle">
-      <label for="preview">Preview</label>
-      <input type="checkbox" name="preview" bind:checked={previewMode} />
+      <label for="preview-checkbox" title={exampleMarkerData.scanned.sentence}>
+        Preview
+      </label>
+      <input
+        type="checkbox"
+        id="preview-checkbox"
+        title={exampleMarkerData.scanned.sentence}
+        bind:checked={previewMode}
+      />
     </div>
     <div class="fields">
       {#await loadedFields}
