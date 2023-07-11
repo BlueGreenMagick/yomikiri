@@ -9,13 +9,19 @@
   export let min: number | null = null;
   export let max: number | null = null;
 
-  let value: number;
+  let value: number | undefined;
+  let initial = true;
 
   async function load() {
     value = await Config.get(key);
   }
 
-  function onValueChange(value: number) {
+  function onValueChange(value: number | undefined) {
+    if (value === undefined) return;
+    if (initial === true) {
+      initial = false;
+      return;
+    }
     Config.set(key, value);
     updateConfig();
   }

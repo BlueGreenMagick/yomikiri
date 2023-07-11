@@ -7,13 +7,19 @@
   export let title: string;
   export let description: string = "";
 
-  let value: string;
+  let value: string | undefined;
+  let initial = true;
 
   async function load() {
     value = await Config.get(key);
   }
 
-  function onValueChange(value: string) {
+  function onValueChange(value: string | undefined) {
+    if (value === undefined) return;
+    if (initial === true) {
+      initial = false;
+      return;
+    }
     Config.set(key, value);
     updateConfig();
   }
