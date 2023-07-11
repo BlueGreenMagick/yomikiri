@@ -90,7 +90,7 @@
 
   function markerValue(field: string) {
     let marker = fieldTemplates[field] as AnkiNoteBuilder.Marker;
-    if (marker === "sentence-translate") {
+    if (marker === "translated-sentence") {
       return exampleTranslatedSentence;
     } else {
       return AnkiNoteBuilder.markerValue(
@@ -174,8 +174,9 @@
             <input class="field-marker" disabled value={markerValue(field)} />
           {:else}
             <select class="field-marker" bind:value={fieldTemplates[field]}>
-              {#each AnkiNoteBuilder.MARKERS as marker}
-                <option>{marker}</option>
+              {#each AnkiNoteBuilder.markerKeys() as marker}
+                <option value={marker}>{AnkiNoteBuilder.MARKERS[marker]}</option
+                >
               {/each}
             </select>
           {/if}

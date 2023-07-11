@@ -24,31 +24,38 @@ export interface NoteData {
 }
 
 export namespace AnkiNoteBuilder {
-  export const MARKERS = [
-    "",
-    "word",
-    "word-furigana",
-    "word-kana",
-    "dict",
-    "dict-furigana",
-    "dict-kana",
-    "sentence",
-    "sentence-furigana",
-    "sentence-kana",
-    "sentence-translate",
-    "sentence-cloze",
-    "sentence-cloze-furigana",
-    "meaning",
-    "meaning-full",
-    "meaning-short",
-    "url",
-    "link",
-  ] as const;
-  export type Marker = (typeof MARKERS)[number];
+  export const MARKERS = {
+    "": "-",
+    word: "word",
+    "word-furigana": "word (furigana)",
+    "word-kana": "word (kana)",
+    dict: "dictionary form",
+    "dict-furigana": "dictionary form (furigana)",
+    "dict-kana": "dictionary form (kana)",
+    "main-dict": "main dictionary form",
+    "main-dict-furigana": "main dictionary form (furigana)",
+    "main-dict-kana": "main dictionary form (kana)",
+    sentence: "sentence",
+    "sentence-furigana": "sentence (furigana)",
+    "sentence-kana": "sentence (kana)",
+    "sentence-cloze": "sentence (cloze)",
+    "sentence-cloze-furigana": "sentence (cloze) (furigana)",
+    "translated-sentence": "translated sentence",
+    meaning: "meaning",
+    "meaning-full": "meaning (full)",
+    "meaning-short": "meaning (short)",
+    url: "url",
+    link: "link",
+  } as const;
+  export type Marker = keyof typeof MARKERS;
 
   const _markerHandlers: {
     [marker: string]: (data: MarkerData) => string | Promise<string>;
   } = {};
+
+  export function markerKeys(): Marker[] {
+    return Object.keys(MARKERS) as Marker[];
+  }
 
   export function addMarker(
     marker: Marker,
@@ -131,6 +138,21 @@ export namespace AnkiNoteBuilder {
     return Utils.escapeHTML(kana);
   });
 
+  addMarker("main-dict", (data: MarkerData) => {
+    return Utils.escapeHTML(Entry.mainForm(data.entry));
+  });
+  addMarker("main-dict-furigana", (data: MarkerData) => {
+    const form = Entry.mainForm(data.entry);
+    const reading = Entry.readingForForm(data.entry, form, false).reading;
+    const rubies = RubyString.generate(form, reading);
+    return Utils.escapeHTML(RubyString.toAnki(rubies));
+  });
+  addMarker("main-dict-kana", (data: MarkerData) => {
+    const form = Entry.mainForm(data.entry);
+    const kana = Entry.readingForForm(data.entry, form, false).reading;
+    return Utils.escapeHTML(kana);
+  });
+
   addMarker("sentence", (data: MarkerData) => {
     let sentence = "";
     const tokens = data.scanned.sentenceTokens;
@@ -183,7 +205,7 @@ export namespace AnkiNoteBuilder {
 
     return sentence;
   });
-  addMarker("sentence-translate", async (data: MarkerData) => {
+  addMarker("translated-sentence", async (data: MarkerData) => {
     return await translate(data.scanned.sentence);
   });
 
