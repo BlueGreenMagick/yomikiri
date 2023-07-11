@@ -15,6 +15,7 @@ window.scanner = scanner;
 async function _trigger(x: number, y: number): Promise<boolean> {
   const result = await scanner.scanAt(x, y);
   if (result === null) return false;
+  console.log(result);
   if (result.dicEntries.length === 0) {
     highlighter.highlightRed(result.range);
     Tooltip.hide();

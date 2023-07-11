@@ -57,18 +57,16 @@ export namespace AnkiNoteBuilder {
     _markerHandlers[marker] = fn;
   }
 
-  export async function markerValue(
+  export function markerValue(
     marker: string,
     data: MarkerData
-  ): Promise<string> {
+  ): Promise<string> | string {
     const handler = _markerHandlers[marker];
     let value = "";
-    if (handler !== undefined) {
-      value = await handler(data);
-    } else {
-      console.error(`Invalid marker in Anki note template: {{${marker}}}`);
+    if (handler === undefined) {
+      throw new Error(`Invalid marker in Anki note template: {{${marker}}}`);
     }
-    return value;
+    return handler(data);
   }
 
   function cloneNote(n: NoteData): NoteData {

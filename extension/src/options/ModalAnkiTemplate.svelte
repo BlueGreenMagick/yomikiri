@@ -5,11 +5,16 @@
   import Modal from "./components/Modal.svelte";
   import Utils from "~/utils";
   import { AnkiNoteBuilder } from "~/ankiNoteBuilder";
+  import {
+    exampleMarkerData,
+    exampleTranslatedSentence,
+  } from "./exampleMarkerData";
 
   export let hidden: boolean;
 
   const [initializePromise, initializeResolve] = Utils.createPromise<void>();
   let initialized = false;
+  let previewMode = false;
 
   let deckNames: string[];
   let notetypeNames: string[];
@@ -84,6 +89,18 @@
     Config.set("anki.templates", [template]);
   }
 
+  function markerValue(field: string) {
+    let marker = fieldTemplates[field] as AnkiNoteBuilder.Marker;
+    if (marker === "sentence-translate") {
+      return exampleTranslatedSentence;
+    } else {
+      return AnkiNoteBuilder.markerValue(
+        fieldTemplates[field],
+        exampleMarkerData
+      );
+    }
+  }
+
   async function initialize(hidden: boolean) {
     if (hidden) return;
     await loadNames();
@@ -137,24 +154,32 @@
         {/if}
       </select>
     </div>
+    <div class="preview-toggle">
+      <label for="preview">Preview</label>
+      <input type="checkbox" name="preview" bind:checked={previewMode} />
+    </div>
     <div class="fields">
       {#await loadedFields}
         <div>Getting fields in note type...</div>
       {:then fieldNames}
         {#each fieldNames as field}
           <div class="field-name">{field}</div>
-          <select class="field-marker" bind:value={fieldTemplates[field]}>
-            {#each AnkiNoteBuilder.MARKERS as marker}
-              <option>{marker}</option>
-            {/each}
-          </select>
+          {#if previewMode}
+            <input class="field-marker" disabled value={markerValue(field)} />
+          {:else}
+            <select class="field-marker" bind:value={fieldTemplates[field]}>
+              {#each AnkiNoteBuilder.MARKERS as marker}
+                <option>{marker}</option>
+              {/each}
+            </select>
+          {/if}
         {/each}
       {:catch err}
         <div class="error">{err.toString()}</div>
       {/await}
     </div>
     <div class="tags-container">
-      <div class="tags-label"><b>Tags</b></div>
+      <div class="tags-label">Tags</div>
       <div class="tags-value">
         <input type="text" title="separated by space" bind:value={ankiTags} />
       </div>
@@ -174,9 +199,11 @@
     row-gap: 12px;
     column-gap: 16px;
     align-items: center;
+    margin-bottom: 18px;
   }
   .item-title {
     grid-column: 1 / 2;
+    font-weight: bold;
   }
   .item-select {
     grid-column: 2 / 3;
@@ -185,13 +212,25 @@
   .item-select.invalid {
     color: red;
   }
+
+  .preview-toggle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    margin: 6px;
+  }
+  .preview-toggle input {
+    flex: 0 0 auto;
+    width: initial;
+  }
+
   .fields {
     display: grid;
     grid-template-columns: auto 1fr;
     row-gap: 8px;
     column-gap: 12px;
     align-items: center;
-    margin-top: 24px;
   }
   .field-name {
     grid-column: 1 / 2;
@@ -200,10 +239,11 @@
   .field-marker {
     grid-column: 2 / 3;
     width: 100%;
-    box-sizing: border-box;
+    height: 1.6em;
     font-size: 1em;
-    padding: 1px 2px;
+    padding: 0px 2px;
   }
+
   .tags-container {
     display: flex;
     gap: 12px;
@@ -212,6 +252,7 @@
   }
   .tags-label {
     flex: 0 0 auto;
+    font-weight: bold;
   }
   .tags-value {
     flex: 1 1 auto;
