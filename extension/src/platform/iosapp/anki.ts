@@ -33,7 +33,7 @@ export namespace AnkiApi {
     return Platform.messageWebview("ankiInfo", null);
   }
 
-  export function canGetAnkiInfo(): boolean {
+  export async function canGetAnkiInfo(): Promise<boolean> {
     return ankiInfo !== undefined;
   }
 
@@ -67,10 +67,6 @@ export namespace AnkiApi {
       return [];
     }
     return notetype.fields.map((f) => f.name);
-  }
-
-  export async function checkConnection(): Promise<void> {
-    throw new Error("Unimplemented");
   }
 }
 

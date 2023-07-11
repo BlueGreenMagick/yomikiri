@@ -2,11 +2,10 @@ import type { NoteData } from "~/ankiNoteBuilder";
 
 export interface IAnkiOptions {
   requestAnkiInfo: () => void;
-  canGetAnkiInfo: () => boolean;
+  canGetAnkiInfo: () => Promise<boolean>;
   deckNames: () => Promise<string[]>;
   notetypeNames: () => Promise<string[]>;
   nodeTypeFields: (noteTypeName: string) => Promise<string[]>;
-  checkConnection: () => Promise<void>;
 }
 
 export interface IAnkiAddNotes {

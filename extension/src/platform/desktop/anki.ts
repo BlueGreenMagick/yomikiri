@@ -22,14 +22,23 @@ export namespace AnkiApi {
   /** Send Anki-connect request */
   async function request(action: string, params?: any): Promise<any> {
     const ankiConnectUrl = await ankiConnectURL();
-    const response = await fetch(ankiConnectUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        action,
-        version: ANKI_CONNECT_VER,
-        params,
-      }),
-    });
+    let response;
+    try {
+      response = await fetch(ankiConnectUrl, {
+        method: "POST",
+        body: JSON.stringify({
+          action,
+          version: ANKI_CONNECT_VER,
+          params,
+        }),
+      });
+    } catch (e) {
+      console.error(e);
+      throw new Error(
+        "Could not connect to Anki-connect. Please check that Anki is running, and if the port number is correct."
+      );
+    }
+
     const data = await response.json();
 
     if (Object.getOwnPropertyNames(data).length != 2) {
@@ -51,7 +60,9 @@ export namespace AnkiApi {
     throw new Error("Unimplemented for desktop");
   }
 
-  export function canGetAnkiInfo(): boolean {
+  /** Throws an error if not successfully connected. */
+  export async function canGetAnkiInfo(): Promise<boolean> {
+    await checkConnection();
     return true;
   }
 
@@ -94,7 +105,7 @@ export namespace AnkiApi {
   }
 
   /** Throws an error if not successfully connected. */
-  export async function checkConnection(): Promise<void> {
+  async function checkConnection(): Promise<void> {
     const resp = await request("requestPermission");
     if (resp.permission === "granted") {
       return;

@@ -8,23 +8,18 @@
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
   import { ankiTemplateModalHidden } from "./stores";
 
-  //ios only
-  let testConnectionDescription = Platform.IS_IOS
-    ? "Click to test connction with AnkiMobile"
-    : "Click to test connection with AnkiConnect";
-  // shared
-  let modalTemplateHidden = true;
+  let ankiTemplateDescription = "";
 
-  async function testConnection() {
-    if (Platform.IS_IOS) {
-      testConnectionDescription = "Connecting to AnkiMobile... (Unimplemented)";
-    } else {
-      testConnectionDescription = "Connecting to AnkiConnect...";
-    }
+  async function openAnkiTemplateModal() {
     try {
-      await AnkiApi.checkConnection();
-      testConnectionDescription =
-        "<span class='success'>Successfully connected!</span>";
+      ankiTemplateDescription = "";
+      let ok = await AnkiApi.canGetAnkiInfo();
+      if (ok) {
+        $ankiTemplateModalHidden = false;
+      } else {
+        ankiTemplateDescription = "Retrieving information from Anki...";
+        AnkiApi.requestAnkiInfo();
+      }
     } catch (err) {
       console.error(err);
       let errorMsg;
@@ -33,7 +28,7 @@
       } else {
         errorMsg = "Unknown error: check the browser console for details";
       }
-      testConnectionDescription = `<span class="warning">${errorMsg}</span>`;
+      ankiTemplateDescription = `<span class="warning">${errorMsg}</span>`;
     }
   }
 </script>
@@ -47,24 +42,10 @@
     />
   {/if}
   <OptionClick
-    title="Test connection"
-    description={testConnectionDescription}
-    buttonText="Test"
-    on:trigger={async () => {
-      await testConnection();
-    }}
-  />
-  <OptionClick
     title="Configure Anki template"
     buttonText="Configure"
-    on:trigger={() => {
-      if (AnkiApi.canGetAnkiInfo()) {
-        $ankiTemplateModalHidden = false;
-      } else {
-        // @ts-ignore
-        AnkiApi.requestAnkiInfo();
-      }
-    }}
+    description={ankiTemplateDescription}
+    on:trigger={openAnkiTemplateModal}
   />
 </GroupedOptions>
 <ModalAnkiTemplate
