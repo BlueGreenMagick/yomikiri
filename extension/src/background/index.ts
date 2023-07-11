@@ -11,15 +11,13 @@ import { AnkiApi } from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 
-let backendP: Promise<BackendWrapper> = BackendWrapper.initialize();
+let backend: BackendWrapper = new BackendWrapper();
 
 async function searchTerm(term: string): Promise<Entry[]> {
-  let backend = await backendP;
   return await backend.searchTerm(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-  let backend = await backendP;
   return await backend.tokenize(req);
 }
 

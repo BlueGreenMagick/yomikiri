@@ -10,15 +10,10 @@ import type { Entry } from "~/dicEntry";
 export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
 export class BackendWrapper {
-  backend: Backend;
+  backendP: Promise<Backend>;
 
-  private constructor(backend: Backend) {
-    this.backend = backend;
-  }
-
-  /// load wasm and initialize
-  static async initialize(): Promise<BackendWrapper> {
-    return new BackendWrapper(await Backend.initialize());
+  constructor() {
+    this.backendP = Backend.initialize();
   }
 
   /** text should not be empty */
@@ -39,8 +34,8 @@ export class BackendWrapper {
         `selectedCharIdx is out of range: ${req.charIdx}, ${req.text}`
       );
     }
-    Utils.benchStart();
-    let result = await this.backend.tokenize(req.text, req.charIdx);
+    let backend = await this.backendP;
+    let result = await backend.tokenize(req.text, req.charIdx);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
@@ -49,6 +44,7 @@ export class BackendWrapper {
   }
 
   async searchTerm(term: string): Promise<Entry[]> {
-    return this.backend.search(term);
+    let backend = await this.backendP;
+    return backend.search(term);
   }
 }
