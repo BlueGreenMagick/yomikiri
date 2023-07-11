@@ -105,7 +105,7 @@ export namespace AnkiApi {
   }
 
   /** Throws an error if not successfully connected. */
-  async function checkConnection(): Promise<void> {
+  export async function checkConnection(): Promise<void> {
     const resp = await request("requestPermission");
     if (resp.permission === "granted") {
       return;

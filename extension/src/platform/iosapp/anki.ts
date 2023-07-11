@@ -68,6 +68,16 @@ export namespace AnkiApi {
     }
     return notetype.fields.map((f) => f.name);
   }
+
+  export async function checkConnection(): Promise<void> {
+    let installed = await Platform.messageWebview("ankiIsInstalled", null);
+    if (installed === false) {
+      throw new Error(
+        "Could not find AnkiMobile on this device. " +
+          "Install <a href='https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387'>AnkiMobile</a> and try again."
+      );
+    }
+  }
 }
 
 AnkiApi satisfies IAnkiOptions;

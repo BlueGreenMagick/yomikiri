@@ -6,6 +6,8 @@ export interface IAnkiOptions {
   deckNames: () => Promise<string[]>;
   notetypeNames: () => Promise<string[]>;
   nodeTypeFields: (noteTypeName: string) => Promise<string[]>;
+  /** Throws Error when failing to connect */
+  checkConnection: () => Promise<void>;
 }
 
 export interface IAnkiAddNotes {
