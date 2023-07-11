@@ -208,7 +208,12 @@ export namespace Sense {
     u: "unclassified",
   };
 
-  function parsePos(tinyPos: string): string {
-    return tinyPosMap[tinyPos];
+  function parsePos(rawPos: string): string {
+    let pos = tinyPosMap[rawPos];
+    if (pos !== undefined) {
+      return pos;
+    } else {
+      return rawPos;
+    }
   }
 }

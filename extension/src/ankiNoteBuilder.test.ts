@@ -6,53 +6,59 @@ import { Entry } from "./dicEntry";
 const scanResult: ScanResult = {
   token: {
     text: "読みたい",
-    partOfSpeech: "動詞",
-    baseForm: "読む",
+    pos: "動詞",
+    base: "読む",
     reading: "よみたい",
-    pos2: "自立",
+    pos2: "一般",
+    start: 4,
   },
+  sentence: "わたしは本が読みたい",
   range: new Range(),
-  sentence: "わやしは本が読みたい",
-  startIdx: 6,
-  endIdx: 10,
+  startIdx: 10,
+  endIdx: 6,
+  tokenIdx: 4,
   sentenceTokens: [
     {
-      text: "わや",
-      partOfSpeech: "名詞",
-      baseForm: "わや",
-      reading: "わや",
-      pos2: "一般",
+      text: "わたし",
+      pos: "代名詞",
+      base: "わたし",
+      reading: "わたし",
+      pos2: "*",
+      start: 0,
     },
     {
-      text: "しは",
-      baseForm: "しは",
-      reading: "しは",
-      partOfSpeech: "=exp=",
-      pos2: "*",
+      text: "は",
+      pos: "助詞",
+      base: "は",
+      reading: "わ",
+      pos2: "係助詞",
+      start: 3,
     },
     {
       text: "本",
-      partOfSpeech: "名詞",
-      baseForm: "本",
+      pos: "名詞",
+      base: "本",
       reading: "ほん",
-      pos2: "一般",
+      pos2: "普通名詞",
+      start: 4,
     },
     {
       text: "が",
-      partOfSpeech: "助詞",
-      baseForm: "が",
+      pos: "助詞",
+      base: "が",
       reading: "が",
       pos2: "格助詞",
+      start: 5,
     },
     {
       text: "読みたい",
-      partOfSpeech: "動詞",
-      baseForm: "読む",
+      pos: "動詞",
+      base: "読む",
       reading: "よみたい",
-      pos2: "自立",
+      pos2: "一般",
+      start: 6,
     },
   ],
-  tokenIdx: 4,
   dicEntries: [
     {
       terms: ["読む", "讀む", "よむ"],
@@ -73,15 +79,15 @@ const scanResult: ScanResult = {
       ],
       senses: [
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["verb"],
           meaning: ["to read"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["verb"],
           meaning: ["to recite (e.g. a sutra)", "to chant"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["verb"],
           meaning: [
             "to predict",
             "to guess",
@@ -92,16 +98,16 @@ const scanResult: ScanResult = {
           ],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["verb"],
           meaning: ["to decipher"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["verb"],
           info: ["now mostly used in idioms"],
           meaning: ["to count", "to estimate"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["verb"],
           info: ["also written as 訓む"],
           meaning: ["to read (a kanji) with its native Japanese reading"],
         },
@@ -148,15 +154,15 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("sentence", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence", data);
-    expect(value).toBe("わやしは本が<b>読みたい</b>");
+    expect(value).toBe("わたしは本が<b>読みたい</b>");
   });
   test("sentence-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-furigana", data);
-    expect(value).toBe("わやしは 本[ほん]が<b>読[よ]みたい</b>");
+    expect(value).toBe("わたしは 本[ほん]が<b>読[よ]みたい</b>");
   });
   test("sentence-kana", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-kana", data);
-    expect(value).toBe("わやしはほんが<b>よみたい</b>");
+    expect(value).toBe("わたしはほんが<b>よみたい</b>");
   });
   test("sentence-translate", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-translate", data);
@@ -164,14 +170,14 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("sentence-cloze", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-cloze", data);
-    expect(value).toBe("わやしは本が{{c1::読みたい}}");
+    expect(value).toBe("わたしは本が{{c1::読みたい}}");
   });
   test("sentence-cloze-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
       "sentence-cloze-furigana",
       data
     );
-    expect(value).toBe("わやしは 本[ほん]が{{c1::読[よ]みたい}}");
+    expect(value).toBe("わたしは 本[ほん]が{{c1::読[よ]みたい}}");
   });
   test("meaning", async () => {
     const value = await AnkiNoteBuilder.markerValue("meaning", data);
@@ -216,10 +222,11 @@ describe("AnkiNoteBuilder marker", () => {
 const escapeScanResult: ScanResult = {
   token: {
     text: "図書",
-    partOfSpeech: "名詞",
-    baseForm: "図書",
+    pos: "名詞",
+    base: "図書",
     reading: "としょ",
     pos2: "一般",
+    start: 2,
   },
   range: new Range(),
   sentence: "図書<",
@@ -228,17 +235,19 @@ const escapeScanResult: ScanResult = {
   sentenceTokens: [
     {
       text: "図書",
-      partOfSpeech: "名詞",
-      baseForm: "図書",
+      pos: "名詞",
+      base: "図書",
       reading: "としょ",
       pos2: "一般",
+      start: 0,
     },
     {
       text: "<",
-      partOfSpeech: "UNK",
-      baseForm: "<",
+      pos: "UNK",
+      base: "<",
       reading: "<",
       pos2: "*",
+      start: 2,
     },
   ],
   tokenIdx: 0,
@@ -247,13 +256,11 @@ const escapeScanResult: ScanResult = {
       forms: [
         {
           form: "図書",
-          priority: ["ichi1", "news1", "nf09"],
         },
       ],
       readings: [
         {
           reading: "としょ",
-          priority: ["ichi1", "news1", "nf09"],
         },
         {
           reading: "ずしょ",
@@ -261,7 +268,7 @@ const escapeScanResult: ScanResult = {
       ],
       senses: [
         {
-          partOfSpeech: ["=n="],
+          pos: ["noun"],
           meaning: ["books<"],
         },
       ],
