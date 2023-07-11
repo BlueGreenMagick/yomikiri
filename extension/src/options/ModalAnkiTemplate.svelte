@@ -34,14 +34,13 @@
   async function loadNames() {
     deckNames = await AnkiApi.deckNames();
     notetypeNames = await AnkiApi.notetypeNames();
-    const templates = await Config.get("anki.templates");
-    if (templates.length === 0) {
+    const template = await Config.get("anki.template");
+    if (template === null) {
       selectedNotetype = notetypeNames[0];
       selectedDeck = deckNames[0];
       fieldTemplates = {};
       ankiTags = "";
     } else {
-      const template = templates[0];
       selectedDeck = template.deck;
       selectedNotetype = template.notetype;
       fieldTemplates = {};
@@ -55,8 +54,8 @@
   async function loadFields(notetype: string, invalid: boolean) {
     if (notetype === undefined) return [];
     if (invalid) {
-      const templates = await Config.get("anki.templates");
-      const template = templates[0];
+      const template = await Config.get("anki.template");
+      if (template === null) return [];
       return template.fields.map((f) => f.name);
     }
     const fields = await AnkiApi.nodeTypeFields(notetype);
@@ -86,7 +85,7 @@
         value: fields[fieldName] ?? "",
       });
     }
-    Config.set("anki.templates", [template]);
+    Config.set("anki.template", template);
   }
 
   function markerValue(field: string) {

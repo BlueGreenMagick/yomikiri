@@ -83,8 +83,13 @@ export namespace AnkiNoteBuilder {
   }
 
   export async function buildNote(data: MarkerData): Promise<NoteData> {
-    const templates = await Config.get("anki.templates");
-    const template = templates[0];
+    const template = await Config.get("anki.template");
+    if (template === null) {
+      throw new Error(
+        "You need to set up Anki template in the extension settings first."
+      );
+    }
+
     const note = cloneNote(template);
     for (const field of note.fields) {
       const marker = field.value;

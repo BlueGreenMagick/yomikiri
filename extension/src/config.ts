@@ -2,13 +2,13 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
 import Utils from "./utils";
 
-/** Cannot distinguish between null and undefined */
+/** Must not be undefined */
 export interface Configuration {
   "general.font_size": number;
   "general.font": string;
   "anki.connect_port": number;
   "anki.connect_url": string;
-  "anki.templates": NoteData[];
+  "anki.template": NoteData | null;
 }
 
 const defaultOptions: Configuration = {
@@ -16,7 +16,7 @@ const defaultOptions: Configuration = {
   "general.font": "Meiryo",
   "anki.connect_port": 8785,
   "anki.connect_url": "http://127.0.0.1",
-  "anki.templates": [],
+  "anki.template": null,
 };
 
 export interface StoredConfiguration extends Partial<Configuration> {
