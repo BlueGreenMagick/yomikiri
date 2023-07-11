@@ -6,6 +6,18 @@ import OptionsSvelte from "./Options.svelte";
 import { AnkiApi } from "@platform/anki";
 import { Theme } from "~/theme";
 import { updated, ankiTemplateModalHidden } from "./stores";
+import Utils from "~/utils";
+import Config from "~/config";
+
+declare global {
+  interface Window {
+    Api: typeof Api;
+    Utils: typeof Utils;
+    AnkiApi: typeof AnkiApi;
+    Config: typeof Config;
+    openAnkiInfoModal: () => void;
+  }
+}
 
 updated.subscribe((_) => Theme.insertStyleElement(document));
 
@@ -14,12 +26,11 @@ const optionsSvelte = new OptionsSvelte({
   props: {},
 });
 
-// @ts-ignore
 window.openAnkiInfoModal = () => {
   ankiTemplateModalHidden.set(false);
 };
 
-// @ts-ignore
 window.Api = Api;
-// @ts-ignore
+window.Utils = Utils;
 window.AnkiApi = AnkiApi;
+window.Config = Config;

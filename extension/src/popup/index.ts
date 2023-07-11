@@ -6,6 +6,15 @@ import Popup from "./Popup.svelte";
 import { Theme } from "~/theme";
 import Config from "~/config";
 import Utils from "~/utils";
+import { Api } from "~/api";
+
+declare global {
+  interface Window {
+    Api: typeof Api;
+    Utils: typeof Utils;
+    Config: typeof Config;
+  }
+}
 
 if (Platform.IS_IOS) {
   document.documentElement.classList.add("ios");
@@ -18,7 +27,6 @@ Theme.insertStyleElement(document);
 
 const svelte = new Popup({ target: document.body, props: {} });
 
-// @ts-ignore
+window.Api = Api;
 window.Utils = Utils;
-// @ts-ignore
 window.Config = Config;

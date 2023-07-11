@@ -11,6 +11,15 @@ import { AnkiApi } from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 
+declare global {
+  interface Window {
+    backend: BackendWrapper;
+    AnkiApi: typeof AnkiApi;
+    Api: typeof Api;
+    Utils: typeof Utils;
+  }
+}
+
 let backend: BackendWrapper = new BackendWrapper();
 
 async function searchTerm(term: string): Promise<Entry[]> {
@@ -35,11 +44,7 @@ Api.handleRequest("addAnkiNote", addAnkiNote);
 Api.handleRequest("tabId", tabId);
 
 // expose object to window for debugging purposes
-//@ts-ignore
-self.backendP = backendP;
-//@ts-ignore
-self.AnkiApi = AnkiApi;
-// @ts-ignore
-self.Api = Api;
-// @ts-ignore
-self.Utils = Utils;
+window.backend = backend;
+window.AnkiApi = AnkiApi;
+window.Api = Api;
+window.Utils = Utils;
