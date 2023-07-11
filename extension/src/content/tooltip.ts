@@ -172,6 +172,7 @@ border: 0;
 </style>
 `;
     Theme.insertStyleElement(doc);
+    doc.documentElement.classList.add("yomikiri");
 
     _tooltipSvelte = new TooltipSvelte({
       target: doc.body,
