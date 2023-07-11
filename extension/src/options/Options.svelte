@@ -23,11 +23,12 @@
 
   #main-column {
     max-width: 900px;
-    flex: 1 1 auto;
+    flex: 2 1 0;
   }
 
   #preview-column {
     max-width: 500px;
-    flex: 1 0 300px;
+    min-width: 300px;
+    flex: 1 0 0;
   }
 </style>
