@@ -2,7 +2,9 @@
 members = [
     "rust",
     "dictionary",
-    "dictionary-types"
+    "dictionary-types",
+    "unidic",
+    "unidic/unidic-build"
 ]
 
 [profile.release]

@@ -1,0 +1,9 @@
+[package]
+name = "yomikiri-unidic-build"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+lindera-unidic-builder = "0.27.0"
+lindera-core = "0.27.0"

@@ -8,6 +8,7 @@ use lindera_tokenizer::tokenizer::{Tokenizer, TokenizerConfig};
 use std::io::{Read, Seek};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
+use yomikiri_unidic_dictionary::load_dictionary;
 
 #[cfg(wasm)]
 use serde::Serialize;
@@ -362,16 +363,8 @@ impl<R: Read + Seek> SharedBackend<R> {
 }
 
 pub fn create_tokenizer() -> Tokenizer {
-    let dictionary = DictionaryConfig {
-        kind: Some(DictionaryKind::UniDic),
-        path: None,
-    };
-    let config = TokenizerConfig {
-        dictionary,
-        user_dictionary: None,
-        mode: Mode::Normal,
-    };
-    Tokenizer::from_config(config).expect("Failed to create lindera Tokenizer")
+    let dictionary = load_dictionary().unwrap();
+    Tokenizer::new(dictionary, None, Mode::Normal)
 }
 
 fn get_value_from_detail<S: Into<String>>(
