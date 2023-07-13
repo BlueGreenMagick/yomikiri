@@ -12,8 +12,5 @@ lindera-core = "0.27"
 
 [build-dependencies]
 yomikiri-unidic-build = { path = "./unidic-build"}
-
-
-[profile.release]
-# Tell `rustc` to optimize for small code size.
-opt-level = "z"
+walkdir = "2.3"
+filetime = "0.2"
