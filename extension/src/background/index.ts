@@ -12,6 +12,7 @@ import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 
 declare global {
+  // ServiceWorkerGlobalScope in service_worker
   interface Window {
     backend: BackendWrapper;
     AnkiApi: typeof AnkiApi;
@@ -44,7 +45,7 @@ Api.handleRequest("addAnkiNote", addAnkiNote);
 Api.handleRequest("tabId", tabId);
 
 // expose object to window for debugging purposes
-window.backend = backend;
-window.AnkiApi = AnkiApi;
-window.Api = Api;
-window.Utils = Utils;
+self.backend = backend;
+self.AnkiApi = AnkiApi;
+self.Api = Api;
+self.Utils = Utils;
