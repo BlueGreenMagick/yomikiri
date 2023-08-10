@@ -10,8 +10,12 @@ use walkdir::{DirEntry, WalkDir};
 use yomikiri_unidic_build::{build_unidic, transform_unidic};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // We compare mtime instead of using `rerun-if-changed`
-    // because build script is rerun when compilation target changes
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=Cargo.toml");
+    println!("cargo:rerun-if-changed=original");
+    println!("cargo:rerun-if-changed=unidic-build");
+
+    // We also compare mtime because build script is rerun when compilation target changes
     let crate_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
     let input_dir = crate_dir.join("original");
     let transform_dir = crate_dir.join("transformed");
