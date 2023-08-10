@@ -1413,6 +1413,7 @@ dependencies = [
 name = "yomikiri-unidic-build"
 version = "0.1.0"
 dependencies = [
+ "csv",
  "lindera-core",
  "lindera-unidic-builder",
 ]
