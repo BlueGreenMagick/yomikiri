@@ -348,8 +348,33 @@ impl<R: Read + Seek> SharedBackend<R> {
         return Ok(true);
     }
 
-    #[allow(unused_variables)]
-    fn manual_patches(&mut self, tokens: &mut Vec<Token>) {}
+    fn manual_patches(&mut self, tokens: &mut Vec<Token>) {
+        for i in 0..tokens.len() {
+            let token = &tokens[i];
+
+            // 1. （形状詞）な　e.g. 静かな
+            // 2. （名詞）な（名詞） e.g.  医者なこと
+            if token.text == "な" && token.base != "だ" && i > 0 {
+                let mut to_replace = false;
+                let prev_token = &tokens[i - 1];
+                if prev_token.pos == "形状詞" {
+                    to_replace = true;
+                }
+                if !to_replace && prev_token.pos == "名詞" && i + 1 < tokens.len() {
+                    let next_token = &tokens[i + 1];
+                    if next_token.pos == "名詞" {
+                        to_replace = true;
+                    }
+                }
+                if to_replace {
+                    tokens[i].base = "だ".into();
+                    tokens[i].reading = "ナ".into();
+                    tokens[i].pos = "助動詞".into();
+                    tokens[i].pos2 = "*".into();
+                }
+            }
+        }
+    }
 }
 
 pub fn create_tokenizer() -> Tokenizer {
