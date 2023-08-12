@@ -15,7 +15,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path) -> TResult<()> {
             let file_name = file_name.to_str().unwrap();
             match file_name {
                 "lex_naist.csv" => {
-                    transform_lex(&copy_from, &copy_to)?;
+                    transform_lex(&copy_from, &transform_dir.join("lex.csv"))?;
                 }
                 _ => {
                     fs::copy(&copy_from, &copy_to)?;

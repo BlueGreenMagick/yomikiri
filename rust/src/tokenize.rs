@@ -40,14 +40,19 @@ pub struct RawTokenizeResult {
 }
 
 impl<R: Read + Seek> SharedBackend<R> {
+    /// if `raw`, return lindera tokenize result without joining tokens
+    /// only used in wasm for debugging purposes
     pub fn tokenize<'a>(
         &mut self,
         sentence: &'a str,
         char_idx: usize,
+        raw: bool,
     ) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
-        self.manual_patches(&mut tokens);
-        self.join_all_tokens(&mut tokens)?;
+        if !raw {
+            self.manual_patches(&mut tokens);
+            self.join_all_tokens(&mut tokens)?;
+        }
         let token_idx = match tokens.iter().position(|t| (t.start as usize) > char_idx) {
             Some(i) => i - 1,
             None => tokens.len() - 1,

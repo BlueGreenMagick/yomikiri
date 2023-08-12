@@ -51,6 +51,17 @@ export class Backend implements IBackend {
     };
   }
 
+  async tokenize_raw(text: string, charIdx: number): Promise<TokenizeResult> {
+    let rawResult = this.wasm.tokenize_raw(text, charIdx);
+    return {
+      tokens: rawResult.tokens,
+      tokenIdx: rawResult.tokenIdx,
+      entries: rawResult.entriesJson
+        .map((json) => JSON.parse(json))
+        .map(Entry.fromObject),
+    };
+  }
+
   async search(term: string): Promise<Entry[]> {
     return this.wasm
       .search(term)

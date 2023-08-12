@@ -34,6 +34,7 @@ export interface RawTokenizeResult {
 const TS_TOKENIZE: &'static str = r#"
 interface Backend {
     tokenize(sentence: string, charIdx: number): RawTokenizeResult;
+    tokenize_raw(sentence: string, charIdx: number): RawTokenizeResult;
     search(term: string): string[]
 }
 "#;
@@ -60,7 +61,18 @@ impl Backend {
 
     #[wasm_bindgen(skip_typescript)]
     pub fn tokenize(&mut self, sentence: &str, char_idx: usize) -> YResult<JsValue> {
-        let result = self.inner.tokenize(sentence, char_idx)?;
+        let result = self.inner.tokenize(sentence, char_idx, false)?;
+        serde_wasm_bindgen::to_value(&result).map_err(|e| {
+            YomikiriError::ConversionError(format!(
+                "Failed to serialize tokenizer result.\n{}",
+                e.to_string()
+            ))
+        })
+    }
+
+    #[wasm_bindgen(skip_typescript)]
+    pub fn tokenize_raw(&mut self, sentence: &str, char_idx: usize) -> YResult<JsValue> {
+        let result = self.inner.tokenize(sentence, char_idx, true)?;
         serde_wasm_bindgen::to_value(&result).map_err(|e| {
             YomikiriError::ConversionError(format!(
                 "Failed to serialize tokenizer result.\n{}",
@@ -89,7 +101,8 @@ impl Dictionary<Cursor<&[u8]>> {
         index_bytes: &[u8],
         entries_bytes: &Uint8Array,
     ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let index: Vec<DictIndexItem> = bincode::deserialize_from(index_bytes).map_err(|e| {
+        let options = bincode::DefaultOptions::new();
+        let index: Vec<DictIndexItem> = options.deserialize_from(index_bytes).map_err(|e| {
             YomikiriError::InvalidDictionaryFile(format!(
                 "Failed to parse dictionary index file. {}",
                 e.to_string()

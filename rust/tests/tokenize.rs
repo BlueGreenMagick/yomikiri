@@ -29,7 +29,7 @@ macro_rules! tokenize_tests {
                 let mut backend = setup_backend();
                 let expected = $expected;
                 let text = expected.replace("/", "");
-                let result = backend.tokenize(&text, 0)?;
+                let result = backend.tokenize(&text, 0, false)?;
                 let result = result
                     .tokens
                     .iter()
@@ -46,7 +46,7 @@ macro_rules! tokenize_tests {
 #[test]
 fn test_tokenize() {
     let mut backend = setup_backend();
-    let result = backend.tokenize("これは例文です。", 0).unwrap();
+    let result = backend.tokenize("これは例文です。", 0, false).unwrap();
     assert_eq!(result.tokenIdx, 0);
     assert!(!result.entriesJson.is_empty());
     assert!(result.tokens.len() > 3);
@@ -87,7 +87,7 @@ tokenize_tests! {
 fn decomposed_unicode() -> YResult<()> {
     let mut backend = setup_backend();
     // か\u3099 = が
-    let result = backend.tokenize("本か\u{3099}好きだ", 2)?;
+    let result = backend.tokenize("本か\u{3099}好きだ", 2, false)?;
     let start_indices: Vec<u32> = result.tokens.iter().map(|t| t.start).collect();
     assert_eq!(start_indices[0], 0);
     assert_eq!(start_indices[1], 1);

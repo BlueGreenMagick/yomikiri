@@ -43,6 +43,21 @@ export class BackendWrapper {
     return result;
   }
 
+  async tokenize_raw(req: TokenizeRequest): Promise<TokenizeResult> {
+    if (req.charIdx < 0 || req.charIdx >= req.text.length) {
+      throw new RangeError(
+        `selectedCharIdx is out of range: ${req.charIdx}, ${req.text}`
+      );
+    }
+    let backend = await this.backendP;
+    let result = await backend.tokenize_raw(req.text, req.charIdx);
+    result.tokens.forEach((token) => {
+      const reading = token.reading === "*" ? token.text : token.reading;
+      token.reading = toHiragana(reading);
+    });
+    return result;
+  }
+
   async searchTerm(term: string): Promise<Entry[]> {
     let backend = await this.backendP;
     return backend.search(term);
