@@ -104,8 +104,8 @@ impl<R: Read + Seek> SharedBackend<R> {
             let details = tok.get_details();
 
             let token = Token {
-                base: get_value_from_detail(&details, 10, &text),
-                reading: get_value_from_detail(&details, 9, "*"),
+                base: get_value_from_detail(&details, 3, &text),
+                reading: get_value_from_detail(&details, 2, "*"),
                 pos: get_value_from_detail(&details, 0, "UNK"),
                 pos2: get_value_from_detail(&details, 1, "*"),
                 text: text,
