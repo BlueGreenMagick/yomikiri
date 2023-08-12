@@ -26,11 +26,17 @@ pub fn transform(input_dir: &Path, transform_dir: &Path) -> TResult<()> {
     Ok(())
 }
 
-/// remove fields that are not used.
+/// 1. remove fields that are not used.
+/// 2. remove entries for emojis and alphabetic, special characters
 fn transform_lex(lex_path: &Path, output_path: &Path) -> TResult<()> {
     let mut reader = csv::Reader::from_path(lex_path)?;
     let mut writer = csv::Writer::from_path(output_path)?;
-    for record in reader.records() {
+
+    let iter = reader.records();
+    // remove emojis and single characters
+    let iter = iter.skip(2977);
+
+    for record in iter {
         let record = record?;
         let key = record.get(0).unwrap();
         let lid = record.get(1).unwrap();
