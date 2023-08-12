@@ -51,7 +51,7 @@ export class BackendWrapper {
     return result;
   }
 
-  async tokenize_raw(req: TokenizeRequest | string): Promise<TokenizeResult> {
+  async tokenizeRaw(req: TokenizeRequest | string): Promise<TokenizeResult> {
     const text = req instanceof Object ? req.text : req;
     const charAt = req instanceof Object ? req.charAt ?? 0 : 0;
     if (text === "") {
@@ -66,7 +66,7 @@ export class BackendWrapper {
     }
 
     let backend = await this.backendP;
-    let result = await backend.tokenize_raw(text, charAt);
+    let result = await backend.tokenizeRaw(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
