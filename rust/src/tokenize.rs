@@ -348,23 +348,8 @@ impl<R: Read + Seek> SharedBackend<R> {
         return Ok(true);
     }
 
-    fn manual_patches(&mut self, tokens: &mut Vec<Token>) {
-        for token in tokens {
-            // "じゃない" 「じゃ」 -> 「じゃ」 instead of 「だ」
-            if &token.text == "じゃ" {
-                token.base = String::from("じゃ");
-                token.pos = String::from("接続詞");
-                token.pos2 = String::from("*");
-                token.reading = String::from("ジャ");
-            // "じゃあ、" 「じゃあ」 -> 「じゃあ」, instead of 「で」
-            } else if token.text == "じゃあ" {
-                token.base = String::from("じゃあ");
-                token.pos = String::from("接続詞");
-                token.pos2 = String::from("*");
-                token.reading = String::from("ジャー");
-            }
-        }
-    }
+    #[allow(unused_variables)]
+    fn manual_patches(&mut self, tokens: &mut Vec<Token>) {}
 }
 
 pub fn create_tokenizer() -> Tokenizer {

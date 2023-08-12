@@ -3,14 +3,19 @@ Increment ios framework version in XCode > framework > Build settings > Versioni
 
 
 ### All possible POS
-All possible POS in unidic v2.1.2 (extracted from lex.csv)
+All possible POS in unidic v2.2.0 (extracted from lex_naist.csv)
 
 ```
 - 名詞 (noun)
   - 助動詞語幹
   - 固有名詞
     - 地名
+      - 一般
+      - 国
     - 人名
+      - 一般
+      - 名
+      - 姓
     - 一般
   - 普通名詞
     - 形状詞可能
