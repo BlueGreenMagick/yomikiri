@@ -45,7 +45,7 @@ fn transform_lex(lex_path: &Path, output_path: &Path) -> TResult<()> {
         let pos = record.get(4).unwrap();
         let pos2 = record.get(5).unwrap();
         let reading = record.get(24).unwrap();
-        let base = record.get(14).unwrap();
+        let base = record.get(11).unwrap();
         // retain only useful fields
         writer.write_record(&[key, lid, rid, cost, pos, pos2, reading, base])?;
     }
