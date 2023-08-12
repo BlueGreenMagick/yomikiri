@@ -38,7 +38,7 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             switch key {
             case "tokenize":
                 let req: TokenizeRequest = try jsonDeserialize(json: request)
-                let result = try backend.tokenize(sentence: req.text, charIdx: req.charIdx)
+                let result = try backend.tokenize(sentence: req.text, charAt: req.charAt)
                 jsonResponse = try jsonSerialize(obj: result)
             case "search":
                 let term: String = try jsonDeserialize(json: request)
@@ -76,5 +76,5 @@ func jsonDeserialize<T: Decodable>(json: String) throws -> T {
 
 private struct TokenizeRequest: Codable {
     var text: String
-    var charIdx: UInt32
+    var charAt: UInt32
 }

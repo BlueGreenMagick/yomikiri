@@ -14,8 +14,8 @@ export class Backend implements IBackend {
     return new Backend();
   }
 
-  async tokenize(text: string, charIdx: number): Promise<TokenizeResult> {
-    let req: TokenizeRequest = { text, charIdx };
+  async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
+    let req: TokenizeRequest = { text, charAt: charAt };
     let rawResult = await Platform.requestToApp("tokenize", req);
     return {
       tokens: rawResult.tokens,

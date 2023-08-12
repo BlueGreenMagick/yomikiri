@@ -25,17 +25,25 @@ export class BackendWrapper {
         entries: [],
       };
     }
-    return await this.tokenize({ text, charIdx: 0 });
+    return await this.tokenize({ text, charAt: 0 });
   }
 
-  async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-    if (req.charIdx < 0 || req.charIdx >= req.text.length) {
-      throw new RangeError(
-        `selectedCharIdx is out of range: ${req.charIdx}, ${req.text}`
-      );
+  async tokenize(req: TokenizeRequest | string): Promise<TokenizeResult> {
+    const text = req instanceof Object ? req.text : req;
+    const charAt = req instanceof Object ? req.charAt ?? 0 : 0;
+    if (text === "") {
+      return {
+        tokens: [],
+        tokenIdx: -1,
+        entries: [],
+      };
     }
+    if (charAt < 0 || charAt >= text.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
+    }
+
     let backend = await this.backendP;
-    let result = await backend.tokenize(req.text, req.charIdx);
+    let result = await backend.tokenize(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
@@ -43,14 +51,22 @@ export class BackendWrapper {
     return result;
   }
 
-  async tokenize_raw(req: TokenizeRequest): Promise<TokenizeResult> {
-    if (req.charIdx < 0 || req.charIdx >= req.text.length) {
-      throw new RangeError(
-        `selectedCharIdx is out of range: ${req.charIdx}, ${req.text}`
-      );
+  async tokenize_raw(req: TokenizeRequest | string): Promise<TokenizeResult> {
+    const text = req instanceof Object ? req.text : req;
+    const charAt = req instanceof Object ? req.charAt ?? 0 : 0;
+    if (text === "") {
+      return {
+        tokens: [],
+        tokenIdx: -1,
+        entries: [],
+      };
     }
+    if (charAt < 0 || charAt >= text.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
+    }
+
     let backend = await this.backendP;
-    let result = await backend.tokenize_raw(req.text, req.charIdx);
+    let result = await backend.tokenize_raw(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);

@@ -40,8 +40,8 @@ export class Backend implements IBackend {
     this.wasm = wasm;
   }
 
-  async tokenize(text: string, charIdx: number): Promise<TokenizeResult> {
-    let rawResult = this.wasm.tokenize(text, charIdx);
+  async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
+    let rawResult = this.wasm.tokenize(text, charAt);
     return {
       tokens: rawResult.tokens,
       tokenIdx: rawResult.tokenIdx,

@@ -33,8 +33,8 @@ export interface RawTokenizeResult {
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKENIZE: &'static str = r#"
 interface Backend {
-    tokenize(sentence: string, charIdx: number): RawTokenizeResult;
-    tokenize_raw(sentence: string, charIdx: number): RawTokenizeResult;
+    tokenize(sentence: string, charAt: number): RawTokenizeResult;
+    tokenize_raw(sentence: string, charAt: number): RawTokenizeResult;
     search(term: string): string[]
 }
 "#;

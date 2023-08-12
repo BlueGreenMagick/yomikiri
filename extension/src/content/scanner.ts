@@ -1,5 +1,5 @@
 import { Api } from "~/api";
-import type { Token, TokenizeResult } from "@platform/backend";
+import type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import { Entry } from "~/dicEntry";
 import { containsJapaneseContent } from "~/japanese";
@@ -57,9 +57,9 @@ export class Scanner {
     if (sentence === null) return null;
 
     const prev = sentence.prev ?? "";
-    const tokenizeReq = {
+    const tokenizeReq: TokenizeRequest = {
       text: fullSentence(sentence),
-      charIdx: prev.length + sentence.idx,
+      charAt: prev.length + sentence.idx,
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
     if (!isValidJapaneseToken(tokenizeResult)) return null;

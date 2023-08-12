@@ -5,17 +5,19 @@ export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
 export interface TokenizeRequest {
   text: string;
-  charIdx: number;
+  /** Default to 0 if not specified */
+  charAt?: number;
 }
 
 export interface TokenizeResult {
   tokens: Token[];
+  /** May be -1 if tokens is empty */
   tokenIdx: number;
   entries: Entry[];
 }
 
 export interface IBackend {
-  tokenize(text: string, charIdx: number): Promise<TokenizeResult>;
+  tokenize(text: string, charAt: number): Promise<TokenizeResult>;
   search(term: string): Promise<Entry[]>;
 }
 
