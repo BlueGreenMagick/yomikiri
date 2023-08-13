@@ -8,29 +8,29 @@
   export let description: string = "";
 
   let value: string | undefined;
-  let initial = true;
 
   async function load() {
     value = await Config.get(key);
   }
 
-  function onValueChange(value: string | undefined) {
+  function onBlur(ev: Event) {
     if (value === undefined) return;
-    if (initial === true) {
-      initial = false;
-      return;
-    }
     Config.set(key, value);
     updateConfig();
   }
 
+  function onKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" && !ev.shiftKey) {
+      (ev.currentTarget as HTMLInputElement).blur();
+    }
+  }
+
   load();
-  $: onValueChange(value);
 </script>
 
 <div>
   <OptionBase {title} {description}>
-    <input type="text" bind:value />
+    <input type="text" bind:value on:blur={onBlur} on:keydown={onKeydown} />
   </OptionBase>
 </div>
 

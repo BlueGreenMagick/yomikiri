@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Configuration, type ConfigKeysOfType, Config } from "~/config";
+  import { type ConfigKeysOfType, Config } from "~/config";
   import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
 
@@ -10,29 +10,44 @@
   export let max: number | null = null;
 
   let value: number | undefined;
-  let initial = true;
 
   async function load() {
     value = await Config.get(key);
   }
 
-  function onValueChange(value: number | undefined) {
-    if (value === undefined) return;
-    if (initial === true) {
-      initial = false;
+  function onBlur(ev: Event) {
+    if (value === undefined) {
       return;
+    }
+    if (min !== null && value < min) {
+      value = min;
+    }
+    if (max !== null && value > max) {
+      value = max;
     }
     Config.set(key, value);
     updateConfig();
   }
 
+  function onKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" && !ev.shiftKey) {
+      (ev.currentTarget as HTMLInputElement).blur();
+    }
+  }
+
   load();
-  $: onValueChange(value);
 </script>
 
 <div>
   <OptionBase {title} {description}>
-    <input type="number" bind:value {min} {max} />
+    <input
+      type="number"
+      bind:value
+      {min}
+      {max}
+      on:blur={onBlur}
+      on:keydown={onKeydown}
+    />
   </OptionBase>
 </div>
 
