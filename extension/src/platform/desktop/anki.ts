@@ -11,7 +11,7 @@ export namespace AnkiApi {
   const ANKI_CONNECT_VER = 6;
 
   async function ankiConnectURL(): Promise<string> {
-    let url = await Config.get("anki.connect_url");
+    let url = await Config.loadGet("anki.connect_url");
     let port = await Config.get("anki.connect_port");
     if (!url.includes("://")) {
       url = "http://" + url;

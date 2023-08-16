@@ -6,12 +6,9 @@
   export let key: ConfigKeysOfType<string>;
   export let title: string;
   export let description: string = "";
+  export let disabled: boolean = false;
 
-  let value: string | undefined;
-
-  async function load() {
-    value = await Config.get(key);
-  }
+  let value: string = Config.get(key);
 
   function onBlur(ev: Event) {
     if (value === undefined) return;
@@ -24,13 +21,17 @@
       (ev.currentTarget as HTMLInputElement).blur();
     }
   }
-
-  load();
 </script>
 
 <div>
-  <OptionBase {title} {description}>
-    <input type="text" bind:value on:blur={onBlur} on:keydown={onKeydown} />
+  <OptionBase {title} {description} {disabled}>
+    <input
+      type="text"
+      bind:value
+      {disabled}
+      on:blur={onBlur}
+      on:keydown={onKeydown}
+    />
   </OptionBase>
 </div>
 

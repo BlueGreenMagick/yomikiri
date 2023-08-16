@@ -7,19 +7,16 @@
   export let key: ConfigKeysOfType<boolean>;
   export let title: string;
   export let description: string = "";
+  export let value: boolean = Config.get(key);
 
-  let active = false;
-
-  function update(value: boolean) {
+  function update() {
     Config.set(key, value);
     updateConfig();
   }
-
-  $: update(active);
 </script>
 
 <div>
   <OptionBase {title} {description}>
-    <ToggleSwitch bind:active height={18} />
+    <ToggleSwitch bind:active={value} height={18} on:click={update} />
   </OptionBase>
 </div>

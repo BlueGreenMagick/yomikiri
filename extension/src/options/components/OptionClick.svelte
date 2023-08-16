@@ -6,6 +6,7 @@
   export let title: string;
   export let description: string = "";
   export let buttonText: string;
+  export let disabled: boolean = false;
 
   const dispatch = createEventDispatcher();
 
@@ -18,8 +19,9 @@
 </script>
 
 <div on:keydown={onKeyDown}>
-  <OptionBase {title} {description}>
+  <OptionBase {title} {description} {disabled}>
     <button
+      {disabled}
       on:click={() => {
         dispatch("trigger");
       }}>{buttonText}</button

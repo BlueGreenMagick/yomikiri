@@ -8,17 +8,11 @@
   export let description: string = "";
   export let min: number | null = null;
   export let max: number | null = null;
+  export let disabled: boolean = false;
 
-  let value: number | undefined;
-
-  async function load() {
-    value = await Config.get(key);
-  }
+  let value: number = Config.get(key);
 
   function onBlur(ev: Event) {
-    if (value === undefined) {
-      return;
-    }
     if (min !== null && value < min) {
       value = min;
     }
@@ -34,17 +28,16 @@
       (ev.currentTarget as HTMLInputElement).blur();
     }
   }
-
-  load();
 </script>
 
 <div>
-  <OptionBase {title} {description}>
+  <OptionBase {title} {description} {disabled}>
     <input
       type="number"
       bind:value
       {min}
       {max}
+      {disabled}
       on:blur={onBlur}
       on:keydown={onKeydown}
     />

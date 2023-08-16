@@ -33,21 +33,37 @@ export type ConfigKeysOfType<T> = {
 export namespace Config {
   let _storage: StoredConfiguration | undefined;
 
-  async function getStorage(): Promise<StoredConfiguration> {
+  export async function load(): Promise<StoredConfiguration> {
     if (_storage === undefined) {
       _storage = await Platform.loadConfig();
     }
     return _storage;
   }
 
-  export async function get<K extends keyof Configuration>(
+  export async function loadGet<K extends keyof Configuration>(
     key: K
   ): Promise<Configuration[K]> {
-    let storage = await getStorage();
-    const value = storage[key];
+    await load();
+    return get(key);
+  }
+
+  export function get<K extends keyof Configuration>(key: K): Configuration[K] {
+    if (_storage === undefined) {
+      throw new Error("_storage is undefined");
+    }
+    const value = _storage[key];
     return value !== undefined
       ? (value as Configuration[K])
       : defaultOptions[key];
+  }
+
+  /** If value is undefined, removes from storage*/
+  export async function loadSet<K extends keyof Configuration>(
+    key: K,
+    value: Configuration[K]
+  ) {
+    await load();
+    return set(key, value);
   }
 
   /** If value is undefined, removes from storage*/
@@ -55,13 +71,15 @@ export namespace Config {
     key: K,
     value: Configuration[K]
   ) {
-    let storage = await getStorage();
-    if (value === undefined) {
-      delete storage[key];
-    } else {
-      storage[key] = value;
+    if (_storage === undefined) {
+      throw new Error("_storage is undefined");
     }
-    await Platform.saveConfig(storage);
+    if (value === undefined) {
+      delete _storage[key];
+    } else {
+      _storage[key] = value;
+    }
+    await Platform.saveConfig(_storage);
   }
 
   export function defaultValue<K extends keyof Configuration>(

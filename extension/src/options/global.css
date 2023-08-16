@@ -19,7 +19,11 @@ button {
   background-color: #eeeeee;
 }
 
-button:hover, button:active {
+button[disabled] {
+  border: 1px solid lightgray;
+}
+
+button:not([disabled]):hover, button:not([disabled]):active {
   cursor: pointer;
   filter: brightness(0.9);
 }

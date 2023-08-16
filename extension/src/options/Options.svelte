@@ -1,11 +1,18 @@
 <script lang="ts">
+  import Config from "~/config";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
+
+  async function load() {
+    await Config.load();
+  }
 </script>
 
 <div class="container">
-  <div id="main-column"><MainColumn /></div>
-  <div id="preview-column"><PreviewColumn /></div>
+  {#await load() then}
+    <div id="main-column"><MainColumn /></div>
+    <div id="preview-column"><PreviewColumn /></div>
+  {/await}
 </div>
 
 <style>

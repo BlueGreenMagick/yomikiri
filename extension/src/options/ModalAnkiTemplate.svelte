@@ -9,6 +9,7 @@
     exampleMarkerData,
     exampleTranslatedSentence,
   } from "./exampleMarkerData";
+  import { updateConfig } from "./stores";
 
   export let hidden: boolean;
 
@@ -34,7 +35,7 @@
   async function loadNames() {
     deckNames = await AnkiApi.deckNames();
     notetypeNames = await AnkiApi.notetypeNames();
-    const template = await Config.get("anki.template");
+    const template = Config.get("anki.template");
     if (template === null) {
       selectedNotetype = notetypeNames[0];
       selectedDeck = deckNames[0];
@@ -54,7 +55,7 @@
   async function loadFields(notetype: string, invalid: boolean) {
     if (notetype === undefined) return [];
     if (invalid) {
-      const template = await Config.get("anki.template");
+      const template = Config.get("anki.template");
       if (template === null) return [];
       return template.fields.map((f) => f.name);
     }
@@ -86,6 +87,7 @@
       });
     }
     Config.set("anki.template", template);
+    updateConfig();
   }
 
   function markerValue(field: string) {

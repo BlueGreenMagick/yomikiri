@@ -11,6 +11,8 @@
   import OptionToggle from "./components/OptionToggle.svelte";
 
   let ankiTemplateDescription = "";
+  let enabled: boolean;
+  let disabled: boolean;
 
   async function openAnkiTemplateModal() {
     try {
@@ -33,6 +35,8 @@
       ankiTemplateDescription = `<span class="warning">${errorMsg}</span>`;
     }
   }
+
+  $: disabled = !enabled;
 </script>
 
 <GroupedOptions title="Anki">
@@ -40,18 +44,21 @@
     key="anki.enabled"
     title="Use Anki"
     description="<a href='https://apps.ankiweb.net/'>Anki</a> is a popular flashcard software."
+    bind:value={enabled}
   />
   {#if Platform.IS_DESKTOP}
     <OptionNumber
       key="anki.connect_port"
       title="AnkiConnect port number"
       description="This is the AnkiConnect config `webBindPort`"
+      bind:disabled
     />
   {/if}
   <OptionClick
     title="Configure Anki template"
     buttonText="Configure"
     description={ankiTemplateDescription}
+    bind:disabled
     on:trigger={openAnkiTemplateModal}
   />
 </GroupedOptions>

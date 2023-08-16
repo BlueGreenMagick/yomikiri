@@ -1,9 +1,10 @@
 <script lang="ts">
   export let title: string;
   export let description: string = "";
+  export let disabled: boolean = false;
 </script>
 
-<div class="option-item">
+<div class="option-item" class:disabled>
   <div class="inner">
     <div class="left">
       <div class="title">{@html title}</div>
@@ -20,6 +21,9 @@
 <style>
   .option-item {
     margin: 0px 8px;
+  }
+  .option-item.disabled .left {
+    opacity: 0.6;
   }
   .inner {
     display: flex;

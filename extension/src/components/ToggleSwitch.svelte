@@ -10,6 +10,7 @@
   on:click={() => {
     active = !active;
   }}
+  on:click
 >
   <div class="front" />
 </div>
