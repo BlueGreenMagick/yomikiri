@@ -9,6 +9,7 @@ export interface Configuration {
   "anki.connect_port": number;
   "anki.connect_url": string;
   "anki.template": NoteData | null;
+  "anki.enabled": boolean;
 }
 
 const defaultOptions: Configuration = {
@@ -17,6 +18,7 @@ const defaultOptions: Configuration = {
   "anki.connect_port": 8785,
   "anki.connect_url": "http://127.0.0.1",
   "anki.template": null,
+  "anki.enabled": false,
 };
 
 export interface StoredConfiguration extends Partial<Configuration> {

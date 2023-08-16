@@ -7,6 +7,8 @@
   import OptionNumber from "./components/OptionNumber.svelte";
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
   import { ankiTemplateModalHidden } from "./stores";
+  import ToggleSwitch from "~/components/ToggleSwitch.svelte";
+  import OptionToggle from "./components/OptionToggle.svelte";
 
   let ankiTemplateDescription = "";
 
@@ -34,6 +36,11 @@
 </script>
 
 <GroupedOptions title="Anki">
+  <OptionToggle
+    key="anki.enabled"
+    title="Use Anki"
+    description="<a href='https://apps.ankiweb.net/'>Anki</a> is a popular flashcard software."
+  />
   {#if Platform.IS_DESKTOP}
     <OptionNumber
       key="anki.connect_port"
