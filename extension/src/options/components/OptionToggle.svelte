@@ -17,6 +17,6 @@
 
 <div>
   <OptionBase {title} {description}>
-    <ToggleSwitch bind:active={value} height={18} on:click={update} />
+    <ToggleSwitch bind:active={value} height={18} on:click={update} on:click />
   </OptionBase>
 </div>

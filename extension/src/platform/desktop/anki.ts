@@ -35,7 +35,7 @@ export namespace AnkiApi {
     } catch (e) {
       console.error(e);
       throw new Error(
-        "Could not connect to Anki-connect. Please check that Anki is running, and if the port number is correct."
+        "Could not connect to Anki. Please check that Anki is running, AnkiConnect add-on is installed, and if port number is configured correctly."
       );
     }
 
@@ -106,11 +106,19 @@ export namespace AnkiApi {
 
   /** Throws an error if not successfully connected. */
   export async function checkConnection(): Promise<void> {
-    const resp = await request("requestPermission");
-    if (resp.permission === "granted") {
-      return;
-    } else {
-      throw new Error("AnkiConnect did not allow this app to use its api.");
+    try {
+      const resp = await request("requestPermission");
+      if (resp.permission === "granted") {
+        return;
+      } else {
+        throw new Error("AnkiConnect did not allow this app to use its api.");
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        err.message +=
+          " <a href='https://apps.ankiweb.net/'>(Anki)</a> <a href='https://ankiweb.net/shared/info/2055492159'>(AnkiConnect)</a>";
+      }
+      throw err;
     }
   }
 }
