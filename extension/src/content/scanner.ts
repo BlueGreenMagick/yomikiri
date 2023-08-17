@@ -17,43 +17,46 @@ export interface ScanResult {
   dicEntries: Entry[];
 }
 
-/**
- * (prev, after) are portion of sentence before and after node
- * prev + curr + after is the constructed sentence
- * stStartIdx, stEndIdx are index of sentence start and end (excluding) in curr node.
- */
-interface ScannedSentenceBase {
-  node: Text;
-  // portion of sentence before, within, and after `node`
-  curr: string;
-  /** curr[idx] is the character at (x,y) */
-  idx: number;
-}
-type ScannedSentencePrev =
-  | { prev: string; stStartIdx?: never }
-  | { prev?: never; stStartIdx: number };
-type ScannedSentenceNext =
-  | { next: string; stEndIdx?: never }
-  | { next?: never; stEndIdx: number };
-
-type ScannedSentence = ScannedSentenceBase &
-  ScannedSentencePrev &
-  ScannedSentenceNext;
-
 /** Find token at point (x, y) */
-export class Scanner {
+export namespace Scanner {
+  /**
+   * (prev, after) are portion of sentence before and after node
+   * prev + curr + after is the constructed sentence
+   * stStartIdx, stEndIdx are index of sentence start and end (excluding) in curr node.
+   */
+  interface ScannedSentenceBase {
+    node: Text;
+    // portion of sentence before, within, and after `node`
+    curr: string;
+    /** curr[idx] is the character at (x,y) */
+    idx: number;
+  }
+  type ScannedSentencePrev =
+    | { prev: string; stStartIdx?: never }
+    | { prev?: never; stStartIdx: number };
+  type ScannedSentenceNext =
+    | { next: string; stEndIdx?: never }
+    | { next?: never; stEndIdx: number };
+
+  type ScannedSentence = ScannedSentenceBase &
+    ScannedSentencePrev &
+    ScannedSentenceNext;
+
   // cache last scan.
-  private lastScannedResult: ScanResult | null = null;
+  let _lastScannedResult: ScanResult | null = null;
 
   /** Returns null if (x,y) is not pointing to valid japanese token */
-  async scanAt(x: number, y: number): Promise<ScanResult | null> {
-    if (this.lastScannedResult !== null) {
-      if (Utils.containsPoint(this.lastScannedResult.range, x, y)) {
-        return this.lastScannedResult;
+  export async function scanAt(
+    x: number,
+    y: number
+  ): Promise<ScanResult | null> {
+    if (_lastScannedResult !== null) {
+      if (Utils.containsPoint(_lastScannedResult.range, x, y)) {
+        return _lastScannedResult;
       }
     }
 
-    const sentence = this.scanSentence(x, y);
+    const sentence = scanSentence(x, y);
     if (sentence === null) return null;
 
     const prev = sentence.prev ?? "";
@@ -63,13 +66,13 @@ export class Scanner {
     };
     const tokenizeResult = await Api.request("tokenize", tokenizeReq);
     if (!isValidJapaneseToken(tokenizeResult)) return null;
-    const result = this.scanToken(tokenizeResult, sentence);
-    this.lastScannedResult = result;
+    const result = scanToken(tokenizeResult, sentence);
+    _lastScannedResult = result;
     return result;
   }
 
   // within inline elements.
-  private scanSentence(x: number, y: number): null | ScannedSentence {
+  function scanSentence(x: number, y: number): null | ScannedSentence {
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
     const node = childTextAt(element, x, y);
@@ -103,7 +106,7 @@ export class Scanner {
             stEndIdx: i + 1,
           };
           if (stStart === 0) {
-            prev = this.sentenceBeforeNode(node);
+            prev = sentenceBeforeNode(node);
             return {
               ...partial,
               prev: prev,
@@ -121,7 +124,7 @@ export class Scanner {
     if (foundChar < 0) {
       return null;
     }
-    next = this.sencenceAfterNode(node);
+    next = sencenceAfterNode(node);
     const partial = {
       node,
       next,
@@ -130,7 +133,7 @@ export class Scanner {
     };
     // sentenceEndChar not found after char at (x,y)
     if (stStart === 0) {
-      prev = this.sentenceBeforeNode(node);
+      prev = sentenceBeforeNode(node);
       return {
         ...partial,
         prev,
@@ -149,7 +152,7 @@ export class Scanner {
    */
   // when it recursively calls itself, new curr is always before(after) old curr
   // so recursion is guranteed to end.
-  private inlineTextNode(curr: Node, PREV: boolean): Text | null {
+  function inlineTextNode(curr: Node, PREV: boolean): Text | null {
     // get closest inline parent that has prev(next) sibling.
     while ((PREV ? curr.previousSibling : curr.nextSibling) === null) {
       if (curr.parentNode === null) return null;
@@ -163,7 +166,7 @@ export class Scanner {
       nodeIsOutOfFlow(curr)
     ) {
       // skip nodes that are removed from normal flow
-      return this.inlineTextNode(curr, PREV);
+      return inlineTextNode(curr, PREV);
     }
     if (!nodeIsInline(curr)) return null;
     if (curr.parentNode !== null && nodeChildIsNotInline(curr.parentNode)) {
@@ -176,30 +179,30 @@ export class Scanner {
         !(curr instanceof Element || curr instanceof Text) ||
         nodeIsOutOfFlow(curr)
       ) {
-        return this.inlineTextNode(curr, PREV);
+        return inlineTextNode(curr, PREV);
       }
       if (!nodeIsInline(curr)) return null;
     }
     if (!(curr instanceof Text)) {
-      return this.inlineTextNode(curr, PREV);
+      return inlineTextNode(curr, PREV);
     }
     return curr;
   }
 
-  private prevInlineTextNode(curr: Node) {
-    return this.inlineTextNode(curr, true);
+  function prevInlineTextNode(curr: Node) {
+    return inlineTextNode(curr, true);
   }
 
-  private nextInlineTextNode(curr: Node) {
-    return this.inlineTextNode(curr, false);
+  function nextInlineTextNode(curr: Node) {
+    return inlineTextNode(curr, false);
   }
 
   /** Extract initial part of the sentence in nodes before `node`. */
-  private sentenceBeforeNode(t: Text): string {
+  function sentenceBeforeNode(t: Text): string {
     let sentence = "";
     let node: Text | null = t;
     while (true) {
-      node = this.prevInlineTextNode(node);
+      node = prevInlineTextNode(node);
       if (node === null) {
         return sentence;
       }
@@ -214,11 +217,11 @@ export class Scanner {
     }
   }
 
-  private sencenceAfterNode(t: Text): string {
+  function sencenceAfterNode(t: Text): string {
     let sentence = "";
     let node: Text | null = t;
     while (true) {
-      node = this.nextInlineTextNode(node);
+      node = nextInlineTextNode(node);
       if (node === null) {
         return sentence;
       }
@@ -235,7 +238,7 @@ export class Scanner {
   }
 
   /** Find token in DOM and create range over it */
-  private scanToken(
+  function scanToken(
     tokenizeResult: TokenizeResult,
     sentence: ScannedSentence
   ): ScanResult | null {
@@ -250,7 +253,7 @@ export class Scanner {
       let prevChars = sentence.prev.length - tokenStartIndex;
       let prevNode: Text = sentence.node;
       while (prevChars > 0) {
-        const prev = this.prevInlineTextNode(prevNode);
+        const prev = prevInlineTextNode(prevNode);
         if (prev === null) break;
         prevNode = prev;
         prevChars -= prevNode.data.length;
@@ -273,7 +276,7 @@ export class Scanner {
       let nextChars =
         currTokenStartIdx + token.text.length - sentence.curr.length;
       while (nextChars > 0) {
-        const next = this.nextInlineTextNode(nextNode);
+        const next = nextInlineTextNode(nextNode);
         if (next === null) break;
         nextNode = next;
         nextChars -= nextNode.data.length;
@@ -295,87 +298,87 @@ export class Scanner {
       tokenIdx: tokenizeResult.tokenIdx,
     };
   }
-}
 
-/** Find child `Text` node at (x, y) if it exists. */
-function childTextAt(parent: Element, x: number, y: number): Text | null {
-  parent.normalize(); // normalize splitted Text nodes
-  for (const child of parent.childNodes) {
-    if (!(child instanceof Text)) {
-      continue;
+  /** Find child `Text` node at (x, y) if it exists. */
+  function childTextAt(parent: Element, x: number, y: number): Text | null {
+    parent.normalize(); // normalize splitted Text nodes
+    for (const child of parent.childNodes) {
+      if (!(child instanceof Text)) {
+        continue;
+      }
+      const range = new Range();
+      range.selectNodeContents(child);
+      if (Utils.containsPoint(range, x, y)) {
+        return child;
+      }
     }
-    const range = new Range();
-    range.selectNodeContents(child);
-    if (Utils.containsPoint(range, x, y)) {
-      return child;
-    }
+    return null;
   }
-  return null;
-}
 
-// returns [token, start character index of token]
-function tokenAtCharacterIndex(
-  tokens: Token[],
-  charIndex: number
-): [Token, number] {
-  let currentIndex = 0;
-  for (let token of tokens) {
-    currentIndex += token.text.length;
-    if (currentIndex > charIndex) {
-      return [token, currentIndex - token.text.length];
+  // returns [token, start character index of token]
+  function tokenAtCharacterIndex(
+    tokens: Token[],
+    charIndex: number
+  ): [Token, number] {
+    let currentIndex = 0;
+    for (let token of tokens) {
+      currentIndex += token.text.length;
+      if (currentIndex > charIndex) {
+        return [token, currentIndex - token.text.length];
+      }
     }
+    throw new Error("character index out of range");
   }
-  throw new Error("character index out of range");
-}
 
-function isSentenceEndChar(char: string): boolean {
-  return "。？！｡.?!".includes(char);
-}
+  function isSentenceEndChar(char: string): boolean {
+    return "。？！｡.?!".includes(char);
+  }
 
-function nodeIsInline(node: Node): boolean {
-  if (!(node instanceof Element)) return true;
-  const styles = window.getComputedStyle(node);
-  return (
-    ["inline", "ruby", "ruby-base"].includes(styles.display) &&
-    (styles.position === "static" || styles.position === "relative")
-  );
-}
+  function nodeIsInline(node: Node): boolean {
+    if (!(node instanceof Element)) return true;
+    const styles = window.getComputedStyle(node);
+    return (
+      ["inline", "ruby", "ruby-base"].includes(styles.display) &&
+      (styles.position === "static" || styles.position === "relative")
+    );
+  }
 
-/**
- * Return true if node is removed from normal flow of document. (or is sticky)
- * It is not possible for a node to be both isInline and isOutOfFlow
- */
-export function nodeIsOutOfFlow(node: Node): boolean {
-  if (!(node instanceof Element)) return false;
-  const styles = window.getComputedStyle(node);
-  return (
-    styles.display === "none" ||
-    styles.display === "ruby-text" ||
-    !(styles.position === "static" || styles.position === "relative") ||
-    node.tagName === "RT"
-  );
-}
+  /**
+   * Return true if node is removed from normal flow of document. (or is sticky)
+   * It is not possible for a node to be both isInline and isOutOfFlow
+   */
+  export function nodeIsOutOfFlow(node: Node): boolean {
+    if (!(node instanceof Element)) return false;
+    const styles = window.getComputedStyle(node);
+    return (
+      styles.display === "none" ||
+      styles.display === "ruby-text" ||
+      !(styles.position === "static" || styles.position === "relative") ||
+      node.tagName === "RT"
+    );
+  }
 
-/** Returns true if node is flex or grid in which its child is assumed not inline */
-function nodeChildIsNotInline(node: Node): boolean {
-  if (!(node instanceof Element)) return false;
-  const styles = window.getComputedStyle(node);
-  // support multi keyword display
-  for (const value of styles.display.split(" ")) {
-    if (["flex", "grid", "inline-flex", "inline-grid"].includes(value)) {
-      return true;
+  /** Returns true if node is flex or grid in which its child is assumed not inline */
+  function nodeChildIsNotInline(node: Node): boolean {
+    if (!(node instanceof Element)) return false;
+    const styles = window.getComputedStyle(node);
+    // support multi keyword display
+    for (const value of styles.display.split(" ")) {
+      if (["flex", "grid", "inline-flex", "inline-grid"].includes(value)) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
-}
 
-function fullSentence(st: ScannedSentence): string {
-  const prev = st.prev ?? "";
-  const next = st.next ?? "";
-  return prev + st.curr + next;
-}
+  function fullSentence(st: ScannedSentence): string {
+    const prev = st.prev ?? "";
+    const next = st.next ?? "";
+    return prev + st.curr + next;
+  }
 
-function isValidJapaneseToken(result: TokenizeResult) {
-  const token = result.tokens[result.tokenIdx];
-  return containsJapaneseContent(token.text);
+  function isValidJapaneseToken(result: TokenizeResult) {
+    const token = result.tokens[result.tokenIdx];
+    return containsJapaneseContent(token.text);
+  }
 }

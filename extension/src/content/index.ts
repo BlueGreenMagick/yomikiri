@@ -7,16 +7,14 @@ import Utils from "~/utils";
 
 declare global {
   interface Window {
-    scanner: Scanner;
+    Scanner: typeof Scanner;
     Api: typeof Api;
   }
 }
 
-const scanner = new Scanner();
-
 /** Return false if not triggered on japanese text */
 async function _trigger(x: number, y: number): Promise<boolean> {
-  const result = await scanner.scanAt(x, y);
+  const result = await Scanner.scanAt(x, y);
   if (result === null) return false;
   console.log(result);
   if (result.dicEntries.length === 0) {
@@ -57,5 +55,5 @@ document.addEventListener("click", async (ev: MouseEvent) => {
   }
 });
 
-window.scanner = scanner;
+window.Scanner = Scanner;
 window.Api = Api;
