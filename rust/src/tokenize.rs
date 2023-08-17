@@ -352,6 +352,12 @@ impl<R: Read + Seek> SharedBackend<R> {
         for i in 0..tokens.len() {
             let token = &tokens[i];
 
+            // 私「ワタクシ」 -> 「ワタシ」
+            if token.text == "私" && token.reading == "ワタクシ" {
+                tokens[i].reading = "ワタシ".into();
+                continue;
+            }
+
             // 1. （形状詞）な　e.g. 静かな
             // 2. （名詞）な（名詞） e.g.  医者なこと
             if token.text == "な" && token.base != "だ" && i > 0 {
