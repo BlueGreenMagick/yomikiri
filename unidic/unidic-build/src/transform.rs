@@ -45,7 +45,13 @@ fn transform_lex(lex_path: &Path, output_path: &Path) -> TResult<()> {
         let pos = record.get(4).unwrap();
         let pos2 = record.get(5).unwrap();
         let reading = record.get(24).unwrap();
-        let base = record.get(11).unwrap();
+        let mut base = record.get(11).unwrap();
+
+        // remove info in base e.g.　「私-代名詞」　「アイアコス-Aeacus」
+        if let Some((front, _)) = base.split_once('-') {
+            base = front;
+        }
+
         // retain only useful fields
         writer.write_record(&[key, lid, rid, cost, pos, pos2, reading, base])?;
     }
