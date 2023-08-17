@@ -1,5 +1,5 @@
 import type { IHighlighter, IHighlighterStatic } from "../types/highlight";
-import { nodeIsOutOfFlow } from "~/content/scanner";
+import { Scanner } from "~/content/scanner";
 
 const TAG_NAME = "yomikirihl";
 
@@ -115,7 +115,7 @@ function textNodesInRange(range: Range): Text[] {
     range.commonAncestorContainer,
     NodeFilter.SHOW_ALL,
     (node) => {
-      if (nodeIsOutOfFlow(node)) {
+      if (Scanner.nodeIsOutOfFlow(node)) {
         return NodeFilter.FILTER_REJECT;
       } else {
         return NodeFilter.FILTER_ACCEPT;
