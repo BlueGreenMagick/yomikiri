@@ -31,26 +31,13 @@ export type ConfigKeysOfType<T> = {
 }[keyof Configuration];
 
 export namespace Config {
-  let _storage: StoredConfiguration | undefined;
+  let _storage: StoredConfiguration;
 
-  export async function load(): Promise<StoredConfiguration> {
-    if (_storage === undefined) {
-      _storage = await Platform.loadConfig();
-    }
-    return _storage;
-  }
-
-  export async function loadGet<K extends keyof Configuration>(
-    key: K
-  ): Promise<Configuration[K]> {
-    await load();
-    return get(key);
+  export async function initialize(): Promise<void> {
+    _storage = await Platform.loadConfig();
   }
 
   export function get<K extends keyof Configuration>(key: K): Configuration[K] {
-    if (_storage === undefined) {
-      throw new Error("_storage is undefined");
-    }
     const value = _storage[key];
     return value !== undefined
       ? (value as Configuration[K])
@@ -58,22 +45,10 @@ export namespace Config {
   }
 
   /** If value is undefined, removes from storage*/
-  export async function loadSet<K extends keyof Configuration>(
-    key: K,
-    value: Configuration[K]
-  ) {
-    await load();
-    return set(key, value);
-  }
-
-  /** If value is undefined, removes from storage*/
   export async function set<K extends keyof Configuration>(
     key: K,
     value: Configuration[K]
   ) {
-    if (_storage === undefined) {
-      throw new Error("_storage is undefined");
-    }
     if (value === undefined) {
       delete _storage[key];
     } else {

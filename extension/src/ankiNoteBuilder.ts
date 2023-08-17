@@ -90,7 +90,7 @@ export namespace AnkiNoteBuilder {
   }
 
   export async function buildNote(data: MarkerData): Promise<NoteData> {
-    const template = await Config.loadGet("anki.template");
+    const template = await Config.get("anki.template");
     if (template === null) {
       throw new Error(
         "You need to set up Anki template in the extension settings first."

@@ -15,18 +15,36 @@ declare global {
     AnkiApi: typeof AnkiApi;
     Api: typeof Api;
     Utils: typeof Utils;
+    ensureInitialized: typeof ensureInitialized;
   }
 }
 
+let _initialized: Promise<void> | undefined;
+
+async function _initialize() {
+  await Config.initialize();
+  await Backend.initialize();
+}
+
+async function ensureInitialized() {
+  if (_initialized === undefined) {
+    _initialized = _initialize();
+  }
+  return _initialized;
+}
+
 async function searchTerm(term: string): Promise<Entry[]> {
+  await ensureInitialized();
   return await Backend.searchTerm(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+  await ensureInitialized();
   return await Backend.tokenize(req);
 }
 
 async function addAnkiNote(note: NoteData): Promise<void> {
+  await ensureInitialized();
   return await AnkiApi.addNote(note);
 }
 
@@ -44,3 +62,4 @@ self.backend = Backend;
 self.AnkiApi = AnkiApi;
 self.Api = Api;
 self.Utils = Utils;
+self.ensureInitialized = ensureInitialized;

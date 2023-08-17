@@ -9,12 +9,18 @@
   import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
   import DicEntryView from "~/components/DicEntryView.svelte";
+  import Config from "~/config";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
   // may be bigger than entries.length
   let selectedTokenIdx: number;
   let entries: Entry[] = [];
+  let initialized = initialize();
+
+  async function initialize() {
+    await Config.initialize();
+  }
 
   async function _tokenize(searchText: string) {
     if (searchText === "") {
@@ -49,36 +55,38 @@
 </script>
 
 <div class="search">
-  <div class="header">
-    <div class="searchbar">
-      <div class="icon icon-search">{@html IconSearch}</div>
-      <input
-        type="text"
-        bind:value={searchText}
-        placeholder="Enter japanese word or sentence."
-      />
-      <div
-        class="icon icon-clear"
-        class:hidden={searchText === ""}
-        on:click={() => {
-          searchText = "";
-        }}
-      >
-        {@html IconCloseCircle}
+  {#await initialized then}
+    <div class="header">
+      <div class="searchbar">
+        <div class="icon icon-search">{@html IconSearch}</div>
+        <input
+          type="text"
+          bind:value={searchText}
+          placeholder="Enter japanese word or sentence."
+        />
+        <div
+          class="icon icon-clear"
+          class:hidden={searchText === ""}
+          on:click={() => {
+            searchText = "";
+          }}
+        >
+          {@html IconCloseCircle}
+        </div>
       </div>
+      <button class="settings-button" on:click={openSettings}>
+        <div class="icon icon-settings">{@html IconSettings}</div>
+      </button>
     </div>
-    <button class="settings-button" on:click={openSettings}>
-      <div class="icon icon-settings">{@html IconSettings}</div>
-    </button>
-  </div>
-  <div class="tokensview">
-    <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
-  </div>
-  <div class="entries">
-    {#each entries as entry}
-      <DicEntryView {entry} />
-    {/each}
-  </div>
+    <div class="tokensview">
+      <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
+    </div>
+    <div class="entries">
+      {#each entries as entry}
+        <DicEntryView {entry} />
+      {/each}
+    </div>
+  {/await}
 </div>
 
 <style>

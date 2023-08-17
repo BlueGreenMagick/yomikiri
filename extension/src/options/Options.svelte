@@ -3,13 +3,15 @@
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
 
-  async function load() {
-    await Config.load();
+  let initialized = initialize();
+
+  async function initialize() {
+    await Config.initialize();
   }
 </script>
 
 <div class="container">
-  {#await load() then}
+  {#await initialized then}
     <div id="main-column"><MainColumn /></div>
     <div id="preview-column"><PreviewColumn /></div>
   {/await}

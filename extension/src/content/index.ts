@@ -4,16 +4,33 @@ import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
+import Config from "~/config";
 
 declare global {
   interface Window {
     Scanner: typeof Scanner;
     Api: typeof Api;
+    ensureInitialized: typeof ensureInitialized;
   }
+}
+
+let _initialized: Promise<void> | undefined;
+
+async function _initialize() {
+  await Config.initialize();
+}
+
+async function ensureInitialized() {
+  if (_initialized === undefined) {
+    _initialized = _initialize();
+  }
+  return _initialized;
 }
 
 /** Return false if not triggered on japanese text */
 async function _trigger(x: number, y: number): Promise<boolean> {
+  await ensureInitialized();
+
   const result = await Scanner.scanAt(x, y);
   if (result === null) return false;
   console.log(result);
@@ -57,3 +74,4 @@ document.addEventListener("click", async (ev: MouseEvent) => {
 
 window.Scanner = Scanner;
 window.Api = Api;
+window.ensureInitialized = ensureInitialized;

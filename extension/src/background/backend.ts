@@ -10,13 +10,10 @@ export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
 export namespace Backend {
   // lazy initialization when getBackend() is called
-  let _backend: Promise<BackendController> | undefined;
+  let _backend: BackendController;
 
-  async function getBackend(): Promise<BackendController> {
-    if (_backend === undefined) {
-      _backend = BackendController.initialize();
-    }
-    return _backend;
+  export async function initialize(): Promise<void> {
+    _backend = await BackendController.initialize();
   }
 
   /** text should not be empty */
@@ -47,8 +44,7 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let backend = await getBackend();
-    let result = await backend.tokenize(text, charAt);
+    let result = await _backend.tokenize(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
@@ -72,8 +68,7 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let backend = await getBackend();
-    let result = await backend.tokenizeRaw(text, charAt);
+    let result = await _backend.tokenizeRaw(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
@@ -82,7 +77,6 @@ export namespace Backend {
   }
 
   export async function searchTerm(term: string): Promise<Entry[]> {
-    let backend = await getBackend();
-    return backend.search(term);
+    return _backend.search(term);
   }
 }
