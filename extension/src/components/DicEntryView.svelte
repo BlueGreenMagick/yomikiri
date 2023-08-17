@@ -5,6 +5,7 @@
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
   import { RubyString } from "~/japanese";
+  import Config from "~/config";
 
   interface Events {
     addNote: Partial<MarkerData>;
@@ -34,7 +35,7 @@
   $: isCommon = Entry.isCommon(entry);
 </script>
 
-<div class="entryView">
+<div class="entryView" class:anki={Config.get("anki.enabled")}>
   <div class="header">
     <div class="icon" on:click={() => addNote({})}>{@html IconAddCircle}</div>
     <div>
@@ -60,11 +61,18 @@
   .entryView {
     overflow: hidden;
   }
+  .entryView:not(.anki) {
+    margin-left: 3px;
+  }
+
   .header {
     margin: 10px 64px 0 4px;
     display: flex;
     align-items: center;
     gap: 3px;
+  }
+  .entryView:not(.anki) .icon {
+    display: none;
   }
   .icon {
     width: 15px;
@@ -85,10 +93,12 @@
     color: #8db38d;
 
     margin-top: 1px;
-    margin-left: 8px;
     padding: 1px 4px;
     border: 1px solid #8db38d;
     border-radius: 3px;
+  }
+  .entryView.anki .badge {
+    margin-left: 8px;
   }
   .groups {
     margin-bottom: 4px;
