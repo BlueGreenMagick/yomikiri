@@ -16,11 +16,11 @@ export interface TokenizeResult {
   entries: Entry[];
 }
 
-export interface IBackend {
+export interface IBackendController {
   tokenize(text: string, charAt: number): Promise<TokenizeResult>;
   search(term: string): Promise<Entry[]>;
 }
 
-export interface IBackendStatic {
-  initialize(): Promise<IBackend>;
+export interface IBackendControllerStatic {
+  initialize(): Promise<IBackendController>;
 }

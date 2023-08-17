@@ -1,23 +1,26 @@
 import {
-  Backend,
+  BackendController,
   type TokenizeResult,
   type TokenizeRequest,
 } from "@platform/backend";
-import Utils from "~/utils";
 import { toHiragana } from "../japanese";
 import type { Entry } from "~/dicEntry";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
-export class BackendWrapper {
-  backendP: Promise<Backend>;
+export namespace Backend {
+  // lazy initialization when getBackend() is called
+  let _backend: Promise<BackendController> | undefined;
 
-  constructor() {
-    this.backendP = Backend.initialize();
+  async function getBackend(): Promise<BackendController> {
+    if (_backend === undefined) {
+      _backend = BackendController.initialize();
+    }
+    return _backend;
   }
 
   /** text should not be empty */
-  async tokenizeText(text: string): Promise<TokenizeResult> {
+  export async function tokenizeText(text: string): Promise<TokenizeResult> {
     if (text.length === 0) {
       return {
         tokens: [],
@@ -25,10 +28,12 @@ export class BackendWrapper {
         entries: [],
       };
     }
-    return await this.tokenize({ text, charAt: 0 });
+    return await tokenize({ text, charAt: 0 });
   }
 
-  async tokenize(req: TokenizeRequest | string): Promise<TokenizeResult> {
+  export async function tokenize(
+    req: TokenizeRequest | string
+  ): Promise<TokenizeResult> {
     const text = req instanceof Object ? req.text : req;
     const charAt = req instanceof Object ? req.charAt ?? 0 : 0;
     if (text === "") {
@@ -42,7 +47,7 @@ export class BackendWrapper {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let backend = await this.backendP;
+    let backend = await getBackend();
     let result = await backend.tokenize(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
@@ -51,7 +56,9 @@ export class BackendWrapper {
     return result;
   }
 
-  async tokenizeRaw(req: TokenizeRequest | string): Promise<TokenizeResult> {
+  export async function tokenizeRaw(
+    req: TokenizeRequest | string
+  ): Promise<TokenizeResult> {
     const text = req instanceof Object ? req.text : req;
     const charAt = req instanceof Object ? req.charAt ?? 0 : 0;
     if (text === "") {
@@ -65,7 +72,7 @@ export class BackendWrapper {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let backend = await this.backendP;
+    let backend = await getBackend();
     let result = await backend.tokenizeRaw(text, charAt);
     result.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
@@ -74,8 +81,8 @@ export class BackendWrapper {
     return result;
   }
 
-  async searchTerm(term: string): Promise<Entry[]> {
-    let backend = await this.backendP;
+  export async function searchTerm(term: string): Promise<Entry[]> {
+    let backend = await getBackend();
     return backend.search(term);
   }
 }

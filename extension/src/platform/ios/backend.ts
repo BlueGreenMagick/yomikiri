@@ -1,7 +1,7 @@
 import { Platform } from ".";
 import type {
-  IBackendStatic,
-  IBackend,
+  IBackendControllerStatic,
+  IBackendController,
   TokenizeRequest,
   TokenizeResult,
 } from "../types/backend";
@@ -9,9 +9,9 @@ import { Entry } from "~/dicEntry";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
 
-export class Backend implements IBackend {
-  static async initialize(): Promise<Backend> {
-    return new Backend();
+export class BackendController implements IBackendController {
+  static async initialize(): Promise<BackendController> {
+    return new BackendController();
   }
 
   async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
@@ -33,4 +33,4 @@ export class Backend implements IBackend {
   }
 }
 
-Backend satisfies IBackendStatic;
+BackendController satisfies IBackendControllerStatic;

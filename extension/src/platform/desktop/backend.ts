@@ -1,6 +1,6 @@
 import type {
-  IBackendStatic as IBackendStatic,
-  IBackend as IBackend,
+  IBackendControllerStatic as IBackendControllerStatic,
+  IBackendController as IBackendController,
   TokenizeResult,
 } from "../types/backend";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
@@ -21,10 +21,10 @@ async function loadWasm(): Promise<typeof BackendWasm> {
   return BackendWasm;
 }
 
-export class Backend implements IBackend {
+export class BackendController implements IBackendController {
   wasm: BackendWasm;
 
-  static async initialize(): Promise<Backend> {
+  static async initialize(): Promise<BackendController> {
     const BackendWasmConstructor = await loadWasm();
     const indexBytesP = fetchBytes(ENYomikiriIndex);
     const entriesBytesP = fetchBytes(ENYomikiridict);
@@ -33,7 +33,7 @@ export class Backend implements IBackend {
       entriesBytesP,
     ]);
     const backendWasm = new BackendWasmConstructor(indexBytes, entriesBytes);
-    return new Backend(backendWasm);
+    return new BackendController(backendWasm);
   }
 
   private constructor(wasm: BackendWasm) {
@@ -76,4 +76,4 @@ async function fetchBytes(url: string): Promise<Uint8Array> {
   return new Uint8Array(buffer, 0, buffer.byteLength);
 }
 
-Backend satisfies IBackendStatic;
+BackendController satisfies IBackendControllerStatic;
