@@ -35,7 +35,7 @@ export namespace AnkiApi {
     } catch (e) {
       console.error(e);
       throw new Error(
-        "Could not connect to Anki. Please check that Anki is running, AnkiConnect add-on is installed, and if port number is configured correctly."
+        "Failed to connect to Anki. Please check that Anki is running and AnkiConnect add-on is configured correctly."
       );
     }
 

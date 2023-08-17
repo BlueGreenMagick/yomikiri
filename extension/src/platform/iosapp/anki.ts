@@ -73,8 +73,7 @@ export namespace AnkiApi {
     let installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (installed === false) {
       throw new Error(
-        "Could not find AnkiMobile on this device. " +
-          "Install <a href='https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387'>AnkiMobile</a> and try again."
+        "<a href='https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387'>AnkiMobile</a> is not installed."
       );
     }
   }
