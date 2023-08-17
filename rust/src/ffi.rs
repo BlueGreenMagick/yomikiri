@@ -27,12 +27,12 @@ impl Backend {
         Ok(Arc::new(backend))
     }
 
-    pub fn tokenize(&self, sentence: String, char_idx: u32) -> YResult<RawTokenizeResult> {
+    pub fn tokenize(&self, sentence: String, char_at: u32) -> YResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
-        let char_idx = usize::try_from(char_idx).map_err(|_| {
-            YomikiriError::ConversionError("Failed to convert char_idx to usize".into())
+        let char_at = usize::try_from(char_at).map_err(|_| {
+            YomikiriError::ConversionError("Failed to convert char_at to usize".into())
         })?;
-        backend.tokenize(&sentence, char_idx, false)
+        backend.tokenize(&sentence, char_at, false)
     }
 
     pub fn search(&self, term: String) -> YResult<Vec<String>> {

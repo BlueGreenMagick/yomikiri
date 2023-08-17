@@ -51,8 +51,8 @@ export class BackendController implements IBackendController {
     };
   }
 
-  async tokenizeRaw(text: string, charIdx: number): Promise<TokenizeResult> {
-    let rawResult = this.wasm.tokenize_raw(text, charIdx);
+  async tokenizeRaw(text: string, charAt: number): Promise<TokenizeResult> {
+    let rawResult = this.wasm.tokenize_raw(text, charAt);
     return {
       tokens: rawResult.tokens,
       tokenIdx: rawResult.tokenIdx,

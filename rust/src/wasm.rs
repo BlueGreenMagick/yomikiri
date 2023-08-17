@@ -60,8 +60,8 @@ impl Backend {
     }
 
     #[wasm_bindgen(skip_typescript)]
-    pub fn tokenize(&mut self, sentence: &str, char_idx: usize) -> YResult<JsValue> {
-        let result = self.inner.tokenize(sentence, char_idx, false)?;
+    pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> YResult<JsValue> {
+        let result = self.inner.tokenize(sentence, char_at, false)?;
         serde_wasm_bindgen::to_value(&result).map_err(|e| {
             YomikiriError::ConversionError(format!(
                 "Failed to serialize tokenizer result.\n{}",
@@ -71,8 +71,8 @@ impl Backend {
     }
 
     #[wasm_bindgen(skip_typescript)]
-    pub fn tokenize_raw(&mut self, sentence: &str, char_idx: usize) -> YResult<JsValue> {
-        let result = self.inner.tokenize(sentence, char_idx, true)?;
+    pub fn tokenize_raw(&mut self, sentence: &str, char_at: usize) -> YResult<JsValue> {
+        let result = self.inner.tokenize(sentence, char_at, true)?;
         serde_wasm_bindgen::to_value(&result).map_err(|e| {
             YomikiriError::ConversionError(format!(
                 "Failed to serialize tokenizer result.\n{}",
