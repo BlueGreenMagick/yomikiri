@@ -4,8 +4,7 @@ import "./initial";
 import { Api } from "~/api";
 import OptionsSvelte from "./Options.svelte";
 import { AnkiApi } from "@platform/anki";
-import { Theme } from "~/theme";
-import { updated, ankiTemplateModalHidden } from "./stores";
+import { ankiTemplateModalHidden } from "./stores";
 import Utils from "~/utils";
 import Config from "~/config";
 
@@ -18,8 +17,6 @@ declare global {
     openAnkiInfoModal: () => void;
   }
 }
-
-updated.subscribe((_) => Theme.insertStyleElement(document));
 
 const optionsSvelte = new OptionsSvelte({
   target: document.body,

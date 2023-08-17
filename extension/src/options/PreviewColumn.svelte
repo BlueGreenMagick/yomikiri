@@ -1,6 +1,7 @@
 <script lang="ts">
   import DicEntriesView from "~/components/DicEntriesView.svelte";
   import { Entry } from "~/dicEntry";
+  import { updated } from "./stores";
 
   const entriesData: Entry[] = [
     {
@@ -61,7 +62,9 @@
 </script>
 
 <div>
-  <DicEntriesView entries={entriesData} />
+  {#key $updated}
+    <DicEntriesView entries={entriesData} />
+  {/key}
 </div>
 
 <style>

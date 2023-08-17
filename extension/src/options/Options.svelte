@@ -2,11 +2,17 @@
   import Config from "~/config";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
+  import { Theme } from "~/theme";
+  import { updated } from "./stores";
 
   let initialized = initialize();
 
   async function initialize() {
     await Config.initialize();
+    updated.subscribe((_) => {
+      Theme.insertStyleElement(document);
+    });
+    Theme.insertStyleElement(document);
   }
 </script>
 
