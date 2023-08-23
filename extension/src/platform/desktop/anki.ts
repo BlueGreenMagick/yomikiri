@@ -1,4 +1,9 @@
-import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
+import type {
+  AnkiInfo,
+  IAnkiAddNotes,
+  IAnkiOptions,
+  NotetypeInfo,
+} from "../types/anki";
 import Config from "~/config";
 import type { NoteData } from "~/ankiNoteBuilder";
 
@@ -56,27 +61,33 @@ export namespace AnkiApi {
     return data.result;
   }
 
-  export function requestAnkiInfo(): void {
-    throw new Error("Unimplemented for desktop");
+  export async function getAnkiInfo(): Promise<AnkiInfo> {
+    return fetchAnkiInfo();
   }
 
-  /** Throws an error if not successfully connected. */
-  export async function canGetAnkiInfo(): Promise<boolean> {
+  export async function requestAnkiInfo(): Promise<void> {
     await checkConnection();
-    return true;
   }
 
-  export async function deckNames(): Promise<string[]> {
-    return (await request("deckNames")) as string[];
+  async function fetchAnkiInfo(): Promise<AnkiInfo> {
+    const decks = (await request("deckNames")) as string[];
+    const notetypes = (await request("modelNames")) as string[];
+    let ankiInfo: AnkiInfo = {
+      decks,
+      notetypes: [],
+    };
+    for (const notetype of notetypes) {
+      const fields = await notetypeFields(notetype);
+      const notetypeInfo: NotetypeInfo = {
+        name: notetype,
+        fields: fields,
+      };
+      ankiInfo.notetypes.push(notetypeInfo);
+    }
+    return ankiInfo;
   }
 
-  export async function notetypeNames(): Promise<string[]> {
-    return (await request("modelNames")) as string[];
-  }
-
-  export async function nodeTypeFields(
-    noteTypeName: string
-  ): Promise<string[]> {
+  async function notetypeFields(noteTypeName: string): Promise<string[]> {
     return (await request("modelFieldNames", {
       modelName: noteTypeName,
     })) as string[];

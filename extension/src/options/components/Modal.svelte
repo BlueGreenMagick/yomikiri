@@ -59,7 +59,6 @@
     align-items: center;
   }
   .modal-content {
-    padding: 8px 12px;
     flex: 1 1 auto;
     overflow-y: auto;
     border-top: 1px solid lightgray;

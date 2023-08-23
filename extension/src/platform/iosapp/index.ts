@@ -9,6 +9,7 @@ export namespace Platform {
 
   interface MessageWebviewMap {
     ankiIsInstalled: [null, boolean];
+    // returns false if anki is not installed
     ankiInfo: [null, boolean];
     // config in JSON string
     loadConfig: [null, string];

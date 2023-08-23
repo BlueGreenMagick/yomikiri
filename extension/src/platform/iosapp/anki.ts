@@ -1,5 +1,5 @@
 import { Api } from "~/api";
-import type { IAnkiOptions } from "../types/anki";
+import type { AnkiInfo, IAnkiOptions } from "../types/anki";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import Utils from "~/utils";
@@ -9,71 +9,56 @@ interface Named {
   name: string;
 }
 
-interface Notetype {
+interface RawNotetypeInfo {
   name: string;
   kind: "normal" | "cloze";
   fields: Named[];
 }
 
-export interface AnkiInfo {
+interface RawAnkiInfo {
   decks: Named[];
-  notetypes: Notetype[];
+  notetypes: RawNotetypeInfo[];
   profiles: Named[];
 }
 
-let ankiInfo: AnkiInfo | undefined;
-
-// @ts-ignore
-window.setAnkiInfo = (ankiInfoJson: string) => {
-  ankiInfo = JSON.parse(ankiInfoJson);
-};
-
 export namespace AnkiApi {
-  export function requestAnkiInfo(): Promise<boolean> {
-    return Platform.messageWebview("ankiInfo", null);
+  const ANKI_MOBILE_INSTALL_LINK =
+    "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
+
+  let [_ankiInfoP, _ankiInfoResolve] = Utils.createPromise<AnkiInfo>();
+
+  export function setAnkiInfo(ankiInfoJson: string): void {
+    const rawAnkiInfo = JSON.parse(ankiInfoJson) as RawAnkiInfo;
+    const ankiInfo: AnkiInfo = {
+      decks: rawAnkiInfo.decks.map((named) => named.name),
+      notetypes: rawAnkiInfo.notetypes.map((rawNotetype) => {
+        return {
+          name: rawNotetype.name,
+          fields: rawNotetype.fields.map((named) => named.name),
+        };
+      }),
+    };
+    _ankiInfoResolve(ankiInfo);
   }
 
-  export async function canGetAnkiInfo(): Promise<boolean> {
-    return ankiInfo !== undefined;
-  }
-
-  function getAnkiInfo(): AnkiInfo {
-    if (ankiInfo === undefined) {
-      throw new Error("Did not get anki info");
-    } else {
-      return ankiInfo;
+  export async function requestAnkiInfo(): Promise<void> {
+    let installed = await Platform.messageWebview("ankiInfo", null);
+    if (installed === false) {
+      throw new Error(
+        `<a href="${ANKI_MOBILE_INSTALL_LINK}">AnkiMobile</a> is not installed.`
+      );
     }
   }
 
-  /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
-  export async function deckNames(): Promise<string[]> {
-    const ankiInfo = getAnkiInfo();
-    return ankiInfo.decks.map((obj) => obj.name);
-  }
-
-  /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
-  export async function notetypeNames(): Promise<string[]> {
-    const ankiInfo = getAnkiInfo();
-    return ankiInfo.notetypes.map((obj) => obj.name);
-  }
-
-  /** This promise may never resolve if use clicks cancel or AnkiMobile is not installed */
-  export async function nodeTypeFields(
-    notetypeName: string
-  ): Promise<string[]> {
-    const ankiInfo = getAnkiInfo();
-    const notetype = ankiInfo.notetypes.find((nt) => nt.name === notetypeName);
-    if (notetype === undefined) {
-      return [];
-    }
-    return notetype.fields.map((f) => f.name);
+  export async function getAnkiInfo(): Promise<AnkiInfo> {
+    return _ankiInfoP;
   }
 
   export async function checkConnection(): Promise<void> {
     let installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (installed === false) {
       throw new Error(
-        "<a href='https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387'>AnkiMobile</a> is not installed."
+        `<a href="${ANKI_MOBILE_INSTALL_LINK}">AnkiMobile</a> is not installed.`
       );
     }
   }

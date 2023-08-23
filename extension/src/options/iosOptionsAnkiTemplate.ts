@@ -2,10 +2,10 @@ import "normalize.css";
 import "./global.css";
 import "./initial";
 import { Api } from "~/api";
-import OptionsSvelte from "./Options.svelte";
 import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
+import IosOptionsAnkiTemplate from "./iosOptionsAnkiTemplate.svelte";
 
 declare global {
   interface Window {
@@ -13,11 +13,10 @@ declare global {
     Utils: typeof Utils;
     AnkiApi: typeof AnkiApi;
     Config: typeof Config;
-    openAnkiInfoModal: () => void;
   }
 }
 
-const optionsSvelte = new OptionsSvelte({
+const mainSvelte = new IosOptionsAnkiTemplate({
   target: document.body,
   props: {},
 });

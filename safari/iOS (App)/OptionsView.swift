@@ -16,11 +16,19 @@ struct OptionsView: View {
 
     var body: some View {
         NavigationView {
-            WebView(viewModel: self.viewModel.webViewModel).onOpenURL(perform: self.handleOpenUrl)
-                .navigationTitle("Settings")
-                .navigationBarTitleDisplayMode(.inline)
-                .background(OptionsView.BACKGROUND_COLOR)
+            VStack {
+                NavigationLink(isActive: self.$viewModel.ankiTemplateShown) {
+                    WebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
+                        .navigationTitle("Anki Template")
+                        .navigationBarTitleDisplayMode(.inline)
+                } label: { EmptyView() }
+                WebView(viewModel: self.viewModel.webViewModel)
+            }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
         }
+        .background(OptionsView.BACKGROUND_COLOR)
+        .onOpenURL(perform: self.handleOpenUrl)
     }
 
     init(viewModel: ViewModel) {
@@ -41,7 +49,7 @@ struct OptionsView: View {
         Task {
             do {
                 let ankiInfo = try await getAnkiInfoFromPasteboard()
-                try viewModel.openAnkiInfoModal(ankiInfo: ankiInfo)
+                try viewModel.passAnkiInfo(ankiInfo: ankiInfo)
             } catch {
                 os_log(.error, "ERROR %{public}s", error.localizedDescription)
             }
@@ -51,28 +59,33 @@ struct OptionsView: View {
 
 extension OptionsView {
     class ViewModel: ObservableObject {
+        @Published var ankiTemplateShown: Bool = false
+
         static let htmlURL = Bundle.main.url(forResource: "options", withExtension: "html", subdirectory: "res")!
+        static let ankiTemplateURL = Bundle.main.url(forResource: "iosOptionsAnkiTemplate", withExtension: "html", subdirectory: "res")!
 
-        var webViewModel = WebView.ViewModel(url: htmlURL, messageHandler: handleMessage)
+        var webViewModel: WebView.ViewModel!
+        var ankiTemplateWebViewModel: WebView.ViewModel!
 
-        init() {}
+        init() {
+            self.webViewModel = WebView.ViewModel(url: ViewModel.htmlURL, messageHandler: handleMessage)
+            self.ankiTemplateWebViewModel = WebView.ViewModel(url: ViewModel.ankiTemplateURL, messageHandler: handleMessage)
+        }
 
-        // ankiInfo: JSON string
-        func openAnkiInfoModal(ankiInfo: String) throws {
+        func passAnkiInfo(ankiInfo: String) throws {
             let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
             let script = """
             setTimeout(() => {
-                setAnkiInfo(`\(escaped)`);
-                openAnkiInfoModal();
+                AnkiApi.setAnkiInfo(`\(escaped)`);
             }, 50);
             """
-            if self.webViewModel.getLoadStatus() == .complete {
-                guard let webview = self.webViewModel.webview else {
+            if webViewModel.getLoadStatus() == .complete {
+                guard let webview = ankiTemplateWebViewModel.webview else {
                     throw "Webview not initialized"
                 }
                 webview.evaluateJavaScript(script)
             } else {
-                self.webViewModel.runOnLoadComplete(fn: {
+                webViewModel.runOnLoadComplete(fn: {
                     guard let webview = self.webViewModel.webview else {
                         return
                     }
@@ -80,46 +93,53 @@ extension OptionsView {
                 })
             }
         }
-    }
-}
 
-private func handleMessage(rawMsg: Any) async throws -> Any? {
-    guard let msg = rawMsg as? [String: Any] else {
-        throw "Invalid message format"
-    }
-    guard let key = msg["key"] as? String else {
-        throw "Message does not have 'key'"
-    }
-    guard let request = msg["request"] else {
-        throw "Message does not have 'request'"
-    }
+        private func handleMessage(rawMsg: Any) async throws -> Any? {
+            guard let msg = rawMsg as? [String: Any] else {
+                throw "Invalid message format"
+            }
+            guard let key = msg["key"] as? String else {
+                throw "Message does not have 'key'"
+            }
+            guard let request = msg["request"] else {
+                throw "Message does not have 'request'"
+            }
 
-    os_log("%{public}s", "handleMessage: \(key)")
-    switch key {
-    case "ankiIsInstalled":
-        return ankiIsInstalled()
-    case "ankiInfo":
-        return await requestAnkiInfo()
-    case "loadConfig":
-        return try SharedStorage.loadConfig()
-    case "saveConfig":
-        guard let configJson = request as? String else {
-            throw "setConfig tequest body must be JSON string"
+            os_log("%{public}s", "handleMessage: \(key)")
+            switch key {
+            case "ankiIsInstalled":
+                return ankiIsInstalled()
+            case "ankiInfo":
+                return requestAnkiInfo()
+            case "loadConfig":
+                return try SharedStorage.loadConfig()
+            case "saveConfig":
+                guard let configJson = request as? String else {
+                    throw "setConfig tequest body must be JSON string"
+                }
+                return try SharedStorage.saveConfig(configJson: configJson)
+            default:
+                throw "Unknown key \(key)"
+            }
         }
-        return try SharedStorage.saveConfig(configJson: configJson)
-    default:
-        throw "Unknown key \(key)"
+
+        private func ankiIsInstalled() -> Bool {
+            let url = URL(string: "anki://x-callback-url/infoForAdding")!
+            return UIApplication.shared.canOpenURL(url)
+        }
+
+        private func requestAnkiInfo() -> Bool {
+            let url = URL(string: "anki://x-callback-url/infoForAdding?x-success=yomikiri://ankiInfo")!
+            if !ankiIsInstalled() {
+                return false
+            }
+            DispatchQueue.main.async {
+                self.ankiTemplateShown = true
+                UIApplication.shared.open(url)
+            }
+            return true
+        }
     }
-}
-
-private func ankiIsInstalled() -> Bool {
-    let url = URL(string: "anki://x-callback-url/infoForAdding")!
-    return UIApplication.shared.canOpenURL(url)
-}
-
-private func requestAnkiInfo() async -> Bool {
-    let url = URL(string: "anki://x-callback-url/infoForAdding?x-success=yomikiri://ankiInfo")!
-    return await UIApplication.shared.open(url)
 }
 
 private func getAnkiInfoFromPasteboard() async throws -> String {

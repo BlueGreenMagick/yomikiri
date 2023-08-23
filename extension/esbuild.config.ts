@@ -173,11 +173,21 @@ function generateBuildOptions(): BuildOptions {
 
   const iosAppBuildOptions: BuildOptions = {
     ...baseBuildOptions,
-    entryPoints: [{ in: "src/options/index.ts", out: "res/options" }],
+    entryPoints: [
+      { in: "src/options/index.ts", out: "res/options" },
+      {
+        in: "src/options/iosOptionsAnkiTemplate.ts",
+        out: "res/iosOptionsAnkiTemplate",
+      },
+    ],
     plugins: [
       copy({
         assets: [
           { from: ["src/options/index.html"], to: ["./res/options.html"] },
+          {
+            from: ["src/options/iosOptionsAnkiTemplate.html"],
+            to: ["./res/iosOptionsAnkiTemplate.html"],
+          },
         ],
       }),
       platformAliasPlugin,

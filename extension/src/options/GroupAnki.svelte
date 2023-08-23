@@ -5,24 +5,19 @@
   import OptionClick from "./components/OptionClick.svelte";
   import OptionNumber from "./components/OptionNumber.svelte";
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
-  import { ankiTemplateModalHidden } from "./stores";
   import OptionToggle from "./components/OptionToggle.svelte";
 
   let ankiTemplateDescription = "";
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
   let useAnkiDescription = "";
+  let ankiTemplateModalHidden: boolean = true;
 
   async function openAnkiTemplateModal() {
+    ankiTemplateDescription = "";
     try {
-      ankiTemplateDescription = "";
-      let ok = await AnkiApi.canGetAnkiInfo();
-      if (ok) {
-        $ankiTemplateModalHidden = false;
-      } else {
-        ankiTemplateDescription = "Retrieving information from Anki...";
-        AnkiApi.requestAnkiInfo();
-      }
+      await AnkiApi.requestAnkiInfo();
+      ankiTemplateModalHidden = false;
     } catch (err) {
       let errorMsg;
       if (err instanceof Error) {
@@ -92,9 +87,10 @@
     on:trigger={openAnkiTemplateModal}
   />
 </GroupedOptions>
-<ModalAnkiTemplate
-  hidden={$ankiTemplateModalHidden}
-  on:close={() => {
-    $ankiTemplateModalHidden = true;
-  }}
-/>
+{#if ankiTemplateModalHidden === false && Platform.IS_DESKTOP}
+  <ModalAnkiTemplate
+    on:close={() => {
+      ankiTemplateModalHidden = true;
+    }}
+  />
+{/if}

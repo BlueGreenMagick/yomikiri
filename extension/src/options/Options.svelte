@@ -4,6 +4,7 @@
   import PreviewColumn from "./PreviewColumn.svelte";
   import { Theme } from "~/theme";
   import { updated } from "./stores";
+  import { Platform } from "~/platform/desktop";
 
   let initialized = initialize();
 
@@ -19,7 +20,9 @@
 <div class="container">
   {#await initialized then}
     <div id="main-column"><MainColumn /></div>
-    <div id="preview-column"><PreviewColumn /></div>
+    {#if Platform.IS_DESKTOP}
+      <div id="preview-column"><PreviewColumn /></div>
+    {/if}
   {/await}
 </div>
 
