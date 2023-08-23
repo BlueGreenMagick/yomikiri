@@ -5,7 +5,7 @@ import { Api } from "~/api";
 import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
-import IosOptionsAnkiTemplate from "./iosOptionsAnkiTemplate.svelte";
+import IosAnkiTemplatePage from "./IosAnkiTemplatePage.svelte";
 
 declare global {
   interface Window {
@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-const mainSvelte = new IosOptionsAnkiTemplate({
+const mainSvelte = new IosAnkiTemplatePage({
   target: document.body,
   props: {},
 });
