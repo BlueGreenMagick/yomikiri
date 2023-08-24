@@ -1,13 +1,8 @@
 <script lang="ts">
-  import Config from "~/config";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";
 
-  let initialized = initialize();
-
-  async function initialize() {
-    await Config.initialize();
-  }
+  export let initialized: Promise<void>;
 </script>
 
 <div class="ios-anki-template" use:platformClass>

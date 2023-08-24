@@ -18,13 +18,7 @@
   // may be bigger than entries.length
   let selectedTokenIdx: number;
   let entries: Entry[] = [];
-  let initialized = initialize();
-
-  async function initialize() {
-    await Config.initialize();
-    await Backend.initialize();
-    Theme.insertStyleElement(document);
-  }
+  export let initialized: Promise<void>;
 
   async function _tokenize(searchText: string) {
     if (searchText === "") {

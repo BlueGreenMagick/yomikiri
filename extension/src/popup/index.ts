@@ -6,6 +6,7 @@ import { Theme } from "~/theme";
 import Config from "~/config";
 import Utils from "~/utils";
 import { Api } from "~/api";
+import { Backend } from "~/backend";
 
 declare global {
   interface Window {
@@ -15,14 +16,17 @@ declare global {
   }
 }
 
-function initialize() {
+async function initialize() {
   Api.initialize({ context: "popup" });
   Platform.initialize();
+  await Config.initialize();
+  Theme.insertStyleElement(document);
+  await Backend.initialize();
 }
 
-initialize();
+let initialized = initialize();
 
-const svelte = new Popup({ target: document.body, props: {} });
+const svelte = new Popup({ target: document.body, props: { initialized } });
 
 window.Api = Api;
 window.Utils = Utils;

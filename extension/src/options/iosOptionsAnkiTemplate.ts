@@ -1,6 +1,7 @@
 import "normalize.css";
 import "./global.css";
 import { Api } from "~/api";
+import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
@@ -15,9 +16,17 @@ declare global {
   }
 }
 
+async function initialize() {
+  Api.initialize({ context: "page" });
+  Platform.initialize();
+  await Config.initialize();
+}
+
+let initialized = initialize();
+
 const mainSvelte = new IosAnkiTemplatePage({
   target: document.body,
-  props: {},
+  props: { initialized },
 });
 
 window.Api = Api;

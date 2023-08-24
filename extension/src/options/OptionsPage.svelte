@@ -1,23 +1,10 @@
 <script lang="ts">
-  import Config from "~/config";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
-  import { Theme } from "~/theme";
-  import { updated } from "./stores";
   import { Platform } from "~/platform/desktop";
   import { platformClass } from "~/components/actions";
-  import { Backend } from "~/backend";
 
-  let initialized = initialize();
-
-  async function initialize() {
-    await Config.initialize();
-    updated.subscribe((_) => {
-      Theme.insertStyleElement(document);
-    });
-    Theme.insertStyleElement(document);
-    await Backend.initialize();
-  }
+  export let initialized: Promise<void>;
 </script>
 
 <div class="container" use:platformClass>

@@ -1,10 +1,12 @@
 <script lang="ts">
   import Tokenize from "./Tokenize.svelte";
   import { platformClass } from "~/components/actions";
+
+  export let initialized: Promise<void>;
 </script>
 
 <div class="container" use:platformClass>
-  <Tokenize />
+  <Tokenize {initialized} />
 </div>
 
 <style>
