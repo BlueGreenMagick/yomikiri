@@ -62,12 +62,14 @@ export namespace Platform {
       window.close();
     }
   }
+
+  export function initialize() {
+    if (Api.context === "background") {
+      Api.handleRequest("loadConfig", () => {
+        return Platform.loadConfig();
+      });
+    }
+  }
 }
 
 Platform satisfies Module;
-
-if (Api.context === "background") {
-  Api.handleRequest("loadConfig", () => {
-    return Platform.loadConfig();
-  });
-}

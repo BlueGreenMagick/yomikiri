@@ -5,6 +5,7 @@
   import { Theme } from "~/theme";
   import { updated } from "./stores";
   import { Platform } from "~/platform/desktop";
+  import { platformClass } from "~/components/actions";
 
   let initialized = initialize();
 
@@ -17,7 +18,7 @@
   }
 </script>
 
-<div class="container">
+<div class="container" use:platformClass>
   {#await initialized then}
     <div id="main-column"><MainColumn /></div>
     {#if Platform.IS_DESKTOP}

@@ -1,6 +1,5 @@
 import "normalize.css";
 import "./global.css";
-import "./initial";
 import { Api } from "~/api";
 import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";

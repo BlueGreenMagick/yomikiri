@@ -3,6 +3,7 @@
   import type { Entry } from "~/dicEntry";
   import IconClose from "@icons/close.svg";
   import DicEntriesView from "~/components/DicEntriesView.svelte";
+  import { platformClass } from "~/components/actions";
 
   interface Events {
     close: MouseEvent;
@@ -17,7 +18,7 @@
   }
 </script>
 
-<div>
+<div use:platformClass>
   <button class="close-button" on:click={(ev) => dispatch("close", ev)}
     ><div class="icon">{@html IconClose}</div></button
   >

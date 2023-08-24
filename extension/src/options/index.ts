@@ -1,8 +1,8 @@
 import "normalize.css";
 import "./global.css";
-import "./initial";
 import { Api } from "~/api";
-import OptionsSvelte from "./Options.svelte";
+import OptionsPage from "./OptionsPage.svelte";
+import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
@@ -17,7 +17,14 @@ declare global {
   }
 }
 
-const optionsSvelte = new OptionsSvelte({
+function initialize() {
+  Api.initialize({ context: "page" });
+  Platform.initialize();
+}
+
+initialize();
+
+const optionsPage = new OptionsPage({
   target: document.body,
   props: {},
 });

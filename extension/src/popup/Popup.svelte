@@ -1,8 +1,9 @@
 <script lang="ts">
   import Search from "./Search.svelte";
+  import { platformClass } from "~/components/actions";
 </script>
 
-<div class="container">
+<div class="container" use:platformClass>
   <Search />
 </div>
 

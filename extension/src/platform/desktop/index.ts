@@ -18,6 +18,8 @@ export namespace Platform {
   export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
   }
+
+  export function initialize() {}
 }
 
 Platform satisfies Module;

@@ -1,8 +1,7 @@
-/** initialize Api before any other code are run */
-import "./initial";
 import type { Entry } from "../dicEntry";
 import { Backend, type TokenizeResult, type TokenizeRequest } from "./backend";
 import { Api, type MessageSender } from "~/api";
+import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
@@ -22,6 +21,11 @@ declare global {
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
+  Api.initialize({
+    handleRequests: true,
+    context: "background",
+  });
+  Platform.initialize();
   await Config.initialize();
   await Backend.initialize();
 }
@@ -51,6 +55,8 @@ async function addAnkiNote(note: NoteData): Promise<void> {
 function tabId(_req: null, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
+
+ensureInitialized();
 
 Api.handleRequest("searchTerm", searchTerm);
 Api.handleRequest("tokenize", tokenize);

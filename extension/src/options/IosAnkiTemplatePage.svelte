@@ -1,6 +1,7 @@
 <script lang="ts">
   import Config from "~/config";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
+  import { platformClass } from "~/components/actions";
 
   let initialized = initialize();
 
@@ -9,7 +10,7 @@
   }
 </script>
 
-<div class="ios-anki-template">
+<div class="ios-anki-template" use:platformClass>
   {#await initialized then}
     <LoadAnkiTemplate />
   {/await}

@@ -8,4 +8,6 @@ export interface Module {
   loadConfig: () => Promise<StoredConfiguration>;
   saveConfig: (config: StoredConfiguration) => Promise<void>;
   openOptionsPage: () => void | Promise<void>;
+  /** Api must be initialized */
+  initialize: () => void;
 }

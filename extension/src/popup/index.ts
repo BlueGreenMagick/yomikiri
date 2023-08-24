@@ -1,6 +1,5 @@
 import "normalize.css";
 import "./global.css";
-import "./initial";
 import { Platform } from "@platform";
 import Popup from "./Popup.svelte";
 import { Theme } from "~/theme";
@@ -16,14 +15,13 @@ declare global {
   }
 }
 
-if (Platform.IS_IOS) {
-  document.documentElement.classList.add("ios");
-}
-if (Platform.IS_DESKTOP) {
-  document.documentElement.classList.add("desktop");
+function initialize() {
+  Api.initialize({ context: "popup" });
+  Platform.initialize();
+  Theme.insertStyleElement(document);
 }
 
-Theme.insertStyleElement(document);
+initialize();
 
 const svelte = new Popup({ target: document.body, props: {} });
 

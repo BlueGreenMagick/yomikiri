@@ -51,6 +51,8 @@ export namespace Platform {
   export async function openOptionsPage(): Promise<void> {
     throw new Error("Not implemented for iosapp");
   }
+
+  export function initialize() {}
 }
 
 Platform satisfies Module;

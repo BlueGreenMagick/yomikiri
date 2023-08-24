@@ -1,10 +1,10 @@
-import "./initial";
 import { Scanner } from "./scanner";
 import { Api } from "~/api";
 import { highlighter } from "@platform/highlight";
 import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
 import Config from "~/config";
+import { Platform } from "@platform";
 
 declare global {
   interface Window {
@@ -17,6 +17,8 @@ declare global {
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
+  Api.initialize({ context: "contentScript" });
+  Platform.initialize();
   await Config.initialize();
 }
 
