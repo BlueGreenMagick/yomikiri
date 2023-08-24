@@ -30,7 +30,7 @@ const scanResult: ScanResult = {
       text: "は",
       pos: "助詞",
       base: "は",
-      reading: "わ",
+      reading: "は",
       pos2: "係助詞",
       start: 3,
     },
@@ -164,8 +164,11 @@ describe("AnkiNoteBuilder marker", () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-kana", data);
     expect(value).toBe("わたしはほんが<b>よみたい</b>");
   });
-  test("sentence-translate", async () => {
-    const value = await AnkiNoteBuilder.markerValue("sentence-translate", data);
+  test("translated-sentence", async () => {
+    const value = await AnkiNoteBuilder.markerValue(
+      "translated-sentence",
+      data
+    );
     expect(typeof value).toBe("string");
   });
   test("sentence-cloze", async () => {
