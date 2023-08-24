@@ -28,7 +28,7 @@ export interface RawTokenizeResult {
     tokenIdx: number;
     entriesJson: string[];
 }
-"
+"#;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_TOKENIZE: &'static str = r#"
