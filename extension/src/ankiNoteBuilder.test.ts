@@ -12,7 +12,7 @@ const scanResult: ScanResult = {
     pos2: "一般",
     start: 4,
   },
-  sentence: "わたしは本が読みたい",
+  sentence: "わたしは本が読みたい。",
   range: new Range(),
   startIdx: 10,
   endIdx: 6,
@@ -57,6 +57,14 @@ const scanResult: ScanResult = {
       reading: "よみたい",
       pos2: "一般",
       start: 6,
+    },
+    {
+      text: "。",
+      pos: "UNK",
+      base: "。",
+      reading: "。",
+      pos2: "*",
+      start: 10,
     },
   ],
   dicEntries: [
@@ -154,15 +162,15 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("sentence", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence", data);
-    expect(value).toBe("わたしは本が<b>読みたい</b>");
+    expect(value).toBe("わたしは本が<b>読みたい</b>。");
   });
   test("sentence-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-furigana", data);
-    expect(value).toBe("わたしは 本[ほん]が<b>読[よ]みたい</b>");
+    expect(value).toBe("わたしは 本[ほん]が<b>読[よ]みたい</b>。");
   });
   test("sentence-kana", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-kana", data);
-    expect(value).toBe("わたしはほんが<b>よみたい</b>");
+    expect(value).toBe("わたしはほんが<b>よみたい</b>。");
   });
   test("translated-sentence", async () => {
     const value = await AnkiNoteBuilder.markerValue(
@@ -173,14 +181,14 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("sentence-cloze", async () => {
     const value = await AnkiNoteBuilder.markerValue("sentence-cloze", data);
-    expect(value).toBe("わたしは本が{{c1::読みたい}}");
+    expect(value).toBe("わたしは本が{{c1::読みたい}}。");
   });
   test("sentence-cloze-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
       "sentence-cloze-furigana",
       data
     );
-    expect(value).toBe("わたしは 本[ほん]が{{c1::読[よ]みたい}}");
+    expect(value).toBe("わたしは 本[ほん]が{{c1::読[よ]みたい}}。");
   });
   test("meaning", async () => {
     const value = await AnkiNoteBuilder.markerValue("meaning", data);
