@@ -33,6 +33,12 @@ export namespace RubyString {
    * (No JMDict entry forms contains regex special characters)
    */
   export function generate(text: string, reading: string): RubyString {
+    if (text === "") {
+      return [];
+    }
+    if (reading === "" || reading === "*") {
+      return [{ base: text }];
+    }
     let inKatakana = isKatakana(reading);
     const splitted = splitKanjiKana(text);
     let regexp = "";

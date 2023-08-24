@@ -4,6 +4,11 @@ import { RubyString, toHiragana, toKatakana } from "./japanese";
 describe("RubyString", () => {
   test("generate", () => {
     expect(RubyString.generate("", "")).toEqual([]);
+    // no reading
+    expect(RubyString.generate("한국어", "*")).toEqual([{ base: "한국어" }]);
+    expect(RubyString.generate("한국어", "")).toEqual([{ base: "한국어" }]);
+
+    // match position
     expect(RubyString.generate("あエ本w1。", "あえほんw1。")).toEqual([
       { base: "あエ" },
       { base: "本", ruby: "ほん" },
