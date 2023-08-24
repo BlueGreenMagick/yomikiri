@@ -6,6 +6,7 @@
   import { updated } from "./stores";
   import { Platform } from "~/platform/desktop";
   import { platformClass } from "~/components/actions";
+  import { Backend } from "~/backend";
 
   let initialized = initialize();
 
@@ -15,6 +16,7 @@
       Theme.insertStyleElement(document);
     });
     Theme.insertStyleElement(document);
+    await Backend.initialize();
   }
 </script>
 

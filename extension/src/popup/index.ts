@@ -18,7 +18,6 @@ declare global {
 function initialize() {
   Api.initialize({ context: "popup" });
   Platform.initialize();
-  Theme.insertStyleElement(document);
 }
 
 initialize();

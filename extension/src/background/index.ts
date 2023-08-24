@@ -1,5 +1,5 @@
 import type { Entry } from "../dicEntry";
-import { Backend, type TokenizeResult, type TokenizeRequest } from "./backend";
+import { Backend, type TokenizeResult, type TokenizeRequest } from "../backend";
 import { Api, type MessageSender } from "~/api";
 import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";

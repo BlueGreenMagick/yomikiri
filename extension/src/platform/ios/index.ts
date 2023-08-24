@@ -3,7 +3,7 @@ import Utils from "~/utils";
 import { Api } from "~/api";
 import type { Module } from "../types";
 import type { RawTokenizeResult } from "../types/backend";
-import type { TokenizeRequest } from "~/background/backend";
+import type { TokenizeRequest } from "~/backend";
 
 export namespace Platform {
   export const IS_DESKTOP = false;

@@ -7,9 +7,11 @@
   import IconSearch from "@icons/search.svg";
   import IconSettings from "@icons/settings.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
-  import TokensView from "./TokensView.svelte";
+  import TokensView from "../components/TokensView.svelte";
   import DicEntryView from "~/components/DicEntryView.svelte";
   import Config from "~/config";
+  import { Backend } from "~/backend";
+  import { Theme } from "~/theme";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
@@ -20,6 +22,8 @@
 
   async function initialize() {
     await Config.initialize();
+    await Backend.initialize();
+    Theme.insertStyleElement(document);
   }
 
   async function _tokenize(searchText: string) {
@@ -28,7 +32,7 @@
       return;
     }
 
-    let result = await Api.request("tokenize", {
+    let result = await Backend.tokenize({
       text: searchText,
       charAt: 0,
     });
@@ -41,7 +45,7 @@
       entries = [];
       return;
     }
-    entries = await Api.request("searchTerm", tokens[idx].base);
+    entries = await Backend.searchTerm(tokens[idx].base);
   }
 
   const getEntries = Utils.SingleQueued(_getEntries);

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Search from "./Search.svelte";
+  import Tokenize from "./Tokenize.svelte";
   import { platformClass } from "~/components/actions";
 </script>
 
 <div class="container" use:platformClass>
-  <Search />
+  <Tokenize />
 </div>
 
 <style>

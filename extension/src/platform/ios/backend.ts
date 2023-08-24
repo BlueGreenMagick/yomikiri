@@ -1,3 +1,4 @@
+import { Api } from "~/api";
 import { Platform } from ".";
 import type {
   IBackendControllerStatic,
@@ -6,6 +7,7 @@ import type {
   TokenizeResult,
 } from "../types/backend";
 import { Entry } from "~/dicEntry";
+import { toHiragana } from "~/japanese";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
 
@@ -15,8 +17,15 @@ export class BackendController implements IBackendController {
   }
 
   async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
+    if (Api.context !== "background" && Api.context !== "page") {
+      return await Api.request("tokenize", { text, charAt });
+    }
     let req: TokenizeRequest = { text, charAt: charAt };
     let rawResult = await Platform.requestToApp("tokenize", req);
+    rawResult.tokens.forEach((token) => {
+      const reading = token.reading === "*" ? token.text : token.reading;
+      token.reading = toHiragana(reading);
+    });
     return {
       tokens: rawResult.tokens,
       tokenIdx: rawResult.tokenIdx,
@@ -27,6 +36,9 @@ export class BackendController implements IBackendController {
   }
 
   async search(term: string): Promise<Entry[]> {
+    if (Api.context !== "background" && Api.context !== "page") {
+      return await Api.request("searchTerm", term);
+    }
     return (await Platform.requestToApp("search", term))
       .map((json) => JSON.parse(json))
       .map(Entry.fromObject);

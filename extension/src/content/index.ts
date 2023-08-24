@@ -5,6 +5,7 @@ import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
 import Config from "~/config";
 import { Platform } from "@platform";
+import { Backend } from "~/backend";
 
 declare global {
   interface Window {
@@ -20,6 +21,7 @@ async function _initialize() {
   Api.initialize({ context: "contentScript" });
   Platform.initialize();
   await Config.initialize();
+  await Backend.initialize();
 }
 
 async function ensureInitialized() {

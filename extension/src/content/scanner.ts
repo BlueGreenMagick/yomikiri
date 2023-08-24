@@ -3,6 +3,7 @@ import type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import { Entry } from "~/dicEntry";
 import { containsJapaneseContent } from "~/japanese";
+import { Backend } from "~/backend";
 
 export interface ScanResult {
   token: Token;
@@ -64,7 +65,7 @@ export namespace Scanner {
       text: fullSentence(sentence),
       charAt: prev.length + sentence.idx,
     };
-    const tokenizeResult = await Api.request("tokenize", tokenizeReq);
+    const tokenizeResult = await Backend.tokenize(tokenizeReq);
     if (!isValidJapaneseToken(tokenizeResult)) return null;
     const result = scanToken(tokenizeResult, sentence);
     _lastScannedResult = result;

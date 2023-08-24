@@ -3,15 +3,14 @@ import {
   type TokenizeResult,
   type TokenizeRequest,
 } from "@platform/backend";
-import { toHiragana } from "../japanese";
 import type { Entry } from "~/dicEntry";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
 export namespace Backend {
-  // lazy initialization when getBackend() is called
   let _backend: BackendController;
 
+  /** Api must be initialized */
   export async function initialize(): Promise<void> {
     _backend = await BackendController.initialize();
   }
@@ -44,12 +43,7 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let result = await _backend.tokenize(text, charAt);
-    result.tokens.forEach((token) => {
-      const reading = token.reading === "*" ? token.text : token.reading;
-      token.reading = toHiragana(reading);
-    });
-    return result;
+    return await _backend.tokenize(text, charAt);
   }
 
   export async function tokenizeRaw(
@@ -68,12 +62,7 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let result = await _backend.tokenizeRaw(text, charAt);
-    result.tokens.forEach((token) => {
-      const reading = token.reading === "*" ? token.text : token.reading;
-      token.reading = toHiragana(reading);
-    });
-    return result;
+    return await _backend.tokenizeRaw(text, charAt);
   }
 
   export async function searchTerm(term: string): Promise<Entry[]> {
