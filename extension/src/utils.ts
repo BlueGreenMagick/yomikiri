@@ -73,6 +73,18 @@ namespace Utils {
       .join("&");
   }
 
+  export function errorMessage(
+    err: any,
+    other: string = "Unknown error: check the browser console for details"
+  ): string {
+    if (err instanceof Error) {
+      return err.message;
+    } else {
+      console.error(err);
+      return other;
+    }
+  }
+
   interface QueueItem<I extends any[], R> {
     inp: I;
     resolve: PromiseResolver<R>;

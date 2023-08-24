@@ -192,16 +192,14 @@ border: 0;
         try {
           note = await AnkiNoteBuilder.buildNote(data as MarkerData);
         } catch (err) {
-          let errMsg = err instanceof Error ? err.message : "Invalid error";
-          toast.error(errMsg);
+          toast.error(Utils.errorMessage(err));
           throw err;
         }
         toast.update("Adding note to Anki");
         try {
           await Api.request("addAnkiNote", note);
         } catch (err) {
-          let errMsg = err instanceof Error ? err.message : "Invalid error";
-          toast.error(errMsg);
+          toast.error(Utils.errorMessage(err));
           throw err;
         }
         toast.success("Added note to Anki!");

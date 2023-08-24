@@ -6,6 +6,7 @@
   import OptionNumber from "./components/OptionNumber.svelte";
   import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
   import OptionToggle from "./components/OptionToggle.svelte";
+  import Utils from "~/utils";
 
   let ankiTemplateDescription = "";
   let ankiEnabled: boolean;
@@ -19,12 +20,7 @@
       await AnkiApi.requestAnkiInfo();
       ankiTemplateModalHidden = false;
     } catch (err) {
-      let errorMsg;
-      if (err instanceof Error) {
-        errorMsg = err.message;
-      } else {
-        errorMsg = "Unknown error: check the browser console for details";
-      }
+      let errorMsg = Utils.errorMessage(err);
       ankiTemplateDescription = `<span class="warning">${errorMsg}</span>`;
     }
   }
@@ -36,13 +32,7 @@
       useAnkiDescription =
         "<span class='success'>Successfully connected to Anki.</span>";
     } catch (err) {
-      let errorMsg;
-      if (err instanceof Error) {
-        errorMsg = err.message;
-      } else {
-        errorMsg = "Unknown error: check the browser console for details";
-        console.error(err);
-      }
+      let errorMsg = Utils.errorMessage(err);
       useAnkiDescription = `<span class="warning">${errorMsg}</span>`;
     }
   }
