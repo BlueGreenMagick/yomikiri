@@ -8,6 +8,7 @@
 import os.log
 import SwiftUI
 import WebKit
+import YomikiriTokenizer
 
 struct OptionsView: View {
     @ObservedObject var viewModel: ViewModel
@@ -118,6 +119,23 @@ extension OptionsView {
                     throw "setConfig tequest body must be JSON string"
                 }
                 return try SharedStorage.saveConfig(configJson: configJson)
+            case "tokenize":
+                guard let req = request as? NSDictionary else {
+                    throw "'tokenize' request is not a Dictionary"
+                }
+                guard let text = req["text"] as? String else {
+                    throw "'tokenize' request.text is not String"
+                }
+                guard let charAt = req["charAt"] as? UInt32 else {
+                    throw "'tokenize' request.charAt is not UInt32"
+                }
+                let rawResult = try backend.tokenize(sentence: text, charAt: charAt)
+                return try jsonSerialize(obj: rawResult)
+            case "searchTerm":
+                guard let term = request as? String else {
+                    throw "'searchTerm' request is not string"
+                }
+                return try backend.search(term: term)
             default:
                 throw "Unknown key \(key)"
             }

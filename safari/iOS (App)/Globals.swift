@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import os.log
+import YomikiriTokenizer
 
 extension URL {
     var isDeeplink: Bool {
@@ -23,4 +25,25 @@ extension URL {
 
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
+}
+
+// this is computed lazily
+let backend = try! newBackend()
+
+private func newBackend() throws -> Backend {
+    os_log(.error, "start creating backend")
+    let result = try createBackend()
+    os_log(.error, "finish creating backend")
+    return result
+}
+
+func jsonSerialize<T: Encodable>(obj: T?) throws -> String {
+    let encoder = JSONEncoder()
+    let data = try encoder.encode(obj)
+    return String(data: data, encoding: .utf8) ?? "null"
+}
+
+func jsonDeserialize<T: Decodable>(json: String) throws -> T {
+    let decoder = JSONDecoder()
+    return try decoder.decode(T.self, from: json.data(using: .utf8)!)
 }

@@ -1,6 +1,7 @@
 import type Utils from "~/utils";
 import type { Module } from "../types";
 import type { StoredConfiguration } from "~/config";
+import type { RawTokenizeResult, TokenizeRequest } from "../types/backend";
 
 export namespace Platform {
   export const IS_DESKTOP = false;
@@ -14,6 +15,9 @@ export namespace Platform {
     // config in JSON string
     loadConfig: [null, string];
     saveConfig: [string, void];
+    // result: JSON-serialized RawTokenizeResult
+    tokenize: [TokenizeRequest, string];
+    searchTerm: [string, string[]];
   }
 
   export type WebviewRequest<K extends keyof MessageWebviewMap> = Utils.First<
