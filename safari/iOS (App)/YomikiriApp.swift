@@ -20,6 +20,11 @@ struct YomikiriApp: App {
     class ViewModel: ObservableObject {
         var optionsViewModel = OptionsView.ViewModel()
 
-        init() {}
+        init() {
+            // fix bottom tab bar background changing when scrolled all the way down
+            let tabBarAppearance = UITabBarAppearance()
+            tabBarAppearance.configureWithDefaultBackground()
+            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        }
     }
 }
