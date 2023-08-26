@@ -2,23 +2,19 @@
   import type { Token } from "@platform/backend";
   import type { Entry } from "~/dicEntry";
   import { Platform } from "@platform";
-  import { Api } from "~/api";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
   import IconSettings from "@icons/settings.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
-  import TokensView from "../components/TokensView.svelte";
+  import TokensView from "./TokensView.svelte";
   import DicEntryView from "~/components/DicEntryView.svelte";
-  import Config from "~/config";
   import { Backend } from "~/backend";
-  import { Theme } from "~/theme";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
   // may be bigger than entries.length
   let selectedTokenIdx: number;
   let entries: Entry[] = [];
-  export let initialized: Promise<void>;
 
   async function _tokenize(searchText: string) {
     if (searchText === "") {
@@ -53,38 +49,36 @@
 </script>
 
 <div class="search">
-  {#await initialized then}
-    <div class="header">
-      <div class="searchbar">
-        <div class="icon icon-search">{@html IconSearch}</div>
-        <input
-          type="text"
-          bind:value={searchText}
-          placeholder="Enter japanese word or sentence."
-        />
-        <div
-          class="icon icon-clear"
-          class:hidden={searchText === ""}
-          on:click={() => {
-            searchText = "";
-          }}
-        >
-          {@html IconCloseCircle}
-        </div>
+  <div class="header">
+    <div class="searchbar">
+      <div class="icon icon-search">{@html IconSearch}</div>
+      <input
+        type="text"
+        bind:value={searchText}
+        placeholder="Enter japanese word or sentence."
+      />
+      <div
+        class="icon icon-clear"
+        class:hidden={searchText === ""}
+        on:click={() => {
+          searchText = "";
+        }}
+      >
+        {@html IconCloseCircle}
       </div>
-      <button class="settings-button" on:click={openSettings}>
-        <div class="icon icon-settings">{@html IconSettings}</div>
-      </button>
     </div>
-    <div class="tokensview">
-      <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
-    </div>
-    <div class="entries">
-      {#each entries as entry}
-        <DicEntryView {entry} />
-      {/each}
-    </div>
-  {/await}
+    <button class="settings-button" on:click={openSettings}>
+      <div class="icon icon-settings">{@html IconSettings}</div>
+    </button>
+  </div>
+  <div class="tokensview">
+    <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
+  </div>
+  <div class="entries">
+    {#each entries as entry}
+      <DicEntryView {entry} />
+    {/each}
+  </div>
 </div>
 
 <style>

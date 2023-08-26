@@ -1,10 +1,12 @@
 import { Platform } from "@platform";
 
 /**
- * adds one of .desktop, .ios, .iosapp depending on platform
+ * adds one of .desktop, .ios, .iosapp depending on platform to <html>
  * Should be attached to all root svelte element
  */
-export function platformClass(node: HTMLElement) {
+export function platformClass(_: HTMLElement) {
+  const node = document.documentElement;
+  if (!node) return;
   if (Platform.IS_DESKTOP) {
     node.classList.add("desktop");
   }
@@ -14,6 +16,4 @@ export function platformClass(node: HTMLElement) {
   if (Platform.IS_IOSAPP) {
     node.classList.add("iosapp");
   }
-
-  return { destroy() {} };
 }

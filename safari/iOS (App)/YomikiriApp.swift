@@ -13,10 +13,7 @@ struct YomikiriApp: App {
 
     var body: some Scene {
         return WindowGroup {
-            OptionsView(viewModel: viewModel.optionsViewModel)
-                .onOpenURL { _ in
-                    print("global")
-                }
+            MainView()
         }
     }
 

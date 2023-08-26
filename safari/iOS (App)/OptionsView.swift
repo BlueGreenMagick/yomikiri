@@ -11,7 +11,7 @@ import WebKit
 import YomikiriTokenizer
 
 struct OptionsView: View {
-    @ObservedObject var viewModel: ViewModel
+    @StateObject var viewModel = ViewModel()
 
     static let BACKGROUND_COLOR = Color(red: 0.933, green: 0.933, blue: 0.933)
 
@@ -32,9 +32,7 @@ struct OptionsView: View {
         .onOpenURL(perform: self.handleOpenUrl)
     }
 
-    init(viewModel: ViewModel) {
-        self.viewModel = viewModel
-
+    init() {
         let appearance = UINavigationBarAppearance()
         appearance.shadowColor = .darkGray
         appearance.backgroundColor = UIColor(OptionsView.BACKGROUND_COLOR)
@@ -69,8 +67,8 @@ extension OptionsView {
         var ankiTemplateWebViewModel: WebView.ViewModel!
 
         init() {
-            self.webViewModel = WebView.ViewModel(url: ViewModel.htmlURL, messageHandler: handleMessage)
-            self.ankiTemplateWebViewModel = WebView.ViewModel(url: ViewModel.ankiTemplateURL, messageHandler: handleMessage)
+            self.webViewModel = WebView.ViewModel(url: ViewModel.htmlURL, additionalMessageHandler: self.handleMessage)
+            self.ankiTemplateWebViewModel = WebView.ViewModel(url: ViewModel.ankiTemplateURL, additionalMessageHandler: self.handleMessage)
         }
 
         func passAnkiInfo(ankiInfo: String) throws {
@@ -95,55 +93,13 @@ extension OptionsView {
             }
         }
 
-        private func handleMessage(rawMsg: Any) async throws -> Any? {
-            guard let msg = rawMsg as? [String: Any] else {
-                throw "Invalid message format"
-            }
-            guard let key = msg["key"] as? String else {
-                throw "Message does not have 'key'"
-            }
-            guard let request = msg["request"] else {
-                throw "Message does not have 'request'"
-            }
-
-            os_log("%{public}s", "handleMessage: \(key)")
+        private func handleMessage(key: String, request: Any) async throws -> Any?? {
             switch key {
-            case "ankiIsInstalled":
-                return ankiIsInstalled()
-            case "ankiInfo":
-                return requestAnkiInfo()
-            case "loadConfig":
-                return try SharedStorage.loadConfig()
-            case "saveConfig":
-                guard let configJson = request as? String else {
-                    throw "setConfig tequest body must be JSON string"
-                }
-                return try SharedStorage.saveConfig(configJson: configJson)
-            case "tokenize":
-                guard let req = request as? NSDictionary else {
-                    throw "'tokenize' request is not a Dictionary"
-                }
-                guard let text = req["text"] as? String else {
-                    throw "'tokenize' request.text is not String"
-                }
-                guard let charAt = req["charAt"] as? UInt32 else {
-                    throw "'tokenize' request.charAt is not UInt32"
-                }
-                let rawResult = try backend.tokenize(sentence: text, charAt: charAt)
-                return try jsonSerialize(obj: rawResult)
-            case "searchTerm":
-                guard let term = request as? String else {
-                    throw "'searchTerm' request is not string"
-                }
-                return try backend.search(term: term)
-            default:
-                throw "Unknown key \(key)"
+                case "ankiInfo":
+                    return self.requestAnkiInfo()
+                default:
+                    return nil
             }
-        }
-
-        private func ankiIsInstalled() -> Bool {
-            let url = URL(string: "anki://x-callback-url/infoForAdding")!
-            return UIApplication.shared.canOpenURL(url)
         }
 
         private func requestAnkiInfo() -> Bool {

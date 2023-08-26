@@ -7,6 +7,7 @@
 
 import Foundation
 import os.log
+import SwiftUI
 import YomikiriTokenizer
 
 extension URL {
@@ -46,4 +47,9 @@ func jsonSerialize<T: Encodable>(obj: T?) throws -> String {
 func jsonDeserialize<T: Decodable>(json: String) throws -> T {
     let decoder = JSONDecoder()
     return try decoder.decode(T.self, from: json.data(using: .utf8)!)
+}
+
+func ankiIsInstalled() -> Bool {
+    let url = URL(string: "anki://x-callback-url/infoForAdding")!
+    return UIApplication.shared.canOpenURL(url)
 }

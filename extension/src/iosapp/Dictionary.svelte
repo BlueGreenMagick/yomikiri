@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Tokenize from "~/components/Tokenize.svelte";
   import { platformClass } from "~/components/actions";
+  import Tokenize from "~/components/Tokenize.svelte";
 
   export let initialized: Promise<void>;
 </script>

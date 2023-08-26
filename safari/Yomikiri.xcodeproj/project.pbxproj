@@ -22,6 +22,8 @@
 		699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
 		699EF6722A540C0400ECA9D1 /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
 		699EF6732A540C0400ECA9D1 /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
+		69D839972A98D76F00618380 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D839962A98D76F00618380 /* MainView.swift */; };
+		69D839992A98D90900618380 /* DictionaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D839982A98D90900618380 /* DictionaryView.swift */; };
 		69F2C26829FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C26729FA4FA80088F503 /* AppDelegate.swift */; };
 		69F2C26B29FA4FA80088F503 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C26929FA4FA80088F503 /* Main.storyboard */; };
 		69F2C27229FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -126,6 +128,8 @@
 		699B7E072A52F00400E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		699B7E0B2A53DCE500E506F2 /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		699EF6712A540C0400ECA9D1 /* SharedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStorage.swift; sourceTree = "<group>"; };
+		69D839962A98D76F00618380 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		69D839982A98D90900618380 /* DictionaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryView.swift; sourceTree = "<group>"; };
 		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		69F2C23F29FA4FA80088F503 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		69F2C24029FA4FA80088F503 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -297,6 +301,8 @@
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
 				699B7DCC2A52BEA100E506F2 /* WebView.swift */,
 				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
+				69D839962A98D76F00618380 /* MainView.swift */,
+				69D839982A98D90900618380 /* DictionaryView.swift */,
 			);
 			path = "iOS (App)";
 			sourceTree = "<group>";
@@ -540,7 +546,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D839992A98D90900618380 /* DictionaryView.swift in Sources */,
 				69F2C28A29FA4FA80088F503 /* ViewController.swift in Sources */,
+				69D839972A98D76F00618380 /* MainView.swift in Sources */,
 				699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */,
 				699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */,
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,

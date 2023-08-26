@@ -139,6 +139,9 @@ function generateBuildOptions(): BuildOptions {
       ...(FOR_IOS
         ? [{ in: "src/x-callback/index.ts", out: "res/x-callback" }]
         : [{ in: "src/options/index.ts", out: "res/options" }]),
+      ...(DEVELOPMENT
+        ? [{ in: "src/iosapp/dictionary.ts", out: "res/dictionary" }]
+        : []),
     ],
     plugins: [
       logRebuildPlugin,
@@ -161,6 +164,14 @@ function generateBuildOptions(): BuildOptions {
                   to: ["./res/options.html"],
                 },
               ]),
+          ...(DEVELOPMENT
+            ? [
+                {
+                  from: ["src/iosapp/dictionary.html"],
+                  to: ["./res/dictionary.html"],
+                },
+              ]
+            : []),
           // static assets
           { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
         ],
@@ -179,6 +190,10 @@ function generateBuildOptions(): BuildOptions {
         in: "src/options/iosOptionsAnkiTemplate.ts",
         out: "res/iosOptionsAnkiTemplate",
       },
+      {
+        in: "src/iosapp/dictionary.ts",
+        out: "res/dictionary",
+      },
     ],
     plugins: [
       copy({
@@ -187,6 +202,10 @@ function generateBuildOptions(): BuildOptions {
           {
             from: ["src/options/iosOptionsAnkiTemplate.html"],
             to: ["./res/iosOptionsAnkiTemplate.html"],
+          },
+          {
+            from: ["src/iosapp/dictionary.html"],
+            to: ["./res/dictionary.html"],
           },
         ],
       }),

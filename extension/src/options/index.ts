@@ -17,6 +17,7 @@ declare global {
     AnkiApi: typeof AnkiApi;
     Config: typeof Config;
     openAnkiInfoModal: () => void;
+    Backend: typeof Backend;
   }
 }
 
@@ -42,3 +43,4 @@ window.Api = Api;
 window.Utils = Utils;
 window.AnkiApi = AnkiApi;
 window.Config = Config;
+window.Backend = Backend;
