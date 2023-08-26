@@ -41,6 +41,9 @@ struct WebView: UIViewRepresentable {
         private var loadCompleteRunnableFunctions: [() -> Void] = []
         private var loadStatus: LoadStatus = .loading
         
+        /**
+         additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
+         */
         init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil) {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
@@ -76,9 +79,6 @@ struct WebView: UIViewRepresentable {
         let parent: WebView
         let additionalMessageHandler: AdditionalMessageHandler?
         
-        /**
-         customMessageHandler:
-         */
         init(_ parent: WebView, additionalMessageHandler: AdditionalMessageHandler? = nil) {
             self.parent = parent
             self.additionalMessageHandler = additionalMessageHandler
