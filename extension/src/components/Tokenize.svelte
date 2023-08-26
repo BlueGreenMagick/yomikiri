@@ -83,7 +83,8 @@
 
 <style>
   /** In desktop, window size changes based on content, but is fixed in ios */
-  :global(.ios) .search {
+  :global(.ios) .search,
+  :global(.iosapp) .search {
     max-height: 100%;
   }
 

@@ -21,6 +21,6 @@ struct DictionaryView: View {
     class ViewModel: ObservableObject {
         static let URL = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
 
-        var webViewModel: WebView.ViewModel = .init(url: URL)
+        var webViewModel: WebView.ViewModel = .init(url: URL, overscroll: false)
     }
 }

@@ -20,6 +20,10 @@ struct WebView: UIViewRepresentable {
         webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(context.coordinator, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
         let webview = WKWebView(frame: .zero, configuration: webConfiguration)
+        if !self.viewModel.overscroll {
+            webview.scrollView.bounces = false
+            webview.scrollView.alwaysBounceHorizontal = false
+        }
         self.viewModel.webview = webview
         webview.navigationDelegate = context.coordinator
         
@@ -36,17 +40,20 @@ struct WebView: UIViewRepresentable {
     
     class ViewModel: ObservableObject {
         var webview: WKWebView?
-        let additionalMessageHandler: AdditionalMessageHandler?
         let url: URL
+        fileprivate let additionalMessageHandler: AdditionalMessageHandler?
+        fileprivate let overscroll: Bool
         private var loadCompleteRunnableFunctions: [() -> Void] = []
         private var loadStatus: LoadStatus = .loading
         
         /**
-         additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
+         ### Optional arguments
+         - additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
          */
-        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil) {
+        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil, overscroll: Bool = true) {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
+            self.overscroll = overscroll
         }
         
         func runOnLoadComplete(fn: @escaping () -> Void) {
