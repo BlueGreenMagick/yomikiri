@@ -25,20 +25,27 @@ fn main() -> Result<(), Box<dyn Error>> {
     let src_dir = crate_dir.join("src");
     let build_crate_dir = crate_dir.join("unidic-build");
 
-    // download original unidic if 'original' dir does not exist or is empty
-    if !original_dir.is_dir()
-        || WalkDir::new(&original_dir)
-            .into_iter()
-            .filter_entry(|e| !skip_file_entry(e))
-            .skip(1) // first entry is the directory
-            .next()
-            .is_none()
+    if !output_dir.try_exists()? {
+        std::fs::create_dir(&output_dir)?;
+    }
+    if !transform_dir.try_exists()? {
+        std::fs::create_dir(&transform_dir)?;
+    }
+    if !original_dir.try_exists()? {
+        std::fs::create_dir(&original_dir)?;
+    }
+    // download original unidic if 'original' dir is empty
+    if WalkDir::new(&original_dir)
+        .into_iter()
+        .filter_entry(|e| !skip_file_entry(e))
+        .skip(1) // first entry is the directory
+        .next()
+        .is_none()
     {
-        let _ = std::fs::create_dir(&original_dir);
         download_unidic_original(&original_dir)?;
     }
 
-    let input_mtime = get_last_mtime_of_dir(&original_dir)?;
+    let original_mtime = get_last_mtime_of_dir(&original_dir)?;
     let transform_mtime = get_last_mtime_of_dir(&transform_dir)?;
     let src_mtime = get_last_mtime_of_dir(&src_dir)?;
     let build_crate_mtime = get_last_mtime_of_dir(&build_crate_dir)?;
@@ -46,7 +53,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let build_rs_mtime = get_mtime(crate_dir.join("build.rs"))?;
 
     // re-run only if any relevant files changed after last transform
-    if input_mtime <= transform_mtime
+    if original_mtime <= transform_mtime
         && src_mtime <= transform_mtime
         && build_crate_mtime <= transform_mtime
         && manifest_mtime <= transform_mtime
