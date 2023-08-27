@@ -12,6 +12,9 @@ real = []
 lindera-core = "0.27"
 
 [build-dependencies]
-yomikiri-unidic-build = { path = "./unidic-build"}
+yomikiri-unidic-build = { path = "./unidic-build" }
 walkdir = "2.3"
 filetime = "0.2"
+ureq = "2.7"
+tempfile = "3.8"
+zip = "0.6"
