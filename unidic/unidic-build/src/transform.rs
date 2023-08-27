@@ -17,6 +17,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path) -> TResult<()> {
                 "lex_naist.csv" => {
                     transform_lex(&copy_from, &transform_dir.join("lex.csv"))?;
                 }
+                "matrix.bin" | "model.bin" | "model.def" => {}
                 _ => {
                     fs::copy(&copy_from, &copy_to)?;
                 }
