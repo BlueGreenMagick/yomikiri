@@ -1,6 +1,6 @@
 import { Scanner } from "./scanner";
 import { Api } from "~/api";
-import { highlighter } from "@platform/highlight";
+import { Highlighter } from "./highlight";
 import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
 import Config from "~/config";
@@ -22,6 +22,7 @@ async function _initialize() {
   Platform.initialize();
   await Config.initialize();
   await Backend.initialize();
+  await Highlighter.initialize();
 }
 
 async function ensureInitialized() {
@@ -39,10 +40,10 @@ async function _trigger(x: number, y: number): Promise<boolean> {
   if (result === null) return false;
   console.log(result);
   if (result.dicEntries.length === 0) {
-    highlighter.highlightRed(result.range);
+    Highlighter.highlightRed(result.range);
     Tooltip.hide();
   } else {
-    highlighter.highlight(result.range);
+    Highlighter.highlight(result.range);
     await Tooltip.show(result.dicEntries, result, x, y);
   }
   return true;
@@ -71,7 +72,7 @@ document.addEventListener("click", async (ev: MouseEvent) => {
     const triggered = await trigger(ev.clientX, ev.clientY);
     if (triggered === false) {
       Tooltip.hide();
-      highlighter.unhighlight();
+      Highlighter.unhighlight();
     }
   }
 });

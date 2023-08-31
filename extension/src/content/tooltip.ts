@@ -8,7 +8,7 @@ import {
 } from "~/ankiNoteBuilder";
 import type { ScanResult } from "~/content/scanner";
 import { Api } from "~/api";
-import { highlighter } from "@platform/highlight";
+import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
 import TooltipSvelte from "./Tooltip.svelte";
 import { Theme } from "~/theme";
@@ -180,7 +180,7 @@ border: 0;
     });
     _tooltipSvelte.$on("close", (ev: CustomEvent<MouseEvent>) => {
       hide();
-      highlighter.unhighlight();
+      Highlighter.unhighlight();
     });
     _tooltipSvelte.$on(
       "addNote",
