@@ -43,10 +43,21 @@ export namespace Scanner {
     ScannedSentencePrev &
     ScannedSentenceNext;
 
+  interface CharacterLocation {
+    node: Text;
+    charAt: number;
+  }
+
   // cache last scan.
   let _lastScannedResult: ScanResult | null = null;
 
   /** Returns null if (x,y) is not pointing to valid japanese token */
+  /*
+    1. Get location(char) of mouse position (node+charpos)
+    2. Scan sentence of that char
+    3. Tokenize sentence
+    4. Get position of token at position
+  */
   export async function scanAt(
     x: number,
     y: number
@@ -72,79 +83,108 @@ export namespace Scanner {
     return result;
   }
 
-  // within inline elements.
-  function scanSentence(x: number, y: number): null | ScannedSentence {
+  export function scanSentence(x: number, y: number): ScannedSentence | null {
+    const location = characterLocationAt(x, y);
+    if (location === null) return null;
+    return sentenceAtCharacterLocation(location.node, location.charAt);
+  }
+
+  /** Binary search inside a Text node to find character location of (x,y) */
+  function characterLocationAt(x: number, y: number): CharacterLocation | null {
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
     const node = childTextAt(element, x, y);
     if (node === null) return null;
 
-    const text = node.data;
-    if (!containsJapaneseContent(text)) return null;
+    let range = new Range();
+    let start = 0;
+    let end = node.data.length;
 
-    let prev: string;
-    let next: string;
+    while (end - start > 7) {
+      let mid = Math.floor((start + end) / 2);
 
-    // split sentence and check if (x,y) is in range of sentence
-    const range = new Range();
-    // index of first char of current sentence
-    let stStart = 0;
-    // index of character at (x,y)
-    let foundChar = -1;
-    for (let i = 0; i < text.length; i++) {
-      range.setStart(node, i);
-      range.setEnd(node, i + 1);
+      range.setStart(node, start);
+      range.setEnd(node, mid);
       if (Utils.containsPoint(range, x, y)) {
-        foundChar = i;
+        end = mid;
+      } else {
+        // assume (mid, end) contains (x,y)
+        // if it doesn't, this function will still return null
+        // because of linear search below
+        start = mid;
       }
+    }
 
-      if (isSentenceEndChar(text[i])) {
-        if (foundChar >= 0) {
-          const partial = {
-            node,
-            curr: text.substring(stStart, i + 1),
-            idx: foundChar - stStart,
-            stEndIdx: i + 1,
-          };
-          if (stStart === 0) {
-            prev = sentenceBeforeNode(node);
-            return {
-              ...partial,
-              prev: prev,
-            };
-          } else {
-            return {
-              ...partial,
-              stStartIdx: stStart,
-            };
-          }
-        }
-        stStart = i + 1;
+    while (start < end) {
+      range.setStart(node, start);
+      range.setEnd(node, start + 1);
+      if (Utils.containsPoint(range, x, y)) {
+        return {
+          node: node,
+          charAt: start,
+        };
+      } else {
+        start += 1;
       }
     }
-    if (foundChar < 0) {
-      return null;
+
+    return null;
+  }
+
+  /*
+  1. Find closest sentence-ending char before charAt in node.
+  2. If it doesn't exist, prepend sentence-part before this node.
+  3. Find closest sentence-ending char after(including) charAt in node.
+  4. If it doesn't exist, append sentence-part after this node.
+  */
+  function sentenceAtCharacterLocation(
+    node: Text,
+    charAt: number
+  ): ScannedSentence {
+    const text = node.data;
+
+    let currSentence: string;
+    let stStartIdx: number | undefined;
+    let prev: string | undefined;
+    let stEndIdx: number | undefined;
+    let next: string | undefined;
+
+    let start: number;
+    for (start = charAt; start > 0; start--) {
+      if (isSentenceEndChar(text[start - 1])) {
+        break;
+      }
     }
-    next = sencenceAfterNode(node);
-    const partial = {
-      node,
-      next,
-      curr: text.substring(stStart, text.length),
-      idx: foundChar - stStart,
-    };
-    // sentenceEndChar not found after char at (x,y)
-    if (stStart === 0) {
+    currSentence = text.substring(start, charAt);
+    if (start === 0) {
       prev = sentenceBeforeNode(node);
-      return {
-        ...partial,
-        prev,
-      };
     } else {
-      return {
-        ...partial,
-        stStartIdx: stStart,
-      };
+      stStartIdx = start;
     }
+
+    let end: number;
+    for (end = charAt; end < text.length; end++) {
+      if (isSentenceEndChar(text[end])) {
+        break;
+      }
+    }
+    if (end === text.length) {
+      currSentence += text.substring(charAt, end);
+      next = sentenceAfterNode(node);
+    } else {
+      currSentence += text.substring(charAt, end + 1);
+      stEndIdx = end + 1;
+    }
+
+    return {
+      node,
+      idx: charAt,
+      curr: currSentence,
+      prev,
+      stStartIdx,
+      next,
+      stEndIdx,
+    } as ScannedSentence;
   }
 
   /**
@@ -218,7 +258,7 @@ export namespace Scanner {
     }
   }
 
-  function sencenceAfterNode(t: Text): string {
+  function sentenceAfterNode(t: Text): string {
     let sentence = "";
     let node: Text | null = t;
     while (true) {
