@@ -93,7 +93,6 @@ export namespace Api {
   }
 
   export function handleRequestResponse<R>(resp: RequestResponse<R>): R {
-    console.log(resp);
     if (resp.success) {
       return resp.resp;
     } else {

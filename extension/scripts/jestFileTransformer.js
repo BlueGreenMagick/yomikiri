@@ -6,7 +6,7 @@ import path from "node:path";
 export default {
   process(sourceText, sourcePath, options) {
     return {
-      code: `module.exports = ${JSON.stringify(
+      code: ` module.exports = ${JSON.stringify(
         "http://yomikiri/" + path.basename(sourcePath)
       )};`,
     };

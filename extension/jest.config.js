@@ -1,7 +1,8 @@
 export default {
   transform: {
     "\\.(t|j|mj)sx?$": "@swc/jest",
-    "\\.gz$": "<rootDir>/scripts/jestFileTransformer.js",
+    "\\.(yomikiriindex|yomikiridict)$":
+      "<rootDir>/scripts/jestFileTransformer.js",
   },
   moduleNameMapper: {
     "^~/(.*)$": "<rootDir>/src/$1",
@@ -10,6 +11,9 @@ export default {
     "^@platform/(.*)$": "<rootDir>/src/platform/desktop/$1",
     "^@yomikiri/yomikiri-rs$":
       "<rootDir>/../node_modules/@yomikiri/yomikiri-rs/yomikiri_rs.js",
+    // jest errors when trying to load wasm as string
+    // because it treats .wasm files differently
+    "^(.*)\\.wasm$": "<rootDir>/scripts/jestWasmUrl.js",
   },
   testEnvironment: "<rootDir>/scripts/jestEnvironment.js",
   testEnvironmentOptions: {
@@ -17,5 +21,6 @@ export default {
     html: "<!DOCTYPE html><html><head></head><body></body></html>",
   },
   setupFiles: ["<rootDir>/scripts/jestSetup.js"],
-  transformIgnorePatterns: ["node_modules/(?!dexie)/"],
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  transformIgnorePatterns: ["node_modules/"],
 };

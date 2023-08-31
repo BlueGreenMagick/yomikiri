@@ -1,4 +1,3 @@
-import { Api } from "~/api";
 import type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import { Entry } from "~/dicEntry";
@@ -137,7 +136,7 @@ export namespace Scanner {
   3. Find closest sentence-ending char after(including) charAt in node.
   4. If it doesn't exist, append sentence-part after this node.
   */
-  function sentenceAtCharacterLocation(
+  export function sentenceAtCharacterLocation(
     node: Text,
     charAt: number
   ): ScannedSentence {
