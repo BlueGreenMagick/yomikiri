@@ -1,15 +1,21 @@
+<script lang="ts" context="module">
+  export interface AddNoteForEntry {
+    entry: Entry;
+    sense?: Sense;
+  }
+
+  interface Events {
+    addNote: AddNoteForEntry;
+  }
+</script>
+
 <script lang="ts">
-  import { Entry, type GroupedSense } from "~/dicEntry";
-  import type { MarkerData } from "~/ankiNoteBuilder";
+  import { Entry, Sense, type GroupedSense } from "~/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircle from "@icons/add-circle.svg";
   import { createEventDispatcher } from "svelte";
   import { RubyString } from "~/japanese";
   import Config from "~/config";
-
-  interface Events {
-    addNote: Partial<MarkerData>;
-  }
 
   export let entry: Entry;
 
@@ -21,9 +27,11 @@
   let groups: GroupedSense[];
   let isCommon: boolean;
 
-  function addNote(data: Partial<MarkerData>) {
-    data.entry = entry;
-    dispatch("addNote", data);
+  function addNote(sense?: Sense) {
+    dispatch("addNote", {
+      entry,
+      sense,
+    });
   }
 
   $: mainForm = Entry.mainForm(entry);
@@ -37,7 +45,7 @@
 
 <div class="entryView" class:anki={Config.get("anki.enabled")}>
   <div class="header">
-    <div class="icon" on:click={() => addNote({})}>{@html IconAddCircle}</div>
+    <div class="icon" on:click={() => addNote()}>{@html IconAddCircle}</div>
     <div>
       <span class="g-japanese-font mainForm">{@html mainFormRuby}</span>
     </div>

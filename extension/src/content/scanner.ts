@@ -1,8 +1,6 @@
-import type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
+import type { Token } from "@platform/backend";
 import Utils from "~/utils";
 import { Entry } from "~/dicEntry";
-import { containsJapaneseContent } from "~/japanese";
-import { Backend } from "~/backend";
 
 export interface ScanResult {
   token: Token;
@@ -17,79 +15,19 @@ export interface ScanResult {
   dicEntries: Entry[];
 }
 
-/** Find token at point (x, y) */
+export interface CharAtString {
+  text: string;
+  charAt: number;
+}
+
+export interface CharLocation {
+  node: Text;
+  charAt: number;
+}
+
 export namespace Scanner {
-  /**
-   * (prev, after) are portion of sentence before and after node
-   * prev + curr + after is the constructed sentence
-   * stStartIdx, stEndIdx are index of sentence start and end (excluding) in curr node.
-   */
-  interface ScannedSentenceBase {
-    node: Text;
-    // portion of sentence before, within, and after `node`
-    curr: string;
-    /** curr[idx] is the character at (x,y) */
-    idx: number;
-  }
-  type ScannedSentencePrev =
-    | { prev: string; stStartIdx?: never }
-    | { prev?: never; stStartIdx: number };
-  type ScannedSentenceNext =
-    | { next: string; stEndIdx?: never }
-    | { next?: never; stEndIdx: number };
-
-  type ScannedSentence = ScannedSentenceBase &
-    ScannedSentencePrev &
-    ScannedSentenceNext;
-
-  interface CharacterLocation {
-    node: Text;
-    charAt: number;
-  }
-
-  // cache last scan.
-  let _lastScannedResult: ScanResult | null = null;
-
-  /** Returns null if (x,y) is not pointing to valid japanese token */
-  /*
-    1. Get location(char) of mouse position (node+charpos)
-    2. Scan sentence of that char
-    3. Tokenize sentence
-    4. Get position of token at position
-  */
-  export async function scanAt(
-    x: number,
-    y: number
-  ): Promise<ScanResult | null> {
-    if (_lastScannedResult !== null) {
-      if (Utils.containsPoint(_lastScannedResult.range, x, y)) {
-        return _lastScannedResult;
-      }
-    }
-
-    const sentence = scanSentence(x, y);
-    if (sentence === null) return null;
-
-    const prev = sentence.prev ?? "";
-    const tokenizeReq: TokenizeRequest = {
-      text: fullSentence(sentence),
-      charAt: prev.length + sentence.idx,
-    };
-    const tokenizeResult = await Backend.tokenize(tokenizeReq);
-    if (!isValidJapaneseToken(tokenizeResult)) return null;
-    const result = scanToken(tokenizeResult, sentence);
-    _lastScannedResult = result;
-    return result;
-  }
-
-  export function scanSentence(x: number, y: number): ScannedSentence | null {
-    const location = characterLocationAt(x, y);
-    if (location === null) return null;
-    return sentenceAtCharacterLocation(location.node, location.charAt);
-  }
-
   /** Binary search inside a Text node to find character location of (x,y) */
-  function characterLocationAt(x: number, y: number): CharacterLocation | null {
+  export function charLocationAtPos(x: number, y: number): CharLocation | null {
     const element = document.elementFromPoint(x, y);
     if (element === null) return null;
     const node = childTextAt(element, x, y);
@@ -136,17 +74,14 @@ export namespace Scanner {
   3. Find closest sentence-ending char after(including) charAt in node.
   4. If it doesn't exist, append sentence-part after this node.
   */
-  export function sentenceAtCharacterLocation(
+  export function sentenceAtCharLocation(
     node: Text,
     charAt: number
-  ): ScannedSentence {
+  ): CharAtString {
     const text = node.data;
 
-    let currSentence: string;
-    let stStartIdx: number | undefined;
-    let prev: string | undefined;
-    let stEndIdx: number | undefined;
-    let next: string | undefined;
+    let sentence: string;
+    let charAtSentence: number;
 
     let start: number;
     for (start = charAt; start > 0; start--) {
@@ -154,11 +89,12 @@ export namespace Scanner {
         break;
       }
     }
-    currSentence = text.substring(start, charAt);
+    sentence = text.substring(start, charAt);
+    charAtSentence = charAt - start;
     if (start === 0) {
-      prev = sentenceBeforeNode(node);
-    } else {
-      stStartIdx = start;
+      let prev = sentenceBeforeNode(node);
+      sentence = prev + sentence;
+      charAtSentence += prev.length;
     }
 
     let end: number;
@@ -168,22 +104,77 @@ export namespace Scanner {
       }
     }
     if (end === text.length) {
-      currSentence += text.substring(charAt, end);
-      next = sentenceAfterNode(node);
+      sentence += text.substring(charAt, end);
+      sentence += sentenceAfterNode(node);
     } else {
-      currSentence += text.substring(charAt, end + 1);
-      stEndIdx = end + 1;
+      sentence += text.substring(charAt, end + 1);
     }
 
     return {
-      node,
-      idx: charAt,
-      curr: currSentence,
-      prev,
-      stStartIdx,
-      next,
-      stEndIdx,
-    } as ScannedSentence;
+      text: sentence,
+      charAt: charAtSentence,
+    };
+  }
+
+  /** Returns list of Nodes that make up a token.
+   * - charIdx: index of curr character in sentence
+   * - tokenStartIdx: index of first character of token in sentence.
+   */
+  export function nodesOfToken(
+    currNode: Text,
+    charIdxInCurrNode: number,
+    charIdx: number,
+    tokenText: string,
+    tokenStartIdx: number
+  ): Text[] {
+    const tokenEndIdx = tokenStartIdx + tokenText.length;
+
+    let nextNodes: Text[] = [];
+    let node = currNode;
+    let charCount = tokenEndIdx - charIdx;
+    const remaining = node.data.length - charIdxInCurrNode;
+    if (charCount < remaining) {
+      node.splitText(charIdxInCurrNode + charCount);
+    } else {
+      charCount -= remaining;
+      while (charCount > 0) {
+        const nextNode = nextInlineTextNode(node);
+        if (nextNode === null) {
+          break;
+        }
+        const count = nextNode.data.length;
+        if (count > charCount) {
+          nextNode.splitText(charCount);
+        }
+        nextNodes.push(nextNode);
+        charCount -= count;
+        node = nextNode;
+      }
+    }
+
+    let prevNodes: Text[] = [];
+    node = currNode;
+    charCount = charIdx - tokenStartIdx;
+    if (charCount < charIdxInCurrNode) {
+      currNode = node.splitText(charIdxInCurrNode - charCount);
+    } else {
+      charCount -= charIdxInCurrNode;
+      while (charCount > 0) {
+        let prevNode = prevInlineTextNode(node);
+        if (prevNode === null) {
+          break;
+        }
+        const count = prevNode.data.length;
+        if (count > charCount) {
+          prevNode = prevNode.splitText(count - charCount);
+        }
+        prevNodes.push(prevNode);
+        charCount -= count;
+        node = prevNode;
+      }
+    }
+
+    return [...prevNodes.reverse(), currNode, ...nextNodes];
   }
 
   /**
@@ -277,68 +268,6 @@ export namespace Scanner {
     }
   }
 
-  /** Find token in DOM and create range over it */
-  function scanToken(
-    tokenizeResult: TokenizeResult,
-    sentence: ScannedSentence
-  ): ScanResult | null {
-    const range = new Range();
-    const token = tokenizeResult.tokens[tokenizeResult.tokenIdx];
-    const tokenStartIndex = token.start;
-
-    if (sentence.stStartIdx !== undefined) {
-      range.setStart(sentence.node, sentence.stStartIdx + tokenStartIndex);
-    } else {
-      // number of characters in token that is in previous nodes
-      let prevChars = sentence.prev.length - tokenStartIndex;
-      let prevNode: Text = sentence.node;
-      while (prevChars > 0) {
-        const prev = prevInlineTextNode(prevNode);
-        if (prev === null) break;
-        prevNode = prev;
-        prevChars -= prevNode.data.length;
-      }
-      range.setStart(prevNode, prevChars > 0 ? 0 : -1 * prevChars);
-    }
-
-    const prev = sentence.prev ?? "";
-    const currTokenStartIdx = tokenStartIndex - prev.length;
-    if (sentence.stEndIdx !== undefined) {
-      const endIdx =
-        sentence.stEndIdx -
-        sentence.curr.length +
-        currTokenStartIdx +
-        token.text.length;
-      range.setEnd(sentence.node, endIdx);
-    } else {
-      let nextNode: Text = sentence.node;
-      // number of characters in token that is in next nodes
-      let nextChars =
-        currTokenStartIdx + token.text.length - sentence.curr.length;
-      while (nextChars > 0) {
-        const next = nextInlineTextNode(nextNode);
-        if (next === null) break;
-        nextNode = next;
-        nextChars -= nextNode.data.length;
-      }
-      range.setEnd(
-        nextNode,
-        nextNode.data.length + (nextChars > 0 ? 0 : nextChars)
-      );
-    }
-
-    return {
-      dicEntries: tokenizeResult.entries as Entry[],
-      token,
-      range,
-      sentence: fullSentence(sentence).normalize("NFC"),
-      startIdx: tokenStartIndex,
-      endIdx: tokenStartIndex + token.text.length,
-      sentenceTokens: tokenizeResult.tokens,
-      tokenIdx: tokenizeResult.tokenIdx,
-    };
-  }
-
   /** Find child `Text` node at (x, y) if it exists. */
   function childTextAt(parent: Element, x: number, y: number): Text | null {
     parent.normalize(); // normalize splitted Text nodes
@@ -353,21 +282,6 @@ export namespace Scanner {
       }
     }
     return null;
-  }
-
-  // returns [token, start character index of token]
-  function tokenAtCharacterIndex(
-    tokens: Token[],
-    charIndex: number
-  ): [Token, number] {
-    let currentIndex = 0;
-    for (let token of tokens) {
-      currentIndex += token.text.length;
-      if (currentIndex > charIndex) {
-        return [token, currentIndex - token.text.length];
-      }
-    }
-    throw new Error("character index out of range");
   }
 
   function isSentenceEndChar(char: string): boolean {
@@ -409,16 +323,5 @@ export namespace Scanner {
       }
     }
     return false;
-  }
-
-  function fullSentence(st: ScannedSentence): string {
-    const prev = st.prev ?? "";
-    const next = st.next ?? "";
-    return prev + st.curr + next;
-  }
-
-  function isValidJapaneseToken(result: TokenizeResult) {
-    const token = result.tokens[result.tokenIdx];
-    return containsJapaneseContent(token.text);
   }
 }

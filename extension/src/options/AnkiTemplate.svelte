@@ -133,13 +133,13 @@
     </select>
   </div>
   <div class="preview-toggle">
-    <label for="preview-checkbox" title={exampleMarkerData.scanned.sentence}>
+    <label for="preview-checkbox" title={exampleMarkerData.sentence}>
       Preview
     </label>
     <input
       type="checkbox"
       id="preview-checkbox"
-      title={exampleMarkerData.scanned.sentence}
+      title={exampleMarkerData.sentence}
       bind:checked={previewMode}
     />
   </div>

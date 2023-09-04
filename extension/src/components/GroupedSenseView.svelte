@@ -6,7 +6,7 @@
   import Config from "~/config";
 
   interface Events {
-    addNote: Partial<MarkerData>;
+    addNote: Sense;
   }
 
   export let group: GroupedSense;
@@ -16,9 +16,7 @@
   const dispatch = createEventDispatcher<Events>();
 
   function addAnkiNote(sense: Sense) {
-    dispatch("addNote", {
-      selectedMeaning: sense,
-    });
+    dispatch("addNote", sense);
   }
   $: posText = group.pos.join(", ");
 </script>

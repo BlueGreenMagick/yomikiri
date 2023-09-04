@@ -1,9 +1,53 @@
 import type { MarkerData } from "~/ankiNoteBuilder";
+import type { TokenizeResult } from "~/backend";
 import type { ScanResult } from "~/content/scanner";
 import { Entry } from "~/dicEntry";
 
-const scanData: ScanResult = {
-  dicEntries: [
+const tokenized: TokenizeResult = {
+  tokens: [
+    {
+      text: "面白い",
+      pos: "形容詞",
+      base: "面白い",
+      reading: "おもしろい",
+      pos2: "一般",
+      start: 0,
+    },
+    {
+      text: "映画",
+      pos: "名詞",
+      base: "映画",
+      reading: "えーが",
+      pos2: "普通名詞",
+      start: 3,
+    },
+    {
+      text: "を",
+      pos: "助詞",
+      base: "を",
+      reading: "お",
+      pos2: "格助詞",
+      start: 5,
+    },
+    {
+      text: "観たい",
+      pos: "動詞",
+      base: "観る",
+      reading: "みたい",
+      pos2: "非自立可能",
+      start: 6,
+    },
+    {
+      text: "。",
+      pos: "補助記号",
+      base: "。",
+      reading: "",
+      pos2: "句点",
+      start: 9,
+    },
+  ],
+  tokenIdx: 3,
+  entries: [
     {
       terms: ["見る", "観る", "視る", "覧る", "みる"],
       forms: [
@@ -74,67 +118,15 @@ const scanData: ScanResult = {
       priority: 161,
     },
   ].map(Entry.fromObject),
-  token: {
-    text: "観たい",
-    pos: "動詞",
-    base: "観る",
-    reading: "みたい",
-    pos2: "非自立可能",
-    start: 6,
-  },
-  range: new Range(),
-  sentence: "面白い映画を観たい。",
-  startIdx: 6,
-  endIdx: 9,
-  sentenceTokens: [
-    {
-      text: "面白い",
-      pos: "形容詞",
-      base: "面白い",
-      reading: "おもしろい",
-      pos2: "一般",
-      start: 0,
-    },
-    {
-      text: "映画",
-      pos: "名詞",
-      base: "映画",
-      reading: "えーが",
-      pos2: "普通名詞",
-      start: 3,
-    },
-    {
-      text: "を",
-      pos: "助詞",
-      base: "を",
-      reading: "お",
-      pos2: "格助詞",
-      start: 5,
-    },
-    {
-      text: "観たい",
-      pos: "動詞",
-      base: "観る",
-      reading: "みたい",
-      pos2: "非自立可能",
-      start: 6,
-    },
-    {
-      text: "。",
-      pos: "補助記号",
-      base: "。",
-      reading: "",
-      pos2: "句点",
-      start: 9,
-    },
-  ],
-  tokenIdx: 3,
 };
 
 export const exampleMarkerData: MarkerData = {
-  scanned: scanData,
-  entry: scanData.dicEntries[0],
-  selectedMeaning: scanData.dicEntries[0].senses[0],
+  tokenized,
+  entry: tokenized.entries[0],
+  selectedMeaning: tokenized.entries[0].senses[0],
+  sentence: tokenized.tokens.map((tok) => tok.text).join(""),
+  url: "https://yomikiri.example/",
+  pageTitle: "Example marker data",
 };
 
 export const exampleTranslatedSentence =

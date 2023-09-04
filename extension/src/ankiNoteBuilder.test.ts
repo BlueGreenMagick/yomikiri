@@ -2,22 +2,10 @@ import { test, expect, describe, jest } from "@jest/globals";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
 import type { ScanResult } from "./content/scanner";
 import { Entry } from "./dicEntry";
+import type { TokenizeResult } from "./backend";
 
-const scanResult: ScanResult = {
-  token: {
-    text: "読みたい",
-    pos: "動詞",
-    base: "読む",
-    reading: "よみたい",
-    pos2: "一般",
-    start: 4,
-  },
-  sentence: "わたしは本が読みたい。",
-  range: new Range(),
-  startIdx: 10,
-  endIdx: 6,
-  tokenIdx: 4,
-  sentenceTokens: [
+const tokenized: TokenizeResult = {
+  tokens: [
     {
       text: "わたし",
       pos: "代名詞",
@@ -67,7 +55,8 @@ const scanResult: ScanResult = {
       start: 10,
     },
   ],
-  dicEntries: [
+  tokenIdx: 4,
+  entries: [
     {
       terms: ["読む", "讀む", "よむ"],
       forms: [
@@ -126,9 +115,12 @@ const scanResult: ScanResult = {
 };
 
 const data: MarkerData = {
-  scanned: scanResult,
-  entry: scanResult.dicEntries[0],
-  selectedMeaning: scanResult.dicEntries[0].senses[2],
+  tokenized,
+  entry: tokenized.entries[0],
+  selectedMeaning: tokenized.entries[0].senses[2],
+  sentence: "わたしは本が読みたい。",
+  url: "https://yomikiri.jest/",
+  pageTitle: "Yomikiri tests",
 };
 
 describe("AnkiNoteBuilder marker", () => {
@@ -230,20 +222,8 @@ describe("AnkiNoteBuilder marker", () => {
   });
 });
 
-const escapeScanResult: ScanResult = {
-  token: {
-    text: "図書",
-    pos: "名詞",
-    base: "図書",
-    reading: "としょ",
-    pos2: "一般",
-    start: 2,
-  },
-  range: new Range(),
-  sentence: "図書<",
-  startIdx: 0,
-  endIdx: 2,
-  sentenceTokens: [
+const escapeTokenizeResult: TokenizeResult = {
+  tokens: [
     {
       text: "図書",
       pos: "名詞",
@@ -262,8 +242,8 @@ const escapeScanResult: ScanResult = {
     },
   ],
   tokenIdx: 0,
-  dicEntries: [
-    Entry.fromObject({
+  entries: [
+    {
       forms: [
         {
           form: "図書",
@@ -284,13 +264,16 @@ const escapeScanResult: ScanResult = {
         },
       ],
       priority: 166,
-    }),
-  ],
+    },
+  ].map(Entry.fromObject),
 };
 const escapedData: MarkerData = {
-  scanned: escapeScanResult,
-  entry: escapeScanResult.dicEntries[0],
-  selectedMeaning: escapeScanResult.dicEntries[0].senses[0],
+  tokenized: escapeTokenizeResult,
+  entry: escapeTokenizeResult.entries[0],
+  selectedMeaning: escapeTokenizeResult.entries[0].senses[0],
+  sentence: "図書<",
+  url: "https://yomikiri.jest/",
+  pageTitle: "Yomikiri tests",
 };
 
 describe("AnkiNoteBuilder escape HTML", () => {

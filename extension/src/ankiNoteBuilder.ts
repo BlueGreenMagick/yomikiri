@@ -1,14 +1,21 @@
+import type { TokenizeResult } from "./backend";
 import Config from "./config";
-import type { ScanResult } from "./content/scanner";
 import { Entry, type Sense } from "./dicEntry";
 import { RubyString } from "./japanese";
 import { translate } from "./translate";
 import Utils from "./utils";
 
+/** This data is saved in the history */
 export interface MarkerData {
-  scanned: ScanResult;
+  tokenized: TokenizeResult;
   entry: Entry;
   selectedMeaning?: Sense;
+  /** NFC normalized string */
+  sentence: string;
+  /** window.location.href */
+  url: string;
+  /** document.title */
+  pageTitle: string;
 }
 
 export interface Field {
@@ -110,30 +117,33 @@ export namespace AnkiNoteBuilder {
   });
 
   addMarker("word", (data: MarkerData) => {
-    return Utils.escapeHTML(data.scanned.token.text);
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+    return Utils.escapeHTML(token.text);
   });
   addMarker("word-furigana", (data: MarkerData) => {
-    let rubies = RubyString.generate(
-      data.scanned.token.text,
-      data.scanned.token.reading
-    );
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+    let rubies = RubyString.generate(token.text, token.reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
   addMarker("word-kana", (data: MarkerData) => {
-    return Utils.escapeHTML(data.scanned.token.reading);
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+    return Utils.escapeHTML(token.reading);
   });
 
   addMarker("dict", (data: MarkerData) => {
-    return Utils.escapeHTML(data.scanned.token.base);
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+    return Utils.escapeHTML(token.base);
   });
   addMarker("dict-furigana", (data: MarkerData) => {
-    const form = data.scanned.token.base;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+    const form = token.base;
     const reading = Entry.readingForForm(data.entry, form, false).reading;
     const rubies = RubyString.generate(form, reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
   addMarker("dict-kana", (data: MarkerData) => {
-    const form = data.scanned.token.base;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+    const form = token.base;
     const kana = Entry.readingForForm(data.entry, form, false).reading;
     return Utils.escapeHTML(kana);
   });
@@ -154,36 +164,41 @@ export namespace AnkiNoteBuilder {
   });
 
   addMarker("sentence", (data: MarkerData) => {
+    const tokenized = data.tokenized;
+    const tokens = tokenized.tokens;
+
     let sentence = "";
-    const tokens = data.scanned.sentenceTokens;
-    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+    for (let i = 0; i < tokenized.tokenIdx; i++) {
       sentence += Utils.escapeHTML(tokens[i].text);
     }
     sentence += "<b>";
-    sentence += Utils.escapeHTML(data.scanned.token.text);
+    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].text);
     sentence += "</b>";
-    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+    for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       sentence += Utils.escapeHTML(tokens[i].text);
     }
     return sentence;
   });
   addMarker("sentence-furigana", (data: MarkerData) => {
+    const tokenized = data.tokenized;
+    const tokens = tokenized.tokens;
+
     let rubies: RubyString = [];
-    const tokens = data.scanned.sentenceTokens;
-    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+
+    for (let i = 0; i < tokenized.tokenIdx; i++) {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const before = Utils.escapeHTML(RubyString.toAnki(rubies));
 
     const tokenRuby = RubyString.generate(
-      data.scanned.token.text,
-      data.scanned.token.reading
+      tokens[tokenized.tokenIdx].text,
+      tokens[tokenized.tokenIdx].reading
     );
     const tokenString = Utils.escapeHTML(RubyString.toAnki(tokenRuby));
     const mid = "<b>" + tokenString + "</b>";
 
     rubies = [];
-    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+    for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const after = Utils.escapeHTML(RubyString.toAnki(rubies));
@@ -191,14 +206,15 @@ export namespace AnkiNoteBuilder {
   });
   addMarker("sentence-kana", (data: MarkerData) => {
     let sentence = "";
-    const tokens = data.scanned.sentenceTokens;
-    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+    const tokenized = data.tokenized;
+    const tokens = tokenized.tokens;
+    for (let i = 0; i < tokenized.tokenIdx; i++) {
       sentence += Utils.escapeHTML(tokens[i].reading);
     }
     sentence += "<b>";
-    sentence += Utils.escapeHTML(data.scanned.token.reading);
+    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].reading);
     sentence += "</b>";
-    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+    for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       sentence += Utils.escapeHTML(tokens[i].reading);
       console.log(Utils.escapeHTML("<" + tokens[i].reading));
     }
@@ -206,40 +222,44 @@ export namespace AnkiNoteBuilder {
     return sentence;
   });
   addMarker("translated-sentence", async (data: MarkerData) => {
-    return await translate(data.scanned.sentence);
+    return await translate(data.sentence);
   });
 
   addMarker("sentence-cloze", (data: MarkerData) => {
+    const tokenized = data.tokenized;
+    const tokens = tokenized.tokens;
     let sentence = "";
-    const tokens = data.scanned.sentenceTokens;
-    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+
+    for (let i = 0; i < tokenized.tokenIdx; i++) {
       sentence += Utils.escapeHTML(tokens[i].text);
     }
     sentence += "{{c1::";
-    sentence += Utils.escapeHTML(data.scanned.token.text);
+    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].text);
     sentence += "}}";
-    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+    for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       sentence += Utils.escapeHTML(tokens[i].text);
     }
     return sentence;
   });
   addMarker("sentence-cloze-furigana", (data: MarkerData) => {
+    const tokenized = data.tokenized;
+    const tokens = tokenized.tokens;
     let rubies: RubyString = [];
-    const tokens = data.scanned.sentenceTokens;
-    for (let i = 0; i < data.scanned.tokenIdx; i++) {
+
+    for (let i = 0; i < tokenized.tokenIdx; i++) {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const before = Utils.escapeHTML(RubyString.toAnki(rubies));
 
     const tokenRuby = RubyString.generate(
-      data.scanned.token.text,
-      data.scanned.token.reading
+      tokens[tokenized.tokenIdx].text,
+      tokens[tokenized.tokenIdx].reading
     );
     const tokenString = Utils.escapeHTML(RubyString.toAnki(tokenRuby));
     const mid = "{{c1::" + tokenString + "}}";
 
     rubies = [];
-    for (let i = data.scanned.tokenIdx + 1; i < tokens.length; i++) {
+    for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const after = Utils.escapeHTML(RubyString.toAnki(rubies));
@@ -278,13 +298,13 @@ export namespace AnkiNoteBuilder {
     }
   });
 
-  addMarker("url", (_data: MarkerData) => {
-    return window.location.href;
+  addMarker("url", (data: MarkerData) => {
+    return data.url;
   });
-  addMarker("link", (_data: MarkerData) => {
+  addMarker("link", (data: MarkerData) => {
     const el = document.createElement("a");
-    el.textContent = document.title;
-    el.href = window.location.href;
+    el.textContent = data.pageTitle;
+    el.href = data.url;
     return el.outerHTML;
   });
   // TODO: translation, maybe sentence-cloze

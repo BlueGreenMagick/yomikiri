@@ -1,5 +1,5 @@
 import Utils from "utils";
-import type { Entry } from "~/dicEntry";
+import type { Entry, Sense } from "~/dicEntry";
 import DicEntriesView from "../components/DicEntriesView.svelte";
 import {
   AnkiNoteBuilder,
@@ -12,28 +12,32 @@ import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
 import TooltipSvelte from "./Tooltip.svelte";
 import { Theme } from "~/theme";
+import type { TokenizeResult } from "~/backend";
+import type { AddNoteForEntry } from "~/components/DicEntryView.svelte";
 
 export namespace Tooltip {
-  let _scanResult: ScanResult;
+  let _tokenizeResult: TokenizeResult;
+  let _highlightedNodes: Node[];
   let _tooltipEl: HTMLIFrameElement;
   let _tooltipSvelte: TooltipSvelte;
 
   export async function show(
-    e: Entry[],
-    scanned: ScanResult,
+    tokenizeResult: TokenizeResult,
+    highlightedNodes: Node[],
     mouseX: number,
     mouseY: number
   ) {
     if (_tooltipEl === undefined) {
       await createTooltipIframe();
     }
-    _scanResult = scanned;
+    _tokenizeResult = tokenizeResult;
+    _highlightedNodes = highlightedNodes;
     _tooltipEl.contentDocument?.scrollingElement?.scrollTo(0, 0);
     _tooltipEl.style.display = "block";
-    _tooltipSvelte.setEntries(e);
+    _tooltipSvelte.setEntries(_tokenizeResult.entries);
     // fix bug where tooltip height is previous entry's height
     await 0;
-    const rect = findRectOfMouse(scanned.range, mouseX, mouseY);
+    const rect = findRectOfMouse(highlightedNodes, mouseX, mouseY);
     await position(rect);
   }
 
@@ -77,8 +81,10 @@ export namespace Tooltip {
   /** add ResizeObserver to document and change position on document resize */
   function attachResizeObserver() {
     const resizeObserver = new ResizeObserver((_) => {
-      if (!_scanResult || _repositionRequested) return;
-      const rect = _scanResult.range.getClientRects()[0];
+      if (!_highlightedNodes || _repositionRequested) return;
+      const range = new Range();
+      range.selectNode(_highlightedNodes[0]);
+      const rect = range.getClientRects()[0];
       _repositionRequested = true;
       requestAnimationFrame(() => {
         position(rect);
@@ -93,16 +99,23 @@ export namespace Tooltip {
   }
 
   function findRectOfMouse(
-    range: Range,
+    nodes: Node[],
     mouseX: number,
     mouseY: number
   ): DOMRect {
-    const rects = range.getClientRects();
-    for (const rect of rects) {
-      if (Utils.rectContainsPoint(rect, mouseX, mouseY)) {
-        return rect;
+    let range = new Range();
+    for (const node of nodes) {
+      range.selectNode(node);
+      const rects = range.getClientRects();
+      for (const rect of rects) {
+        if (Utils.rectContainsPoint(rect, mouseX, mouseY)) {
+          return rect;
+        }
       }
     }
+
+    range.selectNode(nodes[0]);
+    let rects = range.getClientRects();
     return rects[0];
   }
 
@@ -182,28 +195,33 @@ border: 0;
       hide();
       Highlighter.unhighlight();
     });
-    _tooltipSvelte.$on(
-      "addNote",
-      async (ev: CustomEvent<Partial<MarkerData>>) => {
-        const data = ev.detail;
-        data.scanned = _scanResult;
-        const toast = Toast.loading("Preparing Anki note");
-        let note: NoteData;
-        try {
-          note = await AnkiNoteBuilder.buildNote(data as MarkerData);
-        } catch (err) {
-          toast.error(Utils.errorMessage(err));
-          throw err;
-        }
-        toast.update("Adding note to Anki");
-        try {
-          await Api.request("addAnkiNote", note);
-        } catch (err) {
-          toast.error(Utils.errorMessage(err));
-          throw err;
-        }
-        toast.success("Added note to Anki!");
+    _tooltipSvelte.$on("addNote", async (ev: CustomEvent<AddNoteForEntry>) => {
+      const request = ev.detail;
+      const markerData: MarkerData = {
+        tokenized: _tokenizeResult,
+        entry: request.entry,
+        selectedMeaning: request.sense,
+        sentence: _tokenizeResult.tokens.map((tok) => tok.text).join(""),
+        url: window.location.href,
+        pageTitle: document.title,
+      };
+
+      const toast = Toast.loading("Preparing Anki note");
+      let note: NoteData;
+      try {
+        note = await AnkiNoteBuilder.buildNote(markerData);
+      } catch (err) {
+        toast.error(Utils.errorMessage(err));
+        throw err;
       }
-    );
+      toast.update("Adding note to Anki");
+      try {
+        await Api.request("addAnkiNote", note);
+      } catch (err) {
+        toast.error(Utils.errorMessage(err));
+        throw err;
+      }
+      toast.success("Added note to Anki!");
+    });
   }
 }

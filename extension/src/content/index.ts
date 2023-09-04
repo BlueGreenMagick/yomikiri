@@ -6,6 +6,7 @@ import Utils from "~/utils";
 import Config from "~/config";
 import { Platform } from "@platform";
 import { Backend } from "~/backend";
+import { containsJapaneseContent } from "~/japanese";
 
 declare global {
   interface Window {
@@ -33,18 +34,50 @@ async function ensureInitialized() {
 }
 
 /** Return false if not triggered on japanese text */
+/*
+1. Get char location at (x,y)
+2. If already highlighted, stop
+3. Scan sentence at char location
+2. Tokenize sentence
+3. Get nodes of current token
+  let current token char position (start, end)
+  1) (start, end) is within curr leaf node
+  2) start < curr node, end within curr node
+  3) start within curr node, end > curr node
+  4) start < curr node < end 
+  I require (sentence, currNode, charAtSentence, tokenStartCharIdx, tokenEndCharIdx)
+4. Highlight nodes, unhighlighting previous nodes
+
+*/
 async function _trigger(x: number, y: number): Promise<boolean> {
   await ensureInitialized();
 
-  const result = await Scanner.scanAt(x, y);
-  if (result === null) return false;
-  console.log(result);
-  if (result.dicEntries.length === 0) {
-    Highlighter.highlightRed(result.range);
+  const charLoc = await Scanner.charLocationAtPos(x, y);
+  if (charLoc === null) return false;
+  const scanned = Scanner.sentenceAtCharLocation(charLoc.node, charLoc.charAt);
+  if (!containsJapaneseContent(scanned.text)) {
+    return false;
+  }
+
+  const result = await Backend.tokenize({
+    text: scanned.text,
+    charAt: scanned.charAt,
+  });
+  const currToken = result.tokens[result.tokenIdx];
+
+  const nodes = Scanner.nodesOfToken(
+    charLoc.node,
+    charLoc.charAt,
+    scanned.charAt,
+    currToken.text,
+    currToken.start
+  );
+  if (result.entries.length === 0) {
     Tooltip.hide();
+    Highlighter.highlightRed(nodes);
   } else {
-    Highlighter.highlight(result.range);
-    await Tooltip.show(result.dicEntries, result, x, y);
+    Highlighter.highlightNodes(nodes);
+    await Tooltip.show(result, nodes, x, y);
   }
   return true;
 }

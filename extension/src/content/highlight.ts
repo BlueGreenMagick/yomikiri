@@ -6,9 +6,9 @@ interface IHighlighter {
   type: "selection" | "wrap";
   highlighted: boolean;
   initialize: () => void;
-  highlight: (range: Range) => void;
+  highlightNodes: (nodes: Node[]) => void;
   /** For unknown tokens */
-  highlightRed: (range: Range) => void;
+  highlightRed: (nodes: Node[]) => void;
   /** Unhighlight all */
   unhighlight: () => void;
 }
@@ -24,13 +24,14 @@ namespace SelectionHighlighter {
   export function initialize() {}
 
   /** May modify range */
-  export function highlight(range: Range) {
-    highlightRange(range);
+  export function highlightNodes(nodes: Node[]) {
+    console.log("highlight", nodes);
+    _highlightNodes(nodes);
     changeSelectionColor("#a0a0a0a0");
   }
 
-  export function highlightRed(range: Range) {
-    highlightRange(range);
+  export function highlightRed(nodes: Node[]) {
+    _highlightNodes(nodes);
     changeSelectionColor("#ff2626a0");
   }
 
@@ -44,6 +45,25 @@ namespace SelectionHighlighter {
     if (selection === null) return;
     selection.removeAllRanges();
     revertSelectionColor();
+  }
+
+  function _highlightNodes(nodes: Node[]) {
+    let selection = window.getSelection();
+    if (selection === null) return;
+
+    if (selection.rangeCount > 0) {
+      selection.removeAllRanges();
+      ignoreNextSelectionEventFire += 1;
+    }
+    let lastNode = nodes[nodes.length - 1];
+    selection.setBaseAndExtent(
+      nodes[0],
+      0,
+      lastNode,
+      lastNode.textContent?.length ?? lastNode.childNodes.length
+    );
+    ignoreNextSelectionEventFire += 1;
+    highlighted = true;
   }
 
   /** Call this.changeSelectionColor afterwards */
@@ -119,12 +139,12 @@ ${TAG_NAME}.unknown {
   }
 
   /** May modify range */
-  export function highlight(range: Range) {
-    highlightRange(range, false);
+  export function highlightNodes(nodes: Node[]) {
+    _highlightNodes(nodes, false);
   }
 
-  export function highlightRed(range: Range) {
-    highlightRange(range, true);
+  export function highlightRed(nodes: Node[]) {
+    _highlightNodes(nodes, true);
   }
 
   /** Unhighlight all */
@@ -135,19 +155,11 @@ ${TAG_NAME}.unknown {
     highlighted = false;
   }
 
-  /** unknown: highlight red for unknown tokens */
-  function highlightRange(range: Range, unknown: boolean) {
+  function _highlightNodes(nodes: Node[], unknown: boolean) {
     const existing = [...document.getElementsByTagName(TAG_NAME)];
-    if (existing.length != 0 && range.intersectsNode(existing[0])) {
-      return;
-    }
-    const nodes = textNodesInRange(range);
-    const hls: Element[] = [];
     for (const node of nodes) {
-      hls.push(highlightNode(node, unknown));
+      highlightNode(node, unknown);
     }
-    range.setStartBefore(hls[0]);
-    range.setStartBefore(hls[hls.length - 1]);
     for (const node of existing) {
       unhighlightElement(node);
     }

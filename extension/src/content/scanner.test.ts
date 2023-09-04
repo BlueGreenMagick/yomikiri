@@ -19,17 +19,14 @@ rp {
   document.head.appendChild(styles);
 });
 
-describe("Scan sentence", () => {
+describe("sentenceAtCharLocation", () => {
   test("single sentence", () => {
     const container = prepareHTML(`<p>読み切りはすごい。</p>`);
     const textNode = selectTextNode(container, "p");
 
-    const result = Scanner.sentenceAtCharacterLocation(textNode, 0);
-    expect(result.curr).toEqual("読み切りはすごい。");
-    expect(result.stStartIdx).toEqual(undefined);
-    expect(result.prev).toEqual("");
-    expect(result.stEndIdx).toEqual(9);
-    expect(result.next).toEqual(undefined);
+    const result = Scanner.sentenceAtCharLocation(textNode, 0);
+    expect(result.text).toEqual("読み切りはすごい。");
+    expect(result.charAt).toEqual(0);
   });
 
   test("multiple sentences", () => {
@@ -38,46 +35,78 @@ describe("Scan sentence", () => {
     );
     const textNode = selectTextNode(container, "p");
 
-    const result = Scanner.sentenceAtCharacterLocation(textNode, 4);
-    expect(result.curr).toEqual("これは文章1。");
-    expect(result.prev).toEqual("");
-    expect(result.stEndIdx).toEqual(7);
-    const result2 = Scanner.sentenceAtCharacterLocation(textNode, 8);
-    expect(result2.curr).toEqual("これは文章2。");
-    expect(result2.stStartIdx).toEqual(7);
-    expect(result2.stEndIdx).toEqual(14);
-    const result3 = Scanner.sentenceAtCharacterLocation(textNode, 14);
-    expect(result3.curr).toEqual("そして最後の文章。");
-    expect(result3.stStartIdx).toEqual(14);
-    expect(result3.stEndIdx).toEqual(23);
+    const result = Scanner.sentenceAtCharLocation(textNode, 4);
+    expect(result.text).toEqual("これは文章1。");
+    expect(result.charAt).toEqual(4);
+
+    const result2 = Scanner.sentenceAtCharLocation(textNode, 8);
+    expect(result2.text).toEqual("これは文章2。");
+    expect(result2.charAt).toEqual(1);
+
+    const result3 = Scanner.sentenceAtCharLocation(textNode, 17);
+    expect(result3.text).toEqual("そして最後の文章。");
+    expect(result3.charAt).toEqual(3);
   });
 
   test("across inline elements", () => {
+    const sentence = "読書は楽しい活動である。";
     const container = prepareHTML(
       `<p><b>読書</b>は<i><b>楽しい</b>活動</i>である。</p>`
     );
     const textNode = selectTextNode(container, "i b");
-    const result = Scanner.sentenceAtCharacterLocation(textNode, 1);
-    expect(result.curr).toEqual("楽しい");
-    expect(result.prev).toEqual("読書は");
-    expect(result.next).toEqual("活動である。");
+    const result = Scanner.sentenceAtCharLocation(textNode, 1);
+    expect(result.text).toEqual(sentence);
+    expect(result.charAt).toEqual(sentence.indexOf("し"));
   });
 
   test("Ignore ruby", () => {
+    const sentence = "読書は楽しい活動である。";
     const container = prepareHTML(
       `<p><ruby>読書<rt>どくしょ</rt></ruby>は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい<ruby>活動<rt>かつどう</rt></ruby>である。</p>`
     );
     const textNode = selectTextNode(container, "ruby:nth-of-type(1)");
-    const result = Scanner.sentenceAtCharacterLocation(textNode, 1);
-    expect(result.curr).toEqual("読書");
-    expect(result.prev).toEqual("");
-    expect(result.next).toEqual("は楽しい活動である。");
+    const result = Scanner.sentenceAtCharLocation(textNode, 1);
+    expect(result.text).toEqual(sentence);
+    expect(result.charAt).toEqual(1);
 
     const textNode2 = selectTextNode(container, "ruby:nth-of-type(2)");
-    const result2 = Scanner.sentenceAtCharacterLocation(textNode2, 1);
-    expect(result2.curr).toEqual("楽");
-    expect(result2.prev).toEqual("読書は");
-    expect(result2.next).toEqual("しい活動である。");
+    const result2 = Scanner.sentenceAtCharLocation(textNode2, 0);
+    expect(result2.text).toEqual(sentence);
+    expect(result2.charAt).toEqual(3);
+  });
+});
+
+describe("nodesOfToken", () => {
+  test("Single sentence", () => {
+    const container = prepareHTML(`<p>読み切りはすごい。</p>`);
+    const textNode = selectTextNode(container, "p");
+    const nodes = Scanner.nodesOfToken(textNode, 1, 1, "読み切り", 0);
+    expect(nodesText(nodes)).toEqual("読み切り");
+  });
+
+  test("across inline elements", () => {
+    const sentence = "読書は楽しい活動である。";
+    const container = prepareHTML(
+      `<p>読書は<i><b>楽</b><u>し</u></i>い活動である。</p>`
+    );
+    const textNode = selectTextNode(container, "i b");
+    const nodes = Scanner.nodesOfToken(textNode, 0, 3, "楽しい", 3);
+    console.log(nodes.map((n) => n.textContent));
+    expect(nodesText(nodes)).toEqual("楽しい");
+  });
+
+  test("Ignore ruby", () => {
+    const sentence = "読書は楽しい活動である。";
+    const container = prepareHTML(
+      `<p>読書は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい活動である。</p>`
+    );
+    const textNode = selectTextNode(container, "ruby");
+    const nodes = Scanner.nodesOfToken(textNode, 0, 3, "楽しい", 3);
+    expect(nodesText(nodes)).toEqual("楽しい");
+
+    const textNode2 = selectTextNode(container, "p", 2);
+    const nodes2 = Scanner.nodesOfToken(textNode2, 1, 5, "楽しい", 3);
+    expect(nodesText(nodes2)).toEqual("楽しい");
   });
 });
 
@@ -88,8 +117,20 @@ function prepareHTML(html: string): HTMLElement {
   return container;
 }
 
-/** select the first child node of selector element, and assumes it is Text */
-function selectTextNode(element: Element, selector: string): Text {
+/** select the idx's (first by default) child node of selector element as Text. */
+function selectTextNode(
+  element: Element,
+  selector: string,
+  idx: number = 0
+): Text {
   const elem = element.querySelector(selector) as Element;
-  return elem.childNodes[0] as Text;
+  const node = elem.childNodes[idx];
+  if (node.nodeType !== Node.TEXT_NODE) {
+    throw new Error("First child node is not Text");
+  }
+  return node as Text;
+}
+
+function nodesText(nodes: Node[]): string {
+  return nodes.map((n) => n.textContent).join("");
 }
