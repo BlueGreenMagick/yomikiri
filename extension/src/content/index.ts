@@ -62,6 +62,9 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     charAt: scanned.charAt,
   });
   const currToken = result.tokens[result.tokenIdx];
+  if (!containsJapaneseContent(currToken.text)) {
+    return false;
+  }
 
   const nodes = Scanner.nodesOfToken(
     charLoc.node,
