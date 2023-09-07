@@ -1,5 +1,4 @@
 import { Tooltip } from "./tooltip";
-import { Scanner } from "./scanner";
 import { Platform } from "@platform";
 
 interface IHighlighter {
@@ -11,6 +10,7 @@ interface IHighlighter {
   highlightRed: (nodes: Node[]) => void;
   /** Unhighlight all */
   unhighlight: () => void;
+  isHighlighted: (node: Text, charIdx?: number) => boolean;
 }
 
 namespace SelectionHighlighter {
@@ -33,6 +33,22 @@ namespace SelectionHighlighter {
   export function highlightRed(nodes: Node[]) {
     _highlightNodes(nodes);
     changeSelectionColor("#ff2626a0");
+  }
+
+  export function isHighlighted(node: Text, charIdx: number = 0): boolean {
+    if (!highlighted) return false;
+    const selection = document.getSelection();
+    if (selection === null) {
+      highlighted = false;
+      return false;
+    }
+    if (selection.rangeCount === 0) {
+      highlighted = false;
+      return false;
+    }
+
+    const range = selection.getRangeAt(0);
+    return range.comparePoint(node, charIdx) === 0;
   }
 
   /** Unhighlight all */
@@ -62,20 +78,6 @@ namespace SelectionHighlighter {
       lastNode,
       lastNode.textContent?.length ?? lastNode.childNodes.length
     );
-    ignoreNextSelectionEventFire += 1;
-    highlighted = true;
-  }
-
-  /** Call this.changeSelectionColor afterwards */
-  function highlightRange(range: Range) {
-    let selection = window.getSelection();
-    if (selection === null) return;
-
-    if (selection.rangeCount > 0) {
-      selection.removeAllRanges();
-      ignoreNextSelectionEventFire += 1;
-    }
-    selection.addRange(range);
     ignoreNextSelectionEventFire += 1;
     highlighted = true;
   }
@@ -155,6 +157,13 @@ ${TAG_NAME}.unknown {
     highlighted = false;
   }
 
+  export function isHighlighted(node: Text, charIdx: number = 0): boolean {
+    if (!highlighted) return false;
+    let parent = node.parentElement;
+    if (parent === null) return false;
+    return parent.tagName === TAG_NAME.toUpperCase();
+  }
+
   function _highlightNodes(nodes: Node[], unknown: boolean) {
     const existing = [...document.getElementsByTagName(TAG_NAME)];
     for (const node of nodes) {
@@ -164,79 +173,6 @@ ${TAG_NAME}.unknown {
       unhighlightElement(node);
     }
     highlighted = true;
-  }
-
-  function textNodesInRange(range: Range): Text[] {
-    if (
-      range.startContainer === range.endContainer &&
-      range.startContainer instanceof Text
-    ) {
-      let node = range.startContainer;
-      node.splitText(range.endOffset);
-      node = node.splitText(range.startOffset);
-      return [node];
-    }
-
-    // [startNode, endNode)
-    let startContainer = range.startContainer;
-    let startNode: Node;
-    if (startContainer instanceof Text) {
-      startNode = startContainer.splitText(range.startOffset);
-    } else if (startContainer instanceof CharacterData) {
-      startNode = startContainer;
-    } else {
-      startNode = startContainer.childNodes[range.startOffset];
-    }
-
-    let endContainer = range.endContainer;
-    let endNode: Node | null;
-    if (endContainer instanceof Text) {
-      endNode = endContainer.splitText(range.endOffset);
-    } else if (endContainer instanceof CharacterData) {
-      endNode = endContainer;
-    } else {
-      if (range.endOffset < endContainer.childNodes.length) {
-        endNode = endContainer.childNodes[range.endOffset];
-      } else {
-        // endNode = next node of endContainer
-        let parent = endContainer;
-        while (parent.nextSibling === null) {
-          if (parent.parentNode === null) {
-            endNode = null;
-            break;
-          }
-          parent = parent.parentNode;
-        }
-        endNode = parent.nextSibling;
-      }
-    }
-    const nodes: Text[] = [];
-
-    const walker = document.createTreeWalker(
-      range.commonAncestorContainer,
-      NodeFilter.SHOW_ALL,
-      (node) => {
-        // TODO: move this function out of scanner
-        if (Scanner.nodeIsOutOfFlow(node)) {
-          return NodeFilter.FILTER_REJECT;
-        } else {
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      }
-    );
-    walker.currentNode = startNode;
-
-    let node: Node | null = startNode;
-    while (node !== null) {
-      if (range.comparePoint(node, 0) > 0) {
-        break;
-      }
-      if (node instanceof Text) {
-        nodes.push(node);
-      }
-      node = walker.nextNode();
-    }
-    return nodes;
   }
 
   function highlightNode(node: Node, unknown: boolean): Element {

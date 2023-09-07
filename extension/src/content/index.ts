@@ -38,22 +38,20 @@ async function ensureInitialized() {
 1. Get char location at (x,y)
 2. If already highlighted, stop
 3. Scan sentence at char location
-2. Tokenize sentence
-3. Get nodes of current token
-  let current token char position (start, end)
-  1) (start, end) is within curr leaf node
-  2) start < curr node, end within curr node
-  3) start within curr node, end > curr node
-  4) start < curr node < end 
-  I require (sentence, currNode, charAtSentence, tokenStartCharIdx, tokenEndCharIdx)
-4. Highlight nodes, unhighlighting previous nodes
-
+4. Tokenize sentence
+5. Get nodes of current token
+6. Highlight nodes, unhighlighting previous nodes
 */
 async function _trigger(x: number, y: number): Promise<boolean> {
   await ensureInitialized();
 
   const charLoc = await Scanner.charLocationAtPos(x, y);
   if (charLoc === null) return false;
+
+  if (Highlighter.isHighlighted(charLoc.node, charLoc.charAt)) {
+    return false;
+  }
+
   const scanned = Scanner.sentenceAtCharLocation(charLoc.node, charLoc.charAt);
   if (!containsJapaneseContent(scanned.text)) {
     return false;
