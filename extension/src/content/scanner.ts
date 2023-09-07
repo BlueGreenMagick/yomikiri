@@ -117,23 +117,19 @@ export function sentenceAtCharLocation(
 
 /** Returns list of Nodes that make up a token.
  * - currNode
- * - charIdxInCurrNode: index of curr character in currNode
- * - charIdx: index of curr character in sentence
- * - tokenText: text of curr token
- * - tokenStartIdx: index of first character of curr token in sentence.
+ * - charIdxInCurrNode: index of current character in currNode
+ * - tokenLength: length of token text
+ * - tokenCharIdx: index of current character in token
  */
 export function nodesOfToken(
   currNode: Text,
   charIdxInCurrNode: number,
-  charIdx: number,
-  tokenText: string,
-  tokenStartIdx: number
+  tokenLength: number,
+  tokenCharIdx: number
 ): Text[] {
-  const tokenEndIdx = tokenStartIdx + tokenText.length;
-
   let nextNodes: Text[] = [];
   let node = currNode;
-  let charCount = tokenEndIdx - charIdx;
+  let charCount = tokenLength - tokenCharIdx;
   const remaining = node.data.length - charIdxInCurrNode;
   if (charCount < remaining) {
     node.splitText(charIdxInCurrNode + charCount);
@@ -156,7 +152,7 @@ export function nodesOfToken(
 
   let prevNodes: Text[] = [];
   node = currNode;
-  charCount = charIdx - tokenStartIdx;
+  charCount = tokenCharIdx;
   if (charCount < charIdxInCurrNode) {
     currNode = node.splitText(charIdxInCurrNode - charCount);
   } else {

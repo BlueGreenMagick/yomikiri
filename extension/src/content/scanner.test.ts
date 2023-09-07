@@ -77,35 +77,36 @@ describe("sentenceAtCharLocation", () => {
 });
 
 describe("nodesOfToken", () => {
-  test("Single sentence", () => {
+  test("single sentence", () => {
+    // [読(み)切り]はすごい。
     const container = prepareHTML(`<p>読み切りはすごい。</p>`);
     const textNode = selectTextNode(container, "p");
-    const nodes = nodesOfToken(textNode, 1, 1, "読み切り", 0);
+    const nodes = nodesOfToken(textNode, 1, "読み切り".length, 1);
     expect(nodesText(nodes)).toEqual("読み切り");
   });
 
   test("across inline elements", () => {
-    const sentence = "読書は楽しい活動である。";
+    // "読書は[(楽)しい]活動である。"
     const container = prepareHTML(
       `<p>読書は<i><b>楽</b><u>し</u></i>い活動である。</p>`
     );
     const textNode = selectTextNode(container, "i b");
-    const nodes = nodesOfToken(textNode, 0, 3, "楽しい", 3);
-    console.log(nodes.map((n) => n.textContent));
+    const nodes = nodesOfToken(textNode, 0, "楽しい".length, 0);
     expect(nodesText(nodes)).toEqual("楽しい");
   });
 
-  test("Ignore ruby", () => {
-    const sentence = "読書は楽しい活動である。";
+  test("ignore ruby", () => {
+    // 読書は[(楽)しい]活動である。
     const container = prepareHTML(
       `<p>読書は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい活動である。</p>`
     );
     const textNode = selectTextNode(container, "ruby");
-    const nodes = nodesOfToken(textNode, 0, 3, "楽しい", 3);
+    const nodes = nodesOfToken(textNode, 0, "楽しい".length, 0);
     expect(nodesText(nodes)).toEqual("楽しい");
 
+    // 読書は[楽し(い)]活動である。
     const textNode2 = selectTextNode(container, "p", 2);
-    const nodes2 = nodesOfToken(textNode2, 1, 5, "楽しい", 3);
+    const nodes2 = nodesOfToken(textNode2, 1, "楽しい".length, 2);
     expect(nodesText(nodes2)).toEqual("楽しい");
   });
 });

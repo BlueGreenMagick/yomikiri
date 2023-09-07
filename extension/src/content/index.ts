@@ -55,14 +55,14 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
-  const scanned = sentenceAtCharLocation(charLoc.node, charLoc.charAt);
-  if (!containsJapaneseContent(scanned.text)) {
+  const scannedSentence = sentenceAtCharLocation(charLoc.node, charLoc.charAt);
+  if (!containsJapaneseContent(scannedSentence.text)) {
     return false;
   }
 
   const result = await Backend.tokenize({
-    text: scanned.text,
-    charAt: scanned.charAt,
+    text: scannedSentence.text,
+    charAt: scannedSentence.charAt,
   });
   const currToken = result.tokens[result.tokenIdx];
   if (!containsJapaneseContent(currToken.text)) {
@@ -72,9 +72,8 @@ async function _trigger(x: number, y: number): Promise<boolean> {
   const nodes = nodesOfToken(
     charLoc.node,
     charLoc.charAt,
-    scanned.charAt,
-    currToken.text,
-    currToken.start
+    currToken.text.length,
+    scannedSentence.charAt - currToken.start
   );
   if (result.entries.length === 0) {
     Tooltip.hide();
