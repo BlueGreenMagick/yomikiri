@@ -1,19 +1,4 @@
-import type { Token } from "@platform/backend";
 import Utils from "~/utils";
-import { Entry } from "~/dicEntry";
-
-export interface ScanResult {
-  token: Token;
-  /** range that has token text selected */
-  range: Range;
-  /** sentence[startIdx, endIdx) is token text */
-  sentence: string;
-  startIdx: number;
-  endIdx: number;
-  sentenceTokens: Token[];
-  tokenIdx: number;
-  dicEntries: Entry[];
-}
 
 export interface CharAtString {
   text: string;

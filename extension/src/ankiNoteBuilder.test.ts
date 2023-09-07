@@ -1,6 +1,5 @@
 import { test, expect, describe, jest } from "@jest/globals";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
-import type { ScanResult } from "./content/scanner";
 import { Entry } from "./dicEntry";
 import type { TokenizeResult } from "./backend";
 

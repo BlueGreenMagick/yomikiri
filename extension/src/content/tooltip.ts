@@ -1,12 +1,9 @@
 import Utils from "utils";
-import type { Entry, Sense } from "~/dicEntry";
-import DicEntriesView from "../components/DicEntriesView.svelte";
 import {
   AnkiNoteBuilder,
   type MarkerData,
   type NoteData,
 } from "~/ankiNoteBuilder";
-import type { ScanResult } from "~/content/scanner";
 import { Api } from "~/api";
 import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
