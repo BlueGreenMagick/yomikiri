@@ -1,5 +1,5 @@
 import { test, expect, describe, beforeAll } from "@jest/globals";
-import { Scanner } from "./scanner";
+import { sentenceAtCharLocation, nodesOfToken } from "./scanner";
 
 beforeAll(() => {
   const styles = document.createElement("style");
@@ -24,7 +24,7 @@ describe("sentenceAtCharLocation", () => {
     const container = prepareHTML(`<p>読み切りはすごい。</p>`);
     const textNode = selectTextNode(container, "p");
 
-    const result = Scanner.sentenceAtCharLocation(textNode, 0);
+    const result = sentenceAtCharLocation(textNode, 0);
     expect(result.text).toEqual("読み切りはすごい。");
     expect(result.charAt).toEqual(0);
   });
@@ -35,15 +35,15 @@ describe("sentenceAtCharLocation", () => {
     );
     const textNode = selectTextNode(container, "p");
 
-    const result = Scanner.sentenceAtCharLocation(textNode, 4);
+    const result = sentenceAtCharLocation(textNode, 4);
     expect(result.text).toEqual("これは文章1。");
     expect(result.charAt).toEqual(4);
 
-    const result2 = Scanner.sentenceAtCharLocation(textNode, 8);
+    const result2 = sentenceAtCharLocation(textNode, 8);
     expect(result2.text).toEqual("これは文章2。");
     expect(result2.charAt).toEqual(1);
 
-    const result3 = Scanner.sentenceAtCharLocation(textNode, 17);
+    const result3 = sentenceAtCharLocation(textNode, 17);
     expect(result3.text).toEqual("そして最後の文章。");
     expect(result3.charAt).toEqual(3);
   });
@@ -54,7 +54,7 @@ describe("sentenceAtCharLocation", () => {
       `<p><b>読書</b>は<i><b>楽しい</b>活動</i>である。</p>`
     );
     const textNode = selectTextNode(container, "i b");
-    const result = Scanner.sentenceAtCharLocation(textNode, 1);
+    const result = sentenceAtCharLocation(textNode, 1);
     expect(result.text).toEqual(sentence);
     expect(result.charAt).toEqual(sentence.indexOf("し"));
   });
@@ -65,12 +65,12 @@ describe("sentenceAtCharLocation", () => {
       `<p><ruby>読書<rt>どくしょ</rt></ruby>は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい<ruby>活動<rt>かつどう</rt></ruby>である。</p>`
     );
     const textNode = selectTextNode(container, "ruby:nth-of-type(1)");
-    const result = Scanner.sentenceAtCharLocation(textNode, 1);
+    const result = sentenceAtCharLocation(textNode, 1);
     expect(result.text).toEqual(sentence);
     expect(result.charAt).toEqual(1);
 
     const textNode2 = selectTextNode(container, "ruby:nth-of-type(2)");
-    const result2 = Scanner.sentenceAtCharLocation(textNode2, 0);
+    const result2 = sentenceAtCharLocation(textNode2, 0);
     expect(result2.text).toEqual(sentence);
     expect(result2.charAt).toEqual(3);
   });
@@ -80,7 +80,7 @@ describe("nodesOfToken", () => {
   test("Single sentence", () => {
     const container = prepareHTML(`<p>読み切りはすごい。</p>`);
     const textNode = selectTextNode(container, "p");
-    const nodes = Scanner.nodesOfToken(textNode, 1, 1, "読み切り", 0);
+    const nodes = nodesOfToken(textNode, 1, 1, "読み切り", 0);
     expect(nodesText(nodes)).toEqual("読み切り");
   });
 
@@ -90,7 +90,7 @@ describe("nodesOfToken", () => {
       `<p>読書は<i><b>楽</b><u>し</u></i>い活動である。</p>`
     );
     const textNode = selectTextNode(container, "i b");
-    const nodes = Scanner.nodesOfToken(textNode, 0, 3, "楽しい", 3);
+    const nodes = nodesOfToken(textNode, 0, 3, "楽しい", 3);
     console.log(nodes.map((n) => n.textContent));
     expect(nodesText(nodes)).toEqual("楽しい");
   });
@@ -101,11 +101,11 @@ describe("nodesOfToken", () => {
       `<p>読書は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい活動である。</p>`
     );
     const textNode = selectTextNode(container, "ruby");
-    const nodes = Scanner.nodesOfToken(textNode, 0, 3, "楽しい", 3);
+    const nodes = nodesOfToken(textNode, 0, 3, "楽しい", 3);
     expect(nodesText(nodes)).toEqual("楽しい");
 
     const textNode2 = selectTextNode(container, "p", 2);
-    const nodes2 = Scanner.nodesOfToken(textNode2, 1, 5, "楽しい", 3);
+    const nodes2 = nodesOfToken(textNode2, 1, 5, "楽しい", 3);
     expect(nodesText(nodes2)).toEqual("楽しい");
   });
 });

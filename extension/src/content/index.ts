@@ -1,4 +1,8 @@
-import { Scanner } from "./scanner";
+import {
+  charLocationAtPos,
+  sentenceAtCharLocation,
+  nodesOfToken,
+} from "./scanner";
 import { Api } from "~/api";
 import { Highlighter } from "./highlight";
 import { Tooltip } from "~/content/tooltip";
@@ -10,7 +14,6 @@ import { containsJapaneseContent } from "~/japanese";
 
 declare global {
   interface Window {
-    Scanner: typeof Scanner;
     Api: typeof Api;
     ensureInitialized: typeof ensureInitialized;
   }
@@ -45,14 +48,14 @@ async function ensureInitialized() {
 async function _trigger(x: number, y: number): Promise<boolean> {
   await ensureInitialized();
 
-  const charLoc = await Scanner.charLocationAtPos(x, y);
+  const charLoc = await charLocationAtPos(x, y);
   if (charLoc === null) return false;
 
   if (Highlighter.isHighlighted(charLoc.node, charLoc.charAt)) {
     return false;
   }
 
-  const scanned = Scanner.sentenceAtCharLocation(charLoc.node, charLoc.charAt);
+  const scanned = sentenceAtCharLocation(charLoc.node, charLoc.charAt);
   if (!containsJapaneseContent(scanned.text)) {
     return false;
   }
@@ -66,7 +69,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
-  const nodes = Scanner.nodesOfToken(
+  const nodes = nodesOfToken(
     charLoc.node,
     charLoc.charAt,
     scanned.charAt,
@@ -111,6 +114,5 @@ document.addEventListener("click", async (ev: MouseEvent) => {
   }
 });
 
-window.Scanner = Scanner;
 window.Api = Api;
 window.ensureInitialized = ensureInitialized;

@@ -25,303 +25,304 @@ export interface CharLocation {
   charAt: number;
 }
 
-export namespace Scanner {
-  /** Binary search inside a Text node to find character location of (x,y) */
-  export function charLocationAtPos(x: number, y: number): CharLocation | null {
-    const element = document.elementFromPoint(x, y);
-    if (element === null) return null;
-    const node = childTextAt(element, x, y);
-    if (node === null) return null;
+/** Binary search inside a Text node to find character location of (x,y) */
+export function charLocationAtPos(x: number, y: number): CharLocation | null {
+  const element = document.elementFromPoint(x, y);
+  if (element === null) return null;
+  const node = childTextAt(element, x, y);
+  if (node === null) return null;
 
-    let range = new Range();
-    let start = 0;
-    let end = node.data.length;
+  let range = new Range();
+  let start = 0;
+  let end = node.data.length;
 
-    while (end - start > 7) {
-      let mid = Math.floor((start + end) / 2);
+  while (end - start > 7) {
+    let mid = Math.floor((start + end) / 2);
 
-      range.setStart(node, start);
-      range.setEnd(node, mid);
-      if (Utils.containsPoint(range, x, y)) {
-        end = mid;
-      } else {
-        // assume (mid, end) contains (x,y)
-        // if it doesn't, this function will still return null
-        // because of linear search below
-        start = mid;
-      }
+    range.setStart(node, start);
+    range.setEnd(node, mid);
+    if (Utils.containsPoint(range, x, y)) {
+      end = mid;
+    } else {
+      // assume (mid, end) contains (x,y)
+      // if it doesn't, this function will still return null
+      // because of linear search below
+      start = mid;
     }
-
-    while (start < end) {
-      range.setStart(node, start);
-      range.setEnd(node, start + 1);
-      if (Utils.containsPoint(range, x, y)) {
-        return {
-          node: node,
-          charAt: start,
-        };
-      } else {
-        start += 1;
-      }
-    }
-
-    return null;
   }
 
-  /*
+  while (start < end) {
+    range.setStart(node, start);
+    range.setEnd(node, start + 1);
+    if (Utils.containsPoint(range, x, y)) {
+      return {
+        node: node,
+        charAt: start,
+      };
+    } else {
+      start += 1;
+    }
+  }
+
+  return null;
+}
+
+/*
   1. Find closest sentence-ending char before charAt in node.
   2. If it doesn't exist, prepend sentence-part before this node.
   3. Find closest sentence-ending char after(including) charAt in node.
   4. If it doesn't exist, append sentence-part after this node.
   */
-  export function sentenceAtCharLocation(
-    node: Text,
-    charAt: number
-  ): CharAtString {
-    const text = node.data;
+export function sentenceAtCharLocation(
+  node: Text,
+  charAt: number
+): CharAtString {
+  const text = node.data;
 
-    let sentence: string;
-    let charAtSentence: number;
+  let sentence: string;
+  let charAtSentence: number;
 
-    let start: number;
-    for (start = charAt; start > 0; start--) {
-      if (isSentenceEndChar(text[start - 1])) {
-        break;
-      }
+  let start: number;
+  for (start = charAt; start > 0; start--) {
+    if (isSentenceEndChar(text[start - 1])) {
+      break;
     }
-    sentence = text.substring(start, charAt);
-    charAtSentence = charAt - start;
-    if (start === 0) {
-      let prev = sentenceBeforeNode(node);
-      sentence = prev + sentence;
-      charAtSentence += prev.length;
-    }
-
-    let end: number;
-    for (end = charAt; end < text.length; end++) {
-      if (isSentenceEndChar(text[end])) {
-        break;
-      }
-    }
-    if (end === text.length) {
-      sentence += text.substring(charAt, end);
-      sentence += sentenceAfterNode(node);
-    } else {
-      sentence += text.substring(charAt, end + 1);
-    }
-
-    return {
-      text: sentence,
-      charAt: charAtSentence,
-    };
+  }
+  sentence = text.substring(start, charAt);
+  charAtSentence = charAt - start;
+  if (start === 0) {
+    let prev = sentenceBeforeNode(node);
+    sentence = prev + sentence;
+    charAtSentence += prev.length;
   }
 
-  /** Returns list of Nodes that make up a token.
-   * - charIdx: index of curr character in sentence
-   * - tokenStartIdx: index of first character of token in sentence.
-   */
-  export function nodesOfToken(
-    currNode: Text,
-    charIdxInCurrNode: number,
-    charIdx: number,
-    tokenText: string,
-    tokenStartIdx: number
-  ): Text[] {
-    const tokenEndIdx = tokenStartIdx + tokenText.length;
-
-    let nextNodes: Text[] = [];
-    let node = currNode;
-    let charCount = tokenEndIdx - charIdx;
-    const remaining = node.data.length - charIdxInCurrNode;
-    if (charCount < remaining) {
-      node.splitText(charIdxInCurrNode + charCount);
-    } else {
-      charCount -= remaining;
-      while (charCount > 0) {
-        const nextNode = nextInlineTextNode(node);
-        if (nextNode === null) {
-          break;
-        }
-        const count = nextNode.data.length;
-        if (count > charCount) {
-          nextNode.splitText(charCount);
-        }
-        nextNodes.push(nextNode);
-        charCount -= count;
-        node = nextNode;
-      }
+  let end: number;
+  for (end = charAt; end < text.length; end++) {
+    if (isSentenceEndChar(text[end])) {
+      break;
     }
-
-    let prevNodes: Text[] = [];
-    node = currNode;
-    charCount = charIdx - tokenStartIdx;
-    if (charCount < charIdxInCurrNode) {
-      currNode = node.splitText(charIdxInCurrNode - charCount);
-    } else {
-      charCount -= charIdxInCurrNode;
-      while (charCount > 0) {
-        let prevNode = prevInlineTextNode(node);
-        if (prevNode === null) {
-          break;
-        }
-        const count = prevNode.data.length;
-        if (count > charCount) {
-          prevNode = prevNode.splitText(count - charCount);
-        }
-        prevNodes.push(prevNode);
-        charCount -= count;
-        node = prevNode;
-      }
-    }
-
-    return [...prevNodes.reverse(), currNode, ...nextNodes];
+  }
+  if (end === text.length) {
+    sentence += text.substring(charAt, end);
+    sentence += sentenceAfterNode(node);
+  } else {
+    sentence += text.substring(charAt, end + 1);
   }
 
-  /**
-   * Get prev (next) Text node. (Which is not a child of curr)
-   * Does not check if curr is inline. if PREV is false, get next node.
-   */
-  // when it recursively calls itself, new curr is always before(after) old curr
-  // so recursion is guranteed to end.
-  function inlineTextNode(curr: Node, PREV: boolean): Text | null {
-    // get closest inline parent that has prev(next) sibling.
-    while ((PREV ? curr.previousSibling : curr.nextSibling) === null) {
-      if (curr.parentNode === null) return null;
-      curr = curr.parentNode;
-      if (!nodeIsInline(curr)) return null;
+  return {
+    text: sentence,
+    charAt: charAtSentence,
+  };
+}
+
+/** Returns list of Nodes that make up a token.
+ * - currNode
+ * - charIdxInCurrNode: index of curr character in currNode
+ * - charIdx: index of curr character in sentence
+ * - tokenText: text of curr token
+ * - tokenStartIdx: index of first character of curr token in sentence.
+ */
+export function nodesOfToken(
+  currNode: Text,
+  charIdxInCurrNode: number,
+  charIdx: number,
+  tokenText: string,
+  tokenStartIdx: number
+): Text[] {
+  const tokenEndIdx = tokenStartIdx + tokenText.length;
+
+  let nextNodes: Text[] = [];
+  let node = currNode;
+  let charCount = tokenEndIdx - charIdx;
+  const remaining = node.data.length - charIdxInCurrNode;
+  if (charCount < remaining) {
+    node.splitText(charIdxInCurrNode + charCount);
+  } else {
+    charCount -= remaining;
+    while (charCount > 0) {
+      const nextNode = nextInlineTextNode(node);
+      if (nextNode === null) {
+        break;
+      }
+      const count = nextNode.data.length;
+      if (count > charCount) {
+        nextNode.splitText(charCount);
+      }
+      nextNodes.push(nextNode);
+      charCount -= count;
+      node = nextNode;
     }
-    // get inline prev(next) sibling
-    curr = (PREV ? curr.previousSibling : curr.nextSibling) as ChildNode;
+  }
+
+  let prevNodes: Text[] = [];
+  node = currNode;
+  charCount = charIdx - tokenStartIdx;
+  if (charCount < charIdxInCurrNode) {
+    currNode = node.splitText(charIdxInCurrNode - charCount);
+  } else {
+    charCount -= charIdxInCurrNode;
+    while (charCount > 0) {
+      let prevNode = prevInlineTextNode(node);
+      if (prevNode === null) {
+        break;
+      }
+      const count = prevNode.data.length;
+      if (count > charCount) {
+        prevNode = prevNode.splitText(count - charCount);
+      }
+      prevNodes.push(prevNode);
+      charCount -= count;
+      node = prevNode;
+    }
+  }
+
+  return [...prevNodes.reverse(), currNode, ...nextNodes];
+}
+
+/**
+ * Get prev (next) Text node. (Which is not a child of curr)
+ * Does not check if curr is inline. if PREV is false, get next node.
+ */
+// when it recursively calls itself, new curr is always before(after) old curr
+// so recursion is guranteed to end.
+function inlineTextNode(curr: Node, PREV: boolean): Text | null {
+  // get closest inline parent that has prev(next) sibling.
+  while ((PREV ? curr.previousSibling : curr.nextSibling) === null) {
+    if (curr.parentNode === null) return null;
+    curr = curr.parentNode;
+    if (!nodeIsInline(curr)) return null;
+  }
+  // get inline prev(next) sibling
+  curr = (PREV ? curr.previousSibling : curr.nextSibling) as ChildNode;
+  if (
+    !(curr instanceof Element || curr instanceof Text) ||
+    nodeIsOutOfFlow(curr)
+  ) {
+    // skip nodes that are removed from normal flow
+    return inlineTextNode(curr, PREV);
+  }
+  if (!nodeIsInline(curr)) return null;
+  if (curr.parentNode !== null && nodeChildIsNotInline(curr.parentNode)) {
+    return null;
+  }
+  // get inline last(first) leaf node
+  while (curr.childNodes.length > 0) {
+    curr = curr.childNodes[PREV ? curr.childNodes.length - 1 : 0];
     if (
       !(curr instanceof Element || curr instanceof Text) ||
       nodeIsOutOfFlow(curr)
     ) {
-      // skip nodes that are removed from normal flow
       return inlineTextNode(curr, PREV);
     }
     if (!nodeIsInline(curr)) return null;
-    if (curr.parentNode !== null && nodeChildIsNotInline(curr.parentNode)) {
-      return null;
-    }
-    // get inline last(first) leaf node
-    while (curr.childNodes.length > 0) {
-      curr = curr.childNodes[PREV ? curr.childNodes.length - 1 : 0];
-      if (
-        !(curr instanceof Element || curr instanceof Text) ||
-        nodeIsOutOfFlow(curr)
-      ) {
-        return inlineTextNode(curr, PREV);
-      }
-      if (!nodeIsInline(curr)) return null;
-    }
-    if (!(curr instanceof Text)) {
-      return inlineTextNode(curr, PREV);
-    }
-    return curr;
   }
-
-  function prevInlineTextNode(curr: Node) {
-    return inlineTextNode(curr, true);
+  if (!(curr instanceof Text)) {
+    return inlineTextNode(curr, PREV);
   }
+  return curr;
+}
 
-  function nextInlineTextNode(curr: Node) {
-    return inlineTextNode(curr, false);
-  }
+function prevInlineTextNode(curr: Node) {
+  return inlineTextNode(curr, true);
+}
 
-  /** Extract initial part of the sentence in nodes before `node`. */
-  function sentenceBeforeNode(t: Text): string {
-    let sentence = "";
-    let node: Text | null = t;
-    while (true) {
-      node = prevInlineTextNode(node);
-      if (node === null) {
+function nextInlineTextNode(curr: Node) {
+  return inlineTextNode(curr, false);
+}
+
+/** Extract initial part of the sentence in nodes before `node`. */
+function sentenceBeforeNode(t: Text): string {
+  let sentence = "";
+  let node: Text | null = t;
+  while (true) {
+    node = prevInlineTextNode(node);
+    if (node === null) {
+      return sentence;
+    }
+    const text = node.data;
+    for (let i = text.length - 1; i >= 0; i--) {
+      if (isSentenceEndChar(text[i])) {
         return sentence;
-      }
-      const text = node.data;
-      for (let i = text.length - 1; i >= 0; i--) {
-        if (isSentenceEndChar(text[i])) {
-          return sentence;
-        } else {
-          sentence = text[i] + sentence;
-        }
+      } else {
+        sentence = text[i] + sentence;
       }
     }
   }
+}
 
-  function sentenceAfterNode(t: Text): string {
-    let sentence = "";
-    let node: Text | null = t;
-    while (true) {
-      node = nextInlineTextNode(node);
-      if (node === null) {
+function sentenceAfterNode(t: Text): string {
+  let sentence = "";
+  let node: Text | null = t;
+  while (true) {
+    node = nextInlineTextNode(node);
+    if (node === null) {
+      return sentence;
+    }
+    const text = node.data;
+    for (let i = 0; i < text.length; i++) {
+      if (isSentenceEndChar(text[i])) {
+        sentence = sentence + text[i];
         return sentence;
-      }
-      const text = node.data;
-      for (let i = 0; i < text.length; i++) {
-        if (isSentenceEndChar(text[i])) {
-          sentence = sentence + text[i];
-          return sentence;
-        } else {
-          sentence = sentence + text[i];
-        }
+      } else {
+        sentence = sentence + text[i];
       }
     }
   }
+}
 
-  /** Find child `Text` node at (x, y) if it exists. */
-  function childTextAt(parent: Element, x: number, y: number): Text | null {
-    parent.normalize(); // normalize splitted Text nodes
-    for (const child of parent.childNodes) {
-      if (!(child instanceof Text)) {
-        continue;
-      }
-      const range = new Range();
-      range.selectNodeContents(child);
-      if (Utils.containsPoint(range, x, y)) {
-        return child;
-      }
+/** Find child `Text` node at (x, y) if it exists. */
+function childTextAt(parent: Element, x: number, y: number): Text | null {
+  parent.normalize(); // normalize splitted Text nodes
+  for (const child of parent.childNodes) {
+    if (!(child instanceof Text)) {
+      continue;
     }
-    return null;
-  }
-
-  function isSentenceEndChar(char: string): boolean {
-    return "。？！｡.?!".includes(char);
-  }
-
-  function nodeIsInline(node: Node): boolean {
-    if (!(node instanceof Element)) return true;
-    const styles = window.getComputedStyle(node);
-    return (
-      ["inline", "ruby", "ruby-base"].includes(styles.display) &&
-      (styles.position === "static" || styles.position === "relative")
-    );
-  }
-
-  /**
-   * Return true if node is removed from normal flow of document. (or is sticky)
-   * It is not possible for a node to be both isInline and isOutOfFlow
-   */
-  export function nodeIsOutOfFlow(node: Node): boolean {
-    if (!(node instanceof Element)) return false;
-    const styles = window.getComputedStyle(node);
-    return (
-      styles.display === "none" ||
-      styles.display === "ruby-text" ||
-      !(styles.position === "static" || styles.position === "relative") ||
-      node.tagName === "RT"
-    );
-  }
-
-  /** Returns true if node is flex or grid in which its child is assumed not inline */
-  function nodeChildIsNotInline(node: Node): boolean {
-    if (!(node instanceof Element)) return false;
-    const styles = window.getComputedStyle(node);
-    // support multi keyword display
-    for (const value of styles.display.split(" ")) {
-      if (["flex", "grid", "inline-flex", "inline-grid"].includes(value)) {
-        return true;
-      }
+    const range = new Range();
+    range.selectNodeContents(child);
+    if (Utils.containsPoint(range, x, y)) {
+      return child;
     }
-    return false;
   }
+  return null;
+}
+
+function isSentenceEndChar(char: string): boolean {
+  return "。？！｡.?!".includes(char);
+}
+
+function nodeIsInline(node: Node): boolean {
+  if (!(node instanceof Element)) return true;
+  const styles = window.getComputedStyle(node);
+  return (
+    ["inline", "ruby", "ruby-base"].includes(styles.display) &&
+    (styles.position === "static" || styles.position === "relative")
+  );
+}
+
+/**
+ * Return true if node is removed from normal flow of document. (or is sticky)
+ * It is not possible for a node to be both isInline and isOutOfFlow
+ */
+function nodeIsOutOfFlow(node: Node): boolean {
+  if (!(node instanceof Element)) return false;
+  const styles = window.getComputedStyle(node);
+  return (
+    styles.display === "none" ||
+    styles.display === "ruby-text" ||
+    !(styles.position === "static" || styles.position === "relative") ||
+    node.tagName === "RT"
+  );
+}
+
+/** Returns true if node is flex or grid in which its child is assumed not inline */
+function nodeChildIsNotInline(node: Node): boolean {
+  if (!(node instanceof Element)) return false;
+  const styles = window.getComputedStyle(node);
+  // support multi keyword display
+  for (const value of styles.display.split(" ")) {
+    if (["flex", "grid", "inline-flex", "inline-grid"].includes(value)) {
+      return true;
+    }
+  }
+  return false;
 }
