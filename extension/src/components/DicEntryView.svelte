@@ -109,7 +109,7 @@
     font-size: 1.5em;
   }
   .badges {
-    margin: 0 6px;
+    margin: 0 6px 4px 6px;
     display: flex;
     gap: 4px;
   }

@@ -23,6 +23,10 @@
 </div>
 
 <style>
+  .grouped-sense:first-child {
+    margin-top: 0px;
+  }
+
   .grouped-sense {
     margin-top: 4px;
   }
