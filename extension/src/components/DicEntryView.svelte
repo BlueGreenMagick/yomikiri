@@ -43,16 +43,22 @@
   $: isCommon = Entry.isCommon(entry);
 </script>
 
-<div class="entryView" class:anki={Config.get("anki.enabled")}>
+<div class="entryView">
   <div class="header">
-    <div class="icon" on:click={() => addNote()}>{@html IconAddCircle}</div>
-    <div>
+    <div class="term">
       <span class="g-japanese-font mainForm">{@html mainFormRuby}</span>
     </div>
+    <div class="icons">
+      {#if Config.get("anki.enabled")}
+        <div class="icon" on:click={() => addNote()}>{@html IconAddCircle}</div>
+      {/if}
+    </div>
   </div>
-  {#if isCommon}
-    <div class="badge">common</div>
-  {/if}
+  <div class="badges">
+    {#if isCommon}
+      <div class="badge">common</div>
+    {/if}
+  </div>
   <div class="groups">
     {#each groups as group}
       <GroupedSenseView
@@ -69,46 +75,50 @@
   .entryView {
     overflow: hidden;
   }
-  .entryView:not(.anki) {
-    margin-left: 3px;
-  }
 
   .header {
-    margin: 10px 64px 0 4px;
+    margin: 4px;
     display: flex;
-    align-items: center;
-    gap: 3px;
   }
-  .entryView:not(.anki) .icon {
-    display: none;
+  .term {
+    flex: 1 1 auto;
+    margin: 4px 12px 2px 4px;
+  }
+  .icons {
+    flex: 0 0 auto;
+
+    display: flex;
   }
   .icon {
-    width: 15px;
-    height: 15px;
-    opacity: 0.2;
-    fill: green;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    fill: #777777;
   }
   .icon:hover {
-    opacity: 0.6;
+    fill: black;
     cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.07);
+    border-radius: 3px;
   }
   .mainForm {
     font-size: 1.5em;
+  }
+  .badges {
+    margin: 2px 8px;
+    display: flex;
+    gap: 4px;
   }
   .badge {
     width: max-content;
     font-size: 0.6em;
     color: #8db38d;
-
-    margin-top: 1px;
     padding: 1px 4px;
     border: 1px solid #8db38d;
     border-radius: 3px;
   }
-  .entryView.anki .badge {
-    margin-left: 8px;
-  }
+
   .groups {
-    margin-bottom: 4px;
+    margin-bottom: 8px;
   }
 </style>

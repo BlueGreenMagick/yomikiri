@@ -1,23 +1,11 @@
 <script lang="ts">
-  import { Sense, type GroupedSense } from "~/dicEntry";
-  import IconAddCircle from "@icons/add-circle.svg";
-  import { createEventDispatcher } from "svelte";
-  import type { MarkerData } from "~/ankiNoteBuilder";
+  import { type GroupedSense } from "~/dicEntry";
   import Config from "~/config";
-
-  interface Events {
-    addNote: Sense;
-  }
 
   export let group: GroupedSense;
 
   let posText: string;
 
-  const dispatch = createEventDispatcher<Events>();
-
-  function addAnkiNote(sense: Sense) {
-    dispatch("addNote", sense);
-  }
   $: posText = group.pos.join(", ");
 </script>
 
@@ -28,10 +16,7 @@
   <div>
     {#each group.senses as sense, idx}
       <div class="meaning" tabindex="-1">
-        <div class="anki-add" on:click={() => addAnkiNote(sense)}>
-          {@html IconAddCircle}
-        </div>
-        <div class="meaning-text">{idx + 1}. {sense.meaning.join(", ")}</div>
+        {idx + 1}. {sense.meaning.join(", ")}
       </div>
     {/each}
   </div>
@@ -50,42 +35,22 @@
   }
 
   .meaning {
-    display: flex;
-    gap: 2px;
     font-size: 1em;
     align-items: center;
-    padding: 0 2px;
+    padding: 0 8px;
+  }
+
+  .grouped-sense.anki .meaning:focus {
+    border-left: 2px solid #ff6086;
+    padding: 0 6px;
+    background-color: rgba(0, 0, 0, 0.07);
   }
 
   .grouped-sense.anki .meaning:hover {
-    background-color: rgb(236, 236, 236);
+    background-color: rgba(0, 0, 0, 0.04);
   }
 
   .meaning:focus-visible {
     outline: none;
-  }
-  .grouped-sense:not(.anki) .anki-add {
-    display: none;
-  }
-  .anki-add {
-    flex: 0 0 12px;
-    height: 12px;
-    fill: green;
-    visibility: hidden;
-  }
-
-  .meaning:hover .anki-add {
-    visibility: visible;
-    opacity: 0.3;
-  }
-
-  .anki-add:hover {
-    visibility: visible;
-    opacity: 0.6 !important;
-    cursor: pointer;
-  }
-
-  .meaning-text {
-    flex: 1 1 auto;
   }
 </style>

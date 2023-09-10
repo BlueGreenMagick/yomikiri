@@ -188,10 +188,6 @@ border: 0;
       target: doc.body,
       props: {},
     });
-    _tooltipSvelte.$on("close", (ev: CustomEvent<MouseEvent>) => {
-      hide();
-      Highlighter.unhighlight();
-    });
     _tooltipSvelte.$on("addNote", async (ev: CustomEvent<AddNoteForEntry>) => {
       const request = ev.detail;
       const markerData: MarkerData = {
