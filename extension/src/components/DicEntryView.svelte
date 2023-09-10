@@ -12,7 +12,7 @@
 <script lang="ts">
   import { Entry, Sense, type GroupedSense } from "~/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
-  import IconAddCircle from "@icons/add-circle.svg";
+  import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import { createEventDispatcher } from "svelte";
   import { RubyString } from "~/japanese";
   import Config from "~/config";
@@ -27,12 +27,22 @@
   let groups: GroupedSense[];
   let isCommon: boolean;
   let hasBadges: boolean;
+  let selectedSense: Sense | null = null;
 
-  function addNote(sense?: Sense) {
+  function addNote() {
+    const sense = selectedSense ?? undefined;
     dispatch("addNote", {
       entry,
       sense,
     });
+  }
+
+  function onSelectSense(ev: CustomEvent<Sense>) {
+    selectedSense = ev.detail;
+  }
+
+  function onUnselectSense() {
+    selectedSense = null;
   }
 
   $: mainForm = Entry.mainForm(entry);
@@ -52,7 +62,14 @@
     </div>
     <div class="icons">
       {#if Config.get("anki.enabled")}
-        <div class="icon" on:click={() => addNote()}>{@html IconAddCircle}</div>
+        <div
+          class="icon"
+          class:highlight={selectedSense !== null}
+          on:click={addNote}
+          on:mousedown|preventDefault={() => {}}
+        >
+          {@html IconAddCircleOutline}
+        </div>
       {/if}
     </div>
   </div>
@@ -67,9 +84,8 @@
     {#each groups as group}
       <GroupedSenseView
         {group}
-        on:addNote={(ev) => {
-          addNote(ev.detail);
-        }}
+        on:selectSense={onSelectSense}
+        on:unselectSense={onUnselectSense}
       />
     {/each}
   </div>
@@ -97,13 +113,19 @@
     width: 24px;
     height: 24px;
     padding: 4px;
+    color: #777777;
     fill: #777777;
   }
   .icon:hover {
+    color: black;
     fill: black;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.07);
     border-radius: 3px;
+  }
+  .icon.highlight {
+    color: #ff6080;
+    fill: #ff6080;
   }
   .mainForm {
     font-size: 1.5em;

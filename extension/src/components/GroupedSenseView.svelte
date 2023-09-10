@@ -1,10 +1,26 @@
 <script lang="ts">
-  import { type GroupedSense } from "~/dicEntry";
+  import { Sense, type GroupedSense } from "~/dicEntry";
   import Config from "~/config";
+  import { createEventDispatcher } from "svelte";
+
+  interface Events {
+    selectSense: Sense;
+    unselectSense: void;
+  }
 
   export let group: GroupedSense;
 
+  const dispatch = createEventDispatcher<Events>();
+
   let posText: string;
+
+  function onFocusIn(sense: Sense) {
+    dispatch("selectSense", sense);
+  }
+
+  function onFocusOut() {
+    dispatch("unselectSense");
+  }
 
   $: posText = group.pos.join(", ");
 </script>
@@ -13,9 +29,9 @@
   <div class="part-of-speech">
     {posText}
   </div>
-  <div>
+  <div on:focusout={onFocusOut}>
     {#each group.senses as sense, idx}
-      <div class="meaning" tabindex="-1">
+      <div class="meaning" tabindex="-1" on:focusin={() => onFocusIn(sense)}>
         {idx + 1}. {sense.meaning.join(", ")}
       </div>
     {/each}
