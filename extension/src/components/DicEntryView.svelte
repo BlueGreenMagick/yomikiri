@@ -26,6 +26,7 @@
   let mainFormRuby: string;
   let groups: GroupedSense[];
   let isCommon: boolean;
+  let hasBadges: boolean;
 
   function addNote(sense?: Sense) {
     dispatch("addNote", {
@@ -41,6 +42,7 @@
   );
   $: groups = Entry.groupSenses(entry);
   $: isCommon = Entry.isCommon(entry);
+  $: hasBadges = isCommon;
 </script>
 
 <div class="entryView">
@@ -54,11 +56,13 @@
       {/if}
     </div>
   </div>
-  <div class="badges">
-    {#if isCommon}
-      <div class="badge">common</div>
-    {/if}
-  </div>
+  {#if hasBadges}
+    <div class="badges">
+      {#if isCommon}
+        <div class="badge">common</div>
+      {/if}
+    </div>
+  {/if}
   <div class="groups">
     {#each groups as group}
       <GroupedSenseView
@@ -77,12 +81,12 @@
   }
 
   .header {
-    margin: 4px;
+    margin: 4px 4px 0 4px;
     display: flex;
   }
   .term {
     flex: 1 1 auto;
-    margin: 4px 12px 2px 4px;
+    margin: 4px 12px 0px 4px;
   }
   .icons {
     flex: 0 0 auto;
@@ -105,7 +109,7 @@
     font-size: 1.5em;
   }
   .badges {
-    margin: 2px 8px;
+    margin: 0 6px;
     display: flex;
     gap: 4px;
   }
