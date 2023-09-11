@@ -1,7 +1,7 @@
 import "normalize.css";
 import "./dictionary.css";
 import "@platform";
-import Dictionary from "./Dictionary.svelte";
+import DictionaryPage from "./DictionaryPage.svelte";
 import { Theme } from "~/theme";
 import Config from "~/config";
 import Utils from "~/utils";
@@ -27,7 +27,7 @@ async function initialize() {
 
 const initialized = initialize();
 
-const svelte = new Dictionary({
+const page = new DictionaryPage({
   target: document.body,
   props: { initialized },
 });

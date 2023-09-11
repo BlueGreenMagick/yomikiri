@@ -7,7 +7,7 @@ import {
 import { Api } from "~/api";
 import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
-import TooltipSvelte from "./Tooltip.svelte";
+import TooltipSvelte from "./TooltipPage.svelte";
 import { Theme } from "~/theme";
 import type { TokenizeResult } from "~/backend";
 import type { AddNoteForEntry } from "~/components/DicEntryView.svelte";

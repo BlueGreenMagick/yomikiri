@@ -1,7 +1,7 @@
 import "normalize.css";
 import "./global.css";
 import { Platform } from "@platform";
-import Popup from "./Popup.svelte";
+import PopupPage from "./PopupPage.svelte";
 import { Theme } from "~/theme";
 import Config from "~/config";
 import Utils from "~/utils";
@@ -26,7 +26,7 @@ async function initialize() {
 
 let initialized = initialize();
 
-const svelte = new Popup({ target: document.body, props: { initialized } });
+const page = new PopupPage({ target: document.body, props: { initialized } });
 
 window.Api = Api;
 window.Utils = Utils;
