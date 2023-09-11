@@ -1,4 +1,7 @@
 <script lang="ts">
+  import "normalize.css";
+  import "../global.css";
+  import "./styles.css";
   import Tokenize from "~/components/Tokenize.svelte";
   import { platformClass } from "~/components/actions";
 

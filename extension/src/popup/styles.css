@@ -1,13 +1,3 @@
-*, ::before, ::after {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
 /** 
   in desktop, body height should change according to content height
   in ios, body should fill the entire popup height

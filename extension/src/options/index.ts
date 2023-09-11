@@ -1,5 +1,3 @@
-import "normalize.css";
-import "./global.css";
 import { Api } from "~/api";
 import OptionsPage from "./OptionsPage.svelte";
 import { Platform } from "@platform";

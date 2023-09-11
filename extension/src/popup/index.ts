@@ -1,5 +1,3 @@
-import "normalize.css";
-import "./global.css";
 import { Platform } from "@platform";
 import PopupPage from "./PopupPage.svelte";
 import { Theme } from "~/theme";
