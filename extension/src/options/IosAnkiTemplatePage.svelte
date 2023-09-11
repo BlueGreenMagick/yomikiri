@@ -1,6 +1,5 @@
 <script lang="ts">
-  import "normalize.css";
-  import "../globals.css";
+  import "../global.css";
   import "./styles.css";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";

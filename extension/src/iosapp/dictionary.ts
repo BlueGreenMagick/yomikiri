@@ -1,4 +1,3 @@
-import "normalize.css";
 import "./dictionary.css";
 import "@platform";
 import DictionaryPage from "./DictionaryPage.svelte";

@@ -1,4 +1,3 @@
-import "normalize.css";
 import "./global.css";
 import { Api } from "~/api";
 import { Platform } from "@platform";

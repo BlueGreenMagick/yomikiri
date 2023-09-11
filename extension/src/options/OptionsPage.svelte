@@ -1,6 +1,5 @@
 <script lang="ts">
-  import "normalize.css";
-  import "../globals.css";
+  import "../global.css";
   import "./styles.css";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
