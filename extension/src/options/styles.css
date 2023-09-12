@@ -1,16 +1,16 @@
 body {
-  background-color: #eeeeee;
+  background-color: var(--background-alt);
 }
 
 button {
   border: 1px solid black;
   outline: none;
   border-radius: 3px;
-  background-color: #eeeeee;
+  background-color: var(--background-alt);
 }
 
 button[disabled] {
-  border: 1px solid lightgray;
+  border: 1px solid var(--border);
 }
 
 button:not([disabled]):hover, button:not([disabled]):active {
@@ -23,8 +23,8 @@ input:focus-visible {
 }
 
 .warning {
-  color: red;
+  color: var(--text-warn);
 }
 .success {
-  color: green;
+  color: var(--text-success);
 }

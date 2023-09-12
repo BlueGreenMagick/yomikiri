@@ -45,14 +45,21 @@
     margin: 2px;
   }
   .token.selected:not(.invalid) a {
-    color: blue;
+    color: var(--accent);
   }
   .token a {
     text-decoration: none;
-    color: black;
+    color: var(--text);
+  }
+
+  .token.invalid a {
+    cursor: default;
   }
   .token:not(.invalid) a {
     cursor: pointer;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--text);
+  }
+  .token.selected:not(.invalid) a {
+    border-bottom: 1px solid var(--accent);
   }
 </style>

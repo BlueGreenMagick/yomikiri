@@ -48,7 +48,7 @@
   }
 
   .part-of-speech {
-    color: grey;
+    color: var(--text-light);
     font-size: 0.9em;
     margin-bottom: 2px;
     padding: 0 8px;
@@ -61,7 +61,7 @@
   }
 
   .grouped-sense.anki .meaning:focus {
-    border-left: 2px solid #ff6086;
+    border-left: 2px solid var(--accent);
     padding: 0 6px;
     background-color: rgba(0, 0, 0, 0.07);
   }

@@ -113,8 +113,8 @@
     width: 24px;
     height: 24px;
     padding: 4px;
-    color: #777777;
-    fill: #777777;
+    color: var(--button-light);
+    fill: var(--button-light);
   }
   .icon:hover {
     color: black;
@@ -124,8 +124,8 @@
     border-radius: 3px;
   }
   .icon.highlight {
-    color: #ff6080;
-    fill: #ff6080;
+    color: var(--accent);
+    fill: var(--accent);
   }
   .mainForm {
     font-size: 1.5em;

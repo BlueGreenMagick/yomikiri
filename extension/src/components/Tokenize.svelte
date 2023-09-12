@@ -102,7 +102,8 @@
   .header {
     display: flex;
     align-items: center;
-    margin: 6px 0 6px 6px;
+    padding: 6px 0 6px 6px;
+    background-color: var(--background-alt);
   }
 
   .searchbar {
@@ -112,8 +113,8 @@
     height: 100%;
     padding: 2px 4px;
     border-radius: 6px;
-    border: 1px solid grey;
-    background-color: #f6f6f6;
+    background-color: var(--input);
+    border: 1px solid black;
   }
   .searchbar:focus {
     outline: #0969da;
@@ -125,7 +126,7 @@
     padding: 0px;
     border: 0;
     outline: none;
-    background-color: #f6f6f6;
+    background-color: var(--input);
     font-size: 1em;
   }
 
@@ -185,7 +186,8 @@
     max-height: 120px;
     overflow-y: auto;
     padding: 6px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--background-alt);
   }
 
   .entries {
@@ -193,7 +195,7 @@
     overflow-y: auto;
   }
   .entries > :global(div) {
-    border-top: 1px solid lightgray;
+    border-top: 1px solid var(--border);
   }
   .entries > :global(div:first-child) {
     border-top: none;

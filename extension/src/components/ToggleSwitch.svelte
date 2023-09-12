@@ -30,7 +30,7 @@
     background-color: lightgray;
   }
   .toggle-switch.active {
-    background-color: blue;
+    background-color: var(--selected-blue);
   }
   .front {
     position: relative;

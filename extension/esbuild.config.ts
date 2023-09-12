@@ -119,7 +119,7 @@ const watchPlugin: Plugin = {
       if (!watching) {
         watching = true;
         return {
-          watchFiles: ["./src/global.css"],
+          watchFiles: ["./src/global.css", "./options/styles.css"],
         };
       }
     });

@@ -9,3 +9,17 @@ html, body {
   padding: 0;
   border: none;
 }
+
+:root {
+  --text: black;
+  --text-light: #808080;
+  --text-success: green;
+  --text-warn: red;
+  --accent: #ff6086;
+  --border: #c9c9c9;
+  --background: white;
+  --background-alt: #f6f6f6;
+  --input: white;
+  --selected-blue: #007aff;
+  --button-light: #999999;
+}
