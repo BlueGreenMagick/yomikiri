@@ -68,26 +68,42 @@ const platformAliasPlugin: Plugin = {
 const buildManifestPlugin: Plugin = {
   name: "buildManifestPlugin",
   setup(build) {
-    const raw = fs.readFileSync("./src/manifest.json.ejs", {
-      encoding: "utf-8",
-    });
-    const rendered = ejs.render(raw, {
-      chrome: FOR_CHROME,
-      firefox: FOR_FIREFOX,
-      safari_desktop: FOR_SAFARI_DESKTOP,
-      desktop: FOR_DESKTOP,
-      ios: FOR_IOS,
-      v2: FOR_FIREFOX || FOR_SAFARI_DESKTOP,
-    });
     const outdir = build.initialOptions.outdir;
     if (outdir === undefined) {
       throw new Error("outdir must be set to build manifest!");
     }
-    if (!fs.existsSync(outdir)) {
-      fs.mkdirSync(outdir, { recursive: true });
-    }
-    const outPath = path.join(outdir, "manifest.json");
-    fs.writeFileSync(outPath, rendered);
+
+    let watching = false;
+
+    build.onStart(async () => {
+      const raw = fs.readFileSync("./src/manifest.json.ejs", {
+        encoding: "utf-8",
+      });
+      const rendered = ejs.render(raw, {
+        chrome: FOR_CHROME,
+        firefox: FOR_FIREFOX,
+        safari_desktop: FOR_SAFARI_DESKTOP,
+        desktop: FOR_DESKTOP,
+        ios: FOR_IOS,
+        v2: FOR_FIREFOX || FOR_SAFARI_DESKTOP,
+      });
+
+      if (!fs.existsSync(outdir)) {
+        fs.mkdirSync(outdir, { recursive: true });
+      }
+      const outPath = path.join(outdir, "manifest.json");
+      fs.writeFileSync(outPath, rendered);
+      watching = false;
+    });
+
+    build.onResolve({ filter: /./ }, (args) => {
+      if (!watching) {
+        watching = true;
+        return {
+          watchFiles: ["./src/manifest.json.ejs"],
+        };
+      }
+    });
   },
 };
 
