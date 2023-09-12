@@ -1,20 +1,21 @@
 <script lang="ts">
-  import "../global.css";
-  import "./styles.css";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";
 
   export let initialized: Promise<void>;
 </script>
 
-<div class="ios-anki-template" use:platformClass>
+<div id="main" use:platformClass>
   {#await initialized then}
     <LoadAnkiTemplate />
   {/await}
 </div>
 
-<style>
-  .ios-anki-template {
+<style global>
+  @import "../global.css";
+  @import "./styles.css";
+
+  #main {
     padding: 16px;
     overflow-x: hidden;
   }

@@ -1,20 +1,29 @@
 <script lang="ts">
-  import "../global.css";
-  import "./styles.css";
   import Tokenize from "~/components/Tokenize.svelte";
   import { platformClass } from "~/components/actions";
 
   export let initialized: Promise<void>;
 </script>
 
-<div class="container" use:platformClass>
+<div id="main" use:platformClass>
   {#await initialized then}
     <Tokenize />
   {/await}
 </div>
 
-<style>
-  .container {
+<style global>
+  @import "../global.css";
+
+  /** 
+  in desktop, body height should change according to content height
+  in ios, body should fill the entire popup height
+  */
+  html.ios,
+  html.ios body {
+    height: 100%;
+  }
+
+  #main {
     height: 100%;
     min-height: 200px;
     min-width: 300px;

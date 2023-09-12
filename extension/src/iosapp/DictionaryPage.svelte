@@ -5,14 +5,21 @@
   export let initialized: Promise<void>;
 </script>
 
-<div class="container" use:platformClass>
+<div id="main" use:platformClass>
   {#await initialized then}
     <Tokenize />
   {/await}
 </div>
 
-<style>
-  .container {
+<style global>
+  @import "../global.css";
+
+  html,
+  html body {
+    height: 100%;
+  }
+
+  #main {
     height: 100%;
     min-height: 200px;
     min-width: 300px;

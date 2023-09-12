@@ -1,4 +1,3 @@
-import "./dictionary.css";
 import "@platform";
 import DictionaryPage from "./DictionaryPage.svelte";
 import { Theme } from "~/theme";

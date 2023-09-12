@@ -5,6 +5,7 @@ import { copy } from "esbuild-plugin-copy";
 import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
+import postCssImport from "postcss-import";
 
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
@@ -91,12 +92,17 @@ const buildManifestPlugin: Plugin = {
 };
 
 const svelteConfiguredPlugin: Plugin = sveltePlugin({
-  preprocess: sveltePreprocess(),
+  preprocess: sveltePreprocess({
+    postcss: {
+      plugins: [postCssImport()],
+    },
+  }),
   compilerOptions: { css: true },
   filterWarnings: (warning) => {
     const ignore = [
       "a11y-no-noninteractive-tabindex",
       "a11y-click-events-have-key-events",
+      "css-unused-selector",
     ];
     return !ignore.includes(warning.code);
   },

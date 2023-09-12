@@ -170,16 +170,6 @@ export namespace Tooltip {
     const doc = tooltip.contentDocument as Document;
     doc.head.innerHTML += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-html, body {
-margin: 0;
-padding: 0;
-border: 0;
-}
-* {
-  box-sizing: border-box;
-}
-</style>
 `;
     Theme.insertStyleElement(doc);
     doc.documentElement.classList.add("yomikiri");

@@ -1,8 +1,0 @@
-/** 
-  in desktop, body height should change according to content height
-  in ios, body should fill the entire popup height
-*/
-html.ios, 
-html.ios body {
-  height: 100%;
-}
