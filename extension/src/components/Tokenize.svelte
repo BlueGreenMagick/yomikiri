@@ -9,6 +9,7 @@
   import TokensView from "./TokensView.svelte";
   import DicEntryView from "~/components/DicEntryView.svelte";
   import { Backend } from "~/backend";
+  import DicEntriesView from "./DicEntriesView.svelte";
 
   let searchText: string = "";
   let searchTokens: Token[] = [];
@@ -75,9 +76,7 @@
     <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
   </div>
   <div class="entries">
-    {#each entries as entry}
-      <DicEntryView {entry} />
-    {/each}
+    <DicEntriesView {entries} />
   </div>
 </div>
 

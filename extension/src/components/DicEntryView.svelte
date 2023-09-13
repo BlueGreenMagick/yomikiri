@@ -17,8 +17,10 @@
   import { RubyString } from "~/japanese";
   import Config from "~/config";
   import Badges from "./Badges.svelte";
+  import type { DicEntriesModel } from "./dicEntriesModel";
 
   export let entry: Entry;
+  export let model: DicEntriesModel;
 
   const dispatch = createEventDispatcher<Events>();
 
@@ -26,12 +28,11 @@
   let readingForForm: string;
   let mainFormRuby: string;
   let groups: GroupedSense[];
-  let isCommon: boolean;
-  let hasBadges: boolean;
-  let selectedSense: Sense | null = null;
+
+  const selectedSense = model.selectedSense;
 
   function addNote() {
-    const sense = selectedSense ?? undefined;
+    const sense = $selectedSense?.sense ?? undefined;
     dispatch("addNote", {
       entry,
       sense,
@@ -39,11 +40,13 @@
   }
 
   function onSelectSense(ev: CustomEvent<Sense>) {
-    selectedSense = ev.detail;
+    const sense = ev.detail;
+    console.log("selected sense");
+    model.selectSense(entry, sense);
   }
 
-  function onUnselectSense() {
-    selectedSense = null;
+  function onMouseDown(ev: MouseEvent) {
+    model.unselectSense();
   }
 
   $: mainForm = Entry.mainForm(entry);
@@ -54,7 +57,7 @@
   $: groups = Entry.groupSenses(entry);
 </script>
 
-<div class="entryView">
+<div class="entryView" on:mousedown={onMouseDown}>
   <div class="header">
     <div class="term">
       <span class="g-japanese-font mainForm">{@html mainFormRuby}</span>
@@ -63,9 +66,9 @@
       {#if Config.get("anki.enabled")}
         <div
           class="icon"
-          class:highlight={selectedSense !== null}
+          class:highlight={$selectedSense?.entry === entry}
           on:click={addNote}
-          on:mousedown|preventDefault={() => {}}
+          on:mousedown|preventDefault|stopPropagation={() => {}}
         >
           {@html IconAddCircleOutline}
         </div>
@@ -75,11 +78,7 @@
   <Badges {entry} />
   <div class="groups">
     {#each groups as group}
-      <GroupedSenseView
-        {group}
-        on:selectSense={onSelectSense}
-        on:unselectSense={onUnselectSense}
-      />
+      <GroupedSenseView {group} {model} on:selectSense={onSelectSense} />
     {/each}
   </div>
 </div>

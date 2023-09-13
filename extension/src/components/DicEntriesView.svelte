@@ -1,17 +1,21 @@
 <script lang="ts">
   import type { Entry } from "~/dicEntry";
   import DicEntryView from "./DicEntryView.svelte";
+  import { DicEntriesModel } from "./dicEntriesModel";
 
   export let entries: Entry[] = [];
+  let model: DicEntriesModel = new DicEntriesModel();
 
-  export function setEntries(e: Entry[]) {
-    entries = e;
+  function onEntriesChange(e: Entry[]) {
+    model.reset();
   }
+
+  $: onEntriesChange(entries);
 </script>
 
 <div id="yomikiri-entries">
   {#each entries as entry}
-    <DicEntryView {entry} on:addNote />
+    <DicEntryView {entry} {model} on:addNote />
   {/each}
 </div>
 

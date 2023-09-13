@@ -2,24 +2,23 @@
   import { Sense, type GroupedSense } from "~/dicEntry";
   import Config from "~/config";
   import { createEventDispatcher } from "svelte";
+  import type { DicEntriesModel } from "./dicEntriesModel";
 
   interface Events {
     selectSense: Sense;
-    unselectSense: void;
   }
 
+  export let model: DicEntriesModel;
   export let group: GroupedSense;
+
+  const selectedSense = model.selectedSense;
 
   const dispatch = createEventDispatcher<Events>();
 
   let posText: string;
 
-  function onFocusIn(sense: Sense) {
+  function onSelectSense(sense: Sense) {
     dispatch("selectSense", sense);
-  }
-
-  function onFocusOut() {
-    dispatch("unselectSense");
   }
 
   $: posText = group.pos.join(", ");
@@ -29,9 +28,13 @@
   <div class="part-of-speech">
     {posText}
   </div>
-  <div on:focusout={onFocusOut}>
+  <div>
     {#each group.senses as sense, idx}
-      <div class="meaning" tabindex="-1" on:focusin={() => onFocusIn(sense)}>
+      <div
+        class="meaning"
+        class:selected={$selectedSense?.sense === sense}
+        on:mousedown|stopPropagation={() => onSelectSense(sense)}
+      >
         {idx + 1}. {sense.meaning.join(", ")}
       </div>
     {/each}
@@ -60,13 +63,13 @@
     padding: 0 8px;
   }
 
-  .grouped-sense.anki .meaning:focus {
+  .grouped-sense.anki .meaning.selected {
     border-left: 2px solid var(--accent);
     padding: 0 6px;
     background-color: rgba(0, 0, 0, 0.07);
   }
 
-  .grouped-sense.anki .meaning:hover {
+  .grouped-sense.anki .meaning:not(.selected):hover {
     background-color: rgba(0, 0, 0, 0.04);
   }
 
