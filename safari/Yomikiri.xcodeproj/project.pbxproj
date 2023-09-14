@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		69439D332AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */; };
+		69439D342AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */; };
+		69439D362AB2C0E800691B3E /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
+		69439D372AB2C11400691B3E /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
+		69439D622AB2E9AA00691B3E /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
+		69439D632AB2E9AA00691B3E /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		69439D652AB2EC9300691B3E /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
+		695D33122AB1F211003F9C80 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 695D33112AB1F211003F9C80 /* UniformTypeIdentifiers.framework */; };
+		695D33152AB1F211003F9C80 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 695D33142AB1F211003F9C80 /* Media.xcassets */; };
+		695D33172AB1F211003F9C80 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695D33162AB1F211003F9C80 /* ActionViewController.swift */; };
+		695D331A2AB1F211003F9C80 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 695D33182AB1F211003F9C80 /* MainInterface.storyboard */; };
+		695D331E2AB1F211003F9C80 /* Yomikiri Action.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 695D33102AB1F211003F9C80 /* Yomikiri Action.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */; };
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
 		699B7D782A519B2C00E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
@@ -43,6 +55,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		695D331C2AB1F211003F9C80 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69F2C23729FA4FA70088F503 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 695D330F2AB1F211003F9C80;
+			remoteInfo = "Yomikiri Action";
+		};
 		699B7D742A519ADE00E506F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 699B7D702A519ADE00E506F2 /* YomikiriTokenizer.xcodeproj */;
@@ -67,6 +86,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		69439D642AB2E9AB00691B3E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				69439D632AB2E9AA00691B3E /* YomikiriTokenizer.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		699B7D7A2A519B2C00E506F2 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -95,6 +125,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				695D331E2AB1F211003F9C80 /* Yomikiri Action.appex in Embed Foundation Extensions */,
 				69F2C27229FA4FA80088F503 /* Yomikiri Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -114,8 +145,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIYomikiriWebView.swift; sourceTree = "<group>"; };
 		69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri (iOS).entitlements"; sourceTree = "<group>"; };
 		69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri Extension (iOS).entitlements"; sourceTree = "<group>"; };
+		695D33102AB1F211003F9C80 /* Yomikiri Action.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Yomikiri Action.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		695D33112AB1F211003F9C80 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
+		695D33142AB1F211003F9C80 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		695D33162AB1F211003F9C80 /* ActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionViewController.swift; sourceTree = "<group>"; };
+		695D33192AB1F211003F9C80 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		695D331B2AB1F211003F9C80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSWebExtensionHandler.swift; sourceTree = "<group>"; };
 		6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacWebExtensionHandler.swift; sourceTree = "<group>"; };
 		699B7D702A519ADE00E506F2 /* YomikiriTokenizer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YomikiriTokenizer.xcodeproj; path = YomikiriTokenizer/YomikiriTokenizer.xcodeproj; sourceTree = "<group>"; };
@@ -158,6 +196,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		695D330D2AB1F211003F9C80 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				695D33122AB1F211003F9C80 /* UniformTypeIdentifiers.framework in Frameworks */,
+				69439D622AB2E9AA00691B3E /* YomikiriTokenizer.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		69F2C25029FA4FA80088F503 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -186,8 +233,20 @@
 		6909CA782A22411D0052FEF4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				695D33112AB1F211003F9C80 /* UniformTypeIdentifiers.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		695D33132AB1F211003F9C80 /* Yomikiri Action */ = {
+			isa = PBXGroup;
+			children = (
+				695D33142AB1F211003F9C80 /* Media.xcassets */,
+				695D33162AB1F211003F9C80 /* ActionViewController.swift */,
+				695D33182AB1F211003F9C80 /* MainInterface.storyboard */,
+				695D331B2AB1F211003F9C80 /* Info.plist */,
+			);
+			path = "Yomikiri Action";
 			sourceTree = "<group>";
 		};
 		699B7D712A519ADE00E506F2 /* Products */ = {
@@ -249,6 +308,7 @@
 				69F2C27529FA4FA80088F503 /* iOS (Extension) */,
 				69F2C27F29FA4FA80088F503 /* macOS (Extension) */,
 				699B7D8A2A519C6100E506F2 /* scripts */,
+				695D33132AB1F211003F9C80 /* Yomikiri Action */,
 				69F2C25429FA4FA80088F503 /* Products */,
 				6909CA782A22411D0052FEF4 /* Frameworks */,
 			);
@@ -289,6 +349,7 @@
 				69F2C26529FA4FA80088F503 /* Yomikiri.app */,
 				69F2C27129FA4FA80088F503 /* Yomikiri Extension.appex */,
 				69F2C27B29FA4FA80088F503 /* Yomikiri Extension.appex */,
+				695D33102AB1F211003F9C80 /* Yomikiri Action.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -303,6 +364,7 @@
 				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
 				69D839962A98D76F00618380 /* MainView.swift */,
 				69D839982A98D90900618380 /* DictionaryView.swift */,
+				69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */,
 			);
 			path = "iOS (App)";
 			sourceTree = "<group>";
@@ -339,6 +401,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		695D330F2AB1F211003F9C80 /* Yomikiri Action */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 695D33222AB1F211003F9C80 /* Build configuration list for PBXNativeTarget "Yomikiri Action" */;
+			buildPhases = (
+				695D330C2AB1F211003F9C80 /* Sources */,
+				695D330D2AB1F211003F9C80 /* Frameworks */,
+				695D330E2AB1F211003F9C80 /* Resources */,
+				69439D642AB2E9AB00691B3E /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Yomikiri Action";
+			productName = "Yomikiri Action";
+			productReference = 695D33102AB1F211003F9C80 /* Yomikiri Action.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		69F2C25229FA4FA80088F503 /* Yomikiri (iOS) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 69F2C2A629FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri (iOS)" */;
@@ -353,6 +433,7 @@
 			);
 			dependencies = (
 				69F2C27429FA4FA80088F503 /* PBXTargetDependency */,
+				695D331D2AB1F211003F9C80 /* PBXTargetDependency */,
 			);
 			name = "Yomikiri (iOS)";
 			productName = "Yomikiri (iOS)";
@@ -424,6 +505,9 @@
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					695D330F2AB1F211003F9C80 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
 					69F2C25229FA4FA80088F503 = {
 						CreatedOnToolsVersion = 14.3;
 					};
@@ -461,6 +545,7 @@
 				69F2C26429FA4FA80088F503 /* Yomikiri (macOS) */,
 				69F2C27029FA4FA80088F503 /* Yomikiri Extension (iOS) */,
 				69F2C27A29FA4FA80088F503 /* Yomikiri Extension (macOS) */,
+				695D330F2AB1F211003F9C80 /* Yomikiri Action */,
 			);
 		};
 /* End PBXProject section */
@@ -476,6 +561,16 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		695D330E2AB1F211003F9C80 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69439D652AB2EC9300691B3E /* res in Resources */,
+				695D33152AB1F211003F9C80 /* Media.xcassets in Resources */,
+				695D331A2AB1F211003F9C80 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		699B7DD32A52C33A00E506F2 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -542,6 +637,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		695D330C2AB1F211003F9C80 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69439D342AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */,
+				695D33172AB1F211003F9C80 /* ActionViewController.swift in Sources */,
+				69439D372AB2C11400691B3E /* SharedStorage.swift in Sources */,
+				69439D362AB2C0E800691B3E /* Globals.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		69F2C24F29FA4FA80088F503 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -554,6 +660,7 @@
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,
 				699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */,
 				699EF6722A540C0400ECA9D1 /* SharedStorage.swift in Sources */,
+				69439D332AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +693,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		695D331D2AB1F211003F9C80 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 695D330F2AB1F211003F9C80 /* Yomikiri Action */;
+			targetProxy = 695D331C2AB1F211003F9C80 /* PBXContainerItemProxy */;
+		};
 		69F2C27429FA4FA80088F503 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 69F2C27029FA4FA80088F503 /* Yomikiri Extension (iOS) */;
@@ -599,6 +711,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		695D33182AB1F211003F9C80 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				695D33192AB1F211003F9C80 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		69F2C23D29FA4FA80088F503 /* Main.html */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -618,6 +738,61 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		695D331F2AB1F211003F9C80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Yomikiri Action/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Yomikiri Action";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yoonchae.Yomikiri.Yomikiri-Action";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		695D33202AB1F211003F9C80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KA5T86QNBS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Yomikiri Action/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Yomikiri Action";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.yoonchae.Yomikiri.Yomikiri-Action";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		69F2C2A029FA4FA80088F503 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1022,6 +1197,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		695D33222AB1F211003F9C80 /* Build configuration list for PBXNativeTarget "Yomikiri Action" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				695D331F2AB1F211003F9C80 /* Debug */,
+				695D33202AB1F211003F9C80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		69F2C23A29FA4FA70088F503 /* Build configuration list for PBXProject "Yomikiri" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

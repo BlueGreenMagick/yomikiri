@@ -95,6 +95,8 @@ extension OptionsView {
 
         private func handleMessage(key: String, request: Any) async throws -> Any?? {
             switch key {
+                case "ankiIsInstalled":
+                    return ankiIsInstalled()
                 case "ankiInfo":
                     return self.requestAnkiInfo()
                 default:

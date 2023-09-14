@@ -49,6 +49,7 @@ func jsonDeserialize<T: Decodable>(json: String) throws -> T {
     return try decoder.decode(T.self, from: json.data(using: .utf8)!)
 }
 
+@available(iOSApplicationExtension, unavailable)
 func ankiIsInstalled() -> Bool {
     let url = URL(string: "anki://x-callback-url/infoForAdding")!
     return UIApplication.shared.canOpenURL(url)
