@@ -12,15 +12,19 @@ declare global {
     Api: typeof Api;
     Utils: typeof Utils;
     Config: typeof Config;
+    show(sentence: string): void;
   }
 }
 
-async function initialize() {
+const [showPromise, showResolve] = Utils.createPromise<void>();
+
+async function initialize(): Promise<void> {
   Api.initialize({ context: "page" });
   Platform.initialize();
   await Config.initialize();
   await Backend.initialize();
   Theme.insertStyleElement(document);
+  await showPromise;
 }
 
 const initialized = initialize();
@@ -30,6 +34,12 @@ const page = new DictionaryPage({
   props: { initialized },
 });
 
+function show(sentence: string) {
+  page.setSentence(sentence);
+  showResolve();
+}
+
 window.Api = Api;
 window.Utils = Utils;
 window.Config = Config;
+window.show = show;

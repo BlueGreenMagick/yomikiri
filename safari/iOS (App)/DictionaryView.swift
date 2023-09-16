@@ -22,5 +22,14 @@ struct DictionaryView: View {
         static let URL = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
 
         var webViewModel: WebView.ViewModel = .init(url: URL, overscroll: false)
+
+        init() {
+            webViewModel.runOnLoadComplete { [weak webViewModel] in
+                guard let webview = webViewModel?.webview else {
+                    return
+                }
+                webview.evaluateJavaScript("show('')")
+            }
+        }
     }
 }

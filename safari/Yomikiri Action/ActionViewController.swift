@@ -22,27 +22,43 @@ class ActionViewController: UIViewController {
         super.viewDidLoad()
 
         // this gets the incoming information from the share sheet
-        if let item = extensionContext?.inputItems.first as? NSExtensionItem {
-            if let attachments = item.attachments {
-                for attachment: NSItemProvider in attachments {
-                    if attachment.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
-                        attachment.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil, completionHandler: { _, _ in
-                            weak var weakContainer = self.container
-                            weak var weakSelf = self
-                            OperationQueue.main.addOperation {
-                                if let strongContainer = weakContainer, let strongSelf = weakSelf {
-                                    let actionUrl = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
-                                    let options = UIYomikiriWebView.Options(overscroll: true, additionalMessageHandler: nil, url: actionUrl)
-                                    let webview = UIYomikiriWebView(options: options)
-                                    webview.frame = strongContainer.bounds
-                                    strongSelf.webview = webview
-                                    strongContainer.addSubview(webview)
-                                }
-                            }
-                        })
+        guard let item = extensionContext?.inputItems.first as? NSExtensionItem else {
+            return
+        }
+        guard let attachments = item.attachments else {
+            return
+        }
+
+        var searchText = ""
+
+        for attachment: NSItemProvider in attachments {
+            if attachment.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
+                attachment.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil, completionHandler: { item, _ in
+                    guard let item = item as? String else {
+                        return
                     }
-                }
+                    searchText += item
+                })
             }
+        }
+
+        OperationQueue.main.addOperation { [weak self] in
+            guard let self = self else {
+                return
+            }
+            let actionUrl = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
+            let options = UIYomikiriWebView.ViewModel.Options(overscroll: true, additionalMessageHandler: nil, url: actionUrl)
+            let webviewModel = UIYomikiriWebView.ViewModel(options: options)
+            let webview = UIYomikiriWebView(viewModel: webviewModel)
+            webview.frame = self.container.bounds
+            webviewModel.runOnLoadComplete { [weak webview] in
+                var escaped = searchText
+                    .replacingOccurrences(of: "\\", with: "\\\\")
+                    .replacingOccurrences(of: "'", with: "\\'")
+                webview?.evaluateJavaScript("show('\(escaped)')")
+            }
+            self.webview = webview
+            self.container.addSubview(webview)
         }
     }
 

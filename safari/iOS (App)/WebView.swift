@@ -16,21 +16,20 @@ struct WebView: UIViewRepresentable {
     typealias AdditionalMessageHandler = UIYomikiriWebView.AdditionalMessageHandler
     
     func makeUIView(context: Context) -> UIYomikiriWebView {
-        UIYomikiriWebView(options: viewModel.webviewOptions)
+        let webview = UIYomikiriWebView(viewModel: viewModel.webviewModel)
+        viewModel.webview = webview
+        return webview
     }
     
     func updateUIView(_ webview: UIYomikiriWebView, context: Context) {}
     
     class ViewModel: ObservableObject {
         var webview: UIYomikiriWebView?
+        let webviewModel: UIYomikiriWebView.ViewModel
         let url: URL
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         fileprivate let overscroll: Bool
         private var loadCompleteRunnableFunctions: [() -> Void] = []
-        
-        var webviewOptions: UIYomikiriWebView.Options {
-            return UIYomikiriWebView.Options(overscroll: overscroll, additionalMessageHandler: additionalMessageHandler, url: url)
-        }
         
         /**
          ### Optional arguments
@@ -40,14 +39,17 @@ struct WebView: UIViewRepresentable {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
             self.overscroll = overscroll
+            
+            let webviewOptions = UIYomikiriWebView.ViewModel.Options(overscroll: overscroll, additionalMessageHandler: additionalMessageHandler, url: url)
+            self.webviewModel = UIYomikiriWebView.ViewModel(options: webviewOptions)
         }
         
         func runOnLoadComplete(fn: @escaping () -> Void) {
-            webview?.runOnLoadComplete(fn: fn)
+            webviewModel.runOnLoadComplete(fn: fn)
         }
         
         func getLoadStatus() -> LoadStatus {
-            return webview!.loadStatus
+            return webviewModel.loadStatus
         }
     }
 }

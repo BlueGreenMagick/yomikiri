@@ -7,11 +7,10 @@
   import IconSettings from "@icons/settings.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
-  import DicEntryView from "~/components/DicEntryView.svelte";
   import { Backend } from "~/backend";
   import DicEntriesView from "./DicEntriesView.svelte";
 
-  let searchText: string = "";
+  export let searchText: string = "";
   let searchTokens: Token[] = [];
   // may be bigger than entries.length
   let selectedTokenIdx: number;
