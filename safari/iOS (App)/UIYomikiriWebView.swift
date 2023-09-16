@@ -14,62 +14,37 @@ class UIYomikiriWebView: WKWebView {
 
     typealias AdditionalMessageHandler = (String, Any) async throws -> Any??
 
-    public struct Options {
-        var overscroll: Bool
-        let additionalMessageHandler: AdditionalMessageHandler?
-        let url: URL
-    }
-
     public enum LoadStatus {
         case initial, loading, complete, failed
     }
 
-    private var loadCompleteRunnableFunctions: [() -> Void] = []
-    private(set) var loadStatus: LoadStatus {
-        didSet {
-            if self.loadStatus == .complete {
-                let functions = self.loadCompleteRunnableFunctions
-                self.loadCompleteRunnableFunctions = []
-                for function in functions {
-                    function()
-                }
-            }
-        }
-    }
-
-    private var delegate: Delegate? = nil
     private let messageHandler: MessageHandler
+    private let viewModel: ViewModel
+    private var delegate: Delegate!
 
-    public init(options: Options) {
-        self.loadStatus = .initial
-        self.messageHandler = MessageHandler(additionalMessageHandler: options.additionalMessageHandler)
-
+    public init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+        self.messageHandler = MessageHandler(additionalMessageHandler: viewModel.additionalMessageHandler)
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: .page, name: self.WEB_MESSAGE_HANDLER_NAME)
         super.init(frame: .zero, configuration: webConfiguration)
 
-        if !options.overscroll {
+        self.delegate = Delegate(self)
+        self.navigationDelegate = self.delegate
+
+        if !self.viewModel.overscroll {
             self.scrollView.bounces = false
             self.scrollView.alwaysBounceHorizontal = false
         }
-        self.delegate = Delegate(self)
-        self.navigationDelegate = self.delegate
-        let request = URLRequest(url: options.url)
+
+        let request = URLRequest(url: self.viewModel.url)
         self.load(request)
     }
 
     @available(*, unavailable)
     public required init?(coder decoder: NSCoder) {
         fatalError("Unsupported initialization of YomikiriWebView through coder")
-    }
-
-    public func runOnLoadComplete(fn: @escaping () -> Void) {
-        if self.loadStatus == .complete {
-            fn()
-        } else {
-            self.loadCompleteRunnableFunctions.append(fn)
-        }
     }
 
     class MessageHandler: NSObject, WKScriptMessageHandlerWithReply {
@@ -142,6 +117,46 @@ class UIYomikiriWebView: WKWebView {
         }
     }
 
+    public class ViewModel {
+        public struct Options {
+            var overscroll: Bool
+            let additionalMessageHandler: AdditionalMessageHandler?
+            let url: URL
+        }
+
+        fileprivate let overscroll: Bool
+        fileprivate let additionalMessageHandler: AdditionalMessageHandler?
+        fileprivate let url: URL
+        fileprivate var loadCompleteRunnableFunctions: [() -> Void] = []
+
+        fileprivate(set) var loadStatus: LoadStatus {
+            didSet {
+                if self.loadStatus == .complete {
+                    let functions = self.loadCompleteRunnableFunctions
+                    self.loadCompleteRunnableFunctions = []
+                    for function in functions {
+                        function()
+                    }
+                }
+            }
+        }
+
+        init(options: Options) {
+            self.overscroll = options.overscroll
+            self.additionalMessageHandler = options.additionalMessageHandler
+            self.url = options.url
+            self.loadStatus = .initial
+        }
+
+        public func runOnLoadComplete(fn: @escaping () -> Void) {
+            if self.loadStatus == .complete {
+                fn()
+            } else {
+                self.loadCompleteRunnableFunctions.append(fn)
+            }
+        }
+    }
+
     class Delegate: NSObject, WKNavigationDelegate {
         let parent: UIYomikiriWebView
 
@@ -149,16 +164,18 @@ class UIYomikiriWebView: WKWebView {
             self.parent = parent
         }
 
+        func webview(_ webview: WKWebView, didCommit navigation: WKNavigation!) {}
+
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            self.parent.loadStatus = .complete
+            self.parent.viewModel.loadStatus = .complete
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            self.parent.loadStatus = .failed
+            self.parent.viewModel.loadStatus = .failed
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            self.parent.loadStatus = .loading
+            self.parent.viewModel.loadStatus = .loading
         }
     }
 }
