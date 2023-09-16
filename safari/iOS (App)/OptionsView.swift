@@ -84,10 +84,7 @@ extension OptionsView {
                 }
                 webview.evaluateJavaScript(script)
             } else {
-                webViewModel.runOnLoadComplete(fn: {
-                    guard let webview = self.webViewModel.webview else {
-                        return
-                    }
+                webViewModel.runOnLoadComplete(fn: { (webview: UIYomikiriWebView) in
                     webview.evaluateJavaScript(script)
                 })
             }

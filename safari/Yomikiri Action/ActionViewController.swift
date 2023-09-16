@@ -51,11 +51,11 @@ class ActionViewController: UIViewController {
             let webviewModel = UIYomikiriWebView.ViewModel(options: options)
             let webview = UIYomikiriWebView(viewModel: webviewModel)
             webview.frame = self.container.bounds
-            webviewModel.runOnLoadComplete { [weak webview] in
+            webviewModel.runOnLoadComplete { wv in
                 var escaped = searchText
                     .replacingOccurrences(of: "\\", with: "\\\\")
                     .replacingOccurrences(of: "'", with: "\\'")
-                webview?.evaluateJavaScript("show('\(escaped)')")
+                wv.evaluateJavaScript("show('\(escaped)')")
             }
             self.webview = webview
             self.container.addSubview(webview)

@@ -129,7 +129,7 @@ class UIYomikiriWebView: WKWebView {
         fileprivate let overscroll: Bool
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         fileprivate let url: URL
-        fileprivate var loadCompleteRunnableFunctions: [() -> Void] = []
+        fileprivate var loadCompleteRunnableFunctions: [(UIYomikiriWebView) -> Void] = []
 
         fileprivate(set) var loadStatus: LoadStatus {
             didSet {
@@ -137,7 +137,7 @@ class UIYomikiriWebView: WKWebView {
                     let functions = self.loadCompleteRunnableFunctions
                     self.loadCompleteRunnableFunctions = []
                     for function in functions {
-                        function()
+                        function(self.webview!)
                     }
                 }
             }
@@ -150,9 +150,9 @@ class UIYomikiriWebView: WKWebView {
             self.loadStatus = .initial
         }
 
-        public func runOnLoadComplete(fn: @escaping () -> Void) {
+        public func runOnLoadComplete(fn: @escaping (_ webview: UIYomikiriWebView) -> Void) {
             if self.loadStatus == .complete {
-                fn()
+                fn(self.webview!)
             } else {
                 self.loadCompleteRunnableFunctions.append(fn)
             }

@@ -24,11 +24,8 @@ struct DictionaryView: View {
         var webViewModel: WebView.ViewModel = .init(url: URL, overscroll: false)
 
         init() {
-            webViewModel.runOnLoadComplete { [weak webViewModel] in
-                guard let webview = webViewModel?.webview else {
-                    return
-                }
-                webview.evaluateJavaScript("show('')")
+            webViewModel.runOnLoadComplete { wv in
+                wv.evaluateJavaScript("show('')")
             }
         }
     }

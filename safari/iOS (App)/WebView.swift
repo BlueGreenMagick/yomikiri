@@ -44,7 +44,7 @@ struct WebView: UIViewRepresentable {
             self.webviewModel = UIYomikiriWebView.ViewModel(options: webviewOptions)
         }
         
-        func runOnLoadComplete(fn: @escaping () -> Void) {
+        func runOnLoadComplete(fn: @escaping (_ webview: UIYomikiriWebView) -> Void) {
             webviewModel.runOnLoadComplete(fn: fn)
         }
         
