@@ -54,8 +54,8 @@ class ActionViewController: UIViewController {
             webviewModel.runOnLoadComplete { wv in
                 var escaped = searchText
                     .replacingOccurrences(of: "\\", with: "\\\\")
-                    .replacingOccurrences(of: "'", with: "\\'")
-                wv.evaluateJavaScript("show('\(escaped)')")
+                    .replacingOccurrences(of: "`", with: "\\'")
+                wv.evaluateJavaScript("show(`\(escaped)`)")
             }
             self.webview = webview
             self.container.addSubview(webview)
