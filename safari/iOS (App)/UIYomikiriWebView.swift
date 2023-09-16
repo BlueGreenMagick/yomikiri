@@ -29,9 +29,9 @@ class UIYomikiriWebView: WKWebView {
         webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: .page, name: self.WEB_MESSAGE_HANDLER_NAME)
         super.init(frame: .zero, configuration: webConfiguration)
-
         self.delegate = Delegate(self)
         self.navigationDelegate = self.delegate
+        self.viewModel.webview = self
 
         if !self.viewModel.overscroll {
             self.scrollView.bounces = false
@@ -123,6 +123,8 @@ class UIYomikiriWebView: WKWebView {
             let additionalMessageHandler: AdditionalMessageHandler?
             let url: URL
         }
+
+        public weak var webview: UIYomikiriWebView? = nil
 
         fileprivate let overscroll: Bool
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
