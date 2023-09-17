@@ -405,6 +405,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 695D33222AB1F211003F9C80 /* Build configuration list for PBXNativeTarget "Yomikiri Action" */;
 			buildPhases = (
+				690F8B982AB72EB5005A48CF /* Build Extension */,
 				695D330C2AB1F211003F9C80 /* Sources */,
 				695D330D2AB1F211003F9C80 /* Frameworks */,
 				695D330E2AB1F211003F9C80 /* Resources */,
@@ -616,6 +617,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		690F8B982AB72EB5005A48CF /* Build Extension */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Extension";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension.sh\n";
+		};
 		699B7DD12A52C2BA00E506F2 /* Build extension */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
