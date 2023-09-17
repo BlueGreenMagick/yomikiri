@@ -5,6 +5,7 @@
 //  Created by Yoonchae Lee on 2023/09/13.
 //
 import MobileCoreServices
+import os.log
 import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
@@ -17,7 +18,6 @@ class ActionViewController: UIViewController {
         super.viewDidAppear(animated)
     }
 
-    // in ShareViewController
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -29,37 +29,41 @@ class ActionViewController: UIViewController {
             return
         }
 
+        Task { @MainActor in
+            let searchText = await self.getSearchText(attachments: attachments)
+
+            let actionUrl = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
+            let pathComponents = [URLQueryItem(name: "context", value: "action"), URLQueryItem(name: "search", value: searchText)]
+            guard let url = actionUrl.withPathComponents(pathComponents) else {
+                os_log(.error, "Could not add path components to action url")
+                return
+            }
+            self.createWebView(url: url)
+        }
+    }
+
+    func getSearchText(attachments: [NSItemProvider]) async -> String {
         var searchText = ""
 
         for attachment: NSItemProvider in attachments {
             if attachment.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
-                attachment.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil, completionHandler: { item, _ in
-                    guard let item = item as? String else {
-                        return
-                    }
-                    searchText += item
-                })
+                let item = try? await attachment.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil)
+                guard let item = item as? String else {
+                    continue
+                }
+                searchText += item
             }
         }
+        return searchText
+    }
 
-        OperationQueue.main.addOperation { [weak self] in
-            guard let self = self else {
-                return
-            }
-            let actionUrl = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
-            let options = UIYomikiriWebView.ViewModel.Options(overscroll: true, additionalMessageHandler: nil, url: actionUrl)
-            let webviewModel = UIYomikiriWebView.ViewModel(options: options)
-            let webview = UIYomikiriWebView(viewModel: webviewModel)
-            webview.frame = self.container.bounds
-            webviewModel.runOnLoadComplete { wv in
-                var escaped = searchText
-                    .replacingOccurrences(of: "\\", with: "\\\\")
-                    .replacingOccurrences(of: "`", with: "\\'")
-                wv.evaluateJavaScript("show(`\(escaped)`)")
-            }
-            self.webview = webview
-            self.container.addSubview(webview)
-        }
+    @MainActor func createWebView(url: URL) {
+        let options = UIYomikiriWebView.ViewModel.Options(overscroll: true, additionalMessageHandler: nil, url: url)
+        let webviewModel = UIYomikiriWebView.ViewModel(options: options)
+        let webview = UIYomikiriWebView(viewModel: webviewModel)
+        webview.frame = self.container.bounds
+        self.webview = webview
+        self.container.addSubview(webview)
     }
 
     @IBAction func done() {

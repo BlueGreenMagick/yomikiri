@@ -30,7 +30,8 @@ export namespace AnkiApi {
       ...fields,
       "x-success": "http://yomikiri-redirect.bluegreenmagick.com",
     };
-    const ankiLink = "anki://x-callback-url/addnote?" + Utils.urlParams(params);
+    const ankiLink =
+      "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
     Api.updateTab(currentTab.id, { url: ankiLink });
   }
 }

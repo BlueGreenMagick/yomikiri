@@ -3,17 +3,13 @@
   import Tokenize from "~/components/Tokenize.svelte";
 
   export let initialized: Promise<void>;
-
-  let searchText: string = "";
-
-  export function setSentence(text: string) {
-    searchText = text;
-  }
+  export let context: "app" | "action";
+  export let searchText: string;
 </script>
 
 <div id="main" use:platformClass>
   {#await initialized then}
-    <Tokenize bind:searchText />
+    <Tokenize bind:searchText showCloseButton={context === "action"} />
   {/await}
 </div>
 

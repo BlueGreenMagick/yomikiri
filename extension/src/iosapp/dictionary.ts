@@ -12,11 +12,20 @@ declare global {
     Api: typeof Api;
     Utils: typeof Utils;
     Config: typeof Config;
-    show(sentence: string): void;
   }
 }
 
-const [showPromise, showResolve] = Utils.createPromise<void>();
+interface URLParams {
+  context: "app" | "action";
+  search?: string;
+}
+
+const initialized = initialize();
+createSvelte(initialized);
+
+window.Api = Api;
+window.Utils = Utils;
+window.Config = Config;
 
 async function initialize(): Promise<void> {
   Api.initialize({ context: "page" });
@@ -24,22 +33,14 @@ async function initialize(): Promise<void> {
   await Config.initialize();
   await Backend.initialize();
   Theme.insertStyleElement(document);
-  await showPromise;
 }
 
-const initialized = initialize();
-
-const page = new DictionaryPage({
-  target: document.body,
-  props: { initialized },
-});
-
-function show(sentence: string) {
-  page.setSentence(sentence);
-  showResolve();
+function createSvelte(initialized: Promise<void>): DictionaryPage {
+  let params = new URLSearchParams(window.location.search);
+  let context = params.get("context") as "app" | "action";
+  let searchText = params.get("search") ?? "";
+  return new DictionaryPage({
+    target: document.body,
+    props: { initialized, context, searchText },
+  });
 }
-
-window.Api = Api;
-window.Utils = Utils;
-window.Config = Config;
-window.show = show;

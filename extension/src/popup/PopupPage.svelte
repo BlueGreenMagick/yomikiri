@@ -7,7 +7,7 @@
 
 <div id="main" use:platformClass>
   {#await initialized then}
-    <Tokenize />
+    <Tokenize showSettingsButton={true} />
   {/await}
 </div>
 

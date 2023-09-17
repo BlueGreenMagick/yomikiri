@@ -2,8 +2,8 @@ import { test, expect, describe } from "@jest/globals";
 import Utils from "./utils";
 
 describe("Utils", () => {
-  test("urlParams", async () => {
-    const value = Utils.urlParams({ "key 1": "value 1" });
+  test("generateUrlParams", async () => {
+    const value = Utils.generateUrlParams({ "key 1": "value 1" });
     expect(value).toBe("key%201=value%201");
   });
 

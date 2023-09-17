@@ -11,6 +11,9 @@
   import DicEntriesView from "./DicEntriesView.svelte";
 
   export let searchText: string = "";
+  export let showSettingsButton: boolean = false;
+  export let showCloseButton: boolean = false;
+
   let searchTokens: Token[] = [];
   // may be bigger than entries.length
   let selectedTokenIdx: number;
@@ -67,9 +70,14 @@
         {@html IconCloseCircle}
       </div>
     </div>
-    <button class="settings-button" on:click={openSettings}>
-      <div class="icon icon-settings">{@html IconSettings}</div>
-    </button>
+    {#if showSettingsButton}
+      <button class="settings-button" on:click={openSettings}>
+        <div class="icon icon-settings">{@html IconSettings}</div>
+      </button>
+    {/if}
+    {#if showCloseButton}
+      <div class="close-button">Close</div>
+    {/if}
   </div>
   <div class="tokensview">
     <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
@@ -177,6 +185,13 @@
     opacity: 1;
     background: lightgray;
     cursor: pointer;
+  }
+
+  .close-button {
+    flex: 0 0 auto;
+    padding: 2px 8px;
+    color: var(--selected-blue);
+    font-size: 16px;
   }
 
   .tokensview {

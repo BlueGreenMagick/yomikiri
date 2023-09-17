@@ -12,21 +12,21 @@ struct DictionaryView: View {
 
     var body: some View {
         NavigationView {
-            WebView(viewModel: viewModel.webViewModel)
+            WebView(viewModel: self.viewModel.webViewModel)
                 .navigationTitle("Dictionary")
                 .navigationBarTitleDisplayMode(.inline)
         }
     }
 
     class ViewModel: ObservableObject {
-        static let URL = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
-
-        var webViewModel: WebView.ViewModel = .init(url: URL, overscroll: false)
+        let webViewModel: WebView.ViewModel
 
         init() {
-            webViewModel.runOnLoadComplete { wv in
-                wv.evaluateJavaScript("show('')")
+            let url = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
+            guard let url = url.withPathComponents([URLQueryItem(name: "context", value: "app")]) else {
+                fatalError("Unable to build url")
             }
+            self.webViewModel = .init(url: url, overscroll: false)
         }
     }
 }

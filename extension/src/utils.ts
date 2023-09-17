@@ -64,7 +64,7 @@ namespace Utils {
   }
 
   /** "http://url?" + Utils.urlParams({key: value}) */
-  export function urlParams(params: { [key: string]: string }): string {
+  export function generateUrlParams(params: { [key: string]: string }): string {
     return Object.entries(params)
       .map(
         ([key, value]) =>
@@ -140,6 +140,8 @@ namespace Utils {
       return promise;
     };
   }
+
+  export function urlParams<Type extends { string: any }>() {}
 
   let lastBench: number = performance.now();
   let _benchLogs: string[] = [];

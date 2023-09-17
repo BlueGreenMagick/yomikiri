@@ -11,6 +11,12 @@ import SwiftUI
 import YomikiriTokenizer
 
 extension URL {
+    func withPathComponents(_ pathComponents: [URLQueryItem]) -> URL? {
+        var components = URLComponents(url: self, resolvingAgainstBaseURL: true)
+        components?.queryItems = pathComponents
+        return components?.url
+    }
+
     var isDeeplink: Bool {
         return scheme == "yomikiri"
     }
