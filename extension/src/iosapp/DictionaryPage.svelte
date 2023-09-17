@@ -1,6 +1,7 @@
 <script lang="ts">
   import { platformClass } from "~/components/actions";
   import Tokenize from "~/components/Tokenize.svelte";
+  import { Platform } from "~/platform/iosapp";
 
   export let initialized: Promise<void>;
   export let context: "app" | "action";
@@ -9,7 +10,13 @@
 
 <div id="main" use:platformClass>
   {#await initialized then}
-    <Tokenize bind:searchText showCloseButton={context === "action"} />
+    <Tokenize
+      bind:searchText
+      showCloseButton={context === "action"}
+      on:close={() => {
+        Platform.messageWebview("close", null);
+      }}
+    />
   {/await}
 </div>
 

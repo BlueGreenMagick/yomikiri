@@ -58,12 +58,22 @@ class ActionViewController: UIViewController {
     }
 
     @MainActor func createWebView(url: URL) {
-        let options = UIYomikiriWebView.ViewModel.Options(overscroll: true, additionalMessageHandler: nil, url: url)
+        let options = UIYomikiriWebView.ViewModel.Options(overscroll: true, additionalMessageHandler: self.handleMessage, url: url)
         let webviewModel = UIYomikiriWebView.ViewModel(options: options)
         let webview = UIYomikiriWebView(viewModel: webviewModel)
         webview.frame = self.container.bounds
         self.webview = webview
         self.container.addSubview(webview)
+    }
+
+    private func handleMessage(key: String, request: Any) async throws -> Any?? {
+        switch key {
+            case "close":
+                self.done()
+                return Optional(nil)
+            default:
+                return nil
+        }
     }
 
     @IBAction func done() {

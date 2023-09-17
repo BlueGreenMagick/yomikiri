@@ -18,6 +18,9 @@ export namespace Platform {
     // result: JSON-serialized RawTokenizeResult
     tokenize: [TokenizeRequest, string];
     searchTerm: [string, string[]];
+
+    // action extension
+    close: [null, void];
   }
 
   export type WebviewRequest<K extends keyof MessageWebviewMap> = Utils.First<

@@ -9,10 +9,17 @@
   import TokensView from "./TokensView.svelte";
   import { Backend } from "~/backend";
   import DicEntriesView from "./DicEntriesView.svelte";
+  import { createEventDispatcher } from "svelte";
+
+  interface Events {
+    close: void;
+  }
 
   export let searchText: string = "";
   export let showSettingsButton: boolean = false;
   export let showCloseButton: boolean = false;
+
+  const dispatch = createEventDispatcher<Events>();
 
   let searchTokens: Token[] = [];
   // may be bigger than entries.length
@@ -76,7 +83,14 @@
       </button>
     {/if}
     {#if showCloseButton}
-      <div class="close-button">Close</div>
+      <div
+        class="close-button"
+        on:click={() => {
+          dispatch("close");
+        }}
+      >
+        Close
+      </div>
     {/if}
   </div>
   <div class="tokensview">

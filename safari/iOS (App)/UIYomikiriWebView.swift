@@ -12,6 +12,7 @@ import WebKit
 class UIYomikiriWebView: WKWebView {
     private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
 
+    // return nil if not handled, Optional(nil) if returning nil to webview
     typealias AdditionalMessageHandler = (String, Any) async throws -> Any??
 
     public enum LoadStatus {
