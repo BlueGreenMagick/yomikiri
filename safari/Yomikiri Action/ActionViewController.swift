@@ -58,7 +58,7 @@ class ActionViewController: UIViewController {
     }
 
     @MainActor func createWebView(url: URL) {
-        let options = UIYomikiriWebView.ViewModel.Options(overscroll: false, additionalMessageHandler: self.handleMessage, url: url)
+        let options = UIYomikiriWebView.ViewModel.Options(overscroll: false, additionalMessageHandler: self.makeMessageHandler(), url: url)
         let webviewModel = UIYomikiriWebView.ViewModel(options: options)
         let webview = UIYomikiriWebView(viewModel: webviewModel)
         webview.frame = self.container.bounds
@@ -66,13 +66,15 @@ class ActionViewController: UIViewController {
         self.container.addSubview(webview)
     }
 
-    private func handleMessage(key: String, request: Any) async throws -> Any?? {
-        switch key {
-            case "close":
-                self.done()
-                return Optional(nil)
-            default:
-                return nil
+    private func makeMessageHandler() -> UIYomikiriWebView.AdditionalMessageHandler {
+        { [weak self] (key: String, _: Any) in
+            switch key {
+                case "close":
+                    self?.done()
+                    return Optional(nil)
+                default:
+                    return nil
+            }
         }
     }
 

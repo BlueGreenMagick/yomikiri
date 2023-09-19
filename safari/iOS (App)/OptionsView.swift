@@ -67,8 +67,8 @@ extension OptionsView {
         var ankiTemplateWebViewModel: WebView.ViewModel!
 
         init() {
-            self.webViewModel = WebView.ViewModel(url: ViewModel.htmlURL, additionalMessageHandler: self.handleMessage)
-            self.ankiTemplateWebViewModel = WebView.ViewModel(url: ViewModel.ankiTemplateURL, additionalMessageHandler: self.handleMessage)
+            self.webViewModel = WebView.ViewModel(url: ViewModel.htmlURL, additionalMessageHandler: self.makeMessageHandler())
+            self.ankiTemplateWebViewModel = WebView.ViewModel(url: ViewModel.ankiTemplateURL, additionalMessageHandler: self.makeMessageHandler())
         }
 
         func passAnkiInfo(ankiInfo: String) throws {
@@ -90,14 +90,16 @@ extension OptionsView {
             }
         }
 
-        private func handleMessage(key: String, request: Any) async throws -> Any?? {
-            switch key {
-                case "ankiIsInstalled":
-                    return ankiIsInstalled()
-                case "ankiInfo":
-                    return self.requestAnkiInfo()
-                default:
-                    return nil
+        private func makeMessageHandler() -> WebView.AdditionalMessageHandler {
+            { [weak self] (key: String, _: Any) in
+                switch key {
+                    case "ankiIsInstalled":
+                        return ankiIsInstalled()
+                    case "ankiInfo":
+                        return self?.requestAnkiInfo()
+                    default:
+                        return nil
+                }
             }
         }
 

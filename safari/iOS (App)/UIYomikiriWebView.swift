@@ -9,11 +9,11 @@ import os.log
 import UIKit
 import WebKit
 
-class UIYomikiriWebView: WKWebView {
+class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
 
     // return nil if not handled, Optional(nil) if returning nil to webview
-    typealias AdditionalMessageHandler = (String, Any) async throws -> Any??
+    public typealias AdditionalMessageHandler = (String, Any) async throws -> Any??
 
     public enum LoadStatus {
         case initial, loading, complete, failed
@@ -21,7 +21,6 @@ class UIYomikiriWebView: WKWebView {
 
     private let messageHandler: MessageHandler
     private let viewModel: ViewModel
-    private var delegate: Delegate!
 
     public init(viewModel: ViewModel) {
         self.viewModel = viewModel
@@ -30,8 +29,7 @@ class UIYomikiriWebView: WKWebView {
         webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: .page, name: self.WEB_MESSAGE_HANDLER_NAME)
         super.init(frame: .zero, configuration: webConfiguration)
-        self.delegate = Delegate(self)
-        self.navigationDelegate = self.delegate
+        self.navigationDelegate = self
         self.viewModel.webview = self
 
         if !self.viewModel.overscroll {
@@ -41,6 +39,20 @@ class UIYomikiriWebView: WKWebView {
 
         let request = URLRequest(url: self.viewModel.url)
         self.load(request)
+    }
+
+    func webview(_ webview: WKWebView, didCommit navigation: WKNavigation!) {}
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        self.viewModel.loadStatus = .complete
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        self.viewModel.loadStatus = .failed
+    }
+
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        self.viewModel.loadStatus = .loading
     }
 
     @available(*, unavailable)
@@ -157,28 +169,6 @@ class UIYomikiriWebView: WKWebView {
             } else {
                 self.loadCompleteRunnableFunctions.append(fn)
             }
-        }
-    }
-
-    class Delegate: NSObject, WKNavigationDelegate {
-        let parent: UIYomikiriWebView
-
-        init(_ parent: UIYomikiriWebView) {
-            self.parent = parent
-        }
-
-        func webview(_ webview: WKWebView, didCommit navigation: WKNavigation!) {}
-
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            self.parent.viewModel.loadStatus = .complete
-        }
-
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            self.parent.viewModel.loadStatus = .failed
-        }
-
-        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            self.parent.viewModel.loadStatus = .loading
         }
     }
 }
