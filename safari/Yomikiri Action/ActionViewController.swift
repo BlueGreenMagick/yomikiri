@@ -58,7 +58,7 @@ class ActionViewController: UIViewController {
     }
 
     @MainActor func createWebView(url: URL) {
-        let options = UIYomikiriWebView.ViewModel.Options(overscroll: true, additionalMessageHandler: self.handleMessage, url: url)
+        let options = UIYomikiriWebView.ViewModel.Options(overscroll: false, additionalMessageHandler: self.handleMessage, url: url)
         let webviewModel = UIYomikiriWebView.ViewModel(options: options)
         let webview = UIYomikiriWebView(viewModel: webviewModel)
         webview.frame = self.container.bounds
