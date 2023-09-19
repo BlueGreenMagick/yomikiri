@@ -31,7 +31,7 @@ namespace Utils {
   }
 
   export function rectContainsPoint(
-    rect: DOMRect,
+    rect: { top: number; bottom: number; left: number; right: number },
     x: number,
     y: number
   ): boolean {

@@ -10,6 +10,7 @@
   import { Backend } from "~/backend";
   import DicEntriesView from "./DicEntriesView.svelte";
   import { createEventDispatcher } from "svelte";
+  import TextButton from "./TextButton.svelte";
 
   interface Events {
     close: void;
@@ -89,7 +90,7 @@
     {/if}
     {#if showCloseButton}
       <div class="close-button">
-        <div on:click={close}>Close</div>
+        <TextButton label="Close" on:click={close} />
       </div>
     {/if}
   </div>
@@ -197,7 +198,6 @@
   .close-button {
     flex: 0 0 auto;
     padding: 2px 8px;
-    color: var(--selected-blue);
     font-size: 16px;
   }
 
