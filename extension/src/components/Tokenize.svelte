@@ -26,6 +26,8 @@
   let selectedTokenIdx: number;
   let entries: Entry[] = [];
 
+  /** modifies `searchTokens` */
+  const tokenize = Utils.SingleQueued(_tokenize);
   async function _tokenize(searchText: string) {
     if (searchText === "") {
       searchTokens = [];
@@ -38,8 +40,9 @@
     });
     searchTokens = result.tokens;
   }
-  const tokenize = Utils.SingleQueued(_tokenize);
 
+  /** modifies `entries` */
+  const getEntries = Utils.SingleQueued(_getEntries);
   async function _getEntries(tokens: Token[], idx: number) {
     if (idx >= tokens.length) {
       entries = [];
@@ -48,10 +51,12 @@
     entries = await Backend.searchTerm(tokens[idx].base);
   }
 
-  const getEntries = Utils.SingleQueued(_getEntries);
-
   function openSettings() {
     Platform.openOptionsPage();
+  }
+
+  function close() {
+    dispatch("close");
   }
 
   $: tokenize(searchText.normalize("NFC"));
@@ -83,13 +88,8 @@
       </button>
     {/if}
     {#if showCloseButton}
-      <div
-        class="close-button"
-        on:click={() => {
-          dispatch("close");
-        }}
-      >
-        Close
+      <div class="close-button">
+        <div on:click={close}>Close</div>
       </div>
     {/if}
   </div>
@@ -213,11 +213,5 @@
   .entries {
     flex: 1 1;
     overflow-y: auto;
-  }
-  .entries > :global(div) {
-    border-top: 1px solid var(--border);
-  }
-  .entries > :global(div:first-child) {
-    border-top: none;
   }
 </style>
