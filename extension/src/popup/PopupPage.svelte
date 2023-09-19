@@ -29,5 +29,16 @@
     min-width: 300px;
     margin: 0 auto;
     padding: 0;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.ios) #main {
+    max-height: 100%;
+  }
+
+  :global(.desktop) #main {
+    max-height: 600px;
   }
 </style>

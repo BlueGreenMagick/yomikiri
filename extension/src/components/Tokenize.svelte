@@ -102,17 +102,10 @@
 </div>
 
 <style>
-  /** In desktop, window size changes based on content, but is fixed in ios */
-  :global(.ios) .search,
-  :global(.iosapp) .search {
-    max-height: 100%;
-  }
-
-  :global(.desktop) .search {
-    max-height: 600px;
-  }
-
   .search {
+    flex: 0 1 auto;
+
+    height: 100%;
     display: flex;
     flex-direction: column;
 
