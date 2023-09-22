@@ -60,7 +60,7 @@
   }
 
   span.tap,
-  span:active {
+  :global(html.desktop) span:active:hover {
     filter: opacity(0.6);
   }
 
