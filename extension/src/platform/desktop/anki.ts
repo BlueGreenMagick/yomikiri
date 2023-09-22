@@ -6,6 +6,7 @@ import type {
 } from "../types/anki";
 import Config from "~/config";
 import type { NoteData } from "~/ankiNoteBuilder";
+import { Api } from "~/api";
 
 /**
  * Uses Anki-Connect on desktop.
@@ -98,6 +99,10 @@ export namespace AnkiApi {
   }
 
   export async function addNote(note: NoteData): Promise<void> {
+    if (Api.context === "contentScript") {
+      return Api.request("addAnkiNote", note);
+    }
+
     const fields: { [key: string]: string } = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;

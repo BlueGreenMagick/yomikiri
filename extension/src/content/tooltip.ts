@@ -11,6 +11,7 @@ import TooltipSvelte from "./TooltipPage.svelte";
 import type { TokenizeResult } from "~/backend";
 import type { AddNoteForEntry } from "~/components/DicEntryView.svelte";
 import Config from "~/config";
+import { AnkiApi } from "@platform/anki";
 
 export namespace Tooltip {
   let _tokenizeResult: TokenizeResult;
@@ -199,7 +200,7 @@ export namespace Tooltip {
       }
       toast.update("Adding note to Anki");
       try {
-        await Api.request("addAnkiNote", note);
+        await AnkiApi.addNote(note);
       } catch (err) {
         toast.error(Utils.errorMessage(err));
         throw err;
