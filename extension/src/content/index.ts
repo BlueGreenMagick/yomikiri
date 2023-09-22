@@ -104,7 +104,7 @@ document.addEventListener("click", async (ev: MouseEvent) => {
     return;
   }
 
-  if (Api.isTouchScreen) {
+  if (Utils.isTouchScreen) {
     const triggered = await trigger(ev.clientX, ev.clientY);
     if (triggered === false) {
       Tooltip.hide();

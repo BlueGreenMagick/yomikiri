@@ -1,4 +1,6 @@
 namespace Utils {
+  export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
+
   export type First<T extends any[]> = T extends [infer FIRST, ...any[]]
     ? FIRST
     : never;

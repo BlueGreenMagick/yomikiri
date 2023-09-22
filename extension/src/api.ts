@@ -62,7 +62,6 @@ export interface ApiInitializeOptions {
 }
 
 export namespace Api {
-  export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
   export let context: ExecutionContext;
   let _tabId: number | undefined;
 
