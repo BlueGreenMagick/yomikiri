@@ -29,6 +29,9 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: .page, name: self.WEB_MESSAGE_HANDLER_NAME)
         super.init(frame: .zero, configuration: webConfiguration)
+        if #available(iOS 16.4, macOS 13.3, *) {
+            self.isInspectable = true
+        }
         self.navigationDelegate = self
         self.viewModel.webview = self
 
