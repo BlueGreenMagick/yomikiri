@@ -28,6 +28,7 @@ struct OptionsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationViewStyle(.stack)
         .background(OptionsView.BACKGROUND_COLOR)
         .onOpenURL(perform: self.handleOpenUrl)
     }

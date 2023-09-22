@@ -16,6 +16,7 @@ struct DictionaryView: View {
                 .navigationTitle("Dictionary")
                 .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationViewStyle(.stack)
     }
 
     class ViewModel: ObservableObject {
