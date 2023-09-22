@@ -32,6 +32,7 @@ export type ConfigKeysOfType<T> = {
 
 export namespace Config {
   let _storage: StoredConfiguration;
+  let _styleEl: HTMLStyleElement | undefined;
 
   export async function initialize(): Promise<void> {
     _storage = await Platform.loadConfig();
@@ -61,6 +62,27 @@ export namespace Config {
     key: K
   ): Configuration[K] {
     return defaultOptions[key];
+  }
+
+  /** Insert or update <style> properties from config */
+  export function setStyle(document: Document) {
+    const css = generateCss();
+    if (_styleEl === undefined) {
+      _styleEl = document.createElement("style");
+      document.head.appendChild(_styleEl);
+    }
+    _styleEl.textContent = css;
+  }
+
+  function generateCss(): string {
+    const fontSize = Config.get("general.font_size");
+    const font = Config.get("general.font");
+    const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
+
+    return `:root {
+--font-size: ${fontSize}px;
+--japanese-font: "${escapedFont}";
+    }`;
   }
 }
 

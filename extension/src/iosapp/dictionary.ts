@@ -1,6 +1,5 @@
 import "@platform";
 import DictionaryPage from "./DictionaryPage.svelte";
-import { Theme } from "~/theme";
 import Config from "~/config";
 import Utils from "~/utils";
 import { Api } from "~/api";
@@ -31,8 +30,8 @@ async function initialize(): Promise<void> {
   Api.initialize({ context: "page" });
   Platform.initialize();
   await Config.initialize();
+  Config.setStyle(document);
   await Backend.initialize();
-  Theme.insertStyleElement(document);
 }
 
 function createSvelte(initialized: Promise<void>): DictionaryPage {

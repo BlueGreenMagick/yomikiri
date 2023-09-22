@@ -5,7 +5,6 @@ import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
 import { updated } from "./stores";
-import { Theme } from "~/theme";
 import { Backend } from "~/backend";
 
 declare global {
@@ -24,9 +23,9 @@ async function initialize() {
   Platform.initialize();
   await Config.initialize();
   updated.subscribe((_) => {
-    Theme.insertStyleElement(document);
+    Config.setStyle(document);
   });
-  Theme.insertStyleElement(document);
+  Config.setStyle(document);
   await Backend.initialize();
 }
 

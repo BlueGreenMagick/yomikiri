@@ -8,9 +8,9 @@ import { Api } from "~/api";
 import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
 import TooltipSvelte from "./TooltipPage.svelte";
-import { Theme } from "~/theme";
 import type { TokenizeResult } from "~/backend";
 import type { AddNoteForEntry } from "~/components/DicEntryView.svelte";
+import Config from "~/config";
 
 export namespace Tooltip {
   let _tokenizeResult: TokenizeResult;
@@ -171,7 +171,7 @@ export namespace Tooltip {
     doc.head.innerHTML += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 `;
-    Theme.insertStyleElement(doc);
+    Config.setStyle(doc);
     doc.documentElement.classList.add("yomikiri");
 
     _tooltipSvelte = new TooltipSvelte({

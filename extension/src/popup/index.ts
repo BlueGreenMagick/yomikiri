@@ -1,6 +1,5 @@
 import { Platform } from "@platform";
 import PopupPage from "./PopupPage.svelte";
-import { Theme } from "~/theme";
 import Config from "~/config";
 import Utils from "~/utils";
 import { Api } from "~/api";
@@ -18,7 +17,7 @@ async function initialize() {
   Api.initialize({ context: "popup" });
   Platform.initialize();
   await Config.initialize();
-  Theme.insertStyleElement(document);
+  Config.setStyle(document);
   await Backend.initialize();
 }
 
