@@ -61,9 +61,15 @@ class ActionViewController: UIViewController {
         let options = UIYomikiriWebView.ViewModel.Options(overscroll: false, additionalMessageHandler: self.makeMessageHandler(), url: url)
         let webviewModel = UIYomikiriWebView.ViewModel(options: options)
         let webview = UIYomikiriWebView(viewModel: webviewModel)
-        webview.frame = self.container.bounds
         self.webview = webview
         self.container.addSubview(webview)
+        webview.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            webview.leadingAnchor.constraint(equalTo: self.container.leadingAnchor),
+            webview.trailingAnchor.constraint(equalTo: self.container.trailingAnchor),
+            webview.topAnchor.constraint(equalTo: self.container.topAnchor),
+            webview.bottomAnchor.constraint(equalTo: self.container.bottomAnchor)
+        ])
     }
 
     private func makeMessageHandler() -> UIYomikiriWebView.AdditionalMessageHandler {
