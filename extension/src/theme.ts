@@ -16,7 +16,7 @@ export namespace Theme {
   export async function generateCss(): Promise<string> {
     const fontSize = Config.get("general.font_size");
     const font = Config.get("general.font");
-    const escapedFont = font.replace('"', '\\"');
+    const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
 
     return `
 body {
