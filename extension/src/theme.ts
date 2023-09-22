@@ -18,15 +18,9 @@ export namespace Theme {
     const font = Config.get("general.font");
     const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
 
-    return `
-body {
-  font-size: ${fontSize}px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
-}
-
-.g-japanese-font {
-  font-family: "${escapedFont}", "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", sans-serif;
-}
-`;
+    return `:root {
+--font-size: ${fontSize}px;
+--japanese-font: "${escapedFont}";
+    }`;
   }
 }

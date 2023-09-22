@@ -60,7 +60,7 @@
 <div class="entryView" on:mousedown={onMouseDown}>
   <div class="header">
     <div class="term">
-      <span class="g-japanese-font mainForm">{@html mainFormRuby}</span>
+      <span class="mainForm">{@html mainFormRuby}</span>
     </div>
     <div class="icons">
       {#if Config.get("anki.enabled")}
@@ -121,6 +121,7 @@
   }
   .mainForm {
     font-size: 1.5em;
+    font-family: var(--japanese-font-family);
   }
 
   .groups {

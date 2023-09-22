@@ -10,6 +10,11 @@ html, body {
   border: none;
 }
 
+body {
+  font-size: var(--font-size);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 :root {
   --text: black;
   --text-light: #808080;
@@ -22,4 +27,5 @@ html, body {
   --input: white;
   --selected-blue: #007aff;
   --button-light: #999999;
+  --japanese-font-family: var(--japanese-font), "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", sans-serif;
 }
