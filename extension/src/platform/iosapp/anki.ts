@@ -1,4 +1,4 @@
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import type { AnkiInfo, IAnkiOptions } from "../types/anki";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";

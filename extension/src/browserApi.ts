@@ -61,7 +61,7 @@ export interface ApiInitializeOptions {
   context: ExecutionContext;
 }
 
-export namespace Api {
+export namespace BrowserApi {
   export let context: ExecutionContext;
   let _tabId: number | undefined;
 
@@ -242,7 +242,7 @@ export namespace Api {
       req = {};
       req[key] = or;
     }
-    Api.storage().get(req, (obj) => {
+    BrowserApi.storage().get(req, (obj) => {
       resolve(obj[key]);
     });
     return promise;
@@ -253,13 +253,13 @@ export namespace Api {
     const [promise, resolve] = Utils.createPromise<void>();
     const object: { [key: string]: any } = {};
     object[key] = value;
-    Api.storage().set(object, resolve);
+    BrowserApi.storage().set(object, resolve);
     return promise;
   }
 
   export async function removeStorage(key: string) {
     const [promise, resolve] = Utils.createPromise<void>();
-    Api.storage().remove(key, resolve);
+    BrowserApi.storage().remove(key, resolve);
     return promise;
   }
 
@@ -333,7 +333,7 @@ export namespace Api {
   }
 
   function attachStorageChangeHandler() {
-    Api.storage().onChanged.addListener((changes) => {
+    BrowserApi.storage().onChanged.addListener((changes) => {
       for (const key in changes) {
         const handlers = _storageHandlers[key];
         if (handlers === undefined) continue;

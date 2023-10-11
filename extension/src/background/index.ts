@@ -1,6 +1,6 @@
 import type { Entry } from "../dicEntry";
 import { Backend, type TokenizeResult, type TokenizeRequest } from "../backend";
-import { Api, type MessageSender } from "~/api";
+import { BrowserApi, type MessageSender } from "~/browserApi";
 import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";
 import Utils from "../utils";
@@ -12,7 +12,7 @@ declare global {
   interface Window {
     backend: typeof Backend;
     AnkiApi: typeof AnkiApi;
-    Api: typeof Api;
+    Api: typeof BrowserApi;
     Utils: typeof Utils;
     ensureInitialized: typeof ensureInitialized;
   }
@@ -21,7 +21,7 @@ declare global {
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
-  Api.initialize({
+  BrowserApi.initialize({
     handleRequests: true,
     context: "background",
   });
@@ -58,14 +58,14 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
 
 ensureInitialized();
 
-Api.handleRequest("searchTerm", searchTerm);
-Api.handleRequest("tokenize", tokenize);
-Api.handleRequest("addAnkiNote", addAnkiNote);
-Api.handleRequest("tabId", tabId);
+BrowserApi.handleRequest("searchTerm", searchTerm);
+BrowserApi.handleRequest("tokenize", tokenize);
+BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
+BrowserApi.handleRequest("tabId", tabId);
 
 // expose object to window for debugging purposes
 self.backend = Backend;
 self.AnkiApi = AnkiApi;
-self.Api = Api;
+self.Api = BrowserApi;
 self.Utils = Utils;
 self.ensureInitialized = ensureInitialized;

@@ -1,4 +1,4 @@
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import { Platform } from ".";
 import type {
   IBackendControllerStatic,

@@ -1,4 +1,4 @@
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import { Platform } from ".";
 import type {
   IBackendControllerStatic,
@@ -17,8 +17,8 @@ export class BackendController implements IBackendController {
   }
 
   async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
-    if (Api.context !== "background" && Api.context !== "page") {
-      return await Api.request("tokenize", { text, charAt });
+    if (BrowserApi.context !== "background" && BrowserApi.context !== "page") {
+      return await BrowserApi.request("tokenize", { text, charAt });
     }
     let req: TokenizeRequest = { text, charAt: charAt };
     let rawResult = await Platform.requestToApp("tokenize", req);
@@ -36,8 +36,8 @@ export class BackendController implements IBackendController {
   }
 
   async search(term: string): Promise<Entry[]> {
-    if (Api.context !== "background" && Api.context !== "page") {
-      return await Api.request("searchTerm", term);
+    if (BrowserApi.context !== "background" && BrowserApi.context !== "page") {
+      return await BrowserApi.request("searchTerm", term);
     }
     return (await Platform.requestToApp("search", term))
       .map((json) => JSON.parse(json))

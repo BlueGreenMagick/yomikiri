@@ -3,7 +3,7 @@ import {
   sentenceAtCharLocation,
   nodesOfToken,
 } from "./scanner";
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import { Highlighter } from "./highlight";
 import { Tooltip } from "~/content/tooltip";
 import Utils from "~/utils";
@@ -14,7 +14,7 @@ import { containsJapaneseContent } from "~/japanese";
 
 declare global {
   interface Window {
-    Api: typeof Api;
+    Api: typeof BrowserApi;
     ensureInitialized: typeof ensureInitialized;
   }
 }
@@ -22,7 +22,7 @@ declare global {
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
-  Api.initialize({ context: "contentScript" });
+  BrowserApi.initialize({ context: "contentScript" });
   Platform.initialize();
   await Config.initialize();
   await Backend.initialize();
@@ -113,5 +113,5 @@ document.addEventListener("click", async (ev: MouseEvent) => {
   }
 });
 
-window.Api = Api;
+window.Api = BrowserApi;
 window.ensureInitialized = ensureInitialized;

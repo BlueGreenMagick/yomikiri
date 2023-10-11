@@ -1,4 +1,4 @@
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import OptionsPage from "./OptionsPage.svelte";
 import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";
@@ -9,7 +9,7 @@ import { Backend } from "~/backend";
 
 declare global {
   interface Window {
-    Api: typeof Api;
+    Api: typeof BrowserApi;
     Utils: typeof Utils;
     AnkiApi: typeof AnkiApi;
     Config: typeof Config;
@@ -19,7 +19,7 @@ declare global {
 }
 
 async function initialize() {
-  Api.initialize({ context: "page" });
+  BrowserApi.initialize({ context: "page" });
   Platform.initialize();
   await Config.initialize();
   updated.subscribe((_) => {
@@ -36,7 +36,7 @@ const optionsPage = new OptionsPage({
   props: { initialized },
 });
 
-window.Api = Api;
+window.Api = BrowserApi;
 window.Utils = Utils;
 window.AnkiApi = AnkiApi;
 window.Config = Config;

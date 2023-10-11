@@ -1,6 +1,6 @@
 import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import type { Module } from "../types";
 import type { RawTokenizeResult } from "../types/backend";
 import type { TokenizeRequest } from "~/backend";
@@ -33,13 +33,13 @@ export namespace Platform {
       key,
       request: JSON.stringify(request),
     });
-    const response = Api.handleRequestResponse<string>(resp);
+    const response = BrowserApi.handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }
 
   export async function loadConfig(): Promise<StoredConfiguration> {
-    if (Api.context === "contentScript") {
-      return Api.request("loadConfig", null);
+    if (BrowserApi.context === "contentScript") {
+      return BrowserApi.request("loadConfig", null);
     } else {
       return Platform.requestToApp("loadConfig", null);
     }
@@ -51,21 +51,21 @@ export namespace Platform {
 
   export async function openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
-    if (Api.context !== "popup") {
+    if (BrowserApi.context !== "popup") {
       location.href = OPTIONS_URL;
     } else {
-      const currentTab = await Api.currentTab();
+      const currentTab = await BrowserApi.currentTab();
       if (currentTab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await Api.updateTab(currentTab.id, { url: OPTIONS_URL });
+      await BrowserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
       window.close();
     }
   }
 
   export function initialize() {
-    if (Api.context === "background") {
-      Api.handleRequest("loadConfig", () => {
+    if (BrowserApi.context === "background") {
+      BrowserApi.handleRequest("loadConfig", () => {
         return Platform.loadConfig();
       });
     }

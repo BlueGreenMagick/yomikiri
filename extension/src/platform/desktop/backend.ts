@@ -9,7 +9,7 @@ import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import { toHiragana } from "~/japanese";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
@@ -27,7 +27,7 @@ export class BackendController implements IBackendController {
   wasm: BackendWasm | null;
 
   static async initialize(): Promise<BackendController> {
-    if (Api.context !== "background") {
+    if (BrowserApi.context !== "background") {
       return new BackendController(null);
     }
     const BackendWasmConstructor = await loadWasm();
@@ -47,7 +47,7 @@ export class BackendController implements IBackendController {
 
   async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
     if (this.wasm === null) {
-      return await Api.request("tokenize", { text, charAt });
+      return await BrowserApi.request("tokenize", { text, charAt });
     } else {
       let rawResult = this.wasm.tokenize(text, charAt);
       rawResult.tokens.forEach((token) => {
@@ -86,7 +86,7 @@ export class BackendController implements IBackendController {
 
   async search(term: string): Promise<Entry[]> {
     if (this.wasm === null) {
-      return await Api.request("searchTerm", term);
+      return await BrowserApi.request("searchTerm", term);
     }
     return this.wasm
       .search(term)

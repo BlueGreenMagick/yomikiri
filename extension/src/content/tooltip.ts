@@ -4,7 +4,7 @@ import {
   type MarkerData,
   type NoteData,
 } from "~/ankiNoteBuilder";
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
 import TooltipSvelte from "./TooltipPage.svelte";

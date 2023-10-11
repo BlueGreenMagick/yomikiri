@@ -1,4 +1,4 @@
-import { Api } from "~/api";
+import { BrowserApi } from "~/browserApi";
 import type { Module } from "../types";
 import type { StoredConfiguration } from "~/config";
 
@@ -8,11 +8,11 @@ export namespace Platform {
   export const IS_IOSAPP = false;
 
   export function loadConfig(): Promise<StoredConfiguration> {
-    return Api.getStorage<StoredConfiguration>("config", {});
+    return BrowserApi.getStorage<StoredConfiguration>("config", {});
   }
 
   export function saveConfig(config: StoredConfiguration): Promise<void> {
-    return Api.setStorage("config", config);
+    return BrowserApi.setStorage("config", config);
   }
 
   export function openOptionsPage() {
