@@ -24,11 +24,14 @@ async function loadWasm(): Promise<typeof BackendWasm> {
 }
 
 export class BackendController implements IBackendController {
-  wasm: BackendWasm | null;
+  wasm: BackendWasm;
 
+  /** May only be initialized in a 'background' webextension context */
   static async initialize(): Promise<BackendController> {
     if (BrowserApi.context !== "background") {
-      return new BackendController(null);
+      throw new Error(
+        "Desktop BackendController must be initialized in a 'background' context."
+      );
     }
     const BackendWasmConstructor = await loadWasm();
     const indexBytesP = fetchBytes(ENYomikiriIndex);
@@ -41,35 +44,26 @@ export class BackendController implements IBackendController {
     return new BackendController(backendWasm);
   }
 
-  private constructor(wasm: BackendWasm | null) {
+  private constructor(wasm: BackendWasm) {
     this.wasm = wasm;
   }
 
   async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
-    if (this.wasm === null) {
-      return await BrowserApi.request("tokenize", { text, charAt });
-    } else {
-      let rawResult = this.wasm.tokenize(text, charAt);
-      rawResult.tokens.forEach((token) => {
-        const reading = token.reading === "*" ? token.text : token.reading;
-        token.reading = toHiragana(reading);
-      });
-      return {
-        tokens: rawResult.tokens,
-        tokenIdx: rawResult.tokenIdx,
-        entries: rawResult.entriesJson
-          .map((json) => JSON.parse(json))
-          .map(Entry.fromObject),
-      };
-    }
+    let rawResult = this.wasm.tokenize(text, charAt);
+    rawResult.tokens.forEach((token) => {
+      const reading = token.reading === "*" ? token.text : token.reading;
+      token.reading = toHiragana(reading);
+    });
+    return {
+      tokens: rawResult.tokens,
+      tokenIdx: rawResult.tokenIdx,
+      entries: rawResult.entriesJson
+        .map((json) => JSON.parse(json))
+        .map(Entry.fromObject),
+    };
   }
 
   async tokenizeRaw(text: string, charAt: number): Promise<TokenizeResult> {
-    if (this.wasm === null) {
-      throw new Error(
-        "This method may only be called in the background script"
-      );
-    }
     let rawResult = this.wasm.tokenize_raw(text, charAt);
     rawResult.tokens.forEach((token) => {
       const reading = token.reading === "*" ? token.text : token.reading;
@@ -85,9 +79,6 @@ export class BackendController implements IBackendController {
   }
 
   async search(term: string): Promise<Entry[]> {
-    if (this.wasm === null) {
-      return await BrowserApi.request("searchTerm", term);
-    }
     return this.wasm
       .search(term)
       .map((json) => JSON.parse(json))

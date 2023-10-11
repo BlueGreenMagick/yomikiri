@@ -61,6 +61,10 @@ export interface ApiInitializeOptions {
   context: ExecutionContext;
 }
 
+/**
+ * The methods are loaded, but they should not be called
+ * in a non-extension context
+ */
 export namespace BrowserApi {
   export let context: ExecutionContext;
   let _tabId: number | undefined;

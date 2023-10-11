@@ -12,14 +12,17 @@ import { toHiragana } from "~/japanese";
 export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
 
 export class BackendController implements IBackendController {
+  /** May only be initialized in 'background' and 'page' extension context. */
   static async initialize(): Promise<BackendController> {
+    if (BrowserApi.context !== "background" && BrowserApi.context !== "page") {
+      throw new Error(
+        "ios BackendController may only be initialized in 'background' or 'page' context."
+      );
+    }
     return new BackendController();
   }
 
   async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
-    if (BrowserApi.context !== "background" && BrowserApi.context !== "page") {
-      return await BrowserApi.request("tokenize", { text, charAt });
-    }
     let req: TokenizeRequest = { text, charAt: charAt };
     let rawResult = await Platform.requestToApp("tokenize", req);
     rawResult.tokens.forEach((token) => {
@@ -36,9 +39,6 @@ export class BackendController implements IBackendController {
   }
 
   async search(term: string): Promise<Entry[]> {
-    if (BrowserApi.context !== "background" && BrowserApi.context !== "page") {
-      return await BrowserApi.request("searchTerm", term);
-    }
     return (await Platform.requestToApp("search", term))
       .map((json) => JSON.parse(json))
       .map(Entry.fromObject);

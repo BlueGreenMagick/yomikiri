@@ -4,15 +4,25 @@ import {
   type TokenizeRequest,
 } from "@platform/backend";
 import type { Entry } from "~/dicEntry";
+import { Platform } from "@platform";
+import { BrowserApi } from "./browserApi";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
 export namespace Backend {
-  let _backend: BackendController;
+  // If _backend is null, send message to background.
+  let _backend: BackendController | null = null;
 
   /** Api must be initialized */
   export async function initialize(): Promise<void> {
-    _backend = await BackendController.initialize();
+    if (
+      (Platform.IS_DESKTOP && BrowserApi.context === "background") ||
+      (Platform.IS_IOS &&
+        ["background", "page"].includes(BrowserApi.context)) ||
+      Platform.IS_IOSAPP
+    ) {
+      _backend = await BackendController.initialize();
+    }
   }
 
   /** text should not be empty */
@@ -43,7 +53,11 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    return await _backend.tokenize(text, charAt);
+    if (_backend !== null) {
+      return await _backend.tokenize(text, charAt);
+    } else {
+      return await BrowserApi.request("tokenize", { text, charAt });
+    }
   }
 
   export async function tokenizeRaw(
@@ -62,10 +76,20 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    return await _backend.tokenizeRaw(text, charAt);
+    if (_backend !== null) {
+      return await _backend.tokenizeRaw(text, charAt);
+    } else {
+      throw new Error(
+        "tokenizeRaw() is a debug function that can only be called in background."
+      );
+    }
   }
 
   export async function searchTerm(term: string): Promise<Entry[]> {
-    return _backend.search(term);
+    if (_backend !== null) {
+      return await _backend.search(term);
+    } else {
+      return await BrowserApi.request("searchTerm", term);
+    }
   }
 }
