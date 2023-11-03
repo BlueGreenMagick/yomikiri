@@ -4,7 +4,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   border: none;
@@ -14,6 +15,15 @@ body {
   font-size: var(--font-size);
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+
+/**
+css variables set using Config.generateCSS()
+
+:root {
+  --font-size: 8px;
+  --japanese-font: "Noto Sans";
+}
+*/
 
 :root {
   --text: black;
