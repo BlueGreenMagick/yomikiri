@@ -3,7 +3,7 @@
   import DicEntryView from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
 
-  export let entries: Entry[] = [];
+  export let entries: Entry[];
   let model: DicEntriesModel = new DicEntriesModel();
 
   function onEntriesChange(e: Entry[]) {

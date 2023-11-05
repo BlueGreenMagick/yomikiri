@@ -7,17 +7,17 @@ import {
 import { BrowserApi } from "~/browserApi";
 import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
-import TooltipSvelte from "./TooltipPage.svelte";
 import type { TokenizeResult } from "~/backend";
 import type { AddNoteForEntry } from "~/components/DicEntryView.svelte";
 import Config from "~/config";
 import { AnkiApi } from "@platform/anki";
+import TooltipPage from "./TooltipPage.svelte";
 
 export namespace Tooltip {
   let _tokenizeResult: TokenizeResult;
   let _highlightedNodes: Node[];
   let _tooltipEl: HTMLIFrameElement;
-  let _tooltipSvelte: TooltipSvelte;
+  let _tooltipPageSvelte: TooltipPage;
 
   export async function show(
     tokenizeResult: TokenizeResult,
@@ -32,7 +32,7 @@ export namespace Tooltip {
     _highlightedNodes = highlightedNodes;
     _tooltipEl.contentDocument?.scrollingElement?.scrollTo(0, 0);
     _tooltipEl.style.display = "block";
-    _tooltipSvelte.setEntries(_tokenizeResult.entries);
+    _tooltipPageSvelte.showEntries(_tokenizeResult.entries);
     // fix bug where tooltip height is previous entry's height
     await 0;
     const rect = findRectOfMouse(highlightedNodes, mouseX, mouseY);
@@ -63,12 +63,12 @@ export namespace Tooltip {
 
     const iframeDoc = iframe.contentDocument as Document;
     if (iframeDoc.readyState === "complete") {
-      setupEntriesView(iframe);
+      setupEntriesPage(iframe);
       return iframe;
     } else {
       const [promise, resolve] = Utils.createPromise<HTMLIFrameElement>();
       iframe.addEventListener("load", () => {
-        setupEntriesView(iframe);
+        setupEntriesPage(iframe);
         resolve(iframe);
       });
       return promise;
@@ -167,7 +167,7 @@ export namespace Tooltip {
     }
   }
 
-  function setupEntriesView(tooltip: HTMLIFrameElement) {
+  function setupEntriesPage(tooltip: HTMLIFrameElement) {
     const doc = tooltip.contentDocument as Document;
     doc.head.innerHTML += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -175,37 +175,42 @@ export namespace Tooltip {
     Config.setStyle(doc);
     doc.documentElement.classList.add("yomikiri");
 
-    _tooltipSvelte = new TooltipSvelte({
+    _tooltipPageSvelte = new TooltipPage({
       target: doc.body,
       props: {},
     });
-    _tooltipSvelte.$on("addNote", async (ev: CustomEvent<AddNoteForEntry>) => {
-      const request = ev.detail;
-      const markerData: MarkerData = {
-        tokenized: _tokenizeResult,
-        entry: request.entry,
-        selectedMeaning: request.sense,
-        sentence: _tokenizeResult.tokens.map((tok) => tok.text).join(""),
-        url: window.location.href,
-        pageTitle: document.title,
-      };
+    _tooltipPageSvelte.$on(
+      "addNote",
+      async (ev: CustomEvent<AddNoteForEntry>) => {
+        const request = ev.detail;
+        const markerData: MarkerData = {
+          tokenized: _tokenizeResult,
+          entry: request.entry,
+          selectedMeaning: request.sense,
+          sentence: _tokenizeResult.tokens.map((tok) => tok.text).join(""),
+          url: window.location.href,
+          pageTitle: document.title,
+        };
 
-      const toast = Toast.loading("Preparing Anki note");
-      let note: NoteData;
-      try {
-        note = await AnkiNoteBuilder.buildNote(markerData);
-      } catch (err) {
-        toast.error(Utils.errorMessage(err));
-        throw err;
+        const toast = Toast.loading("Preparing Anki note");
+        let note: NoteData;
+        try {
+          note = await AnkiNoteBuilder.buildNote(markerData);
+        } catch (err) {
+          toast.error(Utils.errorMessage(err));
+          throw err;
+        }
+        _tooltipPageSvelte.showPreview(request.entry, note);
+
+        toast.update("Adding note to Anki");
+        try {
+          await AnkiApi.addNote(note);
+        } catch (err) {
+          toast.error(Utils.errorMessage(err));
+          throw err;
+        }
+        toast.success("Added note to Anki!");
       }
-      toast.update("Adding note to Anki");
-      try {
-        await AnkiApi.addNote(note);
-      } catch (err) {
-        toast.error(Utils.errorMessage(err));
-        throw err;
-      }
-      toast.success("Added note to Anki!");
-    });
+    );
   }
 }

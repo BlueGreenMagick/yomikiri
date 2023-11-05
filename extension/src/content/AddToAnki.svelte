@@ -1,0 +1,103 @@
+<!--
+  @component
+  passed-in noteData object is modified live when user changes field value
+-->
+<script lang="ts">
+  import type { Field, NoteData } from "~/ankiNoteBuilder";
+  import NotePreview from "../components/NotePreview.svelte";
+  import NotePreviewField from "~/components/NotePreviewField.svelte";
+  import { createEventDispatcher } from "svelte";
+
+  interface FieldWatch extends Field {
+    _value: string;
+  }
+
+  interface Events {
+    back: void;
+    add: void;
+  }
+
+  export let noteData: NoteData;
+
+  const dispatch = createEventDispatcher<Events>();
+
+  let tagField: FieldWatch = {
+    name: "Tags",
+    _value: noteData.tags,
+
+    get value() {
+      return this._value;
+    },
+    set value(val: string) {
+      noteData.tags = val;
+      this._value = val;
+    },
+  };
+
+  function onBack() {
+    dispatch("back");
+  }
+
+  function onAdd() {
+    dispatch("add");
+  }
+</script>
+
+<div class="add-to-anki">
+  <div class="title-bar">
+    <div class="title-left" on:click={onBack}>Back</div>
+    <div class="title-center">Add to Anki</div>
+    <div class="title-right" on:click={onAdd}>Add</div>
+  </div>
+  <div class="scrollable">
+    <div class="preview-container">
+      <NotePreview fields={noteData.fields} />
+    </div>
+    <div class="tags">
+      <NotePreviewField field={tagField} />
+    </div>
+  </div>
+</div>
+
+<style>
+  .add-to-anki {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+    background-color: var(--background-alt);
+  }
+
+  .title-bar {
+    flex: 0 0 auto;
+    height: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+  }
+  .title-left {
+    flex: 1 0 0;
+    min-width: fit-content;
+    text-align: start;
+  }
+  .title-center {
+    flex: 0 1 auto;
+    text-align: center;
+  }
+  .title-right {
+    flex: 1 0 0;
+    min-width: fit-content;
+    text-align: end;
+  }
+
+  .scrollable {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 4px;
+  }
+
+  .tags {
+    margin-top: 12px;
+  }
+</style>
