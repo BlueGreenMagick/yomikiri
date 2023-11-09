@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
-  export interface AddNoteForEntry {
+  export interface SelectedEntryForAnki {
     entry: Entry;
     sense?: Sense;
   }
 
   interface Events {
-    addNote: AddNoteForEntry;
+    selectedEntryForAnki: SelectedEntryForAnki;
   }
 </script>
 
@@ -31,9 +31,9 @@
 
   const selectedSense = model.selectedSense;
 
-  function addNote() {
+  function selectEntryForAnki() {
     const sense = $selectedSense?.sense ?? undefined;
-    dispatch("addNote", {
+    dispatch("selectedEntryForAnki", {
       entry,
       sense,
     });
@@ -67,7 +67,7 @@
         <div
           class="icon"
           class:highlight={$selectedSense?.entry === entry}
-          on:click={addNote}
+          on:click={selectEntryForAnki}
           on:mousedown|preventDefault|stopPropagation={() => {}}
         >
           {@html IconAddCircleOutline}

@@ -15,7 +15,7 @@
 
 <div id="yomikiri-entries">
   {#each entries as entry}
-    <DicEntryView {entry} {model} on:addNote />
+    <DicEntryView {entry} {model} on:selectedEntryForAnki />
   {/each}
 </div>
 

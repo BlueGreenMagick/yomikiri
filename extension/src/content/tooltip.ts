@@ -8,7 +8,7 @@ import { BrowserApi } from "~/browserApi";
 import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
 import type { TokenizeResult } from "~/backend";
-import type { AddNoteForEntry } from "~/components/DicEntryView.svelte";
+import type { SelectedEntryForAnki } from "~/components/DicEntryView.svelte";
 import Config from "~/config";
 import { AnkiApi } from "@platform/anki";
 import TooltipPage from "./TooltipPage.svelte";
@@ -117,31 +117,34 @@ export namespace Tooltip {
     return rects[0];
   }
 
-  /** position tooltip next to rect */
+  /**
+   * position tooltip next to rect.
+   *
+   * 1) Horizontal position
+   *  ideally tooltip.left = rect.left,
+   *  but if tooltip.left + WIDTH > window.right - MARGIN
+   *  tooltip.left = window.right - MARGIN - width
+   *
+   * 2) Vertical position
+   *  prefer tooltip.top = rect.bottom + VERTICAL_SPACE,
+   *  but sometimes tooltip.bottom = rect.top - VERTICAL_SPACE
+   */
   async function position(rect: DOMRect) {
     // min margin between tooltip and window
     const MARGIN = 10;
     // space between highlighted rect and tooltip
     const VERTICAL_SPACE = 6;
     const MAX_HEIGHT = 300;
+    const WIDTH = Math.min(500, window.innerWidth - 2 * MARGIN);
     const BOTTOM_ADVANTAGE = 150;
 
     const tooltip = getTooltipEl();
     // reset tooltipEl style beforehand so tooltip does not affect document size.
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
-    tooltip.style.width = Math.min(500, window.innerWidth - 2 * MARGIN) + "px";
+    tooltip.style.width = WIDTH + "px";
+    tooltip.style.height = "0px";
     tooltip.style.removeProperty("transform");
-
-    // calculate frame size
-    let tooltipWindow = tooltip.contentWindow as Window;
-    let content = tooltip.contentDocument?.getElementById(
-      "yomikiri-entries"
-    ) as HTMLElement;
-    const width = tooltipWindow.innerWidth;
-    const height = content.scrollHeight;
-    tooltip.style.width = width + "px";
-    tooltip.style.height = height + "px";
 
     // calculate frame position
     const rootRect = document.documentElement.getBoundingClientRect();
@@ -149,22 +152,61 @@ export namespace Tooltip {
     const rectTop = rect.top - rootRect.top;
     const rectBottom = rectTop + rect.height;
     const spaceTop = rect.top;
+    // window.bottom - rect.bottom
     const spaceBottom = window.innerHeight - rect.bottom;
+    const requiredVerticalSpace = MAX_HEIGHT + VERTICAL_SPACE + MARGIN;
 
     tooltip.style.left =
-      Math.min(rectLeft, rootRect.width - MARGIN - width) + "px";
+      Math.min(rectLeft, rootRect.width - MARGIN - WIDTH) + "px";
+
     // default to below text, but above text if space is too small
-    if (
-      (spaceBottom > MAX_HEIGHT ||
-        spaceTop < MAX_HEIGHT + MARGIN ||
-        spaceTop < spaceBottom + BOTTOM_ADVANTAGE) &&
-      rectBottom + VERTICAL_SPACE + height <= rootRect.height
-    ) {
+    let atBottom = true;
+
+    if (spaceTop > requiredVerticalSpace) {
+      if (
+        spaceBottom <= requiredVerticalSpace ||
+        spaceTop >= spaceBottom + BOTTOM_ADVANTAGE
+      ) {
+        // 1) enough screen space for top but not bottom
+        // 2) bigger (and enough) screen space for top than bottom
+        atBottom = false;
+      }
+    } else if (spaceBottom <= requiredVerticalSpace) {
+      // not enough screen space for both top and bottom
+      if (
+        rectTop > requiredVerticalSpace &&
+        rootRect.height - rectBottom <= requiredVerticalSpace
+      ) {
+        // enough document space for top but not bottom
+        atBottom = false;
+      }
+    }
+
+    if (atBottom) {
       tooltip.style.top = rectBottom + VERTICAL_SPACE + "px";
     } else {
       tooltip.style.top = rectTop - VERTICAL_SPACE + "px";
       tooltip.style.transform = "translateY(-100%)";
     }
+
+    updateTooltipHeight();
+  }
+
+  /** update tooltip height to match content height */
+  function updateTooltipHeight(max: boolean = false) {
+    const tooltip = getTooltipEl();
+
+    let height: number;
+
+    if (max) {
+      height = 300; // MAX_HEIGHT
+    } else {
+      let content = tooltip.contentDocument?.getElementById(
+        "main"
+      ) as HTMLElement;
+      height = content.scrollHeight;
+    }
+    tooltip.style.height = height + "px";
   }
 
   function setupEntriesPage(tooltip: HTMLIFrameElement) {
@@ -180,8 +222,8 @@ export namespace Tooltip {
       props: {},
     });
     _tooltipPageSvelte.$on(
-      "addNote",
-      async (ev: CustomEvent<AddNoteForEntry>) => {
+      "selectedEntryForAnki",
+      async (ev: CustomEvent<SelectedEntryForAnki>) => {
         const request = ev.detail;
         const markerData: MarkerData = {
           tokenized: _tokenizeResult,
@@ -201,16 +243,17 @@ export namespace Tooltip {
           throw err;
         }
         _tooltipPageSvelte.showPreview(request.entry, note);
-
-        toast.update("Adding note to Anki");
-        try {
-          await AnkiApi.addNote(note);
-        } catch (err) {
-          toast.error(Utils.errorMessage(err));
-          throw err;
-        }
-        toast.success("Added note to Anki!");
+        updateTooltipHeight(true);
       }
     );
+
+    _tooltipPageSvelte.$on("addNote", async (ev: CustomEvent<NoteData>) => {
+      const note = ev.detail;
+      try {
+        await AnkiApi.addNote(note);
+      } catch (err) {
+        throw err;
+      }
+    });
   }
 }

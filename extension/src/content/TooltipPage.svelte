@@ -9,7 +9,6 @@
 
   let previewIsVisible = false;
   let entries: Entry[] = [];
-  let previewEntry: Entry;
   let previewNoteData: NoteData;
 
   export function showEntries(e: Entry[]) {
@@ -19,7 +18,6 @@
 
   export function showPreview(entry: Entry, noteData: NoteData) {
     previewIsVisible = true;
-    previewEntry = entry;
     previewNoteData = noteData;
   }
 
@@ -30,13 +28,10 @@
 
 <div id="main" use:platformClass>
   <div class="dic-entries-container">
-    <DicEntriesView {entries} on:addNote />
+    <DicEntriesView {entries} on:selectedEntryForAnki />
   </div>
   {#if previewIsVisible}
-    <div
-      transition:fly={{ x: "100%", duration: 500 }}
-      class="add-to-anki-container"
-    >
+    <div class="add-to-anki-container">
       <AddToAnki noteData={previewNoteData} on:back={onBack} on:add />
     </div>
   {/if}

@@ -14,7 +14,7 @@
 
   interface Events {
     back: void;
-    add: void;
+    addNote: NoteData;
   }
 
   export let noteData: NoteData;
@@ -39,7 +39,7 @@
   }
 
   function onAdd() {
-    dispatch("add");
+    dispatch("addNote");
   }
 </script>
 
