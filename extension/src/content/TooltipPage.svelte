@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fly } from "svelte/transition";
   import type { Entry } from "~/dicEntry";
   import DicEntriesView from "~/components/DicEntriesView.svelte";
   import { platformClass } from "~/components/actions";
@@ -6,34 +7,36 @@
   import DicEntryView from "~/components/DicEntryView.svelte";
   import AddToAnki from "./AddToAnki.svelte";
 
-  let view: "entries" | "preview" = "entries";
+  let previewIsVisible = false;
   let entries: Entry[] = [];
   let previewEntry: Entry;
   let previewNoteData: NoteData;
 
   export function showEntries(e: Entry[]) {
-    view = "entries";
+    previewIsVisible = false;
     entries = e;
   }
 
   export function showPreview(entry: Entry, noteData: NoteData) {
-    view = "preview";
+    previewIsVisible = true;
     previewEntry = entry;
     previewNoteData = noteData;
   }
 
   function onBack() {
-    view = "entries";
+    previewIsVisible = false;
   }
 </script>
 
-<div use:platformClass>
-  {#if view == "entries"}
-    <div class="dic-entries-container">
-      <DicEntriesView {entries} on:addNote />
-    </div>
-  {:else}
-    <div class="preview-container">
+<div id="main" use:platformClass>
+  <div class="dic-entries-container">
+    <DicEntriesView {entries} on:addNote />
+  </div>
+  {#if previewIsVisible}
+    <div
+      transition:fly={{ x: "100%", duration: 500 }}
+      class="add-to-anki-container"
+    >
       <AddToAnki noteData={previewNoteData} on:back={onBack} on:add />
     </div>
   {/if}
@@ -41,4 +44,11 @@
 
 <style global>
   @import "../global.css";
+
+  #main > .add-to-anki-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
 </style>
