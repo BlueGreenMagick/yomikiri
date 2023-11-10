@@ -40,7 +40,7 @@
   }
 
   function onAdd() {
-    dispatch("addNote");
+    dispatch("addNote", noteData);
   }
 </script>
 
