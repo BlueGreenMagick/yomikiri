@@ -255,5 +255,9 @@ export namespace Tooltip {
         throw err;
       }
     });
+
+    _tooltipPageSvelte.$on("updateHeight", (ev: CustomEvent<void>) => {
+      updateTooltipHeight();
+    });
   }
 }

@@ -6,6 +6,13 @@
   import type { NoteData } from "~/ankiNoteBuilder";
   import DicEntryView from "~/components/DicEntryView.svelte";
   import AddToAnki from "./AddToAnki.svelte";
+  import { createEventDispatcher } from "svelte";
+
+  interface Events {
+    updateHeight: void;
+  }
+
+  const dispatch = createEventDispatcher<Events>();
 
   let previewIsVisible = false;
   let entries: Entry[] = [];
@@ -23,6 +30,7 @@
 
   function onBack() {
     previewIsVisible = false;
+    dispatch("updateHeight");
   }
 </script>
 
@@ -32,7 +40,7 @@
   </div>
   {#if previewIsVisible}
     <div class="add-to-anki-container">
-      <AddToAnki noteData={previewNoteData} on:back={onBack} on:add />
+      <AddToAnki noteData={previewNoteData} on:back={onBack} on:addNote />
     </div>
   {/if}
 </div>
