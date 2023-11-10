@@ -55,7 +55,7 @@
       <NotePreview fields={noteData.fields} />
     </div>
     <div class="tags">
-      <NotePreviewField field={tagField} />
+      <NotePreviewField field={tagField} bold />
     </div>
   </div>
 </div>

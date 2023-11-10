@@ -2,10 +2,11 @@
   import type { Field } from "~/ankiNoteBuilder";
 
   export let field: Field;
+  export let bold: boolean = false;
 </script>
 
 <div class="anki-preview-field">
-  <div class="field-name">{field.name}</div>
+  <div class="field-name" class:bold>{field.name}</div>
   <div
     class="field-value"
     contenteditable="true"
@@ -18,6 +19,10 @@
     width: 100%;
     margin-top: 4px;
   }
+  .bold {
+    font-weight: bold;
+  }
+
   .field-value {
     width: 100%;
     max-height: 5em;
