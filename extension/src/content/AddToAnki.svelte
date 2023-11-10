@@ -7,6 +7,7 @@
   import NotePreview from "../components/NotePreview.svelte";
   import NotePreviewField from "~/components/NotePreviewField.svelte";
   import { createEventDispatcher } from "svelte";
+  import TextButton from "~/components/TextButton.svelte";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -45,9 +46,9 @@
 
 <div class="add-to-anki">
   <div class="title-bar">
-    <div class="title-left" on:click={onBack}>Back</div>
+    <div class="title-left"><TextButton label="Back" on:click={onBack} /></div>
     <div class="title-center">Add to Anki</div>
-    <div class="title-right" on:click={onAdd}>Add</div>
+    <div class="title-right"><TextButton label="Add" on:click={onAdd} /></div>
   </div>
   <div class="scrollable">
     <div class="preview-container">

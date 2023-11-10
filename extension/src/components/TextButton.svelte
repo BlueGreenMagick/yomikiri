@@ -1,6 +1,10 @@
 <!--
+  @component
   ios style where button text becomes lighter on tap.
-  Use event listener because `:active` does not detect if touch moves out of element.
+  - label [string]
+  - on:click [ClickEvent]: also catches taps on mobile
+
+  Uses event listener for touch because `:active` does not detect if touch moves out of element.
 -->
 
 <script lang="ts">
