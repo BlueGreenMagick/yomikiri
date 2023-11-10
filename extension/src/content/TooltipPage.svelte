@@ -48,6 +48,11 @@
 <style global>
   @import "../global.css";
 
+  #main {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
   #main > .add-to-anki-container {
     position: absolute;
     top: 0;

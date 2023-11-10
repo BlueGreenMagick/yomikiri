@@ -204,7 +204,9 @@ export namespace Tooltip {
       let content = tooltip.contentDocument?.getElementById(
         "main"
       ) as HTMLElement;
-      height = content.scrollHeight;
+      // getBoundingClientRect().height returns floating-precision number
+      let rect = content.getBoundingClientRect();
+      height = rect.height;
     }
     tooltip.style.height = height + "px";
   }
