@@ -71,11 +71,11 @@
 
   .title-bar {
     flex: 0 0 auto;
-    height: 24px;
+    height: 2.4em;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    padding: 4px;
+    padding: 0 0.6em;
   }
   .title-left {
     flex: 1 0 0;
