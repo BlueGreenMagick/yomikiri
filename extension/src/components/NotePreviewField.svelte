@@ -35,6 +35,8 @@
       errored = false;
     }
   }
+
+  $: field.value = value;
 </script>
 
 <div class="anki-preview-field">
