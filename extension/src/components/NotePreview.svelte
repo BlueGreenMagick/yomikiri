@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Field } from "~/ankiNoteBuilder";
+  import type { Field, LoadingField } from "~/ankiNoteBuilder";
   import AnkiPreviewField from "./NotePreviewField.svelte";
 
-  export let fields: Field[];
+  export let fields: LoadingField[];
 </script>
 
 <div class="anki-preview">

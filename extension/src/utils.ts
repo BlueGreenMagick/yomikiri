@@ -1,3 +1,5 @@
+import { writable, type Readable, type Writable } from "svelte/store";
+
 namespace Utils {
   export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
 
@@ -22,6 +24,36 @@ namespace Utils {
     });
     // @ts-ignore
     return [promise, resolve, reject];
+  }
+
+  export class PromiseWithProgress<V, P> extends Promise<V> {
+    progress: Writable<P>;
+
+    constructor(
+      executor: (resolve: PromiseResolver<V>, reject: PromiseRejector) => void,
+      initialProgress?: P
+    ) {
+      super(executor);
+
+      if (initialProgress != undefined) {
+        this.progress = writable(initialProgress);
+      } else {
+        this.progress = writable();
+      }
+    }
+
+    static fromPromise<V, P>(
+      promise: Promise<V>,
+      initialProgress?: P
+    ): PromiseWithProgress<V, P> {
+      return new PromiseWithProgress((res, rej) => {
+        promise.then(res, rej);
+      }, initialProgress);
+    }
+
+    setProgress(progress: P) {
+      this.progress.set(progress);
+    }
   }
 
   export function listIsIdentical(l1: any[], l2: any[]) {

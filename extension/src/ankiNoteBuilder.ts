@@ -23,12 +23,25 @@ export interface Field {
   value: string;
 }
 
-export interface NoteData {
+export interface LoadingField {
+  name: string;
+  value: string | Utils.PromiseWithProgress<string, string>;
+}
+
+export interface LoadingNoteData {
   deck: string;
   notetype: string;
-  fields: Field[];
+  fields: (LoadingField | Field)[];
   tags: string;
 }
+
+export interface NoteData extends LoadingNoteData {
+  fields: Field[];
+}
+
+export type MarkerHandler = (
+  data: MarkerData
+) => string | Utils.PromiseWithProgress<string, string>;
 
 export namespace AnkiNoteBuilder {
   export const MARKERS = {
@@ -57,24 +70,21 @@ export namespace AnkiNoteBuilder {
   export type Marker = keyof typeof MARKERS;
 
   const _markerHandlers: {
-    [marker: string]: (data: MarkerData) => string | Promise<string>;
+    [marker: string]: MarkerHandler;
   } = {};
 
   export function markerKeys(): Marker[] {
     return Object.keys(MARKERS) as Marker[];
   }
 
-  export function addMarker(
-    marker: Marker,
-    fn: (data: MarkerData) => string | Promise<string>
-  ) {
+  export function addMarker(marker: Marker, fn: MarkerHandler) {
     _markerHandlers[marker] = fn;
   }
 
   export function markerValue(
     marker: string,
     data: MarkerData
-  ): Promise<string> | string {
+  ): string | Utils.PromiseWithProgress<string, string> {
     const handler = _markerHandlers[marker];
     let value = "";
     if (handler === undefined) {
@@ -96,7 +106,7 @@ export namespace AnkiNoteBuilder {
     return note;
   }
 
-  export async function buildNote(data: MarkerData): Promise<NoteData> {
+  export async function buildNote(data: MarkerData): Promise<LoadingNoteData> {
     const template = await Config.get("anki.template");
     if (template === null) {
       throw new Error(
@@ -104,10 +114,10 @@ export namespace AnkiNoteBuilder {
       );
     }
 
-    const note = cloneNote(template);
+    const note = cloneNote(template) as LoadingNoteData;
     for (const field of note.fields) {
-      const marker = field.value;
-      field.value = await markerValue(marker, data);
+      const marker = field.value as string;
+      field.value = markerValue(marker, data);
     }
     return note;
   }
@@ -221,9 +231,17 @@ export namespace AnkiNoteBuilder {
 
     return sentence;
   });
-  addMarker("translated-sentence", async (data: MarkerData) => {
-    return await translate(data.sentence);
-  });
+  addMarker(
+    "translated-sentence",
+    (data: MarkerData): Utils.PromiseWithProgress<string, string> => {
+      const translatePromise = translate(data.sentence);
+      const promise = Utils.PromiseWithProgress.fromPromise(
+        translatePromise,
+        "Translating Sentence"
+      );
+      return promise;
+    }
+  );
 
   addMarker("sentence-cloze", (data: MarkerData) => {
     const tokenized = data.tokenized;
@@ -268,7 +286,7 @@ export namespace AnkiNoteBuilder {
 
   addMarker("meaning", (data: MarkerData) => {
     if (data.selectedMeaning === undefined) {
-      return markerValue("meaning-full", data);
+      return markerValue("meaning-full", data) as string;
     } else {
       return Utils.escapeHTML(data.selectedMeaning.meaning.join(", "));
     }

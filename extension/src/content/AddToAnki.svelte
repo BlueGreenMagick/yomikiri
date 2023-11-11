@@ -3,7 +3,7 @@
   passed-in noteData object is modified live when user changes field value
 -->
 <script lang="ts">
-  import type { Field, NoteData } from "~/ankiNoteBuilder";
+  import type { Field, LoadingNoteData, NoteData } from "~/ankiNoteBuilder";
   import NotePreview from "../components/NotePreview.svelte";
   import NotePreviewField from "~/components/NotePreviewField.svelte";
   import { createEventDispatcher } from "svelte";
@@ -18,7 +18,7 @@
     addNote: NoteData;
   }
 
-  export let noteData: NoteData;
+  export let noteData: LoadingNoteData;
 
   const dispatch = createEventDispatcher<Events>();
 

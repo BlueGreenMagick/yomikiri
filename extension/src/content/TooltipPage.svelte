@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { fly } from "svelte/transition";
   import type { Entry } from "~/dicEntry";
   import DicEntriesView from "~/components/DicEntriesView.svelte";
   import { platformClass } from "~/components/actions";
-  import type { NoteData } from "~/ankiNoteBuilder";
+  import type { LoadingNoteData, NoteData } from "~/ankiNoteBuilder";
   import DicEntryView from "~/components/DicEntryView.svelte";
   import AddToAnki from "./AddToAnki.svelte";
   import { createEventDispatcher } from "svelte";
@@ -16,14 +15,14 @@
 
   let previewIsVisible = false;
   let entries: Entry[] = [];
-  let previewNoteData: NoteData;
+  let previewNoteData: LoadingNoteData;
 
   export function showEntries(e: Entry[]) {
     previewIsVisible = false;
     entries = e;
   }
 
-  export function showPreview(entry: Entry, noteData: NoteData) {
+  export function showPreview(entry: Entry, noteData: LoadingNoteData) {
     previewIsVisible = true;
     previewNoteData = noteData;
   }

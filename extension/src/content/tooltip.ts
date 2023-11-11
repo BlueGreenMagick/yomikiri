@@ -1,11 +1,10 @@
 import Utils from "utils";
 import {
   AnkiNoteBuilder,
+  type LoadingNoteData,
   type MarkerData,
   type NoteData,
 } from "~/ankiNoteBuilder";
-import { BrowserApi } from "~/browserApi";
-import { Highlighter } from "./highlight";
 import { Toast } from "~/toast";
 import type { TokenizeResult } from "~/backend";
 import type { SelectedEntryForAnki } from "~/components/DicEntryView.svelte";
@@ -236,12 +235,11 @@ export namespace Tooltip {
           pageTitle: document.title,
         };
 
-        const toast = Toast.loading("Preparing Anki note");
-        let note: NoteData;
+        let note: LoadingNoteData;
         try {
           note = await AnkiNoteBuilder.buildNote(markerData);
         } catch (err) {
-          toast.error(Utils.errorMessage(err));
+          Toast.error(Utils.errorMessage(err));
           throw err;
         }
         _tooltipPageSvelte.showPreview(request.entry, note);
