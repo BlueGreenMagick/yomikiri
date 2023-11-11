@@ -49,4 +49,8 @@
     background-color: var(--background);
     padding: 2px;
   }
+
+  .field-value.loading {
+    background-color: var(--background-alt);
+  }
 </style>

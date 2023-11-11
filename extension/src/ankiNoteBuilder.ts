@@ -237,7 +237,7 @@ export namespace AnkiNoteBuilder {
       const translatePromise = translate(data.sentence);
       const promise = Utils.PromiseWithProgress.fromPromise(
         translatePromise,
-        "Translating Sentence"
+        "Translating Sentence..."
       );
       return promise;
     }
