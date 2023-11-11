@@ -4,7 +4,6 @@
 -->
 <script lang="ts">
   import type { Field, LoadingNoteData, NoteData } from "~/ankiNoteBuilder";
-  import NotePreview from "../components/NotePreview.svelte";
   import NotePreviewField from "~/components/NotePreviewField.svelte";
   import { createEventDispatcher } from "svelte";
   import TextButton from "~/components/TextButton.svelte";
@@ -34,6 +33,8 @@
       this._value = val;
     },
   };
+  let errored: boolean[] = [];
+  let anyErrored = false;
 
   function onBack() {
     dispatch("back");
@@ -42,17 +43,28 @@
   function onAdd() {
     dispatch("addNote", noteData);
   }
+
+  $: anyErrored = errored.includes(true);
 </script>
 
 <div class="add-to-anki">
   <div class="title-bar">
     <div class="title-left"><TextButton label="Back" on:click={onBack} /></div>
     <div class="title-center">Add to Anki</div>
-    <div class="title-right"><TextButton label="Add" on:click={onAdd} /></div>
+    <div class="title-right">
+      <TextButton
+        label="Add"
+        on:click={onAdd}
+        disabled={anyErrored}
+        style={anyErrored ? "warn" : "default"}
+      />
+    </div>
   </div>
   <div class="scrollable">
-    <div class="preview-container">
-      <NotePreview fields={noteData.fields} />
+    <div class="fields-container">
+      {#each noteData.fields as field, i}
+        <NotePreviewField {field} bind:errored={errored[i]} />
+      {/each}
     </div>
     <div class="tags">
       <NotePreviewField field={tagField} bold />

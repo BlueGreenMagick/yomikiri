@@ -75,7 +75,7 @@
   }
 
   .field-value.errored {
-    border: 1px solid red;
-    color: red;
+    border: 1px solid var(--text-warn);
+    color: var(--text-warn);
   }
 </style>
