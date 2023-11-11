@@ -74,6 +74,7 @@
 
   .field-value.loading {
     background-color: var(--background-alt);
+    color: var(--text-light);
   }
 
   .field-value.errored {
