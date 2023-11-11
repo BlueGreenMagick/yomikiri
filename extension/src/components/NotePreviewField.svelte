@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
-  import type { Field, LoadingField } from "~/ankiNoteBuilder";
+  import type { LoadingField } from "~/ankiNoteBuilder";
   import Utils from "~/utils";
 
   export let field: LoadingField;
   export let bold: boolean = false;
+  export let errored: boolean = false;
 
   let loading: boolean;
   let value: string;
@@ -13,20 +14,39 @@
   if (field.value instanceof Utils.PromiseWithProgress) {
     loading = true;
     valueStore = field.value.progress;
-    field.value.then((v) => {
-      loading = false;
-      value = v;
-    });
+    field.value
+      .then((v) => {
+        loading = false;
+        value = v;
+      })
+      .catch((err) => {
+        loading = false;
+        errored = true;
+        value = Utils.errorMessage(err);
+      });
   } else {
     loading = false;
     value = field.value;
+  }
+
+  function onFocus() {
+    if (errored) {
+      value = "";
+      errored = false;
+    }
   }
 </script>
 
 <div class="anki-preview-field">
   <div class="field-name" class:bold>{field.name}</div>
   {#if !loading}
-    <div class="field-value" contenteditable="true" bind:innerHTML={value} />
+    <div
+      class="field-value"
+      class:errored
+      contenteditable="true"
+      bind:innerHTML={value}
+      on:focus={onFocus}
+    />
   {:else}
     <div class="field-value loading">{@html $valueStore}</div>
   {/if}
@@ -52,5 +72,10 @@
 
   .field-value.loading {
     background-color: var(--background-alt);
+  }
+
+  .field-value.errored {
+    border: 1px solid red;
+    color: red;
   }
 </style>
