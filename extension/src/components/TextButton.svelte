@@ -3,7 +3,7 @@
   ios style where button text becomes lighter on tap.
   - label [string]
   - on:click [ClickEvent]: also catches taps on mobile
-  - style ["default" | "warn"]: style the button. default="default"
+  - style: button style. default="default"
 
   Uses event listener for touch because `:active` does not detect if touch moves out of element.
 -->

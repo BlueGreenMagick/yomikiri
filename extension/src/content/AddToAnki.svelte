@@ -3,7 +3,11 @@
   passed-in noteData object is modified live when user changes field value
 -->
 <script lang="ts">
-  import type { Field, LoadingNoteData, NoteData } from "~/ankiNoteBuilder";
+  import {
+    type Field,
+    LoadingNoteData,
+    type NoteData,
+  } from "~/ankiNoteBuilder";
   import NotePreviewField from "~/components/NotePreviewField.svelte";
   import { createEventDispatcher } from "svelte";
   import TextButton from "~/components/TextButton.svelte";
@@ -35,14 +39,20 @@
   };
   let errored: boolean[] = [];
   let anyErrored = false;
+  let allLoaded: boolean = false;
 
   function onBack() {
     dispatch("back");
   }
 
-  function onAdd() {
-    dispatch("addNote", noteData);
+  async function onAdd() {
+    let resolvedNoteData = await LoadingNoteData.resolve(noteData);
+    dispatch("addNote", resolvedNoteData);
   }
+
+  LoadingNoteData.loadComplete(noteData).then((_) => {
+    allLoaded = true;
+  });
 
   $: anyErrored = errored.includes(true);
 </script>
@@ -55,7 +65,7 @@
       <TextButton
         label="Add"
         on:click={onAdd}
-        disabled={anyErrored}
+        disabled={!allLoaded || anyErrored}
         style={anyErrored ? "warn" : "default"}
       />
     </div>

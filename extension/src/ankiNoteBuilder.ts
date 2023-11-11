@@ -39,6 +39,26 @@ export interface NoteData extends LoadingNoteData {
   fields: Field[];
 }
 
+export namespace LoadingNoteData {
+  export function loadComplete(note: LoadingNoteData): Promise<any> {
+    const promises = [];
+    for (const field of note.fields) {
+      if (field.value instanceof Promise) {
+        promises.push(field.value);
+      }
+    }
+    return Promise.allSettled(promises);
+  }
+
+  /** LoadingNoteData is in-place resolved to NoteData */
+  export async function resolve(note: LoadingNoteData): Promise<NoteData> {
+    for (const field of note.fields) {
+      field.value = await field.value;
+    }
+    return note as NoteData;
+  }
+}
+
 export type MarkerHandler = (
   data: MarkerData
 ) => string | Utils.PromiseWithProgress<string, string>;
