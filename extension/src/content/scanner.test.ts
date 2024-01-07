@@ -74,6 +74,17 @@ describe("sentenceAtCharLocation", () => {
     expect(result2.text).toEqual(sentence);
     expect(result2.charAt).toEqual(3);
   });
+
+  test("<br> separated sentences", () => {
+    const sentence = "これは文章2";
+    const container = prepareHTML(
+      `<div>これは文章1<br>これは文章2<br>これは文章3</div>`
+    );
+    const textNode = selectTextNode(container, "div", 2);
+    const result = sentenceAtCharLocation(textNode, 1);
+    expect(result.text).toEqual(sentence);
+    expect(result.charAt).toEqual(1);
+  });
 });
 
 describe("nodesOfToken", () => {
