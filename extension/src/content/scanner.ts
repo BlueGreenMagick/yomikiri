@@ -271,8 +271,17 @@ function isSentenceEndChar(char: string): boolean {
   return "。？！｡.?!".includes(char);
 }
 
+/**
+ * 1) Node display is inline or ruby base
+ * 2) Node position is static or relative
+ *
+ * Exception: \<br\> is not inline
+ */
 function nodeIsInline(node: Node): boolean {
   if (!(node instanceof Element)) return true;
+
+  if (node.tagName == "BR") return false;
+
   const styles = window.getComputedStyle(node);
   return (
     ["inline", "ruby", "ruby-base"].includes(styles.display) &&
