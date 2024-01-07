@@ -8,7 +8,7 @@ beforeAll(() => {
   display: block;
   position: static;
 }
-b, i, u, ruby, rb {
+a, b, br, i, img, input, u, ruby, rb {
   display: inline;
 }
 rp {
