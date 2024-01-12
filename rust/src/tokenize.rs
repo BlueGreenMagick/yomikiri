@@ -68,6 +68,8 @@ impl<R: Read + Seek> SharedBackend<R> {
         })
     }
 
+    // `sentence` may not be unicode normalized, but lindera only accepts normalized text.
+    // byte position on unnormalized sentence is calculated from normalized byte position
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
         let normalized_sentence = sentence.nfc().collect::<String>();
         let already_normalized: bool = sentence == normalized_sentence;
@@ -80,9 +82,10 @@ impl<R: Read + Seek> SharedBackend<R> {
         let normalized_graphemes = normalized_sentence.grapheme_indices(true);
         let mut graphemes = original_graphemes.zip(normalized_graphemes);
 
-        let mut orig_char_indices = sentence.char_indices().enumerate();
+        let mut original_char_indices = sentence.char_indices().enumerate();
 
         for tok in &mut ltokens {
+            // starting byte index of original sentence
             let byte_start = if already_normalized {
                 tok.byte_start
             } else {
@@ -96,7 +99,7 @@ impl<R: Read + Seek> SharedBackend<R> {
                     })
                     .ok_or(YomikiriError::BytePositionError)?
             };
-            let char_start = orig_char_indices
+            let char_start = original_char_indices
                 .find_map(|(i, (a, _))| if a == byte_start { Some(i) } else { None })
                 .ok_or(YomikiriError::BytePositionError)?;
 
