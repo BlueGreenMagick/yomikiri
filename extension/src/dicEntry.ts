@@ -127,6 +127,11 @@ export namespace Entry {
     }
     return null;
   }
+
+  /** Sort entries by priority */
+  export function order(entries: Entry[]) {
+    entries.sort((a, b) => b.priority - a.priority);
+  }
 }
 
 export interface Form {

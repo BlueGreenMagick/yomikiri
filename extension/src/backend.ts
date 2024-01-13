@@ -3,7 +3,7 @@ import {
   type TokenizeResult,
   type TokenizeRequest,
 } from "@platform/backend";
-import type { Entry } from "~/dicEntry";
+import { Entry } from "~/dicEntry";
 import { Platform } from "@platform";
 import { BrowserApi } from "./browserApi";
 
@@ -54,7 +54,9 @@ export namespace Backend {
     }
 
     if (_backend !== null) {
-      return await _backend.tokenize(text, charAt);
+      const result = await _backend.tokenize(text, charAt);
+      Entry.sort(result.entries);
+      return result;
     } else {
       return await BrowserApi.request("tokenize", { text, charAt });
     }
@@ -87,7 +89,9 @@ export namespace Backend {
 
   export async function searchTerm(term: string): Promise<Entry[]> {
     if (_backend !== null) {
-      return await _backend.search(term);
+      const result = await _backend.search(term);
+      Entry.sort(result);
+      return result;
     } else {
       return await BrowserApi.request("searchTerm", term);
     }
