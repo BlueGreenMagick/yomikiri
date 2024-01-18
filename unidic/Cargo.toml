@@ -9,7 +9,7 @@ real = []
 
 
 [dependencies]
-lindera-core = "0.27"
+lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git" }
 
 [build-dependencies]
 yomikiri-unidic-build = { path = "./unidic-build" }

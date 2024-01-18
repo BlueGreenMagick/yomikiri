@@ -22,42 +22,40 @@ uniffi-bindgen = []
 
 [dependencies]
 # switch back to crates.io crate when commit 1fd5848 is released
-lindera-tokenizer = "0.27"
-lindera-dictionary = "0.27"
-lindera-core = "0.27"
-yomikiri-unidic-dictionary = { path = "../unidic", features=["real"] }
+lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+yomikiri-unidic-dictionary = { path = "../unidic", features = ["real"] }
 yomikiri-dictionary-types = { path = "../dictionary-types" }
 unicode-normalization = "0.1.22"
 unicode-segmentation = "1.9.0"
 log = { version = "0.4" }
-serde = { version="1.0", features=["derive"] }
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 bincode = "1"
 thiserror = "1.0"
 
 [target.'cfg(target_family="wasm")'.dependencies]
-serde-wasm-bindgen = { version="0.5"}
-wasm-bindgen = { version="0.2.63" }
+serde-wasm-bindgen = { version = "0.5" }
+wasm-bindgen = { version = "0.2.63" }
 wasm-logger = { version = "0.2" }
-web-sys = { version="0.3", features=[
-  "Window", 
-  "Performance", 
-  "console"
-  ]}
-js-sys="0.3"
+web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
+js-sys = "0.3"
 console_error_panic_hook = { version = "0.1.6" }
 
 [target.'cfg(not(target_family="wasm"))'.dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom" }
 
 [target.'cfg(any(target_os="macos", target_os="ios"))'.dependencies]
-oslog = { version = "0.2"}
+oslog = { version = "0.2" }
 
 [build-dependencies]
 cfg_aliases = "0.1.0"
 
 [target.'cfg(not(target_family="wasm"))'.build-dependencies]
-uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [ "build" ]}
+uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [
+  "build",
+] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
