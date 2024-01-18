@@ -3,8 +3,7 @@
 use crate::error::{YResult, YomikiriError};
 use crate::SharedBackend;
 use lindera_core::mode::Mode;
-use lindera_dictionary::{DictionaryConfig, DictionaryKind};
-use lindera_tokenizer::tokenizer::{Tokenizer, TokenizerConfig};
+use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
@@ -18,16 +17,26 @@ use serde::Serialize;
 #[derive(Debug, Clone)]
 pub struct Token {
     pub text: String,
+    /// start idx
+    pub start: u32,
+
+    /// fields from TokenDetails
+    pub pos: String,
+    pub pos2: String,
+    pub base: String,
+    pub reading: String,
+}
+
+#[derive(Debug, Clone)]
+struct TokenDetails {
     /// defaults to `UNK`
     pub pos: String,
-    /// defaults to `text`
+    /// defaults to `*`
+    pub pos2: String,
+    /// defaults to token surface or ``
     pub base: String,
     /// defaults to `*`
     pub reading: String,
-    /// defaults to `*`
-    pub pos2: String,
-    /// start idx
-    pub start: u32,
 }
 
 #[cfg_attr(wasm, derive(Serialize))]
@@ -37,6 +46,50 @@ pub struct RawTokenizeResult {
     pub tokenIdx: u32,
     // entries in JSON
     pub entriesJson: Vec<String>,
+}
+
+impl Token {
+    fn new<S: Into<String>>(surface: S, details: TokenDetails, start: u32) -> Self {
+        Token {
+            text: surface.into(),
+            start,
+            pos: details.pos,
+            pos2: details.pos2,
+            base: details.base,
+            reading: details.reading,
+        }
+    }
+}
+
+impl Default for TokenDetails {
+    fn default() -> Self {
+        TokenDetails {
+            pos: "UNK".into(),
+            pos2: "*".into(),
+            base: "".into(),
+            reading: "*".into(),
+        }
+    }
+}
+
+impl TokenDetails {
+    fn from_details(details: &[&str]) -> Self {
+        assert!(details.len() == 4, "details must be vector of length 4");
+
+        TokenDetails {
+            pos: details[0].into(),
+            pos2: details[1].into(),
+            base: details[2].into(),
+            reading: details[3].into(),
+        }
+    }
+
+    fn default_with_surface(surface: &str) -> Self {
+        TokenDetails {
+            base: surface.into(),
+            ..TokenDetails::default()
+        }
+    }
 }
 
 impl<R: Read + Seek> SharedBackend<R> {
@@ -104,16 +157,12 @@ impl<R: Read + Seek> SharedBackend<R> {
                 .ok_or(YomikiriError::BytePositionError)?;
 
             let text = tok.text.to_string();
-            let details = tok.get_details();
-
-            let token = Token {
-                base: get_value_from_detail(&details, 3, &text),
-                reading: get_value_from_detail(&details, 2, "*"),
-                pos: get_value_from_detail(&details, 0, "UNK"),
-                pos2: get_value_from_detail(&details, 1, "*"),
-                text: text,
-                start: char_start as u32,
+            let details = match tok.get_details() {
+                Some(d) => TokenDetails::from_details(&d),
+                None => TokenDetails::default_with_surface(&text),
             };
+
+            let token = Token::new(text, details, char_start as u32);
             tokens.push(token)
         }
         Ok(tokens)
@@ -389,18 +438,6 @@ impl<R: Read + Seek> SharedBackend<R> {
 pub fn create_tokenizer() -> Tokenizer {
     let dictionary = load_dictionary().unwrap();
     Tokenizer::new(dictionary, None, Mode::Normal)
-}
-
-fn get_value_from_detail<S: Into<String>>(
-    details: &Option<Vec<&str>>,
-    index: usize,
-    default: S,
-) -> String {
-    details
-        .as_deref()
-        .map(|d| d.get(index).map(|s| s.to_string()))
-        .flatten()
-        .unwrap_or_else(|| default.into())
 }
 
 /// Join and replace tokens[from..<to]
