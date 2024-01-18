@@ -93,8 +93,8 @@ impl TokenDetails {
         TokenDetails {
             pos: details.get(0).unwrap_or(&"UNK").to_string(),
             pos2: details.get(1).unwrap_or(&"*").to_string(),
-            base: details.get(2).unwrap_or(&"").to_string(),
-            reading: details.get(3).unwrap_or(&"*").to_string(),
+            base: details.get(3).unwrap_or(&"").to_string(),
+            reading: details.get(2).unwrap_or(&"*").to_string(),
         }
     }
 
