@@ -57,7 +57,7 @@ export namespace Backend {
 
     if (_backend !== null) {
       const result = await _backend.tokenize(text, charAt);
-      Entry.sort(result.entries);
+      Entry.order(result.entries);
       return result;
     } else {
       return await BrowserApi.request("tokenize", { text, charAt });
@@ -93,7 +93,7 @@ export namespace Backend {
   export async function searchTerm(term: string): Promise<Entry[]> {
     if (_backend !== null) {
       const result = await _backend.search(term);
-      Entry.sort(result);
+      Entry.order(result);
       return result;
     } else {
       return await BrowserApi.request("searchTerm", term);
