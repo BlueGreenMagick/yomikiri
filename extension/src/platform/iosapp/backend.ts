@@ -28,7 +28,7 @@ export class BackendController implements IBackendController {
     return {
       tokens: rawResult.tokens,
       tokenIdx: rawResult.tokenIdx,
-      entries: rawResult.entriesJson
+      entries: rawResult.mainEntries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
     };

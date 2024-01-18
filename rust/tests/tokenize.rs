@@ -48,7 +48,7 @@ fn test_tokenize() {
     let mut backend = setup_backend();
     let result = backend.tokenize("これは例文です。", 0, false).unwrap();
     assert_eq!(result.tokenIdx, 0);
-    assert!(!result.entriesJson.is_empty());
+    assert!(!result.mainEntries.is_empty());
     assert!(result.tokens.len() > 3);
 }
 

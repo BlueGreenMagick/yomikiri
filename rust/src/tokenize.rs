@@ -27,7 +27,7 @@ pub struct Token {
     pub reading: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct TokenDetails {
     /// defaults to `UNK`
     pub pos: String,
@@ -43,9 +43,16 @@ struct TokenDetails {
 #[cfg_attr(uniffi, derive(uniffi::Record))]
 pub struct RawTokenizeResult {
     pub tokens: Vec<Token>,
+    /// selected token index
     pub tokenIdx: u32,
-    // entries in JSON
-    pub entriesJson: Vec<String>,
+    /// DicEntry JSONs returned by lindera tokenizer
+    pub mainEntries: Vec<String>,
+    /// alternate DicEntry JSONS that may output token surface.
+    /// The following text are searched in the dictionary:
+    /// 1) joined surface
+    /// 2) alternate base of joined surface
+    /// 3) alternate base of surface, that joins to joined surface (TODO)
+    pub alternateEntries: Vec<String>,
 }
 
 impl Token {
@@ -57,6 +64,15 @@ impl Token {
             pos2: details.pos2,
             base: details.base,
             reading: details.reading,
+        }
+    }
+
+    fn details(&self) -> TokenDetails {
+        TokenDetails {
+            pos: self.pos.clone(),
+            pos2: self.pos2.clone(),
+            base: self.base.clone(),
+            reading: self.reading.clone(),
         }
     }
 }
@@ -91,6 +107,8 @@ impl TokenDetails {
 }
 
 impl<R: Read + Seek> SharedBackend<R> {
+    /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
+    ///
     /// if `raw`, return lindera tokenize result without joining tokens
     /// only used in wasm for debugging purposes
     pub fn tokenize<'a>(
@@ -108,14 +126,31 @@ impl<R: Read + Seek> SharedBackend<R> {
             Some(i) => i - 1,
             None => tokens.len() - 1,
         };
-        let dict_jsons = self.dictionary.search_json(&tokens[token_idx].base)?;
+        let main_entries = self.dictionary.search_json(&tokens[token_idx].base)?;
+
+        let mut alternate_entries = Vec::new();
+        // joined surface
+        let joined_surface = &tokens[token_idx].text;
+        let mut entries = self.dictionary.search_json(joined_surface)?;
+        alternate_entries.append(&mut entries);
+
+        // alternate base of joined surface
+        let selected_token_details = tokens[token_idx].details();
+        let all_details = self.lindera_details(joined_surface);
+        for details in all_details {
+            if details != selected_token_details {
+                let mut entries = self.dictionary.search_json(&details.base)?;
+                alternate_entries.append(&mut entries);
+            }
+        }
 
         Ok(RawTokenizeResult {
             tokens,
             tokenIdx: token_idx.try_into().map_err(|_| {
-                YomikiriError::ConversionError("Failed to convert tokenIdx as u32.".into())
+                YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
-            entriesJson: dict_jsons,
+            mainEntries: main_entries,
+            alternateEntries: alternate_entries,
         })
     }
 
@@ -164,6 +199,23 @@ impl<R: Read + Seek> SharedBackend<R> {
             tokens.push(token)
         }
         Ok(tokens)
+    }
+
+    fn lindera_details(&self, surface: &str) -> Vec<TokenDetails> {
+        let word_entries = self.tokenizer.dictionary.dict.find_surface(surface);
+        word_entries
+            .iter()
+            .map(|entry| {
+                let id = entry.word_id.0;
+                let details = self.tokenizer.dictionary.word_details(id as usize);
+                match details {
+                    Some(details) => TokenDetails::from_details(
+                        &details.iter().map(AsRef::as_ref).collect::<Vec<&str>>(),
+                    ),
+                    None => TokenDetails::default_with_surface(surface),
+                }
+            })
+            .collect()
     }
 
     /// Join tokens in-place if longer token exist in dictionary
