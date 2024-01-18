@@ -32,6 +32,7 @@ export namespace Backend {
         tokens: [],
         tokenIdx: 0,
         entries: [],
+        alternateEntries: [],
       };
     }
     return await tokenize({ text, charAt: 0 });
@@ -47,6 +48,7 @@ export namespace Backend {
         tokens: [],
         tokenIdx: -1,
         entries: [],
+        alternateEntries: [],
       };
     }
     if (charAt < 0 || charAt >= text.length) {
@@ -72,6 +74,7 @@ export namespace Backend {
         tokens: [],
         tokenIdx: -1,
         entries: [],
+        alternateEntries: [],
       };
     }
     if (charAt < 0 || charAt >= text.length) {

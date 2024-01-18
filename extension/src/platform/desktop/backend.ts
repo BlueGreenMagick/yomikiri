@@ -60,6 +60,9 @@ export class BackendController implements IBackendController {
       entries: rawResult.mainEntries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
+      alternateEntries: rawResult.alternateEntries
+        .map((json) => JSON.parse(json))
+        .map(Entry.fromObject),
     };
   }
 
@@ -73,6 +76,9 @@ export class BackendController implements IBackendController {
       tokens: rawResult.tokens,
       tokenIdx: rawResult.tokenIdx,
       entries: rawResult.mainEntries
+        .map((json) => JSON.parse(json))
+        .map(Entry.fromObject),
+      alternateEntries: rawResult.alternateEntries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
     };

@@ -117,6 +117,7 @@ const tokenized: TokenizeResult = {
       priority: 161,
     },
   ].map(Entry.fromObject),
+  alternateEntries: [],
 };
 
 export const exampleMarkerData: MarkerData = {

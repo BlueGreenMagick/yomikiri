@@ -27,6 +27,7 @@ export interface RawTokenizeResult {
     tokens: Token[];
     tokenIdx: number;
     mainEntries: string[];
+    alternateEntries: string[];
 }
 "#;
 
