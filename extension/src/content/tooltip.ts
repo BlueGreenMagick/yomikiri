@@ -15,7 +15,7 @@ import TooltipPage from "./TooltipPage.svelte";
 export namespace Tooltip {
   let _tokenizeResult: TokenizeResult;
   let _highlightedNodes: Node[];
-  let _tooltipEl: HTMLIFrameElement;
+  let _tooltipEl: HTMLIFrameElement | undefined = undefined;
   let _tooltipPageSvelte: TooltipPage;
 
   export async function show(
@@ -24,22 +24,26 @@ export namespace Tooltip {
     mouseX: number,
     mouseY: number
   ) {
-    if (_tooltipEl === undefined) {
-      await createTooltipIframe();
+    let tooltip = _tooltipEl;
+    if (tooltip === undefined) {
+      tooltip = await createTooltipIframe();
     }
     _tokenizeResult = tokenizeResult;
     _highlightedNodes = highlightedNodes;
-    _tooltipEl.contentDocument?.scrollingElement?.scrollTo(0, 0);
-    _tooltipEl.style.display = "block";
+    tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
+    tooltip.style.display = "block";
     _tooltipPageSvelte.showEntries(_tokenizeResult.entries);
     // fix bug where tooltip height is previous entry's height
     await 0;
     const rect = findRectOfMouse(highlightedNodes, mouseX, mouseY);
-    await position(rect);
+    await position(tooltip, rect);
   }
 
   export function hide() {
     const tooltip = getTooltipEl();
+    if (tooltip === undefined) {
+      return;
+    }
     tooltip.style.display = "none";
     tooltip.contentWindow?.getSelection()?.empty();
   }
@@ -58,7 +62,7 @@ export namespace Tooltip {
     document.body.appendChild(iframe);
     _tooltipEl = iframe;
 
-    attachResizeObserver();
+    attachResizeObserver(_tooltipEl);
 
     const iframeDoc = iframe.contentDocument as Document;
     if (iframeDoc.readyState === "complete") {
@@ -76,7 +80,7 @@ export namespace Tooltip {
 
   let _repositionRequested: boolean = false;
   /** add ResizeObserver to document and change position on document resize */
-  function attachResizeObserver() {
+  function attachResizeObserver(tooltipEl: HTMLIFrameElement) {
     const resizeObserver = new ResizeObserver((_) => {
       if (!_highlightedNodes || _repositionRequested) return;
       const range = new Range();
@@ -84,15 +88,15 @@ export namespace Tooltip {
       const rect = range.getClientRects()[0];
       _repositionRequested = true;
       requestAnimationFrame(() => {
-        position(rect);
+        position(tooltipEl, rect);
         _repositionRequested = false;
       });
     });
     resizeObserver.observe(document.documentElement);
   }
 
-  function getTooltipEl(): HTMLIFrameElement {
-    return _tooltipEl as HTMLIFrameElement;
+  function getTooltipEl(): HTMLIFrameElement | undefined {
+    return _tooltipEl;
   }
 
   function findRectOfMouse(
@@ -128,7 +132,7 @@ export namespace Tooltip {
    *  prefer tooltip.top = rect.bottom + VERTICAL_SPACE,
    *  but sometimes tooltip.bottom = rect.top - VERTICAL_SPACE
    */
-  async function position(rect: DOMRect) {
+  async function position(tooltip: HTMLIFrameElement, rect: DOMRect) {
     // min margin between tooltip and window
     const MARGIN = 10;
     // space between highlighted rect and tooltip
@@ -137,7 +141,6 @@ export namespace Tooltip {
     const WIDTH = Math.min(500, window.innerWidth - 2 * MARGIN);
     const BOTTOM_ADVANTAGE = 150;
 
-    const tooltip = getTooltipEl();
     // reset tooltipEl style beforehand so tooltip does not affect document size.
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
@@ -188,13 +191,14 @@ export namespace Tooltip {
       tooltip.style.transform = "translateY(-100%)";
     }
 
-    updateTooltipHeight();
+    updateTooltipHeight(tooltip);
   }
 
   /** update tooltip height to match content height */
-  function updateTooltipHeight(max: boolean = false) {
-    const tooltip = getTooltipEl();
-
+  function updateTooltipHeight(
+    tooltip: HTMLIFrameElement,
+    max: boolean = false
+  ) {
     let height: number;
 
     if (max) {
@@ -243,7 +247,7 @@ export namespace Tooltip {
           throw err;
         }
         _tooltipPageSvelte.showPreview(request.entry, note);
-        updateTooltipHeight(true);
+        updateTooltipHeight(tooltip, true);
       }
     );
 
@@ -257,7 +261,7 @@ export namespace Tooltip {
     });
 
     _tooltipPageSvelte.$on("updateHeight", (ev: CustomEvent<void>) => {
-      updateTooltipHeight();
+      updateTooltipHeight(tooltip);
     });
   }
 }
