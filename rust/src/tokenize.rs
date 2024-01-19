@@ -46,12 +46,12 @@ pub struct RawTokenizeResult {
     /// selected token index
     pub tokenIdx: u32,
     /// DicEntry JSONs returned by lindera tokenizer
+    /// searched with base and surface of selected token
     pub mainEntries: Vec<String>,
     /// alternate DicEntry JSONS that may output token surface.
     /// The following text are searched in the dictionary:
-    /// 1) joined surface
-    /// 2) alternate base of joined surface
-    /// 3) alternate base of surface, that joins to joined surface
+    /// 1) alternate base of joined surface
+    /// 2) alternate base of surface, that joins to joined surface
     pub alternateEntries: Vec<String>,
 }
 
@@ -135,21 +135,25 @@ impl<R: Read + Seek> SharedBackend<R> {
             None => tokens.len() - 1,
         };
 
-        let main_entries = self.dictionary.search_json(&tokens[token_idx].base)?;
+        let selected_token = &tokens[token_idx];
 
-        let mut alternate_entries = Vec::new();
+        let mut main_entries = self.dictionary.search_json(&selected_token.base)?;
+
         // joined surface
-        let joined_surface = &tokens[token_idx].text;
-        let entries = self.dictionary.search_json(joined_surface)?;
-        for entry in entries {
-            if !main_entries.contains(&entry) {
-                alternate_entries.push(entry);
+        if selected_token.base != selected_token.text {
+            let entries = self.dictionary.search_json(&selected_token.text)?;
+            for entry in entries {
+                if !main_entries.contains(&entry) {
+                    main_entries.push(entry);
+                }
             }
         }
 
+        let mut alternate_entries = Vec::new();
+
         // alternate base of joined surface
-        let selected_token_details = tokens[token_idx].details();
-        let all_details = self.lindera_details(joined_surface);
+        let selected_token_details = selected_token.details();
+        let all_details = self.lindera_details(&selected_token.text);
         for details in all_details {
             if details == selected_token_details {
                 continue;
