@@ -58,6 +58,12 @@ impl<R: Seek + Read> Dictionary<R> {
         }
     }
 
+    pub fn contains(&self, term: &str) -> bool {
+        self.index
+            .binary_search_by_key(&term, |item| &item.key)
+            .is_ok()
+    }
+
     /// Returns json text of entries
     pub fn search_json(&mut self, term: &str) -> YResult<Vec<String>> {
         if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.key) {

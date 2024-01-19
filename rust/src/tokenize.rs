@@ -386,8 +386,8 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let next_token = &tokens[from + 1];
         let compound = concat_string(&token.text, &next_token.base);
-        let search = self.dictionary.search(&compound)?;
-        if search.is_empty() {
+        let exists = self.dictionary.contains(&compound);
+        if !exists {
             return Ok(false);
         }
 
@@ -412,8 +412,8 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let compound = concat_string(&token.text, &next_token.base);
-        let search = self.dictionary.search(&compound)?;
-        if search.is_empty() {
+        let exists = self.dictionary.contains(&compound);
+        if !exists {
             return Ok(false);
         }
 
@@ -461,8 +461,8 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let token = &tokens[from];
         let compound = concat_string(&token.text, &next_token.base);
-        let search = self.dictionary.search(&compound)?;
-        if search.is_empty() {
+        let exists = self.dictionary.contains(&compound);
+        if !exists {
             return Ok(false);
         }
 
