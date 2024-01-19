@@ -51,7 +51,7 @@ pub struct RawTokenizeResult {
     /// The following text are searched in the dictionary:
     /// 1) joined surface
     /// 2) alternate base of joined surface
-    /// 3) alternate base of surface, that joins to joined surface (TODO)
+    /// 3) alternate base of surface, that joins to joined surface
     pub alternateEntries: Vec<String>,
 }
 
@@ -118,29 +118,87 @@ impl<R: Read + Seek> SharedBackend<R> {
         raw: bool,
     ) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
+        let original_tokens = tokens.clone();
         if !raw {
             self.manual_patches(&mut tokens);
             self.join_all_tokens(&mut tokens)?;
         }
+        let original_token_idx = match original_tokens
+            .iter()
+            .position(|t| (t.start as usize) > char_idx)
+        {
+            Some(i) => i - 1,
+            None => tokens.len() - 1,
+        };
         let token_idx = match tokens.iter().position(|t| (t.start as usize) > char_idx) {
             Some(i) => i - 1,
             None => tokens.len() - 1,
         };
+
         let main_entries = self.dictionary.search_json(&tokens[token_idx].base)?;
 
         let mut alternate_entries = Vec::new();
         // joined surface
         let joined_surface = &tokens[token_idx].text;
-        let mut entries = self.dictionary.search_json(joined_surface)?;
-        alternate_entries.append(&mut entries);
+        let entries = self.dictionary.search_json(joined_surface)?;
+        for entry in entries {
+            if !main_entries.contains(&entry) {
+                alternate_entries.push(entry);
+            }
+        }
 
         // alternate base of joined surface
         let selected_token_details = tokens[token_idx].details();
         let all_details = self.lindera_details(joined_surface);
         for details in all_details {
-            if details != selected_token_details {
-                let mut entries = self.dictionary.search_json(&details.base)?;
-                alternate_entries.append(&mut entries);
+            if details == selected_token_details {
+                continue;
+            }
+            let entries = self.dictionary.search_json(&details.base)?;
+            for entry in entries {
+                if !main_entries.contains(&entry) && !alternate_entries.contains(&entry) {
+                    alternate_entries.push(entry);
+                }
+            }
+        }
+
+        // how many tokens were joined in selected joined token
+        let next_joined_token_start = tokens.get(token_idx + 1).map(|t| t.start);
+        let original_next_joined_token_index = match next_joined_token_start {
+            Some(start) => original_tokens
+                .iter()
+                .position(|t| t.start == start)
+                .ok_or_else(|| {
+                    YomikiriError::OtherError("could not find original_token with start".into())
+                })?,
+            None => original_tokens.len(),
+        };
+        let selected_tokens_group =
+            original_tokens[original_token_idx..original_next_joined_token_index].to_vec();
+        let alternate_details = self.lindera_details(&original_tokens[original_token_idx].text);
+        let selected_token_details = original_tokens[original_token_idx].details();
+        for details in alternate_details {
+            if details == selected_token_details {
+                continue;
+            }
+            let mut alternate_tokens_group = selected_tokens_group.clone();
+            let first_token = &mut alternate_tokens_group[0];
+            first_token.pos = details.pos;
+            first_token.pos2 = details.pos2;
+            first_token.base = details.base;
+            first_token.reading = details.reading;
+            self.manual_patches(&mut alternate_tokens_group);
+            self.join_all_tokens(&mut alternate_tokens_group)?;
+            if alternate_tokens_group.len() != 1 {
+                continue;
+            }
+
+            let joined_token = &alternate_tokens_group[0];
+            let entries = self.dictionary.search_json(&joined_token.base)?;
+            for entry in entries {
+                if !main_entries.contains(&entry) && !alternate_entries.contains(&entry) {
+                    alternate_entries.push(entry);
+                }
             }
         }
 
