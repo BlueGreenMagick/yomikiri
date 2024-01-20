@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Token } from "@platform/backend";
+  import type { Token, TokenizeResult } from "@platform/backend";
   import type { Entry } from "~/dicEntry";
   import { Platform } from "@platform";
   import Utils from "~/utils";
@@ -23,33 +23,24 @@
   const dispatch = createEventDispatcher<Events>();
 
   let searchTokens: Token[] = [];
-  // may be bigger than entries.length
-  let selectedTokenIdx: number;
+  // may be bigger than total token characters
+  let selectedCharAt: number;
   let entries: Entry[] = [];
 
   /** modifies `searchTokens` */
   const tokenize = Utils.SingleQueued(_tokenize);
-  async function _tokenize(searchText: string) {
+  async function _tokenize(searchText: string, charAt: number) {
     if (searchText === "") {
       searchTokens = [];
       return;
     }
 
-    let result = await Backend.tokenize({
+    const tokenized = await Backend.tokenize({
       text: searchText,
-      charAt: 0,
+      charAt: charAt,
     });
-    searchTokens = result.tokens;
-  }
-
-  /** modifies `entries` */
-  const getEntries = Utils.SingleQueued(_getEntries);
-  async function _getEntries(tokens: Token[], idx: number) {
-    if (idx >= tokens.length) {
-      entries = [];
-      return;
-    }
-    entries = await Backend.searchTerm(tokens[idx].base);
+    searchTokens = tokenized.tokens;
+    entries = tokenized.mainEntries.concat(tokenized.alternateEntries);
   }
 
   function openSettings() {
@@ -60,8 +51,7 @@
     dispatch("close");
   }
 
-  $: tokenize(searchText.normalize("NFC"));
-  $: getEntries(searchTokens, selectedTokenIdx);
+  $: tokenize(searchText, selectedCharAt);
 </script>
 
 <div class="search">
@@ -95,7 +85,7 @@
     {/if}
   </div>
   <div class="tokensview">
-    <TokensView tokens={searchTokens} bind:selectedIdx={selectedTokenIdx} />
+    <TokensView tokens={searchTokens} bind:selectedCharAt />
   </div>
   <div class="entries">
     <DicEntriesView {entries} />

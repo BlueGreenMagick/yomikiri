@@ -3,8 +3,8 @@
   import type { Token } from "@platform/backend";
 
   export let tokens: Token[];
-  // may be bigger than entries.length
-  export let selectedIdx: number = 0;
+  // may be bigger than total token character
+  export let selectedCharAt: number = 0;
 
   let invalidTokens: boolean[];
 
@@ -19,14 +19,15 @@
   {#each tokens as token, idx}
     <div
       class="token"
-      class:selected={selectedIdx === idx}
+      class:selected={token.start <= selectedCharAt &&
+        selectedCharAt < token.start + token.text.length}
       class:invalid={invalidTokens[idx]}
     >
       <a
         href={"#"}
         on:click={() => {
           if (!invalidTokens[idx]) {
-            selectedIdx = idx;
+            selectedCharAt = token.start;
           }
         }}
       >
