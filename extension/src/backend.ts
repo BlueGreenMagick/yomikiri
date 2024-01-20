@@ -58,6 +58,7 @@ export namespace Backend {
     if (_backend !== null) {
       const result = await _backend.tokenize(text, charAt);
       Entry.order(result.mainEntries);
+      Entry.order(result.alternateEntries);
       return result;
     } else {
       return await BrowserApi.request("tokenize", { text, charAt });
