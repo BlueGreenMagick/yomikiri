@@ -190,7 +190,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             // 3. add alternate entries for alternate bases
             let alternate_details = self.lindera_details(&prejoin_tokens[token_prejoin_idx].text);
             let default_details = prejoin_tokens[token_prejoin_idx].details();
-            let mut alternate_bases: Vec<String> = Vec::with_capacity(alternate_details.len() - 1);
+            let mut alternate_bases: Vec<String> = Vec::with_capacity(alternate_details.len());
             for details in alternate_details {
                 if details == default_details {
                     continue;
