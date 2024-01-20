@@ -55,7 +55,7 @@ const tokenized: TokenizeResult = {
     },
   ],
   tokenIdx: 4,
-  entries: [
+  mainEntries: [
     {
       terms: ["読む", "讀む", "よむ"],
       forms: [
@@ -116,8 +116,8 @@ const tokenized: TokenizeResult = {
 
 const data: MarkerData = {
   tokenized,
-  entry: tokenized.entries[0],
-  selectedMeaning: tokenized.entries[0].senses[2],
+  entry: tokenized.mainEntries[0],
+  selectedMeaning: tokenized.mainEntries[0].senses[2],
   sentence: "わたしは本が読みたい。",
   url: "https://yomikiri.jest/",
   pageTitle: "Yomikiri tests",
@@ -242,7 +242,7 @@ const escapeTokenizeResult: TokenizeResult = {
     },
   ],
   tokenIdx: 0,
-  entries: [
+  mainEntries: [
     {
       forms: [
         {
@@ -270,8 +270,8 @@ const escapeTokenizeResult: TokenizeResult = {
 };
 const escapedData: MarkerData = {
   tokenized: escapeTokenizeResult,
-  entry: escapeTokenizeResult.entries[0],
-  selectedMeaning: escapeTokenizeResult.entries[0].senses[0],
+  entry: escapeTokenizeResult.mainEntries[0],
+  selectedMeaning: escapeTokenizeResult.mainEntries[0].senses[0],
   sentence: "図書<",
   url: "https://yomikiri.jest/",
   pageTitle: "Yomikiri tests",

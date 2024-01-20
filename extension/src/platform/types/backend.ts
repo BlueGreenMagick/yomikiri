@@ -13,7 +13,7 @@ export interface TokenizeResult {
   tokens: Token[];
   /** May be -1 if tokens is empty */
   tokenIdx: number;
-  entries: Entry[];
+  mainEntries: Entry[];
   alternateEntries: Entry[];
 }
 

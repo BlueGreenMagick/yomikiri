@@ -31,7 +31,7 @@ export namespace Backend {
       return {
         tokens: [],
         tokenIdx: 0,
-        entries: [],
+        mainEntries: [],
         alternateEntries: [],
       };
     }
@@ -47,7 +47,7 @@ export namespace Backend {
       return {
         tokens: [],
         tokenIdx: -1,
-        entries: [],
+        mainEntries: [],
         alternateEntries: [],
       };
     }
@@ -57,7 +57,7 @@ export namespace Backend {
 
     if (_backend !== null) {
       const result = await _backend.tokenize(text, charAt);
-      Entry.order(result.entries);
+      Entry.order(result.mainEntries);
       return result;
     } else {
       return await BrowserApi.request("tokenize", { text, charAt });
@@ -73,7 +73,7 @@ export namespace Backend {
       return {
         tokens: [],
         tokenIdx: -1,
-        entries: [],
+        mainEntries: [],
         alternateEntries: [],
       };
     }

@@ -75,7 +75,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     currToken.text.length,
     scannedSentence.charAt - currToken.start
   );
-  if (result.entries.length === 0) {
+  if (result.mainEntries.length === 0) {
     Tooltip.hide();
     Highlighter.highlightRed(nodes);
   } else {
