@@ -94,36 +94,48 @@ pub struct Sense {
     pub meaning: Vec<String>,
 }
 
+/// Unidic based pos tagging
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash)]
 pub enum PartOfSpeech {
+    /// 名詞
     #[serde(rename = "n")]
     Noun,
+    /// 動詞
     #[serde(rename = "v")]
     Verb,
+    /// 形容詞
     #[serde(rename = "a")]
     Adjective,
+    /// 形容動詞 / 形状詞 (unidic)
+    #[serde(rename = "na")]
+    NaAdjective,
+    /// 助詞
     #[serde(rename = "p")]
     Particle,
+    /// 副詞
     #[serde(rename = "av")]
     Adverb,
-    #[serde(rename = "ax")]
-    Auxiliary,
-    #[serde(rename = "cj")]
-    Conjunction,
-    #[serde(rename = "cp")]
-    Copula,
-    #[serde(rename = "pn")]
-    Pronoun,
-    #[serde(rename = "nm")]
-    Numeric,
-    #[serde(rename = "pf")]
-    Prefix,
+    /// 感動詞
+    #[serde(rename = "i")]
+    Interjection,
+    /// 接尾辞
     #[serde(rename = "sf")]
     Suffix,
-    #[serde(rename = "cn")]
-    Counter,
-    #[serde(rename = "in")]
-    Interjection,
+    /// 助動詞
+    #[serde(rename = "ax")]
+    AuxiliaryVerb,
+    /// 代名詞
+    #[serde(rename = "pn")]
+    Pronoun,
+    /// 接続詞
+    #[serde(rename = "c")]
+    Conjunction,
+    /// 接頭辞
+    #[serde(rename = "pf")]
+    Prefix,
+    /// 連体詞
+    #[serde(rename = "ad")]
+    Adnomial,
     #[serde(rename = "e")]
     Expression,
     #[serde(rename = "u")]
