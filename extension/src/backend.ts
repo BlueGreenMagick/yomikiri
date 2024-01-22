@@ -57,8 +57,12 @@ export namespace Backend {
 
     if (_backend !== null) {
       const result = await _backend.tokenize(text, charAt);
-      Entry.order(result.mainEntries);
-      Entry.order(result.alternateEntries);
+
+      const selectedToken = result.tokens[result.tokenIdx];
+      const selectedTokenPos = selectedToken.pos;
+      Entry.order(result.mainEntries, selectedTokenPos);
+      Entry.order(result.alternateEntries, selectedTokenPos);
+
       console.debug(result);
       return result;
     } else {

@@ -128,9 +128,67 @@ export namespace Entry {
     return null;
   }
 
-  /** Sort entries by priority */
-  export function order(entries: Entry[]) {
-    entries.sort((a, b) => b.priority - a.priority);
+  const unidicPosMap: { [unidicPos: string]: string } = {
+    名詞: "noun",
+    動詞: "verb",
+    形容詞: "adjective",
+    形状詞: "na-adjective",
+    助詞: "particle",
+    副詞: "adverb",
+    感動詞: "interjection",
+    接尾辞: "suffix",
+    助動詞: "auxiliary verb",
+    代名詞: "pronoun",
+    接続詞: "conjunction",
+    接頭辞: "prefix",
+    連体詞: "adnomial",
+    "=exp=": "expression",
+    記号: "noun",
+  };
+
+  /**
+   * entry matches token.pos from unidic 2.2.0
+   */
+  export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
+    const dictPos = unidicPosMap[tokenPos];
+    if (!(typeof dictPos === "string")) {
+      throw Error(`Invalid part-of-speech in token: ${tokenPos}`);
+    }
+
+    for (const sense of entry.senses) {
+      if (sense.pos.includes(dictPos)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * order entries in-place by 1) pos 2) priority.
+   * if tokenPos is not provided, sort based on priority only.
+   */
+  export function order(entries: Entry[], tokenPos?: string) {
+    if (tokenPos === undefined) {
+      entries.sort((a, b) => b.priority - a.priority);
+    } else {
+      entries.sort((a, b) => {
+        const aMatchesPos = Entry.matchesTokenPos(a, tokenPos);
+        const bMatchesPos = Entry.matchesTokenPos(b, tokenPos);
+        if (aMatchesPos) {
+          if (bMatchesPos) {
+            return b.priority - a.priority;
+          } else {
+            return -1;
+          }
+        } else {
+          if (bMatchesPos) {
+            return 1;
+          } else {
+            return b.priority - a.priority;
+          }
+        }
+      });
+    }
   }
 }
 
