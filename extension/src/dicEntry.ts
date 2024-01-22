@@ -54,11 +54,31 @@ export namespace Entry {
   }
 
   export function mainForm(entry: Entry): string {
-    if (entry.forms.length > 0) {
-      return entry.forms[0].form;
+    const form = firstNotUncommonForm(entry);
+    if (form !== null) {
+      return form;
     } else {
-      return entry.readings[0].reading;
+      if (entry.forms.length > 0) {
+        return entry.forms[0].form;
+      } else {
+        return entry.readings[0].reading;
+      }
     }
+  }
+
+  function firstNotUncommonForm(entry: Entry): string | null {
+    for (const form of entry.forms) {
+      if (!form.uncommon) {
+        return form.form;
+      }
+    }
+    for (const reading of entry.readings) {
+      if (!reading.uncommon) {
+        return reading.reading;
+      }
+    }
+
+    return null;
   }
 
   /** groups senses with same partOfSpeech. Preserves order. */
