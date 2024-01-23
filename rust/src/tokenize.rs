@@ -438,7 +438,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         return Ok(true);
     }
 
-    /// (any) (助詞) => conj
+    /// (any) (助詞) => 接続詞
     ///
     /// Join any that ends with 助詞 because
     /// unidic is not good at determining if a given 助詞 is 接続助詞
@@ -466,6 +466,9 @@ impl<R: Read + Seek> SharedBackend<R> {
         return Ok(true);
     }
 
+    /// (any) (接尾辞) => 名詞 | 形容詞 | 動詞 | 形状詞
+    ///
+    /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
     fn join_suffix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
@@ -486,7 +489,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             "名詞的" => "名詞",
             "形容詞的" => "形容詞",
             "動詞的" => "動詞",
-            "形状詞" => "形容",
+            "形状詞的" => "形状詞",
             _ => &token.pos,
         }
         .to_string();
@@ -494,6 +497,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
+    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (助動詞 | 助詞/接続助詞)+ => $1
     fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
@@ -568,7 +572,8 @@ pub fn create_tokenizer() -> Tokenizer {
     Tokenizer::new(dictionary, None, Mode::Normal)
 }
 
-/// Join and replace tokens[from..<to]
+/// Join and replace `tokens[from..<to]`
+///
 /// if `last_as_base`, joined token's `base` uses `token.base` for last token
 fn join_tokens<S: Into<String>>(
     tokens: &mut Vec<Token>,
