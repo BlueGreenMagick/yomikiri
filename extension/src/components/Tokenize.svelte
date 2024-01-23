@@ -36,6 +36,8 @@
       return;
     }
 
+    charAt = Math.min(charAt, searchText.length - 1);
+
     const tokenized = await Backend.tokenize({
       text: searchText,
       charAt: charAt,

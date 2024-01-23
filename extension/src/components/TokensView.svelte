@@ -6,21 +6,32 @@
   // may be bigger than total token character
   export let selectedCharAt: number = 0;
 
+  let selectedTokenIdx: number = 0;
   let invalidTokens: boolean[];
 
   function invalidToken(token: Token) {
     return !containsJapaneseContent(token.text);
   }
 
+  function updateSelectedToken(tokens: Token[], selectedCharAt: number) {
+    for (let i = 0; i < tokens.length; i++) {
+      if (tokens[i].start > selectedCharAt) {
+        selectedTokenIdx = i - 1;
+        return;
+      }
+    }
+    selectedTokenIdx = tokens.length - 1;
+  }
+
   $: invalidTokens = tokens.map(invalidToken);
+  $: updateSelectedToken(tokens, selectedCharAt);
 </script>
 
 <div>
   {#each tokens as token, idx}
     <div
       class="token"
-      class:selected={token.start <= selectedCharAt &&
-        selectedCharAt < token.start + token.text.length}
+      class:selected={idx == selectedTokenIdx}
       class:invalid={invalidTokens[idx]}
     >
       <a
