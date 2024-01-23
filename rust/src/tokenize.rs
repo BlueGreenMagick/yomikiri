@@ -386,7 +386,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let pos = String::from(last_found_pos);
-        join_tokens(tokens, from, to, pos, false);
+        join_tokens(tokens, from, last_found_to, pos, false);
         return Ok(to - from > 1);
     }
 
