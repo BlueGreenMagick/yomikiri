@@ -60,8 +60,8 @@ export namespace Backend {
 
       const selectedToken = result.tokens[result.tokenIdx];
       const selectedTokenPos = selectedToken.pos;
-      Entry.order(result.mainEntries, selectedTokenPos);
-      Entry.order(result.alternateEntries, selectedTokenPos);
+      Entry.order(result.mainEntries, selectedToken);
+      Entry.order(result.alternateEntries, selectedToken);
 
       console.debug(result);
       return result;

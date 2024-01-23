@@ -1,5 +1,6 @@
 import Utils from "./utils";
 import ENTITIES from "./assets/dicEntities.json";
+import type { Token } from "./backend";
 
 // list of tuple (pos sorted list, senses)
 export interface GroupedSense {
@@ -184,31 +185,73 @@ export namespace Entry {
   }
 
   /**
-   * order entries in-place by 1) pos 2) priority.
-   * if tokenPos is not provided, sort based on priority only.
+   * Order entries in-place.
+   *
+   * 1. pos: Entries whose pos matches token pos is shown first
+   * 2. form: Entry whose main form is base/surface >
+   *  entry whose secondary common form is base/surface >
+   *  entry whose uncommon form is base/surface
+   * 3. priority: Entries with higher priority is shown first
+   *
+   * If `token` is not specified, sort using priority only.
+   *
    */
-  export function order(entries: Entry[], tokenPos?: string) {
-    if (tokenPos === undefined) {
+  export function order(entries: Entry[], token?: Token) {
+    if (token === undefined) {
       entries.sort((a, b) => b.priority - a.priority);
     } else {
       entries.sort((a, b) => {
-        const aMatchesPos = Entry.matchesTokenPos(a, tokenPos);
-        const bMatchesPos = Entry.matchesTokenPos(b, tokenPos);
-        if (aMatchesPos) {
-          if (bMatchesPos) {
-            return b.priority - a.priority;
-          } else {
-            return -1;
-          }
+        const aMatchesPos = Entry.matchesTokenPos(a, token.pos);
+        const bMatchesPos = Entry.matchesTokenPos(b, token.pos);
+        if (aMatchesPos && !bMatchesPos) {
+          return -1;
+        } else if (!aMatchesPos && bMatchesPos) {
+          return 1;
         } else {
-          if (bMatchesPos) {
-            return 1;
+          let aFormScore = formScoreForOrder(a, token);
+          let bFormScore = formScoreForOrder(b, token);
+          if (aFormScore != bFormScore) {
+            return bFormScore - aFormScore;
           } else {
             return b.priority - a.priority;
           }
         }
       });
     }
+  }
+
+  /**
+   * Score how well entry form matches token.
+   * 3: entry's main form is base/surface
+   * 2: entry's secondary common form is base/surface
+   * 1: entry's uncommon form is base/surface
+   * 0: otherwise
+   */
+  function formScoreForOrder(entry: Entry, token: Token): number {
+    const mainForm = Entry.mainForm(entry);
+    if (mainForm == token.base || mainForm == token.text) {
+      return 3;
+    }
+
+    let score = 0;
+    for (const form of entry.forms) {
+      if (form.form == token.base || form.form == token.text) {
+        if (!form.uncommon) {
+          return 2;
+        }
+        score = 1;
+      }
+    }
+    for (const reading of entry.readings) {
+      if (reading.reading == token.base || reading.reading == token.text) {
+        if (!reading.uncommon) {
+          return 2;
+        }
+        score = 1;
+      }
+    }
+
+    return score;
   }
 }
 
