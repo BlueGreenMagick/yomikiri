@@ -32,6 +32,7 @@
   async function _tokenize(searchText: string, charAt: number) {
     if (searchText === "") {
       searchTokens = [];
+      entries = [];
       return;
     }
 
