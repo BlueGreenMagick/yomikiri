@@ -25,9 +25,9 @@ export type RubyString = RubyUnit[];
  *   - \uff66-\uff9f: halfwidth katakana
  * \uffe0-\uffee: halfwidth/fullwidth symbols
  */
-const RE_HIRAGANA = /[\u3041-\u309F]/u;
+const RE_HIRAGANA = /[\u3041-\u309f]/u;
 // including '゠', 'ー'
-const RE_KATAKANA = /[\u30A0-\u30FF]/u;
+const RE_KATAKANA = /[\u30a0-\u30ff]/u;
 const RE_KANJI = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 const RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 // including symbols
@@ -218,4 +218,15 @@ export function toKatakana(hiragana: string): string {
     }
   }
   return katakana;
+}
+
+/** Returns a string that contains all kanji characters in text. */
+export function extractKanjis(text: string): string {
+  const re = new RegExp(RE_KANJI.source, "gu");
+  const matches = text.matchAll(re);
+  let kanjis = "";
+  for (const match of matches) {
+    kanjis += match[0];
+  }
+  return kanjis;
 }

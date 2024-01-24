@@ -1,6 +1,7 @@
 import Utils from "./utils";
 import ENTITIES from "./assets/dicEntities.json";
 import type { Token } from "./backend";
+import { extractKanjis } from "./japanese";
 
 // list of tuple (pos sorted list, senses)
 export interface GroupedSense {
@@ -182,6 +183,39 @@ export namespace Entry {
       }
     }
     return false;
+  }
+
+  /**
+   * Returns a separate list of entries valid for token surface.
+   *
+   * A valid entry must have a term that contain all the kanji of surface.
+   */
+  export function validEntriesForSurface(
+    entries: Entry[],
+    surface: string
+  ): Entry[] {
+    const kanjis = extractKanjis(surface);
+    if (kanjis === "") {
+      return [...entries];
+    }
+
+    let validEntries = [];
+    for (const entry of entries) {
+      for (const form of entry.forms) {
+        let containsAll = true;
+        for (const kanji of kanjis) {
+          if (!form.form.includes(kanji)) {
+            containsAll = false;
+            break;
+          }
+        }
+        if (containsAll) {
+          validEntries.push(entry);
+          break;
+        }
+      }
+    }
+    return validEntries;
   }
 
   /**

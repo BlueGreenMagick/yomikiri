@@ -59,7 +59,16 @@ export namespace Backend {
       const result = await _backend.tokenize(text, charAt);
 
       const selectedToken = result.tokens[result.tokenIdx];
-      const selectedTokenPos = selectedToken.pos;
+
+      result.mainEntries = Entry.validEntriesForSurface(
+        result.mainEntries,
+        selectedToken.text
+      );
+      result.alternateEntries = Entry.validEntriesForSurface(
+        result.alternateEntries,
+        selectedToken.text
+      );
+
       Entry.order(result.mainEntries, selectedToken);
       Entry.order(result.alternateEntries, selectedToken);
 
