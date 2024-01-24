@@ -21,18 +21,21 @@ export type RubyString = RubyUnit[];
  * \uf900-\ufaff: kanji
  * \ufe30-\ufe4f: rare Japanese punctuation
  * \uff00-\uff9f: halfwidth/fullwidth alphabet & punctuation
+ *   - \uff60-\uff65: halfwidth katakana punctuation
+ *   - \uff66-\uff9f: halfwidth katakana
  * \uffe0-\uffee: halfwidth/fullwidth symbols
  */
 const RE_HIRAGANA = /[\u3041-\u309F]/u;
 // including '゠', 'ー'
 const RE_KATAKANA = /[\u30A0-\u30FF]/u;
-const RE_KANJI = /[\u4e00-\u9fff\uf900-\ufaff]/u;
-const RE_NOKANJI = /[^\u4e00-\u9fff\uf900-\ufaff]/u;
+const RE_KANJI = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
+const RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 // including symbols
 const RE_JAPANESE_ALL =
-  /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f]/u;
-// excluding symbols
-const RE_JAPANESE_CONTENT = /[\u3040-\u30ff\u4e00-\u9fff\uf900-\ufaff]/u;
+  /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f\uffe0-\uffee]/u;
+// excluding most symbols or punctuations
+const RE_JAPANESE_CONTENT =
+  /[\u3040-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/u;
 
 export namespace RubyString {
   // Some words are longer in kanji
@@ -173,6 +176,10 @@ export function isKatakana(text: string): boolean {
   return char >= 12449 && char <= 12534;
 }
 
+/**
+ * Returns true if text contains japanese character(kana/kanji),
+ * excluding most symbols and punctuations.
+ */
 export function containsJapaneseContent(text: string): boolean {
   return RE_JAPANESE_CONTENT.test(text);
 }
