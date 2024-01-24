@@ -8,6 +8,21 @@ export interface RubyUnit {
 
 export type RubyString = RubyUnit[];
 
+/** Unicode Japanese character ranges:
+ *
+ * \u3000-\u303f: Japanese punctuation
+ * \u3040-\u309f: hiragana
+ * \u30a0-\u30ff: katakana
+ * \u31f0-\u31ff: katakana extension (ainu)
+ * \u3220-\u32ff: Japanese symbol
+ * \u3300-\u33ff: Japanese symbol
+ * \u3400-\u4dbf: Rare hanji variant
+ * \u4e00-\u9fff: kanji
+ * \uf900-\ufaff: kanji
+ * \ufe30-\ufe4f: rare Japanese punctuation
+ * \uff00-\uff9f: halfwidth/fullwidth alphabet & punctuation
+ * \uffe0-\uffee: halfwidth/fullwidth symbols
+ */
 const RE_HIRAGANA = /[\u3041-\u309F]/u;
 // including '゠', 'ー'
 const RE_KATAKANA = /[\u30A0-\u30FF]/u;
