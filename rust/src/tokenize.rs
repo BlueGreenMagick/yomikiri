@@ -106,6 +106,20 @@ impl TokenDetails {
     }
 }
 
+trait JapaneseChar {
+    /** Character is hiragana or katakana */
+    fn is_kana(&self) -> bool;
+}
+
+impl JapaneseChar for char {
+    fn is_kana(&self) -> bool {
+        match *self {
+            '\u{3040}'..='\u{309f}' => true,
+            _ => false,
+        }
+    }
+}
+
 impl<R: Read + Seek> SharedBackend<R> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
@@ -497,7 +511,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (助動詞 | 助詞/接続助詞)+ => $1
+    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (kana-only 助動詞 | 助詞/接続助詞)+ => $1
     fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
@@ -510,7 +524,9 @@ impl<R: Read + Seek> SharedBackend<R> {
         let mut joined_reading = String::with_capacity(3 * 12);
         joined_text += &token.text;
         joined_reading += &token.reading;
-        while to < tokens.len() && (tokens[to].pos == "助動詞" || tokens[to].pos2 == "接続助詞")
+        while to < tokens.len()
+            && (tokens[to].pos == "助動詞" || tokens[to].pos2 == "接続助詞")
+            && contains_only_kana(&tokens[to].text)
         {
             joined_text += &tokens[to].text;
             joined_reading += &tokens[to].reading;
@@ -620,4 +636,8 @@ fn concat_string(s1: &str, s2: &str) -> String {
     joined.push_str(s1);
     joined.push_str(s2);
     joined
+}
+
+fn contains_only_kana(text: &str) -> bool {
+    text.chars().all(|c| c.is_kana())
 }

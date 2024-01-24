@@ -82,6 +82,9 @@ tokenize_tests! {
     case13: "私/は/しる",
     // 「静かな」(adj)
     case14: "静かな/日",
+    // 接続助詞 that contains kanji should not join
+    // 聞き「動詞」/乍ら「助詞/接続助詞」
+    case15: "ラジオ/を/聞き/乍ら/勉強/する",
 }
 
 #[test]
