@@ -615,7 +615,6 @@ fn join_tokens<S: Into<String>>(
     tokens.splice(from..to, [joined]);
 }
 
-#[inline]
 fn concat_string(s1: &str, s2: &str) -> String {
     let mut joined = String::with_capacity(s1.len() + s2.len());
     joined.push_str(s1);
