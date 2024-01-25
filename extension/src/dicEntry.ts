@@ -188,9 +188,13 @@ export namespace Entry {
 
   /**
    * Returns a separate list of entries valid for token surface.
+   * If no entries are valid, return a copy of `entries`.
    *
-   * A valid entry must have a term that contain all the kanji of surface.
+   * A valid entry has a term that contain all the kanji of surface.
    */
+  // Example where no entries are valid: {surface: 辞める, base: 止める}
+  // jmdict considers 辞める and 止める as separate word,
+  // but unidic considers 辞める as variant of 止める.
   export function validEntriesForSurface(
     entries: Entry[],
     surface: string
@@ -200,7 +204,7 @@ export namespace Entry {
       return [...entries];
     }
 
-    let validEntries = [];
+    let validEntries: Entry[] = [];
     for (const entry of entries) {
       for (const form of entry.forms) {
         let containsAll = true;
@@ -216,7 +220,13 @@ export namespace Entry {
         }
       }
     }
-    return validEntries;
+
+    // show less correct entries if all entries are invalid
+    if (validEntries.length == 0) {
+      return [...entries];
+    } else {
+      return validEntries;
+    }
   }
 
   /**
