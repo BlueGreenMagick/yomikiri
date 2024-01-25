@@ -166,13 +166,14 @@ export namespace Entry {
     連体詞: "adnomial",
     "=exp=": "expression",
     記号: "noun",
+    UNK: "",
   };
 
   /**
    * entry matches token.pos from unidic 2.2.0
    */
   export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
-    const dictPos = unidicPosMap[tokenPos];
+    const dictPos: string | undefined = unidicPosMap[tokenPos];
     if (!(typeof dictPos === "string")) {
       throw Error(`Invalid part-of-speech in token: ${tokenPos}`);
     }
