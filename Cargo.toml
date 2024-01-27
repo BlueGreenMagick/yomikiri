@@ -4,8 +4,9 @@ members = [
     "dictionary",
     "dictionary-types",
     "unidic",
-    "unidic/unidic-build"
+    "unidic/unidic-build",
 ]
+resolver = "2"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

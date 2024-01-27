@@ -9,11 +9,10 @@ real = []
 
 
 [dependencies]
-vibrato = "0.5"
+vibrato = { version = "0.5", default-features = false }
 
 [build-dependencies]
 yomikiri-unidic-build = { path = "./unidic-build" }
-vibrato = "0.5"
 walkdir = "2.3"
 filetime = "0.2"
 ureq = "2.7"
