@@ -14,7 +14,6 @@ export interface TokenizeResult {
   /** May be -1 if tokens is empty */
   tokenIdx: number;
   mainEntries: Entry[];
-  alternateEntries: Entry[];
 }
 
 export interface IBackendController {

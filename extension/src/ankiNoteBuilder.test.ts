@@ -111,7 +111,6 @@ const tokenized: TokenizeResult = {
       priority: 163,
     },
   ].map(Entry.fromObject),
-  alternateEntries: [],
 };
 
 const data: MarkerData = {
@@ -266,7 +265,6 @@ const escapeTokenizeResult: TokenizeResult = {
       priority: 166,
     },
   ].map(Entry.fromObject),
-  alternateEntries: [],
 };
 const escapedData: MarkerData = {
   tokenized: escapeTokenizeResult,

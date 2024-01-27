@@ -43,7 +43,6 @@
       charAt: charAt,
     });
     searchTokens = tokenized.tokens;
-    entries = tokenized.mainEntries.concat(tokenized.alternateEntries);
   }
 
   function openSettings() {

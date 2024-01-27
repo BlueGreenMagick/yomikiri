@@ -32,7 +32,6 @@ export namespace Backend {
         tokens: [],
         tokenIdx: 0,
         mainEntries: [],
-        alternateEntries: [],
       };
     }
     return await tokenize({ text, charAt: 0 });
@@ -48,7 +47,6 @@ export namespace Backend {
         tokens: [],
         tokenIdx: -1,
         mainEntries: [],
-        alternateEntries: [],
       };
     }
     if (charAt < 0 || charAt >= text.length) {
@@ -64,13 +62,7 @@ export namespace Backend {
         result.mainEntries,
         selectedToken.text
       );
-      result.alternateEntries = Entry.validEntriesForSurface(
-        result.alternateEntries,
-        selectedToken.text
-      );
-
       Entry.order(result.mainEntries, selectedToken);
-      Entry.order(result.alternateEntries, selectedToken);
 
       console.debug(result);
       return result;
@@ -89,7 +81,6 @@ export namespace Backend {
         tokens: [],
         tokenIdx: -1,
         mainEntries: [],
-        alternateEntries: [],
       };
     }
     if (charAt < 0 || charAt >= text.length) {

@@ -35,9 +35,6 @@ export class BackendController implements IBackendController {
       mainEntries: rawResult.mainEntries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
-      alternateEntries: rawResult.alternateEntries
-        .map((json) => JSON.parse(json))
-        .map(Entry.fromObject),
     };
   }
 

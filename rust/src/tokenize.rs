@@ -47,11 +47,6 @@ pub struct RawTokenizeResult {
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
     pub mainEntries: Vec<String>,
-    /// alternate DicEntry JSONS that may output token surface.
-    /// The following text are searched in the dictionary:
-    /// 1) alternate base of joined surface
-    /// 2) alternate base of surface, that joins to joined surface
-    pub alternateEntries: Vec<String>,
 }
 
 impl Token {
@@ -153,7 +148,6 @@ impl<R: Read + Seek> SharedBackend<R> {
                 YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
             mainEntries: main_entries,
-            alternateEntries: vec![],
         })
     }
 
