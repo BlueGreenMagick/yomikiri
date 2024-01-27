@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use yomikiri_rs::dictionary::Dictionary;
 use yomikiri_rs::error::YResult;
-use yomikiri_rs::tokenize::create_tokenizer;
+use yomikiri_rs::tokenize::{create_tokenizer, Token};
 use yomikiri_rs::SharedBackend;
 
 fn setup_backend() -> SharedBackend<File> {
@@ -21,6 +21,29 @@ fn setup_backend() -> SharedBackend<File> {
     }
 }
 
+fn surface_pos_string(tokens: &[Token]) -> String {
+    let mut output = String::new();
+    let mut iter = tokens.iter();
+    let token = match iter.next() {
+        Some(t) => t,
+        None => return output,
+    };
+
+    output.push_str(&token.text);
+    output.push_str("「");
+    output.push_str(&token.pos);
+    output.push_str("」");
+
+    for token in iter {
+        output.push_str("/");
+        output.push_str(&token.text);
+        output.push_str("「");
+        output.push_str(&token.pos);
+        output.push_str("」");
+    }
+    output
+}
+
 macro_rules! tokenize_tests {
     ($($name:ident: $expected:expr,)*) => {
         $(
@@ -30,13 +53,15 @@ macro_rules! tokenize_tests {
                 let expected = $expected;
                 let text = expected.replace("/", "");
                 let result = backend.tokenize(&text, 0, false)?;
-                let result = result
+                let result_string = result
                     .tokens
                     .iter()
                     .map(|t| t.text.as_str())
                     .collect::<Vec<&str>>()
                     .join("/");
-                assert_eq!(result, expected);
+                if result_string != expected {
+                    panic!("{}\nexpected: {}", surface_pos_string(&result.tokens), expected)
+                }
                 Ok(())
             }
         )*
