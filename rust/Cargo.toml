@@ -21,10 +21,7 @@ path = "uniffi-bindgen.rs"
 uniffi-bindgen = []
 
 [dependencies]
-# switch back to crates.io crate when commit 1fd5848 is released
-lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git" }
-lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git" }
-lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+vibrato = "0.5"
 yomikiri-unidic-dictionary = { path = "../unidic", features = ["real"] }
 yomikiri-dictionary-types = { path = "../dictionary-types" }
 unicode-normalization = "0.1.22"

@@ -5,6 +5,5 @@ edition = "2021"
 
 
 [dependencies]
-lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git" }
-lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git" }
+vibrato = "0.5"
 csv = "1.2"

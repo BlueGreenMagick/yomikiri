@@ -2,11 +2,10 @@
 
 use crate::error::{YResult, YomikiriError};
 use crate::SharedBackend;
-use lindera_core::mode::Mode;
-use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
+use vibrato::Tokenizer;
 use yomikiri_unidic_dictionary::load_dictionary;
 
 #[cfg(wasm)]
@@ -66,15 +65,6 @@ impl Token {
             reading: details.reading,
         }
     }
-
-    fn details(&self) -> TokenDetails {
-        TokenDetails {
-            pos: self.pos.clone(),
-            pos2: self.pos2.clone(),
-            base: self.base.clone(),
-            reading: self.reading.clone(),
-        }
-    }
 }
 
 impl Default for TokenDetails {
@@ -89,19 +79,18 @@ impl Default for TokenDetails {
 }
 
 impl TokenDetails {
-    fn from_details(details: &[&str]) -> Self {
-        TokenDetails {
-            pos: details.get(0).unwrap_or(&"UNK").to_string(),
-            pos2: details.get(1).unwrap_or(&"*").to_string(),
-            base: details.get(3).unwrap_or(&"").to_string(),
-            reading: details.get(2).unwrap_or(&"*").to_string(),
-        }
-    }
+    fn from_feature(feature: &str, surface: &str) -> TokenDetails {
+        let mut iter_features = feature.split(",");
+        let pos = iter_features.next().unwrap_or(&"UNK");
+        let pos2 = iter_features.next().unwrap_or(&"*");
+        let reading = iter_features.next().unwrap_or(&"*");
+        let base = iter_features.next().unwrap_or(surface);
 
-    fn default_with_surface(surface: &str) -> Self {
         TokenDetails {
-            base: surface.into(),
-            ..TokenDetails::default()
+            pos: pos.into(),
+            pos2: pos2.into(),
+            base: base.into(),
+            reading: reading.into(),
         }
     }
 }
@@ -132,7 +121,6 @@ impl<R: Read + Seek> SharedBackend<R> {
         raw: bool,
     ) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
-        let prejoin_tokens = tokens.clone();
 
         if !raw {
             self.manual_patches(&mut tokens);
@@ -159,101 +147,28 @@ impl<R: Read + Seek> SharedBackend<R> {
             }
         }
 
-        let mut alternate_entries = Vec::with_capacity(12);
-
-        if !raw {
-            // 1) alternate base of joined surface
-            let default_details = selected_token.details();
-            let all_details = self.lindera_details(&selected_token.text);
-            for details in all_details {
-                if details == default_details {
-                    continue;
-                }
-                let entries = self.dictionary.search_json(&details.base)?;
-                for entry in entries {
-                    if !main_entries.contains(&entry) && !alternate_entries.contains(&entry) {
-                        alternate_entries.push(entry);
-                    }
-                }
-            }
-
-            // 2) alternate base of prejoin surface, that joins to joined surface
-            // find group of tokens that joins to selected token
-            let next_token_start = tokens.get(token_idx + 1).map(|t| t.start);
-            let next_token_prejoin_index = match next_token_start {
-                Some(start) => prejoin_tokens
-                    .iter()
-                    .position(|t| t.start == start)
-                    .ok_or_else(|| {
-                        YomikiriError::OtherError("could not find original_token with start".into())
-                    })?,
-                None => prejoin_tokens.len(),
-            };
-            let token_prejoin_idx = match prejoin_tokens
-                .iter()
-                .position(|t| (t.start as usize) > char_idx)
-            {
-                Some(i) => i - 1,
-                None => tokens.len() - 1,
-            };
-            let selected_tokens_group =
-                prejoin_tokens[token_prejoin_idx..next_token_prejoin_index].to_vec();
-
-            // 1. replace pre-joined selected token details with alternate details
-            // 2. if all tokens join, add base to alternate bases
-            // 3. add alternate entries for alternate bases
-            let alternate_details = self.lindera_details(&prejoin_tokens[token_prejoin_idx].text);
-            let default_details = prejoin_tokens[token_prejoin_idx].details();
-            let mut alternate_bases: Vec<String> = Vec::with_capacity(alternate_details.len());
-            for details in alternate_details {
-                if details == default_details {
-                    continue;
-                }
-                let mut alternate_tokens_group = selected_tokens_group.clone();
-                let first_token = &mut alternate_tokens_group[0];
-                first_token.pos = details.pos;
-                first_token.pos2 = details.pos2;
-                first_token.base = details.base;
-                first_token.reading = details.reading;
-                self.manual_patches(&mut alternate_tokens_group);
-                self.join_all_tokens(&mut alternate_tokens_group)?;
-                if alternate_tokens_group.len() != 1 {
-                    continue;
-                }
-
-                let joined_token = alternate_tokens_group.pop().unwrap();
-                if !alternate_bases.contains(&joined_token.base) {
-                    alternate_bases.push(joined_token.base);
-                }
-            }
-            for base in alternate_bases {
-                let entries = self.dictionary.search_json(&base)?;
-                for entry in entries {
-                    if !main_entries.contains(&entry) && !alternate_entries.contains(&entry) {
-                        alternate_entries.push(entry);
-                    }
-                }
-            }
-        }
-
         Ok(RawTokenizeResult {
             tokens,
             tokenIdx: token_idx.try_into().map_err(|_| {
                 YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
             mainEntries: main_entries,
-            alternateEntries: alternate_entries,
+            alternateEntries: vec![],
         })
     }
 
+    // `sentence`` is tokenized and the result is converted into vector of Token.
     // `sentence` may not be unicode normalized, but lindera only accepts normalized text.
     // byte position on unnormalized sentence is calculated from normalized byte position
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
         let normalized_sentence = sentence.nfc().collect::<String>();
         let already_normalized: bool = sentence == normalized_sentence;
 
-        let mut ltokens = self.tokenizer.tokenize(&normalized_sentence)?;
-        let mut tokens = Vec::with_capacity(ltokens.capacity());
+        let mut worker = self.tokenizer.new_worker();
+        worker.reset_sentence(&normalized_sentence);
+        worker.tokenize();
+
+        let mut tokens = Vec::with_capacity(worker.num_tokens());
 
         // iterator of starting indices of each graphemes
         let original_graphemes = sentence.grapheme_indices(true);
@@ -262,14 +177,15 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let mut original_char_indices = sentence.char_indices().enumerate();
 
-        for tok in &mut ltokens {
+        for tok in worker.token_iter() {
+            let tok_byte_start = tok.range_byte().start;
             // starting byte index of original sentence
             let byte_start = if already_normalized {
-                tok.byte_start
+                tok_byte_start
             } else {
                 graphemes
                     .find_map(|((original_idx, _), (normalized_idx, _))| {
-                        if normalized_idx == tok.byte_start {
+                        if normalized_idx == tok_byte_start {
                             Some(original_idx)
                         } else {
                             None
@@ -281,33 +197,13 @@ impl<R: Read + Seek> SharedBackend<R> {
                 .find_map(|(i, (a, _))| if a == byte_start { Some(i) } else { None })
                 .ok_or(YomikiriError::BytePositionError)?;
 
-            let text = tok.text.to_string();
-            let details = match tok.get_details() {
-                Some(d) => TokenDetails::from_details(&d),
-                None => TokenDetails::default_with_surface(&text),
-            };
+            let text = tok.surface().to_string();
+            let details = TokenDetails::from_feature(tok.feature(), &text);
 
             let token = Token::new(text, details, char_start as u32);
             tokens.push(token)
         }
         Ok(tokens)
-    }
-
-    fn lindera_details(&self, surface: &str) -> Vec<TokenDetails> {
-        let word_entries = self.tokenizer.dictionary.dict.find_surface(surface);
-        word_entries
-            .iter()
-            .map(|entry| {
-                let id = entry.word_id.0;
-                let details = self.tokenizer.dictionary.word_details(id as usize);
-                match details {
-                    Some(details) => TokenDetails::from_details(
-                        &details.iter().map(AsRef::as_ref).collect::<Vec<&str>>(),
-                    ),
-                    None => TokenDetails::default_with_surface(surface),
-                }
-            })
-            .collect()
     }
 
     /// Join tokens in-place if longer token exist in dictionary
@@ -585,7 +481,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
 pub fn create_tokenizer() -> Tokenizer {
     let dictionary = load_dictionary().unwrap();
-    Tokenizer::new(dictionary, None, Mode::Normal)
+    Tokenizer::new(dictionary).max_grouping_len(24)
 }
 
 /// Join and replace `tokens[from..<to]`

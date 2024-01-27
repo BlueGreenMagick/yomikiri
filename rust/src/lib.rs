@@ -9,8 +9,8 @@ mod ffi;
 mod wasm;
 
 use crate::dictionary::Dictionary;
-use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
+use vibrato::Tokenizer;
 
 pub struct SharedBackend<R: Read + Seek> {
     pub tokenizer: Tokenizer,
