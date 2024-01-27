@@ -48,7 +48,12 @@ namespace SelectionHighlighter {
     }
 
     const range = selection.getRangeAt(0);
-    return range.comparePoint(node, charIdx) === 0;
+    return (
+      range.comparePoint(node, charIdx) === 0 &&
+      // if charIdx is the char right after range, comparePoint(charIdx) is also 0
+      (node.data.length == charIdx + 1 ||
+        range.comparePoint(node, charIdx + 1) === 0)
+    );
   }
 
   /** Unhighlight all */
