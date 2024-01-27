@@ -46,7 +46,7 @@ const tokenized: TokenizeResult = {
     },
   ],
   tokenIdx: 3,
-  mainEntries: [
+  entries: [
     {
       terms: ["見る", "観る", "視る", "覧る", "みる"],
       forms: [
@@ -121,8 +121,8 @@ const tokenized: TokenizeResult = {
 
 export const exampleMarkerData: MarkerData = {
   tokenized,
-  entry: tokenized.mainEntries[0],
-  selectedMeaning: tokenized.mainEntries[0].senses[0],
+  entry: tokenized.entries[0],
+  selectedMeaning: tokenized.entries[0].senses[0],
   sentence: tokenized.tokens.map((tok) => tok.text).join(""),
   url: "https://yomikiri.example/",
   pageTitle: "Example marker data",

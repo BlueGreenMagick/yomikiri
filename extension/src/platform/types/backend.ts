@@ -13,7 +13,7 @@ export interface TokenizeResult {
   tokens: Token[];
   /** May be -1 if tokens is empty */
   tokenIdx: number;
-  mainEntries: Entry[];
+  entries: Entry[];
 }
 
 export interface IBackendController {

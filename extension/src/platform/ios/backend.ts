@@ -32,7 +32,7 @@ export class BackendController implements IBackendController {
     return {
       tokens: rawResult.tokens,
       tokenIdx: rawResult.tokenIdx,
-      mainEntries: rawResult.mainEntries
+      entries: rawResult.entries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
     };

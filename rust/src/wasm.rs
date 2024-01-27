@@ -26,7 +26,7 @@ const TS_RAW_TOKENIZE_RESULT: &'static str = r#"
 export interface RawTokenizeResult {
     tokens: Token[];
     tokenIdx: number;
-    mainEntries: string[];
+    entries: string[];
 }
 "#;
 

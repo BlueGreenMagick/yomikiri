@@ -46,7 +46,7 @@ pub struct RawTokenizeResult {
     pub tokenIdx: u32,
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
-    pub mainEntries: Vec<String>,
+    pub entries: Vec<String>,
 }
 
 impl Token {
@@ -130,14 +130,14 @@ impl<R: Read + Seek> SharedBackend<R> {
         let selected_token = &tokens[token_idx];
 
         // 1) joined base
-        let mut main_entries = self.dictionary.search_json(&selected_token.base)?;
+        let mut entries = self.dictionary.search_json(&selected_token.base)?;
 
         // 2) joined surface
         if selected_token.base != selected_token.text {
-            let entries = self.dictionary.search_json(&selected_token.text)?;
-            for entry in entries {
-                if !main_entries.contains(&entry) {
-                    main_entries.push(entry);
+            let searched_entries = self.dictionary.search_json(&selected_token.text)?;
+            for entry in searched_entries {
+                if !entries.contains(&entry) {
+                    entries.push(entry);
                 }
             }
         }
@@ -147,7 +147,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             tokenIdx: token_idx.try_into().map_err(|_| {
                 YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
-            mainEntries: main_entries,
+            entries,
         })
     }
 
