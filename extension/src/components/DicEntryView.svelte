@@ -89,12 +89,13 @@
   }
 
   .header {
-    margin: 4px 4px 0 4px;
+    margin: 4px var(--edge-horizontal-padding);
+    margin-bottom: 0px;
     display: flex;
   }
   .term {
     flex: 1 1 auto;
-    margin: 4px 12px 0px 4px;
+    margin: 4px 12px 0 0;
   }
   .icons {
     flex: 0 0 auto;

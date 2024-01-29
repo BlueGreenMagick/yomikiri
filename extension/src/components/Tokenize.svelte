@@ -109,7 +109,7 @@
   .header {
     display: flex;
     align-items: center;
-    padding: 6px 0 6px 6px;
+    padding: 6px var(--edge-horizontal-padding);
     background-color: var(--background-alt);
   }
 
@@ -167,7 +167,9 @@
 
   .settings-button {
     flex: 0 0 auto;
-    margin: 0 2px;
+    margin: 0;
+    margin-left: 2px;
+    margin-right: calc(2px - var(--edge-horizontal-padding));
     padding: 0;
     border: none;
     border-radius: 4px;
@@ -198,7 +200,7 @@
     flex: 0 0 auto;
     max-height: 120px;
     overflow-y: auto;
-    padding: 6px;
+    padding: 6px var(--edge-horizontal-padding);
     border-bottom: 1px solid var(--border);
     background-color: var(--background-alt);
   }

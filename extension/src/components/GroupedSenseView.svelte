@@ -54,18 +54,18 @@
     color: var(--text-light);
     font-size: 0.9em;
     margin-bottom: 2px;
-    padding: 0 8px;
+    padding: 0 var(--edge-horizontal-padding);
   }
 
   .meaning {
     font-size: 1em;
     align-items: center;
-    padding: 0 8px;
+    padding: 0 var(--edge-horizontal-padding);
   }
 
   .grouped-sense.anki .meaning.selected {
     border-left: 2px solid var(--accent);
-    padding: 0 6px;
+    padding: 0 calc(var(--edge-horizontal-padding) - 2px);
     background-color: rgba(0, 0, 0, 0.07);
   }
 
