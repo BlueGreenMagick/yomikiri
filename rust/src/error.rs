@@ -1,5 +1,5 @@
+use lindera_core::error::LinderaError;
 use std::io;
-use vibrato::errors::VibratoError;
 
 #[cfg(wasm)]
 use wasm_bindgen::JsValue;
@@ -11,7 +11,7 @@ pub type YResult<T> = Result<T, YomikiriError>;
 #[cfg_attr(uniffi, uniffi(flat_error))]
 pub enum YomikiriError {
     #[error("[Tokenize Error] {0}")]
-    TokenizeError(#[from] VibratoError),
+    TokenizeError(#[from] LinderaError),
     #[error("[Byte Position Error] (Unreachable) Invalid unicode byte position")]
     BytePositionError,
     #[error("[IOError] {0}")]

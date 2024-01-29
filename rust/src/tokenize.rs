@@ -2,10 +2,11 @@
 
 use crate::error::{YResult, YomikiriError};
 use crate::SharedBackend;
+use lindera_core::mode::Mode;
+use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
-use vibrato::Tokenizer;
 use yomikiri_unidic_dictionary::load_dictionary;
 
 #[cfg(wasm)]
@@ -74,18 +75,19 @@ impl Default for TokenDetails {
 }
 
 impl TokenDetails {
-    fn from_feature(feature: &str, surface: &str) -> TokenDetails {
-        let mut iter_features = feature.split(",");
-        let pos = iter_features.next().unwrap_or(&"UNK");
-        let pos2 = iter_features.next().unwrap_or(&"*");
-        let reading = iter_features.next().unwrap_or(&"*");
-        let base = iter_features.next().unwrap_or(surface);
-
+    fn from_details(details: &[&str]) -> Self {
         TokenDetails {
-            pos: pos.into(),
-            pos2: pos2.into(),
-            base: base.into(),
-            reading: reading.into(),
+            pos: details.get(0).unwrap_or(&"UNK").to_string(),
+            pos2: details.get(1).unwrap_or(&"*").to_string(),
+            base: details.get(3).unwrap_or(&"").to_string(),
+            reading: details.get(2).unwrap_or(&"*").to_string(),
+        }
+    }
+
+    fn default_with_surface(surface: &str) -> Self {
+        TokenDetails {
+            base: surface.into(),
+            ..TokenDetails::default()
         }
     }
 }
@@ -158,11 +160,8 @@ impl<R: Read + Seek> SharedBackend<R> {
         let normalized_sentence = sentence.nfc().collect::<String>();
         let already_normalized: bool = sentence == normalized_sentence;
 
-        let mut worker = self.tokenizer.new_worker();
-        worker.reset_sentence(&normalized_sentence);
-        worker.tokenize();
-
-        let mut tokens = Vec::with_capacity(worker.num_tokens());
+        let mut ltokens = self.tokenizer.tokenize(&normalized_sentence)?;
+        let mut tokens = Vec::with_capacity(ltokens.capacity());
 
         // iterator of starting indices of each graphemes
         let original_graphemes = sentence.grapheme_indices(true);
@@ -171,15 +170,14 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let mut original_char_indices = sentence.char_indices().enumerate();
 
-        for tok in worker.token_iter() {
-            let tok_byte_start = tok.range_byte().start;
+        for tok in &mut ltokens {
             // starting byte index of original sentence
             let byte_start = if already_normalized {
-                tok_byte_start
+                tok.byte_start
             } else {
                 graphemes
                     .find_map(|((original_idx, _), (normalized_idx, _))| {
-                        if normalized_idx == tok_byte_start {
+                        if normalized_idx == tok.byte_start {
                             Some(original_idx)
                         } else {
                             None
@@ -191,8 +189,11 @@ impl<R: Read + Seek> SharedBackend<R> {
                 .find_map(|(i, (a, _))| if a == byte_start { Some(i) } else { None })
                 .ok_or(YomikiriError::BytePositionError)?;
 
-            let text = tok.surface().to_string();
-            let details = TokenDetails::from_feature(tok.feature(), &text);
+            let text = tok.text.to_string();
+            let details = match tok.get_details() {
+                Some(d) => TokenDetails::from_details(&d),
+                None => TokenDetails::default_with_surface(&text),
+            };
 
             let token = Token::new(text, details, char_start as u32);
             tokens.push(token)
@@ -475,7 +476,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
 pub fn create_tokenizer() -> Tokenizer {
     let dictionary = load_dictionary().unwrap();
-    Tokenizer::new(dictionary).max_grouping_len(24)
+    Tokenizer::new(dictionary, None, Mode::Normal)
 }
 
 /// Join and replace `tokens[from..<to]`
