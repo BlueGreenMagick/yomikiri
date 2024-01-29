@@ -112,6 +112,9 @@ tokenize_tests! {
     case15: "ラジオ/を/聞き/乍ら/勉強/する",
 }
 
+// If string passed to tokenizer is not in NFC normalized form,
+// token text must be in NFC normalized form,
+// but token.start must be starting character position in un-normalized string
 #[test]
 fn decomposed_unicode() -> YResult<()> {
     let mut backend = setup_backend();

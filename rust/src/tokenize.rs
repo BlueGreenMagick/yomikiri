@@ -17,9 +17,11 @@ use serde::Serialize;
 #[derive(Debug, Clone)]
 pub struct Token {
     pub text: String,
-    /// start idx
+    /// character position of token in tokenized sentence
+    ///
+    /// Note that difference between token.start may not equal `text.len()`
+    /// if sentence is not in NFC-normalized form.
     pub start: u32,
-
     /// fields from TokenDetails
     pub pos: String,
     pub pos2: String,
@@ -153,9 +155,10 @@ impl<R: Read + Seek> SharedBackend<R> {
         })
     }
 
-    // `sentence`` is tokenized and the result is converted into vector of Token.
-    // `sentence` may not be unicode normalized, but lindera only accepts normalized text.
-    // byte position on unnormalized sentence is calculated from normalized byte position
+    /// `sentence`` is tokenized and the result is converted into vector of Token.
+    ///
+    /// if `sentence` is not in NFC normalized form, it is normalized before fed to lindera,
+    /// and `token.start` is calculated as character position in pre-normalized sentence.
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
         let normalized_sentence = sentence.nfc().collect::<String>();
         let already_normalized: bool = sentence == normalized_sentence;
