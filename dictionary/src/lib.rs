@@ -2,7 +2,7 @@ pub mod jmdict;
 pub mod xml;
 
 use std::collections::HashSet;
-use std::fmt::{Debug, Display};
+use std::error::Error;
 use std::fs::{self, File};
 use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
@@ -12,20 +12,7 @@ use yomikiri_dictionary_types::{DictIndexItem, Entry};
 
 use crate::xml::{parse_xml, remove_doctype, unescape_entity};
 
-#[derive(Debug)]
-pub struct CustomError {
-    pub msg: String,
-}
-
-impl<D: Display> From<D> for CustomError {
-    fn from(value: D) -> Self {
-        CustomError {
-            msg: format!("{}", value),
-        }
-    }
-}
-
-pub type Result<T> = core::result::Result<T, CustomError>;
+pub type Result<T> = core::result::Result<T, Box<dyn Error>>;
 
 pub fn parse_xml_file(input_path: &Path) -> Result<Vec<Entry>> {
     let xml_str = fs::read_to_string(input_path).unwrap();
