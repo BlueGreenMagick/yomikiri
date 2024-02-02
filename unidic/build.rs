@@ -24,6 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_dir = crate_dir.join("output");
     let src_dir = crate_dir.join("src");
     let build_crate_dir = crate_dir.join("unidic-build");
+    let resource_dir = crate_dir.join("../dictionary/resources");
 
     if !output_dir.try_exists()? {
         std::fs::create_dir(&output_dir)?;
@@ -49,6 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let transform_mtime = get_last_mtime_of_dir(&transform_dir)?;
     let src_mtime = get_last_mtime_of_dir(&src_dir)?;
     let build_crate_mtime = get_last_mtime_of_dir(&build_crate_dir)?;
+    let resource_mtime = get_last_mtime_of_dir(&resource_dir)?;
     let manifest_mtime = get_mtime(crate_dir.join("Cargo.toml"))?;
     let build_rs_mtime = get_mtime(crate_dir.join("build.rs"))?;
 
@@ -58,10 +60,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         && build_crate_mtime <= transform_mtime
         && manifest_mtime <= transform_mtime
         && build_rs_mtime <= transform_mtime
+        && resource_mtime <= transform_mtime
     {
         return Ok(());
     }
-    transform_unidic(&original_dir, &transform_dir)?;
+    transform_unidic(&original_dir, &transform_dir, &resource_dir)?;
     set_file_mtime(&transform_dir, FileTime::now())?;
 
     // re-run build only if transform has updated after last build

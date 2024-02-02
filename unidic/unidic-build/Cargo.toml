@@ -8,3 +8,5 @@ edition = "2021"
 lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 csv = "1.2"
+yomikiri-dictionary = { path = "../../dictionary" }
+yomikiri-dictionary-types = { path = "../../dictionary-types" }

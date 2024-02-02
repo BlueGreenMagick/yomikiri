@@ -50,6 +50,37 @@ impl Entry {
             .iter()
             .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Conjunction))
     }
+
+    pub fn main_form(&self) -> String {
+        for form in &self.forms {
+            if !form.uncommon {
+                return form.form.clone();
+            }
+        }
+        for reading in &self.readings {
+            if !reading.uncommon {
+                return reading.reading.clone();
+            }
+        }
+        if !self.forms.is_empty() {
+            return self.forms[0].form.clone();
+        }
+        if !self.readings.is_empty() {
+            return self.readings[0].reading.clone();
+        }
+        return "".into();
+    }
+
+    pub fn reading_for_form(&self, form: &str) -> Option<&Reading> {
+        for reading in &self.readings {
+            if (reading.to_form.is_empty() || reading.to_form.iter().any(|f| f == form))
+                && !reading.nokanji
+            {
+                return Some(reading);
+            }
+        }
+        None
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]

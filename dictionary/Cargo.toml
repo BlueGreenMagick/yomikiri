@@ -9,5 +9,5 @@ serde = { version = "1.0", features = ["derive"] }
 regex = "1"
 serde_json = "1"
 bincode = "1"
-yomikiri-dictionary-types = {path = "../dictionary-types"}
+yomikiri-dictionary-types = { path = "../dictionary-types" }
 itertools = "0.11"

@@ -1874,6 +1874,8 @@ dependencies = [
  "csv",
  "lindera-core",
  "lindera-unidic-builder",
+ "yomikiri-dictionary",
+ "yomikiri-dictionary-types",
 ]
 
 [[package]]
