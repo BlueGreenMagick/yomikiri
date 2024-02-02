@@ -8,7 +8,7 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 
 use bincode::Options;
-use yomikiri_dictionary_types::{DictIndexItem, Entry};
+pub use yomikiri_dictionary_types::{DictIndexItem, Entry};
 
 use crate::xml::{parse_xml, remove_doctype, unescape_entity};
 
@@ -65,7 +65,8 @@ pub fn write_json_files(index_path: &Path, dict_path: &Path, entries: &Vec<Entry
 pub fn parse_json_file(index_path: &Path, dict_path: &Path) -> Result<Vec<Entry>> {
     let file = File::open(index_path)?;
     let reader = BufReader::new(file);
-    let index_entries: Vec<DictIndexItem> = bincode::deserialize_from(reader)?;
+    let options = bincode::DefaultOptions::new();
+    let index_entries: Vec<DictIndexItem> = options.deserialize_from(reader)?;
     let mut indices: HashSet<u32> = HashSet::new();
     for entry in index_entries {
         for offset in entry.offsets {
@@ -82,11 +83,11 @@ pub fn parse_json_file(index_path: &Path, dict_path: &Path) -> Result<Vec<Entry>
         let start = indices[i];
         let end = indices[i + 1];
         let entry_bytes = &dict_bytes[start as usize..end as usize];
-        let entry: Entry = bincode::deserialize(entry_bytes)?;
+        let entry: Entry = serde_json::from_slice(entry_bytes)?;
         entries.push(entry);
     }
-    let entry_bytes = &dict_bytes[indices.len() - 1 as usize..];
-    let entry: Entry = bincode::deserialize(entry_bytes)?;
+    let entry_bytes = &dict_bytes[indices[indices.len() - 1] as usize..];
+    let entry: Entry = serde_json::from_slice(entry_bytes)?;
     entries.push(entry);
 
     Ok(entries)
