@@ -77,7 +77,7 @@ pub fn parse_json_file(index_path: &Path, dict_path: &Path) -> Result<Vec<Entry>
     let mut indices: Vec<u32> = indices.into_iter().collect();
     indices.sort();
 
-    let mut entries: Vec<Entry> = vec![];
+    let mut entries: Vec<Entry> = Vec::with_capacity(indices.len());
     let dict_bytes: Vec<u8> = fs::read(dict_path)?;
     for i in 0..indices.len() - 1 {
         let start = indices[i];
