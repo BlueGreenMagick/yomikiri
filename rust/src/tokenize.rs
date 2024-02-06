@@ -22,7 +22,8 @@ pub struct Token {
     /// Note that difference between token.start may not equal `text.len()`
     /// if sentence is not in NFC-normalized form.
     pub start: u32,
-    /// fields from TokenDetails
+    pub children: Vec<Token>,
+    // fields from TokenDetails
     pub pos: String,
     pub pos2: String,
     pub base: String,
@@ -57,10 +58,23 @@ impl Token {
         Token {
             text: surface.into(),
             start,
+            children: vec![],
             pos: details.pos,
             pos2: details.pos2,
             base: details.base,
             reading: details.reading,
+        }
+    }
+
+    fn without_children(token: &Token) -> Self {
+        Token {
+            text: token.text.clone(),
+            start: token.start,
+            children: vec![],
+            pos: token.pos.clone(),
+            pos2: token.pos2.clone(),
+            base: token.base.clone(),
+            reading: token.reading.clone(),
         }
     }
 }
@@ -240,7 +254,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         let mut joined_text_prev = token.text.clone();
 
         let mut last_found_to = to;
-        let mut last_found_is_base = true;
+        let mut base_join_strategy = BaseJoinStrategy::TextWithLastBase;
         let mut last_found_pos: &str = &token.pos;
 
         while to < tokens.len() {
@@ -255,7 +269,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
             if found {
                 last_found_to = to + 1;
-                last_found_is_base = false;
+                base_join_strategy = BaseJoinStrategy::Text;
                 last_found_pos = if all_noun {
                     "名詞"
                 } else if all_particle {
@@ -273,7 +287,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
                 if found_base {
                     last_found_to = to + 1;
-                    last_found_is_base = true;
+                    base_join_strategy = BaseJoinStrategy::TextWithLastBase;
                     last_found_pos = if all_noun {
                         "名詞"
                     } else if all_particle {
@@ -286,7 +300,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             let found_next = self.dictionary.has_starts_with_excluding(&joined_text);
             if !found_next {
                 let pos = String::from(last_found_pos);
-                join_tokens(tokens, from, last_found_to, pos, last_found_is_base);
+                join_tokens(tokens, from, last_found_to, pos, base_join_strategy);
                 return Ok(last_found_to - from > 1);
             }
             joined_text_prev = joined_text;
@@ -294,7 +308,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let pos = String::from(last_found_pos);
-        join_tokens(tokens, from, last_found_to, pos, false);
+        join_tokens(tokens, from, last_found_to, pos, BaseJoinStrategy::Text);
         return Ok(to - from > 1);
     }
 
@@ -316,7 +330,13 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let pos = String::from(&next_token.pos);
-        join_tokens(tokens, from, from + 2, pos, true);
+        join_tokens(
+            tokens,
+            from,
+            from + 2,
+            pos,
+            BaseJoinStrategy::TextWithLastBase,
+        );
         return Ok(true);
     }
 
@@ -342,7 +362,13 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let pos = String::from(next_pos);
-        join_tokens(tokens, from, from + 2, pos, true);
+        join_tokens(
+            tokens,
+            from,
+            from + 2,
+            pos,
+            BaseJoinStrategy::TextWithLastBase,
+        );
         return Ok(true);
     }
 
@@ -370,7 +396,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        join_tokens(tokens, from, from + 2, "接続詞", false);
+        join_tokens(tokens, from, from + 2, "接続詞", BaseJoinStrategy::Text);
         return Ok(true);
     }
 
@@ -401,7 +427,13 @@ impl<R: Read + Seek> SharedBackend<R> {
             _ => &token.pos,
         }
         .to_string();
-        join_tokens(tokens, from, from + 2, new_pos, true);
+        join_tokens(
+            tokens,
+            from,
+            from + 2,
+            new_pos,
+            BaseJoinStrategy::TextWithLastBase,
+        );
         Ok(true)
     }
 
@@ -422,24 +454,12 @@ impl<R: Read + Seek> SharedBackend<R> {
             && (tokens[to].pos == "助動詞" || tokens[to].pos2 == "接続助詞")
             && contains_only_kana(&tokens[to].text)
         {
-            joined_text += &tokens[to].text;
-            joined_reading += &tokens[to].reading;
             to += 1;
         }
-        if to - from == 1 {
-            return Ok(false);
-        }
 
-        let joined = Token {
-            text: joined_text,
-            reading: joined_reading,
-            pos: token.pos.clone(),
-            base: token.base.clone(),
-            pos2: token.pos2.clone(),
-            start: token.start,
-        };
-        tokens.splice(from..to, [joined]);
-        return Ok(true);
+        let pos = token.pos.clone();
+        join_tokens(tokens, from, to, &pos, BaseJoinStrategy::FirstBase);
+        return Ok(to - from > 1);
     }
 
     fn manual_patches(&mut self, tokens: &mut Vec<Token>) {
@@ -482,15 +502,27 @@ pub fn create_tokenizer() -> Tokenizer {
     Tokenizer::new(dictionary, None, Mode::Normal)
 }
 
-/// Join and replace `tokens[from..<to]`
+enum BaseJoinStrategy {
+    /// join `text` of all tokens
+    Text,
+    /// join `text` of all tokens except last token's `base`
+    TextWithLastBase,
+    /// use first token's `base`
+    FirstBase,
+}
+
+/// Join and replace `tokens[from..<to]`.
 ///
-/// if `last_as_base`, joined token's `base` uses `token.base` for last token
+/// `text`, `reading` is the joined `text` and `reading` values.
+///
+/// `base` is the joined `text` values.
+/// if `last_as_base`, joined token's `base` uses `base` for last token
 fn join_tokens<S: Into<String>>(
     tokens: &mut Vec<Token>,
     from: usize,
     to: usize,
     pos: S,
-    last_as_base: bool,
+    base_strategy: BaseJoinStrategy,
 ) {
     let size = to - from;
     if size == 1 {
@@ -500,26 +532,35 @@ fn join_tokens<S: Into<String>>(
     let mut text = String::with_capacity(3 * 4 * size);
     let mut reading = String::with_capacity(3 * 4 * size);
     for i in from..to - 1 {
-        text.push_str(&tokens[i].text);
         reading.push_str(&tokens[i].reading);
+        text.push_str(&tokens[i].text);
     }
 
-    let mut base_form = text.clone();
-    if last_as_base {
-        base_form.push_str(&tokens[to - 1].base);
-    } else {
-        base_form.push_str(&tokens[to - 1].text);
-    }
+    let base = match base_strategy {
+        BaseJoinStrategy::FirstBase => tokens[from].base.clone(),
+        BaseJoinStrategy::Text => concat_string(&text, &tokens[to - 1].text),
+        BaseJoinStrategy::TextWithLastBase => concat_string(&text, &tokens[to - 1].base),
+    };
 
     text.push_str(&tokens[to - 1].text);
     reading.push_str(&tokens[to - 1].reading);
 
+    let mut children: Vec<Token> = Vec::with_capacity(2 * (to - from));
+    for i in from..to {
+        if tokens[i].children.is_empty() {
+            children.push(Token::without_children(&tokens[i]));
+        } else {
+            children.append(&mut tokens[i].children);
+        }
+    }
+
     let joined = Token {
         text,
         pos: pos.into(),
+        children,
         reading,
+        base,
         pos2: String::from("*"),
-        base: base_form,
         start: tokens[from].start,
     };
     tokens.splice(from..to, [joined]);
