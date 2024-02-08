@@ -35,12 +35,12 @@ struct WebView: UIViewRepresentable {
          ### Optional arguments
          - additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
          */
-        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil, overscroll: Bool = true) {
+        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil, overscroll: Bool = true, scroll: Bool = true) {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
             self.overscroll = overscroll
             
-            let webviewOptions = UIYomikiriWebView.ViewModel.Options(overscroll: overscroll, additionalMessageHandler: additionalMessageHandler, url: url)
+            let webviewOptions = UIYomikiriWebView.ViewModel.Options(overscroll: overscroll, scroll: scroll, additionalMessageHandler: additionalMessageHandler, url: url)
             self.webviewModel = UIYomikiriWebView.ViewModel(options: webviewOptions)
         }
         

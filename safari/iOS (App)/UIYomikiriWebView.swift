@@ -39,6 +39,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             self.scrollView.bounces = false
             self.scrollView.alwaysBounceHorizontal = false
         }
+        self.scrollView.isScrollEnabled = self.viewModel.scroll
 
         let request = URLRequest(url: self.viewModel.url)
         self.load(request)
@@ -136,6 +137,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     public class ViewModel {
         public struct Options {
             var overscroll: Bool
+            let scroll: Bool
             let additionalMessageHandler: AdditionalMessageHandler?
             let url: URL
         }
@@ -143,6 +145,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         public weak var webview: UIYomikiriWebView? = nil
 
         fileprivate let overscroll: Bool
+        fileprivate let scroll: Bool
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         fileprivate let url: URL
         fileprivate var loadCompleteRunnableFunctions: [(UIYomikiriWebView) -> Void] = []
@@ -161,6 +164,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
 
         init(options: Options) {
             self.overscroll = options.overscroll
+            self.scroll = options.scroll
             self.additionalMessageHandler = options.additionalMessageHandler
             self.url = options.url
             self.loadStatus = .initial
