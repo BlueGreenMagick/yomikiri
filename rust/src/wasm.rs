@@ -18,6 +18,7 @@ export interface Token {
     base: string;
     reading: string;
     start: number;
+    children: Token[];
 }
 "#;
 
