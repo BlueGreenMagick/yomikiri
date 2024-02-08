@@ -18,6 +18,16 @@ export interface Token {
     base: string;
     reading: string;
     start: number;
+    children: Token[];
+}
+"#;
+
+#[wasm_bindgen(typescript_custom_section)]
+const TS_GRAMMAR: &'static str = r#"
+export interface GrammarInfo {
+    term: string;
+    description: string;
+    url: string;
 }
 "#;
 
@@ -27,6 +37,7 @@ export interface RawTokenizeResult {
     tokens: Token[];
     tokenIdx: number;
     entries: string[];
+    grammars: GrammarInfo[];
 }
 "#;
 

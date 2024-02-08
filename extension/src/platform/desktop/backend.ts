@@ -60,6 +60,7 @@ export class BackendController implements IBackendController {
       entries: rawResult.entries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
+      grammars: rawResult.grammars,
     };
   }
 
@@ -75,6 +76,7 @@ export class BackendController implements IBackendController {
       entries: rawResult.entries
         .map((json) => JSON.parse(json))
         .map(Entry.fromObject),
+      grammars: rawResult.grammars,
     };
   }
 

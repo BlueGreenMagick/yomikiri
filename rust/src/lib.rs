@@ -1,5 +1,6 @@
 pub mod dictionary;
 pub mod error;
+pub mod grammar;
 pub mod tokenize;
 mod utils;
 

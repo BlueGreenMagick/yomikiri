@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::error::{YResult, YomikiriError};
+use crate::grammar::{GrammarAnalyzer, GrammarInfo};
 use crate::SharedBackend;
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
@@ -51,6 +52,7 @@ pub struct RawTokenizeResult {
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
     pub entries: Vec<String>,
+    pub grammars: Vec<GrammarInfo>,
 }
 
 impl Token {
@@ -160,12 +162,15 @@ impl<R: Read + Seek> SharedBackend<R> {
             }
         }
 
+        let grammars = GrammarAnalyzer::new(&selected_token.children).analyze();
+
         Ok(RawTokenizeResult {
             tokens,
             tokenIdx: token_idx.try_into().map_err(|_| {
                 YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
             entries,
+            grammars,
         })
     }
 

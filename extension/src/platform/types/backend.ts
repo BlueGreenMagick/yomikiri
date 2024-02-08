@@ -1,4 +1,4 @@
-import type { Token } from "@yomikiri/yomikiri-rs";
+import type { GrammarInfo, Token } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
@@ -14,6 +14,7 @@ export interface TokenizeResult {
   /** May be -1 if tokens is empty */
   tokenIdx: number;
   entries: Entry[];
+  grammars: GrammarInfo[];
 }
 
 export interface IBackendController {
