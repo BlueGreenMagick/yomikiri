@@ -51,9 +51,7 @@
   "dependencies": {
     "@yomikiri/dictionary": "*",
     "@yomikiri/yomikiri-rs": "*",
-    "dexie": "^3.2.3",
     "normalize.css": "^8.0.1",
-    "pako": "^2.1.0",
     "svelte-french-toast": "^1.0.4"
   }
 }
