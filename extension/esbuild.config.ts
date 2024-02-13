@@ -249,6 +249,7 @@ function generateBuildOptions(): BuildOptions {
             from: ["src/iosapp/dictionary.html"],
             to: ["./res/dictionary.html"],
           },
+          { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
         ],
       }),
       platformAliasPlugin,
