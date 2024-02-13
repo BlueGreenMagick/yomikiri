@@ -1825,10 +1825,13 @@ version = "0.1.0"
 dependencies = [
  "RustyXML",
  "bincode",
+ "flate2",
  "itertools",
  "regex",
  "serde",
  "serde_json",
+ "tempfile",
+ "ureq",
  "yomikiri-dictionary-types",
 ]
 

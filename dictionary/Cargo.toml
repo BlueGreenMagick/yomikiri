@@ -2,6 +2,7 @@
 name = "yomikiri-dictionary"
 version = "0.1.0"
 edition = "2021"
+default-run = "yomikiri-dictionary-builder"
 
 [dependencies]
 rustyxml = { version = "0.3.0", git = "https://github.com/Florob/RustyXML.git", package = "RustyXML" }
@@ -11,3 +12,15 @@ serde_json = "1"
 bincode = "1"
 yomikiri-dictionary-types = { path = "../dictionary-types" }
 itertools = "0.11"
+ureq = { version = "2.7", optional = true }
+tempfile = { version = "3.8", optional = true }
+flate2 = { version = "1.0", optional = true }
+
+[features]
+default = ["bin"]
+bin = ["dep:ureq", "dep:tempfile", "dep:flate2"]
+
+[[bin]]
+name = "yomikiri-dictionary-builder"
+path = "src/main.rs"
+required-features = ["bin"]

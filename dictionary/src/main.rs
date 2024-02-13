@@ -1,35 +1,53 @@
+use flate2::read::GzDecoder;
 use std::env;
-
-use std::path::PathBuf;
+use std::error::Error;
+use std::path::{Path, PathBuf};
+use tempfile::NamedTempFile;
 use yomikiri_dictionary::{parse_xml_file, write_json_files};
 
-fn main() {
-    let (input_path, output_path, output_index_path) = read_arguments();
-    println!(
-        "Reading from {}, writing to {} and {}",
-        input_path.to_string_lossy(),
-        output_path.to_string_lossy(),
-        output_index_path.to_string_lossy()
-    );
-    let entries = parse_xml_file(&input_path).unwrap();
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
-    println!("Start writing yomikiridict and yomikiriindex");
+fn main() -> Result<()> {
+    let crate_dir = env::var_os("CARGO_MANIFEST_DIR").ok_or(
+        "CARGO_MANIFEST_DIR env var not found. Are you not running the program with `cargo run`?",
+    )?;
+    let crate_dir = PathBuf::from(crate_dir);
+    let resources_dir = crate_dir.join("resources");
+    let jmdict_file_path = resources_dir.join("JMdict_e");
+    let output_path = resources_dir.join("english.yomikiridict");
+    let output_index_path = resources_dir.join("english.yomikiriindex");
+
+    if !jmdict_file_path.exists() {
+        println!("Downloading JMDict file from the web...");
+        download_jmdict(&jmdict_file_path)?;
+    }
+
+    println!("Parsing downloaded JMDict xml file...",);
+    let entries = parse_xml_file(&jmdict_file_path).unwrap();
+
+    println!("Writing yomikiridict and yomikiriindex...");
     let largest_size = write_json_files(&output_index_path, &output_path, &entries).unwrap();
 
     println!("Data writing complete.");
     println!("Largest entry binary size is {}", largest_size);
+    Ok(())
 }
 
-fn read_arguments() -> (PathBuf, PathBuf, PathBuf) {
-    let mut args = env::args();
-    let msg = "This program requires three arguments: <input dict path> <output_path> <output_index_path>";
-    let _arg0 = args.next().unwrap();
-    let arg1 = args.next().expect(msg);
-    let arg2 = args.next().expect(msg);
-    let arg3 = args.next().expect(msg);
+/// download and unzip jmdict file into `output_path`
+fn download_jmdict(output_path: &Path) -> Result<()> {
+    let output_dir = output_path
+        .parent()
+        .ok_or("output_path does not have a parent directory.")?;
+    std::fs::create_dir_all(output_dir)?;
 
-    let input_path = PathBuf::from(arg1);
-    let output_path = PathBuf::from(arg2);
-    let output_index_path = PathBuf::from(arg3);
-    (input_path, output_path, output_index_path)
+    // download jmdict gzip file
+    let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
+    let resp = ureq::get(download_url).call()?;
+
+    // unzip the single dictionary file in gzip archive
+    let mut decoder = GzDecoder::new(resp.into_reader());
+    let mut tmpfile = NamedTempFile::new_in(output_dir)?;
+    std::io::copy(&mut decoder, &mut tmpfile)?;
+    tmpfile.persist(output_path)?;
+    Ok(())
 }
