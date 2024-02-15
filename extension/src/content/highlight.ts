@@ -1,3 +1,4 @@
+import type { Rect } from "~/utils";
 import { Tooltip } from "./tooltip";
 import { Platform } from "@platform";
 
@@ -11,6 +12,7 @@ interface IHighlighter {
   /** Unhighlight all */
   unhighlight: () => void;
   isHighlighted: (node: Text, charIdx?: number) => boolean;
+  highlightedRects: () => Rect[];
 }
 
 namespace SelectionHighlighter {
@@ -102,6 +104,13 @@ namespace SelectionHighlighter {
     if (selection === null) return;
     selection.removeAllRanges();
     revertSelectionColor();
+  }
+
+  export function highlightedRects(): Rect[] {
+    let selection = window.getSelection();
+    if (selection === null) return [];
+
+    return [...selection.getRangeAt(0).getClientRects()];
   }
 
   function _highlightNodes(nodes: Node[]) {
@@ -199,6 +208,37 @@ ${TAG_NAME}.unknown {
     let parent = node.parentElement;
     if (parent === null) return false;
     return parent.tagName === TAG_NAME.toUpperCase();
+  }
+
+  export function highlightedRects(): Rect[] {
+    let nodes = document.getElementsByTagName(TAG_NAME);
+    let rects: Rect[] = [];
+    for (const node of nodes) {
+      let nodeRects = [...node.getClientRects()];
+      // Join neighboring rects if part of a bigger rect
+      if (rects.length != 0 && nodeRects.length != 0) {
+        let lastRect = rects[rects.length - 1];
+        let firstNodeRect = nodeRects[0];
+        if (
+          lastRect.top == firstNodeRect.top &&
+          lastRect.bottom == firstNodeRect.bottom &&
+          lastRect.right == firstNodeRect.left
+        ) {
+          rects[rects.length - 1] = {
+            top: lastRect.top,
+            bottom: lastRect.bottom,
+            left: lastRect.left,
+            right: firstNodeRect.right,
+          };
+          nodeRects.shift();
+        }
+      }
+      for (const nodeRect of nodeRects) {
+        rects.push(nodeRect);
+      }
+    }
+
+    return rects;
   }
 
   function _highlightNodes(nodes: Node[], unknown: boolean) {

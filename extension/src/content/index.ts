@@ -80,7 +80,8 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     Highlighter.highlightRed(nodes);
   } else {
     Highlighter.highlightNodes(nodes);
-    await Tooltip.show(result, nodes, x, y);
+    let rects = Highlighter.highlightedRects();
+    await Tooltip.show(result, rects, x, y);
   }
   return true;
 }

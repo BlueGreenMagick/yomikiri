@@ -1,5 +1,12 @@
 import { writable, type Readable, type Writable } from "svelte/store";
 
+export interface Rect {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
 namespace Utils {
   export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
 
@@ -64,11 +71,7 @@ namespace Utils {
     return true;
   }
 
-  export function rectContainsPoint(
-    rect: { top: number; bottom: number; left: number; right: number },
-    x: number,
-    y: number
-  ): boolean {
+  export function rectContainsPoint(rect: Rect, x: number, y: number): boolean {
     return (
       x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
     );

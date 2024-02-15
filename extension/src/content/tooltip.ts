@@ -1,4 +1,4 @@
-import Utils from "utils";
+import Utils, { type Rect } from "utils";
 import {
   AnkiNoteBuilder,
   type LoadingNoteData,
@@ -11,16 +11,17 @@ import type { SelectedEntryForAnki } from "~/components/DicEntryView.svelte";
 import Config from "~/config";
 import { AnkiApi } from "@platform/anki";
 import TooltipPage from "./TooltipPage.svelte";
+import { Highlighter } from "./highlight";
 
 export namespace Tooltip {
   let _tokenizeResult: TokenizeResult;
-  let _highlightedNodes: Node[];
   let _tooltipEl: HTMLIFrameElement | undefined = undefined;
   let _tooltipPageSvelte: TooltipPage;
+  let _shown = false;
 
   export async function show(
     tokenizeResult: TokenizeResult,
-    highlightedNodes: Node[],
+    highlightedRects: Rect[],
     mouseX: number,
     mouseY: number
   ) {
@@ -29,13 +30,14 @@ export namespace Tooltip {
       tooltip = await createTooltipIframe();
     }
     _tokenizeResult = tokenizeResult;
-    _highlightedNodes = highlightedNodes;
+    console.log(highlightedRects);
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
+    _shown = true;
     _tooltipPageSvelte.showEntries(_tokenizeResult.entries);
     // fix bug where tooltip height is previous entry's height
     await 0;
-    const rect = findRectOfMouse(highlightedNodes, mouseX, mouseY);
+    const rect = findRectOfMouse(highlightedRects, mouseX, mouseY);
     await position(tooltip, rect);
   }
 
@@ -46,6 +48,7 @@ export namespace Tooltip {
     }
     tooltip.style.display = "none";
     tooltip.contentWindow?.getSelection()?.empty();
+    _shown = false;
   }
 
   async function createTooltipIframe(): Promise<HTMLIFrameElement> {
@@ -82,13 +85,11 @@ export namespace Tooltip {
   /** add ResizeObserver to document and change position on document resize */
   function attachResizeObserver(tooltipEl: HTMLIFrameElement) {
     const resizeObserver = new ResizeObserver((_) => {
-      if (!_highlightedNodes || _repositionRequested) return;
-      const range = new Range();
-      range.selectNode(_highlightedNodes[0]);
-      const rect = range.getClientRects()[0];
+      if (!_shown || _repositionRequested) return;
       _repositionRequested = true;
       requestAnimationFrame(() => {
-        position(tooltipEl, rect);
+        const rects = Highlighter.highlightedRects();
+        position(tooltipEl, rects[0]);
         _repositionRequested = false;
       });
     });
@@ -100,23 +101,15 @@ export namespace Tooltip {
   }
 
   function findRectOfMouse(
-    nodes: Node[],
+    rects: Rect[],
     mouseX: number,
     mouseY: number
-  ): DOMRect {
-    let range = new Range();
-    for (const node of nodes) {
-      range.selectNode(node);
-      const rects = range.getClientRects();
-      for (const rect of rects) {
-        if (Utils.rectContainsPoint(rect, mouseX, mouseY)) {
-          return rect;
-        }
+  ): Rect {
+    for (const rect of rects) {
+      if (Utils.rectContainsPoint(rect, mouseX, mouseY)) {
+        return rect;
       }
     }
-
-    range.selectNode(nodes[0]);
-    let rects = range.getClientRects();
     return rects[0];
   }
 
@@ -132,7 +125,7 @@ export namespace Tooltip {
    *  prefer tooltip.top = rect.bottom + VERTICAL_SPACE,
    *  but sometimes tooltip.bottom = rect.top - VERTICAL_SPACE
    */
-  async function position(tooltip: HTMLIFrameElement, rect: DOMRect) {
+  async function position(tooltip: HTMLIFrameElement, rect: Rect) {
     // min margin between tooltip and window
     const MARGIN = 10;
     // space between highlighted rect and tooltip
@@ -152,7 +145,7 @@ export namespace Tooltip {
     const rootRect = document.documentElement.getBoundingClientRect();
     const rectLeft = rect.left - rootRect.left;
     const rectTop = rect.top - rootRect.top;
-    const rectBottom = rectTop + rect.height;
+    const rectBottom = rect.bottom - rootRect.top;
     const spaceTop = rect.top;
     // window.bottom - rect.bottom
     const spaceBottom = window.innerHeight - rect.bottom;
