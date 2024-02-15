@@ -14,14 +14,50 @@ interface IHighlighter {
 }
 
 namespace SelectionHighlighter {
+  interface SelectionData {
+    anchorNode: Node;
+    anchorOffset: number;
+    focusNode: Node;
+    focusOffset: number;
+  }
+
   const STYLE_ID = "yomikiri-selection-css";
 
   export const type = "selection";
   export let highlighted = false;
-  let hasListener = false;
   let ignoreNextSelectionEventFire = 0;
+  let selectionData: SelectionData | null = null;
 
-  export function initialize() {}
+  export function initialize() {
+    document.addEventListener("selectionchange", (ev) => {
+      if (!highlighted) {
+        return;
+      }
+      if (ignoreNextSelectionEventFire) {
+        ignoreNextSelectionEventFire -= 1;
+        return;
+      }
+
+      // Check if selection has not been changed
+      // Firefox emit selectionchange events when Text nodes are normalized
+      // which cannot be caught by ignoreNextSelectionEventFire
+      let selection = document.getSelection();
+      if (
+        selection !== null &&
+        selectionData !== null &&
+        selection.anchorNode === selectionData.anchorNode &&
+        selection.anchorOffset === selectionData.anchorOffset &&
+        selectionData.focusNode === selection.focusNode &&
+        selectionData.focusOffset === selection.focusOffset
+      ) {
+        return;
+      }
+
+      revertSelectionColor();
+      highlighted = false;
+      Tooltip.hide();
+    });
+  }
 
   /** May modify range */
   export function highlightNodes(nodes: Node[]) {
@@ -84,7 +120,18 @@ namespace SelectionHighlighter {
       lastNode.textContent?.length ?? lastNode.childNodes.length
     );
     ignoreNextSelectionEventFire += 1;
+    if (selection.anchorNode === null || selection.focusNode === null) {
+      return;
+    }
     highlighted = true;
+    nodes[0].parentNode?.normalize();
+    lastNode.parentNode?.normalize();
+    selectionData = {
+      anchorNode: selection.anchorNode,
+      anchorOffset: selection.anchorOffset,
+      focusNode: selection.focusNode,
+      focusOffset: selection.focusOffset,
+    };
   }
 
   function changeSelectionColor(color: string) {
@@ -95,21 +142,6 @@ namespace SelectionHighlighter {
     styleEl.innerHTML = `::selection { background-color: ${color} !important; }`;
     styleEl.id = STYLE_ID;
     document.head.appendChild(styleEl);
-
-    if (!hasListener) {
-      const listener = () => {
-        if (ignoreNextSelectionEventFire) {
-          ignoreNextSelectionEventFire -= 1;
-          return;
-        }
-        revertSelectionColor();
-        Tooltip.hide();
-        document.removeEventListener("selectionchange", listener);
-        hasListener = false;
-      };
-      document.addEventListener("selectionchange", listener);
-      hasListener = true;
-    }
   }
 
   function revertSelectionColor() {
