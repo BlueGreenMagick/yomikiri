@@ -55,8 +55,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         && manifest_mtime <= transform_mtime
         && resource_mtime <= transform_mtime
     {
+        println!("Aborting since nothing has changed since last build.");
         return Ok(());
     }
+    println!("Transforming unidic for Yomikiri...");
     transform(&original_dir, &transform_dir, &resource_dir)?;
     set_file_mtime(&transform_dir, FileTime::now())?;
 
@@ -67,6 +69,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
+    println!("Building unidic lindera files...");
     let builder = UnidicBuilder::new();
     builder.build_dictionary(&transform_dir, &output_dir)?;
     set_file_mtime(&output_dir, FileTime::now())?;
@@ -114,6 +117,7 @@ fn skip_file_entry(entry: &DirEntry) -> bool {
 /// `output_path` must exist and be a directory
 fn download_unidic_original(output_path: &Path) -> Result<(), Box<dyn Error>> {
     let download_url = "https://clrd.ninjal.ac.jp/unidic_archive/cwj/2.2.0/unidic-cwj-2.2.0.zip";
+    println!("Downloading unidic from {}", &download_url);
     let resp = ureq::get(download_url).call()?;
     let mut tmpfile = tempfile::tempfile()?;
     std::io::copy(&mut resp.into_reader(), &mut tmpfile)?;

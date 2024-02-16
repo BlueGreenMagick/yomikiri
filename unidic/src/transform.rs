@@ -95,6 +95,9 @@ impl LexItem {
     }
 }
 
+/// Transforms files in `input_dir` and put it into `transform_dir`.
+///
+/// yomikiridict files are required in `resource_dir`
 pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) -> TResult<()> {
     let entries = fs::read_dir(input_dir)?;
     for entry in entries {
