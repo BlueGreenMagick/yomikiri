@@ -40,7 +40,7 @@ impl LexItem {
                 None => continue,
             };
             let cost = cmp::min(
-                4000 + 1000 * reading.reading.chars().count(),
+                7000 + 1000 * reading.reading.chars().count(),
                 i16::MAX as usize,
             );
 
