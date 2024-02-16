@@ -53,7 +53,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         && manifest_mtime <= transform_mtime
         && resource_mtime <= transform_mtime
     {
-        println!("Aborting since nothing has changed since last build.");
+        println!("Nothing has changed since last unidic build,");
         return Ok(());
     }
     println!("Transforming unidic for Yomikiri...");
