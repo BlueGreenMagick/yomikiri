@@ -13,7 +13,9 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 
 [NodeJS](https://nodejs.org/en/download), [yarn](https://classic.yarnpkg.com/lang/en/docs/install), [Rust, cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
-Go to `/dictionary` and run `cargo run` to create dictionary files.
+Go to `/dictionary` and run `cargo run` to download and build dictionary files.
+
+Go to `/unidic` and run `cargo run` to download and build unidic files.
 
 Go to `/rust` and run `wasm-pack build --scope yomikiri --target web` to build Yomikiri wasm backend.
 
