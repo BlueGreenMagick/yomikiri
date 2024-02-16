@@ -60,14 +60,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     println!("Transforming unidic for Yomikiri...");
     transform(&original_dir, &transform_dir, &resource_dir)?;
-    set_file_mtime(&transform_dir, FileTime::now())?;
-
-    // re-run build only if transform has updated after last build
-    let transform_mtime = get_last_mtime_of_dir(&transform_dir)?;
-    let output_mtime = get_last_mtime_of_dir(&output_dir)?;
-    if transform_mtime <= output_mtime {
-        return Ok(());
-    }
 
     println!("Building unidic lindera files...");
     let builder = UnidicBuilder::new();
