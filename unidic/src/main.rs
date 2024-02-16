@@ -1,5 +1,10 @@
+mod transform;
+
+use crate::transform::transform;
 use filetime::set_file_mtime;
 use filetime::FileTime;
+use lindera_core::dictionary_builder::DictionaryBuilder;
+use lindera_unidic_builder::unidic_builder::UnidicBuilder;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -8,22 +13,14 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::SystemTime;
 use walkdir::{DirEntry, WalkDir};
-use yomikiri_unidic_build::{build_unidic, transform_unidic};
 use zip::ZipArchive;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed=Cargo.toml");
-    println!("cargo:rerun-if-changed=original");
-    println!("cargo:rerun-if-changed=unidic-build");
-
-    // We also compare mtime because build script is rerun when compilation target changes
     let crate_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
     let original_dir = crate_dir.join("original");
     let transform_dir = crate_dir.join("transformed");
     let output_dir = crate_dir.join("output");
     let src_dir = crate_dir.join("src");
-    let build_crate_dir = crate_dir.join("unidic-build");
     let resource_dir = crate_dir.join("../dictionary/resources");
 
     if !output_dir.try_exists()? {
@@ -49,22 +46,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     let original_mtime = get_last_mtime_of_dir(&original_dir)?;
     let transform_mtime = get_last_mtime_of_dir(&transform_dir)?;
     let src_mtime = get_last_mtime_of_dir(&src_dir)?;
-    let build_crate_mtime = get_last_mtime_of_dir(&build_crate_dir)?;
     let resource_mtime = get_last_mtime_of_dir(&resource_dir)?;
     let manifest_mtime = get_mtime(crate_dir.join("Cargo.toml"))?;
-    let build_rs_mtime = get_mtime(crate_dir.join("build.rs"))?;
 
     // re-run only if any relevant files changed after last transform
     if original_mtime <= transform_mtime
         && src_mtime <= transform_mtime
-        && build_crate_mtime <= transform_mtime
         && manifest_mtime <= transform_mtime
-        && build_rs_mtime <= transform_mtime
         && resource_mtime <= transform_mtime
     {
         return Ok(());
     }
-    transform_unidic(&original_dir, &transform_dir, &resource_dir)?;
+    transform(&original_dir, &transform_dir, &resource_dir)?;
     set_file_mtime(&transform_dir, FileTime::now())?;
 
     // re-run build only if transform has updated after last build
@@ -74,7 +67,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
-    build_unidic(&transform_dir, &output_dir)?;
+    let builder = UnidicBuilder::new();
+    builder.build_dictionary(&transform_dir, &output_dir)?;
     set_file_mtime(&output_dir, FileTime::now())?;
     Ok(())
 }

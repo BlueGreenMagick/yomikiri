@@ -1,13 +1,13 @@
 #![allow(non_snake_case)]
 
 use crate::error::{YResult, YomikiriError};
+use crate::unidic::load_dictionary;
 use crate::SharedBackend;
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
 use unicode_normalization::UnicodeNormalization;
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_unidic_dictionary::load_dictionary;
 
 #[cfg(wasm)]
 use serde::Serialize;

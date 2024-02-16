@@ -1867,30 +1867,21 @@ dependencies = [
  "wasm-logger",
  "web-sys",
  "yomikiri-dictionary-types",
- "yomikiri-unidic-dictionary",
-]
-
-[[package]]
-name = "yomikiri-unidic-build"
-version = "0.1.0"
-dependencies = [
- "csv",
- "lindera-core",
- "lindera-unidic-builder",
- "yomikiri-dictionary",
- "yomikiri-dictionary-types",
 ]
 
 [[package]]
 name = "yomikiri-unidic-dictionary"
 version = "0.1.0"
 dependencies = [
+ "csv",
  "filetime",
  "lindera-core",
+ "lindera-unidic-builder",
  "tempfile",
  "ureq",
  "walkdir",
- "yomikiri-unidic-build",
+ "yomikiri-dictionary",
+ "yomikiri-dictionary-types",
  "zip",
 ]
 

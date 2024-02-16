@@ -1,6 +1,9 @@
 rm -rf ./swift
 rm -rf ./pkg
 
+# build unidic
+cargo run --manifest-path "../unidic/Cargo.toml"
+
 # build uniffi
 
 cargo build --release --lib

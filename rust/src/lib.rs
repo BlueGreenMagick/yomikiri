@@ -1,6 +1,7 @@
 pub mod dictionary;
 pub mod error;
 pub mod tokenize;
+mod unidic;
 mod utils;
 
 #[cfg(uniffi)]
