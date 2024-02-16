@@ -110,7 +110,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
                 "lex_naist.csv" => {
                     transform_lex(
                         &copy_from,
-                        &transform_dir.join("lex.csv"),
+                        transform_dir,
                         &resource_dir.join("english.yomikiriindex"),
                         &resource_dir.join("english.yomikiridict"),
                     )?;
@@ -129,7 +129,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
 /// 3. Add entries from JMDict that is not in unidic
 fn transform_lex(
     lex_path: &Path,
-    output_path: &Path,
+    output_dir: &Path,
     index_path: &Path,
     dict_path: &Path,
 ) -> TResult<()> {
@@ -161,10 +161,28 @@ fn transform_lex(
         items.push(item);
     }
 
-    add_words_in_jmdict(&mut items, index_path, dict_path)?;
+    let jmdict_entries = parse_json_file(index_path, dict_path)?;
+    add_words_in_jmdict(&mut items, &jmdict_entries)?;
+    let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 
-    let mut writer = csv::Writer::from_path(output_path)?;
+    // write removed items for debugging purposes
+    let removed_lex_path = output_dir.join("removed.csv");
+    let mut writer = csv::Writer::from_path(&removed_lex_path)?;
+    for item in removed {
+        writer.write_record(&[
+            item.surface,
+            item.lid,
+            item.rid,
+            item.cost,
+            item.pos,
+            item.pos2,
+            item.reading,
+            item.base,
+        ])?;
+    }
 
+    let output_lex_path = output_dir.join("lex.csv");
+    let mut writer = csv::Writer::from_path(&output_lex_path)?;
     for item in items {
         writer.write_record(&[
             item.surface,
@@ -185,12 +203,7 @@ fn transform_lex(
 
 /// Add words in JMDict that is not in Unidic lex
 /// e.g. katakana words
-fn add_words_in_jmdict(
-    items: &mut Vec<LexItem>,
-    index_path: &Path,
-    dict_path: &Path,
-) -> TResult<()> {
-    let entries = parse_json_file(index_path, dict_path)?;
+fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResult<()> {
     let mut item_bases: HashSet<String> = HashSet::with_capacity(items.len() * 2);
     for i in items.iter() {
         item_bases.insert(i.base.clone());
@@ -207,6 +220,31 @@ fn add_words_in_jmdict(
         items.extend(new_items);
     }
     Ok(())
+}
+
+/// Remove LexItems whose base or surface is not in JMDict.
+/// Returns removed LexItems.
+fn remove_word_not_in_jmdict(
+    items: &mut Vec<LexItem>,
+    entries: &Vec<Entry>,
+) -> TResult<Vec<LexItem>> {
+    let mut terms: HashSet<&str> = HashSet::with_capacity(entries.len() * 4);
+    for entry in entries {
+        for term in entry.terms() {
+            terms.insert(term);
+        }
+    }
+
+    let mut retain_len = 0_usize;
+    for i in 0..items.len() {
+        let item = &items[i];
+        if terms.contains(item.base.as_str()) || terms.contains(item.surface.as_str()) {
+            items.swap(i, retain_len);
+            retain_len += 1;
+        }
+    }
+    let removed = items.split_off(retain_len);
+    Ok(removed)
 }
 
 fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool {
