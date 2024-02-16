@@ -32,13 +32,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !original_dir.try_exists()? {
         std::fs::create_dir(&original_dir)?;
     }
-    // download original unidic if 'original' dir is empty
-    if WalkDir::new(&original_dir)
-        .into_iter()
-        .filter_entry(|e| !skip_file_entry(e))
-        .skip(1) // first entry is the directory
-        .next()
-        .is_none()
+
+    // Check if 'original' dir is empty by looking for matrix.def file
+    // and download original unidic files if it does not exist
+    if !fs::read_dir(&original_dir)?
+        .any(|e| e.map(|p| p.file_name() == "matrix.def").unwrap_or(false))
     {
         download_unidic_original(&original_dir)?;
     }
