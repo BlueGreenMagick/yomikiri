@@ -115,7 +115,6 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
                         &resource_dir.join("english.yomikiridict"),
                     )?;
                 }
-                "matrix.bin" | "model.bin" | "model.def" => {}
                 _ => {
                     fs::copy(&copy_from, &copy_to)?;
                 }

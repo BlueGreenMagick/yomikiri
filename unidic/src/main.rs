@@ -120,11 +120,18 @@ fn download_unidic_original(output_path: &Path) -> Result<(), Box<dyn Error>> {
             .enclosed_name()
             .map(|p| if p.is_dir() { None } else { p.file_name() })
             .flatten();
-        if let Some(file_name) = file_name {
-            let dest_path = output_path.join(file_name);
-            let mut dest = File::create(&dest_path)?;
-            std::io::copy(&mut file, &mut dest)?;
+        let Some(file_name) = file_name else { continue };
+        let Some(file_name) = file_name.to_str() else {
+            continue;
+        };
+        // skip large files that aren't used
+        if ["matrix.bin", "model.bin", "model.def", "sys.dic"].contains(&file_name) {
+            continue;
         }
+
+        let dest_path = output_path.join(file_name);
+        let mut dest = File::create(&dest_path)?;
+        std::io::copy(&mut file, &mut dest)?;
     }
     Ok(())
 }
