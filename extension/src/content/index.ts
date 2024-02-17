@@ -116,3 +116,5 @@ document.addEventListener("click", async (ev: MouseEvent) => {
 
 window.Api = BrowserApi;
 window.ensureInitialized = ensureInitialized;
+
+ensureInitialized();
