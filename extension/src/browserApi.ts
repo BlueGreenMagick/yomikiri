@@ -95,6 +95,7 @@ export namespace BrowserApi {
     return chrome.storage.local;
   }
 
+  /** Returns content of the response. Returns an Error object if an error occured. */
   export function handleRequestResponse<R>(resp: RequestResponse<R>): R {
     if (resp.success) {
       return resp.resp;
@@ -114,6 +115,7 @@ export namespace BrowserApi {
     }
   }
 
+  /** It is assumed that request does return a response. */
   function createRequestResponseHandler<K extends keyof MessageMap>(
     resolve: Utils.PromiseResolver<Response<K>>,
     reject: (reason: Error) => void
@@ -128,8 +130,12 @@ export namespace BrowserApi {
     };
   }
 
-  /// Send request to extension backend.
-  /// Returns the return value of the request handler.
+  /**
+   * Send request to all extension pages.
+   * Returns the return value of the request handler.
+   *
+   * Request is not sent to content scripts. Use `requestToTab()` instead.
+   */
   export async function request<K extends keyof MessageMap>(
     key: K,
     request: Request<K>
@@ -144,8 +150,7 @@ export namespace BrowserApi {
     return promise;
   }
 
-  /// Send request to extension backend.
-  /// Returns the return value of the request handler.
+  /** Send request to page and content script in tab. */
   export async function requestToTab<K extends keyof MessageMap>(
     tabId: number,
     key: K,
@@ -164,6 +169,39 @@ export namespace BrowserApi {
     return promise;
   }
 
+  /** Responses may contain undefined if a tab did not handle request */
+  export async function requestToAllTabs<K extends keyof MessageMap>(
+    key: K,
+    request: Request<K>
+  ): Promise<(Response<K> | undefined)[]> {
+    const [outerPromise, outerResolve, outerReject] =
+      Utils.createPromise<(Response<K> | undefined)[]>();
+    const message = {
+      key,
+      request,
+    };
+
+    chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
+      let promises: Promise<Response<K> | undefined>[] = [];
+      for (const tab of tabs) {
+        if (tab.id !== undefined) {
+          const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+          const handler = createRequestResponseHandler(resolve, reject);
+          chrome.tabs.sendMessage(tab.id, message, (resp) => {
+            if (resp === undefined) {
+              resolve(resp);
+            } else {
+              handler(resp);
+            }
+          });
+          promises.push(promise);
+        }
+      }
+      Promise.all(promises).then(outerResolve).catch(outerReject);
+    });
+
+    return outerPromise;
+  }
   /// Handle request by front-end for `key`. Return response in handler.
   /// If there is an existing handler for `key`, replaces it.
   export function handleRequest<K extends keyof MessageMap>(
