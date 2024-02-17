@@ -5,19 +5,21 @@
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
   import IconSettings from "@icons/settings.svg";
+  import IconPower from "@icons/power.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import TokensView from "./TokensView.svelte";
   import { Backend } from "~/backend";
   import DicEntriesView from "./DicEntriesView.svelte";
   import { createEventDispatcher } from "svelte";
   import TextButton from "./TextButton.svelte";
+  import Config from "~/config";
 
   interface Events {
     close: void;
   }
 
   export let searchText: string = "";
-  export let showSettingsButton: boolean = false;
+  export let actionButtons: boolean = false;
   export let showCloseButton: boolean = false;
 
   const dispatch = createEventDispatcher<Events>();
@@ -26,6 +28,8 @@
   // may be bigger than total token characters
   let selectedCharAt: number;
   let entries: Entry[] = [];
+  // TODO: Move this to Config store
+  let stateEnabled = Config.get("state.enabled");
 
   /** modifies `searchTokens` */
   const tokenize = Utils.SingleQueued(_tokenize);
@@ -48,6 +52,13 @@
 
   function openSettings() {
     Platform.openOptionsPage();
+  }
+
+  function toggleEnable() {
+    let prevValue = Config.get("state.enabled");
+    stateEnabled = !prevValue;
+    Config.set("state.enabled", stateEnabled);
+    // TODO: broadcast new power state
   }
 
   function close() {
@@ -76,11 +87,6 @@
         {@html IconCloseCircle}
       </div>
     </div>
-    {#if showSettingsButton}
-      <button class="settings-button" on:click={openSettings}>
-        <div class="icon icon-settings">{@html IconSettings}</div>
-      </button>
-    {/if}
     {#if showCloseButton}
       <div class="close-button">
         <TextButton label="Close" on:click={close} />
@@ -90,9 +96,25 @@
   <div class="tokensview">
     <TokensView tokens={searchTokens} bind:selectedCharAt />
   </div>
-  <div class="entries">
-    <DicEntriesView {entries} />
-  </div>
+  {#if searchText !== ""}
+    <div class="entries">
+      <DicEntriesView {entries} />
+    </div>
+  {:else if actionButtons}
+    <div class="action-buttons">
+      <div
+        class="icon-action"
+        class:active={stateEnabled}
+        on:click={toggleEnable}
+        title={stateEnabled ? "Disable" : "Enable"}
+      >
+        {@html IconPower}
+      </div>
+      <div class="icon-action" on:click={openSettings} title="Open Settings">
+        {@html IconSettings}
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -159,35 +181,41 @@
   .icon-clear.hidden {
     visibility: hidden;
   }
-  .icon-settings {
-    width: 14px;
-    height: 14px;
-    fill: #666666;
+
+  .icon-action {
+    width: 36px;
+    height: 36px;
+    background-color: var(--button-bg);
+    fill: white;
+    border-radius: 4px;
+    padding: 4px;
+    transition: background-color 0.25s;
   }
 
-  .settings-button {
-    flex: 0 0 auto;
-    margin: 0;
-    margin-left: 2px;
-    margin-right: calc(2px - var(--edge-horizontal-padding));
-    padding: 0;
-    border: none;
-    border-radius: 4px;
-    outline: none;
-    width: 28px;
-    height: 28px;
+  .icon-action.active {
+    background-color: var(--accent-orange);
+  }
+
+  @media (hover: hover) {
+    .icon-action:hover,
+    .icon-action:focus {
+      filter: brightness(0.9);
+      cursor: pointer;
+    }
+  }
+
+  .action-buttons {
+    margin-top: 64px;
+    width: 100%;
 
     display: flex;
-    align-items: center;
+    gap: 8px;
+    flex-direction: row;
     justify-content: center;
-    background: none;
-    opacity: 0.8;
   }
-  .settings-button:hover,
-  .settings-button:focus {
-    opacity: 1;
-    background: lightgray;
-    cursor: pointer;
+
+  :global(html.ios) .action-buttons {
+    margin-top: 80px;
   }
 
   .close-button {

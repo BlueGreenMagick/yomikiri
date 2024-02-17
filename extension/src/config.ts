@@ -4,6 +4,7 @@ import Utils from "./utils";
 
 /** Must not be undefined */
 export interface Configuration {
+  "state.enabled": boolean;
   "general.font_size": number;
   "general.font": string;
   "anki.connect_port": number;
@@ -13,6 +14,7 @@ export interface Configuration {
 }
 
 const defaultOptions: Configuration = {
+  "state.enabled": true,
   "general.font_size": 14,
   "general.font": "Meiryo",
   "anki.connect_port": 8785,
