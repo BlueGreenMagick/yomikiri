@@ -14,6 +14,7 @@ declare global {
     AnkiApi: typeof AnkiApi;
     Api: typeof BrowserApi;
     Utils: typeof Utils;
+    Config: typeof Config;
     ensureInitialized: typeof ensureInitialized;
   }
 }
@@ -68,4 +69,5 @@ self.backend = Backend;
 self.AnkiApi = AnkiApi;
 self.Api = BrowserApi;
 self.Utils = Utils;
+self.Config = Config;
 self.ensureInitialized = ensureInitialized;

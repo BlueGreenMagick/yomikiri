@@ -15,6 +15,7 @@ import { containsJapaneseContent } from "~/japanese";
 declare global {
   interface Window {
     Api: typeof BrowserApi;
+    Config: typeof Config;
     ensureInitialized: typeof ensureInitialized;
   }
 }
@@ -122,5 +123,6 @@ document.addEventListener("click", async (ev: MouseEvent) => {
 
 window.Api = BrowserApi;
 window.ensureInitialized = ensureInitialized;
+window.Config = Config;
 
 ensureInitialized();
