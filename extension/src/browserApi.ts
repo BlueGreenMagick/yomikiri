@@ -15,6 +15,7 @@ export interface MessageMap {
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [NoteData, void];
   tabId: [null, number | undefined];
+  stateEnabledChanged: [boolean, void];
   // ios
   loadConfig: [null, StoredConfiguration];
 }
@@ -182,14 +183,21 @@ export namespace BrowserApi {
     };
 
     chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
-      let promises: Promise<Response<K> | undefined>[] = [];
+      let promises: Promise<Response<K>>[] = [];
       for (const tab of tabs) {
         if (tab.id !== undefined) {
           const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
           const handler = createRequestResponseHandler(resolve, reject);
           chrome.tabs.sendMessage(tab.id, message, (resp) => {
-            if (resp === undefined) {
+            if (
+              resp === undefined ||
+              chrome.runtime.lastError?.message?.includes(
+                "Could not establish connection. Receiving end does not exist."
+              )
+            ) {
               resolve(resp);
+            } else if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError.message);
             } else {
               handler(resp);
             }

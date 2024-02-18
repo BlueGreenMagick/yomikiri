@@ -1,6 +1,7 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
 import Utils from "./utils";
+import { BrowserApi } from "./browserApi";
 
 /** Must not be undefined */
 export interface Configuration {
@@ -33,11 +34,19 @@ export type ConfigKeysOfType<T> = {
 }[keyof Configuration];
 
 export namespace Config {
+  export let initialized: boolean = false;
+
   let _storage: StoredConfiguration;
   let _styleEl: HTMLStyleElement | undefined;
 
+  /** Platform and BrowserApi must be initialized. */
   export async function initialize(): Promise<void> {
     _storage = await Platform.loadConfig();
+    BrowserApi.handleRequest("stateEnabledChanged", (value) => {
+      // No need to save config
+      _storage["state.enabled"] = value;
+    });
+    Config.initialized = true;
   }
 
   export function get<K extends keyof Configuration>(key: K): Configuration[K] {

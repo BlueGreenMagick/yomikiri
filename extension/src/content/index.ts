@@ -22,7 +22,7 @@ declare global {
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
-  BrowserApi.initialize({ context: "contentScript" });
+  BrowserApi.initialize({ context: "contentScript", handleRequests: true });
   Platform.initialize();
   await Config.initialize();
   await Backend.initialize();
@@ -93,6 +93,9 @@ document.addEventListener("mousemove", async (ev) => {
   if (document.documentElement.classList.contains("yomikiri")) {
     return;
   }
+  if (!Config.initialized || !Config.get("state.enabled")) {
+    return;
+  }
 
   if (ev.shiftKey) {
     await trigger(ev.clientX, ev.clientY);
@@ -102,6 +105,9 @@ document.addEventListener("mousemove", async (ev) => {
 document.addEventListener("click", async (ev: MouseEvent) => {
   // inside yomikiri tooltip
   if (document.documentElement.classList.contains("yomikiri")) {
+    return;
+  }
+  if (!Config.initialized || !Config.get("state.enabled")) {
     return;
   }
 

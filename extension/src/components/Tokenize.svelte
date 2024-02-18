@@ -13,6 +13,7 @@
   import { createEventDispatcher } from "svelte";
   import TextButton from "./TextButton.svelte";
   import Config from "~/config";
+  import { BrowserApi } from "~/browserApi";
 
   interface Events {
     close: void;
@@ -58,7 +59,7 @@
     let prevValue = Config.get("state.enabled");
     stateEnabled = !prevValue;
     Config.set("state.enabled", stateEnabled);
-    // TODO: broadcast new power state
+    BrowserApi.requestToAllTabs("stateEnabledChanged", stateEnabled);
   }
 
   function close() {
