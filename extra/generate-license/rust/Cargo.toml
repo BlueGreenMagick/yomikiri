@@ -1,0 +1,10 @@
+[package]
+name = "generate-license"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cargo-bundle-licenses = { git = "https://github.com/BlueGreenMagick/cargo-bundle-licenses.git", branch = "yomikiri" }
+clap = { version = "4", features = ["derive"] }

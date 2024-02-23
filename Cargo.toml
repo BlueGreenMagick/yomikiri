@@ -1,5 +1,11 @@
 [workspace]
-members = ["rust", "dictionary", "dictionary-types", "unidic"]
+members = [
+  "rust",
+  "dictionary",
+  "dictionary-types",
+  "unidic",
+  "extra/generate-license/rust",
+]
 resolver = "2"
 
 [profile.release]
