@@ -4,12 +4,17 @@
   "main": "index.ts",
   "license": "MIT",
   "scripts": {
-    "generate": "ts-node index.ts"
+    "generate": "ts-node index.ts > build/third_party.txt"
   },
   "devDependencies": {
     "@types/node": "^20.11.20",
+    "@types/which": "^3.0.3",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "promisify-child-process": "^4.1.2",
+    "which": "^4.0.0"
   }
 }

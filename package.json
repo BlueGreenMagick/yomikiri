@@ -9,7 +9,8 @@
     "extension",
     "safari",
     "rust/pkg",
-    "dictionary"
+    "dictionary",
+    "extra/generate-license"
   ],
   "scripts": {}
 }
