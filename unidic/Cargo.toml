@@ -3,6 +3,7 @@ name = "yomikiri-unidic-dictionary"
 description = "Customize unidic tokenizer dictionary for Yomikiri"
 version = "0.1.0"
 edition = "2021"
+license = "GPL-3.0"
 
 [dependencies]
 lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }

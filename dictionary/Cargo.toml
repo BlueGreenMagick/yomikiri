@@ -3,6 +3,7 @@ name = "yomikiri-dictionary"
 version = "0.1.0"
 edition = "2021"
 default-run = "yomikiri-dictionary-builder"
+license = "GPL-3.0"
 
 [dependencies]
 rustyxml = { version = "0.3.0", git = "https://github.com/Florob/RustyXML.git", package = "RustyXML" }
