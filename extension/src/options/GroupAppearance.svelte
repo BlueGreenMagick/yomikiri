@@ -16,5 +16,6 @@
     key="general.font"
     title="Japanese Font"
     description="For japanese text only."
+    wide={true}
   />
 </GroupedOptions>

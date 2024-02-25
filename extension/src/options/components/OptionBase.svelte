@@ -2,6 +2,7 @@
   export let title: string;
   export let description: string = "";
   export let disabled: boolean = false;
+  export let wide: boolean = false;
 </script>
 
 <div class="option-item" class:disabled>
@@ -12,7 +13,7 @@
         <div class="description">{@html description}</div>
       {/if}
     </div>
-    <div class="right">
+    <div class="right" class:wide>
       <slot />
     </div>
   </div>
@@ -42,6 +43,9 @@
     flex: 0 1 auto;
     display: flex;
     align-items: center;
+  }
+  .right.wide {
+    flex: 2 1 auto;
   }
   .title {
     margin: 1px 0px;

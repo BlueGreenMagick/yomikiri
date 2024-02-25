@@ -7,6 +7,8 @@
   export let title: string;
   export let description: string = "";
   export let disabled: boolean = false;
+  // Make Input box wider
+  export let wide: boolean = false;
 
   let value: string = Config.get(key);
 
@@ -24,7 +26,7 @@
 </script>
 
 <div>
-  <OptionBase {title} {description} {disabled}>
+  <OptionBase {title} {description} {disabled} {wide}>
     <input
       type="text"
       bind:value
@@ -37,7 +39,8 @@
 
 <style>
   input {
-    width: 120px;
+    min-width: 120px;
+    width: 100%;
     padding: 2px 4px;
   }
 </style>
