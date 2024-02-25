@@ -30,8 +30,9 @@ css variables set using Config.generateCSS()
   --text-light: #808080;
   --text-success: green;
   --text-warn: red;
-  --accent: #ff6086;
+  --accent: #ff992a;
   --accent-orange: #ff992a;
+  --accent-pink: #ff6086;
   --border: #c9c9c9;
   --background: white;
   --background-alt: #f2f2f2;
