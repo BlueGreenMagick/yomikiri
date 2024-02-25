@@ -24,3 +24,8 @@ declare module "*.svg" {
   let content: any;
   export default content;
 }
+
+declare module "*.txt" {
+  let content: string;
+  export default content;
+}

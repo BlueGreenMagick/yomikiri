@@ -173,6 +173,7 @@ function generateBuildOptions(): BuildOptions {
       ".svg": "text",
       ".yomikiridict": "file",
       ".yomikiriindex": "file",
+      ".txt": "text",
     },
   };
 
