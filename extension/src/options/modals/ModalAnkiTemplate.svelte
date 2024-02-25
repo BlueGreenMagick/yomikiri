@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from "./components/Modal.svelte";
+  import Modal from "../components/Modal.svelte";
   import AnkiTemplate from "./AnkiTemplate.svelte";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
 </script>

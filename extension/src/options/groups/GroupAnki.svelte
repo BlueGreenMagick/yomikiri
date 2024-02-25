@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Platform } from "@platform";
   import { AnkiApi } from "@platform/anki";
-  import GroupedOptions from "./components/GroupedOptions.svelte";
-  import OptionClick from "./components/OptionClick.svelte";
-  import OptionNumber from "./components/OptionNumber.svelte";
-  import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
-  import OptionToggle from "./components/OptionToggle.svelte";
+  import GroupedOptions from "../components/GroupedOptions.svelte";
+  import OptionClick from "../components/OptionClick.svelte";
+  import OptionNumber from "../components/OptionNumber.svelte";
+  import ModalAnkiTemplate from "../modals/ModalAnkiTemplate.svelte";
+  import OptionToggle from "../components/OptionToggle.svelte";
   import Utils from "~/utils";
 
   let ankiTemplateDescription = "";

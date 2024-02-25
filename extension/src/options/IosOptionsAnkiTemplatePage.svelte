@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
+  import LoadAnkiTemplate from "./modals/LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";
 
   export let initialized: Promise<void>;

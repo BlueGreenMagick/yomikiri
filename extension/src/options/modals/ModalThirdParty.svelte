@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from "./components/Modal.svelte";
+  import Modal from "../components/Modal.svelte";
   import licensesDisclaimer from "@yomikiri/generate-license/res/THIRD_PARTY.txt";
 </script>
 

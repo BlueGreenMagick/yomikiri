@@ -1,9 +1,8 @@
 <script lang="ts">
   import { BrowserApi } from "~/browserApi";
-  import GroupedOptions from "./components/GroupedOptions.svelte";
-  import OptionClick from "./components/OptionClick.svelte";
-  import ModalAnkiTemplate from "./ModalAnkiTemplate.svelte";
-  import ModalThirdParty from "./ModalThirdParty.svelte";
+  import GroupedOptions from "../components/GroupedOptions.svelte";
+  import OptionClick from "../components/OptionClick.svelte";
+  import ModalThirdParty from "../modals/ModalThirdParty.svelte";
 
   let modalThirdPartyVisible = false;
 </script>

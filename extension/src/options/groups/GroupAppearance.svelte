@@ -1,7 +1,7 @@
 <script lang="ts">
-  import OptionNumber from "./components/OptionNumber.svelte";
-  import OptionText from "./components/OptionText.svelte";
-  import GroupedOptions from "./components/GroupedOptions.svelte";
+  import OptionNumber from "../components/OptionNumber.svelte";
+  import OptionText from "../components/OptionText.svelte";
+  import GroupedOptions from "../components/GroupedOptions.svelte";
 </script>
 
 <GroupedOptions title="Appearance">

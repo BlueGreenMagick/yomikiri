@@ -1,7 +1,7 @@
 <script lang="ts">
-  import GroupAppearance from "./GroupAppearance.svelte";
-  import GroupAnki from "./GroupAnki.svelte";
-  import GroupAbout from "./GroupAbout.svelte";
+  import GroupAppearance from "./groups/GroupAppearance.svelte";
+  import GroupAnki from "./groups/GroupAnki.svelte";
+  import GroupAbout from "./groups/GroupAbout.svelte";
 </script>
 
 <div>

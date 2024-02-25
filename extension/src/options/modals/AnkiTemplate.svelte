@@ -5,8 +5,8 @@
   import {
     exampleMarkerData,
     exampleTranslatedSentence,
-  } from "./exampleMarkerData";
-  import { updateConfig } from "./stores";
+  } from "../exampleMarkerData";
+  import { updateConfig } from "../stores";
   import type { AnkiInfo } from "~/platform/types/anki";
 
   export let ankiInfo: AnkiInfo;
