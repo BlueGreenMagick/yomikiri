@@ -17,6 +17,7 @@
       "noImplicitReturns": true,
       "noImplicitThis": true,
       "noImplicitAny": true,
+      "resolveJsonModule": true,
       "typeRoots": [
         "../node_modules/@types",
         "./src/global.d.ts"

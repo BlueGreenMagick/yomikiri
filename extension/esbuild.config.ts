@@ -6,6 +6,7 @@ import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
+import Package from "./package.json" assert { type: "json" };
 
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
@@ -30,6 +31,9 @@ const FOR_IOS = TARGET === "ios";
 const FOR_IOSAPP = TARGET === "iosapp";
 
 const WATCH = DEVELOPMENT && !FOR_IOS;
+
+/** Package */
+const VERSION = Package.version;
 
 const logRebuildPlugin: Plugin = {
   name: "logRebuildPlugin",
@@ -80,6 +84,7 @@ const buildManifestPlugin: Plugin = {
         encoding: "utf-8",
       });
       const rendered = ejs.render(raw, {
+        version: VERSION,
         chrome: FOR_CHROME,
         firefox: FOR_FIREFOX,
         safari_desktop: FOR_SAFARI_DESKTOP,

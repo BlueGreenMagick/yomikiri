@@ -1,5 +1,8 @@
 <%#
   # Variables
+  ## Properties
+  - version: string
+  ## Target
     - v2: boolean
     - chrome: boolean
     - firefox: boolean
@@ -13,7 +16,7 @@
 {
   "manifest_version": <%- v2 ? 2 : 3 %>,
   "name": "Yomikiri",
-  "version": "0.0.1",
+  "version": "<%- version %>",
   "description": "Web extension to view definition for Japanese words and add to Anki.",
   "author": "BlueGreenMagick",
   "icons": {

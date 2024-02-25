@@ -96,6 +96,10 @@ export namespace BrowserApi {
     return chrome.storage.local;
   }
 
+  export function manifest(): chrome.runtime.Manifest {
+    return chrome.runtime.getManifest();
+  }
+
   /** Returns content of the response. Returns an Error object if an error occured. */
   export function handleRequestResponse<R>(resp: RequestResponse<R>): R {
     if (resp.success) {
