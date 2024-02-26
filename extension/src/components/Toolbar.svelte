@@ -1,0 +1,88 @@
+<script lang="ts" context="module">
+  export type Tools = "translate" | "grammar";
+</script>
+
+<script lang="ts">
+  import IconSchool from "@icons/school.svg";
+  import IconLanguage from "@icons/language.svg";
+
+  export let selected: Tools | null = null;
+  export let translateDisabled: boolean = true;
+  export let grammarDisabled: boolean = false;
+
+  function selectTranslate() {
+    if (translateDisabled) return;
+
+    if (selected === "translate") {
+      selected = null;
+    } else {
+      selected = "translate";
+    }
+  }
+
+  function selectGrammar() {
+    if (grammarDisabled) return;
+
+    if (selected === "grammar") {
+      selected = null;
+    } else {
+      selected = "grammar";
+    }
+  }
+</script>
+
+<div class="toolbar">
+  <div
+    class="tool-button"
+    class:selected={selected === "translate"}
+    class:disabled={translateDisabled}
+    on:click={selectTranslate}
+  >
+    <div class="icon">{@html IconLanguage}</div>
+  </div>
+
+  <div
+    class="tool-button"
+    class:selected={selected === "grammar"}
+    class:disabled={grammarDisabled}
+    on:click={selectGrammar}
+  >
+    <div class="icon">{@html IconSchool}</div>
+  </div>
+</div>
+
+<style>
+  .toolbar {
+    width: 100%;
+    background-color: var(--background-dark);
+
+    display: flex;
+  }
+
+  .tool-button {
+    background-color: var(--background-dark);
+    padding: 6px 12px;
+  }
+
+  .tool-button:not(.disabled):hover {
+    cursor: pointer;
+  }
+
+  .tool-button:not(.disabled):not(.selected):hover {
+    filter: brightness(1.1);
+  }
+
+  .tool-button.selected {
+    background-color: var(--background-alt);
+  }
+
+  .icon {
+    fill: #000000;
+    width: 16px;
+    height: 16px;
+  }
+
+  .tool-button.disabled .icon {
+    fill: #999999;
+  }
+</style>

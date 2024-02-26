@@ -36,6 +36,7 @@ css variables set using Config.generateCSS()
   --border: #c9c9c9;
   --background: white;
   --background-alt: #f2f2f2;
+  --background-dark: #d3d3d3;
   --input: white;
   --selected-blue: #007aff;
   --button-light: #999999;
