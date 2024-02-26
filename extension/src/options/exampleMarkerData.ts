@@ -11,6 +11,7 @@ const tokenized: TokenizeResult = {
       reading: "おもしろい",
       pos2: "一般",
       start: 0,
+      children: [],
     },
     {
       text: "映画",
@@ -19,6 +20,7 @@ const tokenized: TokenizeResult = {
       reading: "えーが",
       pos2: "普通名詞",
       start: 3,
+      children: [],
     },
     {
       text: "を",
@@ -27,6 +29,7 @@ const tokenized: TokenizeResult = {
       reading: "お",
       pos2: "格助詞",
       start: 5,
+      children: [],
     },
     {
       text: "観たい",
@@ -35,6 +38,7 @@ const tokenized: TokenizeResult = {
       reading: "みたい",
       pos2: "非自立可能",
       start: 6,
+      children: [],
     },
     {
       text: "。",
@@ -43,6 +47,7 @@ const tokenized: TokenizeResult = {
       reading: "",
       pos2: "句点",
       start: 9,
+      children: [],
     },
   ],
   tokenIdx: 3,
@@ -117,6 +122,7 @@ const tokenized: TokenizeResult = {
       priority: 161,
     },
   ].map(Entry.fromObject),
+  grammars: [],
 };
 
 export const exampleMarkerData: MarkerData = {

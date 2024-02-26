@@ -132,6 +132,7 @@ export namespace Entry {
 
   /** Put in return value of .entityName() */
   export function entityInfo(name: string): string | null {
+    // @ts-ignore
     let info = ENTITIES[name] as string | undefined;
     if (info === undefined) return null;
     return info;

@@ -12,6 +12,7 @@ const tokenized: TokenizeResult = {
       reading: "わたし",
       pos2: "*",
       start: 0,
+      children: [],
     },
     {
       text: "は",
@@ -20,6 +21,7 @@ const tokenized: TokenizeResult = {
       reading: "は",
       pos2: "係助詞",
       start: 3,
+      children: [],
     },
     {
       text: "本",
@@ -28,6 +30,7 @@ const tokenized: TokenizeResult = {
       reading: "ほん",
       pos2: "普通名詞",
       start: 4,
+      children: [],
     },
     {
       text: "が",
@@ -36,6 +39,7 @@ const tokenized: TokenizeResult = {
       reading: "が",
       pos2: "格助詞",
       start: 5,
+      children: [],
     },
     {
       text: "読みたい",
@@ -44,6 +48,7 @@ const tokenized: TokenizeResult = {
       reading: "よみたい",
       pos2: "一般",
       start: 6,
+      children: [],
     },
     {
       text: "。",
@@ -52,6 +57,7 @@ const tokenized: TokenizeResult = {
       reading: "。",
       pos2: "*",
       start: 10,
+      children: [],
     },
   ],
   tokenIdx: 4,
@@ -111,6 +117,7 @@ const tokenized: TokenizeResult = {
       priority: 163,
     },
   ].map(Entry.fromObject),
+  grammars: [],
 };
 
 const data: MarkerData = {
@@ -230,6 +237,7 @@ const escapeTokenizeResult: TokenizeResult = {
       reading: "としょ",
       pos2: "一般",
       start: 0,
+      children: [],
     },
     {
       text: "<",
@@ -238,6 +246,7 @@ const escapeTokenizeResult: TokenizeResult = {
       reading: "<",
       pos2: "*",
       start: 2,
+      children: [],
     },
   ],
   tokenIdx: 0,
@@ -265,6 +274,7 @@ const escapeTokenizeResult: TokenizeResult = {
       priority: 166,
     },
   ].map(Entry.fromObject),
+  grammars: [],
 };
 const escapedData: MarkerData = {
   tokenized: escapeTokenizeResult,
