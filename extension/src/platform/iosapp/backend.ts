@@ -1,11 +1,11 @@
 import { BrowserApi } from "~/browserApi";
 import { Platform } from ".";
-import type {
-  IBackendControllerStatic,
-  IBackendController,
-  TokenizeRequest,
+import {
+  type IBackendControllerStatic,
+  type IBackendController,
+  type TokenizeRequest,
   TokenizeResult,
-  RawTokenizeResult,
+  type RawTokenizeResult,
 } from "../types/backend";
 import { Entry } from "~/dicEntry";
 import { toHiragana } from "~/japanese";
@@ -25,13 +25,7 @@ export class BackendController implements IBackendController {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
     });
-    return {
-      tokens: rawResult.tokens,
-      tokenIdx: rawResult.tokenIdx,
-      entries: rawResult.entries
-        .map((json) => JSON.parse(json))
-        .map(Entry.fromObject),
-    };
+    return TokenizeResult.from(rawResult);
   }
 
   async search(term: string): Promise<Entry[]> {

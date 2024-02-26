@@ -1,4 +1,8 @@
-import type { GrammarInfo, Token } from "@yomikiri/yomikiri-rs";
+import type {
+  GrammarInfo,
+  Token,
+  RawTokenizeResult,
+} from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
@@ -9,12 +13,19 @@ export interface TokenizeRequest {
   charAt?: number;
 }
 
-export interface TokenizeResult {
-  tokens: Token[];
-  /** May be -1 if tokens is empty */
-  tokenIdx: number;
+export interface TokenizeResult extends Omit<RawTokenizeResult, "entries"> {
   entries: Entry[];
-  grammars: GrammarInfo[];
+}
+
+export namespace TokenizeResult {
+  export function from(raw: RawTokenizeResult): TokenizeResult {
+    return {
+      ...raw,
+      entries: raw.entries
+        .map((json) => JSON.parse(json))
+        .map(Entry.fromObject),
+    };
+  }
 }
 
 export interface IBackendController {

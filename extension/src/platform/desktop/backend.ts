@@ -1,6 +1,6 @@
-import type {
-  IBackendControllerStatic as IBackendControllerStatic,
-  IBackendController as IBackendController,
+import {
+  type IBackendControllerStatic as IBackendControllerStatic,
+  type IBackendController as IBackendController,
   TokenizeResult,
 } from "../types/backend";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
@@ -54,14 +54,7 @@ export class BackendController implements IBackendController {
       const reading = token.reading === "*" ? token.text : token.reading;
       token.reading = toHiragana(reading);
     });
-    return {
-      tokens: rawResult.tokens,
-      tokenIdx: rawResult.tokenIdx,
-      entries: rawResult.entries
-        .map((json) => JSON.parse(json))
-        .map(Entry.fromObject),
-      grammars: rawResult.grammars,
-    };
+    return TokenizeResult.from(rawResult);
   }
 
   async search(term: string): Promise<Entry[]> {

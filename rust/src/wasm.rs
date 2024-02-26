@@ -35,6 +35,7 @@ interface GrammarInfo {
 const TS_RAW_TOKENIZE_RESULT: &'static str = r#"
 export interface RawTokenizeResult {
     tokens: Token[];
+    /** May be -1 if tokens is empty */
     tokenIdx: number;
     entries: string[];
     grammars: GrammarInfo[];
