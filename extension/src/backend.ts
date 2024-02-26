@@ -6,6 +6,7 @@ import {
 import { Entry } from "~/dicEntry";
 import { Platform } from "@platform";
 import { BrowserApi } from "./browserApi";
+import Utils from "./utils";
 
 export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
 
@@ -56,7 +57,8 @@ export namespace Backend {
     }
 
     if (_backend !== null) {
-      const result = await _backend.tokenize(text, charAt);
+      const codePointAt = Utils.toCodePointIndex(text, charAt);
+      const result = await _backend.tokenize(text, codePointAt);
 
       const selectedToken = result.tokens[result.tokenIdx];
 

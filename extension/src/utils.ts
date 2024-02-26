@@ -91,6 +91,28 @@ namespace Utils {
     return false;
   }
 
+  /** Converts index of UTF-16 code units to index of unicode code points*/
+  export function toCodePointIndex(text: string, codeUnitIdx: number): number {
+    if (codeUnitIdx < 0) {
+      throw new Error("codeUnitIdx may not be smaller than 0.");
+    }
+    if (codeUnitIdx > text.length) {
+      throw new Error("codeUnitIdx may not be greater than text.length.");
+    }
+
+    let codePointIdx = 0;
+    // string iteration is done in unicode code points
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/@@iterator
+    for (const codePoint of text) {
+      codeUnitIdx -= codePoint.length;
+      if (codeUnitIdx < 0) {
+        return codePointIdx;
+      }
+      codePointIdx += 1;
+    }
+    return codePointIdx;
+  }
+
   // https://stackoverflow.com/a/25612313/15537371
   /**
    * Replaces '&' and '<' for use inside HTML tag.

@@ -9,7 +9,11 @@ export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
 export interface TokenizeRequest {
   text: string;
-  /** Default to 0 if not specified */
+  /**
+   * UTF-16 code unit index.
+   *
+   * Defaults to 0 if not specified.
+   */
   charAt?: number;
 }
 

@@ -27,4 +27,17 @@ describe("Utils", () => {
     expect(await ret2).toBe(null);
     expect(await ret3).toBe("3");
   });
+
+  test("toCodePointIndex", () => {
+    expect(Utils.toCodePointIndex("abc", 0)).toBe(0);
+    expect(Utils.toCodePointIndex("abc", 2)).toBe(2);
+    expect(Utils.toCodePointIndex("abc", 3)).toBe(3);
+    // 😄 is 1 code point represented as 2 UTF-16 code units
+    expect(Utils.toCodePointIndex("1😄2😄3", 1)).toBe(1);
+    expect(Utils.toCodePointIndex("1😄2😄3", 2)).toBe(1);
+    expect(Utils.toCodePointIndex("1😄2😄3", 3)).toBe(2);
+    expect(Utils.toCodePointIndex("1😄2😄3", 4)).toBe(3);
+    expect(Utils.toCodePointIndex("1😄2😄3", 5)).toBe(3);
+    expect(Utils.toCodePointIndex("1😄2😄3", 6)).toBe(4);
+  });
 });
