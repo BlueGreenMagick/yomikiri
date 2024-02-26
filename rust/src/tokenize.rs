@@ -19,11 +19,9 @@ use serde::Serialize;
 #[cfg_attr(uniffi, derive(uniffi::Record))]
 #[derive(Debug, Clone)]
 pub struct Token {
+    /// NFC normalized
     pub text: String,
-    /// character position of token in tokenized sentence
-    ///
-    /// Note that difference between token.start may not equal `text.len()`
-    /// if sentence is not in NFC-normalized form.
+    /// first code point index of token in pre-normalized sentence
     pub start: u32,
     pub children: Vec<Token>,
     // fields from TokenDetails
@@ -122,8 +120,7 @@ impl TokenDetails {
 impl<R: Read + Seek> SharedBackend<R> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
-    /// if `raw`, return lindera tokenize result without joining tokens
-    /// only used in wasm for debugging purposes
+    /// char_idx: code point index of selected character in sentence
     pub fn tokenize<'a>(
         &mut self,
         sentence: &'a str,
@@ -170,10 +167,10 @@ impl<R: Read + Seek> SharedBackend<R> {
         })
     }
 
-    /// `sentence`` is tokenized and the result is converted into vector of Token.
+    /// `sentence` is tokenized and its output Vec<LinderaToken> is converted into Vec<Token>.
     ///
     /// if `sentence` is not in NFC normalized form, it is normalized before fed to lindera,
-    /// and `token.start` is calculated as character position in pre-normalized sentence.
+    /// and `token.start` is calculated as code point position in pre-normalized sentence.
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
         let is_normalized = is_nfc(sentence);
         let normalized_sentence = if is_normalized {
