@@ -164,7 +164,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let grammars = selected_token
-            .grammar_infos()
+            .grammars()
             .into_iter()
             .map(GrammarInfo::from)
             .collect();

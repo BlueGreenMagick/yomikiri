@@ -19,17 +19,17 @@ impl Token {
         self.pos == "助動詞"
     }
 
-    pub fn grammar_infos(&self) -> Vec<&'static GrammarRule> {
-        let mut grammar_infos = vec![];
+    pub fn grammars(&self) -> Vec<&'static GrammarRule> {
+        let mut grammars = vec![];
         for (i, _token) in self.children.iter().enumerate() {
             for grammar in &GRAMMARS {
                 let detect = grammar.detect;
                 if detect(&self.children, i) {
-                    grammar_infos.push(grammar);
+                    grammars.push(grammar);
                 }
             }
         }
-        grammar_infos
+        grammars
     }
 }
 
