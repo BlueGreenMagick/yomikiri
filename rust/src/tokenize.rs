@@ -265,7 +265,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// Handles cases:
     ///     1. (any)+ => (expression)
     ///     2. (名詞)+ => (名詞)
-    ///     3. (助詞)+ => (助詞) e.g.　「かも」、「では」
+    ///     3. (助詞)+ => (助詞) e.g. 「かも」、「では」
     fn join_compounds_multi(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let token = &tokens[from];
         let mut all_noun = token.pos == "名詞";
@@ -458,7 +458,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (kana-only 助動詞 | 助詞/接続助詞)+ => $1
+    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | */助動詞語幹)+ => $1
     fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
@@ -472,7 +472,9 @@ impl<R: Read + Seek> SharedBackend<R> {
         joined_text += &token.text;
         joined_reading += &token.reading;
         while to < tokens.len()
-            && (tokens[to].pos == "助動詞" || tokens[to].pos2 == "接続助詞")
+            && (tokens[to].pos == "助動詞"
+                || tokens[to].pos2 == "接続助詞"
+                || tokens[to].pos2 == "助動詞語幹")
             && contains_only_kana(&tokens[to].text)
         {
             to += 1;
