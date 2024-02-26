@@ -20,6 +20,8 @@ Go to `/unidic` and run `cargo run` to download and build unidic files.
 
 Go to `/rust` and run `wasm-pack build --scope yomikiri --target web` to build Yomikiri wasm backend. (If you are also building for ios, run `./build.sh` instead.)
 
+To build for ios as well, add ios target to rust: `rustup target add aarch64-apple-ios`, `rustup target add aarch64-apple-ios-sim`.
+
 ### Chrome
 
 Go to `/extension`. Run `yarn build:chrome`.
