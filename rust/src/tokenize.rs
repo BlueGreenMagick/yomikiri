@@ -555,9 +555,9 @@ fn join_tokens<S: Into<String>>(
 
     let mut text = String::with_capacity(3 * 4 * size);
     let mut reading = String::with_capacity(3 * 4 * size);
-    for i in from..to - 1 {
-        reading.push_str(&tokens[i].reading);
-        text.push_str(&tokens[i].text);
+    for token in &tokens[from..to - 1] {
+        reading.push_str(&token.reading);
+        text.push_str(&token.text);
     }
 
     let base = match base_strategy {
@@ -570,11 +570,11 @@ fn join_tokens<S: Into<String>>(
     reading.push_str(&tokens[to - 1].reading);
 
     let mut children: Vec<Token> = Vec::with_capacity(2 * (to - from));
-    for i in from..to {
-        if tokens[i].children.is_empty() {
-            children.push(tokens[i].clone());
+    for token in &mut tokens[from..to] {
+        if token.children.is_empty() {
+            children.push(token.clone());
         } else {
-            children.append(&mut tokens[i].children);
+            children.append(&mut token.children);
         }
     }
 
