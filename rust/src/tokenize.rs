@@ -7,8 +7,9 @@ use crate::unidic::load_dictionary;
 use crate::SharedBackend;
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
+use std::borrow::Cow;
 use std::io::{Read, Seek};
-use unicode_normalization::UnicodeNormalization;
+use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
 
 #[cfg(wasm)]
@@ -174,25 +175,37 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// if `sentence` is not in NFC normalized form, it is normalized before fed to lindera,
     /// and `token.start` is calculated as character position in pre-normalized sentence.
     fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
-        let normalized_sentence = sentence.nfc().collect::<String>();
-        let already_normalized: bool = sentence == normalized_sentence;
+        let is_normalized = is_nfc(sentence);
+        let normalized_sentence = if is_normalized {
+            Cow::Borrowed(sentence)
+        } else {
+            let normalized = sentence.nfc().collect::<String>();
+            Cow::Owned(normalized)
+        };
 
         let mut ltokens = self.tokenizer.tokenize(&normalized_sentence)?;
         let mut tokens = Vec::with_capacity(ltokens.capacity());
 
-        // iterator of starting indices of each graphemes
-        let original_graphemes = sentence.grapheme_indices(true);
-        let normalized_graphemes = normalized_sentence.grapheme_indices(true);
-        let mut graphemes = original_graphemes.zip(normalized_graphemes);
-
         let mut original_char_indices = sentence.char_indices().enumerate();
+        let mut graphemes = if is_normalized {
+            None
+        } else {
+            // Map byte index of normalized sentence to byte index of pre-normalized sentence.
+            // Below code works because:
+            // 1) All tok.byte_start are always grapheme cluster boundaries (because unidic)
+            // 2) Grapheme cluster boundaries are always code point boundaries regardless of normalization. (Unicode spec)
+            let original_graphemes = sentence.grapheme_indices(true);
+            let normalized_graphemes = normalized_sentence.grapheme_indices(true);
+            Some(original_graphemes.zip(normalized_graphemes))
+        };
 
         for tok in &mut ltokens {
-            // starting byte index of original sentence
-            let byte_start = if already_normalized {
+            let byte_start = if is_normalized {
                 tok.byte_start
             } else {
                 graphemes
+                    .as_mut()
+                    .unwrap()
                     .find_map(|((original_idx, _), (normalized_idx, _))| {
                         if normalized_idx == tok.byte_start {
                             Some(original_idx)
@@ -211,9 +224,8 @@ impl<R: Read + Seek> SharedBackend<R> {
                 Some(d) => TokenDetails::from_details(&d),
                 None => TokenDetails::default_with_surface(&text),
             };
-
             let token = Token::new(text, details, char_start as u32);
-            tokens.push(token)
+            tokens.push(token);
         }
         Ok(tokens)
     }
