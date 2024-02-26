@@ -1,6 +1,8 @@
 #![allow(non_snake_case)]
 
 use crate::error::{YResult, YomikiriError};
+use crate::grammar::GrammarInfo;
+use crate::japanese::JapaneseChar;
 use crate::unidic::load_dictionary;
 use crate::SharedBackend;
 use lindera_core::mode::Mode;
@@ -44,6 +46,25 @@ struct TokenDetails {
 
 #[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
+#[derive(Debug, Clone)]
+pub struct GrammarInfoOut {
+    pub name: String,
+    pub short: String,
+    pub tofugu: String,
+}
+
+impl From<&GrammarInfo> for GrammarInfoOut {
+    fn from(grammar: &GrammarInfo) -> Self {
+        GrammarInfoOut {
+            name: grammar.name.into(),
+            short: grammar.short.into(),
+            tofugu: grammar.tofugu.into(),
+        }
+    }
+}
+
+#[cfg_attr(wasm, derive(Serialize))]
+#[cfg_attr(uniffi, derive(uniffi::Record))]
 pub struct RawTokenizeResult {
     pub tokens: Vec<Token>,
     /// selected token index
@@ -51,6 +72,7 @@ pub struct RawTokenizeResult {
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
     pub entries: Vec<String>,
+    pub grammars: Vec<GrammarInfoOut>,
 }
 
 impl Token {
@@ -108,20 +130,6 @@ impl TokenDetails {
     }
 }
 
-trait JapaneseChar {
-    /** Character is hiragana or katakana */
-    fn is_kana(&self) -> bool;
-}
-
-impl JapaneseChar for char {
-    fn is_kana(&self) -> bool {
-        match *self {
-            '\u{3040}'..='\u{309f}' => true,
-            _ => false,
-        }
-    }
-}
-
 impl<R: Read + Seek> SharedBackend<R> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
@@ -160,12 +168,19 @@ impl<R: Read + Seek> SharedBackend<R> {
             }
         }
 
+        let grammars = selected_token
+            .grammar_infos()
+            .into_iter()
+            .map(GrammarInfoOut::from)
+            .collect();
+
         Ok(RawTokenizeResult {
             tokens,
             tokenIdx: token_idx.try_into().map_err(|_| {
                 YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
             entries,
+            grammars,
         })
     }
 
