@@ -9,6 +9,16 @@ impl JapaneseChar for char {
     }
 }
 
+pub trait JapaneseString {
+    fn contains_only_kana(&self) -> bool;
+}
+
+impl JapaneseString for str {
+    fn contains_only_kana(&self) -> bool {
+        self.chars().all(|c| c.is_kana())
+    }
+}
+
 /// 五段
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum GoDan {

@@ -2,7 +2,7 @@
 
 use crate::error::{YResult, YomikiriError};
 use crate::grammar::GrammarRule;
-use crate::japanese::JapaneseChar;
+use crate::japanese::JapaneseString;
 use crate::unidic::load_dictionary;
 use crate::SharedBackend;
 use lindera_core::mode::Mode;
@@ -475,7 +475,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             && (tokens[to].pos == "助動詞"
                 || tokens[to].pos2 == "接続助詞"
                 || tokens[to].pos2 == "助動詞語幹")
-            && contains_only_kana(&tokens[to].text)
+            && tokens[to].text.contains_only_kana()
         {
             to += 1;
         }
@@ -594,8 +594,4 @@ fn concat_string(s1: &str, s2: &str) -> String {
     joined.push_str(s1);
     joined.push_str(s2);
     joined
-}
-
-fn contains_only_kana(text: &str) -> bool {
-    text.chars().all(|c| c.is_kana())
 }
