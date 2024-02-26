@@ -19,6 +19,26 @@ impl Token {
         self.pos == "助動詞"
     }
 
+    fn is_suf(&self) -> bool {
+        self.pos == "接尾辞"
+    }
+
+    fn is_adj(&self) -> bool {
+        self.is_iadj() || self.is_naadj()
+    }
+
+    fn is_iadj(&self) -> bool {
+        self.pos == "形容詞"
+    }
+
+    fn is_naadj(&self) -> bool {
+        self.pos == "形状詞"
+    }
+
+    fn is_noun(&self) -> bool {
+        self.pos == "名詞"
+    }
+
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
         let mut grammars = vec![];
         for (i, token) in self.children.iter().enumerate() {
@@ -33,7 +53,36 @@ impl Token {
     }
 }
 
-static GRAMMARS: [GrammarRule; 2] = [
+static GRAMMARS: [GrammarRule; 5] = [
+    GrammarRule {
+        name: "ーさ",
+        short: "objective noun",
+        tofugu: "https://www.tofugu.com/japanese-grammar/adjective-suffix-sa/",
+        detect: |token, _, _| token.base == "さ" && token.is_suf(),
+    },
+    GrammarRule {
+        name: "ーそう",
+        short: "speculative adjective",
+        tofugu: "https://www.tofugu.com/japanese-grammar/adjective-sou/",
+        detect: |token, tokens, idx| {
+            if token.base == "そう" && token.is_naadj() {
+                if let Some(prev) = tokens.get(idx - 1) {
+                    prev.is_adj()
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        },
+    },
+    // no tofugu document exists for hearsay and esp. verb hearsay (伝聞)
+    GrammarRule {
+        name: "ーそう",
+        short: "hearsay",
+        tofugu: "https://www.tofugu.com/japanese-grammar/adjective-sou/#common-mistakes",
+        detect: |token, _, _| token.base == "そう" && token.is_noun() && token.pos2 == "助動詞語幹",
+    },
     GrammarRule {
         name: "ーられる",
         short: "passive suffix",
@@ -45,7 +94,7 @@ static GRAMMARS: [GrammarRule; 2] = [
                 if let Some(prev) = tokens.get(idx - 1) {
                     prev.text.ends_in_go_dan() == Some(GoDan::ADan)
                 } else {
-                    return false;
+                    false
                 }
             } else {
                 false

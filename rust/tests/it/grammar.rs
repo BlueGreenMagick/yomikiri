@@ -49,6 +49,18 @@ macro_rules! test {
 }
 
 test!(
+  さ: "ーさ" "objective noun"
+    | "便利さ"
+    | "カバンの＿重さを測りました。"
+
+  speculativeそう: "ーそう" "speculative adjective"
+    | "便利＿じゃなさそう"
+    | "美味しそうじゃない"
+    | "狭そう"
+
+  hearsayそう: "ーそう" "hearsay"
+  | "美味しいそうです"
+  | "明日はクラスが＿ないそうです"
 
   られる: "ーられる" "passive suffix"
     | "私は蜂に＿刺された。"
