@@ -10,7 +10,7 @@ use wasm_bindgen::prelude::*;
 use yomikiri_dictionary_types::DictIndexItem;
 
 #[wasm_bindgen(typescript_custom_section)]
-const TS_TOKEN: &'static str = r#"
+const TS_CUSTOM: &'static str = r#"
 export interface Token {
     text: string;
     pos: string;
@@ -20,19 +20,13 @@ export interface Token {
     start: number;
     children: Token[];
 }
-"#;
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_GRAMMAR: &'static str = r#"
-interface GrammarInfo {
+export interface GrammarInfo {
     name: string,
     short: string,
     tofugu: string,
 }
-"#;
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_RAW_TOKENIZE_RESULT: &'static str = r#"
 export interface RawTokenizeResult {
     tokens: Token[];
     /** May be -1 if tokens is empty */
@@ -40,13 +34,9 @@ export interface RawTokenizeResult {
     entries: string[];
     grammars: GrammarInfo[];
 }
-"#;
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_TOKENIZE: &'static str = r#"
 interface Backend {
     tokenize(sentence: string, charAt: number): RawTokenizeResult;
-    tokenize_raw(sentence: string, charAt: number): RawTokenizeResult;
     search(term: string): string[]
 }
 "#;
