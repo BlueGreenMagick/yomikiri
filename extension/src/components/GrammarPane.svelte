@@ -11,7 +11,9 @@
       <div class="grammar">
         <div class="name">{grammar.name}:</div>
         <div class="short">{grammar.short}</div>
-        <div class="tofugu"><a href={grammar.tofugu}>tofugu</a></div>
+        <div class="tofugu">
+          <a href={grammar.tofugu} target="_blank" rel="noopener">tofugu</a>
+        </div>
       </div>
     {/each}
   </div>
