@@ -86,6 +86,12 @@ static GRAMMARS: [GrammarRule; 4] = [
         },
     },
     GrammarRule {
+        name: "ーえ／ーろ",
+        short: "command form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
+        detect: |token, _, _| token.conj_form == "命令形",
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
