@@ -64,22 +64,6 @@ export class BackendController implements IBackendController {
     };
   }
 
-  async tokenizeRaw(text: string, charAt: number): Promise<TokenizeResult> {
-    let rawResult = this.wasm.tokenize_raw(text, charAt);
-    rawResult.tokens.forEach((token) => {
-      const reading = token.reading === "*" ? token.text : token.reading;
-      token.reading = toHiragana(reading);
-    });
-    return {
-      tokens: rawResult.tokens,
-      tokenIdx: rawResult.tokenIdx,
-      entries: rawResult.entries
-        .map((json) => JSON.parse(json))
-        .map(Entry.fromObject),
-      grammars: rawResult.grammars,
-    };
-  }
-
   async search(term: string): Promise<Entry[]> {
     return this.wasm
       .search(term)

@@ -73,32 +73,6 @@ export namespace Backend {
     }
   }
 
-  export async function tokenizeRaw(
-    req: TokenizeRequest | string
-  ): Promise<TokenizeResult> {
-    const text = req instanceof Object ? req.text : req;
-    const charAt = req instanceof Object ? req.charAt ?? 0 : 0;
-    if (text === "") {
-      return {
-        tokens: [],
-        tokenIdx: -1,
-        entries: [],
-        grammars: [],
-      };
-    }
-    if (charAt < 0 || charAt >= text.length) {
-      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
-    }
-
-    if (_backend !== null) {
-      return await _backend.tokenizeRaw(text, charAt);
-    } else {
-      throw new Error(
-        "tokenizeRaw() is a debug function that can only be called in background."
-      );
-    }
-  }
-
   export async function searchTerm(term: string): Promise<Entry[]> {
     if (_backend !== null) {
       const result = await _backend.search(term);

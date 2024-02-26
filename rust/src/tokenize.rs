@@ -139,14 +139,11 @@ impl<R: Read + Seek> SharedBackend<R> {
         &mut self,
         sentence: &'a str,
         char_idx: usize,
-        raw: bool,
     ) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
 
-        if !raw {
-            self.manual_patches(&mut tokens);
-            self.join_all_tokens(&mut tokens)?;
-        }
+        self.manual_patches(&mut tokens);
+        self.join_all_tokens(&mut tokens)?;
 
         let token_idx = match tokens.iter().position(|t| (t.start as usize) > char_idx) {
             Some(i) => i - 1,

@@ -32,7 +32,7 @@ impl Backend {
         let char_at = usize::try_from(char_at).map_err(|_| {
             YomikiriError::ConversionError("Failed to convert char_at to usize".into())
         })?;
-        backend.tokenize(&sentence, char_at, false)
+        backend.tokenize(&sentence, char_at)
     }
 
     pub fn search(&self, term: String) -> YResult<Vec<String>> {
