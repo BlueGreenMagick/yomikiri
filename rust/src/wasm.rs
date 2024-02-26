@@ -13,12 +13,13 @@ use yomikiri_dictionary_types::DictIndexItem;
 const TS_CUSTOM: &'static str = r#"
 export interface Token {
     text: string;
+    start: number;
+    children: Token[];
     pos: string;
     pos2: string;
     base: string;
     reading: string;
-    start: number;
-    children: Token[];
+    conj_form: string;
 }
 
 export interface GrammarInfo {

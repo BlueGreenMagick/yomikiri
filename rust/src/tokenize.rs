@@ -29,6 +29,7 @@ pub struct Token {
     pub pos2: String,
     pub base: String,
     pub reading: String,
+    pub conj_form: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -41,6 +42,10 @@ struct TokenDetails {
     pub base: String,
     /// defaults to `*`
     pub reading: String,
+    /// conjugation form
+    ///
+    /// defaults to `*`
+    pub conj_form: String,
 }
 
 #[cfg_attr(wasm, derive(Serialize))]
@@ -96,6 +101,7 @@ impl Token {
             pos2: details.pos2,
             base: details.base,
             reading: details.reading,
+            conj_form: details.conj_form,
         }
     }
 }
@@ -107,18 +113,25 @@ impl Default for TokenDetails {
             pos2: "*".into(),
             base: "".into(),
             reading: "*".into(),
+            conj_form: "*".into(),
         }
     }
 }
 
 impl TokenDetails {
     fn from_details(details: &[&str]) -> Self {
+        let mut details = details.iter();
+        let pos = details.next().unwrap_or(&"UNK").to_string();
+        let pos2 = details.next().unwrap_or(&"*").to_string();
+        let conj_form = details.next().unwrap_or(&"*").to_string();
+        let reading = details.next().unwrap_or(&"*").to_string();
+        let base = details.next().unwrap_or(&"").to_string();
         TokenDetails {
-            #[allow(clippy::get_first)]
-            pos: details.get(0).unwrap_or(&"UNK").to_string(),
-            pos2: details.get(1).unwrap_or(&"*").to_string(),
-            base: details.get(3).unwrap_or(&"").to_string(),
-            reading: details.get(2).unwrap_or(&"*").to_string(),
+            pos,
+            pos2,
+            conj_form,
+            base,
+            reading,
         }
     }
 
@@ -584,6 +597,7 @@ fn join_tokens<S: Into<String>>(
         reading,
         base,
         pos2: String::from("*"),
+        conj_form: String::from("*"),
         start: tokens[from].start,
     };
     tokens.splice(from..to, [joined]);

@@ -17,6 +17,7 @@ struct LexItem {
     reading: String,
     pos: String,
     pos2: String,
+    conj_form: String,
 }
 
 impl LexItem {
@@ -58,6 +59,7 @@ impl LexItem {
                         reading: reading.reading.clone(),
                         pos: part_of_speech_to_unidic(pos).into(),
                         pos2: "*".into(),
+                        conj_form: "*".into(),
                     };
                     items.push(item);
                 }
@@ -86,12 +88,27 @@ impl LexItem {
                         reading: reading.reading.clone(),
                         pos: part_of_speech_to_unidic(pos).into(),
                         pos2: "*".into(),
+                        conj_form: "*".into(),
                     };
                     items.push(item);
                 }
             }
         }
         items
+    }
+
+    fn to_record(&self) -> [&str; 9] {
+        [
+            &self.surface,
+            &self.lid,
+            &self.rid,
+            &self.cost,
+            &self.pos,
+            &self.pos2,
+            &self.conj_form,
+            &self.reading,
+            &self.base,
+        ]
     }
 }
 
@@ -152,6 +169,7 @@ fn transform_lex(
             pos2: record.get(5).unwrap().into(),
             reading: record.get(24).unwrap().into(),
             base: record.get(11).unwrap().into(),
+            conj_form: record.get(9).unwrap().into(),
         };
 
         // remove info in base e.g.　「私-代名詞」　「アイアコス-Aeacus」
@@ -169,31 +187,13 @@ fn transform_lex(
     let removed_lex_path = output_dir.join("removed.csv");
     let mut writer = csv::Writer::from_path(&removed_lex_path)?;
     for item in removed {
-        writer.write_record(&[
-            item.surface,
-            item.lid,
-            item.rid,
-            item.cost,
-            item.pos,
-            item.pos2,
-            item.reading,
-            item.base,
-        ])?;
+        writer.write_record(&item.to_record())?;
     }
 
     let output_lex_path = output_dir.join("lex.csv");
     let mut writer = csv::Writer::from_path(&output_lex_path)?;
     for item in items {
-        writer.write_record(&[
-            item.surface,
-            item.lid,
-            item.rid,
-            item.cost,
-            item.pos,
-            item.pos2,
-            item.reading,
-            item.base,
-        ])?;
+        writer.write_record(&item.to_record())?;
     }
 
     // retain only useful fields
