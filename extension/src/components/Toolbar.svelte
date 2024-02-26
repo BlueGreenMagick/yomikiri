@@ -36,6 +36,7 @@
     class="tool-button"
     class:selected={selected === "translate"}
     class:disabled={translateDisabled}
+    title="Translate sentence"
     on:click={selectTranslate}
   >
     <div class="icon">{@html IconLanguage}</div>
@@ -45,6 +46,7 @@
     class="tool-button"
     class:selected={selected === "grammar"}
     class:disabled={grammarDisabled}
+    title="Grammar"
     on:click={selectGrammar}
   >
     <div class="icon">{@html IconSchool}</div>
