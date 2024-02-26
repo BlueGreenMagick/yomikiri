@@ -4,7 +4,7 @@ use crate::tokenize::Token;
 #[cfg(wasm)]
 use serde::Serialize;
 
-pub struct GrammarInfo {
+pub struct GrammarRule {
     pub name: &'static str,
     /// short description
     pub short: &'static str,
@@ -14,8 +14,8 @@ pub struct GrammarInfo {
     pub detect: fn(&[Token], usize) -> bool,
 }
 
-static GRAMMARS: [GrammarInfo; 2] = [
-    GrammarInfo {
+static GRAMMARS: [GrammarRule; 2] = [
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
@@ -40,7 +40,7 @@ static GRAMMARS: [GrammarInfo; 2] = [
             }
         },
     },
-    GrammarInfo {
+    GrammarRule {
         name: "ーた",
         short: "past tense",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
@@ -56,7 +56,7 @@ impl Token {
         self.pos == "助動詞"
     }
 
-    pub fn grammar_infos(&self) -> Vec<&'static GrammarInfo> {
+    pub fn grammar_infos(&self) -> Vec<&'static GrammarRule> {
         let mut grammar_infos = vec![];
         for (i, _token) in self.children.iter().enumerate() {
             for grammar in &GRAMMARS {

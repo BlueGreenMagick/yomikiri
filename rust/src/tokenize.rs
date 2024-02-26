@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::error::{YResult, YomikiriError};
-use crate::grammar::GrammarInfo;
+use crate::grammar::GrammarRule;
 use crate::japanese::JapaneseChar;
 use crate::unidic::load_dictionary;
 use crate::SharedBackend;
@@ -46,15 +46,15 @@ struct TokenDetails {
 #[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
 #[derive(Debug, Clone)]
-pub struct GrammarInfoOut {
+pub struct GrammarInfo {
     pub name: String,
     pub short: String,
     pub tofugu: String,
 }
 
-impl From<&GrammarInfo> for GrammarInfoOut {
-    fn from(grammar: &GrammarInfo) -> Self {
-        GrammarInfoOut {
+impl From<&GrammarRule> for GrammarInfo {
+    fn from(grammar: &GrammarRule) -> Self {
+        GrammarInfo {
             name: grammar.name.into(),
             short: grammar.short.into(),
             tofugu: grammar.tofugu.into(),
@@ -74,7 +74,7 @@ pub struct RawTokenizeResult {
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
     pub entries: Vec<String>,
-    pub grammars: Vec<GrammarInfoOut>,
+    pub grammars: Vec<GrammarInfo>,
 }
 
 impl RawTokenizeResult {
@@ -166,7 +166,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         let grammars = selected_token
             .grammar_infos()
             .into_iter()
-            .map(GrammarInfoOut::from)
+            .map(GrammarInfo::from)
             .collect();
 
         Ok(RawTokenizeResult {
