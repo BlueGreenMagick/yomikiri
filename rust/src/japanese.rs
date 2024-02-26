@@ -37,3 +37,13 @@ impl GoDan {
         }
     }
 }
+
+pub trait GoDanEnding {
+    fn ends_in_go_dan(&self) -> Option<GoDan>;
+}
+
+impl GoDanEnding for str {
+    fn ends_in_go_dan(&self) -> Option<GoDan> {
+        self.chars().last().map(GoDan::from_char).flatten()
+    }
+}

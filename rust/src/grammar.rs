@@ -1,4 +1,4 @@
-use crate::japanese::GoDan;
+use crate::japanese::{GoDan, GoDanEnding};
 use crate::tokenize::Token;
 
 #[cfg(wasm)]
@@ -43,12 +43,7 @@ static GRAMMARS: [GrammarRule; 2] = [
                 true
             } else if token.base == "れる" && token.is_aux() {
                 if let Some(prev) = tokens.get(idx - 1) {
-                    if let Some(last_char) = prev.text.chars().last() {
-                        let dan = GoDan::from_char(last_char);
-                        dan == Some(GoDan::ADan)
-                    } else {
-                        false
-                    }
+                    prev.text.ends_in_go_dan() == Some(GoDan::ADan)
                 } else {
                     return false;
                 }
