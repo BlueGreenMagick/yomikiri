@@ -53,7 +53,7 @@ impl Token {
     }
 }
 
-static GRAMMARS: [GrammarRule; 5] = [
+static GRAMMARS: [GrammarRule; 4] = [
     GrammarRule {
         name: "ーさ",
         short: "objective noun",
@@ -75,13 +75,6 @@ static GRAMMARS: [GrammarRule; 5] = [
                 false
             }
         },
-    },
-    // no tofugu document exists for hearsay and esp. verb hearsay (伝聞)
-    GrammarRule {
-        name: "ーそう",
-        short: "hearsay",
-        tofugu: "https://www.tofugu.com/japanese-grammar/adjective-sou/#common-mistakes",
-        detect: |token, _, _| token.base == "そう" && token.is_noun() && token.pos2 == "助動詞語幹",
     },
     GrammarRule {
         name: "ーられる",

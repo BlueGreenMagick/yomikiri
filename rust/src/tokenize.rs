@@ -458,7 +458,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | */助動詞語幹)+ => $1
+    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | 形状詞/助動詞語幹)+ => $1
     fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
@@ -474,7 +474,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         while to < tokens.len()
             && (tokens[to].pos == "助動詞"
                 || tokens[to].pos2 == "接続助詞"
-                || tokens[to].pos2 == "助動詞語幹")
+                || (tokens[to].pos2 == "助動詞語幹" && tokens[to].pos == "形状詞"))
             && tokens[to].text.contains_only_kana()
         {
             to += 1;
