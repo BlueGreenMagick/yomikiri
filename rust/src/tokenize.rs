@@ -87,18 +87,6 @@ impl Token {
             reading: details.reading,
         }
     }
-
-    fn without_children(token: &Token) -> Self {
-        Token {
-            text: token.text.clone(),
-            start: token.start,
-            children: vec![],
-            pos: token.pos.clone(),
-            pos2: token.pos2.clone(),
-            base: token.base.clone(),
-            reading: token.reading.clone(),
-        }
-    }
 }
 
 impl Default for TokenDetails {
@@ -560,7 +548,7 @@ fn join_tokens<S: Into<String>>(
     let mut children: Vec<Token> = Vec::with_capacity(2 * (to - from));
     for i in from..to {
         if tokens[i].children.is_empty() {
-            children.push(Token::without_children(&tokens[i]));
+            children.push(tokens[i].clone());
         } else {
             children.append(&mut tokens[i].children);
         }
