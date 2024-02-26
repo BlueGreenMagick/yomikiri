@@ -114,6 +114,7 @@ impl Default for TokenDetails {
 impl TokenDetails {
     fn from_details(details: &[&str]) -> Self {
         TokenDetails {
+            #[allow(clippy::get_first)]
             pos: details.get(0).unwrap_or(&"UNK").to_string(),
             pos2: details.get(1).unwrap_or(&"*").to_string(),
             base: details.get(3).unwrap_or(&"").to_string(),
@@ -133,11 +134,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
     /// char_idx: code point index of selected character in sentence
-    pub fn tokenize<'a>(
-        &mut self,
-        sentence: &'a str,
-        char_idx: usize,
-    ) -> YResult<RawTokenizeResult> {
+    pub fn tokenize(&mut self, sentence: &'_ str, char_idx: usize) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
         if tokens.is_empty() {
             return Ok(RawTokenizeResult::empty());
@@ -186,7 +183,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///
     /// if `sentence` is not in NFC normalized form, it is normalized before fed to lindera,
     /// and `token.start` is calculated as code point position in pre-normalized sentence.
-    fn tokenize_inner<'a>(&self, sentence: &'a str) -> YResult<Vec<Token>> {
+    fn tokenize_inner(&self, sentence: &'_ str) -> YResult<Vec<Token>> {
         let is_normalized = is_nfc(sentence);
         let normalized_sentence = if is_normalized {
             Cow::Borrowed(sentence)
@@ -333,7 +330,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let pos = String::from(last_found_pos);
         join_tokens(tokens, from, last_found_to, pos, BaseJoinStrategy::Text);
-        return Ok(to - from > 1);
+        Ok(to - from > 1)
     }
 
     /// (接頭詞) (any) => (any)
@@ -361,7 +358,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             pos,
             BaseJoinStrategy::TextWithLastBase,
         );
-        return Ok(true);
+        Ok(true)
     }
 
     /// (連体詞) (名詞 | 代名詞 | 接頭辞) => (any)
@@ -393,7 +390,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             pos,
             BaseJoinStrategy::TextWithLastBase,
         );
-        return Ok(true);
+        Ok(true)
     }
 
     /// (any) (助詞) => 接続詞
@@ -421,7 +418,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         join_tokens(tokens, from, from + 2, "接続詞", BaseJoinStrategy::Text);
-        return Ok(true);
+        Ok(true)
     }
 
     /// (any) (接尾辞) => 名詞 | 形容詞 | 動詞 | 形状詞
@@ -483,10 +480,10 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let pos = token.pos.clone();
         join_tokens(tokens, from, to, &pos, BaseJoinStrategy::FirstBase);
-        return Ok(to - from > 1);
+        Ok(to - from > 1)
     }
 
-    fn manual_patches(&mut self, tokens: &mut Vec<Token>) {
+    fn manual_patches(&mut self, tokens: &mut [Token]) {
         for i in 0..tokens.len() {
             let token = &tokens[i];
 

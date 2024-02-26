@@ -17,7 +17,7 @@ fn main() {
 
 fn set_env() {
     let output = Command::new("git")
-        .args(&["rev-parse", "--short=8", "HEAD"])
+        .args(["rev-parse", "--short=8", "HEAD"])
         .output()
         .unwrap()
         .stdout;

@@ -68,18 +68,15 @@ impl Entry {
         if !self.readings.is_empty() {
             return self.readings[0].reading.clone();
         }
-        return "".into();
+
+        "".into()
     }
 
     pub fn reading_for_form(&self, form: &str) -> Option<&Reading> {
-        for reading in &self.readings {
-            if (reading.to_form.is_empty() || reading.to_form.iter().any(|f| f == form))
+        self.readings.iter().find(|reading| {
+            (reading.to_form.is_empty() || reading.to_form.iter().any(|f| f == form))
                 && !reading.nokanji
-            {
-                return Some(reading);
-            }
-        }
-        None
+        })
     }
 }
 
@@ -209,5 +206,5 @@ impl PartialEq for DictIndexItem {
 }
 
 fn is_false(a: &bool) -> bool {
-    return !*a;
+    !*a
 }

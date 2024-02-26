@@ -5,10 +5,7 @@ pub trait JapaneseChar {
 
 impl JapaneseChar for char {
     fn is_kana(&self) -> bool {
-        match *self {
-            '\u{3040}'..='\u{309f}' => true,
-            _ => false,
-        }
+        matches!(*self, '\u{3040}'..='\u{309f}')
     }
 }
 

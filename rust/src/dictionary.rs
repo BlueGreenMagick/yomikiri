@@ -33,7 +33,7 @@ impl<R: Seek + Read> Dictionary<R> {
                 let entry: Entry = serde_json::from_slice(buf_entry).map_err(|e| {
                     YomikiriError::InvalidDictionaryFile(format!(
                         "Failed to parse dictionary entry JSON. {}",
-                        e.to_string()
+                        e
                     ))
                 })?;
                 entries.push(entry)
@@ -98,7 +98,7 @@ impl Dictionary<File> {
         let index: Vec<DictIndexItem> = options.deserialize_from(reader).map_err(|e| {
             YomikiriError::InvalidDictionaryFile(format!(
                 "Failed to parse dictionary index file. {}",
-                e.to_string()
+                e
             ))
         })?;
         let entries_file = File::open(entries_path)?;
