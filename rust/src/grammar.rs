@@ -42,16 +42,15 @@ static GRAMMARS: [GrammarRule; 2] = [
             if token.base == "られる" && token.is_aux() {
                 true
             } else if token.base == "れる" && token.is_aux() {
-                if idx == 0 {
-                    return false;
-                }
-                let prev = &tokens[idx - 1];
-
-                if let Some(last_char) = prev.text.chars().last() {
-                    let dan = GoDan::from_char(last_char);
-                    dan == Some(GoDan::ADan)
+                if let Some(prev) = tokens.get(idx - 1) {
+                    if let Some(last_char) = prev.text.chars().last() {
+                        let dan = GoDan::from_char(last_char);
+                        dan == Some(GoDan::ADan)
+                    } else {
+                        false
+                    }
                 } else {
-                    false
+                    return false;
                 }
             } else {
                 false
