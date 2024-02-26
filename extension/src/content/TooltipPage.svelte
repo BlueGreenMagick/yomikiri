@@ -6,6 +6,10 @@
   import DicEntryView from "~/components/DicEntryView.svelte";
   import AddToAnki from "./AddToAnki.svelte";
   import { createEventDispatcher } from "svelte";
+  import Toolbar, { type Tools } from "~/components/Toolbar.svelte";
+  import GrammarPane from "~/components/GrammarPane.svelte";
+  import type { TokenizeResult } from "~/backend";
+  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
 
   interface Events {
     updateHeight: void;
@@ -15,11 +19,15 @@
 
   let previewIsVisible = false;
   let entries: Entry[] = [];
+  let grammars: GrammarInfo[] = [];
   let previewNoteData: LoadingNoteData;
+  let selectedTool: Tools | null = null;
 
-  export function showEntries(e: Entry[]) {
+  export function showEntries(e: Entry[], g: GrammarInfo[]) {
     previewIsVisible = false;
     entries = e;
+    grammars = g;
+    selectedTool = null;
   }
 
   export function showPreview(entry: Entry, noteData: LoadingNoteData) {
@@ -31,10 +39,16 @@
     previewIsVisible = false;
     dispatch("updateHeight");
   }
+
+  $: grammarDisabled = grammars.length == 0;
 </script>
 
 <div id="main" use:platformClass>
   <div class="dic-entries-container">
+    <Toolbar {grammarDisabled} bind:selected={selectedTool} />
+    {#if selectedTool === "grammar"}
+      <GrammarPane {grammars} />
+    {/if}
     <DicEntriesView {entries} on:selectedEntryForAnki />
   </div>
   {#if previewIsVisible}

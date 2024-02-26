@@ -34,7 +34,10 @@ export namespace Tooltip {
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
     _shown = true;
-    _tooltipPageSvelte.showEntries(_tokenizeResult.entries);
+    _tooltipPageSvelte.showEntries(
+      _tokenizeResult.entries,
+      _tokenizeResult.grammars
+    );
     // fix bug where tooltip height is previous entry's height
     await 0;
     const rect = findRectOfMouse(highlightedRects, mouseX, mouseY);

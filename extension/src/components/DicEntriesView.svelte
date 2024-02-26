@@ -2,7 +2,6 @@
   import type { Entry } from "~/dicEntry";
   import DicEntryView from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
-  import Toolbar from "./Toolbar.svelte";
 
   export let entries: Entry[];
   let model: DicEntriesModel = new DicEntriesModel();
@@ -15,7 +14,6 @@
 </script>
 
 <div id="yomikiri-entries">
-  <Toolbar />
   {#each entries as entry}
     <DicEntryView {entry} {model} on:selectedEntryForAnki />
   {/each}
