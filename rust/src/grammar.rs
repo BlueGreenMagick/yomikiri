@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use crate::japanese::{GoDan, GoDanEnding};
 use crate::tokenize::Token;
 
@@ -41,10 +43,17 @@ impl Token {
 
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
         let mut grammars = vec![];
-        for (i, token) in self.children.iter().enumerate() {
+        let children = if self.children.is_empty() {
+            Cow::Owned(vec![self.clone()])
+        } else {
+            Cow::Borrowed(&self.children)
+        };
+
+        for (i, token) in children.iter().enumerate() {
             for grammar in &GRAMMARS {
                 let detect = grammar.detect;
-                if detect(token, &self.children, i) {
+
+                if detect(token, &children, i) {
                     grammars.push(grammar);
                 }
             }
