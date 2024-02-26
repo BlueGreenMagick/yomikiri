@@ -23,11 +23,21 @@ export interface Token {
 "#;
 
 #[wasm_bindgen(typescript_custom_section)]
+const TS_GRAMMAR: &'static str = r#"
+interface GrammarInfo {
+    name: string,
+    short: string,
+    tofugu: string,
+}
+"#;
+
+#[wasm_bindgen(typescript_custom_section)]
 const TS_RAW_TOKENIZE_RESULT: &'static str = r#"
 export interface RawTokenizeResult {
     tokens: Token[];
     tokenIdx: number;
     entries: string[];
+    grammars: GrammarInfo[];
 }
 "#;
 
