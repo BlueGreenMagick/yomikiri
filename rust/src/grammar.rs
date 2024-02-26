@@ -14,6 +14,25 @@ pub struct GrammarRule {
     pub detect: fn(&[Token], usize) -> bool,
 }
 
+impl Token {
+    fn is_aux(&self) -> bool {
+        self.pos == "助動詞"
+    }
+
+    pub fn grammar_infos(&self) -> Vec<&'static GrammarRule> {
+        let mut grammar_infos = vec![];
+        for (i, _token) in self.children.iter().enumerate() {
+            for grammar in &GRAMMARS {
+                let detect = grammar.detect;
+                if detect(&self.children, i) {
+                    grammar_infos.push(grammar);
+                }
+            }
+        }
+        grammar_infos
+    }
+}
+
 static GRAMMARS: [GrammarRule; 2] = [
     GrammarRule {
         name: "ーられる",
@@ -50,22 +69,3 @@ static GRAMMARS: [GrammarRule; 2] = [
         },
     },
 ];
-
-impl Token {
-    fn is_aux(&self) -> bool {
-        self.pos == "助動詞"
-    }
-
-    pub fn grammar_infos(&self) -> Vec<&'static GrammarRule> {
-        let mut grammar_infos = vec![];
-        for (i, _token) in self.children.iter().enumerate() {
-            for grammar in &GRAMMARS {
-                let detect = grammar.detect;
-                if detect(&self.children, i) {
-                    grammar_infos.push(grammar);
-                }
-            }
-        }
-        grammar_infos
-    }
-}
