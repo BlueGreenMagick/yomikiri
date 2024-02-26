@@ -11,6 +11,7 @@ fn test_grammar(
     sentence: &'static str,
     name: &str,
     short: &str,
+    check_exist: bool,
 ) -> Result<()> {
     let char_at = sentence.chars().position(|c| c == '＿').unwrap_or(0);
     let sentence = sentence.replace('＿', "");
@@ -21,10 +22,11 @@ fn test_grammar(
         .iter()
         .map(|g| (g.name.to_string(), g.short.to_string()))
         .collect();
-    if !grammars
+    let exists = grammars
         .iter()
-        .any(|(n, s)| (n.as_str(), s.as_str()) == (name, short))
-    {
+        .any(|(n, s)| (n.as_str(), s.as_str()) == (name, short));
+
+    if exists != check_exist {
         panic!(
             "Testing sentence: {}\nCould not find grammar ({}, {}) in [{:?}]",
             sentence, name, short, grammars
@@ -40,7 +42,20 @@ macro_rules! test {
         fn $test() -> Result<()> {
           let mut backend = setup_backend();
           $(
-            test_grammar(&mut backend, $sentence, $name, $short)?;
+            test_grammar(&mut backend, $sentence, $name, $short, true)?;
+          )+
+          Ok(())
+        }
+      )+
+    };
+
+    ($($test:ident!: $name:literal $short:literal $(| $sentence:literal)+)+) => {
+      $(
+        #[test]
+        fn $test() -> Result<()> {
+          let mut backend = setup_backend();
+          $(
+            test_grammar(&mut backend, $sentence, $name, $short, false)?;
           )+
           Ok(())
         }
@@ -64,6 +79,16 @@ test!(
     | "やめろってば"
     | "全力で＿やれ"
     | "ここに＿来い"
+
+  が: "ーが" "contrast (but)"
+    | "ワインは好きです＿が、ビアは好きないです。"
+    | "夏です＿が今日は涼しいです。"
+
+  けれど: "ーけど／ーけれど" "contrast (but)"
+    | "夏だ＿けど今日は涼しい。"
+    | "ペン持ってないんだ＿けど、貸してくれない？"
+    | "分からない＿けれど、一つだけ分かっていることがある。"
+    | "もしもし。予約したいんです＿けど…。"
 
   られる: "ーられる" "passive suffix"
     | "私は蜂に＿刺された。"

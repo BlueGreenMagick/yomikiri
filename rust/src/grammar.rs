@@ -41,6 +41,14 @@ impl Token {
         self.pos == "名詞"
     }
 
+    fn is_verb(&self) -> bool {
+        self.pos == "動詞"
+    }
+
+    fn is_conn_particle(&self) -> bool {
+        self.pos2 == "接続助詞"
+    }
+
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
         let mut grammars = vec![];
         let children = if self.children.is_empty() {
@@ -62,7 +70,20 @@ impl Token {
     }
 }
 
-static GRAMMARS: [GrammarRule; 4] = [
+/// get previous verb / adj token looking from `idx`` backwards
+fn prev_yougen(tokens: &[Token], idx: usize) -> Option<&Token> {
+    if idx == 0 {
+        return None;
+    }
+    for token in tokens[0..idx - 1].iter().rev() {
+        if token.is_adj() || token.is_verb() {
+            return Some(token);
+        }
+    }
+    None
+}
+
+static GRAMMARS: [GrammarRule; 7] = [
     GrammarRule {
         name: "ーさ",
         short: "objective noun",
@@ -90,6 +111,18 @@ static GRAMMARS: [GrammarRule; 4] = [
         short: "command form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
         detect: |token, _, _| token.conj_form == "命令形",
+    },
+    GrammarRule {
+        name: "ーが",
+        short: "contrast (but)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
+        detect: |token, _, _| token.base == "が" && token.is_conn_particle(),
+    },
+    GrammarRule {
+        name: "ーけど／ーけれど",
+        short: "contrast (but)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
+        detect: |token, _, _| token.base == "けれど" && token.is_conn_particle(),
     },
     GrammarRule {
         name: "ーられる",
