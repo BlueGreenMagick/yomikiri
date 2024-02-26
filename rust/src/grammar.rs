@@ -11,7 +11,7 @@ pub struct GrammarRule {
     /// tofugu url
     pub tofugu: &'static str,
     /// (children, current index)
-    pub detect: fn(&[Token], usize) -> bool,
+    pub detect: fn(&Token, &[Token], usize) -> bool,
 }
 
 impl Token {
@@ -21,10 +21,10 @@ impl Token {
 
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
         let mut grammars = vec![];
-        for (i, _token) in self.children.iter().enumerate() {
+        for (i, token) in self.children.iter().enumerate() {
             for grammar in &GRAMMARS {
                 let detect = grammar.detect;
-                if detect(&self.children, i) {
+                if detect(token, &self.children, i) {
                     grammars.push(grammar);
                 }
             }
@@ -38,8 +38,7 @@ static GRAMMARS: [GrammarRule; 2] = [
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
-        detect: |tokens, idx| {
-            let token = &tokens[idx];
+        detect: |token, tokens, idx| {
             if token.base == "られる" && token.is_aux() {
                 true
             } else if token.base == "れる" && token.is_aux() {
@@ -63,8 +62,7 @@ static GRAMMARS: [GrammarRule; 2] = [
         name: "ーた",
         short: "past tense",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
-        detect: |tokens, idx| {
-            let token = &tokens[idx];
+        detect: |token, _, _| {
             token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
         },
     },
