@@ -64,14 +64,26 @@ impl From<&GrammarInfo> for GrammarInfoOut {
 
 #[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
+#[derive(Debug, Default)]
 pub struct RawTokenizeResult {
     pub tokens: Vec<Token>,
     /// selected token index
-    pub tokenIdx: u32,
+    ///
+    /// may be -1 if no there
+    pub tokenIdx: i32,
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
     pub entries: Vec<String>,
     pub grammars: Vec<GrammarInfoOut>,
+}
+
+impl RawTokenizeResult {
+    pub fn empty() -> Self {
+        RawTokenizeResult {
+            tokenIdx: -1,
+            ..Default::default()
+        }
+    }
 }
 
 impl Token {
@@ -127,6 +139,9 @@ impl<R: Read + Seek> SharedBackend<R> {
         char_idx: usize,
     ) -> YResult<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
+        if tokens.is_empty() {
+            return Ok(RawTokenizeResult::empty());
+        }
 
         self.manual_patches(&mut tokens);
         self.join_all_tokens(&mut tokens)?;

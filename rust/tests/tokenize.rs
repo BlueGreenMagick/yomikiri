@@ -127,3 +127,11 @@ fn decomposed_unicode() -> YResult<()> {
     assert_eq!(&result.tokens[1].text, "が");
     Ok(())
 }
+
+#[test]
+fn empty_string() -> YResult<()> {
+    let mut backend = setup_backend();
+    let result = backend.tokenize("", 0)?;
+    assert_eq!(result.tokenIdx, -1);
+    Ok(())
+}
