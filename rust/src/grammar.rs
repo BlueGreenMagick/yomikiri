@@ -58,7 +58,7 @@ impl Token {
         };
 
         for (i, token) in children.iter().enumerate() {
-            for grammar in &GRAMMARS {
+            for grammar in GRAMMARS {
                 let detect = grammar.detect;
 
                 if detect(token, &children, i) {
@@ -83,7 +83,7 @@ fn prev_yougen(tokens: &[Token], idx: usize) -> Option<&Token> {
     None
 }
 
-static GRAMMARS: [GrammarRule; 7] = [
+static GRAMMARS: &[GrammarRule] = &[
     GrammarRule {
         name: "ーさ",
         short: "objective noun",
