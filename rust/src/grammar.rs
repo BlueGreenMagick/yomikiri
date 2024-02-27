@@ -182,9 +182,12 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-kara/",
         detect: |token, _, _| token.base == "から" && token.is_particle(),
     },
-    // どうか: adverb
-    // 誰か[adverbial]-> pronoun
-    // 何か: pronoun? adverb?
+    GrammarRule {
+        name: "が",
+        short: "subject",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-ga/",
+        detect: |token, _, _| token.base == "が" && token.pos2 == "格助詞",
+    },
     GrammarRule {
         name: "ーられる",
         short: "passive suffix",
