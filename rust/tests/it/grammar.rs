@@ -26,15 +26,21 @@ fn test_grammar(
         .iter()
         .any(|(n, s)| (n.as_str(), s.as_str()) == (name, short));
 
+    let additional_panic_msg = if !sentence_inp.contains('＿') {
+        "\n'＿' char was not found in sentence. Maybe that's the issue?"
+    } else {
+        ""
+    };
+
     if check_exist && !exists {
         panic!(
-            "Testing sentence: {}\nCould not find grammar ({}, {}) in {:?}",
-            sentence_inp, name, short, grammars
+            "Testing sentence: {}\nCould not find grammar ({}, {}) in {:?}{}",
+            sentence_inp, name, short, grammars, additional_panic_msg
         );
     } else if !check_exist && exists {
         panic!(
-            "Testing sentence: {}\nFound grammar ({}, {}) in {:?}",
-            sentence_inp, name, short, grammars
+            "Testing sentence: {}\nFound grammar ({}, {}) in {:?}{}",
+            sentence_inp, name, short, grammars, additional_panic_msg
         );
     }
 
