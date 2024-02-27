@@ -234,6 +234,12 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ね",
+        short: "consensus with listener",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-ne/",
+        detect: |token, data| token.base == "ね" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",

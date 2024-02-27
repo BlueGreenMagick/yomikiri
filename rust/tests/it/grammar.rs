@@ -167,6 +167,10 @@ test!(
   // covered by のに rule
   - "静かなの＿に眠れない"
 
+  ね: "ね" "consensus with listener"
+    | "あ、雨が降ってる＿ね。"
+    | "できない＿ね。"
+
   られる: "ーられる" "passive suffix"
     | "私は蜂に＿刺された。"
     | "タバコを＿吸われた。"
