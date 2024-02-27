@@ -165,9 +165,7 @@ static GRAMMARS: &[GrammarRule] = &[
             token.base == "に"
                 && token.text == "に"
                 && token.is_particle()
-                && data.prev_is(|prev| {
-                    prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞"
-                })
+                && data.prev_is(|prev| prev.base == "の" && prev.pos2 == "準体助詞")
         },
     },
     GrammarRule {
@@ -223,6 +221,17 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "causal relationship",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-to/",
         detect: |token, _| token.base == "と" && token.text == "と" && token.pos2 == "接続助詞",
+    },
+    GrammarRule {
+        name: "に",
+        short: "location; time; purpose; state; ...",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-ni/",
+        detect: |token, data| {
+            (token.base == "に"
+                && token.is_particle()
+                && !data.prev_is(|prev| prev.base == "の" && prev.pos2 == "準体助詞"))
+                || (token.text == "に" && token.base == "だ" && token.is_aux())
+        },
     },
     GrammarRule {
         name: "ーられる",
