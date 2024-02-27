@@ -9,8 +9,8 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 fn test_grammar(
     backend: &mut SharedBackend<File>,
     sentence_inp: &'static str,
-    name: &str,
-    short: &str,
+    includes: &[(&str, &str)],
+    excludes: &[(&str, &str)],
     check_exist: bool,
 ) -> Result<()> {
     let char_at = sentence_inp.chars().position(|c| c == '＿').unwrap_or(0);
@@ -22,9 +22,6 @@ fn test_grammar(
         .iter()
         .map(|g| (g.name.to_string(), g.short.to_string()))
         .collect();
-    let exists = grammars
-        .iter()
-        .any(|(n, s)| (n.as_str(), s.as_str()) == (name, short));
 
     let additional_panic_msg = if !sentence_inp.contains('＿') {
         "\n'＿' char was not found in sentence. Maybe that's the issue?"
@@ -32,43 +29,80 @@ fn test_grammar(
         ""
     };
 
-    if check_exist && !exists {
-        panic!(
-            "Testing sentence: {}\nCould not find grammar ({}, {}) in {:?}{}",
-            sentence_inp, name, short, grammars, additional_panic_msg
-        );
-    } else if !check_exist && exists {
-        panic!(
-            "Testing sentence: {}\nFound grammar ({}, {}) in {:?}{}",
-            sentence_inp, name, short, grammars, additional_panic_msg
-        );
+    for (name, short) in includes {
+        let exists = grammars
+            .iter()
+            .any(|(n, s)| n == name && (*short == "" || s == short));
+        if !exists {
+            panic!(
+                "Testing sentence: {}\nCould not find grammar ({}, {}) in {:?}{}",
+                sentence_inp, name, short, grammars, additional_panic_msg
+            );
+        }
     }
 
-    if exists != check_exist {
-        let msg = if check_exist {
-            "Could not find"
-        } else {
-            "Found"
-        };
-        panic!(
-            "Testing sentence: {}\n{} grammar ({}, {}) in {:?}",
-            sentence, msg, name, short, grammars
-        );
+    for (name, short) in excludes {
+        let exists = grammars
+            .iter()
+            .any(|(n, s)| n == name && (*short == "" || s == short));
+        if exists {
+            panic!(
+                "Testing sentence: {}\nFound grammar ({}, {}) in {:?}{}",
+                sentence_inp, name, short, grammars, additional_panic_msg
+            );
+        }
     }
+
     Ok(())
 }
 
+macro_rules! default_if_empty {
+    ($default: expr,) => {
+        $default
+    };
+
+    ($default: expr, $value: expr) => {
+        $value
+    };
+}
+
+/// ## Syntax:
+///
+/// Each test function mainly tests for a single grammar rule
+/// You can specify `name` only,
+/// or both name and short using syntax `name=short` for rules with identical names.
+///
+/// The test function name is followed by lines starting with `|`,
+/// which tests for the existance of the main rule.
+/// Then follows lines starting with `*`, which tests for exclusion of the main rule.
+///
+/// The lines contain the testing sentence. Char '＿' is put before The character to test token at.
+///
+/// Lines may also optionally contain more grammar rules to test.
+/// `+ name short?` tests for the inclusion of the rule,
+/// `- name short?` tests for the exclusion of the rule.
 macro_rules! test {
-    ($($test:ident: $name:literal $short:literal $(| $sentence:literal)* $(- $neg_sentence:literal)*)+) => {
+    (
+      $(
+        $test:ident: $name:literal $(=$short:literal)?
+        $(| $sentence:literal $(+$include_name:literal $(=$include_short:literal)?)* $(-$exclude_name:literal $(=$exclude_short:literal)?)* )*
+        $(* $nsentence:literal $(+$ninclude_name:literal  $(=$ninclude_short:literal)?)* $(-$nexclude_name:literal $(=$nexclude_short:literal)?)* )*
+      )+
+    ) => {
       $(
         #[test]
         fn $test() -> Result<()> {
           let mut backend = setup_backend();
+          let short = default_if_empty!("", $($short)?);
           $(
-            test_grammar(&mut backend, $sentence, $name, $short, true)?;
+            let includes = vec![ ($name, short), $( ($include_name, default_if_empty!("", $($include_short)?)) ),*];
+            let excludes = vec![$( ($exclude_name, default_if_empty!("", $($exclude_short)?)) ),*];
+            test_grammar(&mut backend, $sentence, &includes, &excludes, true)?;
           )*
           $(
-            test_grammar(&mut backend, $neg_sentence, $name, $short, false)?;
+            let includes = vec![$( ($ninclude_name, default_if_empty!("", $($ninclude_short)?)) ),*];
+            let excludes = vec![($name, short), $( ($nexclude_name, default_if_empty!("", $($nexclude_short)?)) ),*];
+            test_grammar(&mut backend, $nsentence, &includes, &excludes, false)?;
           )*
           Ok(())
         }
@@ -77,166 +111,164 @@ macro_rules! test {
 }
 
 test!(
-  さ: "ーさ" "objective noun"
+  さ: "ーさ"
     | "便利さ"
     | "カバンの＿重さを測りました。"
 
-  speculativeそう: "ーそう" "speculative adjective"
+  speculativeそう: "ーそう"
     | "便利＿じゃなさそう"
     | "美味しそうじゃない"
     | "狭そう"
 
-  command: "ーえ／ーろ" "command form"
+  command: "ーえ／ーろ"
     | "ちゃんと黒板＿見ろ！"
     | "やめろよ"
     | "やめろってば"
     | "全力で＿やれ"
     | "ここに＿来い"
 
-  ので: "ので" "cause (so)"
-    | "お腹が空いた＿のでレストランに行きました。"
-    | "二十歳な＿のでお酒が飲めます。"
-    | "彼女は忙しい＿んで、会えません"
+  ので: "ので"
+    | "お腹が空いた＿のでレストランに行きました。" -"の" -"で"
+    | "二十歳な＿のでお酒が飲めます。" -"の" -"で"
+    | "彼女は忙しい＿んで、会えません" -"の" -"で"
 
-  のに: "のに" "unexpectedness (but)"
-    | "クーラーをつけた＿のに、全然涼しくならなかった。"
-    | "レモン＿なのに甘い"
-    | "彼は忙しい＿んに、手伝ってくれない"
-    - "ミルクは私＿のに入れないでね。"
+  のに: "のに"
+    | "クーラーをつけた＿のに、全然涼しくならなかった。" -"の" -"に"
+    | "レモン＿なのに甘い" -"の" -"に"
+    | "彼は忙しい＿んに、手伝ってくれない" -"の" -"に"
+    * "ミルクは私＿のに入れないでね。" +"の" +"に"
 
-  が: "ーが" "contrast (but)"
+  が: "ーが"="contrast (but)"
     | "ワインは好きです＿が、ビアは好きないです。"
     | "夏です＿が今日は涼しいです。"
 
-  けれど: "ーけど／ーけれど" "contrast (but)"
+  けれど: "ーけど／ーけれど"
     | "夏だ＿けど今日は涼しい。"
     | "ペン持ってないんだ＿けど、貸してくれない？"
     | "分からない＿けれど、一つだけ分かっていることがある。"
     | "もしもし。予約したいんです＿けど…。"
 
-  お: "おー" "honorific"
+  お: "おー"
     | "お預かりする"
     | "お茶"
     | "ご注文"
     | "御国"
 
-  か: "ーか" "unknown"
+  か: "ーか"
     | "そうか"
     | "誰＿かがいると思う。"
     | "カレー＿かパスタかを作ると思う"
 
-  から: "ーから" "source"
+  から: "ーから"
     | "どこ＿から来たんですか。"
     | "学生＿から社会人になる。"
     | "予定がある＿から遊べない。"
 
-  subjectが: "が" "subject"
+  subjectが: "が"="subject"
     | "あの犬＿が吠えた。"
     | "私＿が社長です。"
     | "梅干＿が大好き。"
     | "日本語＿が分かる。"
 
-  で: "で" "where; how"
+  で: "で"
     | "バス＿で行きます"
     | "インスタ＿で"
     | "この小説は五つの章＿で構成されている"
     // aux verbs
     // unidic often mistakes aux で(だ) as particle で...
     // - "外国人＿で日本に居る人"
-    - "人間＿である"
+    * "人間＿である"
 
-  と: "と" "together; quote"
+  と: "と"="together; quote"
     | "トマト＿とバナナを食べる。"
     | "妹＿とトマトを食べた。"
     | "紅茶＿とコーヒー、どれがいいですか？"
     | "彼女＿とキスをした。"
     | "キャメロンが「おはよう」＿と言った。"
-    - "ご飯を食べる＿と眠くなる。"
-    - "ボタンを押す＿と、店員が来た。"
+    * "ご飯を食べる＿と眠くなる。"  +"と"="causal relationship"
+    * "ボタンを押す＿と、店員が来た。"  +"と"="causal relationship"
 
-  causalと: "と" "causal relationship"
+  causalと: "と"="causal relationship"
     | "ご飯を食べる＿と眠くなる。"
     | "晴れる＿とよくランニングをする。"
     | "ボタンを押す＿と、店員が来た。"
     | "このボタンを押す＿とどうなりますか？"
     | "はっきり言う＿と…"
-    - "トマト＿とバナナを食べる。"
-    - "妹＿とトマトを食べた。"
+    * "トマト＿とバナナを食べる。"  +"と"="together; quote"
+    * "妹＿とトマトを食べた。"  +"と"="together; quote"
 
-  に: "に" "location; time; purpose; state; ..."
-  | "火星＿にいる。"
-  | "彼は宇宙人を探し＿に行きました。"
-  | "宇宙はとても静か＿になった。"
-  | "まみは子供＿に外で遊ばせた。"
-  | "あっ、ミルクは私の＿に入れないでね。"
-  | "おいしそう＿に食べる"
-  // covered by のに rule
-  - "静かなの＿に眠れない"
+  に: "に"
+    | "火星＿にいる。"
+    | "彼は宇宙人を探し＿に行きました。"
+    | "宇宙はとても静か＿になった。"
+    | "まみは子供＿に外で遊ばせた。"
+    | "あっ、ミルクは私の＿に入れないでね。"
+    | "おいしそう＿に食べる"
 
-  ね: "ね" "consensus with listener"
+  ね: "ね"
     | "あ、雨が降ってる＿ね。"
     | "できない＿ね。"
 
-  nounの: "ーの" "noun form; explanatory"
+  nounの: "ーの"="noun form; explanatory"
     | "走る＿のは楽しい。"
     | "こんな＿の要らないよ。"
     // | "授業中は、おしゃべりしない＿の！"
     | "何をしている＿の"
-    - "私＿の車"
-    - "フルーツ_のバナナ"
+    * "私＿の車" +"の"="possessive; apposition"
+    * "フルーツ_のバナナ" +"の"="possessive; apposition"
 
-  の: "の" "possessive; apposition"
+  の: "の"="possessive; apposition"
     | "私＿の車"
     | "アメリカへ＿の飛行機"
     | "フルーツ＿のバナナ"
-    - "走る＿のは楽しい。"
-    - "こんな＿の要らないよ。"
+    * "走る＿のは楽しい。" +"ーの"="noun form; explanatory"
+    * "こんな＿の要らないよ。" +"ーの"="noun form; explanatory"
 
-  は: "は" "topic"
+  は: "は"
     | "これ＿は何ですか。"
     | "難しく＿はない。"
 
-  へ: "へ" "destination; direction"
+  へ: "へ"
     | "アメリア＿へ行く"
     | "娘＿へ荷物を送った。"
     | "どうぞ、こちら＿へ"
     | "花子＿への手紙"
 
-  まで: "まで" "end point"
+  まで: "まで"
     | "家から学校＿まで"
     | "これ食べる＿まで待って"
     | "１０時＿までに帰る。"
     | "納豆＿まで食べれるの！？"
 
-  も: "も" "also"
+  も: "も"
     | "私＿も日本語を教えています。"
     | "私は学生で＿もあります。"
     | "ジェニーに＿もあげる。"
     | "５キロ＿も太った。"
     | "どれ＿もおいしそう！"
 
-  や: "や" "list"
+  や: "や"
     | "トマト＿やバナナやストロベリーです。"
 
-  よ: "よ" "informative"
+  よ: "よ"
     | "食べる＿よ"
-    // display よね instead
-    - "食べる＿よね。"
+    * "食べる＿よね。"
 
-  よね: "よね" "confirmation"
-    | "食べる＿よね。"
+  よね: "よね"
+    | "食べる＿よね。" - "よ"
 
-  られる: "ーられる" "passive suffix"
+  られる: "ーられる"
     | "私は蜂に＿刺された。"
     | "タバコを＿吸われた。"
     | "このお酒は芋から＿作られている"
     | "私が＿閉ざされた"
     | "彼は＿刺されませんでした"
 
-  た: "ーた" "past tense"
-  | "本を＿買った。"
-  | "日本語が上手に＿なったね。"
-  | "フグを＿食べましたか。"
-  | "彼が＿死んだ。"
-  | "泳いだ。"
+  た: "ーた"
+    | "本を＿買った。"
+    | "日本語が上手に＿なったね。"
+    | "フグを＿食べましたか。"
+    | "彼が＿死んだ。"
+    | "泳いだ。"
+
 );
