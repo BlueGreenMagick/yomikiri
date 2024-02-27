@@ -272,6 +272,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "まで" && token.is_particle(),
     },
     GrammarRule {
+        name: "も",
+        short: "also",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-mo/",
+        detect: |token, _| token.base == "も" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
