@@ -281,81 +281,114 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///     3. 助詞+ => 助詞 e.g. 「かも」、「では」
     ///     4. (名詞|代名詞) 助詞+ => any e.g. 「誰か」、「何とも」、「誠に」
     ///
-    /// Search strategy:
+    /// Search strategy (ordered):
     ///     1. '(text)+': join text of all tokens
     ///         used for all cases
     ///     2. '(text)+ (base)': join text of all tokens except last, and last's base
-    ///         used for cases 1-3
+    ///         used for cases 1-2
+    ///     3. '(base)+': join base of all tokens
+    ///         used for case 3 e.g. んに「のに」
     fn join_compounds_multi(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let token = &tokens[from];
         let mut all_noun = token.pos == "名詞";
         let mut all_particle = token.pos == "助詞";
         let mut noun_particle = token.pos == "名詞" || token.pos == "代名詞";
 
-        let mut to = from + 1;
+        let mut at = from + 1;
         let mut joined_text_prev = token.text.clone();
+        let mut joined_base_prev = token.base.clone();
 
-        let mut last_found_to = to;
-        let mut base_join_strategy = BaseJoinStrategy::TextWithLastBase;
+        let mut searching_text_join = true;
+        let mut searching_base_join = true;
+
+        let mut last_found_to = at;
+        let mut last_found_join_strategy = BaseJoinStrategy::TextAll;
         let mut last_found_pos: &str = &token.pos;
 
-        while to < tokens.len() {
-            let token = &tokens[to];
+        while at < tokens.len() {
+            let token = &tokens[at];
             all_noun = all_noun && token.pos == "名詞";
             all_particle = all_particle && token.pos == "助詞";
             noun_particle = noun_particle && token.pos == "助詞";
 
-            let joined_text = concat_string(&joined_text_prev, &token.text);
-            let found = self.dictionary.search(&joined_text)?.iter().any(|e| {
-                e.is_expression()
-                    || (all_noun && e.is_noun())
-                    || (all_particle && e.is_particle())
-                    || noun_particle
-            });
+            if !all_particle {
+                searching_base_join = false;
+            }
 
-            if found {
-                last_found_to = to + 1;
-                base_join_strategy = BaseJoinStrategy::Text;
-                last_found_pos = if all_noun {
-                    "名詞"
-                } else if all_particle {
-                    "助詞"
-                } else {
-                    "=exp="
-                }
-            } else {
-                let joined_text_base = concat_string(&joined_text_prev, &token.base);
-                let found_base = self.dictionary.search(&joined_text_base)?.iter().any(|e| {
-                    e.is_expression()
-                        || (all_noun && e.is_noun())
-                        || (all_particle && e.is_particle())
-                });
+            if searching_text_join {
+                let text_all = concat_string(&joined_text_prev, &token.text);
 
-                if found_base {
-                    last_found_to = to + 1;
-                    base_join_strategy = BaseJoinStrategy::TextWithLastBase;
-                    last_found_pos = if all_noun {
-                        "名詞"
-                    } else if all_particle {
-                        "助詞"
-                    } else {
-                        "=exp="
+                let mut found_pos = None;
+                for e in self.dictionary.search(&text_all)?.iter() {
+                    if all_noun && e.is_noun() {
+                        found_pos = Some("名詞");
+                        break;
+                    } else if all_particle && e.is_particle() {
+                        found_pos = Some("助詞");
+                        break;
+                    } else if noun_particle || e.is_expression() {
+                        found_pos = Some("=exp=")
                     }
                 }
+
+                if let Some(pos) = found_pos {
+                    last_found_to = at + 1;
+                    last_found_pos = pos;
+                    last_found_join_strategy = BaseJoinStrategy::TextAll;
+                } else {
+                    let text_then_base = concat_string(&joined_text_prev, &token.base);
+                    let mut found_pos = None;
+                    for e in self.dictionary.search(&text_then_base)?.iter() {
+                        if all_noun && e.is_noun() {
+                            found_pos = Some("名詞");
+                            break;
+                        } else if noun_particle || e.is_expression() {
+                            found_pos = Some("=exp=")
+                        }
+                    }
+
+                    if let Some(pos) = found_pos {
+                        last_found_to = at + 1;
+                        last_found_pos = pos;
+                        last_found_join_strategy = BaseJoinStrategy::TextWithLastBase;
+                    }
+                }
+
+                // no more `text_all` or `text_then_base` exist in dictionary
+                searching_text_join = self.dictionary.has_starts_with_excluding(&text_all);
+                joined_text_prev = text_all;
             }
-            let found_next = self.dictionary.has_starts_with_excluding(&joined_text);
-            if !found_next {
-                let pos = String::from(last_found_pos);
-                join_tokens(tokens, from, last_found_to, pos, base_join_strategy);
-                return Ok(last_found_to - from > 1);
+
+            if searching_base_join {
+                let base_all = concat_string(&joined_base_prev, &token.base);
+                // text_all and text_then_base did not find an entry this iteration
+                if !(last_found_to == at + 1) {
+                    let found = self
+                        .dictionary
+                        .search(&base_all)?
+                        .iter()
+                        .any(|e| e.is_particle());
+                    if found {
+                        last_found_to = at + 1;
+                        last_found_pos = "助詞";
+                        last_found_join_strategy = BaseJoinStrategy::BaseAll;
+                    }
+                }
+
+                searching_base_join = self.dictionary.has_starts_with_excluding(&base_all);
+                joined_base_prev = base_all;
             }
-            joined_text_prev = joined_text;
-            to += 1;
+
+            // no need to search anymore
+            if !searching_text_join && !searching_base_join {
+                break;
+            }
+            at += 1;
         }
 
         let pos = String::from(last_found_pos);
-        join_tokens(tokens, from, last_found_to, pos, BaseJoinStrategy::Text);
-        Ok(to - from > 1)
+        join_tokens(tokens, from, last_found_to, pos, last_found_join_strategy);
+        Ok(last_found_to - from > 1)
     }
 
     /// (接頭詞) (any) => (any)
@@ -442,7 +475,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        join_tokens(tokens, from, from + 2, "接続詞", BaseJoinStrategy::Text);
+        join_tokens(tokens, from, from + 2, "接続詞", BaseJoinStrategy::TextAll);
         Ok(true)
     }
 
@@ -561,11 +594,13 @@ pub fn create_tokenizer() -> Tokenizer {
 
 enum BaseJoinStrategy {
     /// join `text` of all tokens
-    Text,
+    TextAll,
     /// join `text` of all tokens except last token's `base`
     TextWithLastBase,
     /// use first token's `base`
     FirstBase,
+    /// join `base` of all tokens
+    BaseAll,
 }
 
 /// Join and replace `tokens[from..<to]`.
@@ -595,8 +630,13 @@ fn join_tokens<S: Into<String>>(
 
     let base = match base_strategy {
         BaseJoinStrategy::FirstBase => tokens[from].base.clone(),
-        BaseJoinStrategy::Text => concat_string(&text, &tokens[to - 1].text),
+        BaseJoinStrategy::TextAll => concat_string(&text, &tokens[to - 1].text),
         BaseJoinStrategy::TextWithLastBase => concat_string(&text, &tokens[to - 1].base),
+        BaseJoinStrategy::BaseAll => tokens
+            .iter()
+            .map(|t| t.base.as_str())
+            .collect::<Vec<&str>>()
+            .join(""),
     };
 
     text.push_str(&tokens[to - 1].text);
