@@ -215,7 +215,7 @@ test!(
     // | "授業中は、おしゃべりしない＿の！"
     | "何をしている＿の"
     * "私＿の車" +"の"="possessive; apposition"
-    * "フルーツ_のバナナ" +"の"="possessive; apposition"
+    * "フルーツ＿のバナナ" +"の"="possessive; apposition"
 
   の: "の"="possessive; apposition"
     | "私＿の車"
