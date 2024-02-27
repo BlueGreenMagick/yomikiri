@@ -237,7 +237,21 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ね",
         short: "consensus with listener",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-ne/",
-        detect: |token, data| token.base == "ね" && token.is_particle(),
+        detect: |token, _| token.base == "ね" && token.is_particle(),
+    },
+    GrammarRule {
+        name: "ーの",
+        short: "noun form; explanatory",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-no-nominalizer/",
+        detect: |token, _| {
+            token.base == "の" && (token.pos2 == "準体助詞" || token.pos2 == "終助詞")
+        },
+    },
+    GrammarRule {
+        name: "の",
+        short: "possessive; apposition",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-no-nominalizer/",
+        detect: |token, _| token.base == "の" && token.pos2 == "格助詞",
     },
     GrammarRule {
         name: "ーられる",
