@@ -116,6 +116,8 @@ tokenize_tests! {
     // # Other
     // don't compound. 私/はしる is wrong
     other1: "私/は/しる",
+    // below 「と」 is 接続助詞, not 格助詞
+    other2: "早く/起きないと/遅刻/する/よ",
 
 
 }
