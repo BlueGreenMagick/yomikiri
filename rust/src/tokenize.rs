@@ -273,16 +273,24 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(())
     }
 
-    /// Join maximal expression tokens starting from tokens[index]
+    /// Join maximal expression tokens starting from tokens\[index\]
     ///
     /// Handles cases:
-    ///     1. (any)+ => (expression)
-    ///     2. (名詞)+ => (名詞)
-    ///     3. (助詞)+ => (助詞) e.g. 「かも」、「では」
+    ///     1. any+ => exp
+    ///     2. 名詞+ => 名詞
+    ///     3. 助詞+ => 助詞 e.g. 「かも」、「では」
+    ///     4. (名詞|代名詞) 助詞+ => any e.g. 「誰か」、「何とも」、「誠に」
+    ///
+    /// Search strategy:
+    ///     1. '(text)+': join text of all tokens
+    ///         used for all cases
+    ///     2. '(text)+ (base)': join text of all tokens except last, and last's base
+    ///         used for cases 1-3
     fn join_compounds_multi(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let token = &tokens[from];
         let mut all_noun = token.pos == "名詞";
         let mut all_particle = token.pos == "助詞";
+        let mut noun_particle = token.pos == "名詞" || token.pos == "代名詞";
 
         let mut to = from + 1;
         let mut joined_text_prev = token.text.clone();
@@ -295,10 +303,14 @@ impl<R: Read + Seek> SharedBackend<R> {
             let token = &tokens[to];
             all_noun = all_noun && token.pos == "名詞";
             all_particle = all_particle && token.pos == "助詞";
+            noun_particle = noun_particle && token.pos == "助詞";
 
             let joined_text = concat_string(&joined_text_prev, &token.text);
             let found = self.dictionary.search(&joined_text)?.iter().any(|e| {
-                e.is_expression() || (all_noun && e.is_noun()) || (all_particle && e.is_particle())
+                e.is_expression()
+                    || (all_noun && e.is_noun())
+                    || (all_particle && e.is_particle())
+                    || noun_particle
             });
 
             if found {
