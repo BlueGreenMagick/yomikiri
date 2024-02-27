@@ -53,6 +53,10 @@ impl Token {
         self.pos2 == "接続助詞"
     }
 
+    fn is_prefix(&self) -> bool {
+        self.pos == "接頭辞"
+    }
+
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
         let mut grammars = vec![];
         let children = if self.children.is_empty() {
@@ -159,6 +163,12 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "contrast (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
         detect: |token, _, _| token.base == "けれど" && token.is_conn_particle(),
+    },
+    GrammarRule {
+        name: "おー",
+        short: "honorific",
+        tofugu: "https://www.tofugu.com/japanese-grammar/honorific-prefix-o-go/",
+        detect: |token, _, _| token.base == "御" && token.is_prefix(),
     },
     GrammarRule {
         name: "ーられる",
