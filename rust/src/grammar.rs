@@ -209,6 +209,20 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, tokens, _| token.base == "で" && token.is_particle(),
     },
     GrammarRule {
+        name: "と",
+        short: "together; quote",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-to/",
+        detect: |token, tokens, idx| token.base == "と" && token.pos2 == "格助詞",
+    },
+    GrammarRule {
+        name: "と",
+        short: "causal relationship",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-to/",
+        detect: |token, tokens, idx| {
+            token.base == "と" && token.text == "と" && token.pos2 == "接続助詞"
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
@@ -216,7 +230,7 @@ static GRAMMARS: &[GrammarRule] = &[
             if token.base == "られる" && token.is_aux() {
                 true
             } else if token.base == "れる" && token.is_aux() {
-                if let Some(prev) = tokens.get(idx - 1) {
+                if let Some(prev) = tokens.get_prev(idx) {
                     prev.text.ends_in_go_dan() == Some(GoDan::ADan)
                 } else {
                     false
