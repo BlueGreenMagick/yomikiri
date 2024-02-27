@@ -8,13 +8,13 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 fn test_grammar(
     backend: &mut SharedBackend<File>,
-    sentence: &'static str,
+    sentence_inp: &'static str,
     name: &str,
     short: &str,
     check_exist: bool,
 ) -> Result<()> {
-    let char_at = sentence.chars().position(|c| c == '＿').unwrap_or(0);
-    let sentence = sentence.replace('＿', "");
+    let char_at = sentence_inp.chars().position(|c| c == '＿').unwrap_or(0);
+    let sentence = sentence_inp.replace('＿', "");
     let result = backend.tokenize(&sentence, char_at)?;
 
     let grammars: Vec<(String, String)> = result
@@ -26,10 +26,27 @@ fn test_grammar(
         .iter()
         .any(|(n, s)| (n.as_str(), s.as_str()) == (name, short));
 
-    if exists != check_exist {
+    if check_exist && !exists {
         panic!(
-            "Testing sentence: {}\nCould not find grammar ({}, {}) in [{:?}]",
-            sentence, name, short, grammars
+            "Testing sentence: {}\nCould not find grammar ({}, {}) in {:?}",
+            sentence_inp, name, short, grammars
+        );
+    } else if !check_exist && exists {
+        panic!(
+            "Testing sentence: {}\nFound grammar ({}, {}) in {:?}",
+            sentence_inp, name, short, grammars
+        );
+    }
+
+    if exists != check_exist {
+        let msg = if check_exist {
+            "Could not find"
+        } else {
+            "Found"
+        };
+        panic!(
+            "Testing sentence: {}\n{} grammar ({}, {}) in {:?}",
+            sentence, msg, name, short, grammars
         );
     }
     Ok(())
