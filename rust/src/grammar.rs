@@ -128,6 +128,10 @@ impl Token {
         self.pos == "接頭辞"
     }
 
+    fn is_pronoun(&self) -> bool {
+        self.pos == "代名詞"
+    }
+
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
         let tokens = if self.children.is_empty() {
             Cow::Owned(vec![self.clone()])
@@ -335,6 +339,31 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "grammatical object",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-wo/",
         detect: |token, data| token.base == "を" && token.is_particle(),
+    },
+    GrammarRule {
+        name: "私／僕／俺／うち",
+        short: "I",
+        tofugu: "https://www.tofugu.com/japanese-grammar/first-person-pronouns",
+        detect: |token, data| {
+            token.is_pronoun() && ["私", "僕", "俺", "うち"].contains(&token.base.as_str())
+        },
+    },
+    GrammarRule {
+        name: "あなた／君／お前",
+        short: "you",
+        tofugu: "https://www.tofugu.com/japanese-grammar/first-person-pronouns",
+        detect: |token, data| {
+            token.is_pronoun() && ["貴方", "君", "御前", "貴様"].contains(&token.base.as_str())
+        },
+    },
+    GrammarRule {
+        name: "彼／彼女／こいつ／そいつ／あいつ",
+        short: "he/she/they",
+        tofugu: "https://www.tofugu.com/japanese-grammar/first-person-pronouns",
+        detect: |token, data| {
+            token.is_pronoun()
+                && ["彼", "彼女", "此奴", "其奴", "彼奴"].contains(&token.base.as_str())
+        },
     },
     GrammarRule {
         name: "ーられる",
