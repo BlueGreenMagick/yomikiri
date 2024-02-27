@@ -319,6 +319,12 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "より",
+        short: "comparison (than...); source (from)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-yori-than/",
+        detect: |token, data| token.base == "より" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
