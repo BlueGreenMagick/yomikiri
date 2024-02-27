@@ -284,6 +284,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "や" && token.is_particle(),
     },
     GrammarRule {
+        name: "よ",
+        short: "informative",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-yo/",
+        detect: |token, _| token.base == "よ" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
