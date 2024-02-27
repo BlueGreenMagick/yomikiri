@@ -266,6 +266,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "へ" && token.is_particle(),
     },
     GrammarRule {
+        name: "まで",
+        short: "end point",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-made/",
+        detect: |token, _| token.base == "まで" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
