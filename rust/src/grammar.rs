@@ -145,6 +145,7 @@ impl Token {
 }
 
 static GRAMMARS: &[GrammarRule] = &[
+    // # Adjective Forms
     GrammarRule {
         name: "ーさ",
         short: "objective noun",
@@ -159,6 +160,55 @@ static GRAMMARS: &[GrammarRule] = &[
             token.base == "そう" && token.is_naadj() && data.prev_is(|prev| prev.is_adj())
         },
     },
+    // # Verb Forms
+    GrammarRule {
+        name: "ーえ／ーろ",
+        short: "command form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
+        detect: |token, _| token.conj_form == "命令形",
+    },
+    // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
+    GrammarRule {
+        name: "ーる",
+        short: "plain form; present/future",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
+        detect: |token, _| {
+            token.is_verb()
+                && (token.conj_form == "連体形-一般" || token.conj_form == "終止形-一般")
+        },
+    },
+    GrammarRule {
+        name: "ーそう",
+        short: "looks like ... will happen",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
+        detect: |token, _| token.base == "そう" && token.is_naadj(),
+    },
+    GrammarRule {
+        name: "ーせる／ーさせる",
+        short: "causative form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-causative-form-saseru/",
+        detect: |token, _| (token.base == "せる" || token.base == "させる") && token.is_aux(),
+    },
+    GrammarRule {
+        name: "ーた",
+        short: "past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
+        detect: |token, _| {
+            token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
+        },
+    },
+    GrammarRule {
+        name: "ーられる",
+        short: "passive suffix",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
+        detect: |token, data| {
+            (token.base == "られる" && token.is_aux())
+                || (token.base == "れる"
+                    && token.is_aux()
+                    && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan)))
+        },
+    },
+    // # Particles
     GrammarRule {
         name: "ので",
         short: "cause (so)",
@@ -192,12 +242,6 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "contrast (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
         detect: |token, _| token.base == "けれど" && token.is_conn_particle(),
-    },
-    GrammarRule {
-        name: "おー",
-        short: "honorific",
-        tofugu: "https://www.tofugu.com/japanese-grammar/honorific-prefix-o-go/",
-        detect: |token, _| token.base == "御" && token.is_prefix(),
     },
     GrammarRule {
         name: "ーか",
@@ -334,6 +378,14 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-wo/",
         detect: |token, data| token.base == "を" && token.is_particle(),
     },
+    // # Prefix
+    GrammarRule {
+        name: "おー",
+        short: "honorific",
+        tofugu: "https://www.tofugu.com/japanese-grammar/honorific-prefix-o-go/",
+        detect: |token, _| token.base == "御" && token.is_prefix(),
+    },
+    // # Pronoun
     GrammarRule {
         name: "私／僕／俺／うち",
         short: "I",
@@ -357,55 +409,6 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, data| {
             token.is_pronoun()
                 && ["彼", "彼女", "此奴", "其奴", "彼奴"].contains(&token.base.as_str())
-        },
-    },
-    // # Verb Forms
-    GrammarRule {
-        name: "ーえ／ーろ",
-        short: "command form",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
-        detect: |token, _| token.conj_form == "命令形",
-    },
-    // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
-    GrammarRule {
-        name: "ーる",
-        short: "plain form; present/future",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
-        detect: |token, _| {
-            token.is_verb()
-                && (token.conj_form == "連体形-一般" || token.conj_form == "終止形-一般")
-        },
-    },
-    GrammarRule {
-        name: "ーそう",
-        short: "looks like ... will happen",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
-        detect: |token, _| token.base == "そう" && token.is_naadj(),
-    },
-    GrammarRule {
-        name: "ーせる／ーさせる",
-        short: "causative form",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-causative-form-saseru/",
-        detect: |token, _| (token.base == "せる" || token.base == "させる") && token.is_aux(),
-    },
-    // # Others
-    GrammarRule {
-        name: "ーられる",
-        short: "passive suffix",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
-        detect: |token, data| {
-            (token.base == "られる" && token.is_aux())
-                || (token.base == "れる"
-                    && token.is_aux()
-                    && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan)))
-        },
-    },
-    GrammarRule {
-        name: "ーた",
-        short: "past tense",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
-        detect: |token, _| {
-            token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
         },
     },
 ];
