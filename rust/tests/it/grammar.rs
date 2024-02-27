@@ -36,27 +36,17 @@ fn test_grammar(
 }
 
 macro_rules! test {
-    ($($test:ident: $name:literal $short:literal $(| $sentence:literal)+)+) => {
+    ($($test:ident: $name:literal $short:literal $(| $sentence:literal)* $(- $neg_sentence:literal)*)+) => {
       $(
         #[test]
         fn $test() -> Result<()> {
           let mut backend = setup_backend();
           $(
             test_grammar(&mut backend, $sentence, $name, $short, true)?;
-          )+
-          Ok(())
-        }
-      )+
-    };
-
-    ($($test:ident!: $name:literal $short:literal $(| $sentence:literal)+)+) => {
-      $(
-        #[test]
-        fn $test() -> Result<()> {
-          let mut backend = setup_backend();
+          )*
           $(
-            test_grammar(&mut backend, $sentence, $name, $short, false)?;
-          )+
+            test_grammar(&mut backend, $neg_sentence, $name, $short, false)?;
+          )*
           Ok(())
         }
       )+
