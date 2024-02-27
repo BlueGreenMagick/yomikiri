@@ -83,12 +83,10 @@ fn prev_yougen(tokens: &[Token], idx: usize) -> Option<&Token> {
     if idx == 0 {
         return None;
     }
-    for token in tokens[0..idx - 1].iter().rev() {
-        if token.is_adj() || token.is_verb() {
-            return Some(token);
-        }
-    }
-    None
+    tokens[0..idx - 1]
+        .iter()
+        .rev()
+        .find(|&token| token.is_adj() || token.is_verb())
 }
 
 trait GetPrev {
@@ -119,13 +117,10 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, tokens, idx| {
             if token.base == "そう" && token.is_naadj() {
                 if let Some(prev) = tokens.get_prev(idx) {
-                    prev.is_adj()
-                } else {
-                    false
+                    return prev.is_adj();
                 }
-            } else {
-                false
             }
+            false
         },
     },
     GrammarRule {
@@ -141,13 +136,10 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, tokens, idx| {
             if token.base == "だ" && token.text == "で" && token.is_aux() {
                 if let Some(prev) = tokens.get_prev(idx) {
-                    prev.base == "の" && prev.pos2 == "準体助詞"
-                } else {
-                    false
+                    return prev.base == "の" && prev.pos2 == "準体助詞";
                 }
-            } else {
-                false
             }
+            false
         },
     },
     GrammarRule {
@@ -157,13 +149,10 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, tokens, idx| {
             if token.base == "に" && token.text == "に" && token.is_particle() {
                 if let Some(prev) = tokens.get_prev(idx) {
-                    prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞"
-                } else {
-                    false
+                    return prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞";
                 }
-            } else {
-                false
             }
+            false
         },
     },
     GrammarRule {
@@ -206,21 +195,19 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "で",
         short: "where; how",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-de/",
-        detect: |token, tokens, _| token.base == "で" && token.is_particle(),
+        detect: |token, _, _| token.base == "で" && token.is_particle(),
     },
     GrammarRule {
         name: "と",
         short: "together; quote",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-to/",
-        detect: |token, tokens, idx| token.base == "と" && token.pos2 == "格助詞",
+        detect: |token, _, _| token.base == "と" && token.pos2 == "格助詞",
     },
     GrammarRule {
         name: "と",
         short: "causal relationship",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-to/",
-        detect: |token, tokens, idx| {
-            token.base == "と" && token.text == "と" && token.pos2 == "接続助詞"
-        },
+        detect: |token, _, _| token.base == "と" && token.text == "と" && token.pos2 == "接続助詞",
     },
     GrammarRule {
         name: "ーられる",
@@ -228,16 +215,14 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
         detect: |token, tokens, idx| {
             if token.base == "られる" && token.is_aux() {
-                true
-            } else if token.base == "れる" && token.is_aux() {
-                if let Some(prev) = tokens.get_prev(idx) {
-                    prev.text.ends_in_go_dan() == Some(GoDan::ADan)
-                } else {
-                    false
-                }
-            } else {
-                false
+                return true;
             }
+            if token.base == "れる" && token.is_aux() {
+                if let Some(prev) = tokens.get_prev(idx) {
+                    return prev.text.ends_in_go_dan() == Some(GoDan::ADan);
+                }
+            }
+            false
         },
     },
     GrammarRule {
