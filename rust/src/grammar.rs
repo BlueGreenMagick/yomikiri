@@ -160,12 +160,6 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
-        name: "ーえ／ーろ",
-        short: "command form",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
-        detect: |token, _| token.conj_form == "命令形",
-    },
-    GrammarRule {
         name: "ので",
         short: "cause (so)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-node/",
@@ -365,6 +359,36 @@ static GRAMMARS: &[GrammarRule] = &[
                 && ["彼", "彼女", "此奴", "其奴", "彼奴"].contains(&token.base.as_str())
         },
     },
+    // # Verb Forms
+    GrammarRule {
+        name: "ーえ／ーろ",
+        short: "command form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
+        detect: |token, _| token.conj_form == "命令形",
+    },
+    // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
+    GrammarRule {
+        name: "ーる",
+        short: "plain form; present/future",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
+        detect: |token, _| {
+            token.is_verb()
+                && (token.conj_form == "連体形-一般" || token.conj_form == "終止形-一般")
+        },
+    },
+    GrammarRule {
+        name: "ーそう",
+        short: "looks like ... will happen",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
+        detect: |token, _| token.base == "そう" && token.is_naadj(),
+    },
+    GrammarRule {
+        name: "ーせる／ーさせる",
+        short: "causative form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-causative-form-saseru/",
+        detect: |token, _| (token.base == "せる" || token.base == "させる") && token.is_aux(),
+    },
+    // # Others
     GrammarRule {
         name: "ーられる",
         short: "passive suffix",
