@@ -325,6 +325,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, data| token.base == "より" && token.is_particle(),
     },
     GrammarRule {
+        name: "わ",
+        short: "personal sentiment; willingness",
+        tofugu: "https://www.tofugu.com/japanese-grammar/sentence-ending-particle-wa/",
+        detect: |token, data| token.base == "わ" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
