@@ -46,6 +46,16 @@ impl<'a> GrammarDetector<'a> {
         }
     }
 
+    /// Runs `check(prev)` on previous token and return its value.
+    /// Returns `false` if current is first token.
+    fn prev_is(&self, check: fn(&Token) -> bool) -> bool {
+        if let Some(prev) = self.prev() {
+            check(prev)
+        } else {
+            false
+        }
+    }
+
     fn detect(&mut self) -> Vec<&'static GrammarRule> {
         let mut grammars = vec![];
         for (i, token) in self.tokens.iter().enumerate() {
@@ -127,12 +137,7 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "speculative adjective",
         tofugu: "https://www.tofugu.com/japanese-grammar/adjective-sou/",
         detect: |token, data| {
-            if token.base == "そう" && token.is_naadj() {
-                if let Some(prev) = data.prev() {
-                    return prev.is_adj();
-                }
-            }
-            false
+            token.base == "そう" && token.is_naadj() && data.prev_is(|prev| prev.is_adj())
         },
     },
     GrammarRule {
@@ -146,12 +151,10 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "cause (so)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-node/",
         detect: |token, data| {
-            if token.base == "だ" && token.text == "で" && token.is_aux() {
-                if let Some(prev) = data.prev() {
-                    return prev.base == "の" && prev.pos2 == "準体助詞";
-                }
-            }
-            false
+            token.base == "だ"
+                && token.text == "で"
+                && token.is_aux()
+                && data.prev_is(|prev| prev.base == "の" && prev.pos2 == "準体助詞")
         },
     },
     GrammarRule {
@@ -159,12 +162,12 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "unexpectedness (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-noni/",
         detect: |token, data| {
-            if token.base == "に" && token.text == "に" && token.is_particle() {
-                if let Some(prev) = data.prev() {
-                    return prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞";
-                }
-            }
-            false
+            token.base == "に"
+                && token.text == "に"
+                && token.is_particle()
+                && data.prev_is(|prev| {
+                    prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞"
+                })
         },
     },
     GrammarRule {
@@ -226,15 +229,10 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
         detect: |token, data| {
-            if token.base == "られる" && token.is_aux() {
-                return true;
-            }
-            if token.base == "れる" && token.is_aux() {
-                if let Some(prev) = data.prev() {
-                    return prev.text.ends_in_go_dan() == Some(GoDan::ADan);
-                }
-            }
-            false
+            (token.base == "られる" && token.is_aux())
+                || (token.base == "れる"
+                    && token.is_aux()
+                    && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan)))
         },
     },
     GrammarRule {
