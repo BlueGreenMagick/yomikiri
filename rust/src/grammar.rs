@@ -45,6 +45,10 @@ impl Token {
         self.pos == "動詞"
     }
 
+    fn is_particle(&self) -> bool {
+        self.pos == "助詞"
+    }
+
     fn is_conn_particle(&self) -> bool {
         self.pos2 == "接続助詞"
     }
@@ -111,6 +115,38 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "command form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
         detect: |token, _, _| token.conj_form == "命令形",
+    },
+    GrammarRule {
+        name: "ので",
+        short: "cause (so)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-node/",
+        detect: |token, tokens, idx| {
+            if token.base == "だ" && token.text == "で" && token.is_aux() {
+                if let Some(prev) = tokens.get(idx - 1) {
+                    prev.base == "の" && prev.pos2 == "準体助詞"
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        },
+    },
+    GrammarRule {
+        name: "のに",
+        short: "unexpectedness (but)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-noni/",
+        detect: |token, tokens, idx| {
+            if token.base == "に" && token.text == "に" && token.is_particle() {
+                if let Some(prev) = tokens.get(idx - 1) {
+                    prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞"
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        },
     },
     GrammarRule {
         name: "ーが",
