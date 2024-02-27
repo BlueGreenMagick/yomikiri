@@ -203,6 +203,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _, _| token.base == "が" && token.pos2 == "格助詞",
     },
     GrammarRule {
+        name: "で",
+        short: "where; how",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-de/",
+        detect: |token, tokens, _| token.base == "で" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
