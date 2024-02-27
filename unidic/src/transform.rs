@@ -184,7 +184,8 @@ fn transform_lex(
     let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 
     // write removed items for debugging purposes
-    let removed_lex_path = output_dir.join("removed.csv");
+    // .hidden is attached so lindera does not add it to its dictionary
+    let removed_lex_path = output_dir.join("removed.csv.hidden");
     let mut writer = csv::Writer::from_path(&removed_lex_path)?;
     for item in removed {
         writer.write_record(&item.to_record())?;
