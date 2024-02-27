@@ -176,6 +176,12 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-ka/",
         detect: |token, _, _| token.base == "か" && token.is_particle(),
     },
+    GrammarRule {
+        name: "ーから",
+        short: "source",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-kara/",
+        detect: |token, _, _| token.base == "から" && token.is_particle(),
+    },
     // どうか: adverb
     // 誰か[adverbial]-> pronoun
     // 何か: pronoun? adverb?
