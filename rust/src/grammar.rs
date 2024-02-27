@@ -13,7 +13,53 @@ pub struct GrammarRule {
     /// tofugu url
     pub tofugu: &'static str,
     /// (children, current index)
-    pub detect: fn(&Token, &[Token], usize) -> bool,
+    detect: fn(&Token, &GrammarDetector) -> bool,
+}
+
+struct GrammarDetector<'a> {
+    pub tokens: &'a [Token],
+    pub idx: usize,
+}
+
+impl<'a> GrammarDetector<'a> {
+    fn new(tokens: &'a [Token]) -> Self {
+        Self { tokens, idx: 0 }
+    }
+
+    /// get previous verb / adj token looking from `idx` backwards
+    fn prev_yougen(&self) -> Option<&Token> {
+        if self.idx == 0 {
+            return None;
+        }
+        self.tokens[0..self.idx - 1]
+            .iter()
+            .rev()
+            .find(|&token| token.is_adj() || token.is_verb())
+    }
+
+    /// returns previous token
+    fn prev(&self) -> Option<&Token> {
+        if self.idx == 0 {
+            None
+        } else {
+            self.tokens.get(self.idx - 1)
+        }
+    }
+
+    fn detect(&mut self) -> Vec<&'static GrammarRule> {
+        let mut grammars = vec![];
+        for (i, token) in self.tokens.iter().enumerate() {
+            self.idx = i;
+            for grammar in GRAMMARS {
+                let detect = grammar.detect;
+
+                if detect(token, &*self) {
+                    grammars.push(grammar);
+                }
+            }
+        }
+        grammars
+    }
 }
 
 impl Token {
@@ -58,48 +104,14 @@ impl Token {
     }
 
     pub fn grammars(&self) -> Vec<&'static GrammarRule> {
-        let mut grammars = vec![];
-        let children = if self.children.is_empty() {
+        let tokens = if self.children.is_empty() {
             Cow::Owned(vec![self.clone()])
         } else {
             Cow::Borrowed(&self.children)
         };
 
-        for (i, token) in children.iter().enumerate() {
-            for grammar in GRAMMARS {
-                let detect = grammar.detect;
-
-                if detect(token, &children, i) {
-                    grammars.push(grammar);
-                }
-            }
-        }
-        grammars
-    }
-}
-
-/// get previous verb / adj token looking from `idx`` backwards
-fn prev_yougen(tokens: &[Token], idx: usize) -> Option<&Token> {
-    if idx == 0 {
-        return None;
-    }
-    tokens[0..idx - 1]
-        .iter()
-        .rev()
-        .find(|&token| token.is_adj() || token.is_verb())
-}
-
-trait GetPrev {
-    fn get_prev(&self, idx: usize) -> Option<&Token>;
-}
-
-impl GetPrev for &[Token] {
-    fn get_prev(&self, idx: usize) -> Option<&Token> {
-        if idx == 0 {
-            None
-        } else {
-            self.get(idx - 1)
-        }
+        let mut detector = GrammarDetector::new(&tokens);
+        detector.detect()
     }
 }
 
@@ -108,15 +120,15 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーさ",
         short: "objective noun",
         tofugu: "https://www.tofugu.com/japanese-grammar/adjective-suffix-sa/",
-        detect: |token, _, _| token.base == "さ" && token.is_suf(),
+        detect: |token, _| token.base == "さ" && token.is_suf(),
     },
     GrammarRule {
         name: "ーそう",
         short: "speculative adjective",
         tofugu: "https://www.tofugu.com/japanese-grammar/adjective-sou/",
-        detect: |token, tokens, idx| {
+        detect: |token, data| {
             if token.base == "そう" && token.is_naadj() {
-                if let Some(prev) = tokens.get_prev(idx) {
+                if let Some(prev) = data.prev() {
                     return prev.is_adj();
                 }
             }
@@ -127,15 +139,15 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーえ／ーろ",
         short: "command form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
-        detect: |token, _, _| token.conj_form == "命令形",
+        detect: |token, _| token.conj_form == "命令形",
     },
     GrammarRule {
         name: "ので",
         short: "cause (so)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-node/",
-        detect: |token, tokens, idx| {
+        detect: |token, data| {
             if token.base == "だ" && token.text == "で" && token.is_aux() {
-                if let Some(prev) = tokens.get_prev(idx) {
+                if let Some(prev) = data.prev() {
                     return prev.base == "の" && prev.pos2 == "準体助詞";
                 }
             }
@@ -146,9 +158,9 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "のに",
         short: "unexpectedness (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-noni/",
-        detect: |token, tokens, idx| {
+        detect: |token, data| {
             if token.base == "に" && token.text == "に" && token.is_particle() {
-                if let Some(prev) = tokens.get_prev(idx) {
+                if let Some(prev) = data.prev() {
                     return prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞";
                 }
             }
@@ -159,66 +171,66 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーが",
         short: "contrast (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
-        detect: |token, _, _| token.base == "が" && token.is_conn_particle(),
+        detect: |token, _| token.base == "が" && token.is_conn_particle(),
     },
     GrammarRule {
         name: "ーけど／ーけれど",
         short: "contrast (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
-        detect: |token, _, _| token.base == "けれど" && token.is_conn_particle(),
+        detect: |token, _| token.base == "けれど" && token.is_conn_particle(),
     },
     GrammarRule {
         name: "おー",
         short: "honorific",
         tofugu: "https://www.tofugu.com/japanese-grammar/honorific-prefix-o-go/",
-        detect: |token, _, _| token.base == "御" && token.is_prefix(),
+        detect: |token, _| token.base == "御" && token.is_prefix(),
     },
     GrammarRule {
         name: "ーか",
         short: "unknown",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-ka/",
-        detect: |token, _, _| token.base == "か" && token.is_particle(),
+        detect: |token, _| token.base == "か" && token.is_particle(),
     },
     GrammarRule {
         name: "ーから",
         short: "source",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-kara/",
-        detect: |token, _, _| token.base == "から" && token.is_particle(),
+        detect: |token, _| token.base == "から" && token.is_particle(),
     },
     GrammarRule {
         name: "が",
         short: "subject",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-ga/",
-        detect: |token, _, _| token.base == "が" && token.pos2 == "格助詞",
+        detect: |token, _| token.base == "が" && token.pos2 == "格助詞",
     },
     GrammarRule {
         name: "で",
         short: "where; how",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-de/",
-        detect: |token, _, _| token.base == "で" && token.is_particle(),
+        detect: |token, _| token.base == "で" && token.is_particle(),
     },
     GrammarRule {
         name: "と",
         short: "together; quote",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-to/",
-        detect: |token, _, _| token.base == "と" && token.pos2 == "格助詞",
+        detect: |token, _| token.base == "と" && token.pos2 == "格助詞",
     },
     GrammarRule {
         name: "と",
         short: "causal relationship",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-to/",
-        detect: |token, _, _| token.base == "と" && token.text == "と" && token.pos2 == "接続助詞",
+        detect: |token, _| token.base == "と" && token.text == "と" && token.pos2 == "接続助詞",
     },
     GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
-        detect: |token, tokens, idx| {
+        detect: |token, data| {
             if token.base == "られる" && token.is_aux() {
                 return true;
             }
             if token.base == "れる" && token.is_aux() {
-                if let Some(prev) = tokens.get_prev(idx) {
+                if let Some(prev) = data.prev() {
                     return prev.text.ends_in_go_dan() == Some(GoDan::ADan);
                 }
             }
@@ -229,7 +241,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーた",
         short: "past tense",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
-        detect: |token, _, _| {
+        detect: |token, _| {
             token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
         },
     },
