@@ -91,6 +91,20 @@ fn prev_yougen(tokens: &[Token], idx: usize) -> Option<&Token> {
     None
 }
 
+trait GetPrev {
+    fn get_prev(&self, idx: usize) -> Option<&Token>;
+}
+
+impl GetPrev for &[Token] {
+    fn get_prev(&self, idx: usize) -> Option<&Token> {
+        if idx == 0 {
+            None
+        } else {
+            self.get(idx - 1)
+        }
+    }
+}
+
 static GRAMMARS: &[GrammarRule] = &[
     GrammarRule {
         name: "ーさ",
@@ -104,7 +118,7 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/adjective-sou/",
         detect: |token, tokens, idx| {
             if token.base == "そう" && token.is_naadj() {
-                if let Some(prev) = tokens.get(idx - 1) {
+                if let Some(prev) = tokens.get_prev(idx) {
                     prev.is_adj()
                 } else {
                     false
@@ -126,7 +140,7 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-node/",
         detect: |token, tokens, idx| {
             if token.base == "だ" && token.text == "で" && token.is_aux() {
-                if let Some(prev) = tokens.get(idx - 1) {
+                if let Some(prev) = tokens.get_prev(idx) {
                     prev.base == "の" && prev.pos2 == "準体助詞"
                 } else {
                     false
@@ -142,7 +156,7 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-noni/",
         detect: |token, tokens, idx| {
             if token.base == "に" && token.text == "に" && token.is_particle() {
-                if let Some(prev) = tokens.get(idx - 1) {
+                if let Some(prev) = tokens.get_prev(idx) {
                     prev.base == "の" && prev.text == "の" && prev.pos2 == "準体助詞"
                 } else {
                     false
