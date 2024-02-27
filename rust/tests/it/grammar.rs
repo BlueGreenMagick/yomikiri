@@ -220,6 +220,11 @@ test!(
 
   よ: "よ" "informative"
     | "食べる＿よ"
+    // display よね instead
+    - "食べる＿よね。"
+
+  よね: "よね" "confirmation"
+    | "食べる＿よね。"
 
   られる: "ーられる" "passive suffix"
     | "私は蜂に＿刺された。"

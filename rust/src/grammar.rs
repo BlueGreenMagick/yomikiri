@@ -46,11 +46,26 @@ impl<'a> GrammarDetector<'a> {
         }
     }
 
+    /// returns next token
+    fn next(&self) -> Option<&Token> {
+        self.tokens.get(self.idx + 1)
+    }
+
     /// Runs `check(prev)` on previous token and return its value.
     /// Returns `false` if current is first token.
     fn prev_is(&self, check: fn(&Token) -> bool) -> bool {
         if let Some(prev) = self.prev() {
             check(prev)
+        } else {
+            false
+        }
+    }
+
+    /// Runs `check(next)` on next token and return its value.
+    /// Returns `false` if current is first token.
+    fn next_is(&self, check: fn(&Token) -> bool) -> bool {
+        if let Some(next) = self.next() {
+            check(next)
         } else {
             false
         }
@@ -287,7 +302,21 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "よ",
         short: "informative",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-yo/",
-        detect: |token, _| token.base == "よ" && token.is_particle(),
+        detect: |token, data| {
+            token.base == "よ"
+                && token.is_particle()
+                && !data.next_is(|next| next.base == "ね" && next.is_particle())
+        },
+    },
+    GrammarRule {
+        name: "よね",
+        short: "confirmation",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-yone/",
+        detect: |token, data| {
+            token.base == "ね"
+                && token.is_particle()
+                && data.prev_is(|prev| prev.base == "よ" && prev.is_particle())
+        },
     },
     GrammarRule {
         name: "ーられる",
