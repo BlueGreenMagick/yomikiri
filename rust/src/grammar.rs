@@ -171,6 +171,15 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _, _| token.base == "御" && token.is_prefix(),
     },
     GrammarRule {
+        name: "ーか",
+        short: "unknown",
+        tofugu: "https://www.tofugu.com/japanese-grammar/particle-ka/",
+        detect: |token, _, _| token.base == "か" && token.is_particle(),
+    },
+    // どうか: adverb
+    // 誰か[adverbial]-> pronoun
+    // 何か: pronoun? adverb?
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
