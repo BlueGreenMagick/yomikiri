@@ -16,14 +16,32 @@ pub struct GrammarRule {
     detect: fn(&Token, &GrammarDetector) -> bool,
 }
 
-struct GrammarDetector<'a> {
-    pub tokens: &'a [Token],
-    pub idx: usize,
+pub struct GrammarDetector<'a> {
+    grammars: Vec<&'static GrammarRule>,
+    // all tokens in sentence
+    global_tokens: &'a [Token],
+    global_idx: usize,
+    // tokens in current token
+    group: Cow<'a, Vec<Token>>,
+    idx: usize,
 }
 
 impl<'a> GrammarDetector<'a> {
-    fn new(tokens: &'a [Token]) -> Self {
-        Self { tokens, idx: 0 }
+    pub fn new(tokens: &'a [Token], idx: usize) -> Self {
+        let curr = &tokens[idx];
+        let group = if curr.children.is_empty() {
+            Cow::Owned(vec![curr.clone()])
+        } else {
+            Cow::Borrowed(&curr.children)
+        };
+
+        Self {
+            grammars: vec![],
+            global_tokens: tokens,
+            global_idx: idx,
+            group: group,
+            idx: 0,
+        }
     }
 
     /// get previous verb / adj token looking from `idx` backwards
@@ -31,7 +49,7 @@ impl<'a> GrammarDetector<'a> {
         if self.idx == 0 {
             return None;
         }
-        self.tokens[0..self.idx - 1]
+        self.group[0..self.idx - 1]
             .iter()
             .rev()
             .find(|&token| token.is_adj() || token.is_verb())
@@ -42,13 +60,13 @@ impl<'a> GrammarDetector<'a> {
         if self.idx == 0 {
             None
         } else {
-            self.tokens.get(self.idx - 1)
+            self.group.get(self.idx - 1)
         }
     }
 
     /// returns next token
     fn next(&self) -> Option<&Token> {
-        self.tokens.get(self.idx + 1)
+        self.group.get(self.idx + 1)
     }
 
     /// Runs `check(prev)` on previous token and return its value.
@@ -71,19 +89,18 @@ impl<'a> GrammarDetector<'a> {
         }
     }
 
-    fn detect(&mut self) -> Vec<&'static GrammarRule> {
-        let mut grammars = vec![];
-        for (i, token) in self.tokens.iter().enumerate() {
+    pub fn detect(mut self) -> Vec<&'static GrammarRule> {
+        for (i, token) in self.group.iter().enumerate() {
             self.idx = i;
             for grammar in GRAMMARS {
                 let detect = grammar.detect;
 
-                if detect(token, &*self) {
-                    grammars.push(grammar);
+                if detect(token, &self) {
+                    self.grammars.push(grammar);
                 }
             }
         }
-        grammars
+        self.grammars
     }
 }
 
@@ -130,17 +147,6 @@ impl Token {
 
     fn is_pronoun(&self) -> bool {
         self.pos == "代名詞"
-    }
-
-    pub fn grammars(&self) -> Vec<&'static GrammarRule> {
-        let tokens = if self.children.is_empty() {
-            Cow::Owned(vec![self.clone()])
-        } else {
-            Cow::Borrowed(&self.children)
-        };
-
-        let mut detector = GrammarDetector::new(&tokens);
-        detector.detect()
     }
 }
 

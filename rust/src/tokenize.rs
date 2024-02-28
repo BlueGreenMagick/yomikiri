@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::error::{YResult, YomikiriError};
-use crate::grammar::GrammarRule;
+use crate::grammar::{GrammarDetector, GrammarRule};
 use crate::japanese::JapaneseString;
 use crate::unidic::load_dictionary;
 use crate::SharedBackend;
@@ -176,8 +176,9 @@ impl<R: Read + Seek> SharedBackend<R> {
             }
         }
 
-        let grammars = selected_token
-            .grammars()
+        let grammar_analyzer = GrammarDetector::new(&tokens, token_idx);
+        let grammars = grammar_analyzer
+            .detect()
             .into_iter()
             .map(GrammarInfo::from)
             .collect();
