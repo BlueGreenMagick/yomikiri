@@ -317,6 +317,14 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, data| token.base == "置く" && data.global_prev_is(|prev| prev.base == "て"),
     },
     GrammarRule {
+        name: "ーてほしい",
+        short: "want something to happen",
+        tofugu: "https://www.tofugu.com/japanese-grammar/tehoshii/",
+        detect: |token, data| {
+            token.base == "欲しい" && data.global_prev_is(|prev| prev.base == "て")
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
