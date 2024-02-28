@@ -239,8 +239,10 @@ static GRAMMARS: &[GrammarRule] = &[
     GrammarRule {
         name: "ーそう",
         short: "looks like ... will happen",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
-        detect: |token, _| token.base == "そう" && token.is_naadj(),
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-sou/",
+        detect: |token, data| {
+            token.base == "そう" && token.is_naadj() && data.prev_is(|prev| prev.is_verb())
+        },
     },
     GrammarRule {
         name: "ーせる／ーさせる",
