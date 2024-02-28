@@ -162,77 +162,77 @@ impl<'a> GrammarDetector<'a> {
 }
 
 impl Token {
-    fn is_aux(&self) -> bool {
+    pub fn is_aux(&self) -> bool {
         self.pos == "助動詞"
     }
 
-    fn is_suf(&self) -> bool {
+    pub fn is_suf(&self) -> bool {
         self.pos == "接尾辞"
     }
 
-    fn is_adj(&self) -> bool {
+    pub fn is_adj(&self) -> bool {
         self.is_iadj() || self.is_naadj()
     }
 
-    fn is_iadj(&self) -> bool {
+    pub fn is_iadj(&self) -> bool {
         self.pos == "形容詞"
     }
 
-    fn is_naadj(&self) -> bool {
+    pub fn is_naadj(&self) -> bool {
         self.pos == "形状詞"
     }
 
-    fn is_noun(&self) -> bool {
+    pub fn is_noun(&self) -> bool {
         self.pos == "名詞"
     }
 
-    fn is_verb(&self) -> bool {
+    pub fn is_verb(&self) -> bool {
         self.pos == "動詞"
     }
 
-    fn is_particle(&self) -> bool {
+    pub fn is_particle(&self) -> bool {
         self.pos == "助詞"
     }
 
-    fn is_conn_particle(&self) -> bool {
+    pub fn is_conn_particle(&self) -> bool {
         self.pos2 == "接続助詞"
     }
 
-    fn is_prefix(&self) -> bool {
+    pub fn is_prefix(&self) -> bool {
         self.pos == "接頭辞"
     }
 
-    fn is_pronoun(&self) -> bool {
+    pub fn is_pronoun(&self) -> bool {
         self.pos == "代名詞"
     }
 
-    fn is_adverb(&self) -> bool {
+    pub fn is_adverb(&self) -> bool {
         self.pos == "副詞"
     }
 
-    fn is_adnomial(&self) -> bool {
+    pub fn is_adnomial(&self) -> bool {
         self.pos == "連体詞"
     }
 
-    fn is_conjunction(&self) -> bool {
+    pub fn is_conjunction(&self) -> bool {
         self.pos == "接続詞"
     }
 
-    fn is_interjection(&self) -> bool {
+    pub fn is_interjection(&self) -> bool {
         self.pos == "感動詞"
     }
 
     //　用言
-    fn is_yougen(&self) -> bool {
+    pub fn is_yougen(&self) -> bool {
         self.is_verb() || self.is_iadj() || self.is_naadj()
     }
     // 体言
-    fn is_taigen(&self) -> bool {
+    pub fn is_taigen(&self) -> bool {
         self.is_noun() || self.is_pronoun()
     }
 
-    // 自立語
-    fn is_independant(&self) -> bool {
+    // 自立語. Note that not-independant verbs are also returned as well.
+    pub fn is_independant(&self) -> bool {
         self.is_yougen()
             || self.is_taigen()
             || self.is_adnomial()
