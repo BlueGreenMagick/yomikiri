@@ -487,16 +487,26 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-volitional-form-you/",
         detect: |token, data| token.is_verb() && token.conj_form == "意志推量形",
     },
+    // it is impossible to accurately figure out passive and potential forms
+    // skipping godan potential　ーえる as it is impossible to figure out
+    //
+    // godan passive
     GrammarRule {
-        name: "ーられる",
-        short: "passive suffix",
+        name: "ー（ら）れる",
+        short: "passive form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
         detect: |token, data| {
-            (token.base == "られる" && token.is_aux())
-                || (token.base == "れる"
-                    && token.is_aux()
-                    && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan)))
+            (token.base == "れる"
+                && token.is_aux()
+                && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan)))
         },
+    },
+    // ichidan passive, potential, polite form
+    GrammarRule {
+        name: "ーられる",
+        short: "passive form; potential form; polite form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
+        detect: |token, data| token.base == "られる" && token.is_aux(),
     },
     // # Particles
     GrammarRule {
