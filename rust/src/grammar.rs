@@ -450,10 +450,16 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/nikui/",
         detect: |token, data| {
             token.text == "にくい"
-                && token.base == "憎い"
+                && token.base == "難い"
                 && token.is_suf()
                 && data.global_prev_is(|prev| prev.is_verb())
         },
+    },
+    GrammarRule {
+        name: "ーば",
+        short: "conditional (if)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-conditional-form-ba/",
+        detect: |token, data| token.base == "ば" && token.is_conn_particle(),
     },
     GrammarRule {
         name: "ーられる",
