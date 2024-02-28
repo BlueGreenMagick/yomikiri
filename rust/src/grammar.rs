@@ -222,6 +222,10 @@ impl Token {
         self.pos == "感動詞"
     }
 
+    pub fn is_unknown_pos(&self) -> bool {
+        self.pos == "UNK" || self.pos == "" || self.pos == "*"
+    }
+
     //　用言
     pub fn is_yougen(&self) -> bool {
         self.is_verb() || self.is_iadj() || self.is_naadj()
@@ -677,6 +681,29 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "grammatical object",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-wo/",
         detect: |token, _data| token.base == "を" && token.is_particle(),
+    },
+    GrammarRule {
+        name: "ーし",
+        short: "what's more...",
+        tofugu: "https://www.tofugu.com/japanese-grammar/shi/",
+        detect: |token, _data| token.base == "し" && token.is_conn_particle(),
+    },
+    GrammarRule {
+        name: "ーな",
+        short: "don't...!",
+        tofugu: "https://www.tofugu.com/japanese-grammar/na/",
+        detect: |token, data| {
+            (token.base == "な" && token.pos2 == "終助詞") ||
+            // な is not usually tokenized correctly
+            (token.text == "な"
+                && data.next().is_none()
+                && !data.global_next_is(|next| !next.is_unknown_pos())
+                && data.global_prev_is(|prev| prev.conj_form.starts_with("終止形")))
+                || (token.text == "んな"
+                    && data.next().is_none()
+                    && !data.global_next_is(|next| !next.is_unknown_pos())
+                    && data.global_prev_is(|prev| prev.conj_form.starts_with("連用形")))
+        },
     },
     // # Clause Link
     GrammarRule {
