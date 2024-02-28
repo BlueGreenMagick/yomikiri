@@ -311,6 +311,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, data| token.base == "居る" && data.global_prev_is(|prev| prev.base == "て"),
     },
     GrammarRule {
+        name: "ーておく",
+        short: "do in advance",
+        tofugu: "https://www.tofugu.com/japanese-grammar/teoku/",
+        detect: |token, data| token.base == "置く" && data.global_prev_is(|prev| prev.base == "て"),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
