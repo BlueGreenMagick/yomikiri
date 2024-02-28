@@ -271,6 +271,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         self.join_conjunction(tokens, from)?;
         self.join_suffix(tokens, from)?;
         self.join_inflections(tokens, from)?;
+        self.join_subsequent_verb(tokens, from)?;
         Ok(())
     }
 
@@ -542,6 +543,34 @@ impl<R: Read + Seek> SharedBackend<R> {
         let pos = token.pos.clone();
         join_tokens(tokens, from, to, &pos, BaseJoinStrategy::FirstBase);
         Ok(to - from > 1)
+    }
+
+    /// When encountering certain verbs on certain conditions,
+    /// they are joined with preceding token.
+    ///
+    /// 1. 名詞 + する
+    fn join_subsequent_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+        let token = &tokens[from];
+        if token.base == "為る"
+            && (token.pos2 == "非自立可能"
+                || token
+                    .children
+                    .get(0)
+                    .map(|c| c.base == "為る" && c.pos2 == "非自立可能")
+                    .unwrap_or(false))
+            && from > 0
+            && tokens[from - 1].is_noun()
+        {
+            join_tokens(
+                tokens,
+                from - 1,
+                from + 1,
+                "動詞",
+                BaseJoinStrategy::TextWithLastBase,
+            );
+            return Ok(true);
+        };
+        Ok(false)
     }
 
     fn manual_patches(&mut self, tokens: &mut [Token]) {

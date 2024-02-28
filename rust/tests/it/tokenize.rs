@@ -96,13 +96,19 @@ tokenize_tests! {
     inf4: "静かな/日",
     // 接続助詞 that contains kanji should not join
     // 聞き「動詞」/乍ら「助詞/接続助詞」
-    inf5: "ラジオ/を/聞き/乍ら/勉強/する",
+    inf5: "ラジオ/を/聞き/乍ら/勉強する",
     // 美味しい「形容詞」/そう「形状詞/助動詞語幹」
     inf6: "美味しそう",
     // Don't join ーそう「名詞/助動詞語幹」 as in hearsay
     inf7: "美味しい/そうです",
     // 「ーたり」 is to be considered as inflection
     inf8: "ここ/は/暑かったり/寒かったり/します",
+
+    // # Subsequent Verbs
+    // 運動 + する
+    verb1: "彼/は/運動する",
+    // 旅行 + する
+    verb2: "私/は/旅行しました",
 
     // # Prefix
     // 「全否定」＜接頭辞「全」名詞「否定」＞
@@ -123,7 +129,7 @@ tokenize_tests! {
     // don't compound. 私/はしる is wrong
     other1: "私/は/しる",
     // below 「と」 is 接続助詞, not 格助詞
-    other2: "早く/起きないと/遅刻/する/よ",
+    other2: "早く/起きないと/遅刻する/よ",
 
 
 }
