@@ -55,7 +55,7 @@ impl<'a> GrammarDetector<'a> {
             .find(|&token| token.is_adj() || token.is_verb())
     }
 
-    /// returns previous token
+    /// returns previous token in current token group
     fn prev(&self) -> Option<&Token> {
         if self.idx == 0 {
             None
@@ -64,7 +64,40 @@ impl<'a> GrammarDetector<'a> {
         }
     }
 
-    /// returns next token
+    /// returns previous global token
+    /// which may not be in the current token group
+    fn global_prev(&self) -> Option<&Token> {
+        if let Some(prev) = self.prev() {
+            Some(prev)
+        } else if self.global_idx > 0 {
+            let prev = &self.global_tokens[self.global_idx - 1];
+            if prev.children.is_empty() {
+                Some(&prev)
+            } else {
+                prev.children.last()
+            }
+        } else {
+            None
+        }
+    }
+
+    /// returns next global token
+    /// which may not be in the current token group
+    fn global_next(&self) -> Option<&Token> {
+        if let Some(next) = self.next() {
+            Some(next)
+        } else {
+            self.global_tokens.get(self.global_idx + 1).map(|next| {
+                if next.children.is_empty() {
+                    next
+                } else {
+                    &next.children[0]
+                }
+            })
+        }
+    }
+
+    /// returns next token in current token group
     fn next(&self) -> Option<&Token> {
         self.group.get(self.idx + 1)
     }
@@ -83,6 +116,26 @@ impl<'a> GrammarDetector<'a> {
     /// Returns `false` if current is first token.
     fn next_is(&self, check: fn(&Token) -> bool) -> bool {
         if let Some(next) = self.next() {
+            check(next)
+        } else {
+            false
+        }
+    }
+
+    /// Runs `check(prev)` on previous global token and return its value.
+    /// Returns `false` if current is first token.
+    fn global_prev_is(&self, check: fn(&Token) -> bool) -> bool {
+        if let Some(prev) = self.global_prev() {
+            check(prev)
+        } else {
+            false
+        }
+    }
+
+    /// Runs `check(next)` on next global token and return its value.
+    /// Returns `false` if current is first token.
+    fn global_next_is(&self, check: fn(&Token) -> bool) -> bool {
+        if let Some(next) = self.global_next() {
             check(next)
         } else {
             false
