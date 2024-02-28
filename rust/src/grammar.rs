@@ -705,6 +705,12 @@ static GRAMMARS: &[GrammarRule] = &[
                     && data.global_prev_is(|prev| prev.conj_form.starts_with("連用形")))
         },
     },
+    GrammarRule {
+        name: "くらい",
+        short: "approximation",
+        tofugu: "https://www.tofugu.com/japanese-grammar/kurai/",
+        detect: |token, data| token.base == "くらい",
+    },
     // # Clause Link
     GrammarRule {
         name: "ーながら",
