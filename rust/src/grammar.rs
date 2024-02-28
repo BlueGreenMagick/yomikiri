@@ -445,6 +445,17 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ーにくい",
+        short: "difficult",
+        tofugu: "https://www.tofugu.com/japanese-grammar/nikui/",
+        detect: |token, data| {
+            token.text == "にくい"
+                && token.base == "憎い"
+                && token.is_suf()
+                && data.global_prev_is(|prev| prev.is_verb())
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
