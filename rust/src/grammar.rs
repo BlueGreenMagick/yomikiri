@@ -283,6 +283,16 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-garu/",
         detect: |token, data| token.base == "がる" && token.is_suf(),
     },
+    GrammarRule {
+        name: "ーければ",
+        short: "conditional form (if, when)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-conditional-form-kereba/",
+        detect: |token, data| {
+            token.base == "ば"
+                && token.is_conn_particle()
+                && data.prev_is(|prev| prev.is_iadj() && prev.text.ends_with("けれ"))
+        },
+    },
     // # Verb Forms
     GrammarRule {
         name: "ーえ／ーろ",
@@ -486,7 +496,11 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーば",
         short: "conditional (if)",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-conditional-form-ba/",
-        detect: |token, data| token.base == "ば" && token.is_conn_particle(),
+        detect: |token, data| {
+            token.base == "ば"
+                && token.is_conn_particle()
+                && !data.prev_is(|prev| prev.is_iadj() && prev.text.ends_with("けれ"))
+        },
     },
     GrammarRule {
         name: "ーます",
