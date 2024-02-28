@@ -285,8 +285,8 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "current state",
         tofugu: "https://www.tofugu.com/japanese-grammar/tearu/",
         detect: |token, data| {
-            (token.base == "有る" || token.base == "ない")
-                && data.global_prev_is(|prev| prev.text == "て")
+            token.base == "有る" && data.global_prev_is(|prev| prev.base == "て")
+                || token.base == "ない" && data.global_prev_is(|prev| prev.text == "て")
         },
     },
     GrammarRule {
