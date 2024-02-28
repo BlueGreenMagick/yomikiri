@@ -46,13 +46,17 @@ impl<'a> GrammarDetector<'a> {
 
     /// get previous verb / adj token looking from `idx` backwards
     fn prev_yougen(&self) -> Option<&Token> {
-        if self.idx == 0 {
-            return None;
-        }
-        self.group[0..self.idx - 1]
+        self.group[0..self.idx]
             .iter()
             .rev()
-            .find(|&token| token.is_adj() || token.is_verb())
+            .find(|&token| token.is_yougen())
+    }
+
+    fn prev_independent(&self) -> Option<&Token> {
+        self.group[0..self.idx]
+            .iter()
+            .rev()
+            .find(|&token| token.is_independant())
     }
 
     /// returns previous token in current token group
@@ -200,6 +204,41 @@ impl Token {
 
     fn is_pronoun(&self) -> bool {
         self.pos == "代名詞"
+    }
+
+    fn is_adverb(&self) -> bool {
+        self.pos == "副詞"
+    }
+
+    fn is_adnomial(&self) -> bool {
+        self.pos == "連体詞"
+    }
+
+    fn is_conjunction(&self) -> bool {
+        self.pos == "接続詞"
+    }
+
+    fn is_interjection(&self) -> bool {
+        self.pos == "感動詞"
+    }
+
+    //　用言
+    fn is_yougen(&self) -> bool {
+        self.is_verb() || self.is_iadj() || self.is_naadj()
+    }
+    // 体言
+    fn is_taigen(&self) -> bool {
+        self.is_noun() || self.is_pronoun()
+    }
+
+    // 自立語
+    fn is_independant(&self) -> bool {
+        self.is_yougen()
+            || self.is_taigen()
+            || self.is_adnomial()
+            || self.is_adverb()
+            || self.is_conjunction()
+            || self.is_interjection()
     }
 }
 
@@ -379,6 +418,22 @@ static GRAMMARS: &[GrammarRule] = &[
                 && data.group[data.idx - 3].text == "ませ"
                 && data.group[data.idx - 2].text == "ん"
                 && data.group[data.idx - 1].text == "でし"
+        },
+    },
+    // although tofugu separates even between the verb + ーながら
+    // it is impossible to distinguish between the two by analyzing grammar
+    // and 'while' has both meanings 'simultaneous' and 'contrast' anyway
+    GrammarRule {
+        name: "ーながら",
+        short: "while",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-nagara/",
+        detect: |token, data| {
+            token.base == "ながら"
+                && token.is_particle()
+                && data
+                    .prev_independent()
+                    .map(|token| token.is_verb())
+                    .unwrap_or(false)
         },
     },
     GrammarRule {
@@ -561,6 +616,21 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "grammatical object",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-wo/",
         detect: |token, _data| token.base == "を" && token.is_particle(),
+    },
+    // # Clause Link
+    GrammarRule {
+        name: "ーながら",
+        short: "contrast (although)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/nagara/",
+        detect: |token, data| {
+            token.base == "ながら"
+                && token.is_particle()
+                // exclude verbながら
+                && !data
+                    .prev_independent()
+                    .map(|token| token.is_verb())
+                    .unwrap_or(false)
+        },
     },
     // # Prefix
     GrammarRule {
