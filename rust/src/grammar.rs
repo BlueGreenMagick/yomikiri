@@ -198,6 +198,18 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ーたい",
+        short: "desire",
+        tofugu: "https://www.tofugu.com/japanese-grammar/tai-form/",
+        detect: |token, _| token.base == "たい" && token.is_aux(),
+    },
+    GrammarRule {
+        name: "ーたがる",
+        short: "another's desire",
+        tofugu: "https://www.tofugu.com/japanese-grammar/tagaru-form/",
+        detect: |token, _| token.base == "たがる" && token.is_aux(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
