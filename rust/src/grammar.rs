@@ -301,6 +301,13 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/teiku-tekuru/",
         detect: |token, data| token.base == "来る" && data.global_prev_is(|prev| prev.base == "て"),
     },
+    // skipping ーていた as it is also covered by ーている + ーた and difficult detect in e.g. 「ていませんでした」
+    GrammarRule {
+        name: "ーている",
+        short: "ongoing action; result of past action",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-continuous-form-teiru/",
+        detect: |token, data| token.base == "居る" && data.global_prev_is(|prev| prev.base == "て"),
+    },
     GrammarRule {
         name: "ーられる",
         short: "passive suffix",
