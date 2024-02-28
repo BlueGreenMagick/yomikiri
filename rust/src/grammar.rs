@@ -276,6 +276,13 @@ static GRAMMARS: &[GrammarRule] = &[
                 })
         },
     },
+    // this rule will only be displayed if joined-word is not in unidic
+    GrammarRule {
+        name: "ーがる",
+        short: "seems to be ...",
+        tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-garu/",
+        detect: |token, data| token.base == "がる" && token.is_suf(),
+    },
     // # Verb Forms
     GrammarRule {
         name: "ーえ／ーろ",
