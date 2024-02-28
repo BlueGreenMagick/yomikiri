@@ -278,10 +278,10 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// Join maximal expression tokens starting from tokens\[index\]
     ///
     /// Handles cases:
-    ///     1. any+ => exp
-    ///     2. 名詞+ => 名詞
-    ///     3. 助詞+ => 助詞 e.g. 「かも」、「では」
-    ///     4. (名詞|代名詞) 助詞+ => any e.g. 「誰か」、「何とも」、「誠に」
+    ///     1. any+ => 'dict' exp
+    ///     2. 名詞+ => 'dict' 名詞
+    ///     3. 助詞+ => 'dict' 助詞  e.g. 「かも」、「では」
+    ///     4. (名詞|代名詞) 助詞+ => 'dict' any  e.g. 「誰か」、「何とも」、「誠に」
     ///
     /// Search strategy (ordered):
     ///     1. '(text)+': join text of all tokens
@@ -393,7 +393,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(last_found_to - from > 1)
     }
 
-    /// (接頭詞) (any) => (any)
+    /// (接頭詞) (any) => 'dict' (any)
     fn join_prefix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
@@ -421,7 +421,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (連体詞) (名詞 | 代名詞 | 接頭辞) => (any)
+    /// (連体詞) (名詞 | 代名詞 | 接頭辞) => 'dict' (any)
     fn join_pre_noun(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
@@ -453,7 +453,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (any) (助詞) => 接続詞
+    /// (any) (助詞) => 'dict' 接続詞
     ///
     /// Join any that ends with 助詞 because
     /// unidic is not good at determining if a given 助詞 is 接続助詞
@@ -481,7 +481,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (any) (接尾辞) => 名詞 | 形容詞 | 動詞 | 形状詞
+    /// (any) (接尾辞) => 'dict' 名詞 | 形容詞 | 動詞 | 形状詞
     ///
     /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
     fn join_suffix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
