@@ -524,6 +524,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// they may be joined with current token.
     ///
     /// 1. 名詞 + する
+    /// 2. 動詞 + なさい「為さる」
     fn join_subsequent_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
@@ -532,15 +533,19 @@ impl<R: Read + Seek> SharedBackend<R> {
         let next = &tokens[from + 1];
 
         if next.base == "為る" && next.pos2 == "非自立可能" && token.is_noun() {
-            join_tokens(
-                tokens,
-                from,
-                from + 2,
-                "動詞",
-                BaseJoinStrategy::TextWithLastBase,
-            );
+            join_tokens(tokens, from, from + 2, "動詞", BaseJoinStrategy::FirstBase);
             return Ok(true);
         };
+
+        if next.text == "なさい"
+            && next.base == "為さる"
+            && next.pos2 == "非自立可能"
+            && token.is_verb()
+        {
+            join_tokens(tokens, from, from + 2, "動詞", BaseJoinStrategy::FirstBase);
+            return Ok(true);
+        };
+
         Ok(false)
     }
 
