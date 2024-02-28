@@ -203,6 +203,7 @@ fn transform_lex(
 }
 
 /// Add words in JMDict that is not in Unidic lex
+/// and is not an expression
 /// e.g. katakana words
 fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResult<()> {
     let mut item_bases: HashSet<String> = HashSet::with_capacity(items.len() * 2);
@@ -211,6 +212,9 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResul
     }
 
     for entry in entries {
+        if entry.is_expression() {
+            continue;
+        }
         if entry_form_in_item_bases(&item_bases, &entry) {
             continue;
         }
