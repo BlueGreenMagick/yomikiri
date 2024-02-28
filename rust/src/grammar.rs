@@ -437,6 +437,14 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ーなさい",
+        short: "polite command",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-imperative-form-nasai/",
+        detect: |token, data| {
+            token.text == "なさい" && token.base == "為さる" && token.pos2 == "非自立可能"
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
