@@ -262,6 +262,20 @@ static GRAMMARS: &[GrammarRule] = &[
             token.base == "そう" && token.is_naadj() && data.prev_is(|prev| prev.is_adj())
         },
     },
+    GrammarRule {
+        name: "ーかった",
+        short: "past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-past-form-katta/",
+        detect: |token, data| {
+            token.base == "た"
+                && token.text == "た"
+                && data.prev_is(|prev| {
+                    prev.is_iadj()
+                    // exclude なかった
+                    && prev.text != "なかっ"
+                })
+        },
+    },
     // # Verb Forms
     GrammarRule {
         name: "ーえ／ーろ",
@@ -299,6 +313,7 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
         detect: |token, data| {
             token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
+            && data.prev_is(|prev| !prev.is_adj())
             // exclude なかった
             && !data.prev_is(|prev| prev.text == "なかっ")
             // exclude ませんでした
@@ -404,6 +419,7 @@ static GRAMMARS: &[GrammarRule] = &[
                     && data.group[data.idx + 2].text == "た")
         },
     },
+    // also for i-adjective
     GrammarRule {
         name: "ーなかった",
         short: "did not do",
