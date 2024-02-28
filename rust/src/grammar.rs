@@ -281,6 +281,15 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "たり" && token.is_particle(),
     },
     GrammarRule {
+        name: "ーてある",
+        short: "current state",
+        tofugu: "https://www.tofugu.com/japanese-grammar/tearu/",
+        detect: |token, data| {
+            (token.base == "有る" || token.base == "ない")
+                && data.global_prev_is(|prev| prev.text == "て")
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
