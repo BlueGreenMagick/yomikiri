@@ -717,6 +717,12 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/dake/",
         detect: |token, data| token.base == "だけ" && token.is_particle(),
     },
+    GrammarRule {
+        name: "ーなら",
+        short: "if",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conditional-form-nara/",
+        detect: |token, data| token.text == "なら" && token.is_aux(),
+    },
     // # Clause Link
     GrammarRule {
         name: "ーながら",
