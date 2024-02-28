@@ -254,8 +254,18 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーた",
         short: "past tense",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
-        detect: |token, _| {
+        detect: |token, data| {
             token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
+            // exclude なかった
+            && !data.prev_is(|prev| prev.text == "なかっ")
+            // exclude ませんでした
+            && !(
+                data.idx >= 3
+                && data.group[data.idx - 3].base == "ます"
+                && data.group[data.idx - 3].text == "ませ"
+                && data.group[data.idx - 2].text == "ん"
+                && data.group[data.idx - 1].text == "でし"
+            )
         },
     },
     GrammarRule {
@@ -322,6 +332,53 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/tehoshii/",
         detect: |token, data| {
             token.base == "欲しい" && data.global_prev_is(|prev| prev.base == "て")
+        },
+    },
+    GrammarRule {
+        name: "ーない",
+        short: "not",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-nai-form/",
+        detect: |token, data| {
+            data.idx != 0
+                //　not 無い, only ない
+                && token.base == "ない"
+                // exclude なかった
+                && !(token.text == "なかっ" && data.next_is(|next| next.base == "た"))
+        },
+    },
+    GrammarRule {
+        name: "ーません",
+        short: "not (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-nai-form/",
+        detect: |token, data| {
+            data.idx >= 1
+                && token.text == "ん"
+                && data.group[data.idx - 1].base == "ます"
+                && data.group[data.idx - 1].text == "ませ"
+                // exclude ませんでした
+                && !(data.group.len() - data.idx >= 2
+                    && data.group[data.idx + 1].text == "でし"
+                    && data.group[data.idx + 2].text == "た")
+        },
+    },
+    GrammarRule {
+        name: "ーなかった",
+        short: "did not do",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-past-nakatta-form/",
+        // may be なかっ「ない」 or なかっ「無い」
+        detect: |token, data| token.base == "た" && data.prev_is(|prev| prev.text == "なかっ"),
+    },
+    GrammarRule {
+        name: "ーませんでした",
+        short: "did not do (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-past-nakatta-form/",
+        detect: |token, data| {
+            data.idx >= 3
+                && token.base == "た"
+                && data.group[data.idx - 3].base == "ます"
+                && data.group[data.idx - 3].text == "ませ"
+                && data.group[data.idx - 2].text == "ん"
+                && data.group[data.idx - 1].text == "でし"
         },
     },
     GrammarRule {
@@ -491,19 +548,19 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "より",
         short: "comparison (than...); source (from)",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-yori-than/",
-        detect: |token, data| token.base == "より" && token.is_particle(),
+        detect: |token, _data| token.base == "より" && token.is_particle(),
     },
     GrammarRule {
         name: "わ",
         short: "personal sentiment; willingness",
         tofugu: "https://www.tofugu.com/japanese-grammar/sentence-ending-particle-wa/",
-        detect: |token, data| token.base == "わ" && token.is_particle(),
+        detect: |token, _data| token.base == "わ" && token.is_particle(),
     },
     GrammarRule {
         name: "を",
         short: "grammatical object",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-wo/",
-        detect: |token, data| token.base == "を" && token.is_particle(),
+        detect: |token, _data| token.base == "を" && token.is_particle(),
     },
     // # Prefix
     GrammarRule {
@@ -517,7 +574,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "私／僕／俺／うち",
         short: "I",
         tofugu: "https://www.tofugu.com/japanese-grammar/first-person-pronouns",
-        detect: |token, data| {
+        detect: |token, _data| {
             token.is_pronoun() && ["私", "僕", "俺", "うち"].contains(&token.base.as_str())
         },
     },
@@ -525,7 +582,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "あなた／君／お前",
         short: "you",
         tofugu: "https://www.tofugu.com/japanese-grammar/first-person-pronouns",
-        detect: |token, data| {
+        detect: |token, _data| {
             token.is_pronoun() && ["貴方", "君", "御前", "貴様"].contains(&token.base.as_str())
         },
     },
@@ -533,7 +590,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "彼／彼女／こいつ／そいつ／あいつ",
         short: "he/she/they",
         tofugu: "https://www.tofugu.com/japanese-grammar/first-person-pronouns",
-        detect: |token, data| {
+        detect: |token, _data| {
             token.is_pronoun()
                 && ["彼", "彼女", "此奴", "其奴", "彼奴"].contains(&token.base.as_str())
         },
