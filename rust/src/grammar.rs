@@ -482,6 +482,12 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ー(よ)う",
+        short: "volition",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-volitional-form-you/",
+        detect: |token, data| token.is_verb() && token.conj_form == "意志推量形",
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
