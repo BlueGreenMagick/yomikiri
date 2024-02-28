@@ -621,6 +621,17 @@ impl<R: Read + Seek> SharedBackend<R> {
             else if token.base == "たり" && token.pos2 == "副助詞" {
                 tokens[i].pos2 = "接続助詞".into()
             }
+            // は/よそう「止す」 rather than は／よそう「装う」
+            // 「装う」 still turns up in the dictionary after patch
+            else if token.base == "装う"
+                && token.text == "よそう"
+                && i > 0
+                && tokens[i - 1].base == "は"
+            {
+                tokens[i].base = "止す".into();
+                tokens[i].pos2 = "一般".into();
+                tokens[i].conj_form = "意志推量形".into();
+            }
         }
     }
 }
