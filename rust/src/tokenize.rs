@@ -481,7 +481,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (any) (接尾辞) => 'dict' 名詞 | 形容詞 | 動詞 | 形状詞
+    /// (any) (接尾辞) => 名詞 | 形容詞 | 動詞 | 形状詞
     ///
     /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
     fn join_suffix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
@@ -494,28 +494,32 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
 
         let token = &tokens[from];
-        let compound = concat_string(&token.text, &next_token.base);
-        let exists = self.dictionary.contains(&compound);
-        if !exists {
-            return Ok(false);
-        }
-
         let new_pos = match next_token.pos2.as_str() {
             "名詞的" => "名詞",
             "形容詞的" => "形容詞",
             "動詞的" => "動詞",
             "形状詞的" => "形状詞",
+            // unreachable
             _ => &token.pos,
         }
         .to_string();
-        join_tokens(
-            tokens,
-            from,
-            from + 2,
-            new_pos,
-            BaseJoinStrategy::TextWithLastBase,
-        );
-        Ok(true)
+        let compound = concat_string(&token.text, &next_token.base);
+        let exists = self.dictionary.contains(&compound);
+
+        // try new base as text + base, and default to initial base.
+        if !exists {
+            join_tokens(tokens, from, from + 2, new_pos, BaseJoinStrategy::FirstBase);
+            Ok(false)
+        } else {
+            join_tokens(
+                tokens,
+                from,
+                from + 2,
+                new_pos,
+                BaseJoinStrategy::TextWithLastBase,
+            );
+            Ok(true)
+        }
     }
 
     /// ? + 動詞 -> 動詞
