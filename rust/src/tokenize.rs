@@ -583,6 +583,11 @@ impl<R: Read + Seek> SharedBackend<R> {
             {
                 tokens[i].pos2 = "接続助詞".into()
             }
+            // 助詞 'ーたり' used for listing should be joined with previous 用言
+            // and other sources list 「ーたり」 as 接続助詞
+            else if token.base == "たり" && token.pos2 == "副助詞" {
+                tokens[i].pos2 = "接続助詞".into()
+            }
         }
     }
 }
