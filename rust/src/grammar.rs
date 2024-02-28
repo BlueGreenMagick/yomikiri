@@ -462,6 +462,16 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, data| token.base == "ば" && token.is_conn_particle(),
     },
     GrammarRule {
+        name: "ーます",
+        short: "polite",
+        tofugu: "https://www.tofugu.com/japanese-grammar/masu/",
+        detect: |token, data| {
+            token.base == "ます"
+            // exclude ーません
+                && !(token.text == "ませ" && data.next_is(|next| next.text == "ん"))
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
