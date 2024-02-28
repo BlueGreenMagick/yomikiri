@@ -11,7 +11,6 @@ fn test_grammar(
     sentence_inp: &'static str,
     includes: &[(&str, &str)],
     excludes: &[(&str, &str)],
-    check_exist: bool,
 ) -> Result<()> {
     let char_at = sentence_inp.chars().position(|c| c == '＿').unwrap_or(0);
     let sentence = sentence_inp.replace('＿', "");
@@ -97,12 +96,12 @@ macro_rules! test {
           $(
             let includes = vec![ ($name, short), $( ($include_name, default_if_empty!("", $($include_short)?)) ),*];
             let excludes = vec![$( ($exclude_name, default_if_empty!("", $($exclude_short)?)) ),*];
-            test_grammar(&mut backend, $sentence, &includes, &excludes, true)?;
+            test_grammar(&mut backend, $sentence, &includes, &excludes)?;
           )*
           $(
             let includes = vec![$( ($ninclude_name, default_if_empty!("", $($ninclude_short)?)) ),*];
             let excludes = vec![($name, short), $( ($nexclude_name, default_if_empty!("", $($nexclude_short)?)) ),*];
-            test_grammar(&mut backend, $nsentence, &includes, &excludes, false)?;
+            test_grammar(&mut backend, $nsentence, &includes, &excludes)?;
           )*
           Ok(())
         }
