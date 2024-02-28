@@ -472,6 +472,16 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ーやすい",
+        short: "easy",
+        tofugu: "https://www.tofugu.com/japanese-grammar/yasui/",
+        detect: |token, data| {
+            token.base == "易い"
+                && token.text == "やすい"
+                && data.global_prev_is(|prev| prev.is_verb())
+        },
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
