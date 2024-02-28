@@ -210,6 +210,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "たがる" && token.is_aux(),
     },
     GrammarRule {
+        name: "ーたら",
+        short: "when; after; if",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conditional-form-tara/",
+        detect: |token, _| token.base == "た" && token.text == "たら" && token.is_aux(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
