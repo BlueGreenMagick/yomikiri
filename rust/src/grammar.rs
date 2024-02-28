@@ -216,6 +216,12 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "た" && token.text == "たら" && token.is_aux(),
     },
     GrammarRule {
+        name: "ーたり",
+        short: "(incomplete) list",
+        tofugu: "https://www.tofugu.com/japanese-grammar/tarisuru/",
+        detect: |token, _| token.base == "たり" && token.is_particle(),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
