@@ -85,6 +85,13 @@ tokenize_tests! {
     // 「誠に」(adv)＜名詞「誠」助詞「に」＞
     npart3: "誠に/申し訳ありません",
 
+
+    // # Subsequent Verbs
+    // 運動 + する
+    verb1: "彼/は/運動する",
+    // 旅行 + する
+    verb2: "私/は/旅行しました",
+
     // # Inflection
     // 「きそう」＜き「動詞」そう「形状詞/助動詞語幹」な「助動詞」＞
     inf1: "聞こえて/きそうな/くらい",
@@ -103,12 +110,6 @@ tokenize_tests! {
     inf7: "美味しい/そうです",
     // 「ーたり」 is to be considered as inflection
     inf8: "ここ/は/暑かったり/寒かったり/します",
-
-    // # Subsequent Verbs
-    // 運動 + する
-    verb1: "彼/は/運動する",
-    // 旅行 + する
-    verb2: "私/は/旅行しました",
 
     // # Prefix
     // 「全否定」＜接頭辞「全」名詞「否定」＞
