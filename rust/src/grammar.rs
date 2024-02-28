@@ -711,6 +711,12 @@ static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/kurai/",
         detect: |token, data| token.base == "くらい",
     },
+    GrammarRule {
+        name: "ーだけ",
+        short: "only",
+        tofugu: "https://www.tofugu.com/japanese-grammar/dake/",
+        detect: |token, data| token.base == "だけ" && token.is_particle(),
+    },
     // # Clause Link
     GrammarRule {
         name: "ーながら",
