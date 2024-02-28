@@ -290,6 +290,18 @@ static GRAMMARS: &[GrammarRule] = &[
         },
     },
     GrammarRule {
+        name: "ーていく",
+        short: "process started; to go",
+        tofugu: "https://www.tofugu.com/japanese-grammar/teiku-tekuru/",
+        detect: |token, data| token.base == "行く" && data.global_prev_is(|prev| prev.base == "て"),
+    },
+    GrammarRule {
+        name: "ーてくる",
+        short: "process done; to come; become able",
+        tofugu: "https://www.tofugu.com/japanese-grammar/teiku-tekuru/",
+        detect: |token, data| token.base == "来る" && data.global_prev_is(|prev| prev.base == "て"),
+    },
+    GrammarRule {
         name: "ーられる",
         short: "passive suffix",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
