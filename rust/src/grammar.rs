@@ -238,7 +238,7 @@ impl Token {
     }
 }
 
-static GRAMMARS: &[GrammarRule] = &[
+pub static GRAMMARS: &[GrammarRule] = &[
     // # Adjective Forms
     GrammarRule {
         name: "ーさ",

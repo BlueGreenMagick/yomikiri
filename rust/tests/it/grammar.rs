@@ -1,10 +1,37 @@
+use std::collections::HashMap;
 use std::fs::File;
 
+use yomikiri_rs::grammar::GRAMMARS;
 use yomikiri_rs::SharedBackend;
 
 use crate::common::setup_backend;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn test_rule_exists(rules: &[(&str, &str)]) {
+    let mut names: HashMap<&'static str, Vec<&'static str>> = HashMap::new();
+
+    for grammar in GRAMMARS {
+        names
+            .entry(grammar.name)
+            .and_modify(|v| v.push(grammar.short))
+            .or_insert(vec![grammar.short]);
+    }
+
+    for (name, short) in rules {
+        if let Some(rule_shorts) = names.get(name) {
+            if short.is_empty() {
+                if rule_shorts.len() != 1 {
+                    panic!("Multiple grammar rule found for name '{}'.\nYou must specify the short as well, with syntax '\"(name)\"=\"(short)\"'.", name);
+                }
+            } else if !rule_shorts.contains(short) {
+                panic!("No grammar rule (name, short) found: ({}, {})", name, short);
+            }
+        } else {
+            panic!("No grammar rule with name {}", name);
+        }
+    }
+}
 
 fn test_grammar(
     backend: &mut SharedBackend<File>,
@@ -12,6 +39,9 @@ fn test_grammar(
     includes: &[(&str, &str)],
     excludes: &[(&str, &str)],
 ) -> Result<()> {
+    test_rule_exists(includes);
+    test_rule_exists(excludes);
+
     let char_at = sentence_inp.chars().position(|c| c == '＿').unwrap_or(0);
     let sentence = sentence_inp.replace('＿', "");
     let result = backend.tokenize(&sentence, char_at)?;
@@ -275,11 +305,11 @@ test!(
     | "＿安かろう悪かろうということだ。"
 
   godanられる: "ー（ら）れる"
-    | "私は蜂に＿刺された。" -"られる"
-    | "タバコを＿吸われた。" -"られる"
-    | "私が＿閉ざされた" -"られる"
-    | "このお酒は芋から＿作られている" -"られる"
-    | "彼は＿刺されませんでした" -"られる"
+    | "私は蜂に＿刺された。" -"ーられる"
+    | "タバコを＿吸われた。" -"ーられる"
+    | "私が＿閉ざされた" -"ーられる"
+    | "このお酒は芋から＿作られている" -"ーられる"
+    | "彼は＿刺されませんでした" -"ーられる"
 
   ichidanられる: "ーられる"
     | "この消しゴムは＿食べられる。" -"ー（ら）れる"
@@ -306,7 +336,7 @@ test!(
   けど: "ーけど"
     | "夏だ＿けど今日は涼しい。" -"ーけれど"
     | "ペン持ってないんだ＿けど、貸してくれない？" -"ーけれど"
-    | "もしもし。予約したいんです＿けど…。" -"けれど"
+    | "もしもし。予約したいんです＿けど…。" -"ーけれど"
 
   けれど: "ーけれど"
     | "分からない＿けれど、一つだけ分かっていることがある。" -"ーけど"
@@ -548,9 +578,9 @@ test!(
     | "便利じゃ＿ない" -"ーない"
 
   ではない: "ーではない"
-    | "学生では＿ない" -"ーで" -"は" -"ーない"
-    // | "静かでは＿ない" -"ーで" -"は" -"ーない"
-    | "便利では＿ない" -"ーで" -"は" -"ーない"
+    | "学生では＿ない" -"で" -"は" -"ーない"
+    // | "静かでは＿ない" -"で" -"は" -"ーない"
+    | "便利では＿ない" -"で" -"は" -"ーない"
 
   た: "ーた"
     | "本を＿買った。"
@@ -584,7 +614,7 @@ test!(
     | "便利＿でした" -"ーです" -"ーた"
 
   ませんでした: "ーませんでした"
-    | "食べませんでした" -"ーません" -"ます" -"ーた"
+    | "食べませんでした" -"ーません" -"ーます" -"ーた"
 
   なかった: "ーなかった"
     | "食べなかった" -"ーない" -"ーた" -"ーかった"
@@ -593,9 +623,9 @@ test!(
     * "私は学生では＿なかったです" +"ーではなかった"
 
   じゃなかった: "ーじゃなかった"
-    | "私は学生じゃ＿なかった" -"じゃない" -"ーなかった" -"ーない" -"ーかった" -"ーた"
-    | "ここは静かじゃ＿なかった" -"じゃない" -"ーなかった" -"ーない" -"ーかった" -"ーた"
-    | "このが便利じゃ＿なかった" -"じゃない" -"ーなかった" -"ーない" -"ーかった" -"ーた"
+    | "私は学生じゃ＿なかった" -"ーじゃない" -"ーなかった" -"ーない" -"ーかった" -"ーた"
+    | "ここは静かじゃ＿なかった" -"ーじゃない" -"ーなかった" -"ーない" -"ーかった" -"ーた"
+    | "このが便利じゃ＿なかった" -"ーじゃない" -"ーなかった" -"ーない" -"ーかった" -"ーた"
 
   ではなかった: "ーではなかった"
     | "私は学生では＿なかった" -"で" -"は" -"ーなかった" -"ーない" -"ーかった" -"ーた"
