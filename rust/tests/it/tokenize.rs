@@ -122,6 +122,7 @@ tokenize_tests! {
     pref2: "お母さん/だ",
 
     // # Suffix
+    // exception
     // 形容詞「羨ましい」＋接尾辞「がる」
     suf1: "彼/は/羨ましがった",
 

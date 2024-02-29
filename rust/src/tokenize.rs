@@ -481,7 +481,9 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(true)
     }
 
-    /// (any) (接尾辞) => 名詞 | 形容詞 | 動詞 | 形状詞
+    /// (any) (接尾辞) => 'dict' 名詞 | 形容詞 | 動詞 | 形状詞
+    ///
+    /// ーがる is joined even if it does not exist in dictionary
     ///
     /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
     fn join_suffix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
@@ -506,10 +508,13 @@ impl<R: Read + Seek> SharedBackend<R> {
         let compound = concat_string(&token.text, &next_token.base);
         let exists = self.dictionary.contains(&compound);
 
-        // try new base as text + base, and default to initial base.
         if !exists {
-            join_tokens(tokens, from, from + 2, new_pos, BaseJoinStrategy::FirstBase);
-            Ok(false)
+            if next_token.base == "がる" {
+                join_tokens(tokens, from, from + 2, new_pos, BaseJoinStrategy::FirstBase);
+                Ok(true)
+            } else {
+                Ok(false)
+            }
         } else {
             join_tokens(
                 tokens,
