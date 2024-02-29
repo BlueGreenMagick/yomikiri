@@ -553,11 +553,11 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(false)
     }
 
-    /// (動詞 | 形容詞 | 形状詞 | 副詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | 形状詞/助動詞語幹)+ => $1
+    /// (動詞 | 形容詞 | 形状詞 | 副詞 | 助動詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | 形状詞/助動詞語幹)+ => $1
     fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
-        if !(["動詞", "形容詞", "形状詞", "副詞", "=exp="].contains(&token.pos.as_str()))
+        if !(["動詞", "形容詞", "形状詞", "副詞", "助動詞", "=exp="].contains(&token.pos.as_str()))
         {
             return Ok(false);
         }

@@ -112,6 +112,7 @@ tokenize_tests! {
     inf7: "美味しい/そうです",
     // 「ーたり」 is to be considered as inflection
     inf8: "ここ/は/暑かったり/寒かったり/します",
+    inf9: "これは/本/でした",
 
     // # Prefix
     // 「全否定」＜接頭辞「全」名詞「否定」＞
