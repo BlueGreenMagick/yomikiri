@@ -74,8 +74,8 @@
   $: onTokenizeResultChanged(tokenizeResult);
 </script>
 
-<div>
-  <div class="dic-entries-container">
+<div class="tooltip">
+  <div class="toolbar-container">
     <Toolbar {grammarDisabled} bind:selected={selectedTool} />
     <div class="tools-pane" class:hidden={selectedTool === null}>
       <TranslatePane {sentence} shown={selectedTool === "translate"} />
@@ -84,6 +84,8 @@
         shown={selectedTool === "grammar"}
       />
     </div>
+  </div>
+  <div class="dic-entries-container">
     <DicEntriesView
       entries={tokenizeResult.entries}
       on:selectedEntryForAnki={selectedEntryForAnki}
@@ -97,8 +99,25 @@
 </div>
 
 <style>
+  .tooltip {
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .toolbar-container {
+    flex: 0 1 auto;
+  }
+
+  .dic-entries-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
   .tools-pane {
     border-bottom: 1px solid var(--border);
+    max-height: 160px;
+    overflow-y: auto;
   }
 
   .tools-pane.hidden {
