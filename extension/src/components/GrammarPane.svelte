@@ -2,9 +2,10 @@
   import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
 
   export let grammars: GrammarInfo[];
+  export let shown: boolean;
 </script>
 
-<div class="grammar-pane">
+<div class="grammar-pane" class:shown>
   <div class="title">Grammar</div>
   <div class="grammars">
     {#each grammars as grammar}
@@ -23,6 +24,11 @@
   .grammar-pane {
     padding: var(--edge-horizontal-padding);
     background-color: var(--background-alt);
+    display: none;
+  }
+
+  .grammar-pane.shown {
+    display: block;
   }
 
   .title {

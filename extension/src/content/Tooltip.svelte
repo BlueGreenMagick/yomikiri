@@ -76,9 +76,10 @@
   <div class="dic-entries-container">
     <Toolbar {grammarDisabled} bind:selected={selectedTool} />
     <div class="tools-pane" class:hidden={selectedTool === null}>
-      {#if selectedTool === "grammar"}
-        <GrammarPane grammars={tokenizeResult.grammars} />
-      {/if}
+      <GrammarPane
+        grammars={tokenizeResult.grammars}
+        shown={selectedTool === "grammar"}
+      />
     </div>
     <DicEntriesView
       entries={tokenizeResult.entries}
