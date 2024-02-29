@@ -6,6 +6,7 @@ import { AnkiApi } from "@platform/anki";
 import Utils from "../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
+import { translate, type TranslateResult } from "~/translate";
 
 declare global {
   // ServiceWorkerGlobalScope in service_worker
@@ -57,12 +58,18 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
 
+async function handleTranslate(req: string): Promise<TranslateResult> {
+  await ensureInitialized();
+  return await translate(req);
+}
+
 ensureInitialized();
 
 BrowserApi.handleRequest("searchTerm", searchTerm);
 BrowserApi.handleRequest("tokenize", tokenize);
 BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
 BrowserApi.handleRequest("tabId", tabId);
+BrowserApi.handleRequest("translate", handleTranslate);
 
 // expose object to window for debugging purposes
 self.backend = Backend;

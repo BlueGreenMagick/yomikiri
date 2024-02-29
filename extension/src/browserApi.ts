@@ -3,6 +3,7 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "./config";
+import type { TranslateResult } from "./translate";
 
 /**
  * Type map for messages between extension processes
@@ -16,6 +17,7 @@ export interface MessageMap {
   addAnkiNote: [NoteData, void];
   tabId: [null, number | undefined];
   stateEnabledChanged: [boolean, void];
+  translate: [string, TranslateResult];
   // ios
   loadConfig: [null, StoredConfiguration];
 }

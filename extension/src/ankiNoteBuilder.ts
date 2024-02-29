@@ -256,7 +256,7 @@ export namespace AnkiNoteBuilder {
     (data: MarkerData): Utils.PromiseWithProgress<string, string> => {
       const translatePromise = translate(data.sentence);
       const promise = Utils.PromiseWithProgress.fromPromise(
-        translatePromise,
+        translatePromise.then((result) => result.translated),
         "Translating Sentence..."
       );
       return promise;

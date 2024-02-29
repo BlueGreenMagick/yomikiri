@@ -10,7 +10,7 @@
   import { Highlighter } from "~/content/highlight";
 
   export let selected: Tools | null = null;
-  export let translateDisabled: boolean = true;
+  export let translateDisabled: boolean = false;
   export let grammarDisabled: boolean = false;
 
   function selectTranslate() {

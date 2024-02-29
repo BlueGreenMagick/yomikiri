@@ -13,6 +13,7 @@
   import type { SelectedEntryForAnki } from "~/components/DicEntryView.svelte";
   import { Toast } from "~/toast";
   import Utils from "~/utils";
+  import TranslatePane from "~/components/TranslatePane.svelte";
 
   interface Events {
     updateHeight: void;
@@ -68,6 +69,7 @@
   }
 
   $: grammarDisabled = tokenizeResult.grammars.length == 0;
+  $: sentence = tokenizeResult.tokens.map((t) => t.text).join("");
   $: onSelectedToolChanged(selectedTool);
   $: onTokenizeResultChanged(tokenizeResult);
 </script>
@@ -76,6 +78,7 @@
   <div class="dic-entries-container">
     <Toolbar {grammarDisabled} bind:selected={selectedTool} />
     <div class="tools-pane" class:hidden={selectedTool === null}>
+      <TranslatePane {sentence} shown={selectedTool === "translate"} />
       <GrammarPane
         grammars={tokenizeResult.grammars}
         shown={selectedTool === "grammar"}
