@@ -1,21 +1,10 @@
 <script lang="ts">
   import type { Entry } from "~/dicEntry";
-  import DicEntriesView from "~/components/DicEntriesView.svelte";
   import { platformClass } from "~/components/actions";
-  import type { LoadingNoteData, NoteData } from "~/ankiNoteBuilder";
-  import DicEntryView from "~/components/DicEntryView.svelte";
-  import AddToAnki from "./AddToAnki.svelte";
-  import { createEventDispatcher, tick } from "svelte";
-  import Toolbar, { type Tools } from "~/components/Toolbar.svelte";
-  import GrammarPane from "~/components/GrammarPane.svelte";
-  import type { TokenizeResult } from "~/backend";
+  import type { LoadingNoteData } from "~/ankiNoteBuilder";
+  import { type Tools } from "~/components/Toolbar.svelte";
   import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
-
-  interface Events {
-    updateHeight: void;
-  }
-
-  const dispatch = createEventDispatcher<Events>();
+  import Tooltip from "./Tooltip.svelte";
 
   let previewIsVisible = false;
   let entries: Entry[] = [];
@@ -34,36 +23,17 @@
     previewIsVisible = true;
     previewNoteData = noteData;
   }
-
-  function onBack() {
-    previewIsVisible = false;
-    dispatch("updateHeight");
-  }
-
-  async function onSelectedToolChanged(_tool: Tools | null) {
-    await tick();
-    dispatch("updateHeight");
-  }
-
-  $: grammarDisabled = grammars.length == 0;
-  $: onSelectedToolChanged(selectedTool);
 </script>
 
 <div id="main" use:platformClass>
-  <div class="dic-entries-container">
-    <Toolbar {grammarDisabled} bind:selected={selectedTool} />
-    <div class="tools-pane">
-      {#if selectedTool === "grammar"}
-        <GrammarPane {grammars} />
-      {/if}
-    </div>
-    <DicEntriesView {entries} on:selectedEntryForAnki />
-  </div>
-  {#if previewIsVisible}
-    <div class="add-to-anki-container">
-      <AddToAnki noteData={previewNoteData} on:back={onBack} on:addNote />
-    </div>
-  {/if}
+  <Tooltip
+    {previewIsVisible}
+    {entries}
+    {grammars}
+    {previewNoteData}
+    {selectedTool}
+    on:updateHeight
+  />
 </div>
 
 <style global>
@@ -72,16 +42,5 @@
   #main {
     max-height: 300px;
     overflow-y: auto;
-  }
-
-  #main > .add-to-anki-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
-
-  #main .tools-pane {
-    border-bottom: 1px solid var(--border);
   }
 </style>
