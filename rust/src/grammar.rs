@@ -579,10 +579,20 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _| token.base == "が" && token.is_conn_particle(),
     },
     GrammarRule {
-        name: "ーけど／ーけれど",
+        name: "ーけど",
         short: "contrast (but)",
         tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
-        detect: |token, _| token.base == "けれど" && token.is_conn_particle(),
+        detect: |token, _| {
+            token.base == "けれど" && token.is_conn_particle() && !token.text.starts_with("けれど")
+        },
+    },
+    GrammarRule {
+        name: "ーけれど",
+        short: "contrast (but)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/conjunctive-particle-ga-kedo/",
+        detect: |token, _| {
+            token.base == "けれど" && token.is_conn_particle() && token.text.starts_with("けれど")
+        },
     },
     GrammarRule {
         name: "ーか",
