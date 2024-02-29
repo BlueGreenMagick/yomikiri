@@ -5,7 +5,7 @@
   import type { LoadingNoteData, NoteData } from "~/ankiNoteBuilder";
   import DicEntryView from "~/components/DicEntryView.svelte";
   import AddToAnki from "./AddToAnki.svelte";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, tick } from "svelte";
   import Toolbar, { type Tools } from "~/components/Toolbar.svelte";
   import GrammarPane from "~/components/GrammarPane.svelte";
   import type { TokenizeResult } from "~/backend";
@@ -40,7 +40,13 @@
     dispatch("updateHeight");
   }
 
+  async function onSelectedToolChanged(_tool: Tools | null) {
+    await tick();
+    dispatch("updateHeight");
+  }
+
   $: grammarDisabled = grammars.length == 0;
+  $: onSelectedToolChanged(selectedTool);
 </script>
 
 <div id="main" use:platformClass>
