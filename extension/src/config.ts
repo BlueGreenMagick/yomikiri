@@ -34,6 +34,8 @@ export type ConfigKeysOfType<T> = {
 }[keyof Configuration];
 
 export namespace Config {
+  const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
+
   export let initialized: boolean = false;
 
   let _storage: StoredConfiguration;
@@ -78,11 +80,13 @@ export namespace Config {
   /** Insert or update <style> properties from config */
   export function setStyle(document: Document) {
     const css = generateCss();
-    if (_styleEl === undefined) {
-      _styleEl = document.createElement("style");
-      document.head.appendChild(_styleEl);
+    let styleEl = document.getElementById(STYLE_ELEMENT_ID);
+    if (styleEl === null) {
+      styleEl = document.createElement("style");
+      styleEl.id = STYLE_ELEMENT_ID;
+      document.head.appendChild(styleEl);
     }
-    _styleEl.textContent = css;
+    styleEl.textContent = css;
   }
 
   function generateCss(): string {

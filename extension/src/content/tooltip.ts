@@ -5,9 +5,10 @@ import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
 
 export namespace Tooltip {
-  let _tooltipEl: HTMLIFrameElement | undefined = undefined;
+  const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
   let _tooltipPageSvelte: TooltipPage;
   let _shown = false;
+  let _resizeObserverAttached = false;
 
   export async function show(
     tokenizeResult: TokenizeResult,
@@ -15,8 +16,9 @@ export namespace Tooltip {
     mouseX: number,
     mouseY: number
   ) {
-    let tooltip = _tooltipEl;
-    if (tooltip === undefined) {
+    let tooltip = getTooltipEl();
+    if (tooltip === null) {
+      console.log("null. creating!");
       tooltip = await createTooltipIframe();
     }
     console.log(highlightedRects);
@@ -32,7 +34,7 @@ export namespace Tooltip {
 
   export function hide() {
     const tooltip = getTooltipEl();
-    if (tooltip === undefined) {
+    if (tooltip === null) {
       return;
     }
     tooltip.style.display = "none";
@@ -42,6 +44,7 @@ export namespace Tooltip {
 
   async function createTooltipIframe(): Promise<HTMLIFrameElement> {
     const iframe = document.createElement("iframe");
+    iframe.id = TOOLTIP_IFRAME_ID;
     iframe.style.position = "absolute";
     iframe.style.maxWidth = "calc(min(500px, 100vw))";
     iframe.style.minWidth = "300px";
@@ -52,9 +55,11 @@ export namespace Tooltip {
     iframe.style.boxShadow = "0 0 4px rgba(0, 0, 0, 0.4)";
     iframe.style.display = "block";
     document.body.appendChild(iframe);
-    _tooltipEl = iframe;
 
-    attachResizeObserver(_tooltipEl);
+    if (!_resizeObserverAttached) {
+      attachResizeObserver();
+      _resizeObserverAttached = true;
+    }
 
     const iframeDoc = iframe.contentDocument as Document;
     if (iframeDoc.readyState === "complete") {
@@ -72,21 +77,26 @@ export namespace Tooltip {
 
   let _repositionRequested: boolean = false;
   /** add ResizeObserver to document and change position on document resize */
-  function attachResizeObserver(tooltipEl: HTMLIFrameElement) {
+  function attachResizeObserver() {
     const resizeObserver = new ResizeObserver((_) => {
       if (!_shown || _repositionRequested) return;
       _repositionRequested = true;
       requestAnimationFrame(() => {
+        _repositionRequested = false;
+        if (!_shown) return;
+        let tooltipEl = getTooltipEl();
+        if (!tooltipEl) return;
         const rects = Highlighter.highlightedRects();
         position(tooltipEl, rects[0]);
-        _repositionRequested = false;
       });
     });
     resizeObserver.observe(document.documentElement);
   }
 
-  function getTooltipEl(): HTMLIFrameElement | undefined {
-    return _tooltipEl;
+  function getTooltipEl(): HTMLIFrameElement | null {
+    return document.getElementById(
+      TOOLTIP_IFRAME_ID
+    ) as HTMLIFrameElement | null;
   }
 
   function findRectOfMouse(
@@ -210,7 +220,10 @@ export namespace Tooltip {
     });
 
     _tooltipPageSvelte.$on("updateHeight", (ev: CustomEvent<void>) => {
-      updateTooltipHeight(tooltip);
+      const tooltip = getTooltipEl();
+      if (tooltip !== null) {
+        updateTooltipHeight(tooltip);
+      }
     });
   }
 }
