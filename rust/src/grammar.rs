@@ -526,7 +526,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ー(よ)う",
         short: "volition",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-volitional-form-you/",
-        detect: |token, data| token.is_verb() && token.conj_form == "意志推量形",
+        detect: |token, data| token.conj_form == "意志推量形",
     },
     // it is impossible to accurately figure out passive and potential forms
     // skipping godan potential　ーえる as it is impossible to figure out
