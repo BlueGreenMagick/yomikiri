@@ -364,7 +364,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             if searching_base_join {
                 let base_all = concat_string(&joined_base_prev, &token.base);
                 // text_all and text_then_base did not find an entry this iteration
-                if !(last_found_to == at + 1) {
+                if last_found_to != at + 1 {
                     let found = self
                         .dictionary
                         .search(&base_all)?
@@ -585,6 +585,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(to - from > 1)
     }
 
+    #[allow(clippy::if_same_then_else)]
     fn manual_patches(&mut self, tokens: &mut [Token]) {
         for i in 0..tokens.len() {
             let token = &tokens[i];

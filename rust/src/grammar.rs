@@ -39,17 +39,9 @@ impl<'a> GrammarDetector<'a> {
             grammars: vec![],
             global_tokens: tokens,
             global_idx: idx,
-            group: group,
+            group,
             idx: 0,
         }
-    }
-
-    /// get previous verb / adj token looking from `idx` backwards
-    fn prev_yougen(&self) -> Option<&Token> {
-        self.group[0..self.idx]
-            .iter()
-            .rev()
-            .find(|&token| token.is_yougen())
     }
 
     fn prev_independent(&self) -> Option<&Token> {
@@ -76,7 +68,7 @@ impl<'a> GrammarDetector<'a> {
         } else if self.global_idx > 0 {
             let prev = &self.global_tokens[self.global_idx - 1];
             if prev.children.is_empty() {
-                Some(&prev)
+                Some(prev)
             } else {
                 prev.children.last()
             }
@@ -223,7 +215,7 @@ impl Token {
     }
 
     pub fn is_unknown_pos(&self) -> bool {
-        self.pos == "UNK" || self.pos == "" || self.pos == "*"
+        self.pos == "UNK" || self.pos == "*" || self.pos.is_empty()
     }
 
     //　用言
@@ -267,7 +259,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーがる",
         short: "seems to be ...",
         tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-garu/",
-        detect: |token, data| token.base == "がる" && token.is_suf(),
+        detect: |token, _| token.base == "がる" && token.is_suf(),
     },
     GrammarRule {
         name: "ーければ",
@@ -396,7 +388,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーなさい",
         short: "polite command",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-imperative-form-nasai/",
-        detect: |token, data| {
+        detect: |token, _| {
             token.text == "なさい" && token.base == "為さる" && token.pos2 == "非自立可能"
         },
     },
@@ -435,7 +427,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ー(よ)う",
         short: "volition",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-volitional-form-you/",
-        detect: |token, data| token.conj_form == "意志推量形",
+        detect: |token, _| token.conj_form == "意志推量形",
     },
     // it is impossible to accurately figure out passive and potential forms
     // skipping godan potential　ーえる as it is impossible to figure out
@@ -446,9 +438,9 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "passive form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
         detect: |token, data| {
-            (token.base == "れる"
+            token.base == "れる"
                 && token.is_aux()
-                && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan)))
+                && data.prev_is(|prev| prev.text.ends_in_go_dan() == Some(GoDan::ADan))
         },
     },
     // ichidan passive, potential, polite form
@@ -456,7 +448,7 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーられる",
         short: "passive form; potential form; polite form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
-        detect: |token, data| token.base == "られる" && token.is_aux(),
+        detect: |token, _| token.base == "られる" && token.is_aux(),
     },
     // # Particles
     GrammarRule {
@@ -681,19 +673,19 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "くらい",
         short: "approximation",
         tofugu: "https://www.tofugu.com/japanese-grammar/kurai/",
-        detect: |token, data| token.base == "くらい",
+        detect: |token, _| token.base == "くらい",
     },
     GrammarRule {
         name: "ーだけ",
         short: "only",
         tofugu: "https://www.tofugu.com/japanese-grammar/dake/",
-        detect: |token, data| token.base == "だけ" && token.is_particle(),
+        detect: |token, _| token.base == "だけ" && token.is_particle(),
     },
     GrammarRule {
         name: "ーなら",
         short: "if",
         tofugu: "https://www.tofugu.com/japanese-grammar/conditional-form-nara/",
-        detect: |token, data| token.text == "なら" && token.is_aux(),
+        detect: |token, _| token.text == "なら" && token.is_aux(),
     },
     // # Clause Link
     GrammarRule {
@@ -764,13 +756,13 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "ーだ",
         short: "positive present tense",
         tofugu: "https://www.tofugu.com/japanese-grammar/da/",
-        detect: |token, data| token.base == "だ" && token.text == "だ" && token.is_aux(),
+        detect: |token, _| token.base == "だ" && token.text == "だ" && token.is_aux(),
     },
     GrammarRule {
         name: "ーです",
         short: "present tense (polite)",
         tofugu: "https://www.tofugu.com/japanese-grammar/desu/",
-        detect: |token, data| token.base == "です" && token.text == "です" && token.is_aux(),
+        detect: |token, _| token.base == "です" && token.text == "です" && token.is_aux(),
     },
     GrammarRule {
         name: "ーない",
