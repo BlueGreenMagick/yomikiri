@@ -1,45 +1,53 @@
 <script lang="ts">
   import { BrowserApi } from "~/browserApi";
+  import type { TranslateResult } from "~/translate";
   import Utils from "~/utils";
 
   export let sentence: string;
   export let shown: boolean;
+  export let translation: Promise<TranslateResult> | null = null;
 
-  // @ts-ignore
-  export let translation: Promise<string> = undefined;
-  let resolveTranslation: Utils.PromiseResolver<string>;
-  let rejectTranslation: Utils.PromiseRejector;
+  let display: string = "Translating...";
+  // current sentence translation errored
+  let failed: boolean = false;
 
-  [translation, resolveTranslation, rejectTranslation] =
-    Utils.createPromise<string>();
+  async function requestTranslation() {
+    let [promise, resolver, rejector] = Utils.createPromise<TranslateResult>();
+    translation = promise;
+    display = "Translating...";
 
-  async function onShown(_shown: boolean) {
-    if (_shown == false) return;
-    BrowserApi.request("translate", sentence)
-      .then((result) => {
-        resolveTranslation(result.translated);
-      })
-      .catch(rejectTranslation);
+    try {
+      let result = await BrowserApi.request("translate", sentence);
+      display = result.translated;
+      resolver(result);
+    } catch (err) {
+      failed = true;
+      display = `Error occured: ${Utils.errorMessage(err)}`;
+      rejector(err);
+    }
   }
 
-  translation.catch((e) => {
-    console.log(e);
-    throw e;
-  });
+  function onShownChange(shown: boolean) {
+    if (shown == false) return;
+    if (translation == null || failed) {
+      requestTranslation();
+    }
+  }
 
-  $: onShown(shown);
+  async function onSentenceChange(sentence: string) {
+    translation = null;
+    failed = false;
+    display = "";
+  }
+
+  $: onShownChange(shown);
+  $: onSentenceChange(sentence);
 </script>
 
 <div class="translation-pane" class:shown>
   <div class="title">Translation</div>
   <div class="translation">
-    {#await translation}
-      Translating...
-    {:then translated}
-      {translated}
-    {:catch error}
-      Error occured: {error}
-    {/await}
+    {display}
   </div>
 </div>
 
