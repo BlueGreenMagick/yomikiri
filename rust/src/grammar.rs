@@ -273,22 +273,6 @@ static GRAMMARS: &[GrammarRule] = &[
     },
     // # Verb Forms
     GrammarRule {
-        name: "ーえ／ーろ",
-        short: "command form",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
-        detect: |token, _| token.conj_form == "命令形",
-    },
-    // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
-    GrammarRule {
-        name: "ーる",
-        short: "plain form; present/future",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
-        detect: |token, _| {
-            token.is_verb()
-                && (token.conj_form == "連体形-一般" || token.conj_form == "終止形-一般")
-        },
-    },
-    GrammarRule {
         name: "ーそう",
         short: "looks like ... will happen",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-sou/",
@@ -449,6 +433,22 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "passive form; potential form; polite form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-passive-form-rareru/",
         detect: |token, _| token.base == "られる" && token.is_aux(),
+    },
+    GrammarRule {
+        name: "ーえ／ーろ",
+        short: "command form",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
+        detect: |token, _| token.conj_form == "命令形",
+    },
+    // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
+    GrammarRule {
+        name: "ーる",
+        short: "plain form; present/future",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
+        detect: |token, _| {
+            token.is_verb()
+                && (token.conj_form == "連体形-一般" || token.conj_form == "終止形-一般")
+        },
     },
     // # Particles
     GrammarRule {
