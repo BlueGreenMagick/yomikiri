@@ -5,6 +5,9 @@
 <script lang="ts">
   import IconSchool from "@icons/school.svg";
   import IconLanguage from "@icons/language.svg";
+  import IconClose from "@icons/close.svg";
+  import { Tooltip } from "../content/tooltip";
+  import { Highlighter } from "~/content/highlight";
 
   export let selected: Tools | null = null;
   export let translateDisabled: boolean = true;
@@ -29,27 +32,39 @@
       selected = "grammar";
     }
   }
+
+  function closeTooltip() {
+    Tooltip.hide();
+    Highlighter.unhighlight();
+  }
 </script>
 
 <div class="toolbar">
-  <div
-    class="tool-button"
-    class:selected={selected === "translate"}
-    class:disabled={translateDisabled}
-    title="Translate sentence"
-    on:click={selectTranslate}
-  >
-    <div class="icon">{@html IconLanguage}</div>
-  </div>
+  <div class="left buttons">
+    <div
+      class="tool-button"
+      class:selected={selected === "translate"}
+      class:disabled={translateDisabled}
+      title="Translate sentence"
+      on:click={selectTranslate}
+    >
+      <div class="icon">{@html IconLanguage}</div>
+    </div>
 
-  <div
-    class="tool-button"
-    class:selected={selected === "grammar"}
-    class:disabled={grammarDisabled}
-    title="Grammar"
-    on:click={selectGrammar}
-  >
-    <div class="icon">{@html IconSchool}</div>
+    <div
+      class="tool-button"
+      class:selected={selected === "grammar"}
+      class:disabled={grammarDisabled}
+      title="Grammar"
+      on:click={selectGrammar}
+    >
+      <div class="icon">{@html IconSchool}</div>
+    </div>
+  </div>
+  <div class="right buttons">
+    <div class="tool-button" title="Close" on:click={closeTooltip}>
+      <div class="icon">{@html IconClose}</div>
+    </div>
   </div>
 </div>
 
@@ -59,6 +74,18 @@
     background-color: var(--background-dark);
 
     display: flex;
+  }
+
+  .buttons {
+    display: flex;
+  }
+
+  .left {
+    flex: 1 0 auto;
+  }
+
+  .right {
+    flex: 0 0 auto;
   }
 
   .tool-button {
