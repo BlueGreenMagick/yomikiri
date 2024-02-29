@@ -75,7 +75,7 @@
 <div>
   <div class="dic-entries-container">
     <Toolbar {grammarDisabled} bind:selected={selectedTool} />
-    <div class="tools-pane">
+    <div class="tools-pane" class:hidden={selectedTool === null}>
       {#if selectedTool === "grammar"}
         <GrammarPane grammars={tokenizeResult.grammars} />
       {/if}
@@ -95,6 +95,10 @@
 <style>
   .tools-pane {
     border-bottom: 1px solid var(--border);
+  }
+
+  .tools-pane.hidden {
+    display: none;
   }
 
   .add-to-anki-container {
