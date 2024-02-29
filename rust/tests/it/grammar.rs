@@ -83,7 +83,7 @@ macro_rules! default_if_empty {
 macro_rules! test {
     (
       $(
-        $test:ident: $name:literal $(=$short:literal)?
+        $test:ident: $($name:literal $(=$short:literal)?)?
         $(| $sentence:literal $(+$include_name:literal $(=$include_short:literal)?)* $(-$exclude_name:literal $(=$exclude_short:literal)?)* )*
         $(* $nsentence:literal $(+$ninclude_name:literal  $(=$ninclude_short:literal)?)* $(-$nexclude_name:literal $(=$nexclude_short:literal)?)* )*
       )+
@@ -92,15 +92,25 @@ macro_rules! test {
         #[test]
         fn $test() -> Result<()> {
           let mut backend = setup_backend();
-          let short = default_if_empty!("", $($short)?);
+          let mut main = vec![];
           $(
-            let includes = vec![ ($name, short), $( ($include_name, default_if_empty!("", $($include_short)?)) ),*];
+            main.push(($name, default_if_empty!("", $($short)?)));
+          )?
+
+          $(
+            let mut includes = main.clone();
+            $(
+              includes.push(($include_name, default_if_empty!("", $($include_short)?)));
+            )*
             let excludes = vec![$( ($exclude_name, default_if_empty!("", $($exclude_short)?)) ),*];
             test_grammar(&mut backend, $sentence, &includes, &excludes)?;
           )*
           $(
             let includes = vec![$( ($ninclude_name, default_if_empty!("", $($ninclude_short)?)) ),*];
-            let excludes = vec![($name, short), $( ($nexclude_name, default_if_empty!("", $($nexclude_short)?)) ),*];
+            let mut excludes = main.clone();
+            $(
+              excludes.push(($nexclude_name, default_if_empty!("", $($nexclude_short)?)));
+            )*
             test_grammar(&mut backend, $nsentence, &includes, &excludes)?;
           )*
           Ok(())
