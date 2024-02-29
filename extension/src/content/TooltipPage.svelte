@@ -52,9 +52,11 @@
 <div id="main" use:platformClass>
   <div class="dic-entries-container">
     <Toolbar {grammarDisabled} bind:selected={selectedTool} />
-    {#if selectedTool === "grammar"}
-      <GrammarPane {grammars} />
-    {/if}
+    <div class="tools-pane">
+      {#if selectedTool === "grammar"}
+        <GrammarPane {grammars} />
+      {/if}
+    </div>
     <DicEntriesView {entries} on:selectedEntryForAnki />
   </div>
   {#if previewIsVisible}
@@ -77,5 +79,9 @@
     top: 0;
     left: 0;
     width: 100%;
+  }
+
+  #main .tools-pane {
+    border-bottom: 1px solid var(--border);
   }
 </style>

@@ -12,7 +12,7 @@
         <div class="name">{grammar.name}:</div>
         <div class="short">{grammar.short}</div>
         <div class="tofugu">
-          <a href={grammar.tofugu} target="_blank" rel="noopener">tofugu</a>
+          <a href={grammar.tofugu} target="_blank" rel="noopener">Tofugu</a>
         </div>
       </div>
     {/each}
@@ -30,7 +30,7 @@
   }
 
   .grammars {
-    margin-top: 12px;
+    margin-top: 8px;
   }
 
   .grammar {
