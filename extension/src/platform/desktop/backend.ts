@@ -2,7 +2,7 @@ import {
   type IBackendControllerStatic as IBackendControllerStatic,
   type IBackendController as IBackendController,
   TokenizeResult,
-} from "../types/backend";
+} from "../common/backend";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
@@ -12,7 +12,11 @@ import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/browserApi";
 import { toHiragana } from "~/japanese";
 
-export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
+export {
+  type Token,
+  type TokenizeRequest,
+  TokenizeResult,
+} from "../common/backend";
 
 async function loadWasm(): Promise<typeof BackendWasm> {
   // @ts-ignore wasm is string

@@ -1,5 +1,5 @@
 import { BrowserApi } from "~/browserApi";
-import type { IAnkiAddNotes } from "../types/anki";
+import type { IAnkiAddNotes } from "../common/anki";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import Utils from "~/utils";

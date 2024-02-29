@@ -11,6 +11,7 @@
   import NotePreviewField from "~/components/NotePreviewField.svelte";
   import { createEventDispatcher } from "svelte";
   import TextButton from "~/components/TextButton.svelte";
+  import { AnkiApi } from "@platform/anki";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -18,7 +19,6 @@
 
   interface Events {
     back: void;
-    addNote: NoteData;
   }
 
   export let noteData: LoadingNoteData;
@@ -47,7 +47,7 @@
 
   async function onAdd() {
     let resolvedNoteData = await LoadingNoteData.resolve(noteData);
-    dispatch("addNote", resolvedNoteData);
+    await AnkiApi.addNote(resolvedNoteData);
   }
 
   LoadingNoteData.loadComplete(noteData).then((_) => {

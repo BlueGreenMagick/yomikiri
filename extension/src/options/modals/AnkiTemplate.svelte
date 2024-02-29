@@ -7,7 +7,7 @@
     exampleTranslatedSentence,
   } from "../exampleMarkerData";
   import { updateConfig } from "../stores";
-  import type { AnkiInfo } from "~/platform/types/anki";
+  import type { AnkiInfo } from "~/platform/common/anki";
 
   export let ankiInfo: AnkiInfo;
 

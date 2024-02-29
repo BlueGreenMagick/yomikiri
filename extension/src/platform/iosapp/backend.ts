@@ -6,11 +6,15 @@ import {
   type TokenizeRequest,
   TokenizeResult,
   type RawTokenizeResult,
-} from "../types/backend";
+} from "../common/backend";
 import { Entry } from "~/dicEntry";
 import { toHiragana } from "~/japanese";
 
-export type { Token, TokenizeRequest, TokenizeResult } from "../types/backend";
+export {
+  type Token,
+  type TokenizeRequest,
+  TokenizeResult,
+} from "../common/backend";
 
 export class BackendController implements IBackendController {
   static async initialize(): Promise<BackendController> {

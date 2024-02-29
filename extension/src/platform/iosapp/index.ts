@@ -1,7 +1,7 @@
 import type Utils from "~/utils";
-import type { Module } from "../types";
+import type { Module } from "../common";
 import type { StoredConfiguration } from "~/config";
-import type { RawTokenizeResult, TokenizeRequest } from "../types/backend";
+import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 
 export namespace Platform {
   export const IS_DESKTOP = false;

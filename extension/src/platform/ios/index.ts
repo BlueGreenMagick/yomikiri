@@ -1,8 +1,8 @@
 import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/browserApi";
-import type { Module } from "../types";
-import type { RawTokenizeResult } from "../types/backend";
+import type { Module } from "../common";
+import type { RawTokenizeResult } from "../common/backend";
 import type { TokenizeRequest } from "~/backend";
 
 export namespace Platform {

@@ -3,7 +3,7 @@ import type {
   IAnkiAddNotes,
   IAnkiOptions,
   NotetypeInfo,
-} from "../types/anki";
+} from "../common/anki";
 import Config from "~/config";
 import type { NoteData } from "~/ankiNoteBuilder";
 import { BrowserApi } from "~/browserApi";

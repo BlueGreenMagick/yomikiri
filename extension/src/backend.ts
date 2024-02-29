@@ -1,6 +1,6 @@
 import {
   BackendController,
-  type TokenizeResult,
+  TokenizeResult,
   type TokenizeRequest,
 } from "@platform/backend";
 import { Entry } from "~/dicEntry";
@@ -8,7 +8,11 @@ import { Platform } from "@platform";
 import { BrowserApi } from "./browserApi";
 import Utils from "./utils";
 
-export type { Token, TokenizeRequest, TokenizeResult } from "@platform/backend";
+export {
+  type Token,
+  type TokenizeRequest,
+  TokenizeResult,
+} from "@platform/backend";
 
 export namespace Backend {
   // If _backend is null, send message to background.

@@ -1,27 +1,40 @@
 <script lang="ts">
-  import type { Entry } from "~/dicEntry";
   import DicEntriesView from "~/components/DicEntriesView.svelte";
-  import type { LoadingNoteData } from "~/ankiNoteBuilder";
+  import {
+    AnkiNoteBuilder,
+    type LoadingNoteData,
+    type MarkerData,
+  } from "~/ankiNoteBuilder";
   import AddToAnki from "./AddToAnki.svelte";
   import { createEventDispatcher, tick } from "svelte";
   import Toolbar, { type Tools } from "~/components/Toolbar.svelte";
   import GrammarPane from "~/components/GrammarPane.svelte";
-  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
+  import { TokenizeResult } from "~/backend";
+  import type { SelectedEntryForAnki } from "~/components/DicEntryView.svelte";
+  import { Toast } from "~/toast";
+  import Utils from "~/utils";
 
   interface Events {
     updateHeight: void;
   }
 
-  export let previewIsVisible = false;
-  export let entries: Entry[] = [];
-  export let grammars: GrammarInfo[] = [];
-  export let previewNoteData: LoadingNoteData;
-  export let selectedTool: Tools | null = null;
+  export let tokenizeResult: TokenizeResult;
+  let previewIsVisible = false;
+  let previewNoteData: LoadingNoteData;
+  let selectedTool: Tools | null = null;
 
   const dispatch = createEventDispatcher<Events>();
 
-  function onBack() {
+  async function onBack() {
     previewIsVisible = false;
+    await tick();
+    dispatch("updateHeight");
+  }
+
+  async function onTokenizeResultChanged(tokenizeResult: TokenizeResult) {
+    previewIsVisible = false;
+    selectedTool = null;
+    await tick();
     dispatch("updateHeight");
   }
 
@@ -30,8 +43,33 @@
     dispatch("updateHeight");
   }
 
-  $: grammarDisabled = grammars.length == 0;
+  async function selectedEntryForAnki(ev: CustomEvent<SelectedEntryForAnki>) {
+    const request = ev.detail;
+    const markerData: MarkerData = {
+      tokenized: tokenizeResult,
+      entry: request.entry,
+      selectedMeaning: request.sense,
+      sentence: tokenizeResult.tokens.map((tok) => tok.text).join(""),
+      url: window.location.href,
+      pageTitle: document.title,
+    };
+
+    let note: LoadingNoteData;
+    try {
+      note = await AnkiNoteBuilder.buildNote(markerData);
+    } catch (err) {
+      Toast.error(Utils.errorMessage(err));
+      throw err;
+    }
+    previewNoteData = note;
+    previewIsVisible = true;
+    await tick();
+    dispatch("updateHeight");
+  }
+
+  $: grammarDisabled = tokenizeResult.grammars.length == 0;
   $: onSelectedToolChanged(selectedTool);
+  $: onTokenizeResultChanged(tokenizeResult);
 </script>
 
 <div>
@@ -39,14 +77,17 @@
     <Toolbar {grammarDisabled} bind:selected={selectedTool} />
     <div class="tools-pane">
       {#if selectedTool === "grammar"}
-        <GrammarPane {grammars} />
+        <GrammarPane grammars={tokenizeResult.grammars} />
       {/if}
     </div>
-    <DicEntriesView {entries} on:selectedEntryForAnki />
+    <DicEntriesView
+      entries={tokenizeResult.entries}
+      on:selectedEntryForAnki={selectedEntryForAnki}
+    />
   </div>
   {#if previewIsVisible}
     <div class="add-to-anki-container">
-      <AddToAnki noteData={previewNoteData} on:back={onBack} on:addNote />
+      <AddToAnki noteData={previewNoteData} on:back={onBack} />
     </div>
   {/if}
 </div>

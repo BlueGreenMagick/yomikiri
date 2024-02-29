@@ -1,39 +1,17 @@
 <script lang="ts">
-  import type { Entry } from "~/dicEntry";
   import { platformClass } from "~/components/actions";
-  import type { LoadingNoteData } from "~/ankiNoteBuilder";
-  import { type Tools } from "~/components/Toolbar.svelte";
-  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
   import Tooltip from "./Tooltip.svelte";
+  import { TokenizeResult } from "~/backend";
 
-  let previewIsVisible = false;
-  let entries: Entry[] = [];
-  let grammars: GrammarInfo[] = [];
-  let previewNoteData: LoadingNoteData;
-  let selectedTool: Tools | null = null;
+  let tokenizeResult = TokenizeResult.empty();
 
-  export function showEntries(e: Entry[], g: GrammarInfo[]) {
-    previewIsVisible = false;
-    entries = e;
-    grammars = g;
-    selectedTool = null;
-  }
-
-  export function showPreview(entry: Entry, noteData: LoadingNoteData) {
-    previewIsVisible = true;
-    previewNoteData = noteData;
+  export function setTokenizeResult(result: TokenizeResult) {
+    tokenizeResult = result;
   }
 </script>
 
 <div id="main" use:platformClass>
-  <Tooltip
-    {previewIsVisible}
-    {entries}
-    {grammars}
-    {previewNoteData}
-    {selectedTool}
-    on:updateHeight
-  />
+  <Tooltip {tokenizeResult} on:updateHeight />
 </div>
 
 <style global>

@@ -22,6 +22,15 @@ export interface TokenizeResult extends Omit<RawTokenizeResult, "entries"> {
 }
 
 export namespace TokenizeResult {
+  export function empty(): TokenizeResult {
+    return {
+      entries: [],
+      tokens: [],
+      tokenIdx: -1,
+      grammars: [],
+    };
+  }
+
   export function from(raw: RawTokenizeResult): TokenizeResult {
     return {
       ...raw,

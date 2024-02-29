@@ -1,5 +1,5 @@
 import { BrowserApi } from "~/browserApi";
-import type { Module } from "../types";
+import type { Module } from "../common";
 import type { StoredConfiguration } from "~/config";
 
 export namespace Platform {

@@ -1,20 +1,10 @@
 import Utils, { type Rect } from "utils";
-import {
-  AnkiNoteBuilder,
-  type LoadingNoteData,
-  type MarkerData,
-  type NoteData,
-} from "~/ankiNoteBuilder";
-import { Toast } from "~/toast";
 import type { TokenizeResult } from "~/backend";
-import type { SelectedEntryForAnki } from "~/components/DicEntryView.svelte";
 import Config from "~/config";
-import { AnkiApi } from "@platform/anki";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
 
 export namespace Tooltip {
-  let _tokenizeResult: TokenizeResult;
   let _tooltipEl: HTMLIFrameElement | undefined = undefined;
   let _tooltipPageSvelte: TooltipPage;
   let _shown = false;
@@ -29,15 +19,11 @@ export namespace Tooltip {
     if (tooltip === undefined) {
       tooltip = await createTooltipIframe();
     }
-    _tokenizeResult = tokenizeResult;
     console.log(highlightedRects);
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
     _shown = true;
-    _tooltipPageSvelte.showEntries(
-      _tokenizeResult.entries,
-      _tokenizeResult.grammars
-    );
+    _tooltipPageSvelte.setTokenizeResult(tokenizeResult);
     // fix bug where tooltip height is previous entry's height
     await 0;
     const rect = findRectOfMouse(highlightedRects, mouseX, mouseY);
@@ -221,39 +207,6 @@ export namespace Tooltip {
     _tooltipPageSvelte = new TooltipPage({
       target: doc.body,
       props: {},
-    });
-    _tooltipPageSvelte.$on(
-      "selectedEntryForAnki",
-      async (ev: CustomEvent<SelectedEntryForAnki>) => {
-        const request = ev.detail;
-        const markerData: MarkerData = {
-          tokenized: _tokenizeResult,
-          entry: request.entry,
-          selectedMeaning: request.sense,
-          sentence: _tokenizeResult.tokens.map((tok) => tok.text).join(""),
-          url: window.location.href,
-          pageTitle: document.title,
-        };
-
-        let note: LoadingNoteData;
-        try {
-          note = await AnkiNoteBuilder.buildNote(markerData);
-        } catch (err) {
-          Toast.error(Utils.errorMessage(err));
-          throw err;
-        }
-        _tooltipPageSvelte.showPreview(request.entry, note);
-        updateTooltipHeight(tooltip, true);
-      }
-    );
-
-    _tooltipPageSvelte.$on("addNote", async (ev: CustomEvent<NoteData>) => {
-      const note = ev.detail;
-      try {
-        await AnkiApi.addNote(note);
-      } catch (err) {
-        throw err;
-      }
     });
 
     _tooltipPageSvelte.$on("updateHeight", (ev: CustomEvent<void>) => {
