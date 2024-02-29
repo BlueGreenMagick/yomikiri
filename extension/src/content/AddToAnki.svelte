@@ -12,6 +12,8 @@
   import { createEventDispatcher } from "svelte";
   import TextButton from "~/components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
+  import { Toast } from "~/toast";
+  import Utils from "~/utils";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -47,7 +49,16 @@
 
   async function onAdd() {
     let resolvedNoteData = await LoadingNoteData.resolve(noteData);
-    await AnkiApi.addNote(resolvedNoteData);
+    try {
+      await AnkiApi.addNote(resolvedNoteData);
+    } catch (err) {
+      console.error(err);
+      const errorMessage = Utils.errorMessage(
+        err,
+        "An unknown error occured... Check the browser console for more info."
+      );
+      Toast.error(errorMessage);
+    }
   }
 
   LoadingNoteData.loadComplete(noteData).then((_) => {
