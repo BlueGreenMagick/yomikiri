@@ -262,20 +262,6 @@ static GRAMMARS: &[GrammarRule] = &[
             token.base == "そう" && token.is_naadj() && data.prev_is(|prev| prev.is_adj())
         },
     },
-    GrammarRule {
-        name: "ーかった",
-        short: "past tense",
-        tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-past-form-katta/",
-        detect: |token, data| {
-            token.base == "た"
-                && token.text == "た"
-                && data.prev_is(|prev| {
-                    prev.is_iadj()
-                    // exclude なかった
-                    && prev.text != "なかっ"
-                })
-        },
-    },
     // this rule will only be displayed if joined-word is not in unidic
     GrammarRule {
         name: "ーがる",
@@ -323,25 +309,6 @@ static GRAMMARS: &[GrammarRule] = &[
         short: "causative form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-causative-form-saseru/",
         detect: |token, _| (token.base == "せる" || token.base == "させる") && token.is_aux(),
-    },
-    GrammarRule {
-        name: "ーた",
-        short: "past tense",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
-        detect: |token, data| {
-            token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
-            && data.prev_is(|prev| !prev.is_adj())
-            // exclude なかった
-            && !data.prev_is(|prev| prev.text == "なかっ")
-            // exclude ませんでした
-            && !(
-                data.idx >= 3
-                && data.group[data.idx - 3].base == "ます"
-                && data.group[data.idx - 3].text == "ませ"
-                && data.group[data.idx - 2].text == "ん"
-                && data.group[data.idx - 1].text == "でし"
-            )
-        },
     },
     GrammarRule {
         name: "ーたい",
@@ -409,54 +376,6 @@ static GRAMMARS: &[GrammarRule] = &[
             token.base == "欲しい" && data.global_prev_is(|prev| prev.base == "て")
         },
     },
-    GrammarRule {
-        name: "ーない",
-        short: "not",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-nai-form/",
-        detect: |token, data| {
-            data.idx != 0
-                //　not 無い, only ない
-                && token.base == "ない"
-                // exclude なかった
-                && !(token.text == "なかっ" && data.next_is(|next| next.base == "た"))
-        },
-    },
-    GrammarRule {
-        name: "ーません",
-        short: "not (polite)",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-nai-form/",
-        detect: |token, data| {
-            data.idx >= 1
-                && token.text == "ん"
-                && data.group[data.idx - 1].base == "ます"
-                && data.group[data.idx - 1].text == "ませ"
-                // exclude ませんでした
-                && !(data.group.len() - data.idx >= 2
-                    && data.group[data.idx + 1].text == "でし"
-                    && data.group[data.idx + 2].text == "た")
-        },
-    },
-    // also for i-adjective
-    GrammarRule {
-        name: "ーなかった",
-        short: "did not do",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-past-nakatta-form/",
-        // may be なかっ「ない」 or なかっ「無い」
-        detect: |token, data| token.base == "た" && data.prev_is(|prev| prev.text == "なかっ"),
-    },
-    GrammarRule {
-        name: "ーませんでした",
-        short: "did not do (polite)",
-        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-past-nakatta-form/",
-        detect: |token, data| {
-            data.idx >= 3
-                && token.base == "た"
-                && data.group[data.idx - 3].base == "ます"
-                && data.group[data.idx - 3].text == "ませ"
-                && data.group[data.idx - 2].text == "ん"
-                && data.group[data.idx - 1].text == "でし"
-        },
-    },
     // although tofugu separates even between the verb + ーながら
     // it is impossible to distinguish between the two by analyzing grammar
     // and 'while' has both meanings 'simultaneous' and 'contrast' anyway
@@ -500,16 +419,6 @@ static GRAMMARS: &[GrammarRule] = &[
             token.base == "ば"
                 && token.is_conn_particle()
                 && !data.prev_is(|prev| prev.is_iadj() && prev.text.ends_with("けれ"))
-        },
-    },
-    GrammarRule {
-        name: "ーます",
-        short: "polite",
-        tofugu: "https://www.tofugu.com/japanese-grammar/masu/",
-        detect: |token, data| {
-            token.base == "ます"
-            // exclude ーません
-                && !(token.text == "ませ" && data.next_is(|next| next.text == "ん"))
         },
     },
     GrammarRule {
@@ -616,7 +525,16 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "で",
         short: "where; how",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-de/",
-        detect: |token, _| token.base == "で" && token.is_particle(),
+        detect: |token, data| {
+            token.base == "で"
+                && token.is_particle()
+                // exclude ーではない
+                && !(token.text == "で"
+                    && data.group.len() > data.idx + 2
+                    && data.group[data.idx + 1].text == "は"
+                    && data.group[data.idx + 1].is_particle()
+                    && data.group[data.idx + 2].base == "無い")
+        },
     },
     GrammarRule {
         name: "と",
@@ -665,7 +583,14 @@ static GRAMMARS: &[GrammarRule] = &[
         name: "は",
         short: "topic",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-wa/",
-        detect: |token, _| token.base == "は" && token.is_particle(),
+        detect: |token, data| {
+            token.base == "は"
+                && token.is_particle()
+                // exclude ではない
+                && !(token.text == "は"
+                    && data.prev_is(|prev| prev.text == "で")
+                    && data.next_is(|next| next.base == "無い"))
+        },
     },
     GrammarRule {
         name: "へ",
@@ -816,6 +741,224 @@ static GRAMMARS: &[GrammarRule] = &[
         detect: |token, _data| {
             token.is_pronoun()
                 && ["彼", "彼女", "此奴", "其奴", "彼奴"].contains(&token.base.as_str())
+        },
+    },
+    // # Plain, Negative, Past
+    // plain: 動詞：(ーる)／ーます、名詞｜形状詞：ーだ,、名詞｜形状詞|形容詞：ーです
+    // negative: 動詞：ーない／ーません、形容詞：ーくない、名詞｜形状詞：ーじゃない／ーではない
+    // past: 動詞：ーた／ーました、形容詞：ーかった、名詞｜形状詞：ーだった／ーでした
+    // negative-past: 動詞：ーませんでした、動詞｜形容詞：ーなかった、名詞｜形状詞ーじゃなかった／ーではなかった
+    GrammarRule {
+        name: "ーます",
+        short: "present tense (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/masu/",
+        detect: |token, data| {
+            token.base == "ます"
+            // exclude ーました
+                && !(token.text == "まし" && data.next_is(|next| next.text == "た" && next.base == "た"))
+            // exclude ーません／ーませんでした
+                && !(token.text == "ませ" && data.next_is(|next| next.text == "ん"))
+        },
+    },
+    GrammarRule {
+        name: "ーだ",
+        short: "positive present tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/da/",
+        detect: |token, data| token.base == "だ" && token.text == "だ" && token.is_aux(),
+    },
+    GrammarRule {
+        name: "ーです",
+        short: "present tense (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/desu/",
+        detect: |token, data| token.base == "です" && token.text == "です" && token.is_aux(),
+    },
+    GrammarRule {
+        name: "ーない",
+        short: "not",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-nai-form/",
+        detect: |token, data| {
+            data.idx != 0
+                //　exclude 無い (形容詞＋くない、名詞｜形状詞＋じゃない)
+                && token.base == "ない"
+                // exclude なかった
+                && !(token.text == "なかっ" && data.next_is(|next| next.base == "た"))
+        },
+    },
+    GrammarRule {
+        name: "ーません",
+        short: "not (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-nai-form/",
+        detect: |token, data| {
+            data.idx >= 1
+                && token.text == "ん"
+                && data.group[data.idx - 1].base == "ます"
+                && data.group[data.idx - 1].text == "ませ"
+                // exclude ませんでした
+                && !(data.group.len() - data.idx >= 2
+                    && data.group[data.idx + 1].text == "でし"
+                    && data.group[data.idx + 2].text == "た")
+        },
+    },
+    GrammarRule {
+        name: "ーくない",
+        short: "not",
+        tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-negative-form-kunai/",
+        detect: |token, data| token.base == "無い" && data.global_prev_is(|prev| prev.is_iadj()),
+    },
+    GrammarRule {
+        name: "ーじゃない",
+        short: "not",
+        tofugu: "https://www.tofugu.com/japanese-grammar/janai-dewanai/",
+        detect: |token, data| {
+            token.base == "無い"
+                && data.global_prev_is(|prev| prev.text == "じゃ" && prev.is_aux())
+                // exclude ーじゃなかった
+                && !(token.text == "なかっ" && data.next_is(|next| next.base == "た"))
+        },
+    },
+    // does not identify 形状詞 + ではない as those are across 3 global tokens
+    // which is difficult to support for little gain
+    GrammarRule {
+        name: "ーではない",
+        short: "not",
+        tofugu: "https://www.tofugu.com/japanese-grammar/janai-dewanai/",
+        detect: |token, data| {
+            token.base == "無い"
+                && (
+                data.idx >= 2
+                && data.group[data.idx - 2].text == "で"
+                && data.group[data.idx - 1].text == "は"
+                && data.group[data.idx - 1].is_particle()
+                )
+                // exclude ーではなかった
+                && !(token.text == "なかっ" && data.next_is(|next| next.base == "た"))
+        },
+    },
+    GrammarRule {
+        name: "ーた",
+        short: "past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-past-ta-form/",
+        detect: |token, data| {
+            token.base == "た" && token.is_aux() && (token.text == "た" || token.text == "だ")
+            && data.prev_is(|prev| !prev.is_adj())
+            && !data.prev_is(|prev|
+                // exclude ーました
+                (prev.base == "ます" && prev.text == "まし")
+                // exclude ーでした、ーませんでした
+                || prev.text == "でし"
+                // exclude ーだった
+                || prev.text == "だっ"
+                // exclude ーかった
+                || prev.is_iadj()
+            )
+            // exclude なかった、ーじゃなかった、ーではなかった
+            && !data.prev_is(|prev| prev.text == "なかっ")
+        },
+    },
+    GrammarRule {
+        name: "ーました",
+        short: "past tense (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/masu/#the-past-tense-of-",
+        detect: |token, data| {
+            token.base == "た"
+                && token.text == "た"
+                && data.prev_is(|prev| prev.base == "ます" && prev.text == "まし")
+        },
+    },
+    GrammarRule {
+        name: "ーかった",
+        short: "past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/i-adjective-past-form-katta/",
+        detect: |token, data| {
+            token.base == "た"
+                && token.text == "た"
+                && data.prev_is(|prev| {
+                    prev.is_iadj()
+                    // exclude なかった
+                    && prev.text != "なかっ"
+                })
+        },
+    },
+    GrammarRule {
+        name: "ーだった",
+        short: "past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/datta/",
+        detect: |token, data| {
+            token.base == "た" && token.text == "た" && data.prev_is(|prev| prev.text == "だっ")
+        },
+    },
+    GrammarRule {
+        name: "ーでした",
+        short: "past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/deshita/",
+        detect: |token, data| {
+            token.base == "た"
+                && token.text == "た"
+                && data.prev_is(|prev| prev.text == "でし")
+                // exclude ーませんでした
+                && !(data.idx >= 3
+                    && data.group[data.idx - 3].base == "ます"
+                    && data.group[data.idx - 3].text == "ませ"
+                    && data.group[data.idx - 2].text == "ん")
+        },
+    },
+    GrammarRule {
+        name: "ーませんでした",
+        short: "did not do (polite)",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-past-nakatta-form/",
+        detect: |token, data| {
+            data.idx >= 3
+                && token.base == "た"
+                && data.group[data.idx - 3].base == "ます"
+                && data.group[data.idx - 3].text == "ませ"
+                && data.group[data.idx - 2].text == "ん"
+                && data.group[data.idx - 1].text == "でし"
+        },
+    },
+    // also for i-adjective
+    GrammarRule {
+        name: "ーなかった",
+        short: "negative past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/verb-negative-past-nakatta-form/",
+        // may be なかっ「ない」 or なかっ「無い」
+        detect: |token, data| {
+            (token.base == "無い" || token.base == "ない")
+                && token.text == "なかっ"
+                && data.next_is(|next| next.base == "た")
+                // exclude ーじゃなかった
+                && !data.global_prev_is(|prev| prev.text == "じゃ" && prev.is_aux())
+                // exclude ーではなかった which is ーではない + ーかった
+                && !(data.idx >= 2
+                    && data.group[data.idx - 2].text == "で"
+                    && data.group[data.idx - 1].text == "は"
+                    && data.group[data.idx - 1].is_particle())
+        },
+    },
+    GrammarRule {
+        name: "ーじゃなかった",
+        short: "negative past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/janai-dewanai#past-tense",
+        detect: |token, data| {
+            token.base == "無い"
+                && token.text == "なかっ"
+                && data.global_prev_is(|prev| prev.text == "じゃ" && prev.is_aux())
+                && data.next_is(|next| next.base == "た")
+        },
+    },
+    // does not identify 形状詞 + ではなかった as those are across 3 global tokens
+    // which is difficult to support for little gain
+    GrammarRule {
+        name: "ーではなかった",
+        short: "negative past tense",
+        tofugu: "https://www.tofugu.com/japanese-grammar/janai-dewanai#past-tense",
+        detect: |token, data| {
+            token.base == "無い"
+                && token.text == "なかっ"
+                && data.idx >= 2
+                && data.group[data.idx - 2].text == "で"
+                && data.group[data.idx - 1].text == "は"
+                && data.group[data.idx - 1].is_particle()
+                && data.next_is(|next| next.base == "た")
         },
     },
 ];
