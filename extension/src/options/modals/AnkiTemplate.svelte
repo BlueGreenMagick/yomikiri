@@ -194,7 +194,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 6px;
-    margin: 6px;
+    margin: 6px 12px;
   }
   .preview-toggle input {
     flex: 0 0 auto;

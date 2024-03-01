@@ -62,7 +62,6 @@
     flex: 1 1 auto;
     overflow-y: auto;
     border-top: 1px solid lightgray;
-    border-bottom: 1px solid lightgray;
   }
 
   .modal-title {
