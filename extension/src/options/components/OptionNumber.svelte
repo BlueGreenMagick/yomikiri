@@ -12,7 +12,7 @@
 
   let value: number = Config.get(key);
 
-  function onBlur(ev: Event) {
+  function onChange(_: any) {
     if (min !== null && value < min) {
       value = min;
     }
@@ -38,7 +38,7 @@
       {min}
       {max}
       {disabled}
-      on:blur={onBlur}
+      on:change={onChange}
       on:keydown={onKeydown}
     />
   </OptionBase>

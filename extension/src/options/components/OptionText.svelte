@@ -12,7 +12,7 @@
 
   let value: string = Config.get(key);
 
-  function onBlur(ev: Event) {
+  function onChange(ev: Event) {
     if (value === undefined) return;
     Config.set(key, value);
     updateConfig();
@@ -31,7 +31,7 @@
       type="text"
       bind:value
       {disabled}
-      on:blur={onBlur}
+      on:change={onChange}
       on:keydown={onKeydown}
     />
   </OptionBase>
