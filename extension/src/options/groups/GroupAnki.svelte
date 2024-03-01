@@ -13,6 +13,7 @@
   let ankiDisabled: boolean;
   let useAnkiDescription = "";
   let ankiTemplateModalHidden: boolean = true;
+  let requesting: boolean = false;
 
   async function openAnkiTemplateModal() {
     ankiTemplateDescription = "";
@@ -25,8 +26,10 @@
     }
   }
 
+  // Checks if anki can be connected. On fail, tries again every 3 seconds.
   async function checkAnkiConnection() {
-    useAnkiDescription = "Connecting to Anki...";
+    if (requesting) return;
+    requesting = true;
     try {
       await AnkiApi.checkConnection();
       useAnkiDescription =
@@ -34,11 +37,19 @@
     } catch (err) {
       let errorMsg = Utils.errorMessage(err);
       useAnkiDescription = `<span class="warning">${errorMsg}</span>`;
+
+      setTimeout(() => {
+        if (ankiEnabled) {
+          checkAnkiConnection();
+        }
+      }, 3000);
     }
+    requesting = false;
   }
 
   async function onAnkiEnableChange(enabled: boolean) {
     if (enabled) {
+      useAnkiDescription = "Connecting to Anki...";
       checkAnkiConnection();
     } else {
       if (Platform.IS_DESKTOP) {
