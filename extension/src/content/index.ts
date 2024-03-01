@@ -23,7 +23,7 @@ declare global {
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
-  BrowserApi.initialize({ context: "contentScript", handleRequests: true });
+  BrowserApi.initialize({ context: "contentScript" });
   Platform.initialize();
   await Config.initialize();
   await Backend.initialize();

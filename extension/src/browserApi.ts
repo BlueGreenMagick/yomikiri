@@ -72,7 +72,12 @@ export namespace BrowserApi {
   export let context: ExecutionContext;
   let _tabId: number | undefined;
 
-  export function initialize(opts: ApiInitializeOptions) {
+  export function initialize(options: ApiInitializeOptions) {
+    const opts: ApiInitializeOptions = {
+      handleRequests: true,
+      ...options,
+    };
+
     if (opts.handleRequests) {
       attachRequestHandler();
     }
