@@ -16,7 +16,7 @@ After editing rust library, run build to get accurate type analysis in XCode.
 
 ### Extension files
 
-1. During build phase, `scripts/build_extension.sh` is run which runs `yarn build` on extension
+1. During build phase, `scripts/build_extension.sh` is run which runs `pnpm build` on extension
 
 2. `manifest.json` and `res` folder is bundled into extension during build phase
 

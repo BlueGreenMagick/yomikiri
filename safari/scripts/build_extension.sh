@@ -7,10 +7,10 @@ PATH="/opt/homebrew/opt/node@16/bin:$PATH"
 EXTENSION_DIR="$PROJECT_DIR/../extension"
 
 if [ "$CONFIGURATION" = "Debug" ]; then
-  YARN_CMD="dev:ios"
+  RUN_CMD="dev:ios"
 else
-  YARN_CMD="build:ios"
+  RUN_CMD="build:ios"
 fi
 
-yarn --cwd "$EXTENSION_DIR" "build:iosapp"
-yarn --cwd "$EXTENSION_DIR" "$YARN_CMD"
+pnpm --cwd "$EXTENSION_DIR" "build:iosapp"
+pnpm --cwd "$EXTENSION_DIR" "$RUN_CMD"

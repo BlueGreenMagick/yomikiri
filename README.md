@@ -12,7 +12,7 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 
 ## Installation
 
-[NodeJS](https://nodejs.org/en/download), [yarn](https://classic.yarnpkg.com/lang/en/docs/install), [Rust, cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
+[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust, cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
 Go to `/dictionary` and run `cargo run` to download and build dictionary files.
 
@@ -24,12 +24,12 @@ To build for ios as well, add ios target to rust: `rustup target add aarch64-app
 
 ### Chrome
 
-Go to `/extension`. Run `yarn build:chrome`.
+Go to `/extension`. Run `pnpm build:chrome`.
 
 In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/extension/build/chrome`.
 
 ### Firefox
 
-Go to `/extension`. Run `yarn build:firefox`.
+Go to `/extension`. Run `pnpm build:firefox`.
 
 In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab. Press 'Load Temporary Add-on...' and open `/extension/build/firefox/manifest.json`.

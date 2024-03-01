@@ -1,0 +1,6 @@
+packages:
+  - "extension"
+  - "safari"
+  - "rust/pkg"
+  - "dictionary"
+  - "extra/generate-license"

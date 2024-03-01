@@ -5,12 +5,5 @@
   "private": true,
   "author": "BlueGreenMagick",
   "license": "GPL-3.0",
-  "workspaces": [
-    "extension",
-    "safari",
-    "rust/pkg",
-    "dictionary",
-    "extra/generate-license"
-  ],
   "scripts": {}
 }

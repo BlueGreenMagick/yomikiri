@@ -7,12 +7,12 @@ You only need to do this once.
 
 **Chrome**
 
-1. Run `yarn dev`
+1. Run `pnpm dev`
 2. Add `build/chrome` directory as extension. ([Chrome](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked))
 
 **Firefox**
 
-1. Run `yarn dev:firefox`
+1. Run `pnpm dev:firefox`
 2. Go to `about:debugging` > `This firefox`
 3. Click `Load Temporary Add-on` and add `build/firefox/manifest.json`
 
