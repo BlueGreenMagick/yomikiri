@@ -10,10 +10,14 @@
     model.reset();
   }
 
+  function onMouseDown(ev: MouseEvent) {
+    model.unselectSense();
+  }
+
   $: onEntriesChange(entries);
 </script>
 
-<div id="yomikiri-entries">
+<div id="yomikiri-entries" on:mousedown={onMouseDown}>
   {#each entries as entry}
     <DicEntryView {entry} {model} on:selectedEntryForAnki />
   {/each}

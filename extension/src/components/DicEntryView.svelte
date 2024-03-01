@@ -45,10 +45,6 @@
     model.selectSense(entry, sense);
   }
 
-  function onMouseDown(ev: MouseEvent) {
-    model.unselectSense();
-  }
-
   $: mainForm = Entry.mainForm(entry);
   $: readingForForm = Entry.readingForForm(entry, mainForm, false).reading;
   $: mainFormRuby = RubyString.toHtml(
@@ -57,7 +53,7 @@
   $: groups = Entry.groupSenses(entry);
 </script>
 
-<div class="entryView" on:mousedown={onMouseDown}>
+<div class="entryView">
   <div class="header">
     <div class="term">
       <span class="mainForm">{@html mainFormRuby}</span>
