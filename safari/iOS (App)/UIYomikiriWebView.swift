@@ -108,7 +108,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 return try SharedStorage.loadConfig()
             case "saveConfig":
                 guard let configJson = request as? String else {
-                    throw "setConfig tequest body must be JSON string"
+                    throw "saveConfig tequest body must be JSON string"
                 }
                 return try SharedStorage.saveConfig(configJson: configJson)
             case "tokenize":

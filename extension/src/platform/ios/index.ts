@@ -14,6 +14,7 @@ export namespace Platform {
   export interface AppMessageMap {
     tokenize: [TokenizeRequest, RawTokenizeResult];
     loadConfig: [null, StoredConfiguration];
+    saveConfig: [string, null];
     search: [string, string[]];
   }
 
@@ -45,8 +46,13 @@ export namespace Platform {
     }
   }
 
-  export function saveConfig(config: StoredConfiguration): Promise<void> {
-    throw new Error("saveConfig should not be called in ios");
+  export async function saveConfig(config: StoredConfiguration): Promise<void> {
+    if (BrowserApi.context === "contentScript") {
+      await BrowserApi.request("saveConfig", config);
+    } else {
+      const configJson = JSON.stringify(config);
+      await Platform.requestToApp("saveConfig", configJson);
+    }
   }
 
   export async function openOptionsPage() {
@@ -67,6 +73,9 @@ export namespace Platform {
     if (BrowserApi.context === "background") {
       BrowserApi.handleRequest("loadConfig", () => {
         return Platform.loadConfig();
+      });
+      BrowserApi.handleRequest("saveConfig", (config) => {
+        return Platform.saveConfig(config);
       });
     }
   }

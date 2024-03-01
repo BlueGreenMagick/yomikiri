@@ -20,6 +20,7 @@ export interface MessageMap {
   translate: [string, TranslateResult];
   // ios
   loadConfig: [null, StoredConfiguration];
+  saveConfig: [StoredConfiguration, void];
 }
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
