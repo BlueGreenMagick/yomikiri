@@ -54,6 +54,7 @@ export namespace Tooltip {
     iframe.style.zIndex = "2147483647";
     iframe.style.boxShadow = "0 0 4px rgba(0, 0, 0, 0.4)";
     iframe.style.display = "block";
+    iframe.style.boxSizing = "content-box";
     document.body.appendChild(iframe);
 
     if (!_resizeObserverAttached) {
