@@ -4,6 +4,7 @@ import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../translate";
+import { MANIFEST_V3, TARGET } from "~/consts";
 
 /**
  * Type map for messages between extension processes
@@ -99,6 +100,11 @@ export namespace BrowserApi {
   const _storageHandlers: {
     [key: string]: StorageHandler[];
   } = {};
+
+  /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
+  function action(): typeof chrome.action {
+    return chrome.action ?? chrome.browserAction
+  }
 
   export function storage(): chrome.storage.StorageArea {
     return chrome.storage.local;
@@ -357,6 +363,21 @@ export namespace BrowserApi {
     } else {
       handlers.push(handler);
     }
+  }
+
+
+  // set text to "" to remove badge
+  export function setBadge(text: string | number, color: string) {
+    const iAction = action();
+    if (typeof text === "number") {
+      text = text.toString()
+    }
+    iAction.setBadgeText({
+      text
+    })
+    iAction.setBadgeBackgroundColor({
+      color
+    });
   }
 
   function attachRequestHandler() {
