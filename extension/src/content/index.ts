@@ -20,6 +20,8 @@ declare global {
   }
 }
 
+let initialized: boolean = false;
+
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
@@ -28,6 +30,7 @@ async function _initialize() {
   await Config.initialize();
   await Backend.initialize();
   await Highlighter.initialize();
+  initialized = true;
 }
 
 async function ensureInitialized() {
@@ -118,6 +121,15 @@ document.addEventListener("click", async (ev: MouseEvent) => {
       Tooltip.hide();
       Highlighter.unhighlight();
     }
+  }
+});
+
+BrowserApi.handleRequest("stateEnabledChanged", async (value) => {
+  if (!initialized) return;
+  
+  if (!value) {
+    Tooltip.hide();
+    Highlighter.unhighlight();
   }
 });
 
