@@ -3,6 +3,7 @@
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import ModalThirdParty from "../modals/ModalThirdParty.svelte";
+  import OptionBase from "../items/OptionBase.svelte";
 
   let modalThirdPartyVisible = false;
   let versionString = "Loading version...";
@@ -17,12 +18,7 @@
 </script>
 
 <GroupedOptions title="About">
-  <OptionClick
-    title="About Yomikiri"
-    description={versionString}
-    buttonText="Details"
-    disabled={true}
-  />
+  <OptionBase title="About Yomikiri" description={versionString} />
   <OptionClick
     title="Third party licenses"
     description={"View licenses for third party open source libraries & resources"}
