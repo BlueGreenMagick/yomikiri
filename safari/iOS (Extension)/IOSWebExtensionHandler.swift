@@ -49,6 +49,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             case "loadConfig":
                 // already stored in json
                 jsonResponse = try SharedStorage.loadConfig()
+            case "saveConfig":
+                let configJson: String = try jsonDeserialize(json: request)
+                try SharedStorage.saveConfig(configJson: configJson)
             default:
                 return
             }

@@ -10,6 +10,7 @@ declare global {
     Api: typeof BrowserApi;
     Utils: typeof Utils;
     Config: typeof Config;
+    Platform: typeof Platform;
   }
 }
 
@@ -28,3 +29,4 @@ const page = new PopupPage({ target: document.body, props: { initialized } });
 window.Api = BrowserApi;
 window.Utils = Utils;
 window.Config = Config;
+window.Platform = Platform;
