@@ -10,4 +10,9 @@ export interface Module {
   openOptionsPage: () => void | Promise<void>;
   /** Api must be initialized */
   initialize: () => void;
+  versionInfo: () => Promise<VersionInfo>;
+}
+
+export interface VersionInfo {
+  version: string
 }

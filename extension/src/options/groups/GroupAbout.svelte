@@ -1,16 +1,25 @@
 <script lang="ts">
-  import { BrowserApi } from "~/browserApi";
+  import { Platform } from "@platform";
   import GroupedOptions from "../components/GroupedOptions.svelte";
   import OptionClick from "../components/OptionClick.svelte";
   import ModalThirdParty from "../modals/ModalThirdParty.svelte";
 
   let modalThirdPartyVisible = false;
+  let versionString = "Loading version...";
+
+  async function initialize() {
+    await Platform.versionInfo();
+    const versionInfo = await Platform.versionInfo();
+    versionString = "v" + versionInfo.version;
+  }
+
+  initialize();
 </script>
 
 <GroupedOptions title="About">
   <OptionClick
     title="About Yomikiri"
-    description={"v" + BrowserApi.manifest().version}
+    description={versionString}
     buttonText="Details"
     disabled={true}
   />

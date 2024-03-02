@@ -128,6 +128,12 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                     throw "'searchTerm' request is not string"
                 }
                 return try backend.search(term: term)
+            case "versionInfo":
+                let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+                let versionInfo = [
+                    "version": appVersion
+                ]
+                return versionInfo
             default:
                 throw "Unknown key \(key)"
             }

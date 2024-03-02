@@ -1,7 +1,7 @@
 import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/browserApi";
-import type { Module } from "../common";
+import type { Module, VersionInfo } from "../common";
 import type { RawTokenizeResult } from "../common/backend";
 import type { TokenizeRequest } from "~/backend";
 
@@ -77,6 +77,13 @@ export namespace Platform {
       BrowserApi.handleRequest("saveConfig", (config) => {
         return Platform.saveConfig(config);
       });
+    }
+  }
+
+  export async function versionInfo(): Promise<VersionInfo> {
+    const manifest = BrowserApi.manifest();
+    return {
+      version: manifest.version 
     }
   }
 }

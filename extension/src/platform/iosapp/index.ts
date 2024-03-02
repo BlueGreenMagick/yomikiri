@@ -1,5 +1,5 @@
 import type Utils from "~/utils";
-import type { Module } from "../common";
+import type { Module, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 
@@ -18,6 +18,7 @@ export namespace Platform {
     // result: JSON-serialized RawTokenizeResult
     tokenize: [TokenizeRequest, string];
     searchTerm: [string, string[]];
+    versionInfo: [null, VersionInfo]
 
     // action extension
     close: [null, void];
@@ -60,6 +61,10 @@ export namespace Platform {
   }
 
   export function initialize() {}
+
+  export async function versionInfo(): Promise<VersionInfo> {
+    return await messageWebview("versionInfo", null);
+  }
 }
 
 Platform satisfies Module;

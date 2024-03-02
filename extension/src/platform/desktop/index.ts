@@ -1,5 +1,5 @@
 import { BrowserApi } from "~/browserApi";
-import type { Module } from "../common";
+import type { Module, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
 
 export namespace Platform {
@@ -20,6 +20,13 @@ export namespace Platform {
   }
 
   export function initialize() {}
+
+  export async function versionInfo(): Promise<VersionInfo> {
+    const manifest = BrowserApi.manifest();
+    return {
+      version: manifest.version 
+    }
+  }
 }
 
 Platform satisfies Module;
