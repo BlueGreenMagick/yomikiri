@@ -17,5 +17,4 @@ else
   RUN_CMD="build:ios"
 fi
 
-pnpm run --dir "$EXTENSION_DIR" "build:iosapp"
-pnpm run --dir "$EXTENSION_DIR" "$RUN_CMD"
+pnpm run --dir "$EXTENSION_DIR" "build:iosapp" && pnpm run --dir "$EXTENSION_DIR" "$RUN_CMD"
