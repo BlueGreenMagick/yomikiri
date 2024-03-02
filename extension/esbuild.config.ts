@@ -233,10 +233,10 @@ function generateBuildOptions(): BuildOptions {
   const iosAppBuildOptions: BuildOptions = {
     ...baseBuildOptions,
     entryPoints: [
-      { in: "src/options/index.ts", out: "res/options" },
+      { in: "src/iosapp/options.ts", out: "res/options" },
       {
-        in: "src/options/iosOptionsAnkiTemplate.ts",
-        out: "res/iosOptionsAnkiTemplate",
+        in: "src/iosapp/optionsAnkiTemplate.ts",
+        out: "res/optionsAnkiTemplate",
       },
       {
         in: "src/iosapp/dictionary.ts",
@@ -246,10 +246,10 @@ function generateBuildOptions(): BuildOptions {
     plugins: [
       copy({
         assets: [
-          { from: ["src/options/index.html"], to: ["./res/options.html"] },
+          { from: ["src/iosapp/options.html"], to: ["./res/options.html"] },
           {
-            from: ["src/options/iosOptionsAnkiTemplate.html"],
-            to: ["./res/iosOptionsAnkiTemplate.html"],
+            from: ["src/iosapp/optionsAnkiTemplate.html"],
+            to: ["./res/optionsAnkiTemplate.html"],
           },
           {
             from: ["src/iosapp/dictionary.html"],

@@ -63,6 +63,11 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
   return await translate(req);
 }
 
+async function stateEnabledChanged(value: boolean): Promise<void> {
+  await ensureInitialized();
+  Config.set("state.enabled", value, false);
+}
+
 ensureInitialized();
 
 BrowserApi.handleRequest("searchTerm", searchTerm);
@@ -70,6 +75,7 @@ BrowserApi.handleRequest("tokenize", tokenize);
 BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
 BrowserApi.handleRequest("tabId", tabId);
 BrowserApi.handleRequest("translate", handleTranslate);
+BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
 
 // expose object to window for debugging purposes
 self.backend = Backend;

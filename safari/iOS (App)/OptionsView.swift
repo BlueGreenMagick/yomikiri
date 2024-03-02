@@ -62,7 +62,7 @@ extension OptionsView {
         @Published var ankiTemplateShown: Bool = false
 
         static let htmlURL = Bundle.main.url(forResource: "options", withExtension: "html", subdirectory: "res")!
-        static let ankiTemplateURL = Bundle.main.url(forResource: "iosOptionsAnkiTemplate", withExtension: "html", subdirectory: "res")!
+        static let ankiTemplateURL = Bundle.main.url(forResource: "optionsAnkiTemplate", withExtension: "html", subdirectory: "res")!
 
         var webViewModel: WebView.ViewModel!
         var ankiTemplateWebViewModel: WebView.ViewModel!

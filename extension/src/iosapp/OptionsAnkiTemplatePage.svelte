@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LoadAnkiTemplate from "./modals/LoadAnkiTemplate.svelte";
+  import LoadAnkiTemplate from "../options/modals/LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";
 
   export let initialized: Promise<void>;
@@ -13,7 +13,7 @@
 
 <style global>
   @import "../global.css";
-  @import "./styles.css";
+  @import "../options/styles.css";
 
   #main {
     padding: 16px;

@@ -13,7 +13,6 @@ declare global {
     Utils: typeof Utils;
     AnkiApi: typeof AnkiApi;
     Config: typeof Config;
-    openAnkiInfoModal: () => void;
     Backend: typeof Backend;
   }
 }
@@ -30,6 +29,13 @@ async function initialize() {
 }
 
 let initialized = initialize();
+
+async function stateEnabledChanged(value: boolean): Promise<void> {
+  await initialized;
+  Config.set("state.enabled", value, false);
+}
+
+BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
 
 const optionsPage = new OptionsPage({
   target: document.body,

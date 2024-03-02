@@ -1,4 +1,3 @@
-import { BrowserApi } from "~/browserApi";
 import { Platform } from ".";
 import {
   type IBackendControllerStatic,

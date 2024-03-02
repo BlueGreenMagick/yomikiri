@@ -124,6 +124,12 @@ document.addEventListener("click", async (ev: MouseEvent) => {
   }
 });
 
+async function stateEnabledChanged(value: boolean): Promise<void> {
+  await ensureInitialized();
+  Config.set("state.enabled", value, false);
+}
+
+
 BrowserApi.handleRequest("stateEnabledChanged", async (value) => {
   if (!initialized) return;
   
@@ -132,6 +138,7 @@ BrowserApi.handleRequest("stateEnabledChanged", async (value) => {
     Highlighter.unhighlight();
   }
 });
+BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
 
 window.Api = BrowserApi;
 window.ensureInitialized = ensureInitialized;

@@ -1,7 +1,5 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
-import Utils from "./utils";
-import { BrowserApi } from "./browserApi";
 
 /** Must not be undefined */
 export interface Configuration {
@@ -41,13 +39,10 @@ export namespace Config {
   let _storage: StoredConfiguration;
   let _styleEl: HTMLStyleElement | undefined;
 
-  /** Platform and BrowserApi must be initialized. */
+  /** Platform must be initialized. */
   export async function initialize(): Promise<void> {
     _storage = await Platform.loadConfig();
-    BrowserApi.handleRequest("stateEnabledChanged", (value) => {
-      // No need to save config
-      _storage["state.enabled"] = value;
-    });
+
     Config.initialized = true;
   }
 
@@ -58,16 +53,27 @@ export namespace Config {
       : defaultOptions[key];
   }
 
-  /** If value is undefined, removes from storage*/
+  /** 
+   * To remove from storage, set value to `undefined`.
+   * 
+   * If `save` is `false`, only updates config values in this context.
+   */
   export async function set<K extends keyof Configuration>(
     key: K,
-    value: Configuration[K]
-  ) {
+    value: Configuration[K],
+    save: boolean = true
+  ): Promise<void> {
     if (value === undefined) {
       delete _storage[key];
     } else {
       _storage[key] = value;
     }
+    if (save) {
+      await Config.save()
+    }
+  }
+
+  export async function save(): Promise<void> {
     await Platform.saveConfig(_storage);
   }
 

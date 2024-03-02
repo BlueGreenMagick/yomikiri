@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-async function initialize() {
+async function initialize(): Promise<void> {
   BrowserApi.initialize({ context: "popup" });
   Platform.initialize();
   await Config.initialize();
@@ -23,6 +23,13 @@ async function initialize() {
 }
 
 let initialized = initialize();
+
+async function stateEnabledChanged(value: boolean): Promise<void> {
+  await initialized;
+  Config.set("state.enabled", value, false);
+}
+
+BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
 
 const page = new PopupPage({ target: document.body, props: { initialized } });
 
