@@ -27,6 +27,16 @@
       modalThirdPartyVisible = true;
     }}
   />
+  <OptionClick
+    title="View source code"
+    description={"Yomikiri is an open source project! You can view the code on GitHub."}
+    buttonText={"GitHub"}
+    on:trigger={() => {
+      window
+        .open("https://github.com/bluegreenmagick/yomikiri", "_blank")
+        ?.focus();
+    }}
+  />
 </GroupedOptions>
 
 {#if modalThirdPartyVisible}
