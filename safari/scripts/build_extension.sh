@@ -1,8 +1,13 @@
 #!/bin/sh
-# XCode tries to be helpful and overwrites the PATH. Reset that.
-PATH="$(bash -l -c 'echo $PATH')"
-PATH="/opt/homebrew/bin:$PATH"
-PATH="/opt/homebrew/opt/node@16/bin:$PATH"
+# Import paths from bash and zsh, so .bashrc and zshrc paths are added.
+if output=$(bash -lic 'echo $PATH'); then
+  PATH="$output:$PATH"
+fi
+if output=$(zsh -lic 'echo $PATH'); then
+  PATH="$output:$PATH"
+fi
+
+echo $PATH
 
 EXTENSION_DIR="$PROJECT_DIR/../extension"
 
@@ -12,5 +17,5 @@ else
   RUN_CMD="build:ios"
 fi
 
-pnpm --cwd "$EXTENSION_DIR" "build:iosapp"
-pnpm --cwd "$EXTENSION_DIR" "$RUN_CMD"
+pnpm run --dir "$EXTENSION_DIR" "build:iosapp"
+pnpm run --dir "$EXTENSION_DIR" "$RUN_CMD"
