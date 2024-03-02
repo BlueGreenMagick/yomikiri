@@ -10,26 +10,41 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 - Recognizes conjugation forms of verbs or adjectives
 - Add word to Anki
 
-## Installation
+## Building from source
 
-[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust, cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
+Please note that we do not support building the project on Windows. You may want to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to build the project.
 
-Go to `/dictionary` and run `cargo run` to download and build dictionary files.
+[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust/cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
-Go to `/unidic` and run `cargo run` to download and build unidic files.
+Run the following commands in order:
+```sh
+# install dependencies
+pnpm install --frozen-lockfile
+# install JMDict dictionary file
+pnpm run prepare:dictionary
+# install unidic tokenizer dictionary files
+pnpm run prepare:unidic
+# build rust backend binary
+pnpm run prepare:backend
+```
 
-Go to `/rust` and run `wasm-pack build --scope yomikiri --target web` to build Yomikiri wasm backend. (If you are also building for ios, run `./build.sh` instead.)
-
-To build for ios as well, add ios target to rust: `rustup target add aarch64-apple-ios`, `rustup target add aarch64-apple-ios-sim`.
+To build for ios as well, add ios target to rust: 
+`rustup target add aarch64-apple-ios`, `rustup target add aarch64-apple-ios-sim`,
+then run `pnpm run prepare:backend`.
 
 ### Chrome
 
-Go to `/main`. Run `pnpm build:chrome`.
+Run `pnpm build:chrome`.
 
-In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/extension/build/chrome`.
+In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/main/build/chrome`.
 
 ### Firefox
 
-Go to `/main`. Run `pnpm build:firefox`.
+Run `pnpm build:firefox`.
 
-In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab. Press 'Load Temporary Add-on...' and open `/extension/build/firefox/manifest.json`.
+In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab. 
+Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.
+
+## Ios
+
+Open `/safari/Yomikiri.xcodeproj` on XCode.

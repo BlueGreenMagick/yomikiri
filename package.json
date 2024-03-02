@@ -5,5 +5,19 @@
   "private": true,
   "author": "BlueGreenMagick",
   "license": "GPL-3.0",
-  "scripts": {}
+  "scripts": {
+    "prepare:dictionary": "cargo -C ./dictionary run",
+    "prepare:unidic": "cargo -C ./unidic run",
+    "prepare:backend": "./rust/build.sh",
+    "build:firefox": "pnpm run --dir ./main build:firefox",
+    "build:chrome": "pnpm run --dir ./main build:chrome",
+    "build:ios": "pnpm run --dir ./main build:ios",
+    "build:iosapp": "pnpm run --dir ./main build:iosapp",
+    "build": "pnpm run build:chrome",
+    "dev:firefox": "pnpm run --dir ./main dev:firefox",
+    "dev:chrome": "pnpm run --dir ./main dev:chrome",
+    "dev:ios": "pnpm run --dir ./main dev:ios",
+    "dev": "pnpm run dev:chrome",
+    "test": "pnpm run -r test"
+  }
 }
