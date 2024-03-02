@@ -1,5 +1,5 @@
 packages:
-  - "extension"
+  - "main"
   - "safari"
   - "rust/pkg"
   - "dictionary"
