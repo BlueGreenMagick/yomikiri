@@ -23,6 +23,7 @@
     "test": "pnpm jest"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@swc/core": "^1.3.63",
     "@swc/jest": "^0.2.26",
     "@types/chrome": "^0.0.233",
