@@ -24,12 +24,12 @@ To build for ios as well, add ios target to rust: `rustup target add aarch64-app
 
 ### Chrome
 
-Go to `/extension`. Run `pnpm build:chrome`.
+Go to `/main`. Run `pnpm build:chrome`.
 
 In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/extension/build/chrome`.
 
 ### Firefox
 
-Go to `/extension`. Run `pnpm build:firefox`.
+Go to `/main`. Run `pnpm build:firefox`.
 
 In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab. Press 'Load Temporary Add-on...' and open `/extension/build/firefox/manifest.json`.

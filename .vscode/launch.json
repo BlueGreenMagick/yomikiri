@@ -5,7 +5,7 @@
       "name": "Debug Jest Tests",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/extension",
+      "cwd": "${workspaceFolder}/main",
       "runtimeArgs": [
         "--inspect-brk",
         "${workspaceRoot}/node_modules/.bin/jest",

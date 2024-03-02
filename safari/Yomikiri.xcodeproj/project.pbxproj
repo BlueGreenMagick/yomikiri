@@ -272,7 +272,7 @@
 				699B7DEC2A52C9D900E506F2 /* manifest.json */,
 			);
 			name = ios;
-			path = ../extension/build/ios;
+			path = ../main/build/ios;
 			sourceTree = "<group>";
 		};
 		699B7DFF2A52EFF000E506F2 /* iosapp */ = {
@@ -281,7 +281,7 @@
 				699B7E072A52F00400E506F2 /* res */,
 			);
 			name = iosapp;
-			path = ../extension/build/iosapp;
+			path = ../main/build/iosapp;
 			sourceTree = "<group>";
 		};
 		699EF6702A540BE600ECA9D1 /* Shared (iOS) */ = {

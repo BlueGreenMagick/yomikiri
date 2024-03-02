@@ -9,7 +9,7 @@ fi
 
 echo $PATH
 
-EXTENSION_DIR="$PROJECT_DIR/../extension"
+EXTENSION_DIR="$PROJECT_DIR/../main"
 
 if [ "$CONFIGURATION" = "Debug" ]; then
   RUN_CMD="dev:ios"
