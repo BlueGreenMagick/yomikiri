@@ -6,8 +6,8 @@
   "author": "BlueGreenMagick",
   "license": "GPL-3.0",
   "scripts": {
-    "prepare:dictionary": "cargo -C ./dictionary run",
-    "prepare:unidic": "cargo -C ./unidic run",
+    "prepare:dictionary": "cd ./dictionary; cargo run",
+    "prepare:unidic": "cd ./unidic; cargo run",
     "prepare:backend": "./rust/build.sh",
     "build:firefox": "pnpm run --dir ./main build:firefox",
     "build:chrome": "pnpm run --dir ./main build:chrome",
