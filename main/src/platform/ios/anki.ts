@@ -21,6 +21,7 @@ export namespace AnkiApi {
       throw new Error("Current tab does not have an id");
     }
     await BrowserApi.setStorage("x-callback.tabId", currentTab.id);
+    await BrowserApi.setStorage("x-callback.tabUrl", location.href);
 
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
