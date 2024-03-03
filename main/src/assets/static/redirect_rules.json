@@ -5,7 +5,7 @@
     "action": {
       "type": "redirect",
       "redirect": {
-        "extensionPath": "/x-callback.html"
+        "extensionPath": "/res/x-callback.html"
       }
     },
     "condition": {
