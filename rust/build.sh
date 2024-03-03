@@ -1,10 +1,11 @@
+#!/bin/sh
 rm -rf ./swift
 rm -rf ./pkg
 
-FILE_PATH=$(realpath $0)
-PROJECT_DIR=$(dirname $FILE_PATH)
+FILE_PATH=$(realpath "$0")
+PROJECT_DIR=$(dirname "$FILE_PATH")
 
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || exit 1
 
 # build unidic
 cargo run --manifest-path "../unidic/Cargo.toml"

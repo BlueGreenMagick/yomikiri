@@ -7,7 +7,7 @@ if output=$(zsh -lic 'echo $PATH'); then
   PATH="$output:$PATH"
 fi
 
-echo $PATH
+echo "$PATH"
 
 EXTENSION_DIR="$PROJECT_DIR/../main"
 
