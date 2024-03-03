@@ -4,7 +4,6 @@ import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../translate";
-import { MANIFEST_V3, TARGET } from "~/consts";
 
 /**
  * Type map for messages between extension processes
@@ -272,6 +271,14 @@ export namespace BrowserApi {
 
     chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
       resolve(result[0]);
+    });
+    return promise;
+  }
+
+  export async function tabs(info: chrome.tabs.QueryInfo): Promise<chrome.tabs.Tab[]> {
+    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab[]>();
+    chrome.tabs.query(info, (tabs: chrome.tabs.Tab[]) => {
+      resolve(tabs);
     });
     return promise;
   }
