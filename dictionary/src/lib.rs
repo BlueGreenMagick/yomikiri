@@ -1,7 +1,7 @@
 pub mod jmdict;
 pub mod xml;
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::fs::{self, File};
 use std::io::{BufReader, BufWriter, Write};
@@ -26,7 +26,8 @@ pub fn parse_xml_file(input_path: &Path) -> Result<Vec<Entry>> {
 pub fn write_json_files(index_path: &Path, dict_path: &Path, entries: &Vec<Entry>) -> Result<u32> {
     let output_file = File::create(&dict_path).unwrap();
     let mut output_writer = BufWriter::new(output_file);
-    let mut dict_index: Vec<DictIndexItem> = Vec::with_capacity(entries.len());
+    let mut dict_indices: HashMap<&str, Vec<(u32, u16)>> =
+        HashMap::with_capacity(entries.len() * 8);
     let mut offset: u32 = 0;
     let mut largest_size: u32 = 0;
     // write outputs and build entry_index
@@ -36,20 +37,32 @@ pub fn write_json_files(index_path: &Path, dict_path: &Path, entries: &Vec<Entry
         let size = u16::try_from(serialized.len()).unwrap();
         largest_size = largest_size.max(size as u32);
         for term in entry.terms() {
-            match dict_index.binary_search_by_key(&term, |item| &item.key) {
-                Ok(idx) => {
-                    let item = dict_index.get_mut(idx).unwrap();
-                    item.offsets.push(offset);
-                    item.sizes.push(size);
-                }
-                Err(idx) => {
-                    dict_index.insert(idx, DictIndexItem::new(term.to_string(), offset, size));
-                }
-            };
+            dict_indices
+                .entry(term)
+                .and_modify(|entry| entry.push((offset, size)))
+                .or_insert_with(|| vec![(offset, size)]);
         }
         offset += size as u32;
     }
     output_writer.flush().unwrap();
+
+    let mut dict_index: Vec<DictIndexItem> = dict_indices
+        .into_iter()
+        .map(|(key, entries)| {
+            let mut offsets = Vec::with_capacity(entries.len());
+            let mut sizes = Vec::with_capacity(entries.len());
+            for entry in entries {
+                offsets.push(entry.0);
+                sizes.push(entry.1);
+            }
+            DictIndexItem {
+                key: key.into(),
+                offsets,
+                sizes,
+            }
+        })
+        .collect();
+    dict_index.sort();
 
     let output_index_file = File::create(&index_path).unwrap();
     let output_index_writer = BufWriter::new(output_index_file);
