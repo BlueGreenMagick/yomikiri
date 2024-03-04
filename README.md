@@ -8,7 +8,11 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 - View definition for hovered word
 - Recognizes word boundary within sentence
 - Recognizes conjugation forms of verbs or adjectives
-- Add word to Anki
+- View translation for sentence.
+- View relevant grammar with a link to Tofugu.
+- Add word to Anki. You can preview and edit the note before adding.
+- Search and view how a sentence is structured
+- IOS app + integration with AnkiMobile. (Coming soon!)
 
 ## Building from source
 
