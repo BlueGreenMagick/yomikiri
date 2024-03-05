@@ -1,3 +1,5 @@
+#![allow(uncommon_codepoints)]
+
 #[derive(Debug)]
 pub struct UnknownValueError {
     pub encountered: String,
@@ -13,211 +15,145 @@ impl UnknownValueError {
 
 type Result<T> = std::result::Result<T, UnknownValueError>;
 
-pub enum UnidicPos {
-    Noun(UnidicNounPos2),
-    Particle(UnidicParticlePos2),
-    Verb(UnidicVerbPos2),
-    Adjective(UnidicAdjectivePos2),
-    NaAdjective(UnidicNaAdjectivePos2),
-    Interjection(UnidicInterjectionPos2),
-    Suffix(UnidicSuffixPos2),
-    AuxVerb,
-    Whitespace,
-    Pronoun,
-    Symbol(UnidicSymbolPos2),
-    SupplementarySymbol(UnidicSupplementarySymbolPos2),
-    /// e.g. しかし
-    Conjunction,
-    Prefix,
-    PrenounAdjectival,
-    Adverb,
+/// valid num: 0 - 61
+#[inline(always)]
+fn short_value(num: usize) -> u8 {
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".as_bytes()[num]
 }
 
-pub enum UnidicNounPos2 {
-    助動詞語幹,
-    固有名詞,
-    普通名詞,
-    数詞,
+macro_rules! unidic_pos_enum {
+    ($( $pos_name:ident $($pos2_name:ident)? ),+) => {
+        pub enum UnidicPos {
+            $(
+                $pos_name( $($pos2_name)? ),
+            )+
+
+        }
+    };
 }
 
-pub enum UnidicParticlePos2 {
-    係助詞,
-    格助詞,
-    /// conjunctive particle
-    接続助詞,
-    準体助詞,
-    終助詞,
-    副助詞,
+macro_rules! unidic_pos2_enum {
+    ($pos2_name:ident, $($pos2_value:ident),+) => {
+        pub enum $pos2_name {
+            $(
+                $pos2_value,
+            )+
+        }
+    };
 }
 
-pub enum UnidicVerbPos2 {
-    一般,
-    非自立可能,
-}
-
-pub enum UnidicAdjectivePos2 {
-    一般,
-    非自立可能,
-}
-
-pub enum UnidicNaAdjectivePos2 {
-    一般,
-    助動詞語幹,
-    タリ,
-}
-
-pub enum UnidicInterjectionPos2 {
-    一般,
-    フィラー,
-}
-
-pub enum UnidicSuffixPos2 {
-    名詞的,
-    形容詞的,
-    動詞的,
-    形状詞的,
-}
-
-pub enum UnidicSymbolPos2 {
-    一般,
-    文字,
-}
-
-pub enum UnidicSupplementarySymbolPos2 {
-    読点,
-    一般,
-    括弧開,
-    括弧閉,
-    /// actual is 'ＡＡ', not 'AA'
-    AA,
-    句点,
-}
-
-impl UnidicPos {
-    pub fn from_unidic(pos: &str, pos2: &str) -> Result<Self> {
-        Ok(match pos {
-            "名詞" => UnidicPos::Noun(UnidicNounPos2::from_unidic(pos2)?),
-            "助詞" => UnidicPos::Particle(UnidicParticlePos2::from_unidic(pos2)?),
-            "動詞" => UnidicPos::Verb(UnidicVerbPos2::from_unidic(pos2)?),
-            "形容詞" => UnidicPos::Adjective(UnidicAdjectivePos2::from_unidic(pos2)?),
-            "形状詞" => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::from_unidic(pos2)?),
-            "感動詞" => UnidicPos::Interjection(UnidicInterjectionPos2::from_unidic(pos2)?),
-            "接尾辞" => UnidicPos::Suffix(UnidicSuffixPos2::from_unidic(pos2)?),
-            "助動詞" => UnidicPos::AuxVerb,
-            "空白" => UnidicPos::Whitespace,
-            "代名詞" => UnidicPos::Pronoun,
-            "記号" => UnidicPos::Symbol(UnidicSymbolPos2::from_unidic(pos2)?),
-            "補助記号" => {
-                UnidicPos::SupplementarySymbol(UnidicSupplementarySymbolPos2::from_unidic(pos2)?)
+macro_rules! unidic_pos2_from_unidic {
+    ($pos2_name:ident, $($pos2_value:ident),+) => {
+        impl $pos2_name {
+            pub fn from_unidic(pos2: &str) -> Result<Self> {
+                match pos2 {
+                    $(
+                        stringify!($pos2_value) => Ok($pos2_name::$pos2_value),
+                    )+
+                    other => Err(UnknownValueError::new(other)),
+                }
             }
-            "接続詞" => UnidicPos::Conjunction,
-            "接頭辞" => UnidicPos::Prefix,
-            "連体詞" => UnidicPos::PrenounAdjectival,
-            "副詞" => UnidicPos::Adverb,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
+        }
+    };
 }
 
-impl UnidicNounPos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "助動詞語幹" => UnidicNounPos2::助動詞語幹,
-            "固有名詞" => UnidicNounPos2::固有名詞,
-            "普通名詞" => UnidicNounPos2::普通名詞,
-            "数詞" => UnidicNounPos2::数詞,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
+macro_rules! unidic_pos {
+    (
+        $(
+            $pos_name:ident $pos_value:ident $($pos_num: literal)?
+            $(= $pos2_name:ident
+                $(- $pos2_value:ident $num:literal)+
+            )?
+        )+
+    ) => {
+        unidic_pos_enum!($( $pos_name $($pos2_name)? ),+);
+        $(
+            $(
+                unidic_pos2_enum!($pos2_name, $($pos2_value),+);
+                unidic_pos2_from_unidic!($pos2_name, $($pos2_value),+);
+            )?
+        )+
+
+
+        impl UnidicPos {
+            pub fn from_unidic(pos: &str, pos2: &str) -> Result<Self> {
+                match pos {
+                    $(
+                        stringify!($pos_value) => Ok(UnidicPos::$pos_name( $( $pos2_name::from_unidic(pos2)? )? )),
+                    )+
+                    other => return Err(UnknownValueError::new(other)),
+                }
+            }
+        }
+
+    };
 }
 
-impl UnidicParticlePos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "係助詞" => UnidicParticlePos2::係助詞,
-            "格助詞" => UnidicParticlePos2::格助詞,
-            "接続助詞" => UnidicParticlePos2::接続助詞,
-            "準体助詞" => UnidicParticlePos2::準体助詞,
-            "終助詞" => UnidicParticlePos2::終助詞,
-            "副助詞" => UnidicParticlePos2::副助詞,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+unidic_pos!(
+    Noun 名詞
+    = UnidicNounPos2
+        - 助動詞語幹 1
+        - 固有名詞 2
+        - 普通名詞 3
+        - 数詞 4
 
-impl UnidicVerbPos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "一般" => UnidicVerbPos2::一般,
-            "非自立可能" => UnidicVerbPos2::非自立可能,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    Particle 助詞
+    = UnidicParticlePos2
+        - 係助詞 5
+        - 格助詞 6
+        - 接続助詞 7
+        - 準体助詞 8
+        - 終助詞 9
+        - 副助詞 10
 
-impl UnidicAdjectivePos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "一般" => UnidicAdjectivePos2::一般,
-            "非自立可能" => UnidicAdjectivePos2::非自立可能,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    Verb 動詞
+    = UnidicVerbPos2
+        - 一般 11
+        - 非自立可能 12
 
-impl UnidicNaAdjectivePos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "一般" => UnidicNaAdjectivePos2::一般,
-            "助動詞語幹" => UnidicNaAdjectivePos2::助動詞語幹,
-            "タリ" => UnidicNaAdjectivePos2::タリ,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    Adjective 形容詞
+    = UnidicAdjectivePos2
+        - 一般 13
+        - 非自立可能 14
 
-impl UnidicInterjectionPos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "一般" => UnidicInterjectionPos2::一般,
-            "フィラー" => UnidicInterjectionPos2::フィラー,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    NaAdjective 形状詞
+    = UnidicNaAdjectivePos2
+        - 一般 15
+        - 助動詞語幹 16
+        - タリ 17
 
-impl UnidicSuffixPos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "名詞的" => UnidicSuffixPos2::名詞的,
-            "形容詞的" => UnidicSuffixPos2::形容詞的,
-            "動詞的" => UnidicSuffixPos2::動詞的,
-            "形状詞的" => UnidicSuffixPos2::形状詞的,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    Interjection 感動詞
+    = UnidicInterjectionPos2
+        - 一般 18
+        - フィラー 19
 
-impl UnidicSymbolPos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "一般" => UnidicSymbolPos2::一般,
-            "文字" => UnidicSymbolPos2::文字,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    Suffix 接尾辞
+    = UnidicSuffixPos2
+        - 名詞的 20
+        - 形容詞的 21
+        - 動詞的 22
+        - 形状詞的 23
 
-impl UnidicSupplementarySymbolPos2 {
-    pub fn from_unidic(pos2: &str) -> Result<Self> {
-        Ok(match pos2 {
-            "読点" => UnidicSupplementarySymbolPos2::読点,
-            "一般" => UnidicSupplementarySymbolPos2::一般,
-            "括弧開" => UnidicSupplementarySymbolPos2::括弧開,
-            "括弧閉" => UnidicSupplementarySymbolPos2::括弧閉,
-            "ＡＡ" => UnidicSupplementarySymbolPos2::AA,
-            "句点" => UnidicSupplementarySymbolPos2::句点,
-            other => return Err(UnknownValueError::new(other)),
-        })
-    }
-}
+    AuxVerb 助動詞 24
+    Whitespace 空白 25
+    Pronoun 代名詞 26
+
+    Symbol 記号
+    = UnidicSymbolPos2
+        - 一般 27
+        - 文字 28
+
+    SupplementarySymbol 補助記号
+    = UnidicSupplementarySymbolPos2
+        - 読点 29
+        - 一般 30
+        - 括弧開 31
+        - 括弧閉 32
+        - ＡＡ 33
+        - 句点 34
+
+    Conjunction 接続詞 35
+    Prefix 接頭辞 36
+    PrenounAdjectival 連体詞 37
+    Adverb 副詞 38
+);
