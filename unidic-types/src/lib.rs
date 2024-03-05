@@ -25,7 +25,7 @@ macro_rules! unidic_pos_enum {
     ($( $pos_name:ident $($pos2_name:ident)? ),+) => {
         pub enum UnidicPos {
             $(
-                $pos_name( $($pos2_name)? ),
+                $pos_name $( ($pos2_name) )?,
             )+
 
         }
@@ -62,7 +62,7 @@ macro_rules! unidic_pos {
         $(
             $pos_name:ident $pos_value:ident $($pos_num: literal)?
             $(= $pos2_name:ident
-                $(- $pos2_value:ident $num:literal)+
+                $(- $pos2_value:ident $pos2_num:literal)+
             )?
         )+
     ) => {
@@ -79,9 +79,41 @@ macro_rules! unidic_pos {
             pub fn from_unidic(pos: &str, pos2: &str) -> Result<Self> {
                 match pos {
                     $(
-                        stringify!($pos_value) => Ok(UnidicPos::$pos_name( $( $pos2_name::from_unidic(pos2)? )? )),
+                        stringify!($pos_value) => Ok(UnidicPos::$pos_name $( ($pos2_name::from_unidic(pos2)?) )? ),
                     )+
-                    other => return Err(UnknownValueError::new(other)),
+                    other => Err(UnknownValueError::new(other)),
+                }
+            }
+
+            pub fn to_short(&self) -> u8 {
+                match &self {
+                    $(
+                        $(
+                            UnidicPos::$pos_name => short_value($pos_num),
+                        )?
+                        $(
+                            $(
+                                UnidicPos::$pos_name($pos2_name::$pos2_value) => short_value($pos2_num),
+                            )+
+                        )?
+
+                    )+
+                }
+            }
+
+            pub fn from_short(short: u8) -> Result<Self> {
+                match short {
+                    $(
+                      $(
+                        $pos_num => Ok(UnidicPos::$pos_name),
+                      )?
+                      $(
+                        $(
+                            $pos2_num => Ok(UnidicPos::$pos_name($pos2_name::$pos2_value)),
+                        )+
+                      )?
+                    )+
+                    other =>Err(UnknownValueError::new(other.to_string()))
                 }
             }
         }
