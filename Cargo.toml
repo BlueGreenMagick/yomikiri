@@ -4,6 +4,7 @@ members = [
   "dictionary",
   "dictionary-types",
   "unidic",
+  "unidic-types",
   "extra/generate-license/rust",
 ]
 resolver = "2"
