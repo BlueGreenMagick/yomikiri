@@ -183,6 +183,8 @@ fn transform_lex(
     add_words_in_jmdict(&mut items, &jmdict_entries)?;
     let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 
+    identical_base_to_empty_string(&mut items);
+
     // write removed items for debugging purposes
     // .hidden is attached so lindera does not add it to its dictionary
     let removed_lex_path = output_dir.join("removed.csv.hidden");
@@ -196,8 +198,6 @@ fn transform_lex(
     for item in items {
         writer.write_record(&item.to_record())?;
     }
-
-    // retain only useful fields
 
     Ok(())
 }
@@ -250,6 +250,15 @@ fn remove_word_not_in_jmdict(
     }
     let removed = items.split_off(retain_len);
     Ok(removed)
+}
+
+/// if item.surface == item.base (most nouns), set base to "" to save space
+fn identical_base_to_empty_string(items: &mut Vec<LexItem>) {
+    for item in items {
+        if item.surface == item.base {
+            item.base = "".into()
+        }
+    }
 }
 
 fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool {

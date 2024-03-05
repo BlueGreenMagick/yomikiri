@@ -119,13 +119,22 @@ impl Default for TokenDetails {
 }
 
 impl TokenDetails {
-    fn from_details(details: &[&str]) -> Self {
+    fn from_details<S: Into<String>>(details: &[&str], surface: S) -> Self {
         let mut details = details.iter();
         let pos = details.next().unwrap_or(&"UNK").to_string();
         let pos2 = details.next().unwrap_or(&"*").to_string();
         let conj_form = details.next().unwrap_or(&"*").to_string();
         let reading = details.next().unwrap_or(&"*").to_string();
-        let base = details.next().unwrap_or(&"").to_string();
+        let base = if let Some(base) = details.next() {
+            if base.is_empty() {
+                surface.into()
+            } else {
+                base.to_string()
+            }
+        } else {
+            surface.into()
+        };
+
         TokenDetails {
             pos,
             pos2,
@@ -244,7 +253,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
             let text = tok.text.to_string();
             let details = match tok.get_details() {
-                Some(d) => TokenDetails::from_details(&d),
+                Some(d) => TokenDetails::from_details(&d, &text),
                 None => TokenDetails::default_with_surface(&text),
             };
             let token = Token::new(text, details, char_start as u32);
