@@ -11,7 +11,7 @@ use std::borrow::Cow;
 use std::io::{Read, Seek};
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_unidic_types::UnidicPos;
+use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
 #[cfg(wasm)]
 use serde::Serialize;
@@ -124,12 +124,19 @@ impl TokenDetails {
         let mut details = details.iter();
         let (pos, pos2) = details
             .next()
-            .and_then(|p| UnidicPos::from_short(*p.as_bytes().get(0).unwrap_or(&0)).ok())
+            .and_then(|p| p.as_bytes().get(0))
+            .and_then(|short| UnidicPos::from_short(*short).ok())
             .map(|pos| pos.to_unidic())
             .unwrap_or(("UNK", "*"));
         let pos = pos.to_string();
         let pos2 = pos2.to_string();
-        let conj_form = details.next().unwrap_or(&"*").to_string();
+        let conj_form = details
+            .next()
+            .and_then(|p| p.as_bytes().get(0))
+            .and_then(|short| UnidicConjugationForm::from_short(*short).ok())
+            .map(|conj| conj.to_unidic())
+            .unwrap_or("*")
+            .to_string();
         let reading = details.next().unwrap_or(&"*").to_string();
         let base = if let Some(base) = details.next() {
             if base.is_empty() {

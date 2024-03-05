@@ -5,7 +5,7 @@ use std::path::Path;
 use std::{cmp, fs};
 use yomikiri_dictionary::parse_json_file;
 use yomikiri_dictionary_types::{Entry, PartOfSpeech};
-use yomikiri_unidic_types::UnidicPos;
+use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
 type TResult<T> = core::result::Result<T, Box<dyn Error>>;
 
@@ -108,14 +108,16 @@ impl LexItem {
 
     fn to_record(&self) -> TResult<[String; 8]> {
         let pos = UnidicPos::from_unidic(&self.pos, &self.pos2)?;
-        let pos_short = pos.to_short();
+        let pos_short = String::from_utf8(vec![pos.to_short()])?;
+        let conj_form = UnidicConjugationForm::from_unidic(&self.conj_form)?;
+        let conj_form_short = String::from_utf8(vec![conj_form.to_short()])?;
         Ok([
             self.surface.to_string(),
             self.lid.to_string(),
             self.rid.to_string(),
             self.cost.to_string(),
-            String::from_utf8(vec![pos_short])?,
-            self.conj_form.to_string(),
+            pos_short,
+            conj_form_short,
             self.reading.to_string(),
             self.base.to_string(),
         ])
