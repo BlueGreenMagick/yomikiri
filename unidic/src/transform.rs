@@ -5,6 +5,7 @@ use std::path::Path;
 use std::{cmp, fs};
 use yomikiri_dictionary::parse_json_file;
 use yomikiri_dictionary_types::{Entry, PartOfSpeech};
+use yomikiri_unidic_types::UnidicPos;
 
 type TResult<T> = core::result::Result<T, Box<dyn Error>>;
 
@@ -105,18 +106,19 @@ impl LexItem {
         items
     }
 
-    fn to_record(&self) -> [&str; 9] {
-        [
-            &self.surface,
-            &self.lid,
-            &self.rid,
-            &self.cost,
-            &self.pos,
-            &self.pos2,
-            &self.conj_form,
-            &self.reading,
-            &self.base,
-        ]
+    fn to_record(&self) -> TResult<[String; 8]> {
+        let pos = UnidicPos::from_unidic(&self.pos, &self.pos2)?;
+        let pos_short = pos.to_short();
+        Ok([
+            self.surface.to_string(),
+            self.lid.to_string(),
+            self.rid.to_string(),
+            self.cost.to_string(),
+            String::from_utf8(vec![pos_short])?,
+            self.conj_form.to_string(),
+            self.reading.to_string(),
+            self.base.to_string(),
+        ])
     }
 }
 
@@ -198,13 +200,13 @@ fn transform_lex(
     let removed_lex_path = output_dir.join("removed.csv.hidden");
     let mut writer = csv::Writer::from_path(&removed_lex_path)?;
     for item in removed {
-        writer.write_record(&item.to_record())?;
+        writer.write_record(&item.to_record()?)?;
     }
 
     let output_lex_path = output_dir.join("lex.csv");
     let mut writer = csv::Writer::from_path(&output_lex_path)?;
     for item in items {
-        writer.write_record(&item.to_record())?;
+        writer.write_record(&item.to_record()?)?;
     }
 
     Ok(())

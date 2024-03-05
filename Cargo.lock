@@ -2317,6 +2317,7 @@ dependencies = [
  "wasm-logger",
  "web-sys",
  "yomikiri-dictionary-types",
+ "yomikiri-unidic-types",
 ]
 
 [[package]]
@@ -2332,6 +2333,7 @@ dependencies = [
  "walkdir",
  "yomikiri-dictionary",
  "yomikiri-dictionary-types",
+ "yomikiri-unidic-types",
  "zip",
 ]
 

@@ -10,6 +10,7 @@ lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 yomikiri-dictionary = { path = "../dictionary", default-features = false }
 yomikiri-dictionary-types = { path = "../dictionary-types" }
+yomikiri-unidic-types = { path = "../unidic-types" }
 csv = "1.2"
 walkdir = "2.3"
 filetime = "0.2"
