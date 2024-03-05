@@ -33,11 +33,13 @@ IOS_TARGET="aarch64-apple-ios"
 IOS_SIM_TARGET="aarch64-apple-ios-sim"
 
 if target_installed $IOS_TARGET; then
+  echo "Building backend for ios"
   cargo build --release --lib --target $IOS_TARGET
 else
   echo "Skipped building for ios because target 'aarch64-apple-ios' is not installed for rust"
 fi
 if target_installed $IOS_SIM_TARGET; then
+echo "Building backend for ios simulator"
   cargo build --release --lib --target $IOS_SIM_TARGET
 else
   echo echo "Skipped building for ios simulator because target 'aarch64-apple-ios-sim' is not installed for rust"
