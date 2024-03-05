@@ -30,6 +30,8 @@ impl LexItem {
     //         for each sense:
     //             if sense.to_reading is empty or reading in sense.to_reading:
     //                 create LexItem
+    //
+    // unclassified pos are excluded
     fn items_from_entry(entry: &Entry) -> Vec<LexItem> {
         let mut items = vec![];
         let base = entry.main_form();
@@ -50,6 +52,9 @@ impl LexItem {
                     continue;
                 }
                 for pos in &sense.pos {
+                    if *pos == PartOfSpeech::Unclassified {
+                        continue;
+                    }
                     let item = LexItem {
                         surface: form.form.clone(),
                         lid: "0".into(),
@@ -79,6 +84,9 @@ impl LexItem {
                     continue;
                 }
                 for pos in &sense.pos {
+                    if *pos == PartOfSpeech::Unclassified {
+                        continue;
+                    }
                     let item = LexItem {
                         surface: reading.reading.clone(),
                         lid: "0".into(),
@@ -291,6 +299,7 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
         PartOfSpeech::Prefix => "接頭辞",
         PartOfSpeech::Adnomial => "連体詞",
         PartOfSpeech::Expression => "=exp=",
+        // unclassified pos are never included into unidic
         PartOfSpeech::Unclassified => "",
     }
 }
