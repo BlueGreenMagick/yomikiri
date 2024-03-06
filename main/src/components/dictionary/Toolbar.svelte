@@ -101,11 +101,11 @@
     padding: 0.5em 1.2em;
   }
 
-  .tool-button:not(.disabled):hover {
+  :global(html.desktop) .tool-button:not(.disabled):hover {
     cursor: pointer;
   }
 
-  .tool-button:not(.disabled):not(.selected):hover {
+  :global(html.desktop) .tool-button:not(.disabled):not(.selected):hover {
     filter: brightness(1.1);
   }
 
