@@ -80,7 +80,7 @@
   .toolbar {
     width: 100%;
     background-color: var(--background-dark);
-    height: 28px;
+    height: 2.2em;
     display: flex;
   }
 
@@ -98,7 +98,7 @@
 
   .tool-button {
     background-color: var(--background-dark);
-    padding: 6px 12px;
+    padding: 0.5em 1.2em;
   }
 
   .tool-button:not(.disabled):hover {
@@ -115,8 +115,8 @@
 
   .icon {
     fill: #000000;
-    width: 16px;
-    height: 16px;
+    width: 1.2em;
+    height: 1.2em;
   }
 
   .tool-button.disabled .icon {
