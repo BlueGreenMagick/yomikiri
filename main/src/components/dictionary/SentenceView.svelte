@@ -61,6 +61,7 @@
     margin: 2px;
     min-height: 1.6em;
     align-items: flex-end;
+    user-select: none;
   }
   .token.selected:not(.invalid) a {
     color: var(--accent);
