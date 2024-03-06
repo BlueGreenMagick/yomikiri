@@ -44,7 +44,7 @@
 
 <div class="toolbar" class:tooltip={tooltipMode}>
   <div class="left buttons">
-    <div
+    <button
       class="tool-button"
       class:selected={selectedTool === "translate"}
       class:disabled={translateDisabled}
@@ -52,9 +52,9 @@
       on:click={selectTranslate}
     >
       <div class="icon">{@html IconLanguage}</div>
-    </div>
+    </button>
 
-    <div
+    <button
       class="tool-button"
       class:selected={selectedTool === "grammar"}
       class:disabled={grammarDisabled}
@@ -62,13 +62,13 @@
       on:click={selectGrammar}
     >
       <div class="icon">{@html IconSchool}</div>
-    </div>
+    </button>
   </div>
   <div class="right buttons">
     {#if tooltipMode}
-      <div class="tool-button" title="Close" on:click={closeTooltip}>
+      <button class="tool-button" title="Close" on:click={closeTooltip}>
         <div class="icon">{@html IconClose}</div>
-      </div>
+      </button>
     {/if}
   </div>
 </div>

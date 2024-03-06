@@ -89,7 +89,7 @@
         bind:value={searchText}
         placeholder="Enter japanese word or sentence."
       />
-      <div
+      <button
         class="icon icon-clear"
         class:hidden={searchText === ""}
         on:click={() => {
@@ -97,7 +97,7 @@
         }}
       >
         {@html IconCloseCircle}
-      </div>
+      </button>
     </div>
     {#if showCloseButton}
       <div class="close-button">
@@ -121,17 +121,17 @@
     </div>
   {:else if actionButtons}
     <div class="action-buttons">
-      <div
+      <button
         class="icon-action"
         class:active={stateEnabled}
         on:click={toggleEnable}
         title={stateEnabled ? "Disable" : "Enable"}
       >
         {@html IconPower}
-      </div>
-      <div class="icon-action" on:click={openSettings} title="Open Settings">
+      </button>
+      <button class="icon-action" on:click={openSettings} title="Open Settings">
         {@html IconSettings}
-      </div>
+      </button>
     </div>
   {/if}
 </div>
