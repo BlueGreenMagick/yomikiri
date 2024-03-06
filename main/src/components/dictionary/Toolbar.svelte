@@ -12,6 +12,7 @@
   export let selectedTool: Tools | null = null;
   export let translateDisabled: boolean = false;
   export let grammarDisabled: boolean = false;
+  export let showClose;
 
   export let changeSelectedTool: (tool: Tools | null) => any;
 
@@ -64,9 +65,11 @@
     </div>
   </div>
   <div class="right buttons">
-    <div class="tool-button" title="Close" on:click={closeTooltip}>
-      <div class="icon">{@html IconClose}</div>
-    </div>
+    {#if showClose}
+      <div class="tool-button" title="Close" on:click={closeTooltip}>
+        <div class="icon">{@html IconClose}</div>
+      </div>
+    {/if}
   </div>
 </div>
 

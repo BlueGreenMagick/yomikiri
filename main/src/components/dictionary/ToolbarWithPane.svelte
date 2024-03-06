@@ -7,6 +7,7 @@
   export let selectedTool: Tools | null;
   export let grammars: GrammarInfo[] = [];
   export let sentence: string;
+  export let showClose: boolean = true;
 
   export let changeSelectedTool: (tool: Tools | null) => any;
 </script>
@@ -15,6 +16,7 @@
   <Toolbar
     grammarDisabled={grammars.length == 0}
     {selectedTool}
+    {showClose}
     {changeSelectedTool}
   />
   <div class="tools-pane" class:hidden={selectedTool === null}>

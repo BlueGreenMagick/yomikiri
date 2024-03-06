@@ -14,6 +14,9 @@
   import TextButton from "../TextButton.svelte";
   import Config from "~/config";
   import { BrowserApi } from "~/extension/browserApi";
+  import ToolbarWithPane from "./ToolbarWithPane.svelte";
+  import type { Tools } from "./Toolbar.svelte";
+  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
 
   interface Events {
     close: void;
@@ -29,8 +32,10 @@
   // may be bigger than total token characters
   let selectedCharAt: number;
   let entries: Entry[] = [];
+  let grammars: GrammarInfo[] = [];
   // TODO: Move this to Config store
   let stateEnabled = Config.get("state.enabled");
+  let selectedTool: Tools | null = null;
 
   /** modifies `searchTokens` */
   const tokenize = Utils.SingleQueued(_tokenize);
@@ -38,6 +43,7 @@
     if (searchText === "") {
       searchTokens = [];
       entries = [];
+      grammars = [];
       return;
     }
 
@@ -49,6 +55,7 @@
     });
     searchTokens = tokenized.tokens;
     entries = tokenized.entries;
+    grammars = tokenized.grammars;
   }
 
   function openSettings() {
@@ -66,11 +73,15 @@
     dispatch("close");
   }
 
+  function changeSelectedTool(tool: Tools | null) {
+    selectedTool = tool;
+  }
+
   $: tokenize(searchText, selectedCharAt);
 </script>
 
 <div class="search">
-  <div class="header">
+  <div class="header" class:entry-mode={!actionButtons}>
     <div class="searchbar">
       <div class="icon icon-search">{@html IconSearch}</div>
       <input
@@ -94,10 +105,18 @@
       </div>
     {/if}
   </div>
-  <div class="tokensview">
-    <SentenceView tokens={searchTokens} bind:selectedCharAt />
-  </div>
+
   {#if searchText !== ""}
+    <ToolbarWithPane
+      {selectedTool}
+      {grammars}
+      sentence={searchText}
+      showClose={false}
+      {changeSelectedTool}
+    />
+    <div class="tokensview">
+      <SentenceView tokens={searchTokens} bind:selectedCharAt />
+    </div>
     <div class="entries">
       <DicEntriesView {entries} />
     </div>
@@ -133,7 +152,10 @@
     display: flex;
     align-items: center;
     padding: 6px var(--edge-horizontal-padding);
-    background-color: var(--background-alt);
+    background-color: var(--background-dark);
+  }
+  y .header.entr-mode {
+    padding-bottom: 0px;
   }
 
   .searchbar {
