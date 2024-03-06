@@ -23,7 +23,6 @@
 <style>
   .grammar-pane {
     padding: var(--edge-horizontal-padding);
-    background-color: var(--background-alt);
     display: none;
   }
 

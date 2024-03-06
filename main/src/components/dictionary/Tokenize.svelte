@@ -105,18 +105,17 @@
       </div>
     {/if}
   </div>
-  <ToolbarWithPane
-    {selectedTool}
-    {grammars}
-    sentence={searchText}
-    showClose={false}
-    hideTools={searchText === ""}
-    {changeSelectedTool}
-  />
   {#if searchText !== ""}
     <div class="tokensview">
       <SentenceView tokens={searchTokens} bind:selectedCharAt />
     </div>
+    <ToolbarWithPane
+      {selectedTool}
+      {grammars}
+      sentence={searchText}
+      tooltipMode={false}
+      {changeSelectedTool}
+    />
     <div class="entries">
       <DicEntriesView {entries} />
     </div>
@@ -152,7 +151,12 @@
     display: flex;
     align-items: center;
     padding: 6px var(--edge-horizontal-padding) 0 var(--edge-horizontal-padding);
-    background-color: var(--background-dark);
+    background-color: var(--background-alt);
+  }
+
+  .header.action-button-mode {
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--border);
   }
 
   .searchbar {
@@ -225,7 +229,7 @@
   }
 
   .action-buttons {
-    margin-top: 64px;
+    margin-top: 48px;
     width: 100%;
 
     display: flex;
@@ -249,7 +253,6 @@
     max-height: 120px;
     overflow-y: auto;
     padding: 6px var(--edge-horizontal-padding);
-    border-bottom: 1px solid var(--border);
     background-color: var(--background-alt);
   }
 

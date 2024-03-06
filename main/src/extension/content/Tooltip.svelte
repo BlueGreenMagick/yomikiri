@@ -77,6 +77,7 @@
     grammars={tokenizeResult.grammars}
     {sentence}
     {selectedTool}
+    tooltipMode={true}
     {changeSelectedTool}
   />
   <div class="dic-entries-container">

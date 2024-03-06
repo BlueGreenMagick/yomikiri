@@ -7,18 +7,24 @@
   export let selectedTool: Tools | null;
   export let grammars: GrammarInfo[] = [];
   export let sentence: string;
-  export let showClose: boolean = true;
-  export let hideTools: boolean = false;
+  export let tooltipMode: boolean;
 
   export let changeSelectedTool: (tool: Tools | null) => any;
 </script>
 
-<div class="toolbar-with-pane">
+<div
+  class="toolbar-with-pane"
+  style:--toolbar-foreground={tooltipMode
+    ? "var(--background-alt)"
+    : "var(--background-dark)"}
+  style:--toolbar-background={tooltipMode
+    ? "var(--background-dark)"
+    : "var(--background-alt)"}
+>
   <Toolbar
     grammarDisabled={grammars.length == 0}
     {selectedTool}
-    {showClose}
-    {hideTools}
+    {tooltipMode}
     {changeSelectedTool}
   />
   <div class="tools-pane" class:hidden={selectedTool === null}>
@@ -30,10 +36,11 @@
 <style>
   .toolbar-with-pane {
     flex: 0 1 auto;
+    border-bottom: 1px solid var(--border);
   }
 
   .tools-pane {
-    border-bottom: 1px solid var(--border);
+    background-color: var(--toolbar-foreground);
     max-height: 160px;
     overflow-y: auto;
   }

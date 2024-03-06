@@ -12,8 +12,7 @@
   export let selectedTool: Tools | null = null;
   export let translateDisabled: boolean = false;
   export let grammarDisabled: boolean = false;
-  export let showClose: boolean;
-  export let hideTools: boolean;
+  export let tooltipMode: boolean;
 
   export let changeSelectedTool: (tool: Tools | null) => any;
 
@@ -43,32 +42,30 @@
   }
 </script>
 
-<div class="toolbar">
+<div class="toolbar" class:tooltip={tooltipMode}>
   <div class="left buttons">
-    {#if !hideTools}
-      <div
-        class="tool-button"
-        class:selected={selectedTool === "translate"}
-        class:disabled={translateDisabled}
-        title="Translate sentence"
-        on:click={selectTranslate}
-      >
-        <div class="icon">{@html IconLanguage}</div>
-      </div>
+    <div
+      class="tool-button"
+      class:selected={selectedTool === "translate"}
+      class:disabled={translateDisabled}
+      title="Translate sentence"
+      on:click={selectTranslate}
+    >
+      <div class="icon">{@html IconLanguage}</div>
+    </div>
 
-      <div
-        class="tool-button"
-        class:selected={selectedTool === "grammar"}
-        class:disabled={grammarDisabled}
-        title="Grammar"
-        on:click={selectGrammar}
-      >
-        <div class="icon">{@html IconSchool}</div>
-      </div>
-    {/if}
+    <div
+      class="tool-button"
+      class:selected={selectedTool === "grammar"}
+      class:disabled={grammarDisabled}
+      title="Grammar"
+      on:click={selectGrammar}
+    >
+      <div class="icon">{@html IconSchool}</div>
+    </div>
   </div>
   <div class="right buttons">
-    {#if showClose}
+    {#if tooltipMode}
       <div class="tool-button" title="Close" on:click={closeTooltip}>
         <div class="icon">{@html IconClose}</div>
       </div>
@@ -79,7 +76,7 @@
 <style>
   .toolbar {
     width: 100%;
-    background-color: var(--background-dark);
+    background-color: var(--toolbar-background);
     height: 2.2em;
     display: flex;
   }
@@ -97,7 +94,7 @@
   }
 
   .tool-button {
-    background-color: var(--background-dark);
+    background-color: var(--toolbar-background);
     padding: 0.5em 1.2em;
   }
 
@@ -105,12 +102,18 @@
     cursor: pointer;
   }
 
-  :global(html.desktop) .tool-button:not(.disabled):not(.selected):hover {
+  :global(html.desktop)
+    .tooltip
+    .tool-button:not(.disabled):not(.selected):hover {
     filter: brightness(1.1);
   }
 
+  :global(html.desktop) .tool-button:not(.disabled):not(.selected):hover {
+    filter: brightness(0.9);
+  }
+
   .tool-button.selected {
-    background-color: var(--background-alt);
+    background-color: var(--toolbar-foreground);
   }
 
   .icon {
