@@ -12,7 +12,8 @@
   export let selectedTool: Tools | null = null;
   export let translateDisabled: boolean = false;
   export let grammarDisabled: boolean = false;
-  export let showClose;
+  export let showClose: boolean;
+  export let hideTools: boolean;
 
   export let changeSelectedTool: (tool: Tools | null) => any;
 
@@ -44,25 +45,27 @@
 
 <div class="toolbar">
   <div class="left buttons">
-    <div
-      class="tool-button"
-      class:selected={selectedTool === "translate"}
-      class:disabled={translateDisabled}
-      title="Translate sentence"
-      on:click={selectTranslate}
-    >
-      <div class="icon">{@html IconLanguage}</div>
-    </div>
+    {#if !hideTools}
+      <div
+        class="tool-button"
+        class:selected={selectedTool === "translate"}
+        class:disabled={translateDisabled}
+        title="Translate sentence"
+        on:click={selectTranslate}
+      >
+        <div class="icon">{@html IconLanguage}</div>
+      </div>
 
-    <div
-      class="tool-button"
-      class:selected={selectedTool === "grammar"}
-      class:disabled={grammarDisabled}
-      title="Grammar"
-      on:click={selectGrammar}
-    >
-      <div class="icon">{@html IconSchool}</div>
-    </div>
+      <div
+        class="tool-button"
+        class:selected={selectedTool === "grammar"}
+        class:disabled={grammarDisabled}
+        title="Grammar"
+        on:click={selectGrammar}
+      >
+        <div class="icon">{@html IconSchool}</div>
+      </div>
+    {/if}
   </div>
   <div class="right buttons">
     {#if showClose}
@@ -77,7 +80,7 @@
   .toolbar {
     width: 100%;
     background-color: var(--background-dark);
-
+    height: 28px;
     display: flex;
   }
 

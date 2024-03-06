@@ -81,7 +81,7 @@
 </script>
 
 <div class="search">
-  <div class="header" class:entry-mode={!actionButtons}>
+  <div class="header" class:action-button-mode={searchText === ""}>
     <div class="searchbar">
       <div class="icon icon-search">{@html IconSearch}</div>
       <input
@@ -105,15 +105,15 @@
       </div>
     {/if}
   </div>
-
+  <ToolbarWithPane
+    {selectedTool}
+    {grammars}
+    sentence={searchText}
+    showClose={false}
+    hideTools={searchText === ""}
+    {changeSelectedTool}
+  />
   {#if searchText !== ""}
-    <ToolbarWithPane
-      {selectedTool}
-      {grammars}
-      sentence={searchText}
-      showClose={false}
-      {changeSelectedTool}
-    />
     <div class="tokensview">
       <SentenceView tokens={searchTokens} bind:selectedCharAt />
     </div>
@@ -151,11 +151,8 @@
   .header {
     display: flex;
     align-items: center;
-    padding: 6px var(--edge-horizontal-padding);
+    padding: 6px var(--edge-horizontal-padding) 0 var(--edge-horizontal-padding);
     background-color: var(--background-dark);
-  }
-  y .header.entr-mode {
-    padding-bottom: 0px;
   }
 
   .searchbar {
