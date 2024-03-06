@@ -9,27 +9,29 @@
   import { Tooltip } from "~/extension/content/tooltip";
   import { Highlighter } from "~/extension/content/highlight";
 
-  export let selected: Tools | null = null;
+  export let selectedTool: Tools | null = null;
   export let translateDisabled: boolean = false;
   export let grammarDisabled: boolean = false;
+
+  export let changeSelectedTool: (tool: Tools | null) => any;
 
   function selectTranslate() {
     if (translateDisabled) return;
 
-    if (selected === "translate") {
-      selected = null;
+    if (selectedTool === "translate") {
+      changeSelectedTool(null);
     } else {
-      selected = "translate";
+      changeSelectedTool("translate");
     }
   }
 
   function selectGrammar() {
     if (grammarDisabled) return;
 
-    if (selected === "grammar") {
-      selected = null;
+    if (selectedTool === "grammar") {
+      changeSelectedTool(null);
     } else {
-      selected = "grammar";
+      changeSelectedTool("grammar");
     }
   }
 
@@ -43,7 +45,7 @@
   <div class="left buttons">
     <div
       class="tool-button"
-      class:selected={selected === "translate"}
+      class:selected={selectedTool === "translate"}
       class:disabled={translateDisabled}
       title="Translate sentence"
       on:click={selectTranslate}
@@ -53,7 +55,7 @@
 
     <div
       class="tool-button"
-      class:selected={selected === "grammar"}
+      class:selected={selectedTool === "grammar"}
       class:disabled={grammarDisabled}
       title="Grammar"
       on:click={selectGrammar}

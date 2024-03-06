@@ -7,13 +7,12 @@
   } from "~/ankiNoteBuilder";
   import AddToAnki from "./AddToAnki.svelte";
   import { createEventDispatcher, tick } from "svelte";
-  import Toolbar, { type Tools } from "~/components/dictionary/Toolbar.svelte";
-  import GrammarPane from "~/components/dictionary/GrammarPane.svelte";
+  import { type Tools } from "~/components/dictionary/Toolbar.svelte";
   import { TokenizeResult } from "~/backend";
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
   import { Toast } from "~/toast";
   import Utils from "~/utils";
-  import TranslatePane from "~/components/dictionary/TranslatePane.svelte";
+  import ToolbarWithPane from "~/components/dictionary/ToolbarWithPane.svelte";
 
   interface Events {
     updateHeight: void;
@@ -35,11 +34,6 @@
   async function onTokenizeResultChanged(tokenizeResult: TokenizeResult) {
     previewIsVisible = false;
     selectedTool = null;
-    await tick();
-    dispatch("updateHeight");
-  }
-
-  async function onSelectedToolChanged(_tool: Tools | null) {
     await tick();
     dispatch("updateHeight");
   }
@@ -68,23 +62,23 @@
     dispatch("updateHeight");
   }
 
-  $: grammarDisabled = tokenizeResult.grammars.length == 0;
+  async function changeSelectedTool(tool: Tools | null): Promise<void> {
+    selectedTool = tool;
+    await tick();
+    dispatch("updateHeight");
+  }
+
   $: sentence = tokenizeResult.tokens.map((t) => t.text).join("");
-  $: onSelectedToolChanged(selectedTool);
   $: onTokenizeResultChanged(tokenizeResult);
 </script>
 
 <div class="tooltip">
-  <div class="toolbar-container">
-    <Toolbar {grammarDisabled} bind:selected={selectedTool} />
-    <div class="tools-pane" class:hidden={selectedTool === null}>
-      <TranslatePane {sentence} shown={selectedTool === "translate"} />
-      <GrammarPane
-        grammars={tokenizeResult.grammars}
-        shown={selectedTool === "grammar"}
-      />
-    </div>
-  </div>
+  <ToolbarWithPane
+    grammars={tokenizeResult.grammars}
+    {sentence}
+    {selectedTool}
+    {changeSelectedTool}
+  />
   <div class="dic-entries-container">
     <DicEntriesView
       entries={tokenizeResult.entries}
@@ -105,23 +99,9 @@
     flex-direction: column;
   }
 
-  .toolbar-container {
-    flex: 0 1 auto;
-  }
-
   .dic-entries-container {
     flex: 1 1 auto;
     overflow-y: auto;
-  }
-
-  .tools-pane {
-    border-bottom: 1px solid var(--border);
-    max-height: 160px;
-    overflow-y: auto;
-  }
-
-  .tools-pane.hidden {
-    display: none;
   }
 
   .add-to-anki-container {
