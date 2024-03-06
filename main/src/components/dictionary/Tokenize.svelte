@@ -7,7 +7,7 @@
   import IconSettings from "@icons/settings.svg";
   import IconPower from "@icons/power.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
-  import TokensView from "./TokensView.svelte";
+  import SentenceView from "./SentenceView.svelte";
   import { Backend } from "~/backend";
   import DicEntriesView from "./DicEntriesView.svelte";
   import { createEventDispatcher } from "svelte";
@@ -95,7 +95,7 @@
     {/if}
   </div>
   <div class="tokensview">
-    <TokensView tokens={searchTokens} bind:selectedCharAt />
+    <SentenceView tokens={searchTokens} bind:selectedCharAt />
   </div>
   {#if searchText !== ""}
     <div class="entries">

@@ -27,7 +27,7 @@
   $: updateSelectedToken(tokens, selectedCharAt);
 </script>
 
-<div>
+<div class="sentence-view">
   {#each tokens as token, idx}
     <div
       class="token"
@@ -49,12 +49,18 @@
 </div>
 
 <style>
-  div {
-    font-size: 1.2em;
+  .sentence-view {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    font-size: 1.5em;
   }
+
   .token {
-    display: inline-block;
+    display: flex;
     margin: 2px;
+    min-height: 1.6em;
+    align-items: flex-end;
   }
   .token.selected:not(.invalid) a {
     color: var(--accent);
