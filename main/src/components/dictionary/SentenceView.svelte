@@ -36,6 +36,7 @@
     >
       <a
         href={"#"}
+        draggable="false"
         on:click={() => {
           if (!invalidTokens[idx]) {
             selectedCharAt = token.start;
@@ -62,6 +63,7 @@
     min-height: 1.6em;
     align-items: flex-end;
     user-select: none;
+    -webkit-user-select: none;
   }
   .token.selected:not(.invalid) a {
     color: var(--accent);
