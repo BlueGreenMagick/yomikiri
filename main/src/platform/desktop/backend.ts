@@ -5,8 +5,8 @@ import {
 } from "../common/backend";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import initWasm from "@yomikiri/yomikiri-rs";
-import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
-import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
+import ENYomikiridict from "@yomikiri/jmdict/english.yomikiridict";
+import ENYomikiriIndex from "@yomikiri/jmdict/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";

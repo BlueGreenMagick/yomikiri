@@ -2,5 +2,5 @@ packages:
   - "main"
   - "safari"
   - "rust/pkg"
-  - "dictionary"
+  - "jmdict"
   - "extra/generate-license"

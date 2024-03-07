@@ -1,10 +1,9 @@
-use csv;
 use std::collections::HashSet;
 use std::error::Error;
 use std::path::Path;
 use std::{cmp, fs};
-use yomikiri_dictionary::parse_json_file;
-use yomikiri_dictionary_types::{Entry, PartOfSpeech};
+use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
+use yomikiri_jmdict::read_yomikiri_dictionary;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
 type TResult<T> = core::result::Result<T, Box<dyn Error>>;
@@ -191,7 +190,7 @@ fn transform_lex(
         items.push(item);
     }
 
-    let jmdict_entries = parse_json_file(index_path, dict_path)?;
+    let jmdict_entries = read_yomikiri_dictionary(index_path, dict_path)?;
     add_words_in_jmdict(&mut items, &jmdict_entries)?;
     let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 

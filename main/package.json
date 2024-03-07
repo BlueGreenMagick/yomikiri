@@ -50,7 +50,7 @@
     "web-ext": "^7.6.2"
   },
   "dependencies": {
-    "@yomikiri/dictionary": "workspace:*",
+    "@yomikiri/jmdict": "workspace:*",
     "@yomikiri/generate-license": "workspace:*",
     "@yomikiri/yomikiri-rs": "workspace:*",
     "normalize.css": "^8.0.1",

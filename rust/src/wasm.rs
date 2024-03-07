@@ -7,7 +7,7 @@ use bincode::Options;
 use js_sys::Uint8Array;
 use std::io::Cursor;
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary_types::DictIndexItem;
+use yomikiri_dictionary::file::DictTermIndex;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"
@@ -54,7 +54,7 @@ impl Backend {
         utils::set_panic_hook();
         utils::setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::try_new(index_bytes, entries_bytes)?;
+        let dictionary = Dictionary::try_new(index_bytes, entries_bytes.to_vec())?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
@@ -83,24 +83,5 @@ impl Backend {
                 e.to_string()
             ))
         })
-    }
-}
-
-#[cfg(wasm)]
-impl Dictionary<Cursor<&[u8]>> {
-    // UInt8Array are copied in when passed from js
-    pub fn try_new(
-        index_bytes: &[u8],
-        entries_bytes: &Uint8Array,
-    ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictIndexItem> = options.deserialize_from(index_bytes).map_err(|e| {
-            YomikiriError::InvalidDictionaryFile(format!(
-                "Failed to parse dictionary index file. {}",
-                e.to_string()
-            ))
-        })?;
-        let cursor = Cursor::new(entries_bytes.to_vec());
-        Ok(Dictionary::new(index, cursor))
     }
 }

@@ -8,8 +8,8 @@ license = "MIT"
 [dependencies]
 lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-yomikiri-dictionary = { path = "../dictionary", default-features = false }
-yomikiri-dictionary-types = { path = "../dictionary-types" }
+yomikiri-jmdict = { path = "../jmdict", default-features = false }
+yomikiri-dictionary = { path = "../dictionary" }
 yomikiri-unidic-types = { path = "../unidic-types" }
 csv = "1.2"
 walkdir = "2.3"

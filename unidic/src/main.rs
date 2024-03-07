@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let transform_dir = crate_dir.join("transformed");
     let output_dir = crate_dir.join("output");
     let src_dir = crate_dir.join("src");
-    let resource_dir = crate_dir.join("../dictionary/resources");
+    let resource_dir = crate_dir.join("../jmdict/resources");
 
     if !output_dir.try_exists()? {
         std::fs::create_dir(&output_dir)?;

@@ -3,7 +3,7 @@ use std::env;
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
-use yomikiri_dictionary::{parse_xml_file, write_json_files};
+use yomikiri_jmdict::{parse_xml_file, write_yomikiri_dictionary};
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
@@ -26,10 +26,9 @@ fn main() -> Result<()> {
     let entries = parse_xml_file(&jmdict_file_path).unwrap();
 
     println!("Writing yomikiridict and yomikiriindex...");
-    let largest_size = write_json_files(&output_index_path, &output_path, &entries).unwrap();
+    write_yomikiri_dictionary(&output_index_path, &output_path, &entries).unwrap();
 
     println!("Data writing complete.");
-    println!("Largest entry binary size is {}", largest_size);
     Ok(())
 }
 

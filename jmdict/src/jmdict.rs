@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use serde::Serialize;
-use yomikiri_dictionary_types::{Entry, Form, PartOfSpeech, Reading, Sense};
+use yomikiri_dictionary::entry::{Entry, Form, PartOfSpeech, Reading, Sense};
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]

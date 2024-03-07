@@ -1,91 +1,97 @@
 use crate::error::{YResult, YomikiriError};
 use bincode::Options;
 use std::fs::File;
-use std::io::{BufReader, Read, Seek, SeekFrom};
-use yomikiri_dictionary_types::{DictIndexItem, Entry, ENTRY_BUFFER_SIZE};
+use std::io::{BufReader, Cursor, Read, Seek};
+use yomikiri_dictionary::entry::Entry;
+use yomikiri_dictionary::file::{read_entries_with_buffers, DictTermIndex, BUFFER_SIZE};
 
 pub struct Dictionary<R: Seek + Read> {
-    index: Vec<DictIndexItem>,
+    index: Vec<DictTermIndex>,
     entries_reader: R,
-    // buffer for reading entry
-    buf: Box<[u8; ENTRY_BUFFER_SIZE]>,
+    extraction_buffer: Vec<u8>,
+    chunk_buffer: Vec<u8>,
 }
 
 impl<R: Seek + Read> Dictionary<R> {
-    pub fn new(index: Vec<DictIndexItem>, entries_reader: R) -> Dictionary<R> {
+    pub fn new(index: Vec<DictTermIndex>, entries_reader: R) -> Dictionary<R> {
         Dictionary {
             index,
             entries_reader,
-            buf: Box::new([0; ENTRY_BUFFER_SIZE]),
+            extraction_buffer: vec![0; BUFFER_SIZE],
+            chunk_buffer: vec![0; BUFFER_SIZE],
         }
     }
 
     pub fn search(&mut self, term: &str) -> YResult<Vec<Entry>> {
-        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.key) {
+        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.term) {
             let item = &self.index[idx];
-            let mut entries = Vec::<Entry>::with_capacity(item.offsets.len());
-            for i in 0..item.offsets.len() {
-                let offset = item.offsets[i];
-                let size = item.sizes[i];
-                let buf_entry = &mut self.buf[0..(size as usize)];
-                self.entries_reader.seek(SeekFrom::Start(offset as u64))?;
-                self.entries_reader.read_exact(buf_entry)?;
-                let entry: Entry = serde_json::from_slice(buf_entry).map_err(|e| {
-                    YomikiriError::InvalidDictionaryFile(format!(
-                        "Failed to parse dictionary entry JSON. {}",
-                        e
-                    ))
-                })?;
-                entries.push(entry)
-            }
+            let entries = read_entries_with_buffers(
+                &mut self.chunk_buffer,
+                &mut self.extraction_buffer,
+                &mut self.entries_reader,
+                &item.entry_indexes,
+            )
+            .map_err(|e| {
+                YomikiriError::InvalidDictionaryFile(format!(
+                    "Failed to parse dictionary entry JSON. {}",
+                    e
+                ))
+            })?;
             Ok(entries)
         } else {
-            Ok(Vec::with_capacity(0))
+            Ok(Vec::new())
         }
     }
 
     /// Returns true only if there is a dictionary term
     /// that starts with `prefix` and is not `prefix`
     pub fn has_starts_with_excluding(&mut self, prefix: &str) -> bool {
-        let next_idx = match self.index.binary_search_by_key(&prefix, |item| &item.key) {
+        let next_idx = match self.index.binary_search_by_key(&prefix, |item| &item.term) {
             Ok(idx) => idx + 1,
             Err(idx) => idx,
         };
         if next_idx == self.index.len() {
             false
         } else {
-            self.index[next_idx].key.starts_with(prefix)
+            self.index[next_idx].term.starts_with(prefix)
         }
     }
 
     pub fn contains(&self, term: &str) -> bool {
         self.index
-            .binary_search_by_key(&term, |item| &item.key)
+            .binary_search_by_key(&term, |item| &item.term)
             .is_ok()
     }
 
     /// Returns json text of entries
     pub fn search_json(&mut self, term: &str) -> YResult<Vec<String>> {
-        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.key) {
+        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.term) {
             let item = &self.index[idx];
-            let mut entries = Vec::<String>::with_capacity(item.offsets.len());
-            for i in 0..item.offsets.len() {
-                let offset = item.offsets[i];
-                let size = item.sizes[i];
-                let buf_entry = &mut self.buf[0..(size as usize)];
-                self.entries_reader.seek(SeekFrom::Start(offset as u64))?;
-                self.entries_reader.read_exact(buf_entry)?;
-                let entry_json = String::from_utf8(buf_entry.to_vec()).map_err(|_| {
+            let entries = read_entries_with_buffers(
+                &mut self.chunk_buffer,
+                &mut self.extraction_buffer,
+                &mut self.entries_reader,
+                &item.entry_indexes,
+            )
+            .map_err(|e| {
+                YomikiriError::InvalidDictionaryFile(format!(
+                    "Failed to parse dictionary entry JSON. {}",
+                    e
+                ))
+            })?;
+            let jsons = entries
+                .iter()
+                .map(serde_json::to_string)
+                .collect::<serde_json::Result<Vec<String>>>()
+                .map_err(|e| {
                     YomikiriError::InvalidDictionaryFile(format!(
-                        "Failed to parse dictionary entry JSON at offset {} as UTF-8.",
-                        offset
+                        "Failed to parse dictionary entry JSON. {}",
+                        e
                     ))
                 })?;
-                entries.push(entry_json);
-            }
-            Ok(entries)
+            Ok(jsons)
         } else {
-            Ok(Vec::with_capacity(0))
+            Ok(Vec::new())
         }
     }
 }
@@ -95,7 +101,7 @@ impl Dictionary<File> {
         let index_file = File::open(index_path)?;
         let reader = BufReader::new(index_file);
         let options = bincode::DefaultOptions::new();
-        let index: Vec<DictIndexItem> = options.deserialize_from(reader).map_err(|e| {
+        let index: Vec<DictTermIndex> = options.deserialize_from(reader).map_err(|e| {
             YomikiriError::InvalidDictionaryFile(format!(
                 "Failed to parse dictionary index file. {}",
                 e
@@ -103,5 +109,23 @@ impl Dictionary<File> {
         })?;
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))
+    }
+}
+
+impl Dictionary<Cursor<&[u8]>> {
+    // UInt8Array are copied in when passed from js
+    pub fn try_new(
+        index_bytes: &[u8],
+        entries_bytes: Vec<u8>,
+    ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
+        let options = bincode::DefaultOptions::new();
+        let index: Vec<DictTermIndex> = options.deserialize_from(index_bytes).map_err(|e| {
+            YomikiriError::InvalidDictionaryFile(format!(
+                "Failed to parse dictionary index file. {}",
+                e.to_string()
+            ))
+        })?;
+        let cursor = Cursor::new(entries_bytes);
+        Ok(Dictionary::new(index, cursor))
     }
 }

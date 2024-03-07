@@ -2273,6 +2273,17 @@ checksum = "b6d12cb7a57bbf2ab670ed9545bae3648048547f9039279a89ce000208e585c1"
 name = "yomikiri-dictionary"
 version = "0.1.0"
 dependencies = [
+ "byteorder",
+ "flate2",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "yomikiri-jmdict"
+version = "0.1.0"
+dependencies = [
  "RustyXML",
  "bincode",
  "flate2",
@@ -2282,14 +2293,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "ureq",
- "yomikiri-dictionary-types",
-]
-
-[[package]]
-name = "yomikiri-dictionary-types"
-version = "0.1.0"
-dependencies = [
- "serde",
+ "yomikiri-dictionary",
 ]
 
 [[package]]
@@ -2316,7 +2320,7 @@ dependencies = [
  "wasm-bindgen-test",
  "wasm-logger",
  "web-sys",
- "yomikiri-dictionary-types",
+ "yomikiri-dictionary",
  "yomikiri-unidic-types",
 ]
 
@@ -2332,7 +2336,7 @@ dependencies = [
  "ureq",
  "walkdir",
  "yomikiri-dictionary",
- "yomikiri-dictionary-types",
+ "yomikiri-jmdict",
  "yomikiri-unidic-types",
  "zip",
 ]
