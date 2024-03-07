@@ -1,7 +1,7 @@
 [workspace]
 members = [
   "rust",
-  "dictionary",
+  "jmdict",
   "dictionary-types",
   "unidic",
   "unidic-types",

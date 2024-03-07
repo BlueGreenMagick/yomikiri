@@ -6,7 +6,7 @@
   "author": "BlueGreenMagick",
   "license": "MIT",
   "scripts": {
-    "prepare:dictionary": "cd ./dictionary; cargo run",
+    "prepare:dictionary": "cd ./jmdict; cargo run",
     "prepare:unidic": "cd ./unidic; cargo run",
     "prepare:backend": "./rust/build.sh",
     "build:firefox": "pnpm run --dir ./main build:firefox",
