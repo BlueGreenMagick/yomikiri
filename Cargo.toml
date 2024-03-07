@@ -2,7 +2,7 @@
 members = [
   "rust",
   "jmdict",
-  "dictionary-types",
+  "dictionary",
   "unidic",
   "unidic-types",
   "extra/generate-license/rust",
