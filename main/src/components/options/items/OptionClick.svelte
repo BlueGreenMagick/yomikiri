@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
+  import IconChevronForward from "@icons/chevron-forward.svg";
 
   export let title: string;
   export let description: string = "";
@@ -18,21 +19,32 @@
   }
 </script>
 
-<div on:keydown={onKeyDown}>
+<div
+  class="option-click"
+  on:keydown={onKeyDown}
+  on:click={() => {
+    dispatch("trigger");
+  }}
+>
   <OptionBase {title} {description} {disabled}>
-    <button
-      {disabled}
-      on:click={() => {
-        dispatch("trigger");
-      }}>{buttonText}</button
-    >
+    {#if !disabled}
+      <div class="icon">{@html IconChevronForward}</div>
+    {/if}
   </OptionBase>
 </div>
 
 <style>
-  button {
-    padding: 2px 4px;
-    min-width: 120px;
-    transition: background-color 0.125s ease-in-out;
+  .option-click:hover {
+    cursor: pointer;
+    background-color: var(--background-alt-light);
+  }
+
+  .option-click:hover .icon {
+    color: var(--button-light);
+  }
+  .icon {
+    width: 18px;
+    height: 18px;
+    color: var(--button-bg);
   }
 </style>

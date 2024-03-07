@@ -22,6 +22,7 @@
 <style>
   .option-item {
     margin: 0px 8px;
+    overflow: hidden;
   }
   .option-item.disabled .left {
     opacity: 0.6;
