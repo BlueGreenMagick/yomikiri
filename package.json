@@ -4,7 +4,7 @@
   "description": "Web extension to view definition for Japanese words and add to Anki.",
   "private": true,
   "author": "BlueGreenMagick",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "scripts": {
     "prepare:dictionary": "cd ./dictionary; cargo run",
     "prepare:unidic": "cd ./unidic; cargo run",
