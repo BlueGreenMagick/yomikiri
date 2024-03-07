@@ -21,30 +21,49 @@
 
 <div
   class="option-click"
+  class:disabled
   on:keydown={onKeyDown}
   on:click={() => {
-    dispatch("trigger");
+    if (!disabled) {
+      dispatch("trigger");
+    }
   }}
 >
   <OptionBase {title} {description} {disabled}>
-    {#if !disabled}
+    <div class="button">
+      <div class="button-text">{buttonText}</div>
       <div class="icon">{@html IconChevronForward}</div>
-    {/if}
+    </div>
   </OptionBase>
 </div>
 
 <style>
-  .option-click:hover {
+  .option-click {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .option-click.disabled {
+    filter: opacity(0.75);
+  }
+
+  .option-click:not(.disabled):hover {
     cursor: pointer;
     background-color: var(--background-alt-light);
   }
 
-  .option-click:hover .icon {
+  .button {
+    color: var(--button-bg);
+    display: flex;
+    align-items: center;
+  }
+
+  .option-click:not(.disabled):hover .button {
     color: var(--button-light);
   }
+
   .icon {
     width: 18px;
     height: 18px;
-    color: var(--button-bg);
   }
 </style>
