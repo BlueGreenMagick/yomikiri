@@ -86,6 +86,14 @@ export namespace Platform {
       version: manifest.version 
     }
   }
+
+  export function hasTTS(): boolean {
+    return false;
+  }
+
+  export async function playTTS(text: string): Promise<void> {
+    throw new Error("Not implemented!")
+  }
 }
 
 Platform satisfies Module;

@@ -18,6 +18,7 @@ export interface MessageMap {
   tabId: [null, number | undefined];
   stateEnabledChanged: [boolean, void];
   translate: [string, TranslateResult];
+  tts: [string, void];
   // ios
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
@@ -385,6 +386,12 @@ export namespace BrowserApi {
     iAction.setBadgeBackgroundColor({
       color
     });
+  }
+
+  export function speakJapanese(text: string): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    chrome.tts.speak(text, {"lang": "ja-jp"}, resolve);
+    return promise;
   }
 
   function attachRequestHandler() {

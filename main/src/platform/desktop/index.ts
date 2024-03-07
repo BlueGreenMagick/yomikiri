@@ -1,6 +1,7 @@
 import { BrowserApi } from "~/extension/browserApi";
 import type { Module, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
+import { PLATFORM } from "~/generated";
 
 export namespace Platform {
   export const IS_DESKTOP = true;
@@ -25,6 +26,22 @@ export namespace Platform {
     const manifest = BrowserApi.manifest();
     return {
       version: manifest.version 
+    }
+  }
+
+  export function hasTTS(): boolean {
+    return (PLATFORM === "chrome")
+  }
+
+  export async function playTTS(text: string): Promise<void> {
+    if (!hasTTS()) {
+      throw new Error("Not implemented")
+    }
+
+    if (BrowserApi.context === "contentScript") {
+      await BrowserApi.request("tts", text);
+    } else {
+      BrowserApi.speakJapanese(text);
     }
   }
 }

@@ -65,6 +65,14 @@ export namespace Platform {
   export async function versionInfo(): Promise<VersionInfo> {
     return await messageWebview("versionInfo", null);
   }
+
+  export function hasTTS(): boolean {
+    return false;
+  }
+
+  export async function playTTS(text: string): Promise<void> {
+    throw new Error("Not implemented!")
+  }
 }
 
 Platform satisfies Module;

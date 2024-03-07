@@ -13,11 +13,13 @@
   import { Entry, Sense, type GroupedSense } from "~/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
+  import IconVolumeHigh from "@icons/volume-high.svg";
   import { createEventDispatcher } from "svelte";
   import { RubyString } from "~/japanese";
   import Config from "~/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
+  import { Platform } from "@platform";
 
   export let entry: Entry;
   export let model: DicEntriesModel;
@@ -45,6 +47,10 @@
     model.selectSense(entry, sense);
   }
 
+  function playAudio() {
+    Platform.playTTS(mainForm);
+  }
+
   $: mainForm = Entry.mainForm(entry);
   $: readingForForm = Entry.readingForForm(entry, mainForm, false).reading;
   $: mainFormRuby = RubyString.toHtml(
@@ -61,12 +67,21 @@
     <div class="icons">
       {#if Config.get("anki.enabled")}
         <div
-          class="icon"
+          class="icon icon-anki-add"
           class:highlight={$selectedSense?.entry === entry}
           on:click={selectEntryForAnki}
           on:mousedown|preventDefault|stopPropagation={() => {}}
         >
           {@html IconAddCircleOutline}
+        </div>
+      {/if}
+      {#if Platform.hasTTS()}
+        <div
+          class="icon"
+          on:click={playAudio}
+          on:mousedown|preventDefault|stopPropagation={() => {}}
+        >
+          {@html IconVolumeHigh}
         </div>
       {/if}
     </div>
@@ -112,7 +127,7 @@
     background-color: rgba(0, 0, 0, 0.07);
     border-radius: 3px;
   }
-  .icon.highlight {
+  .icon-anki-add.highlight {
     color: var(--accent);
     fill: var(--accent);
   }

@@ -68,6 +68,11 @@ async function stateEnabledChanged(value: boolean): Promise<void> {
   Config.set("state.enabled", value, false);
 }
 
+async function tts(text: string): Promise<void> {
+  await ensureInitialized();
+  BrowserApi.speakJapanese(text);
+}
+
 ensureInitialized();
 
 BrowserApi.handleRequest("searchTerm", searchTerm);
@@ -76,6 +81,7 @@ BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
 BrowserApi.handleRequest("tabId", tabId);
 BrowserApi.handleRequest("translate", handleTranslate);
 BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
+BrowserApi.handleRequest("tts", tts);
 
 // expose object to window for debugging purposes
 self.backend = Backend;

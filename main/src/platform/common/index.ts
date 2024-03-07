@@ -11,6 +11,8 @@ export interface Module {
   /** Api must be initialized */
   initialize: () => void;
   versionInfo: () => Promise<VersionInfo>;
+  hasTTS: () => boolean;
+  playTTS: (text: string) => Promise<void>;
 }
 
 export interface VersionInfo {
