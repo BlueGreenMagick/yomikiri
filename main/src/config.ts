@@ -1,5 +1,6 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
+import { VERSION } from "./generated";
 
 /** Must not be undefined */
 export interface Configuration {
@@ -10,6 +11,8 @@ export interface Configuration {
   "anki.connect_url": string;
   "anki.template": NoteData | null;
   "anki.enabled": boolean;
+  /** Yomikiri semantic version on last config save */
+  "version": string
 }
 
 const defaultOptions: Configuration = {
@@ -20,6 +23,7 @@ const defaultOptions: Configuration = {
   "anki.connect_url": "http://127.0.0.1",
   "anki.template": null,
   "anki.enabled": false,
+  "version": VERSION
 };
 
 export interface StoredConfiguration extends Partial<Configuration> {
@@ -42,6 +46,7 @@ export namespace Config {
   /** Platform must be initialized. */
   export async function initialize(): Promise<void> {
     _storage = await Platform.loadConfig();
+    migrate()
 
     Config.initialized = true;
   }
@@ -104,6 +109,12 @@ export namespace Config {
 --font-size: ${fontSize}px;
 --japanese-font: "${escapedFont}";
     }`;
+  }
+
+  function migrate() {
+    if (_storage["version"] !== defaultOptions["version"]) {
+      set("version", defaultOptions["version"])
+    }
   }
 }
 
