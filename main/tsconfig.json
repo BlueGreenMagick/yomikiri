@@ -24,7 +24,7 @@
       ],
       "paths": {
         "~/*": ["./*"],
-        "@icons/*": ["assets/icons/*"],
+        "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
         "@platform": ["platform/desktop/index"],
         "@platform/*": ["platform/desktop/*"]
       }

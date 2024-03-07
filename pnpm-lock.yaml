@@ -106,6 +106,9 @@ importers:
       esbuild-svelte:
         specifier: ^0.7.3
         version: 0.7.4(esbuild@0.17.19)(svelte@3.59.2)
+      ionicons:
+        specifier: ^7.2.2
+        version: 7.2.2
       jest:
         specifier: ^29.5.0
         version: 29.7.0
@@ -1575,6 +1578,12 @@ packages:
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
     dependencies:
       '@sinonjs/commons': 3.0.1
+    dev: true
+
+  /@stencil/core@4.12.5:
+    resolution: {integrity: sha512-vSyFjY7XSEx0ufa9SebOd437CvnneaTXlCpuGDhjUDxAjGBlu6ie5qHyubobVGBth//aErc6wZPHc6W75Vp3iQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.10.0'}
+    hasBin: true
     dev: true
 
   /@swc/core-darwin-arm64@1.4.5:
@@ -4118,6 +4127,12 @@ packages:
   /invert-kv@3.0.1:
     resolution: {integrity: sha512-CYdFeFexxhv/Bcny+Q0BfOV+ltRlJcd4BBZBYFX/O0u4npJrgZtIcjokegtiSMAvlMTJ+Koq0GBCc//3bueQxw==}
     engines: {node: '>=8'}
+    dev: true
+
+  /ionicons@7.2.2:
+    resolution: {integrity: sha512-I3iYIfc9Q9FRifWyFSwTAvbEABWlWY32i0sAVDDPGYnaIZVugkLCZFbEcrphW6ixVPg8tt1oLwalo/JJwbEqnA==}
+    dependencies:
+      '@stencil/core': 4.12.5
     dev: true
 
   /ip-address@9.0.5:
