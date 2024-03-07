@@ -11,7 +11,7 @@ pub struct Entry {
     pub readings: Vec<Reading>,
     #[serde(rename = "s")]
     pub senses: Vec<Sense>,
-    #[serde(rename = "p")]
+    #[serde(rename = "p", default, skip_serializing_if = "is_zero")]
     pub priority: u16,
 }
 
@@ -207,4 +207,8 @@ impl PartialEq for DictIndexItem {
 
 fn is_false(a: &bool) -> bool {
     !*a
+}
+
+fn is_zero(a: &u16) -> bool {
+    *a == 0
 }
