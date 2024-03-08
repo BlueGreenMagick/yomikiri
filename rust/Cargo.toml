@@ -14,6 +14,10 @@ crate-type = ["cdylib", "rlib", "staticlib"]
 name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 
+[[bin]]
+name = "chunk-wasm"
+path = "chunk_wasm.rs"
+
 [features]
 # uniffi/cli is always enabled when calling uniffi-bindgen
 # but the the lint tool does not know that

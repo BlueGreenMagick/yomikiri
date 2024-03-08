@@ -29,3 +29,8 @@ declare module "*.txt" {
   let content: string;
   export default content;
 }
+
+declare module "*.chunk" {
+  let content: string;
+  export default content;
+}
