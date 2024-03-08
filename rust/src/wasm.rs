@@ -50,11 +50,11 @@ pub struct Backend {
 #[wasm_bindgen]
 impl Backend {
     #[wasm_bindgen(constructor)]
-    pub fn new(index_bytes: &[u8], entries_bytes: &Uint8Array) -> YResult<Backend> {
+    pub fn new(index_bytes: &Uint8Array, entries_bytes: &Uint8Array) -> YResult<Backend> {
         utils::set_panic_hook();
         utils::setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::try_new(index_bytes, entries_bytes.to_vec())?;
+        let dictionary = Dictionary::try_new(&index_bytes.to_vec(), entries_bytes.to_vec())?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
