@@ -1,8 +1,12 @@
+use bincode::Options;
+use yomikiri_dictionary::file::DictTermIndex;
+
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 use std::fs::File;
+use std::io::BufReader;
 use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
@@ -38,5 +42,21 @@ impl Backend {
     pub fn search(&self, term: String) -> YResult<Vec<String>> {
         let mut backend = self.inner.lock().unwrap();
         backend.dictionary.search_json(&term)
+    }
+}
+
+impl Dictionary<File> {
+    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
+        let index_file = File::open(index_path)?;
+        let reader = BufReader::new(index_file);
+        let options = bincode::DefaultOptions::new();
+        let index: Vec<DictTermIndex> = options.deserialize_from(reader).map_err(|e| {
+            YomikiriError::InvalidDictionaryFile(format!(
+                "Failed to parse dictionary index file. {}",
+                e
+            ))
+        })?;
+        let entries_file = File::open(entries_path)?;
+        Ok(Dictionary::new(index, entries_file))
     }
 }

@@ -85,3 +85,21 @@ impl Backend {
         })
     }
 }
+
+impl Dictionary<Cursor<&[u8]>> {
+    // UInt8Array are copied in when passed from js
+    pub fn try_new(
+        index_bytes: &[u8],
+        entries_bytes: Vec<u8>,
+    ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
+        let options = bincode::DefaultOptions::new();
+        let index: Vec<DictTermIndex> = options.deserialize_from(index_bytes).map_err(|e| {
+            YomikiriError::InvalidDictionaryFile(format!(
+                "Failed to parse dictionary index file. {}",
+                e.to_string()
+            ))
+        })?;
+        let cursor = Cursor::new(entries_bytes);
+        Ok(Dictionary::new(index, cursor))
+    }
+}

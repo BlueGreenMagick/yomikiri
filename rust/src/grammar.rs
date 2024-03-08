@@ -3,9 +3,6 @@ use std::borrow::Cow;
 use crate::japanese::{GoDan, GoDanEnding};
 use crate::tokenize::Token;
 
-#[cfg(wasm)]
-use serde::Serialize;
-
 pub struct GrammarRule {
     pub name: &'static str,
     /// short description

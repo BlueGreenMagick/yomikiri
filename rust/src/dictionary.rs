@@ -1,7 +1,5 @@
 use crate::error::{YResult, YomikiriError};
-use bincode::Options;
-use std::fs::File;
-use std::io::{BufReader, Cursor, Read, Seek};
+use std::io::{Read, Seek};
 use yomikiri_dictionary::entry::Entry;
 use yomikiri_dictionary::file::{read_entries_with_buffers, DictTermIndex, BUFFER_SIZE};
 
@@ -93,39 +91,5 @@ impl<R: Seek + Read> Dictionary<R> {
         } else {
             Ok(Vec::new())
         }
-    }
-}
-
-impl Dictionary<File> {
-    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
-        let index_file = File::open(index_path)?;
-        let reader = BufReader::new(index_file);
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictTermIndex> = options.deserialize_from(reader).map_err(|e| {
-            YomikiriError::InvalidDictionaryFile(format!(
-                "Failed to parse dictionary index file. {}",
-                e
-            ))
-        })?;
-        let entries_file = File::open(entries_path)?;
-        Ok(Dictionary::new(index, entries_file))
-    }
-}
-
-impl Dictionary<Cursor<&[u8]>> {
-    // UInt8Array are copied in when passed from js
-    pub fn try_new(
-        index_bytes: &[u8],
-        entries_bytes: Vec<u8>,
-    ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictTermIndex> = options.deserialize_from(index_bytes).map_err(|e| {
-            YomikiriError::InvalidDictionaryFile(format!(
-                "Failed to parse dictionary index file. {}",
-                e.to_string()
-            ))
-        })?;
-        let cursor = Cursor::new(entries_bytes);
-        Ok(Dictionary::new(index, cursor))
     }
 }
