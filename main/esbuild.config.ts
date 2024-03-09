@@ -9,8 +9,9 @@ import postCssImport from "postcss-import";
 import Package from "./package.json" assert { type: "json" };
 import AdmZip from "adm-zip";
 
-const DEVELOPMENT = process.env.NODE_ENV === "development";
-const PRODUCTION = process.env.NODE_ENV === "production";
+
+const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
+const DEVELOPMENT = !PRODUCTION;
 
 const TARGET = process.env.TARGET_PLATFORM;
 

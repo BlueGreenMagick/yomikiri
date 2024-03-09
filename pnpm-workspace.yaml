@@ -4,3 +4,4 @@ packages:
   - "rust/pkg"
   - "jmdict"
   - "extra/generate-license"
+  - "rust"

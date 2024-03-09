@@ -4,5 +4,19 @@
   "description": "JS build script used for yomikiri-rs",
   "author": "BlueGreenMagick",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "_clean_swift": "rm -rf ./swift",
+    "_clean_pkg": "rm -rf ./pkg",
+    "_build_release_lib": "cargo build --release --lib",
+    "_build_uniffi_bindgen": "cargo run --features \"uniffi/cli uniffi-bindgen\" --bin uniffi-bindgen generate --language swift --lib-file ../target/release/libyomikiri_rs.a --out-dir ./swift ./src/uniffi_yomikiri.udl",
+    "_build_ios": "cargo build --release --lib --target aarch64-apple-ios",
+    "_build_ios_sim": "cargo build --release --lib --target aarch64-apple-ios-sim",
+    "chunk_wasm": "cargo run --bin chunk-wasm",
+    "ios": "pnpm run _clean_swift && pnpm run _build_release_lib && pnpm run _build_uniffi_bindgen && pnpm run _build_ios && pnpm run _build_ios_sim",
+    "wasm": "pnpm run _clean_pkg && wasm-pack build --scope yomikiri --target web && pnpm run chunk_wasm",
+    "check": "cargo check --target wasm32-unknown-unknown --target aarch64-apple-ios",
+    "lint": "cargo clippy --target wasm32-unknown-unknown --target aarch64-apple-ios",
+    "test": "cargo test  --target wasm32-unknown-unknown --target aarch64-apple-ios"
+  }
 }

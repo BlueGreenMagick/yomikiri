@@ -20,31 +20,29 @@ Please note that we do not support building the project on Windows. You may want
 
 [NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust/cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
-Run the following commands in order:
+Run the following commands
 ```sh
-# install dependencies
-pnpm install --frozen-lockfile
-# install JMDict dictionary file
-pnpm run prepare:dictionary
-# install unidic tokenizer dictionary files
-pnpm run prepare:unidic
-# build rust backend binary
-pnpm run prepare:backend
+# install node dependencies
+# Optionally, use --frozen-lockfile to build identical software
+pnpm install
+# Downloads and builds JMDict and UniDic dictionary files,
+# so it will take a long time to run.
+pnpm run construct:web
 ```
 
 To build for ios as well, add ios target to rust: 
 `rustup target add aarch64-apple-ios`, `rustup target add aarch64-apple-ios-sim`,
-then run `pnpm run prepare:backend`.
+and run `pnpm run construct:all`.
 
 ### Chrome
 
-Run `pnpm build:chrome`.
+Run `pnpm dev:chrome`.
 
 In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/main/build/chrome`.
 
 ### Firefox
 
-Run `pnpm build:firefox`.
+Run `pnpm dev:firefox`.
 
 In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab. 
 Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.

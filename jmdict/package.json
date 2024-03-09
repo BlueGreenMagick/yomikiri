@@ -12,5 +12,12 @@
   "files": [
     "resources/english.yomikiridict",
     "resources/english.yomikiriindex"
-  ]
+  ],
+  "scripts": {
+    "test": "cargo test",
+    "check": "cargo check",
+    "lint": "cargo lint",
+    "redownload": "rm -rf ./resources && cargo run",
+    "construct": "cargo run"
+  }
 }

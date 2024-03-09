@@ -26,8 +26,8 @@
 		699B7D832A519B9100E506F2 /* uniffi_yomikiriFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_yomikiriFFI.h; sourceTree = "<group>"; };
 		699B7D882A519C3400E506F2 /* build_uniffi.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_uniffi.sh; sourceTree = "<group>"; };
 		69D436F22A5C292E0019E35B /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
-		69D436F92A5C5CB10019E35B /* english.yomikiridict */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = english.yomikiridict; path = ../../../dictionary/resources/english.yomikiridict; sourceTree = "<group>"; };
-		69D436FA2A5C5CB10019E35B /* english.yomikiriindex */ = {isa = PBXFileReference; lastKnownFileType = file; name = english.yomikiriindex; path = ../../../dictionary/resources/english.yomikiriindex; sourceTree = "<group>"; };
+		69D436F92A5C5CB10019E35B /* english.yomikiridict */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = english.yomikiridict; path = ../../../jmdict/resources/english.yomikiridict; sourceTree = "<group>"; };
+		69D436FA2A5C5CB10019E35B /* english.yomikiriindex */ = {isa = PBXFileReference; lastKnownFileType = file; name = english.yomikiriindex; path = ../../../jmdict/resources/english.yomikiriindex; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

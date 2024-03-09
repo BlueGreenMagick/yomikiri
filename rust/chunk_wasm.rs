@@ -43,7 +43,11 @@ fn main() {
     let wasm_file_path = Path::new("./pkg/yomikiri_rs_bg.wasm");
     let output_dir = Path::new("./pkg/chunks");
 
-    fs::remove_dir_all(output_dir).unwrap();
+    if output_dir.is_dir() {
+        fs::remove_dir_all(output_dir).unwrap();
+    } else if output_dir.exists() {
+        panic!("Error while splitting wasm chunks: output dir path already exists and not a directory: {:?}", &output_dir);
+    }
 
     split_file_chunk(wasm_file_path, output_dir).unwrap();
 }
