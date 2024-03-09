@@ -44,7 +44,7 @@
   }
 
   .option-click.disabled {
-    filter: opacity(0.75);
+    filter: opacity(0.5);
   }
 
   .option-click:not(.disabled):hover {
@@ -53,13 +53,9 @@
   }
 
   .button {
-    color: var(--button-bg);
+    color: var(--text-light);
     display: flex;
     align-items: center;
-  }
-
-  .option-click:not(.disabled):hover .button {
-    color: var(--button-light);
   }
 
   .icon {
