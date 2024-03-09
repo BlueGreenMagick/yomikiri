@@ -105,6 +105,7 @@
     flex-direction: column;
     overflow-y: hidden;
     background-color: var(--background-alt);
+    min-height: 100%;
   }
 
   .title-bar {
