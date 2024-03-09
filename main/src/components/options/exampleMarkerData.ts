@@ -35,11 +35,11 @@ const tokenized: TokenizeResult = {
       "conj_form": "*"
     },
     {
-      "text": "観たい",
+      "text": "見たい",
       "start": 6,
       "children": [
         {
-          "text": "観",
+          "text": "見",
           "start": 6,
           "children": [],
           "pos": "動詞",
@@ -180,7 +180,7 @@ export const exampleMarkerData: MarkerData = {
   selectedMeaning: tokenized.entries[0].senses[0],
   sentence: tokenized.tokens.map((tok) => tok.text).join(""),
   url: "https://yomikiri.example/",
-  pageTitle: "Example marker data",
+  pageTitle: "Yomikiri Examples",
 };
 
 export const exampleTranslatedSentence =
