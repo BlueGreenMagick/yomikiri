@@ -67,6 +67,7 @@
     stateEnabled = !prevValue;
     Config.set("state.enabled", stateEnabled);
     BrowserApi.requestToAllTabs("stateEnabledChanged", stateEnabled);
+    BrowserApi.request("stateEnabledChanged", stateEnabled);
   }
 
   function close() {

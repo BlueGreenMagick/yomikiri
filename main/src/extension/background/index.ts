@@ -65,6 +65,12 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
 
 async function stateEnabledChanged(value: boolean): Promise<void> {
   await ensureInitialized();
+  if (value) {
+    BrowserApi.setBadge("", "#999999")
+  } else {
+    BrowserApi.setBadge("off", "#999999")
+  }
+
   Config.set("state.enabled", value, false);
 }
 

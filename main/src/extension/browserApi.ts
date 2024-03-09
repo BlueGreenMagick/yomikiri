@@ -374,7 +374,7 @@ export namespace BrowserApi {
   }
 
 
-  // set text to "" to remove badge
+  /** set text to "" to remove badge */
   export function setBadge(text: string | number, color: string) {
     const iAction = action();
     if (typeof text === "number") {
@@ -390,7 +390,7 @@ export namespace BrowserApi {
 
   export function speakJapanese(text: string): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
-    chrome.tts.speak(text, {"lang": "ja-jp"}, resolve);
+    chrome.tts.speak(text, { "lang": "ja-jp" }, resolve);
     return promise;
   }
 
