@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Tokenize from "~/components/dictionary/Tokenize.svelte";
   import { platformClass } from "~/components/actions";
+  import PopupView from "./PopupView.svelte";
 
   export let initialized: Promise<void>;
 </script>
 
 <div id="main" use:platformClass>
   {#await initialized then}
-    <Tokenize actionButtons={true} />
+    <PopupView />
   {/await}
 </div>
 

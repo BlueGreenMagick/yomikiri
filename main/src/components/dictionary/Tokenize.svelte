@@ -1,6 +1,5 @@
 <script lang="ts">
-  import type { Token, TokenizeResult } from "@platform/backend";
-  import type { Entry } from "~/dicEntry";
+  import { TokenizeResult, type Token } from "@platform/backend";
   import { Platform } from "@platform";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
@@ -16,7 +15,7 @@
   import { BrowserApi } from "~/extension/browserApi";
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
-  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
+  import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
 
   interface Events {
     close: void;
@@ -25,14 +24,16 @@
   export let searchText: string = "";
   export let actionButtons: boolean = false;
   export let showCloseButton: boolean = false;
+  export let onShowAnkiPreview: (
+    selectedEntry: SelectedEntryForAnki,
+    tokenizeResult: TokenizeResult
+  ) => void;
 
   const dispatch = createEventDispatcher<Events>();
 
-  let searchTokens: Token[] = [];
+  let tokenizeResult: TokenizeResult = TokenizeResult.empty();
   // may be bigger than total token characters
   let selectedCharAt: number;
-  let entries: Entry[] = [];
-  let grammars: GrammarInfo[] = [];
   // TODO: Move this to Config store
   let stateEnabled = Config.get("state.enabled");
   let selectedTool: Tools | null = null;
@@ -41,21 +42,16 @@
   const tokenize = Utils.SingleQueued(_tokenize);
   async function _tokenize(searchText: string, charAt: number) {
     if (searchText === "") {
-      searchTokens = [];
-      entries = [];
-      grammars = [];
+      tokenizeResult = TokenizeResult.empty();
       return;
     }
 
     charAt = Math.min(charAt, searchText.length - 1);
 
-    const tokenized = await Backend.tokenize({
+    tokenizeResult = await Backend.tokenize({
       text: searchText,
       charAt: charAt,
     });
-    searchTokens = tokenized.tokens;
-    entries = tokenized.entries;
-    grammars = tokenized.grammars;
   }
 
   function openSettings() {
@@ -108,17 +104,22 @@
   </div>
   {#if searchText !== ""}
     <div class="tokensview">
-      <SentenceView tokens={searchTokens} bind:selectedCharAt />
+      <SentenceView tokens={tokenizeResult.tokens} bind:selectedCharAt />
     </div>
     <ToolbarWithPane
       {selectedTool}
-      {grammars}
+      grammars={tokenizeResult.grammars}
       sentence={searchText}
       tooltipMode={false}
       {changeSelectedTool}
     />
     <div class="entries">
-      <DicEntriesView {entries} />
+      <DicEntriesView
+        entries={tokenizeResult.entries}
+        on:selectedEntryForAnki={(ev) => {
+          onShowAnkiPreview(ev.detail, tokenizeResult);
+        }}
+      />
     </div>
   {:else if actionButtons}
     <div class="action-buttons">
