@@ -40,9 +40,10 @@ fn split_file_chunk(file_path: &Path, output_dir: &Path) -> Result<u32, Box<dyn 
 }
 
 fn main() {
-    split_file_chunk(
-        Path::new("./pkg/yomikiri_rs_bg.wasm"),
-        Path::new("./pkg/chunks"),
-    )
-    .unwrap();
+    let wasm_file_path = Path::new("./pkg/yomikiri_rs_bg.wasm");
+    let output_dir = Path::new("./pkg/chunks");
+
+    fs::remove_dir_all(output_dir).unwrap();
+
+    split_file_chunk(wasm_file_path, output_dir).unwrap();
 }
