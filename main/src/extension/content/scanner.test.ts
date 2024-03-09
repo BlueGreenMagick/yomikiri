@@ -3,7 +3,7 @@ import { sentenceAtCharLocation, nodesOfToken } from "./scanner";
 
 beforeAll(() => {
   const styles = document.createElement("style");
-  styles.innerHTML = `
+  styles.textContent = `
 * {
   display: block;
   position: static;
@@ -124,7 +124,7 @@ describe("nodesOfToken", () => {
 
 function prepareHTML(html: string): HTMLElement {
   const container = document.createElement("div");
-  container.innerHTML = html;
+  container.textContent = html;
   document.body.appendChild(container);
   return container;
 }

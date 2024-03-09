@@ -149,7 +149,7 @@ namespace SelectionHighlighter {
     if (styleEl === null) {
       styleEl = document.createElement("style");
     }
-    styleEl.innerHTML = `::selection { background-color: ${color} !important; }`;
+    styleEl.textContent = `::selection { background-color: ${color} !important; }`;
     styleEl.id = STYLE_ID;
     document.head.appendChild(styleEl);
   }
@@ -183,7 +183,7 @@ ${TAG_NAME}.unknown {
   /** Adds <style> to document head */
   export function initialize() {
     const style = document.createElement("style");
-    style.innerHTML = HIGHLIGHT_CSS;
+    style.textContent = HIGHLIGHT_CSS;
     document.head.appendChild(style);
   }
 

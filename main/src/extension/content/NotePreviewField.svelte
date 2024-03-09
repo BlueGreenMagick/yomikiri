@@ -46,7 +46,7 @@
       class="field-value"
       class:errored
       contenteditable="true"
-      bind:innerHTML={value}
+      bind:textContent={value}
       on:focus={onFocus}
     />
   {:else}

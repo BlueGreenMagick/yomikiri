@@ -207,7 +207,7 @@ export namespace Tooltip {
 
   function setupEntriesPage(tooltip: HTMLIFrameElement) {
     const doc = tooltip.contentDocument as Document;
-    doc.head.innerHTML += `
+    doc.head.textContent += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 `;
     Config.setStyle(doc);
