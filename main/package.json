@@ -20,7 +20,7 @@
     "dev": "pnpm run dev:chrome",
     "run:firefox": "pnpm web-ext run -s ./build --devtools",
     "lint": "svelte-check --compiler-warnings \"a11y-no-noninteractive-tabindex:ignore,a11y-click-events-have-key-events:ignore\"",
-    "test": "pnpm jest"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

@@ -10,7 +10,7 @@ export default {
     "^@platform$": "<rootDir>/src/platform/desktop/index",
     "^@platform/(.*)$": "<rootDir>/src/platform/desktop/$1",
     "^@yomikiri/yomikiri-rs$":
-      "<rootDir>/../node_modules/@yomikiri/yomikiri-rs/yomikiri_rs.js",
+      "<rootDir>/node_modules/@yomikiri/yomikiri-rs/yomikiri_rs.js",
     // jest errors when trying to load wasm as string
     // because it treats .wasm files differently
     "^(.*)\\.wasm$": "<rootDir>/scripts/jestWasmUrl.js",
@@ -22,5 +22,4 @@ export default {
   },
   setupFiles: ["<rootDir>/scripts/jestSetup.js"],
   extensionsToTreatAsEsm: [".ts", ".tsx"],
-  transformIgnorePatterns: ["node_modules/"],
 };
