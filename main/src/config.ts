@@ -19,7 +19,7 @@ const defaultOptions: Configuration = {
   "state.enabled": true,
   "general.font_size": 14,
   "general.font": "Meiryo",
-  "anki.connect_port": 8785,
+  "anki.connect_port": 8765,
   "anki.connect_url": "http://127.0.0.1",
   "anki.template": null,
   "anki.enabled": false,
