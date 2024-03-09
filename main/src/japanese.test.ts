@@ -27,6 +27,15 @@ describe("RubyString", () => {
   });
 
   test("generate complex", () => {
+    // escape regex
+    expect(
+      RubyString.generate("日本語[の]言語", "にほんご[の]げんご")
+    ).toEqual([
+      { base: "日本語", ruby: "にほんご" },
+      { base: "[の]" },
+      { base: "言語", ruby: "げんご" },
+    ]);
+
     expect(
       RubyString.generate("配信の否認不能", "はいしんのひにんふのう")
     ).toEqual([

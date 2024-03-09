@@ -122,6 +122,12 @@ namespace Utils {
     return input.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   }
 
+  export function escapeRegex(text: string): string {
+    return text
+      .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+      .replace(/-/g, '\\x2d');
+  }
+
   /** "http://url?" + Utils.urlParams({key: value}) */
   export function generateUrlParams(params: { [key: string]: string }): string {
     return Object.entries(params)

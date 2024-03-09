@@ -58,7 +58,7 @@ export namespace RubyString {
       return [{ base: text }];
     }
     let inKatakana = isKatakana(reading);
-    const splitted = splitKanjiKana(text);
+    const splitted = splitKanjiSegment(text);
     let regexp = "";
     if (splitted[0] !== "") {
       regexp += "(.+?)";
@@ -69,8 +69,8 @@ export namespace RubyString {
         i % 2 === 0
           ? "(.+?)"
           : inKatakana
-            ? toKatakana(splitted[i])
-            : toHiragana(splitted[i]);
+            ? Utils.escapeRegex(toKatakana(splitted[i]))
+            : Utils.escapeRegex(toHiragana(splitted[i]));
     }
     const r = new RegExp("^" + regexp + "$", "u");
     const matches = reading.match(r);
@@ -141,20 +141,22 @@ export namespace RubyString {
 }
 
 /**
- * first element of splitted is always kanji.
- * If text starts with kana, first element is ""
+ * Split text into kanji segments and non-kanji segments.
+ * 
+ * Returns an array of [kanji, non-kanji, kanji, ...].
+ * 
+ * If text starts with non-kanji, first element is "".
  */
-function splitKanjiKana(text: string): string[] {
+function splitKanjiSegment(text: string): string[] {
   const splitted = [];
-  let isKanji = true;
+  let gettingKanji = true;
   let chars = "";
   for (const char of text) {
-    const regexp = isKanji ? RE_KANJI : RE_NOKANJI;
-    if (regexp.test(char)) {
+    if (RE_KANJI.test(char) === gettingKanji) {
       chars += char;
     } else {
       splitted.push(chars);
-      isKanji = !isKanji;
+      gettingKanji = !gettingKanji;
       chars = char;
     }
   }
@@ -187,34 +189,35 @@ export function containsJapaneseContent(text: string): boolean {
 // (u+30a1ァ -> u+3041ぁ) (u+30f6ヶ -> u+3096ゖ)
 // charcode: u+30a1 = 12449, u+30f6 = 12534, (-96)
 /**
- * Convert all katakana to hiragana
- * `katakana` should be normalized
+ * Convert all katakana in text to hiragana
+ * `text` should be NFC normalized
  */
-export function toHiragana(katakana: string): string {
+export function toHiragana(text: string): string {
   let hiragana = "";
-  for (let i = 0; i < katakana.length; i++) {
-    const char = katakana.charCodeAt(i);
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
     if (char >= 12449 && char <= 12534) {
       hiragana += String.fromCharCode(char - 96);
     } else {
-      hiragana += katakana[i];
+      hiragana += text[i];
     }
   }
   return hiragana;
 }
 
 /**
- * Convert all hiragana to katakana.
- * `hiragana` should be normalized.
+ * Convert all hiragana in text to katakana.
+ * `text` should be NFC normalized.
+ * 
  */
-export function toKatakana(hiragana: string): string {
+export function toKatakana(text: string): string {
   let katakana = "";
-  for (let i = 0; i < hiragana.length; i++) {
-    const char = hiragana.charCodeAt(i);
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
     if (char >= 12353 && char <= 12438) {
       katakana += String.fromCharCode(char + 96);
     } else {
-      katakana += hiragana[i];
+      katakana += text[i];
     }
   }
   return katakana;
