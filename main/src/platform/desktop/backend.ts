@@ -20,8 +20,6 @@ import Chunk6 from "@yomikiri/yomikiri-rs/chunks/yomikiri_rs_bg.wasm.6.chunk"
 import Chunk7 from "@yomikiri/yomikiri-rs/chunks/yomikiri_rs_bg.wasm.7.chunk"
 import Chunk8 from "@yomikiri/yomikiri-rs/chunks/yomikiri_rs_bg.wasm.8.chunk"
 import Chunk9 from "@yomikiri/yomikiri-rs/chunks/yomikiri_rs_bg.wasm.9.chunk"
-import Chunk10 from "@yomikiri/yomikiri-rs/chunks/yomikiri_rs_bg.wasm.10.chunk"
-import Chunk11 from "@yomikiri/yomikiri-rs/chunks/yomikiri_rs_bg.wasm.11.chunk"
 import Utils from "~/utils";
 
 export {
@@ -32,7 +30,7 @@ export {
 
 async function loadWasm(): Promise<typeof BackendWasm> {
   // @ts-ignore wasm is string
-  const wasmChunks: string[] = [Chunk0, Chunk1, Chunk2, Chunk3, Chunk4, Chunk5, Chunk6, Chunk7, Chunk8, Chunk9, Chunk10, Chunk11];
+  const wasmChunks: string[] = [Chunk0, Chunk1, Chunk2, Chunk3, Chunk4, Chunk5, Chunk6, Chunk7, Chunk8, Chunk9];
 
   let current = 0;
   const fetched = await fetch(wasmChunks[current]);
