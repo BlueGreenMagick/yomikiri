@@ -246,7 +246,6 @@ export namespace AnkiNoteBuilder {
     sentence += "</b>";
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       sentence += Utils.escapeHTML(tokens[i].reading);
-      console.log(Utils.escapeHTML("<" + tokens[i].reading));
     }
 
     return sentence;

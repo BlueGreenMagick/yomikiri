@@ -200,7 +200,7 @@ namespace Utils {
     };
   }
 
-  export function urlParams<Type extends { string: any }>() {}
+  export function urlParams<Type extends { string: any }>() { }
 
   let lastBench: number = performance.now();
   let _benchLogs: string[] = [];
@@ -228,6 +228,16 @@ namespace Utils {
     const [promise, resolve] = createPromise<void>();
     setTimeout(resolve, ms);
     return promise;
+  }
+
+  let _logs: any[] = [];
+
+  export function log(...args: any[]): void {
+    _logs.push(args)
+  }
+
+  export function logs(): string[] {
+    return _logs;
   }
 }
 

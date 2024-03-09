@@ -1,6 +1,7 @@
 import type { Rect } from "~/utils";
 import { Tooltip } from "./tooltip";
 import { Platform } from "@platform";
+import Utils from "~/utils";
 
 interface IHighlighter {
   type: "selection" | "wrap";
@@ -63,7 +64,7 @@ namespace SelectionHighlighter {
 
   /** May modify range */
   export function highlightNodes(nodes: Node[]) {
-    console.log("highlight", nodes);
+    Utils.log("highlight", nodes);
     _highlightNodes(nodes);
     changeSelectionColor("#a0a0a0a0");
   }

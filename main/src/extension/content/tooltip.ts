@@ -18,10 +18,8 @@ export namespace Tooltip {
   ) {
     let tooltip = getTooltipEl();
     if (tooltip === null) {
-      console.log("null. creating!");
       tooltip = await createTooltipIframe();
     }
-    console.log(highlightedRects);
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
     _shown = true;

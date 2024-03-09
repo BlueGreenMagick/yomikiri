@@ -44,7 +44,6 @@ export class Toast {
 
   static loading(msg: string): Toast {
     Toast.maybeSetupToaster();
-    console.log("loading toast");
     const id = toast.loading(msg, optsLoading);
     return new Toast(id);
   }

@@ -43,7 +43,6 @@
 
   function onSelectSense(ev: CustomEvent<Sense>) {
     const sense = ev.detail;
-    console.log("selected sense");
     model.selectSense(entry, sense);
   }
 

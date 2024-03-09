@@ -28,13 +28,12 @@ function getShell(): string {
     if (shell) {
       return shell;
     }
-  } catch {}
+  } catch { }
 
   return process.env.SHELL || "/bin/sh";
 }
 
 async function runRustCommand() {
-  // console.log("### cargo run:");
   const cargoPath = (await which("cargo")) as string;
   const { stdout } = await child_process.spawn(cargoPath, ["run"], {
     shell: getShell(),
@@ -85,7 +84,7 @@ function getManualLicenses(licensesMap: LicensesMap) {
   const resources = toml.parse(manualToml) as ManualTomlFile;
 
   // remove existing license from licenses map
-  for (const res of resources.res) {    
+  for (const res of resources.res) {
     for (const [key, names] of licensesMap) {
       let i;
       while ((i = names.indexOf(res.name)) != -1) {

@@ -249,7 +249,6 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("link", async () => {
     document.title = "Yomikiri tests";
-    console.log();
     const value = await AnkiNoteBuilder.markerValue("link", data);
     expect(value).toBe('<a href="https://yomikiri.jest/">Yomikiri tests</a>');
   });
