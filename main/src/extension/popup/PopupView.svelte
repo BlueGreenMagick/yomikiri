@@ -23,8 +23,8 @@
       entry: selectedEntry.entry,
       selectedMeaning: selectedEntry.sense,
       sentence: tokenizeResult.tokens.map((tok) => tok.text).join(""),
-      url: window.location.href,
-      pageTitle: document.title,
+      url: "",
+      pageTitle: "",
     };
 
     let note: LoadingNoteData;
