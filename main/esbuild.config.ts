@@ -177,6 +177,8 @@ function generateBuildOptions(): BuildOptions {
     format: "iife",
     bundle: true,
     logLevel: "info",
+    minify: PRODUCTION,
+    keepNames: PRODUCTION,
     sourcemap: DEVELOPMENT ? "inline" : false,
     conditions: ["svelte"],
     assetNames: "res/assets/[name]-[hash]",
