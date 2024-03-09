@@ -28,12 +28,13 @@
     min-height: 200px;
     margin: 0 auto;
     padding: 0;
+    overflow-y: auto;
 
     display: flex;
     flex-direction: column;
   }
 
-  html.desktop #main {
+  html.desktop body {
     width: 360px;
   }
 
