@@ -13,6 +13,9 @@
     <Tokenize
       bind:searchText
       showCloseButton={context === "action"}
+      onShowAnkiPreview={() => {
+        throw "Not yet implemented!";
+      }}
       on:close={() => {
         Platform.messageWebview("close", null);
       }}
