@@ -18,7 +18,7 @@ importers:
         version: 3.0.3
       generate-license-file:
         specifier: ^3.0.1
-        version: 3.0.1(commander@12.0.0)(typescript@5.3.3)
+        version: 3.0.1(commander@11.1.0)(typescript@5.3.3)
       import:
         specifier: ^0.0.6
         version: 0.0.6
@@ -76,6 +76,9 @@ importers:
       '@swc/jest':
         specifier: ^0.2.26
         version: 0.2.36(@swc/core@1.4.6)
+      '@types/adm-zip':
+        specifier: ^0.5.5
+        version: 0.5.5
       '@types/chrome':
         specifier: ^0.0.263
         version: 0.0.263
@@ -91,6 +94,9 @@ importers:
       '@types/pako':
         specifier: ^2.0.0
         version: 2.0.3
+      adm-zip:
+        specifier: ^0.5.10
+        version: 0.5.10
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -495,12 +501,12 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@commander-js/extra-typings@11.1.0(commander@12.0.0):
+  /@commander-js/extra-typings@11.1.0(commander@11.1.0):
     resolution: {integrity: sha512-GuvZ38d23H+7Tz2C9DhzCepivsOsky03s5NI+KCy7ke1FNUvsJ2oO47scQ9YaGGhgjgNW5OYYNSADmbjcSoIhw==}
     peerDependencies:
       commander: 11.1.x
     dependencies:
-      commander: 12.0.0
+      commander: 11.1.0
     dev: true
 
   /@cspotcode/source-map-support@0.8.1:
@@ -1765,6 +1771,12 @@ packages:
       minimatch: 9.0.3
     dev: true
 
+  /@types/adm-zip@0.5.5:
+    resolution: {integrity: sha512-YCGstVMjc4LTY5uK9/obvxBya93axZOVOyf2GSUulADzmLhYE45u2nAssCs/fWBs1Ifq5Vat75JTPwd5XZoPJw==}
+    dependencies:
+      '@types/node': 20.11.24
+    dev: true
+
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
     dependencies:
@@ -2701,9 +2713,9 @@ packages:
       delayed-stream: 1.0.0
     dev: true
 
-  /commander@12.0.0:
-    resolution: {integrity: sha512-MwVNWlYjDTtOjX5PiD7o5pK0UrFU/OYgcJfjjK4RaHZETNtjJqrZa9Y9ds88+A+f+d5lv+561eZ+yCKoS3gbAA==}
-    engines: {node: '>=18'}
+  /commander@11.1.0:
+    resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
+    engines: {node: '>=16'}
     dev: true
 
   /commander@2.20.3:
@@ -3751,11 +3763,11 @@ packages:
       wide-align: 1.1.5
     dev: true
 
-  /generate-license-file@3.0.1(commander@12.0.0)(typescript@5.3.3):
+  /generate-license-file@3.0.1(commander@11.1.0)(typescript@5.3.3):
     resolution: {integrity: sha512-kQ9IoHX5bcydUugMlhOxxSKbx5zLfSJ8XuWNKZ3Jp/v30VFeAcZ8Ch4zyZcYqmm0IKy6fNzZPe2o8IhNjMQbjA==}
     hasBin: true
     dependencies:
-      '@commander-js/extra-typings': 11.1.0(commander@12.0.0)
+      '@commander-js/extra-typings': 11.1.0(commander@11.1.0)
       '@npmcli/arborist': 7.4.0
       cli-spinners: 2.9.2
       cosmiconfig: 9.0.0(typescript@5.3.3)

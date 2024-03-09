@@ -7,6 +7,7 @@ import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "./package.json" assert { type: "json" };
+import AdmZip from "adm-zip";
 
 const DEVELOPMENT = process.env.NODE_ENV === "development";
 const PRODUCTION = process.env.NODE_ENV === "production";
@@ -297,8 +298,19 @@ function cleanDirectory(dir) {
   }
 }
 
+
+async function compressDirectoryTo(dir: string, outfile: string) {
+  let zip = new AdmZip();
+  await zip.addLocalFolderPromise(dir, { filter: (path) => !path.startsWith(".") });
+  await zip.writeZipPromise(outfile, { overwrite: true });
+}
+
 async function main() {
   const buildOptions = generateBuildOptions();
+  if (buildOptions.outdir === undefined) {
+    throw "esbuild outdir must be set!"
+  }
+
   cleanDirectory(buildOptions.outdir);
 
   const ctx = await esbuild.context(buildOptions);
@@ -306,6 +318,12 @@ async function main() {
 
   if (!WATCH) {
     ctx.dispose();
+    if (PRODUCTION && (FOR_CHROME || FOR_FIREFOX)) {
+
+      let compressedFile = path.join(buildOptions.outdir, "..", `yomikiri_${TARGET}_v${VERSION}.zip`);
+      console.log("Compressing file to: " + compressedFile)
+      compressDirectoryTo(buildOptions.outdir, compressedFile)
+    }
   } else {
     console.info("esbuild: Watching for changes to code..");
     await ctx.watch();
