@@ -73,14 +73,14 @@
 </script>
 
 <div class="tooltip">
-  <ToolbarWithPane
-    grammars={tokenizeResult.grammars}
-    {sentence}
-    {selectedTool}
-    tooltipMode={true}
-    {changeSelectedTool}
-  />
-  <div class="dic-entries-container">
+  <div class="dic-entries-container" class:previewIsVisible>
+    <ToolbarWithPane
+      grammars={tokenizeResult.grammars}
+      {sentence}
+      {selectedTool}
+      tooltipMode={true}
+      {changeSelectedTool}
+    />
     <DicEntriesView
       entries={tokenizeResult.entries}
       on:selectedEntryForAnki={selectedEntryForAnki}
@@ -96,19 +96,18 @@
 <style>
   .tooltip {
     max-height: 300px;
-    display: flex;
-    flex-direction: column;
   }
 
   .dic-entries-container {
-    flex: 1 1 auto;
     overflow-y: auto;
   }
 
+  .dic-entries-container.previewIsVisible {
+    display: none;
+  }
+
   .add-to-anki-container {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
+    height: 300px;
   }
 </style>
