@@ -1,6 +1,6 @@
 {
   "name": "@yomikiri/rust",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "JS build script used for yomikiri-rs",
   "author": "BlueGreenMagick",
   "license": "MIT",
