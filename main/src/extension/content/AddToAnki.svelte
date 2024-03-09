@@ -26,6 +26,7 @@
   }
 
   export let noteData: LoadingNoteData;
+  export let noteAdded: () => void;
 
   const dispatch = createEventDispatcher<Events>();
 
@@ -53,9 +54,9 @@
     let resolvedNoteData = await LoadingNoteData.resolve(noteData);
     try {
       await AnkiApi.addNote(resolvedNoteData);
-      Tooltip.hide();
-      Highlighter.unhighlight();
+
       Toast.success("Note added to Anki");
+      noteAdded();
     } catch (err) {
       console.error(err);
       const errorMessage = Utils.errorMessage(

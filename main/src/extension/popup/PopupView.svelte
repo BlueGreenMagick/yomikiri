@@ -41,7 +41,10 @@
   function onBack() {
     previewIsVisible = false;
   }
-  $: console.log(previewIsVisible);
+
+  function noteAdded() {
+    previewIsVisible = false;
+  }
 </script>
 
 <div class="popup">
@@ -49,7 +52,7 @@
     <Tokenize actionButtons={true} {onShowAnkiPreview} />
   </div>
   {#if previewIsVisible}
-    <AddToAnki noteData={previewNoteData} on:back={onBack} />
+    <AddToAnki noteData={previewNoteData} on:back={onBack} {noteAdded} />
   {/if}
 </div>
 

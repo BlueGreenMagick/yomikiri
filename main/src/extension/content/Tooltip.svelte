@@ -13,6 +13,8 @@
   import { Toast } from "~/toast";
   import Utils from "~/utils";
   import ToolbarWithPane from "~/components/dictionary/ToolbarWithPane.svelte";
+  import { Highlighter } from "./highlight";
+  import { Tooltip } from "./tooltip";
 
   interface Events {
     updateHeight: void;
@@ -68,6 +70,12 @@
     dispatch("updateHeight");
   }
 
+  function noteAdded() {
+    Tooltip.hide();
+    Highlighter.unhighlight();
+    previewIsVisible = false;
+  }
+
   $: sentence = tokenizeResult.tokens.map((t) => t.text).join("");
   $: onTokenizeResultChanged(tokenizeResult);
 </script>
@@ -88,7 +96,7 @@
   </div>
   {#if previewIsVisible}
     <div class="add-to-anki-container">
-      <AddToAnki noteData={previewNoteData} on:back={onBack} />
+      <AddToAnki noteData={previewNoteData} on:back={onBack} {noteAdded} />
     </div>
   {/if}
 </div>
