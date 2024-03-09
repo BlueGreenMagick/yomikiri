@@ -116,6 +116,6 @@
 
   .add-to-anki-container {
     width: 100%;
-    height: 300px;
+    max-height: 300px;
   }
 </style>

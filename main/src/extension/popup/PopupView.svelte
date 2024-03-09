@@ -57,6 +57,12 @@
 </div>
 
 <style>
+  .popup {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
   .tokenize-container.previewIsVisible {
     display: none;
   }
