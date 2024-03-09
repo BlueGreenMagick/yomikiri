@@ -14,6 +14,8 @@
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "~/toast";
   import Utils from "~/utils";
+  import { Tooltip } from "./tooltip";
+  import { Highlighter } from "./highlight";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -51,6 +53,9 @@
     let resolvedNoteData = await LoadingNoteData.resolve(noteData);
     try {
       await AnkiApi.addNote(resolvedNoteData);
+      Tooltip.hide();
+      Highlighter.unhighlight();
+      Toast.success("Note added to Anki");
     } catch (err) {
       console.error(err);
       const errorMessage = Utils.errorMessage(
