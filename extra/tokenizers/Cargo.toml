@@ -9,3 +9,7 @@ edition = "2021"
 anyhow = "1.0"
 log = "0.4"
 vaporetto = { version = "0.6" }
+lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+yomikiri-unidic-types = { path = "../../unidic-types" }

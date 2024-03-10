@@ -1769,8 +1769,12 @@ name = "tokenizers"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "lindera-core",
+ "lindera-dictionary",
+ "lindera-tokenizer",
  "log",
  "vaporetto",
+ "yomikiri-unidic-types",
 ]
 
 [[package]]
