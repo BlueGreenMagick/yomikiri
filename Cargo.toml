@@ -6,6 +6,7 @@ members = [
   "unidic",
   "unidic-types",
   "extra/generate-license/rust",
+  "extra/tokenizers",
 ]
 resolver = "2"
 
