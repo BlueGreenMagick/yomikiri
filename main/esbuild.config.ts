@@ -164,6 +164,7 @@ const svelteConfiguredPlugin: Plugin = sveltePlugin({
     ];
     return !ignore.includes(warning.code);
   },
+  include: /\.(?:svelte|svg)$/
 });
 
 function generateBuildOptions(): BuildOptions {

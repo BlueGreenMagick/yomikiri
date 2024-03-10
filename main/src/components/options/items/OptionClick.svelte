@@ -32,7 +32,7 @@
   <OptionBase {title} {description} {disabled}>
     <div class="button">
       <div class="button-text">{buttonText}</div>
-      <div class="icon">{@html IconChevronForward}</div>
+      <div class="icon"><IconChevronForward /></div>
     </div>
   </OptionBase>
 </div>

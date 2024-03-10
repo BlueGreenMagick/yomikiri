@@ -51,7 +51,7 @@
       title="Translate sentence"
       on:click={selectTranslate}
     >
-      <div class="icon">{@html IconLanguage}</div>
+      <div class="icon"><IconLanguage /></div>
     </button>
 
     <button
@@ -61,13 +61,13 @@
       title="Grammar"
       on:click={selectGrammar}
     >
-      <div class="icon">{@html IconSchool}</div>
+      <div class="icon"><IconSchool /></div>
     </button>
   </div>
   <div class="right buttons">
     {#if tooltipMode}
       <button class="tool-button" title="Close" on:click={closeTooltip}>
-        <div class="icon">{@html IconClose}</div>
+        <div class="icon"><IconClose /></div>
       </button>
     {/if}
   </div>

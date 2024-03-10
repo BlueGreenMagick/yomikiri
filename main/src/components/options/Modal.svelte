@@ -16,7 +16,7 @@
         class="close-button"
         on:click={() => {
           dispatch("close");
-        }}><div class="icon-close">{@html IconClose}</div></button
+        }}><div class="icon-close"><IconClose /></div></button
       >
     </div>
     <div class="modal-content"><slot /></div>

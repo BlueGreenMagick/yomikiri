@@ -80,7 +80,7 @@
 <div class="search">
   <div class="header" class:action-button-mode={searchText === ""}>
     <div class="searchbar">
-      <div class="icon icon-search">{@html IconSearch}</div>
+      <div class="icon icon-search"><IconSearch /></div>
       <input
         type="text"
         bind:value={searchText}
@@ -93,7 +93,7 @@
           searchText = "";
         }}
       >
-        {@html IconCloseCircle}
+        <IconCloseCircle />
       </button>
     </div>
     {#if showCloseButton}
@@ -129,10 +129,10 @@
         on:click={toggleEnable}
         title={stateEnabled ? "Disable" : "Enable"}
       >
-        {@html IconPower}
+        <IconPower />
       </button>
       <button class="icon-action" on:click={openSettings} title="Open Settings">
-        {@html IconSettings}
+        <IconSettings />
       </button>
     </div>
   {/if}

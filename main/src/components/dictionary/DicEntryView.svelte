@@ -71,7 +71,7 @@
           on:click={selectEntryForAnki}
           on:mousedown|preventDefault|stopPropagation={() => {}}
         >
-          {@html IconAddCircleOutline}
+          <IconAddCircleOutline />
         </div>
       {/if}
       {#if Platform.hasTTS()}
@@ -80,7 +80,7 @@
           on:click={playAudio}
           on:mousedown|preventDefault|stopPropagation={() => {}}
         >
-          {@html IconVolumeHigh}
+          <IconVolumeHigh />
         </div>
       {/if}
     </div>
