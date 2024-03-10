@@ -50,7 +50,7 @@
       on:focus={onFocus}
     />
   {:else}
-    <div class="field-value loading">{@html $valueStore}</div>
+    <div class="field-value loading">{$valueStore}</div>
   {/if}
 </div>
 

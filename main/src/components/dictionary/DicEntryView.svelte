@@ -20,6 +20,7 @@
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import { Platform } from "@platform";
+  import RubyText from "../RubyText.svelte";
 
   export let entry: Entry;
   export let model: DicEntriesModel;
@@ -28,7 +29,7 @@
 
   let mainForm: string;
   let readingForForm: string;
-  let mainFormRuby: string;
+  let mainFormRuby: RubyString;
   let groups: GroupedSense[];
 
   const selectedSense = model.selectedSense;
@@ -52,16 +53,14 @@
 
   $: mainForm = Entry.mainForm(entry);
   $: readingForForm = Entry.readingForForm(entry, mainForm, false).reading;
-  $: mainFormRuby = RubyString.toHtml(
-    RubyString.generate(mainForm, readingForForm)
-  );
+  $: mainFormRuby = RubyString.generate(mainForm, readingForForm);
   $: groups = Entry.groupSenses(entry);
 </script>
 
 <div class="entryView">
   <div class="header">
     <div class="term">
-      <span class="mainForm">{@html mainFormRuby}</span>
+      <span class="mainForm"><RubyText text={mainFormRuby} /></span>
     </div>
     <div class="icons">
       {#if Config.get("anki.enabled")}

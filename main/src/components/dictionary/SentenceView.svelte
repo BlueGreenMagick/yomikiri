@@ -1,6 +1,7 @@
 <script lang="ts">
   import { RubyString, containsJapaneseContent } from "~/japanese";
   import type { Token } from "@platform/backend";
+  import RubyText from "../RubyText.svelte";
 
   export let tokens: Token[];
   // may be bigger than total token character
@@ -43,7 +44,7 @@
           }
         }}
       >
-        {@html RubyString.toHtml(RubyString.fromToken(token))}
+        <RubyText text={RubyString.fromToken(token)} />
       </a>
     </div>
   {/each}
