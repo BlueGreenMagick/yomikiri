@@ -6,7 +6,6 @@
 
   export let key: ConfigKeysOfType<boolean>;
   export let title: string;
-  export let description: string = "";
   export let value: boolean = Config.get(key);
 
   function update() {
@@ -16,7 +15,8 @@
 </script>
 
 <div>
-  <OptionBase {title} {description}>
+  <OptionBase {title}>
     <ToggleSwitch bind:active={value} height={18} on:click={update} on:click />
+    <slot slot="description" />
   </OptionBase>
 </div>

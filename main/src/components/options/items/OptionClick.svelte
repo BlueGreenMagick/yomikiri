@@ -5,7 +5,6 @@
   import IconChevronForward from "@icons/chevron-forward.svg";
 
   export let title: string;
-  export let description: string = "";
   export let buttonText: string;
   export let disabled: boolean = false;
 
@@ -29,11 +28,12 @@
     }
   }}
 >
-  <OptionBase {title} {description} {disabled}>
+  <OptionBase {title} {disabled}>
     <div class="button">
       <div class="button-text">{buttonText}</div>
       <div class="icon"><IconChevronForward /></div>
     </div>
+    <slot slot="description" />
   </OptionBase>
 </div>
 

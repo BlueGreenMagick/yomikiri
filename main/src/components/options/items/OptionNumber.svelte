@@ -5,7 +5,6 @@
 
   export let key: ConfigKeysOfType<number>;
   export let title: string;
-  export let description: string = "";
   export let min: number | null = null;
   export let max: number | null = null;
   export let disabled: boolean = false;
@@ -31,7 +30,7 @@
 </script>
 
 <div>
-  <OptionBase {title} {description} {disabled}>
+  <OptionBase {title} {disabled}>
     <input
       type="number"
       bind:value
@@ -41,6 +40,7 @@
       on:change={onChange}
       on:keydown={onKeydown}
     />
+    <slot slot="description" />
   </OptionBase>
 </div>
 

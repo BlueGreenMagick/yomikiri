@@ -5,7 +5,6 @@
 
   export let key: ConfigKeysOfType<string>;
   export let title: string;
-  export let description: string = "";
   export let disabled: boolean = false;
   // Make Input box wider
   export let wide: boolean = false;
@@ -26,7 +25,7 @@
 </script>
 
 <div>
-  <OptionBase {title} {description} {disabled} {wide}>
+  <OptionBase {title} {disabled} {wide}>
     <input
       type="text"
       bind:value
@@ -34,6 +33,7 @@
       on:change={onChange}
       on:keydown={onKeydown}
     />
+    <slot slot="description" />
   </OptionBase>
 </div>
 

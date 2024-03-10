@@ -11,7 +11,8 @@
   let ankiTemplateDescription = "";
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
-  let useAnkiDescription = "";
+  let useAnkiDescription: "off" | "loading" | "success" | "error" = "off";
+  let useAnkiError: string = "";
   let ankiTemplateModalHidden: boolean = true;
   let requesting: boolean = false;
 
@@ -32,11 +33,10 @@
     requesting = true;
     try {
       await AnkiApi.checkConnection();
-      useAnkiDescription =
-        "<span class='success'>Successfully connected to Anki.</span>";
+      useAnkiDescription = "success";
     } catch (err) {
-      let errorMsg = Utils.errorMessage(err);
-      useAnkiDescription = `<span class="warning">${errorMsg}</span>`;
+      useAnkiError = Utils.errorMessage(err);
+      useAnkiDescription = "error";
 
       setTimeout(() => {
         if (ankiEnabled) {
@@ -49,16 +49,10 @@
 
   async function onAnkiEnableChange(enabled: boolean) {
     if (enabled) {
-      useAnkiDescription = "Connecting to Anki...";
+      useAnkiDescription = "loading";
       checkAnkiConnection();
     } else {
-      if (Platform.IS_DESKTOP) {
-        useAnkiDescription =
-          "<a href='https://apps.ankiweb.net/'>Anki</a> is a flashcard software.";
-      } else {
-        useAnkiDescription =
-          "<a href='https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387'>AnkiMobile</a> is a flashcard app.";
-      }
+      useAnkiDescription = "off";
     }
   }
 
@@ -67,26 +61,41 @@
 </script>
 
 <GroupedOptions title="Anki">
-  <OptionToggle
-    key="anki.enabled"
-    title="Use Anki"
-    description={useAnkiDescription}
-    bind:value={ankiEnabled}
-  />
+  <OptionToggle key="anki.enabled" title="Use Anki" bind:value={ankiEnabled}>
+    {#if useAnkiDescription === "loading"}
+      Connecting to Anki...
+    {:else if useAnkiDescription === "success"}
+      <span class="success">Successfully connected to Anki.</span>
+    {:else if useAnkiDescription === "error"}
+      <span class="warning">{useAnkiError}</span>
+      {#if Platform.IS_DESKTOP}
+        <a href="https://apps.ankiweb.net/">(Anki)</a>
+        <a href="https://ankiweb.net/shared/info/2055492159">(AnkiConnect)</a>
+      {/if}
+    {:else if useAnkiDescription === "off"}
+      {#if Platform.IS_DESKTOP}
+        <a href="https://apps.ankiweb.net/">Anki</a> is a flashcard software.
+      {:else}
+        <a
+          href="https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387"
+          >AnkiMobile</a
+        > is a flashcard app.
+      {/if}
+    {/if}
+  </OptionToggle>
   {#if Platform.IS_DESKTOP}
-    <OptionNumber
-      key="anki.connect_port"
-      title="AnkiConnect port number"
-      description="This is the AnkiConnect config `webBindPort`"
-    />
+    <OptionNumber key="anki.connect_port" title="AnkiConnect port number">
+      This is the AnkiConnect config `webBindPort`
+    </OptionNumber>
   {/if}
   <OptionClick
     title="Configure Anki template"
     buttonText="Configure"
-    description={ankiTemplateDescription}
     bind:disabled={ankiDisabled}
     on:trigger={openAnkiTemplateModal}
-  />
+  >
+    {ankiTemplateDescription}
+  </OptionClick>
 </GroupedOptions>
 {#if ankiTemplateModalHidden === false && Platform.IS_DESKTOP}
   <ModalAnkiTemplate

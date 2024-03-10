@@ -18,25 +18,27 @@
 </script>
 
 <GroupedOptions title="About">
-  <OptionBase title="About Yomikiri" description={versionString} />
+  <OptionBase title="About Yomikiri">{versionString}</OptionBase>
   <OptionClick
     title="Third party licenses"
-    description={"View licenses for third party open source libraries & resources"}
     buttonText={"View"}
     on:trigger={() => {
       modalThirdPartyVisible = true;
     }}
-  />
+  >
+    View licenses for third party open source libraries & resources
+  </OptionClick>
   <OptionClick
     title="View source code"
-    description={"Yomikiri is an open source project! You can view the code on GitHub."}
     buttonText={"GitHub"}
     on:trigger={() => {
       window
         .open("https://github.com/bluegreenmagick/yomikiri", "_blank")
         ?.focus();
     }}
-  />
+  >
+    Yomikiri is an open source project! You can view the code on GitHub.
+  </OptionClick>
 </GroupedOptions>
 
 {#if modalThirdPartyVisible}

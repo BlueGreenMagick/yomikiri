@@ -130,10 +130,6 @@ export namespace AnkiApi {
         throw new Error("AnkiConnect did not allow this app to use its api.");
       }
     } catch (err) {
-      if (err instanceof Error) {
-        err.message +=
-          " <a href='https://apps.ankiweb.net/'>(Anki)</a> <a href='https://ankiweb.net/shared/info/2055492159'>(AnkiConnect)</a>";
-      }
       throw err;
     }
   }

@@ -1,6 +1,5 @@
 <script lang="ts">
   export let title: string;
-  export let description: string = "";
   export let disabled: boolean = false;
   export let wide: boolean = false;
 </script>
@@ -8,10 +7,8 @@
 <div class="option-item" class:disabled>
   <div class="inner">
     <div class="left">
-      <div class="title">{@html title}</div>
-      {#if description}
-        <div class="description">{@html description}</div>
-      {/if}
+      <div class="title">{title}</div>
+      <div class="description"><slot name="description" /></div>
     </div>
     <div class="right" class:wide>
       <slot />
