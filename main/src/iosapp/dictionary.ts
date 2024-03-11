@@ -3,7 +3,7 @@ import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "~/config";
 import Utils from "~/utils";
 import { Platform } from "@platform";
-import { Backend } from "~/backend";
+import { Backend } from "@platform/backend";
 
 declare global {
   interface Window {

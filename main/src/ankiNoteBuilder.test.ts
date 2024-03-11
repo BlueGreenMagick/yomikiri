@@ -1,7 +1,7 @@
 import { test, expect, describe, jest } from "@jest/globals";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
 import { Entry } from "./dicEntry";
-import type { TokenizeResult } from "./backend";
+import type { TokenizeResult } from "@platform/backend";
 
 const tokenized: TokenizeResult = {
   tokens: [

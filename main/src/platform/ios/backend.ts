@@ -1,13 +1,11 @@
 import { BrowserApi } from "~/extension/browserApi";
 import { Platform } from ".";
 import {
-  type IBackendControllerStatic,
-  type IBackendController,
+  type IBackend,
   type TokenizeRequest,
   TokenizeResult,
 } from "../common/backend";
 import { Entry } from "~/dicEntry";
-import { toHiragana } from "~/japanese";
 
 export {
   type Token,
@@ -15,32 +13,51 @@ export {
   TokenizeResult,
 } from "../common/backend";
 
-export class BackendController implements IBackendController {
-  /** May only be initialized in 'background' and 'page' extension context. */
-  static async initialize(): Promise<BackendController> {
-    if (BrowserApi.context !== "background" && BrowserApi.context !== "page") {
-      throw new Error(
-        "ios BackendController may only be initialized in 'background' or 'page' context."
-      );
-    }
-    return new BackendController();
+
+export namespace Backend {
+  export async function initialize(): Promise<void> {
+    return;
   }
 
-  async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
-    let req: TokenizeRequest = { text, charAt: charAt };
+  export async function tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+    if (BrowserApi.context !== "contentScript") {
+      return _tokenize(text, charAt);
+    } else {
+      return BrowserApi.request("tokenize", { text, charAt });
+    }
+  }
+
+  async function _tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+    charAt = charAt ?? 0;
+
+    if (text === "") {
+      return TokenizeResult.empty();
+    }
+    if (charAt < 0 || charAt >= text.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
+    }
+
+    let req: TokenizeRequest = { text, charAt };
     let rawResult = await Platform.requestToApp("tokenize", req);
-    rawResult.tokens.forEach((token) => {
-      const reading = token.reading === "*" ? token.text : token.reading;
-      token.reading = toHiragana(reading);
-    });
     return TokenizeResult.from(rawResult);
   }
 
-  async search(term: string): Promise<Entry[]> {
-    return (await Platform.requestToApp("search", term))
+  export async function search(term: string): Promise<Entry[]> {
+    if (BrowserApi.context !== "contentScript") {
+      return _search(term);
+    } else {
+      return BrowserApi.request("searchTerm", term);
+    }
+  }
+
+  async function _search(term: string): Promise<Entry[]> {
+    const entries = (await Platform.requestToApp("search", term))
       .map((json) => JSON.parse(json))
       .map(Entry.fromObject);
+    Entry.order(entries);
+    return entries;
   }
+
 }
 
-BackendController satisfies IBackendControllerStatic;
+Backend satisfies IBackend;

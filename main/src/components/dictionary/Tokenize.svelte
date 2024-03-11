@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TokenizeResult, type Token } from "@platform/backend";
+  import { TokenizeResult, Backend } from "@platform/backend";
   import { Platform } from "@platform";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
@@ -7,7 +7,6 @@
   import IconPower from "@icons/power.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import SentenceView from "./SentenceView.svelte";
-  import { Backend } from "~/backend";
   import DicEntriesView from "./DicEntriesView.svelte";
   import { createEventDispatcher } from "svelte";
   import TextButton from "../TextButton.svelte";
@@ -48,10 +47,7 @@
 
     charAt = Math.min(charAt, searchText.length - 1);
 
-    tokenizeResult = await Backend.tokenize({
-      text: searchText,
-      charAt: charAt,
-    });
+    tokenizeResult = await Backend.tokenize(searchText, charAt);
   }
 
   function openSettings() {

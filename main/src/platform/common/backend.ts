@@ -1,9 +1,8 @@
 import type {
-  GrammarInfo,
-  Token,
   RawTokenizeResult,
 } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
+import { toHiragana } from "~/japanese";
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
@@ -30,20 +29,29 @@ export namespace TokenizeResult {
   }
 
   export function from(raw: RawTokenizeResult): TokenizeResult {
-    return {
+    raw.tokens.forEach((token) => {
+      const reading = token.reading === "*" ? token.text : token.reading;
+      token.reading = toHiragana(reading);
+    });
+
+    let entries = raw.entries
+      .map((json) => JSON.parse(json))
+      .map(Entry.fromObject);
+    const selectedToken = raw.tokens[raw.tokenIdx];
+    entries = Entry.validEntriesForSurface(entries, selectedToken.text);
+    Entry.order(entries);
+
+    const result = {
       ...raw,
-      entries: raw.entries
-        .map((json) => JSON.parse(json))
-        .map(Entry.fromObject),
+      entries,
     };
+    console.debug(result);
+    return result;
   }
 }
 
-export interface IBackendController {
-  tokenize(text: string, charAt: number): Promise<TokenizeResult>;
+export interface IBackend {
+  initialize(): Promise<void>;
+  tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
   search(term: string): Promise<Entry[]>;
-}
-
-export interface IBackendControllerStatic {
-  initialize(): Promise<IBackendController>;
 }

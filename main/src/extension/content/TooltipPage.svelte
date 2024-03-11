@@ -1,7 +1,7 @@
 <script lang="ts">
   import { platformClass } from "~/components/actions";
   import Tooltip from "./Tooltip.svelte";
-  import { TokenizeResult } from "~/backend";
+  import { TokenizeResult } from "@platform/backend";
 
   let tokenizeResult = TokenizeResult.empty();
 

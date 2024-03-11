@@ -2,8 +2,7 @@ import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
 import type { Module, VersionInfo } from "../common";
-import type { RawTokenizeResult } from "../common/backend";
-import type { TokenizeRequest } from "~/backend";
+import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 
 export namespace Platform {
   export const IS_DESKTOP = false;
@@ -83,7 +82,7 @@ export namespace Platform {
   export async function versionInfo(): Promise<VersionInfo> {
     const manifest = BrowserApi.manifest();
     return {
-      version: manifest.version 
+      version: manifest.version
     }
   }
 

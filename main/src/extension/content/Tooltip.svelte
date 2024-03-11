@@ -8,7 +8,7 @@
   import AddToAnki from "./AddToAnki.svelte";
   import { createEventDispatcher, tick } from "svelte";
   import { type Tools } from "~/components/dictionary/Toolbar.svelte";
-  import { TokenizeResult } from "~/backend";
+  import { TokenizeResult } from "@platform/backend";
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
   import { Toast } from "~/toast";
   import Utils from "~/utils";

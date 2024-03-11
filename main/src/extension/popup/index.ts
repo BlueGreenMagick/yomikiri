@@ -3,7 +3,7 @@ import PopupPage from "./PopupPage.svelte";
 import Config from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import { Backend } from "~/backend";
+import { Backend } from "@platform/backend";
 
 declare global {
   interface Window {

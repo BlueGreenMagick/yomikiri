@@ -1,13 +1,11 @@
 import { Platform } from ".";
 import {
-  type IBackendControllerStatic,
-  type IBackendController,
+  type IBackend,
   type TokenizeRequest,
   TokenizeResult,
   type RawTokenizeResult,
 } from "../common/backend";
 import { Entry } from "~/dicEntry";
-import { toHiragana } from "~/japanese";
 
 export {
   type Token,
@@ -15,27 +13,35 @@ export {
   TokenizeResult,
 } from "../common/backend";
 
-export class BackendController implements IBackendController {
-  static async initialize(): Promise<BackendController> {
-    return new BackendController();
+
+export namespace Backend {
+  export async function initialize(): Promise<void> {
+    return
   }
 
-  async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
+  export async function tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+    charAt = charAt ?? 0;
+
+    if (text === "") {
+      return TokenizeResult.empty();
+    }
+    if (charAt < 0 || charAt >= text.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
+    }
+
     let req: TokenizeRequest = { text, charAt: charAt };
     let rawResultJSON = await Platform.messageWebview("tokenize", req);
     let rawResult = JSON.parse(rawResultJSON) as RawTokenizeResult;
-    rawResult.tokens.forEach((token) => {
-      const reading = token.reading === "*" ? token.text : token.reading;
-      token.reading = toHiragana(reading);
-    });
     return TokenizeResult.from(rawResult);
   }
 
-  async search(term: string): Promise<Entry[]> {
-    return (await Platform.messageWebview("searchTerm", term))
+  export async function search(term: string): Promise<Entry[]> {
+    const entries = (await Platform.messageWebview("searchTerm", term))
       .map((json) => JSON.parse(json))
       .map(Entry.fromObject);
+    Entry.order(entries);
+    return entries;
   }
 }
 
-BackendController satisfies IBackendControllerStatic;
+Backend satisfies IBackend;

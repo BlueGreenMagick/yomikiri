@@ -9,7 +9,7 @@ import { Tooltip } from "~/extension/content/tooltip";
 import Utils from "~/utils";
 import Config from "~/config";
 import { Platform } from "@platform";
-import { Backend } from "~/backend";
+import { Backend } from "@platform/backend";
 import { containsJapaneseContent } from "~/japanese";
 
 declare global {
@@ -64,10 +64,10 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
-  const result = await Backend.tokenize({
-    text: scannedSentence.text,
-    charAt: scannedSentence.charAt,
-  });
+  const result = await Backend.tokenize(
+    scannedSentence.text,
+    scannedSentence.charAt,
+  );
   const currToken = result.tokens[result.tokenIdx];
   if (!containsJapaneseContent(currToken.text)) {
     return false;
@@ -132,7 +132,7 @@ async function stateEnabledChanged(value: boolean): Promise<void> {
 
 BrowserApi.handleRequest("stateEnabledChanged", async (value) => {
   if (!initialized) return;
-  
+
   if (!value) {
     Tooltip.hide();
     Highlighter.unhighlight();

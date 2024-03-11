@@ -1,6 +1,6 @@
 import Utils from "./utils";
 import ENTITIES from "./assets/dicEntities.json";
-import type { Token } from "./backend";
+import type { Token } from "@platform/backend";
 import { extractKanjis } from "./japanese";
 
 // list of tuple (pos sorted list, senses)

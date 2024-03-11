@@ -5,7 +5,7 @@ import { AnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
 import { updated } from "../../components/options/stores";
-import { Backend } from "~/backend";
+import { Backend } from "@platform/backend";
 
 declare global {
   interface Window {

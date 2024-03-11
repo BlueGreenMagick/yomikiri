@@ -1,6 +1,5 @@
 import {
-  type IBackendControllerStatic as IBackendControllerStatic,
-  type IBackendController as IBackendController,
+  type IBackend,
   TokenizeResult,
 } from "../common/backend";
 import initWasm from "@yomikiri/yomikiri-rs";
@@ -9,7 +8,6 @@ import ENYomikiriIndex from "@yomikiri/jmdict/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";
-import { toHiragana } from "~/japanese";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
 import Utils from "~/utils";
 
@@ -27,16 +25,24 @@ async function loadWasm(): Promise<typeof BackendWasm> {
   return BackendWasm;
 }
 
-export class BackendController implements IBackendController {
-  wasm: BackendWasm;
 
-  /** May only be initialized in a 'background' webextension context */
-  static async initialize(): Promise<BackendController> {
-    if (BrowserApi.context !== "background") {
-      throw new Error(
-        "Desktop BackendController must be initialized in a 'background' context."
-      );
+async function fetchBytes(url: string): Promise<Uint8Array> {
+  const resp = await fetch(url);
+  const buffer = await resp.arrayBuffer();
+  return new Uint8Array(buffer, 0, buffer.byteLength);
+}
+
+
+export namespace Backend {
+  let _wasm: BackendWasm;
+
+  export async function initialize(): Promise<void> {
+    if (BrowserApi.context === "background") {
+      return _initialize()
     }
+  }
+
+  async function _initialize(): Promise<void> {
     Utils.bench("start")
     const BackendWasmConstructor = await loadWasm();
     Utils.bench("loadWasm")
@@ -47,36 +53,52 @@ export class BackendController implements IBackendController {
       entriesBytesP,
     ]);
     Utils.bench("fetch")
-    const backendWasm = new BackendWasmConstructor(indexBytes, entriesBytes);
+    _wasm = new BackendWasmConstructor(indexBytes, entriesBytes);
     Utils.bench("backend")
-    return new BackendController(backendWasm);
   }
 
-  private constructor(wasm: BackendWasm) {
-    this.wasm = wasm;
+  export async function tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+    if (BrowserApi.context !== "background") {
+      return BrowserApi.request("tokenize", { text, charAt });
+    } else {
+      return _tokenize(text, charAt);
+    }
   }
 
-  async tokenize(text: string, charAt: number): Promise<TokenizeResult> {
-    let rawResult = this.wasm.tokenize(text, charAt);
-    rawResult.tokens.forEach((token) => {
-      const reading = token.reading === "*" ? token.text : token.reading;
-      token.reading = toHiragana(reading);
-    });
+  async function _tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+    charAt = charAt ?? 0;
+
+    if (text === "") {
+      return TokenizeResult.empty();
+    }
+    if (charAt < 0 || charAt >= text.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
+    }
+
+    const codePointAt = Utils.toCodePointIndex(text, charAt);
+
+    let rawResult = _wasm.tokenize(text, codePointAt);
     return TokenizeResult.from(rawResult);
   }
 
-  async search(term: string): Promise<Entry[]> {
-    return this.wasm
+  export async function search(term: string): Promise<Entry[]> {
+    if (BrowserApi.context !== "background") {
+      return BrowserApi.request("searchTerm", term);
+    } else {
+      return _search(term);
+    }
+  }
+
+  async function _search(term: string): Promise<Entry[]> {
+    const entries = _wasm
       .search(term)
       .map((json) => JSON.parse(json))
       .map(Entry.fromObject);
+    Entry.order(entries);
+    return entries;
   }
+
 }
 
-async function fetchBytes(url: string): Promise<Uint8Array> {
-  const resp = await fetch(url);
-  const buffer = await resp.arrayBuffer();
-  return new Uint8Array(buffer, 0, buffer.byteLength);
-}
 
-BackendController satisfies IBackendControllerStatic;
+Backend satisfies IBackend;

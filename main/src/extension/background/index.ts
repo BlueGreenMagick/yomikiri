@@ -1,5 +1,5 @@
 import type { Entry } from "../../dicEntry";
-import { Backend, type TokenizeResult, type TokenizeRequest } from "../../backend";
+import { Backend, type TokenizeResult, type TokenizeRequest } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
 import { Platform } from "@platform";
 import { AnkiApi } from "@platform/anki";
@@ -41,12 +41,12 @@ async function ensureInitialized() {
 
 async function searchTerm(term: string): Promise<Entry[]> {
   await ensureInitialized();
-  return await Backend.searchTerm(term);
+  return await Backend.search(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   await ensureInitialized();
-  return await Backend.tokenize(req);
+  return await Backend.tokenize(req.text, req.charAt);
 }
 
 async function addAnkiNote(note: NoteData): Promise<void> {

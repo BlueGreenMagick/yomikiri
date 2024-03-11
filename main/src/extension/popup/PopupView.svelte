@@ -8,7 +8,7 @@
     type MarkerData,
   } from "~/ankiNoteBuilder";
   import Utils from "~/utils";
-  import type { TokenizeResult } from "~/backend";
+  import type { TokenizeResult } from "@platform/backend";
   import AddToAnki from "../content/AddToAnki.svelte";
 
   let previewIsVisible = false;
