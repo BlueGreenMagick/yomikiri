@@ -1,7 +1,10 @@
 import type Utils from "~/utils";
-import type { Module, VersionInfo } from "../common";
+import type { Module, TranslateResult, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
+import { getTranslation } from "../desktop";
+
+export * from "../common"
 
 export namespace Platform {
   export const IS_DESKTOP = false;
@@ -60,7 +63,7 @@ export namespace Platform {
     throw new Error("Not implemented for iosapp");
   }
 
-  export function initialize() {}
+  export function initialize() { }
 
   export async function versionInfo(): Promise<VersionInfo> {
     return await messageWebview("versionInfo", null);
@@ -72,6 +75,10 @@ export namespace Platform {
 
   export async function playTTS(text: string): Promise<void> {
     throw new Error("Not implemented!")
+  }
+
+  export async function translate(text: string): Promise<TranslateResult> {
+    return getTranslation(text);
   }
 }
 

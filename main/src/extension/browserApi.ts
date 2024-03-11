@@ -3,7 +3,7 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "../config";
-import type { TranslateResult } from "../translate";
+import type { TranslateResult } from "../platform/common/translate";
 
 /**
  * Type map for messages between extension processes

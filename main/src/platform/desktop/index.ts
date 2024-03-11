@@ -2,6 +2,10 @@ import { BrowserApi } from "~/extension/browserApi";
 import type { Module, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
 import { PLATFORM } from "~/generated";
+import type { TranslateResult } from "../common/translate";
+import { getTranslation } from "../common/translate";
+
+export * from "../common/translate";
 
 export namespace Platform {
   export const IS_DESKTOP = true;
@@ -20,12 +24,12 @@ export namespace Platform {
     chrome.runtime.openOptionsPage();
   }
 
-  export function initialize() {}
+  export function initialize() { }
 
   export async function versionInfo(): Promise<VersionInfo> {
     const manifest = BrowserApi.manifest();
     return {
-      version: manifest.version 
+      version: manifest.version
     }
   }
 
@@ -42,6 +46,14 @@ export namespace Platform {
       await BrowserApi.request("tts", text);
     } else {
       BrowserApi.speakJapanese(text);
+    }
+  }
+
+  export async function translate(text: string): Promise<TranslateResult> {
+    if (BrowserApi.context !== "contentScript") {
+      return getTranslation(text)
+    } else {
+      return BrowserApi.request("translate", text);
     }
   }
 }

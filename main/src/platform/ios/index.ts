@@ -1,8 +1,11 @@
 import type { StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import type { Module, VersionInfo } from "../common";
+import type { Module, TranslateResult, VersionInfo } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
+import { getTranslation } from "../desktop";
+
+export * from "../common";
 
 export namespace Platform {
   export const IS_DESKTOP = false;
@@ -92,6 +95,14 @@ export namespace Platform {
 
   export async function playTTS(text: string): Promise<void> {
     throw new Error("Not implemented!")
+  }
+
+  export async function translate(text: string): Promise<TranslateResult> {
+    if (BrowserApi.context !== "contentScript") {
+      return getTranslation(text)
+    } else {
+      return BrowserApi.request("translate", text);
+    }
   }
 }
 

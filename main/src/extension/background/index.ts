@@ -1,12 +1,11 @@
 import type { Entry } from "../../dicEntry";
 import { Backend, type TokenizeResult, type TokenizeRequest } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
-import { Platform } from "@platform";
+import { Platform, type TranslateResult } from "@platform";
 import { AnkiApi } from "@platform/anki";
 import Utils from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
-import { translate, type TranslateResult } from "~/translate";
 
 declare global {
   // ServiceWorkerGlobalScope in service_worker
@@ -60,7 +59,7 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
 
 async function handleTranslate(req: string): Promise<TranslateResult> {
   await ensureInitialized();
-  return await translate(req);
+  return await Platform.translate(req);
 }
 
 async function stateEnabledChanged(value: boolean): Promise<void> {

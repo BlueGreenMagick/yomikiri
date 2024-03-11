@@ -2,7 +2,7 @@ import type { TokenizeResult } from "@platform/backend";
 import Config from "./config";
 import { Entry, type Sense } from "./dicEntry";
 import { RubyString } from "./japanese";
-import { translate } from "./translate";
+import { Platform } from "@platform";
 import Utils from "./utils";
 
 /** This data is saved in the history */
@@ -253,7 +253,7 @@ export namespace AnkiNoteBuilder {
   addMarker(
     "translated-sentence",
     (data: MarkerData): Utils.PromiseWithProgress<string, string> => {
-      const translatePromise = translate(data.sentence);
+      const translatePromise = Platform.translate(data.sentence);
       const promise = Utils.PromiseWithProgress.fromPromise(
         translatePromise.then((result) => result.translated),
         "Translating Sentence..."

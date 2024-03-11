@@ -1,4 +1,7 @@
 import type { StoredConfiguration } from "~/config";
+import type { TranslateResult } from "./translate";
+
+export type { TranslateResult } from "./translate";
 
 export interface Module {
   IS_DESKTOP: boolean;
@@ -13,6 +16,7 @@ export interface Module {
   versionInfo: () => Promise<VersionInfo>;
   hasTTS: () => boolean;
   playTTS: (text: string) => Promise<void>;
+  translate: (text: string) => Promise<TranslateResult>;
 }
 
 export interface VersionInfo {

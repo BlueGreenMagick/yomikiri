@@ -1,6 +1,6 @@
 <script lang="ts">
   import { BrowserApi } from "~/extension/browserApi";
-  import type { TranslateResult } from "~/translate";
+  import { type TranslateResult } from "@platform";
   import Utils from "~/utils";
 
   export let sentence: string;
