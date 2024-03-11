@@ -135,7 +135,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
             let copy_to = transform_dir.join(&file_name);
             let file_name = file_name.to_str().unwrap();
             match file_name {
-                "lex_naist.csv" => {
+                "lex.csv" => {
                     transform_lex(
                         &copy_from,
                         transform_dir,
@@ -178,7 +178,7 @@ fn transform_lex(
             cost: record.get(3).unwrap().into(),
             pos: record.get(4).unwrap().into(),
             pos2: record.get(5).unwrap().into(),
-            reading: record.get(24).unwrap().into(),
+            reading: record.get(21).unwrap().into(),
             base: record.get(11).unwrap().into(),
             conj_form: record.get(9).unwrap().into(),
         };

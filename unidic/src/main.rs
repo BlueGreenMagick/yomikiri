@@ -22,6 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let output_dir = crate_dir.join("output");
     let src_dir = crate_dir.join("src");
     let resource_dir = crate_dir.join("../jmdict/resources");
+    let unidic_types_dir = crate_dir.join("../unidic-types");
 
     if !output_dir.try_exists()? {
         std::fs::create_dir(&output_dir)?;
@@ -46,12 +47,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     let src_mtime = get_last_mtime_of_dir(&src_dir)?;
     let resource_mtime = get_last_mtime_of_dir(&resource_dir)?;
     let manifest_mtime = get_mtime(crate_dir.join("Cargo.toml"))?;
+    let unidic_types_mtime = get_last_mtime_of_dir(&unidic_types_dir)?;
 
     // re-run only if any relevant files changed after last transform
     if original_mtime <= transform_mtime
         && src_mtime <= transform_mtime
         && manifest_mtime <= transform_mtime
         && resource_mtime <= transform_mtime
+        && unidic_types_mtime <= transform_mtime
     {
         println!("Nothing has changed since last unidic build,");
         return Ok(());
@@ -106,7 +109,8 @@ fn skip_file_entry(entry: &DirEntry) -> bool {
 /// download and unzip unidic file into `output_path`.
 /// `output_path` must exist and be a directory
 fn download_unidic_original(output_path: &Path) -> Result<(), Box<dyn Error>> {
-    let download_url = "https://clrd.ninjal.ac.jp/unidic_archive/cwj/2.2.0/unidic-cwj-2.2.0.zip";
+    let download_url =
+        "https://clrd.ninjal.ac.jp/unidic_archive/cwj/2.1.2/unidic-mecab_kana-accent-2.1.2_src.zip";
     println!("Downloading unidic from {}", &download_url);
     let resp = ureq::get(download_url).call()?;
     let mut tmpfile = tempfile::tempfile()?;

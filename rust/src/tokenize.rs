@@ -617,27 +617,6 @@ impl<R: Read + Seek> SharedBackend<R> {
                 tokens[i].reading = "ワタシ".into();
                 continue;
             }
-            // 1. （形状詞）な　e.g. 静かな
-            // 2. （名詞）な（名詞） e.g.  医者なこと
-            else if token.text == "な" && token.base != "だ" && i > 0 {
-                let mut to_replace = false;
-                let prev_token = &tokens[i - 1];
-                if prev_token.pos == "形状詞" {
-                    to_replace = true;
-                }
-                if !to_replace && prev_token.pos == "名詞" && i + 1 < tokens.len() {
-                    let next_token = &tokens[i + 1];
-                    if next_token.pos == "名詞" {
-                        to_replace = true;
-                    }
-                }
-                if to_replace {
-                    tokens[i].base = "だ".into();
-                    tokens[i].reading = "ナ".into();
-                    tokens[i].pos = "助動詞".into();
-                    tokens[i].pos2 = "*".into();
-                }
-            }
             // 助詞 'と' that follows 終止形 動詞/助動詞 is always 接続助詞
             // fixes tokenization and grammar
             else if token.base == "と"
