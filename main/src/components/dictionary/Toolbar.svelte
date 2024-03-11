@@ -47,7 +47,7 @@
     <button
       class="tool-button"
       class:selected={selectedTool === "translate"}
-      class:disabled={translateDisabled}
+      disabled={translateDisabled}
       title="Translate sentence"
       on:click={selectTranslate}
     >
@@ -57,7 +57,7 @@
     <button
       class="tool-button"
       class:selected={selectedTool === "grammar"}
-      class:disabled={grammarDisabled}
+      disabled={grammarDisabled}
       title="Grammar"
       on:click={selectGrammar}
     >
@@ -98,7 +98,7 @@
     padding: 0.5em 1.2em;
   }
 
-  :global(html.desktop) .tool-button:not(.disabled):hover {
+  :global(html.desktop) .tool-button:not(:disabled):hover {
     cursor: pointer;
   }
 
@@ -108,7 +108,7 @@
     filter: brightness(1.1);
   }
 
-  :global(html.desktop) .tool-button:not(.disabled):not(.selected):hover {
+  :global(html.desktop) .tool-button:not(:disabled):not(.selected):hover {
     filter: brightness(0.9);
   }
 
@@ -122,7 +122,7 @@
     height: 1.2em;
   }
 
-  .tool-button.disabled .icon {
+  .tool-button:disabled .icon {
     fill: #999999;
   }
 </style>
