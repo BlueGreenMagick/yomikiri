@@ -12,6 +12,8 @@ export namespace Platform {
   export const IS_IOS = false;
   export const IS_IOSAPP = false;
 
+  export function initialize() { }
+
   export function loadConfig(): Promise<StoredConfiguration> {
     return BrowserApi.getStorage<StoredConfiguration>("config", {});
   }
@@ -23,8 +25,6 @@ export namespace Platform {
   export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
   }
-
-  export function initialize() { }
 
   export async function versionInfo(): Promise<VersionInfo> {
     const manifest = BrowserApi.manifest();

@@ -34,6 +34,8 @@ export namespace Platform {
     MessageWebviewMap[K]
   >;
 
+  export function initialize() { }
+
   /** Message to app inside app's WKWebview */
   export async function messageWebview<K extends keyof MessageWebviewMap>(
     key: K,
@@ -62,8 +64,6 @@ export namespace Platform {
   export async function openOptionsPage(): Promise<void> {
     throw new Error("Not implemented for iosapp");
   }
-
-  export function initialize() { }
 
   export async function versionInfo(): Promise<VersionInfo> {
     return await messageWebview("versionInfo", null);

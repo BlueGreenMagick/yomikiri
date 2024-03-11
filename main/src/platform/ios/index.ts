@@ -27,6 +27,18 @@ export namespace Platform {
     AppMessageMap[K]
   >;
 
+
+  export function initialize() {
+    if (BrowserApi.context === "background") {
+      BrowserApi.handleRequest("loadConfig", () => {
+        return Platform.loadConfig();
+      });
+      BrowserApi.handleRequest("saveConfig", (config) => {
+        return Platform.saveConfig(config);
+      });
+    }
+  }
+
   /** Only works in background & page */
   export async function requestToApp<K extends keyof AppMessageMap>(
     key: K,
@@ -68,17 +80,6 @@ export namespace Platform {
       }
       await BrowserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
       window.close();
-    }
-  }
-
-  export function initialize() {
-    if (BrowserApi.context === "background") {
-      BrowserApi.handleRequest("loadConfig", () => {
-        return Platform.loadConfig();
-      });
-      BrowserApi.handleRequest("saveConfig", (config) => {
-        return Platform.saveConfig(config);
-      });
     }
   }
 
