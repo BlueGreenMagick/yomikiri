@@ -120,7 +120,7 @@ impl Default for TokenDetails {
 }
 
 impl TokenDetails {
-    fn from_details<S: Into<String>>(details: &[&str], surface: S) -> Self {
+    fn from_details(details: &[&str], surface: &str) -> Self {
         let mut details = details.iter();
         let (pos, pos2) = details
             .next()
@@ -137,7 +137,16 @@ impl TokenDetails {
             .map(|conj| conj.to_unidic())
             .unwrap_or("*")
             .to_string();
-        let reading = details.next().unwrap_or(&"*").to_string();
+        let reading = details
+            .next()
+            .map(|r| {
+                if r.is_empty() {
+                    surface.into()
+                } else {
+                    r.to_string()
+                }
+            })
+            .unwrap_or("*".into());
         let base = if let Some(base) = details.next() {
             if base.is_empty() {
                 surface.into()

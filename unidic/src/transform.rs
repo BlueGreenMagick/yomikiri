@@ -195,6 +195,7 @@ fn transform_lex(
     let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 
     identical_base_to_empty_string(&mut items);
+    identical_reading_to_empty_string(&mut items);
 
     // write removed items for debugging purposes
     // .hidden is attached so lindera does not add it to its dictionary
@@ -269,6 +270,15 @@ fn identical_base_to_empty_string(items: &mut Vec<LexItem>) {
     for item in items {
         if item.surface == item.base {
             item.base = "".into()
+        }
+    }
+}
+
+/// if item.surface == item.reading (most kana-only words), set reading to "" to save space
+fn identical_reading_to_empty_string(items: &mut Vec<LexItem>) {
+    for item in items {
+        if item.surface == item.reading {
+            item.reading = "".into()
         }
     }
 }
