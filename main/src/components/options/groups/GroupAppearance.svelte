@@ -5,17 +5,10 @@
 </script>
 
 <GroupedOptions title="Appearance">
-  <OptionNumber
-    key="general.font_size"
-    title="Font size"
-    description="Text size in pixels"
-    min={9}
-    max={24}
-  />
-  <OptionText
-    key="general.font"
-    title="Japanese Font"
-    description="For japanese text only."
-    wide={true}
-  />
+  <OptionNumber key="general.font_size" title="Font size" min={9} max={24}>
+    Text size in pixels
+  </OptionNumber>
+  <OptionText key="general.font" title="Japanese Font" wide={true}>
+    For japanese text only
+  </OptionText>
 </GroupedOptions>
