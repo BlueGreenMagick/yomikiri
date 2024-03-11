@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { BrowserApi } from "~/extension/browserApi";
-  import { type TranslateResult } from "@platform";
+  import { Platform, type TranslateResult } from "@platform";
   import Utils from "~/utils";
 
   export let sentence: string;
@@ -17,7 +16,7 @@
     display = "Translating...";
 
     try {
-      let result = await BrowserApi.request("translate", sentence);
+      let result = await Platform.translate(sentence);
       display = result.translated;
       resolver(result);
     } catch (err) {
