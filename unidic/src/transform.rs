@@ -76,7 +76,7 @@ impl LexItem {
                 continue;
             }
             let cost = cmp::min(
-                4000 + 1000 * reading.reading.chars().count(),
+                10000 + 500 * reading.reading.chars().count(),
                 i16::MAX as usize,
             );
             for sense in &entry.senses {
