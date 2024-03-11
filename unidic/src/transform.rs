@@ -166,7 +166,7 @@ fn transform_lex(
     let mut reader = csv::Reader::from_path(lex_path)?;
     let iter = reader.records();
     // remove emojis and single characters
-    let iter = iter.skip(2977);
+    let iter = iter.skip(864);
 
     for record in iter {
         let record = record?;
