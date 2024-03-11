@@ -318,7 +318,7 @@ export namespace AnkiNoteBuilder {
     for (const group of grouped) {
       for (const meaning of group.senses) {
         const meaningLine = Utils.escapeHTML(meaning.meaning.join(", "));
-        lines.push(`<span class="yk-meaning">${meaningLine}</span>`);
+        lines.push(`<span class="yk-meaning">\n${meaningLine}\n</span>`);
       }
     }
     return lines.join("<br>");
