@@ -1,11 +1,21 @@
 pub trait JapaneseChar {
     /** Character is hiragana or katakana */
     fn is_kana(&self) -> bool;
+    fn is_hiragana(&self) -> bool;
+    fn is_katakana(&self) -> bool;
 }
 
 impl JapaneseChar for char {
     fn is_kana(&self) -> bool {
+        matches!(*self, '\u{3040}'..='\u{30ff}')
+    }
+
+    fn is_hiragana(&self) -> bool {
         matches!(*self, '\u{3040}'..='\u{309f}')
+    }
+
+    fn is_katakana(&self) -> bool {
+        matches!(*self, '\u{30a0}'..='\u{30ff}')
     }
 }
 
