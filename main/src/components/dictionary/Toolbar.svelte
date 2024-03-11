@@ -104,8 +104,12 @@
 
   :global(html.desktop)
     .tooltip
-    .tool-button:not(.disabled):not(.selected):hover {
+    .tool-button:not(:disabled):not(.selected):hover,
+  :global(html.desktop)
+    .tooltip
+    .tool-button:not(:disabled):not(.selected):focus-visible {
     filter: brightness(1.1);
+    outline: none;
   }
 
   :global(html.desktop) .tool-button:not(:disabled):not(.selected):hover {
