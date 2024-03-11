@@ -213,10 +213,7 @@ fn transform_lex(
     Ok(())
 }
 
-/// Add words in JMDict that is not in Unidic lex
-/// and is not an expression
-/// and is not a particle (ので = 「の」＋「で」)
-/// e.g. katakana words
+/// Add katakana words in JMDict that is not in Unidic lex
 fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResult<()> {
     let mut item_bases: HashSet<String> = HashSet::with_capacity(items.len() * 2);
     for i in items.iter() {
@@ -231,10 +228,13 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResul
             continue;
         }
         let new_items = LexItem::items_from_entry(&entry);
-        for item in &new_items {
+        for item in new_items.into_iter() {
+            if !item.base.chars().any(|c| c.is_katakana()) {
+                continue;
+            }
             item_bases.insert(item.base.clone());
+            items.push(item);
         }
-        items.extend(new_items);
     }
     Ok(())
 }
@@ -305,5 +305,26 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
         PartOfSpeech::Expression => "=exp=",
         // unclassified pos are never included into unidic
         PartOfSpeech::Unclassified => "",
+    }
+}
+
+pub trait JapaneseChar {
+    /** Character is hiragana or katakana */
+    fn is_kana(&self) -> bool;
+    fn is_hiragana(&self) -> bool;
+    fn is_katakana(&self) -> bool;
+}
+
+impl JapaneseChar for char {
+    fn is_kana(&self) -> bool {
+        matches!(*self, '\u{3040}'..='\u{30ff}')
+    }
+
+    fn is_hiragana(&self) -> bool {
+        matches!(*self, '\u{3040}'..='\u{309f}')
+    }
+
+    fn is_katakana(&self) -> bool {
+        matches!(*self, '\u{30a0}'..='\u{30ff}')
     }
 }
