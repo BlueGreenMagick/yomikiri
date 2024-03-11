@@ -15,41 +15,44 @@ declare global {
     Api: typeof BrowserApi;
     Utils: typeof Utils;
     Config: typeof Config;
-    ensureInitialized: typeof ensureInitialized;
+    maybeInitBackend: typeof maybeInitBackend;
   }
 }
 
-let _initialized: Promise<void> | undefined;
 
-async function _initialize() {
+let initialized: Promise<void> = initialize();
+
+async function initialize(): Promise<void> {
   BrowserApi.initialize({
     handleRequests: true,
     context: "background",
   });
   Platform.initialize();
   await Config.initialize();
-  await Backend.initialize();
 }
 
-async function ensureInitialized() {
-  if (_initialized === undefined) {
-    _initialized = _initialize();
+let _backendInitialized: Promise<void> | undefined;
+
+async function maybeInitBackend(): Promise<void> {
+  await initialized;
+  if (_backendInitialized === undefined) {
+    _backendInitialized = Backend.initialize();
   }
-  return _initialized;
+  await _backendInitialized;
 }
 
 async function searchTerm(term: string): Promise<Entry[]> {
-  await ensureInitialized();
+  await maybeInitBackend();
   return await Backend.search(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-  await ensureInitialized();
+  await maybeInitBackend();
   return await Backend.tokenize(req.text, req.charAt);
 }
 
 async function addAnkiNote(note: NoteData): Promise<void> {
-  await ensureInitialized();
+  await initialized;
   return await AnkiApi.addNote(note);
 }
 
@@ -58,12 +61,12 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
 }
 
 async function handleTranslate(req: string): Promise<TranslateResult> {
-  await ensureInitialized();
+  await initialized;
   return await Platform.translate(req);
 }
 
 async function stateEnabledChanged(value: boolean): Promise<void> {
-  await ensureInitialized();
+  await initialized;
   if (value) {
     BrowserApi.setBadge("", "#999999")
   } else {
@@ -74,11 +77,9 @@ async function stateEnabledChanged(value: boolean): Promise<void> {
 }
 
 async function tts(text: string): Promise<void> {
-  await ensureInitialized();
+  await initialized;
   BrowserApi.speakJapanese(text);
 }
-
-ensureInitialized();
 
 BrowserApi.handleRequest("searchTerm", searchTerm);
 BrowserApi.handleRequest("tokenize", tokenize);
@@ -94,4 +95,4 @@ self.AnkiApi = AnkiApi;
 self.Api = BrowserApi;
 self.Utils = Utils;
 self.Config = Config;
-self.ensureInitialized = ensureInitialized;
+self.maybeInitBackend = maybeInitBackend;
