@@ -127,7 +127,7 @@ export namespace Tooltip {
     // min margin between tooltip and window
     const MARGIN = 10;
     // space between highlighted rect and tooltip
-    const VERTICAL_SPACE = 6;
+    const VERTICAL_SPACE = 10;
     const MAX_HEIGHT = 300;
     const WIDTH = Math.min(500, window.innerWidth - 2 * MARGIN);
     const BOTTOM_ADVANTAGE = 150;
