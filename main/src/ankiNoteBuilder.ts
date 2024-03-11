@@ -199,7 +199,7 @@ export namespace AnkiNoteBuilder {
 
     let sentence = "";
     for (let i = 0; i < tokenized.tokenIdx; i++) {
-      sentence += Utils.escapeHTML(tokens[i].text);
+      sentence += Utils.escapeHTML(tokens[i].text)
     }
     sentence += "<b>";
     sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].text);
@@ -207,7 +207,7 @@ export namespace AnkiNoteBuilder {
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       sentence += Utils.escapeHTML(tokens[i].text);
     }
-    return sentence;
+    return sentence.trim();
   });
   addMarker("sentence-furigana", (data: MarkerData) => {
     const tokenized = data.tokenized;
@@ -218,7 +218,7 @@ export namespace AnkiNoteBuilder {
     for (let i = 0; i < tokenized.tokenIdx; i++) {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
-    const before = Utils.escapeHTML(RubyString.toAnki(rubies));
+    const before = Utils.escapeHTML(RubyString.toAnki(rubies))
 
     const tokenRuby = RubyString.generate(
       tokens[tokenized.tokenIdx].text,
@@ -232,7 +232,8 @@ export namespace AnkiNoteBuilder {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const after = Utils.escapeHTML(RubyString.toAnki(rubies));
-    return before + mid + after;
+    const sentence = before + mid + after;
+    return sentence.trim();
   });
   addMarker("sentence-kana", (data: MarkerData) => {
     let sentence = "";
@@ -248,14 +249,14 @@ export namespace AnkiNoteBuilder {
       sentence += Utils.escapeHTML(tokens[i].reading);
     }
 
-    return sentence;
+    return sentence.trim();
   });
   addMarker(
     "translated-sentence",
     (data: MarkerData): Utils.PromiseWithProgress<string, string> => {
       const translatePromise = Platform.translate(data.sentence);
       const promise = Utils.PromiseWithProgress.fromPromise(
-        translatePromise.then((result) => result.translated),
+        translatePromise.then((result) => result.translated.trim()),
         "Translating Sentence..."
       );
       return promise;
@@ -276,7 +277,7 @@ export namespace AnkiNoteBuilder {
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
       sentence += Utils.escapeHTML(tokens[i].text);
     }
-    return sentence;
+    return sentence.trim();
   });
   addMarker("sentence-cloze-furigana", (data: MarkerData) => {
     const tokenized = data.tokenized;
@@ -300,7 +301,8 @@ export namespace AnkiNoteBuilder {
       rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const after = Utils.escapeHTML(RubyString.toAnki(rubies));
-    return before + mid + after;
+    const sentence = before + mid + after;
+    return sentence.trim()
   });
 
   addMarker("meaning", (data: MarkerData) => {
