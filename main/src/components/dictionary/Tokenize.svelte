@@ -1,17 +1,12 @@
 <script lang="ts">
   import { TokenizeResult, Backend } from "@platform/backend";
-  import { Platform } from "@platform";
   import Utils from "~/utils";
   import IconSearch from "@icons/search.svg";
-  import IconSettings from "@icons/settings.svg";
-  import IconPower from "@icons/power.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import SentenceView from "./SentenceView.svelte";
   import DicEntriesView from "./DicEntriesView.svelte";
   import { createEventDispatcher } from "svelte";
   import TextButton from "../TextButton.svelte";
-  import Config from "~/config";
-  import { BrowserApi } from "~/extension/browserApi";
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
@@ -33,8 +28,6 @@
   let tokenizeResult: TokenizeResult = TokenizeResult.empty();
   // may be bigger than total token characters
   let selectedCharAt: number;
-  // TODO: Move this to Config store
-  let stateEnabled = Config.get("state.enabled");
   let selectedTool: Tools | null = null;
 
   /** modifies `searchTokens` */
@@ -48,18 +41,6 @@
     charAt = Math.min(charAt, searchText.length - 1);
 
     tokenizeResult = await Backend.tokenize(searchText, charAt);
-  }
-
-  function openSettings() {
-    Platform.openOptionsPage();
-  }
-
-  function toggleEnable() {
-    let prevValue = Config.get("state.enabled");
-    stateEnabled = !prevValue;
-    Config.set("state.enabled", stateEnabled);
-    BrowserApi.requestToAllTabs("stateEnabledChanged", stateEnabled);
-    BrowserApi.request("stateEnabledChanged", stateEnabled);
   }
 
   function close() {
@@ -118,19 +99,7 @@
       />
     </div>
   {:else if actionButtons}
-    <div class="action-buttons">
-      <button
-        class="icon-action"
-        class:active={stateEnabled}
-        on:click={toggleEnable}
-        title={stateEnabled ? "Disable" : "Enable"}
-      >
-        <IconPower />
-      </button>
-      <button class="icon-action" on:click={openSettings} title="Open Settings">
-        <IconSettings />
-      </button>
-    </div>
+    <slot />
   {/if}
 </div>
 
@@ -202,42 +171,6 @@
   }
   .icon-clear.hidden {
     visibility: hidden;
-  }
-
-  .icon-action {
-    width: 36px;
-    height: 36px;
-    background-color: var(--button-bg);
-    fill: white;
-    border-radius: 4px;
-    padding: 4px;
-    transition: background-color 0.25s;
-  }
-
-  .icon-action.active {
-    background-color: var(--accent-orange);
-  }
-
-  @media (hover: hover) {
-    .icon-action:hover,
-    .icon-action:focus {
-      filter: brightness(0.9);
-      cursor: pointer;
-    }
-  }
-
-  .action-buttons {
-    margin-top: 48px;
-    width: 100%;
-
-    display: flex;
-    gap: 8px;
-    flex-direction: row;
-    justify-content: center;
-  }
-
-  :global(html.ios) .action-buttons {
-    margin-top: 80px;
   }
 
   .close-button {
