@@ -36,13 +36,13 @@
 <style>
   .toolbar-with-pane {
     flex: 0 1 auto;
-    border-bottom: 1px solid var(--border);
   }
 
   .tools-pane {
     background-color: var(--toolbar-foreground);
     max-height: 160px;
     overflow-y: auto;
+    border-bottom: 1px solid var(--border);
   }
 
   .tools-pane.hidden {
