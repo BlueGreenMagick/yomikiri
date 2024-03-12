@@ -167,41 +167,6 @@ pub enum PartOfSpeech {
     Unclassified,
 }
 
-#[derive(Debug, Eq, Serialize, Deserialize)]
-pub struct DictIndexItem {
-    pub key: String,
-    pub offsets: Vec<u32>,
-    pub sizes: Vec<u16>,
-}
-
-impl DictIndexItem {
-    pub fn new(key: String, offset: u32, size: u16) -> DictIndexItem {
-        DictIndexItem {
-            key,
-            offsets: vec![offset],
-            sizes: vec![size],
-        }
-    }
-}
-
-impl Ord for DictIndexItem {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.key.cmp(&other.key)
-    }
-}
-
-impl PartialOrd for DictIndexItem {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for DictIndexItem {
-    fn eq(&self, other: &Self) -> bool {
-        self.key == other.key
-    }
-}
-
 fn is_false(a: &bool) -> bool {
     !*a
 }
