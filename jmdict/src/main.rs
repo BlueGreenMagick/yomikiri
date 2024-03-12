@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use flate2::read::GzDecoder;
 use std::env;
 use std::error::Error;
@@ -31,10 +32,27 @@ fn main() -> Result<()> {
     println!("Writing yomikiridict and yomikiriindex...");
     let output_index_file = File::create(&output_index_path)?;
     let mut output_index_writer = BufWriter::new(output_index_file);
-    let output_file = File::create(output_path)?;
+    let output_file = File::create(&output_path)?;
     let mut output_writer = BufWriter::new(output_file);
 
     write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
+
+    println!("Writing metadata.json...");
+    let download_time = Utc::now();
+    let download_time = download_time.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
+    let index_file_size = fs::metadata(&output_index_path)?.len();
+    let entries_file_size = fs::metadata(&output_path)?.len();
+    let file_size = index_file_size + entries_file_size;
+
+    let metadata_json = format!(
+        "{{
+    \"download_date\": \"{}\",
+    \"file_size\": {}
+}}",
+        download_time, file_size
+    );
+    let metadata_json_file = resources_dir.join("metadata.json");
+    fs::write(&metadata_json_file, &metadata_json)?;
 
     println!("Data writing complete.");
     Ok(())

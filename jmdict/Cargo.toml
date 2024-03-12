@@ -13,14 +13,17 @@ serde_json = "1"
 bincode = "1"
 yomikiri-dictionary = { path = "../dictionary" }
 itertools = "0.11"
+thiserror = "1"
+
+# binary dependencies
 ureq = { version = "2.7", optional = true }
 tempfile = { version = "3.8", optional = true }
 flate2 = { version = "1.0", optional = true }
-thiserror = "1"
+chrono = { version = "0.4", optional = true, features = ["alloc"] }
 
 [features]
 default = ["bin"]
-bin = ["dep:ureq", "dep:tempfile", "dep:flate2"]
+bin = ["dep:ureq", "dep:tempfile", "dep:flate2", "dep:chrono"]
 
 [[bin]]
 name = "yomikiri-dictionary-builder"

@@ -145,7 +145,6 @@ export namespace Backend {
     return metadata;
   }
 
-
   async function createNewDictionary(): Promise<[Uint8Array, Uint8Array]> {
     const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz")
     const buffer = await resp.arrayBuffer()
