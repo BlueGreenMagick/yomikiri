@@ -1,9 +1,11 @@
 use flate2::read::GzDecoder;
 use std::env;
 use std::error::Error;
+use std::fs::{self, File};
+use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
-use yomikiri_jmdict::{parse_xml_file, write_yomikiri_dictionary};
+use yomikiri_jmdict::{parse_jmdict_xml, write_yomikiri_dictionary};
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
@@ -23,10 +25,16 @@ fn main() -> Result<()> {
     }
 
     println!("Parsing downloaded JMDict xml file...",);
-    let entries = parse_xml_file(&jmdict_file_path).unwrap();
+    let jmdict_xml = fs::read_to_string(&jmdict_file_path)?;
+    let entries = parse_jmdict_xml(&jmdict_xml)?;
 
     println!("Writing yomikiridict and yomikiriindex...");
-    write_yomikiri_dictionary(&output_index_path, &output_path, &entries).unwrap();
+    let output_index_file = File::create(&output_index_path)?;
+    let mut output_index_writer = BufWriter::new(output_index_file);
+    let output_file = File::create(output_path)?;
+    let mut output_writer = BufWriter::new(output_file);
+
+    write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
 
     println!("Data writing complete.");
     Ok(())
