@@ -6,6 +6,7 @@ import {
 import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/jmdict/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/jmdict/english.yomikiriindex";
+import BundledDictMetadata from "@yomikiri/jmdict/metadata.json";
 import { Backend as BackendWasm, create_dictionary } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";
@@ -17,6 +18,7 @@ export {
   type Token,
   type TokenizeRequest,
   TokenizeResult,
+  type DictionaryMetadata,
 } from "../common/backend";
 
 interface DictionaryDBSchema extends DBSchema {
@@ -131,7 +133,7 @@ export namespace Backend {
     const [index_bytes, entries_bytes] = await createNewDictionary()
     const download_date = new Date();
     const metadata: DictionaryMetadata = {
-      download_date: download_date.toISOString(),
+      download_date: download_date,
       files_size: index_bytes.byteLength + entries_bytes.byteLength
     };
 
@@ -162,6 +164,18 @@ export namespace Backend {
     });
   }
 
+  export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
+    const db = await openDictionaryDB();
+    const installedMetadata = await db.get("metadata", "value")
+    if (installedMetadata !== undefined) {
+      return installedMetadata
+    } else {
+      return {
+        ...BundledDictMetadata,
+        download_date: new Date(BundledDictMetadata.download_date),
+      }
+    }
+  }
 }
 
 

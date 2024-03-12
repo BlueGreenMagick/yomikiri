@@ -4,6 +4,7 @@ import {
   type IBackend,
   type TokenizeRequest,
   TokenizeResult,
+  type DictionaryMetadata,
 } from "../common/backend";
 import { Entry } from "~/dicEntry";
 
@@ -11,6 +12,7 @@ export {
   type Token,
   type TokenizeRequest,
   TokenizeResult,
+  type DictionaryMetadata,
 } from "../common/backend";
 
 
@@ -58,6 +60,13 @@ export namespace Backend {
     return entries;
   }
 
+  export async function updateDictionary(): Promise<DictionaryMetadata> {
+    throw new Error("Not implemented on ios");
+  }
+
+  export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
+    throw new Error("Not implemented on ios");
+  }
 }
 
 Backend satisfies IBackend;
