@@ -5,7 +5,7 @@ import {
 import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/jmdict/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/jmdict/english.yomikiriindex";
-import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
+import { Backend as BackendWasm, create_dictionary } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
@@ -96,6 +96,14 @@ export namespace Backend {
       .map(Entry.fromObject);
     Entry.order(entries);
     return entries;
+  }
+
+  export async function updateDictionary() {
+    const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz")
+    const buffer = await resp.arrayBuffer()
+    const typedarray = new Uint8Array(buffer);
+    const [indexesBytes, entriesBytes] = create_dictionary(typedarray);
+    throw new Error("Saving dictionary files are unimplemented");
   }
 
 }

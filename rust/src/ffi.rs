@@ -1,12 +1,14 @@
 use bincode::Options;
-use yomikiri_dictionary::file::DictTermIndex;
+use flate2::read::GzDecoder;
+use yomikiri_dictionary::file::{write_entries, write_indexes, DictTermIndex};
+use yomikiri_jmdict::parse_jmdict_xml;
 
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{BufReader, Write};
 use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
@@ -43,6 +45,22 @@ impl Backend {
         let mut backend = self.inner.lock().unwrap();
         backend.dictionary.search_json(&term)
     }
+
+    pub fn update_dictionary_file(&self, index_path: String, entries_path: String) -> YResult<()> {
+        let entries = {
+            // JMDict is currently 58MB.
+            let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
+            download_dictionary(&mut bytes)?;
+            let xml = String::from_utf8(bytes)?;
+            parse_jmdict_xml(&xml)
+        }?;
+
+        let mut entries_file = File::create(&entries_path)?;
+        let term_indexes = write_entries(&mut entries_file, &entries)?;
+        let mut index_file = File::create(&index_path)?;
+        write_indexes(&mut index_file, &term_indexes)?;
+        Ok(())
+    }
 }
 
 impl Dictionary<File> {
@@ -59,4 +77,12 @@ impl Dictionary<File> {
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))
     }
+}
+
+fn download_dictionary<W: Write>(writer: &mut W) -> YResult<()> {
+    let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
+    let resp = ureq::get(download_url).call()?;
+    let mut decoder = GzDecoder::new(resp.into_reader());
+    std::io::copy(&mut decoder, writer)?;
+    Ok(())
 }
