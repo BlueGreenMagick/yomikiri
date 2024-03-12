@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::io::{Read, Seek, SeekFrom, Write};
 
+use bincode::Options;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
 use flate2::write::{GzDecoder, GzEncoder};
 use flate2::Compression;
@@ -14,6 +15,7 @@ pub const CHUNK_CUTOFF_SIZE: usize = 16 * 1024;
 /// Recommended minimum buffer size
 pub const BUFFER_SIZE: usize = CHUNK_CUTOFF_SIZE + 8 * 1024;
 
+/// Location of a single jmdict entry in .yomikiridict
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize, Hash)]
 pub struct DictEntryIndex {
     /// chunk starting byte index
@@ -31,6 +33,7 @@ impl DictEntryIndex {
     }
 }
 
+/// Locations of multiple jmdict entries for a single term in .yomikiridict
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DictTermIndex {
     pub term: String,
@@ -45,6 +48,12 @@ impl DictTermIndex {
             entry_indexes,
         }
     }
+}
+
+pub fn read_indexes<R: Read>(reader: &mut R) -> Result<Vec<DictTermIndex>> {
+    let options = bincode::DefaultOptions::new();
+    let term_indexes = options.deserialize_from(reader)?;
+    Ok(term_indexes)
 }
 
 /// entry_indexes should be sorted for better performance
@@ -152,6 +161,12 @@ pub fn write_entries<W: Write>(writer: &mut W, entries: &[Entry]) -> Result<Vec<
         .collect();
     dict_indexes.sort_by(|a, b| a.term.cmp(&b.term));
     Ok(dict_indexes)
+}
+
+pub fn write_indexes<W: Write>(writer: &mut W, term_indexes: &[DictTermIndex]) -> Result<()> {
+    let options = bincode::DefaultOptions::new();
+    options.serialize_into(writer, term_indexes)?;
+    Ok(())
 }
 
 fn gzip_bytes(bytes: &[u8]) -> Result<Vec<u8>> {

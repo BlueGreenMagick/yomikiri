@@ -1,9 +1,11 @@
 use std::collections::HashSet;
 use std::error::Error;
+use std::fs::File;
+use std::io::{BufReader, Cursor};
 use std::path::Path;
 use std::{cmp, fs};
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
-use yomikiri_jmdict::read_yomikiri_dictionary;
+use yomikiri_dictionary::file::{read_entries, read_indexes, DictEntryIndex};
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
 type TResult<T> = core::result::Result<T, Box<dyn Error>>;
@@ -316,6 +318,27 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
         // unclassified pos are never included into unidic
         PartOfSpeech::Unclassified => "",
     }
+}
+
+pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> TResult<Vec<Entry>> {
+    let file = File::open(index_path)?;
+    let mut reader = BufReader::new(file);
+    let term_indexes = read_indexes(&mut reader)?;
+
+    let mut entry_indexes: HashSet<DictEntryIndex> = HashSet::new();
+    for term_index in term_indexes {
+        for entry_index in term_index.entry_indexes {
+            entry_indexes.insert(entry_index);
+        }
+    }
+
+    let mut entry_indexes: Vec<DictEntryIndex> = entry_indexes.into_iter().collect();
+    entry_indexes.sort();
+
+    let dict_bytes: Vec<u8> = fs::read(dict_path)?;
+    let mut reader = Cursor::new(dict_bytes);
+    let entries = read_entries(&mut reader, &entry_indexes)?;
+    Ok(entries)
 }
 
 pub trait JapaneseChar {

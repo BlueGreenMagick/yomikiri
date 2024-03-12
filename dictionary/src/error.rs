@@ -13,4 +13,6 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("TryFromInt {0}")]
     TryFromInt(#[from] TryFromIntError),
+    #[error("Bincode {0}")]
+    Bincode(#[from] bincode::Error),
 }
