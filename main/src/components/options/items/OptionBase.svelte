@@ -23,6 +23,7 @@
     align-items: center;
     padding: 6px 0px;
     border-bottom: 1px solid lightgray;
+    min-height: 2.5em;
   }
   .option-item.disabled .left {
     opacity: 0.6;
