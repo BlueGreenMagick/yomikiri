@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
-  import IconChevronForward from "@icons/chevron-forward.svg";
 
   export let title: string;
   export let buttonText: string;
@@ -12,7 +9,7 @@
 
 <div class="option-button" class:disabled>
   <OptionBase {title} {disabled}>
-    <button on:click={() => onClicked()}>
+    <button on:click={() => onClicked()} {disabled}>
       {buttonText}
     </button>
     <slot slot="description" />

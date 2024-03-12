@@ -129,8 +129,18 @@ export namespace Backend {
     return entries;
   }
 
-  export async function updateDictionary(): Promise<DictionaryMetadata> {
-    const [index_bytes, entries_bytes] = await createNewDictionary()
+  export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
+    let prom: Utils.PromiseWithProgress<DictionaryMetadata, string>;
+    const progressFn = (msg: string) => {
+      prom.setProgress(msg);
+    }
+    prom = Utils.PromiseWithProgress.fromPromise(_updateDictionary(progressFn), "Downloading JMDict file...")
+    return prom;
+  }
+
+  async function _updateDictionary(progressFn: (msg: string) => any): Promise<DictionaryMetadata> {
+    const [index_bytes, entries_bytes] = await _createNewDictionary(progressFn)
+    progressFn("Saving dictionary file...")
     const download_date = new Date();
     const metadata: DictionaryMetadata = {
       download_date: download_date,
@@ -147,10 +157,11 @@ export namespace Backend {
     return metadata;
   }
 
-  async function createNewDictionary(): Promise<[Uint8Array, Uint8Array]> {
+  async function _createNewDictionary(progressFn: (msg: string) => any): Promise<[Uint8Array, Uint8Array]> {
     const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz")
     const buffer = await resp.arrayBuffer()
     const typedarray = new Uint8Array(buffer);
+    progressFn("Creating dictionary file...")
     return create_dictionary(typedarray);
   }
 

@@ -7,6 +7,7 @@ import {
   type DictionaryMetadata,
 } from "../common/backend";
 import { Entry } from "~/dicEntry";
+import type Utils from "~/utils";
 
 export {
   type Token,
@@ -60,7 +61,7 @@ export namespace Backend {
     return entries;
   }
 
-  export async function updateDictionary(): Promise<DictionaryMetadata> {
+  export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
     throw new Error("Not implemented on ios");
   }
 

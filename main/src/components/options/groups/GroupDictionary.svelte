@@ -3,6 +3,7 @@
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
   import { Backend } from "@platform/backend";
+  import Utils from "~/utils";
 
   let dictDescription = "Loading...";
   let disabled: boolean = false;
@@ -19,13 +20,19 @@
   }
 
   async function onClicked() {
-    const updating = Backend.updateDictionary();
-    disabled = true;
-    dictDescription =
-      "Updating... It may take about a minute... Don't close the window.";
-    const dictionaryMetadata = await updating;
-    dictDescription = "Successfully updated dictionary!";
-    dictDescClass = "success";
+    try {
+      disabled = true;
+      const updating = Backend.updateDictionary();
+      updating.progress.subscribe((value) => {
+        dictDescription = value;
+      });
+      const dictionaryMetadata = await updating;
+      dictDescription = "Successfully updated dictionary!";
+      dictDescClass = "success";
+    } catch (e) {
+      dictDescription = "Error: " + Utils.errorMessage(e);
+      console.error(e);
+    }
   }
 
   initialize();

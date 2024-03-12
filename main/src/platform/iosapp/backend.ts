@@ -1,3 +1,4 @@
+import type Utils from "~/utils";
 import { Platform } from ".";
 import {
   type IBackend,
@@ -45,7 +46,7 @@ export namespace Backend {
     return entries;
   }
 
-  export async function updateDictionary(): Promise<DictionaryMetadata> {
+  export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
     throw new Error("Not yet implemented on ios");
   }
 
