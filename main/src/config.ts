@@ -1,6 +1,7 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
 import { VERSION } from "./generated";
+import Utils from "./utils";
 
 /** Must not be undefined */
 export interface Configuration {
@@ -40,14 +41,29 @@ export namespace Config {
 
   export let initialized: boolean = false;
 
-  let _storage: StoredConfiguration;
+  export let _storage: StoredConfiguration;
   let _styleEl: HTMLStyleElement | undefined;
+  let _subscribers: (() => any)[] = []
+
+
+
 
   /** Platform must be initialized. */
   export async function initialize(): Promise<void> {
-    _storage = await Platform.loadConfig();
-    migrate()
+    _storage = await Platform.getConfig();
 
+    for (const subscriber of _subscribers) {
+      subscriber();
+    }
+
+    Platform.subscribeConfig((stored) => {
+      _storage = stored;
+      for (const subscriber of _subscribers) {
+        subscriber();
+      }
+    });
+
+    migrate()
     Config.initialized = true;
   }
 
@@ -88,6 +104,18 @@ export namespace Config {
     return defaultOptions[key];
   }
 
+  /** 
+   * If Config is initialized, subscriber will run immediately.
+   * 
+   * If Config isn't initialized yet, it will run on initialization.
+   */
+  export function onChange(subscriber: () => void): void {
+    _subscribers.push(subscriber)
+    if (Config.initialized) {
+      subscriber()
+    }
+  }
+
   /** Insert or update <style> properties from config */
   export function setStyle(document: Document) {
     const css = generateCss();
@@ -111,6 +139,7 @@ export namespace Config {
     }`;
   }
 
+  // Make sure no race condition with migration occurs!
   function migrate() {
     if (_storage["version"] !== defaultOptions["version"]) {
       set("version", defaultOptions["version"])

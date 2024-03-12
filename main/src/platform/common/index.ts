@@ -10,7 +10,8 @@ export interface Module {
 
   /** Api must be initialized */
   initialize: () => void;
-  loadConfig: () => Promise<StoredConfiguration>;
+  getConfig(): Promise<StoredConfiguration>;
+  subscribeConfig(subscriber: (config: StoredConfiguration) => any): void;
   saveConfig: (config: StoredConfiguration) => Promise<void>;
   openOptionsPage: () => void | Promise<void>;
   versionInfo: () => Promise<VersionInfo>;

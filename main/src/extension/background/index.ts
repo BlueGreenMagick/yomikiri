@@ -7,20 +7,8 @@ import Utils from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 
-declare global {
-  // ServiceWorkerGlobalScope in service_worker
-  interface Window {
-    backend: typeof Backend;
-    AnkiApi: typeof AnkiApi;
-    Api: typeof BrowserApi;
-    Utils: typeof Utils;
-    Config: typeof Config;
-    maybeInitBackend: typeof maybeInitBackend;
-  }
-}
-
-
 let initialized: Promise<void> = initialize();
+let _backendInitialized: Promise<void> | undefined;
 
 async function initialize(): Promise<void> {
   BrowserApi.initialize({
@@ -30,8 +18,6 @@ async function initialize(): Promise<void> {
   Platform.initialize();
   await Config.initialize();
 }
-
-let _backendInitialized: Promise<void> | undefined;
 
 async function maybeInitBackend(): Promise<void> {
   await initialized;
@@ -65,15 +51,10 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
   return await Platform.translate(req);
 }
 
-async function stateEnabledChanged(value: boolean): Promise<void> {
-  await initialized;
-  if (value) {
-    BrowserApi.setBadge("", "#999999")
-  } else {
-    BrowserApi.setBadge("off", "#999999")
-  }
-
-  Config.set("state.enabled", value, false);
+async function updateStateEnabledBadge(): Promise<void> {
+  const enabled = Config.get("state.enabled");
+  const text = enabled ? "" : "off";
+  BrowserApi.setBadge(text, "#999999");
 }
 
 async function tts(text: string): Promise<void> {
@@ -86,10 +67,23 @@ BrowserApi.handleRequest("tokenize", tokenize);
 BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
 BrowserApi.handleRequest("tabId", tabId);
 BrowserApi.handleRequest("translate", handleTranslate);
-BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
 BrowserApi.handleRequest("tts", tts);
 
+Config.onChange(updateStateEnabledBadge);
+
 // expose object to window for debugging purposes
+declare global {
+  // ServiceWorkerGlobalScope in service_worker
+  interface Window {
+    backend: typeof Backend;
+    AnkiApi: typeof AnkiApi;
+    Api: typeof BrowserApi;
+    Utils: typeof Utils;
+    Config: typeof Config;
+    maybeInitBackend: typeof maybeInitBackend;
+  }
+}
+
 self.backend = Backend;
 self.AnkiApi = AnkiApi;
 self.Api = BrowserApi;

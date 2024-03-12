@@ -124,24 +124,21 @@ document.addEventListener("click", async (ev: MouseEvent) => {
   }
 });
 
-async function stateEnabledChanged(value: boolean): Promise<void> {
-  await ensureInitialized();
-  Config.set("state.enabled", value, false);
-}
-
-
-BrowserApi.handleRequest("stateEnabledChanged", async (value) => {
+function checkStateEnabled() {
   if (!initialized) return;
 
+
+  const value = Config.get("state.enabled");
   if (!value) {
     Tooltip.hide();
     Highlighter.unhighlight();
   }
-});
-BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
+}
+
+Config.onChange(checkStateEnabled)
+ensureInitialized();
+
 
 window.Api = BrowserApi;
 window.ensureInitialized = ensureInitialized;
 window.Config = Config;
-
-ensureInitialized();

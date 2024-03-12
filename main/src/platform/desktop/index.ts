@@ -14,8 +14,15 @@ export namespace Platform {
 
   export function initialize() { }
 
-  export function loadConfig(): Promise<StoredConfiguration> {
-    return BrowserApi.getStorage<StoredConfiguration>("config", {});
+  export async function getConfig(): Promise<StoredConfiguration> {
+    return await BrowserApi.getStorage<StoredConfiguration>("config", {});
+  }
+
+  /** subscriber is called when config is changed. */
+  export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
+    BrowserApi.handleStorageChange("config", (change) => {
+      subscriber(change.newValue)
+    })
   }
 
   export function saveConfig(config: StoredConfiguration): Promise<void> {

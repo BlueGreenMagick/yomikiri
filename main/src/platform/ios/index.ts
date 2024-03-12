@@ -1,4 +1,4 @@
-import type { StoredConfiguration } from "~/config";
+import { type StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
 import type { Module, TranslateResult, VersionInfo } from "../common";
@@ -30,8 +30,9 @@ export namespace Platform {
 
   export function initialize() {
     if (BrowserApi.context === "background") {
-      BrowserApi.handleRequest("loadConfig", () => {
-        return Platform.loadConfig();
+      BrowserApi.handleRequest("loadConfig", async () => {
+        const config = await updateConfig();
+        return config;
       });
       BrowserApi.handleRequest("saveConfig", (config) => {
         return Platform.saveConfig(config);
@@ -52,12 +53,33 @@ export namespace Platform {
     return JSON.parse(response) as AppResponse<K>;
   }
 
-  export async function loadConfig(): Promise<StoredConfiguration> {
+  export async function getConfig(): Promise<StoredConfiguration> {
     if (BrowserApi.context === "contentScript") {
       return BrowserApi.request("loadConfig", null);
     } else {
-      return Platform.requestToApp("loadConfig", null);
+      return updateConfig();
     }
+  }
+
+  /** 
+   * Listens to web config changes, 
+   * which may occur when a new script loads and app config is fetched
+   */
+  export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
+    BrowserApi.handleStorageChange("config", (change) => {
+      subscriber(change.newValue)
+    })
+  }
+
+  // App config is the source of truth
+  async function updateConfig(): Promise<StoredConfiguration> {
+    const webConfigP = BrowserApi.getStorage<StoredConfiguration>("config", {});
+    const appConfigP = Platform.requestToApp("loadConfig", null);
+    const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
+    if (webConfig != appConfig) {
+      await BrowserApi.setStorage("config", appConfig);
+    }
+    return appConfig;
   }
 
   export async function saveConfig(config: StoredConfiguration): Promise<void> {
@@ -65,6 +87,7 @@ export namespace Platform {
       await BrowserApi.request("saveConfig", config);
     } else {
       const configJson = JSON.stringify(config);
+      BrowserApi.setStorage("config", config);
       await Platform.requestToApp("saveConfig", configJson);
     }
   }

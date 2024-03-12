@@ -16,7 +16,6 @@ export interface MessageMap {
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [NoteData, void];
   tabId: [null, number | undefined];
-  stateEnabledChanged: [boolean, void];
   translate: [string, TranslateResult];
   tts: [string, void];
   // ios
@@ -77,6 +76,7 @@ export namespace BrowserApi {
   export function initialize(options: ApiInitializeOptions) {
     const opts: ApiInitializeOptions = {
       handleRequests: true,
+      handleStorageChange: true,
       ...options,
     };
 

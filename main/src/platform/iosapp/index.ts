@@ -51,9 +51,14 @@ export namespace Platform {
     )) as WebviewResponse<K>;
   }
 
-  export async function loadConfig(): Promise<StoredConfiguration> {
-    const configJson = await messageWebview("loadConfig", null);
+  export async function getConfig(): Promise<StoredConfiguration> {
+    const configJson = await messageWebview("loadConfig", null)
     return JSON.parse(configJson);
+  }
+
+  /** Does nothiing in iosapp */
+  export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
+    return
   }
 
   export async function saveConfig(config: StoredConfiguration) {

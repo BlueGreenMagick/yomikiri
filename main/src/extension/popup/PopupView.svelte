@@ -61,8 +61,6 @@
     let prevValue = Config.get("state.enabled");
     stateEnabled = !prevValue;
     Config.set("state.enabled", stateEnabled);
-    BrowserApi.requestToAllTabs("stateEnabledChanged", stateEnabled);
-    BrowserApi.request("stateEnabledChanged", stateEnabled);
   }
 </script>
 

@@ -24,13 +24,6 @@ async function initialize(): Promise<void> {
 
 let initialized = initialize();
 
-async function stateEnabledChanged(value: boolean): Promise<void> {
-  await initialized;
-  Config.set("state.enabled", value, false);
-}
-
-BrowserApi.handleRequest("stateEnabledChanged", stateEnabledChanged);
-
 const page = new PopupPage({ target: document.body, props: { initialized } });
 
 window.Api = BrowserApi;
