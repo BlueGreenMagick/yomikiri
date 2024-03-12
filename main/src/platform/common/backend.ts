@@ -50,6 +50,13 @@ export namespace TokenizeResult {
   }
 }
 
+export interface DictionaryMetadata {
+  // ISO date string format (YYYY-MM-DDTHH:mm:ss.sssZ)
+  download_date: string,
+  // bytes len
+  files_size: number
+}
+
 export interface IBackend {
   initialize(): Promise<void>;
   tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
