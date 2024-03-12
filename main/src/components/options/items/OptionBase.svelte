@@ -5,14 +5,12 @@
 </script>
 
 <div class="option-item" class:disabled>
-  <div class="inner">
-    <div class="left">
-      <div class="title">{title}</div>
-      <div class="description"><slot name="description" /></div>
-    </div>
-    <div class="right" class:wide>
-      <slot />
-    </div>
+  <div class="left">
+    <div class="title">{title}</div>
+    <div class="description"><slot name="description" /></div>
+  </div>
+  <div class="right" class:wide>
+    <slot />
   </div>
 </div>
 
@@ -20,18 +18,16 @@
   .option-item {
     margin: 0px 8px;
     overflow: hidden;
-  }
-  .option-item.disabled .left {
-    opacity: 0.6;
-  }
-  .inner {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 6px 0px;
     border-bottom: 1px solid lightgray;
   }
-  :global(.grouped > div:last-child) .inner {
+  .option-item.disabled .left {
+    opacity: 0.6;
+  }
+  :global(.grouped > div:last-child) .option-item {
     border-bottom: none;
   }
   .left {
