@@ -4,7 +4,7 @@ use rustyxml::{Event, Parser};
 use std::borrow::Cow;
 
 use crate::jmdict::{JMEntry, JMForm, JMReading, JMSense};
-use crate::Result;
+use crate::{Error, Result};
 
 /// RustyXML errors upon custom entity `&xx;`
 /// So unescape to `=xx=` before parsing
@@ -149,7 +149,10 @@ pub fn parse_reading(parser: &mut Parser) -> Result<JMReading> {
                 if &tag.name == "r_ele" {
                     return Ok(reading);
                 } else {
-                    return Err(format!("Expected </r_ele>, found {}", &tag.name).into());
+                    return Err(Error::Unexpected {
+                        expected: "</r_ele>",
+                        actual: tag.name.to_string(),
+                    });
                 }
             }
             _ => {}
@@ -207,7 +210,10 @@ fn parse_sense(parser: &mut Parser) -> Result<JMSense> {
                 if &tag.name == "sense" {
                     return Ok(sense);
                 } else {
-                    return Err(format!("Expected </sense>, found {}", &tag.name).into());
+                    return Err(Error::Unexpected {
+                        expected: "</sense>",
+                        actual: tag.name.to_string(),
+                    });
                 }
             }
             _ => {}
@@ -220,15 +226,20 @@ pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
     while let Some(event) = parser.next() {
         match event? {
             Event::ElementStart(tag) => {
-                let errmsg = format!("Expected character, received starting tag <{}>", &tag.name);
-                return Err(errmsg.into());
+                return Err(Error::Unexpected {
+                    expected: "character",
+                    actual: format!("starting tag <{}>", &tag.name),
+                });
             }
             Event::ElementEnd(tag) => {
                 if &tag.name == in_tag {
                     return Ok(characters);
+                } else {
+                    return Err(Error::Unexpected {
+                        expected: "character",
+                        actual: format!("ending tag </{}>", &tag.name),
+                    });
                 }
-                let errmsg = format!("Expected character, received ending tag </{}>", &tag.name);
-                return Err(errmsg.into());
             }
             Event::Characters(chars) => {
                 characters.push_str(chars.as_str());

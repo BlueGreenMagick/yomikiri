@@ -2393,6 +2393,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "thiserror",
  "ureq",
  "yomikiri-dictionary",
 ]
