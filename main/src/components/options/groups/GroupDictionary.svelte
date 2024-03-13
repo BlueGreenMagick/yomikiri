@@ -1,8 +1,7 @@
 <script lang="ts">
-  import type { DictionaryMetadata } from "@platform/backend";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import { Backend } from "@platform/backend";
+  import { Dictionary, type DictionaryMetadata } from "@platform/dictionary";
   import Utils from "~/utils";
 
   let dictDescription = "Loading...";
@@ -15,14 +14,14 @@
   }
 
   async function initialize() {
-    const dictionaryMetadata = await Backend.dictionaryMetadata();
+    const dictionaryMetadata = await Dictionary.dictionaryMetadata();
     update_description(dictionaryMetadata);
   }
 
   async function onClicked() {
     try {
       disabled = true;
-      const updating = Backend.updateDictionary();
+      const updating = Dictionary.updateDictionary();
       updating.progress.subscribe((value) => {
         dictDescription = value;
       });

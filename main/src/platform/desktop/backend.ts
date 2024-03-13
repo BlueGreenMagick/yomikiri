@@ -1,40 +1,22 @@
 import {
   type IBackend,
   TokenizeResult,
-  type DictionaryMetadata,
 } from "../common/backend";
 import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
-import BundledDictMetadata from "@yomikiri/dictionary/metadata.json";
-import { Backend as BackendWasm, create_dictionary } from "@yomikiri/yomikiri-rs";
+import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
 import Utils from "~/utils";
-import { openDB, type DBSchema } from "idb"
+import { Dictionary } from "./dictionary"
 
 export {
   type Token,
   type TokenizeRequest,
   TokenizeResult,
-  type DictionaryMetadata,
 } from "../common/backend";
-
-interface DictionaryDBSchema extends DBSchema {
-  "metadata": {
-    key: string,
-    value: DictionaryMetadata,
-  },
-  "yomikiri-index": {
-    key: "value",
-    value: Uint8Array,
-  },
-  "yomikiri-entries": {
-    key: "value",
-    value: Uint8Array,
-  }
-}
 
 
 export namespace Backend {
@@ -71,12 +53,9 @@ export namespace Backend {
   }
 
   async function loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
-    const db = await openDictionaryDB();
-    const yomikiriIndexP = db.get("yomikiri-index", "value");
-    const yomikiriEntriesP = db.get("yomikiri-entries", "value");
-    const [yomikiriIndexBytes, yomikiriEntriesBytes] = await Promise.all([yomikiriIndexP, yomikiriEntriesP]);
-    if (yomikiriIndexBytes !== undefined && yomikiriEntriesBytes !== undefined) {
-      return [yomikiriIndexBytes, yomikiriEntriesBytes];
+    const saved = await Dictionary.loadSavedDictionary();
+    if (saved !== null) {
+      return saved;
     }
 
     const defaultIndexP = fetchBytes(ENYomikiriIndex);
@@ -127,65 +106,6 @@ export namespace Backend {
       .map(Entry.fromObject);
     Entry.order(entries);
     return entries;
-  }
-
-  export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    let prom: Utils.PromiseWithProgress<DictionaryMetadata, string>;
-    const progressFn = (msg: string) => {
-      prom.setProgress(msg);
-    }
-    prom = Utils.PromiseWithProgress.fromPromise(_updateDictionary(progressFn), "Downloading JMDict file...")
-    return prom;
-  }
-
-  async function _updateDictionary(progressFn: (msg: string) => any): Promise<DictionaryMetadata> {
-    const [index_bytes, entries_bytes] = await _createNewDictionary(progressFn)
-    progressFn("Saving dictionary file...")
-    const download_date = new Date();
-    const metadata: DictionaryMetadata = {
-      download_date: download_date,
-      files_size: index_bytes.byteLength + entries_bytes.byteLength
-    };
-
-    const db = await openDictionaryDB();
-    let tx = await db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
-    tx.objectStore("metadata").put(metadata, "value");
-    tx.objectStore("yomikiri-index").put(index_bytes, "value");
-    tx.objectStore("yomikiri-entries").put(entries_bytes, "value");
-    await tx.done;
-
-    return metadata;
-  }
-
-  async function _createNewDictionary(progressFn: (msg: string) => any): Promise<[Uint8Array, Uint8Array]> {
-    const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz")
-    const buffer = await resp.arrayBuffer()
-    const typedarray = new Uint8Array(buffer);
-    progressFn("Creating dictionary file...")
-    return create_dictionary(typedarray);
-  }
-
-  async function openDictionaryDB() {
-    return await openDB<DictionaryDBSchema>("jmdict", 1, {
-      upgrade(db, oldVersion, newVersion, transaction, event) {
-        db.createObjectStore("metadata")
-        db.createObjectStore("yomikiri-index")
-        db.createObjectStore("yomikiri-entries")
-      }
-    });
-  }
-
-  export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
-    const db = await openDictionaryDB();
-    const installedMetadata = await db.get("metadata", "value")
-    if (installedMetadata !== undefined) {
-      return installedMetadata
-    } else {
-      return {
-        ...BundledDictMetadata,
-        download_date: new Date(BundledDictMetadata.download_date),
-      }
-    }
   }
 }
 

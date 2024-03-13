@@ -10,6 +10,8 @@ importers:
 
   dictionary: {}
 
+  dictionary/pkg: {}
+
   extra/generate-license:
     devDependencies:
       '@types/node':
@@ -56,6 +58,9 @@ importers:
       '@yomikiri/generate-license':
         specifier: workspace:*
         version: link:../extra/generate-license
+      '@yomikiri/yomikiri-dictionary':
+        specifier: workspace:*
+        version: link:../dictionary/pkg
       '@yomikiri/yomikiri-rs':
         specifier: workspace:*
         version: link:../rust/pkg

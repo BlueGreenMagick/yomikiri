@@ -3,7 +3,6 @@ import type {
 } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { toHiragana } from "~/japanese";
-import type Utils from "~/utils";
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
@@ -51,16 +50,8 @@ export namespace TokenizeResult {
   }
 }
 
-export interface DictionaryMetadata {
-  download_date: Date,
-  // bytes len
-  files_size: number
-}
-
 export interface IBackend {
   initialize(): Promise<void>;
   tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
   search(term: string): Promise<Entry[]>;
-  updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string>;
-  dictionaryMetadata(): Promise<DictionaryMetadata>;
 }

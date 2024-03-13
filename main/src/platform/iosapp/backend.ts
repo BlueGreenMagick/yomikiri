@@ -5,7 +5,6 @@ import {
   type TokenizeRequest,
   TokenizeResult,
   type RawTokenizeResult,
-  type DictionaryMetadata,
 } from "../common/backend";
 import { Entry } from "~/dicEntry";
 
@@ -13,7 +12,6 @@ export {
   type Token,
   type TokenizeRequest,
   TokenizeResult,
-  type DictionaryMetadata,
 } from "../common/backend";
 
 
@@ -46,13 +44,6 @@ export namespace Backend {
     return entries;
   }
 
-  export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    throw new Error("Not yet implemented on ios");
-  }
-
-  export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
-    throw new Error("Not yet implemented on iosapp");
-  }
 }
 
 Backend satisfies IBackend;
