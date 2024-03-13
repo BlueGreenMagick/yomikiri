@@ -7,6 +7,13 @@ default-run = "yomikiri-dictionary-builder"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+bin = ["dep:ureq", "dep:tempfile", "dep:chrono"]
+
 [dependencies]
 yomikiri-jmdict = { path = "../jmdict" }
 serde = { version = "1.0", features = ["derive"] }
@@ -16,15 +23,22 @@ flate2 = "1"
 byteorder = "1"
 bincode = "1"
 itertools = "0.11"
+log = "0.4"
 
 # binary dependencies
 ureq = { version = "2.7", optional = true }
 tempfile = { version = "3.8", optional = true }
 chrono = { version = "0.4", optional = true, features = ["alloc"] }
 
-[features]
-default = []
-bin = ["dep:ureq", "dep:tempfile", "dep:chrono"]
+[target.'cfg(target_family="wasm")'.dependencies]
+wasm-bindgen = { version = "0.2.63" }
+wasm-logger = { version = "0.2" }
+web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
+js-sys = "0.3"
+console_error_panic_hook = { version = "0.1.6" }
+
+[build-dependencies]
+cfg_aliases = "0.1.0"
 
 
 [[bin]]

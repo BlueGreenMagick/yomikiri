@@ -15,10 +15,12 @@
     "resources/metadata.json"
   ],
   "scripts": {
+    "_clean_pkg": "rm -rf ./pkg",
+    "wasm": "pnpm run _clean_pkg && wasm-pack build --scope yomikiri --target web",
     "test": "cargo test",
-    "check": "cargo check",
+    "check": "cargo check && cargo check --target wasm32-unknown-unknown",
     "lint": "cargo lint",
     "redownload": "rm -rf ./resources && cargo run",
-    "construct": "cargo run --features bin"
+    "construct": "cargo run --features bin && pnpm run wasm"
   }
 }

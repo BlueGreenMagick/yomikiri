@@ -1,0 +1,14 @@
+{
+  "rust-analyzer.check.overrideCommand": [
+    "cargo",
+    "check",
+    "--target",
+    "wasm32-unknown-unknown",
+    "--target",
+    "aarch64-apple-ios",
+    "-p",
+    "yomikiri-rs",
+    "--message-format=json"
+  ],
+  "rust-analyzer.showUnlinkedFileNotification": false
+}

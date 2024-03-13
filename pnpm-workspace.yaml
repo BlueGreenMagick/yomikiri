@@ -1,8 +1,8 @@
 packages:
   - "main"
-  - "safari"
+  - "rust"
   - "rust/pkg"
   - "jmdict"
-  - "extra/generate-license"
-  - "rust"
   - "dictionary"
+  - "dictionary/pkg"
+  - "extra/generate-license"
