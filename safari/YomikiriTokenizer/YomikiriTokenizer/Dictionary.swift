@@ -12,7 +12,6 @@ public struct DictionaryMetadata: Codable {
     let filesSize: Int
 }
 
-let bundle = Bundle(identifier: "com.yoonchae.YomikiriTokenizer")!
 let documentsDirUrl = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 let dictIndexUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
 let dictEntriesUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
@@ -47,10 +46,10 @@ func getDictionaryPath() throws -> (index: String, entries: String) {
     if let (index, entries) = tryGetInstalledDictionaryUrl() {
         return (index.path, entries.path)
     } else {
-        guard let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex") else {
+        guard let indexPath = Bundle.main.path(forResource: "english", ofType: "yomikiriindex") else {
             throw YomikiriTokenizerError.InvalidBaseFile
         }
-        guard let entriesPath = bundle.path(forResource: "english", ofType: "yomikiridict") else {
+        guard let entriesPath = Bundle.main.path(forResource: "english", ofType: "yomikiridict") else {
             throw YomikiriTokenizerError.InvalidBaseFile
         }
         return (indexPath, entriesPath)
@@ -106,7 +105,7 @@ public func getDictionaryMetadata() throws -> DictionaryMetadata {
 }
 
 func getDefaultDictionaryMetadata() throws -> DictionaryMetadata {
-    guard let jsonPath = bundle.path(forResource: "dictionary-metadata", ofType: "json") else {
+    guard let jsonPath = Bundle.main.path(forResource: "dictionary-metadata", ofType: "json") else {
         throw YomikiriTokenizerError.InvalidBaseFile
     }
     let json = try String(contentsOfFile: jsonPath, encoding: .utf8)
