@@ -40,7 +40,7 @@ export namespace TokenizeResult {
       .map(Entry.fromObject);
     const selectedToken = raw.tokens[raw.tokenIdx];
     entries = Entry.validEntriesForSurface(entries, selectedToken.text);
-    Entry.order(entries);
+    Entry.order(entries, selectedToken);
 
     const result = {
       ...raw,
