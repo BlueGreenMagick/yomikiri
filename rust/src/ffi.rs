@@ -15,7 +15,6 @@ pub struct Backend {
     inner: Mutex<SharedBackend<File>>,
 }
 
-#[cfg(uniffi)]
 #[uniffi::export]
 impl Backend {
     #[uniffi::constructor]
@@ -44,22 +43,25 @@ impl Backend {
         let mut backend = self.inner.lock().unwrap();
         backend.dictionary.search_json(&term)
     }
+}
 
-    pub fn update_dictionary_file(&self, index_path: String, entries_path: String) -> YResult<()> {
-        let entries = {
-            // JMDict is currently 58MB.
-            let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
-            download_dictionary(&mut bytes)?;
-            let xml = String::from_utf8(bytes)?;
-            parse_jmdict_xml(&xml)
-        }?;
+/// Downloads and writes new dictionary files into specified path.
+/// The files are written in-place.
+#[uniffi::export]
+pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResult<()> {
+    let entries = {
+        // JMDict is currently 58MB.
+        let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
+        download_dictionary(&mut bytes)?;
+        let xml = String::from_utf8(bytes)?;
+        parse_jmdict_xml(&xml)
+    }?;
 
-        let mut entries_file = File::create(&entries_path)?;
-        let term_indexes = write_entries(&mut entries_file, &entries)?;
-        let mut index_file = File::create(&index_path)?;
-        write_indexes(&mut index_file, &term_indexes)?;
-        Ok(())
-    }
+    let mut entries_file = File::create(&entries_path)?;
+    let term_indexes = write_entries(&mut entries_file, &entries)?;
+    let mut index_file = File::create(&index_path)?;
+    write_indexes(&mut index_file, &term_indexes)?;
+    Ok(())
 }
 
 impl Dictionary<File> {

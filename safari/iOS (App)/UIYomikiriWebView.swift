@@ -134,6 +134,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                     "version": appVersion
                 ]
                 return versionInfo
+
             default:
                 throw "Unknown key \(key)"
             }

@@ -1,9 +1,9 @@
 #!/bin/bash
-# Import paths from bash and zsh, so .bashrc and zshrc paths are added.
 
 # Exit if fail
 set -e
 
+# Import paths from bash and zsh, so .bashrc and zshrc paths are added.
 if output=$(bash -lic 'echo $PATH'); then
   PATH="$output:$PATH"
 fi
