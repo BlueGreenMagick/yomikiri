@@ -1,7 +1,4 @@
-use serde::Serialize;
-
-#[derive(Debug, Default, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Default, PartialEq, Eq)]
 pub struct JMEntry {
     /// 0+ k_ele
     pub forms: Vec<JMForm>,
@@ -39,8 +36,7 @@ impl JMEntry {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Default, PartialEq, Eq)]
 pub struct JMForm {
     pub form: String,
     /// 0+ ke_inf
@@ -60,8 +56,7 @@ impl JMForm {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Default, PartialEq, Eq)]
 pub struct JMReading {
     pub reading: String,
     pub nokanji: bool,
@@ -84,8 +79,7 @@ impl JMReading {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Default, PartialEq, Eq)]
 pub struct JMSense {
     /// 0+ 'stagk'
     pub to_form: Vec<String>,

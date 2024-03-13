@@ -2469,8 +2469,6 @@ dependencies = [
  "RustyXML",
  "bincode 1.3.3",
  "regex",
- "serde",
- "serde_json",
  "thiserror",
 ]
 
