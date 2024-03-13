@@ -84,7 +84,7 @@ export namespace Dictionary {
     } else {
       return {
         ...BundledDictMetadata,
-        downloadDate: new Date(BundledDictMetadata.download_date),
+        downloadDate: new Date(BundledDictMetadata.downloadDate),
       }
     }
   }

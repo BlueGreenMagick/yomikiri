@@ -136,9 +136,11 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 ]
                 return versionInfo
             case "updateDict":
-                return try updateDictionary()
+                let metadata = try updateDictionary()
+                return try jsonSerialize(obj: metadata)
             case "dictMetadata":
-                return try getDictionaryMetadata()
+                let metadata = try getDictionaryMetadata()
+                return try jsonSerialize(obj: metadata)
             default:
                 throw "Unknown key \(key)"
             }

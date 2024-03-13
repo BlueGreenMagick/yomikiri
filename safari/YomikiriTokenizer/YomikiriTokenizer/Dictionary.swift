@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import os.log
 
 public struct DictionaryMetadata: Codable {
     let downloadDate: String
     let filesSize: Int
 }
 
+let bundle = Bundle(for: Backend.self)
 let documentsDirUrl = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
 let dictIndexUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
 let dictEntriesUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
@@ -46,11 +48,11 @@ func getDictionaryPath() throws -> (index: String, entries: String) {
     if let (index, entries) = tryGetInstalledDictionaryUrl() {
         return (index.path, entries.path)
     } else {
-        guard let indexPath = Bundle.main.path(forResource: "english", ofType: "yomikiriindex") else {
-            throw YomikiriTokenizerError.InvalidBaseFile
+        guard let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex", inDirectory: "resources") else {
+            throw YomikiriTokenizerError.BaseResourceNotFound
         }
-        guard let entriesPath = Bundle.main.path(forResource: "english", ofType: "yomikiridict") else {
-            throw YomikiriTokenizerError.InvalidBaseFile
+        guard let entriesPath = bundle.path(forResource: "english", ofType: "yomikiridict", inDirectory: "resources") else {
+            throw YomikiriTokenizerError.BaseResourceNotFound
         }
         return (indexPath, entriesPath)
     }
@@ -105,10 +107,10 @@ public func getDictionaryMetadata() throws -> DictionaryMetadata {
 }
 
 func getDefaultDictionaryMetadata() throws -> DictionaryMetadata {
-    guard let jsonPath = Bundle.main.path(forResource: "dictionary-metadata", ofType: "json") else {
-        throw YomikiriTokenizerError.InvalidBaseFile
+    guard let jsonUrl = bundle.url(forResource: "dictionary-metadata", withExtension: "json", subdirectory: "resources") else {
+        throw YomikiriTokenizerError.BaseResourceNotFound
     }
-    let json = try String(contentsOfFile: jsonPath, encoding: .utf8)
+    let json = try String(contentsOf: jsonUrl, encoding: .utf8)
     let decoder = JSONDecoder()
     guard let jsonData = json.data(using: .utf8) else {
         throw YomikiriTokenizerError.IsNotValidUtf8(context: "dictionary-manifest.json")
