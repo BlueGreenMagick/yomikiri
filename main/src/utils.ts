@@ -245,6 +245,13 @@ namespace Utils {
   export function logs(): string[] {
     return _logs;
   }
+
+  export async function nextDocumentPaint(): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    // macro tasks are run after paint action
+    requestAnimationFrame(() => { setTimeout(resolve) })
+    return promise
+  }
 }
 
 export default Utils;

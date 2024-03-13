@@ -44,6 +44,7 @@ export namespace Dictionary {
       download_date: download_date,
       files_size: index_bytes.byteLength + entries_bytes.byteLength
     };
+    await Utils.nextDocumentPaint();
 
     const db = await openDictionaryDB();
     let tx = await db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
@@ -61,6 +62,7 @@ export namespace Dictionary {
     const [_wasm, buffer] = await Promise.all([wasmP, bufferP]);
     const typedarray = new Uint8Array(buffer);
     progressFn("Creating dictionary file...")
+    await Utils.nextDocumentPaint();
     return create_dictionary(typedarray)
   }
 
