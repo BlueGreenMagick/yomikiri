@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@yomikiri/generate-license": "workspace:*",
-    "@yomikiri/jmdict": "workspace:*",
+    "@yomikiri/dictionary": "workspace:*",
     "@yomikiri/yomikiri-rs": "workspace:*",
     "idb": "^8.0.0",
     "normalize.css": "^8.0.1",

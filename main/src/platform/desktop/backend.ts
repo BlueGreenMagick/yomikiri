@@ -4,9 +4,9 @@ import {
   type DictionaryMetadata,
 } from "../common/backend";
 import initWasm from "@yomikiri/yomikiri-rs";
-import ENYomikiridict from "@yomikiri/jmdict/english.yomikiridict";
-import ENYomikiriIndex from "@yomikiri/jmdict/english.yomikiriindex";
-import BundledDictMetadata from "@yomikiri/jmdict/metadata.json";
+import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
+import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
+import BundledDictMetadata from "@yomikiri/dictionary/metadata.json";
 import { Backend as BackendWasm, create_dictionary } from "@yomikiri/yomikiri-rs";
 import { Entry } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";

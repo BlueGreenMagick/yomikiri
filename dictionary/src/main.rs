@@ -6,7 +6,7 @@ use std::fs::{self, File};
 use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 use tempfile::NamedTempFile;
-use yomikiri_jmdict::{parse_jmdict_xml, write_yomikiri_dictionary};
+use yomikiri_dictionary::file::{parse_jmdict_xml, write_yomikiri_dictionary};
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 

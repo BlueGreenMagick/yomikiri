@@ -1,7 +1,6 @@
 use bincode::Options;
 use flate2::read::GzDecoder;
-use yomikiri_dictionary::file::{write_entries, write_indexes, DictTermIndex};
-use yomikiri_jmdict::parse_jmdict_xml;
+use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes, DictTermIndex};
 
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};

@@ -1,0 +1,24 @@
+{
+  "name": "@yomikiri/dictionary",
+  "collaborators": [
+    "BlueGreenMagick <bluegreenmagick@gmail.com>"
+  ],
+  "description": "Yomikiri dictionary files",
+  "version": "0.1.0",
+  "license": "MIT",
+  "exports": {
+    "./*": "./resources/*"
+  },
+  "files": [
+    "resources/english.yomikiridict",
+    "resources/english.yomikiriindex",
+    "resources/metadata.json"
+  ],
+  "scripts": {
+    "test": "cargo test",
+    "check": "cargo check",
+    "lint": "cargo lint",
+    "redownload": "rm -rf ./resources && cargo run",
+    "construct": "cargo run --features bin"
+  }
+}

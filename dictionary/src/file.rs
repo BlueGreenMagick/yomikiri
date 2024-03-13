@@ -50,6 +50,23 @@ impl DictTermIndex {
     }
 }
 
+pub fn write_yomikiri_dictionary<I: Write, D: Write>(
+    index_writer: &mut I,
+    dict_writer: &mut D,
+    entries: &[Entry],
+) -> Result<()> {
+    let term_indexes = write_entries(dict_writer, entries)?;
+    write_indexes(index_writer, &term_indexes)?;
+
+    Ok(())
+}
+
+pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
+    let jm_entries = yomikiri_jmdict::parse_jmdict_xml(xml)?;
+    let entries = jm_entries.into_iter().map(Entry::from).collect();
+    Ok(entries)
+}
+
 pub fn read_indexes<R: Read>(reader: &mut R) -> Result<Vec<DictTermIndex>> {
     let options = bincode::DefaultOptions::new();
     let term_indexes = options.deserialize_from(reader)?;

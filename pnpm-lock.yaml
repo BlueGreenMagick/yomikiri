@@ -8,6 +8,8 @@ importers:
 
   .: {}
 
+  dictionary: {}
+
   extra/generate-license:
     devDependencies:
       '@types/node':
@@ -48,12 +50,12 @@ importers:
 
   main:
     dependencies:
+      '@yomikiri/dictionary':
+        specifier: workspace:*
+        version: link:../dictionary
       '@yomikiri/generate-license':
         specifier: workspace:*
         version: link:../extra/generate-license
-      '@yomikiri/jmdict':
-        specifier: workspace:*
-        version: link:../jmdict
       '@yomikiri/yomikiri-rs':
         specifier: workspace:*
         version: link:../rust/pkg

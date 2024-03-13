@@ -7,8 +7,8 @@
   "license": "MIT",
   "url": "https://github.com/bluegreenmagick/yomikiri",
   "scripts": {
-    "update_dictionary": "pnpm run --dir ./jmdict redownload",
-    "construct:dictionary": "pnpm run --dir ./jmdict construct",
+    "update_dictionary": "pnpm run --dir ./dictionary redownload",
+    "construct:dictionary": "pnpm run --dir ./dictionary construct",
     "construct:unidic": "cd ./unidic; cargo run",
     "construct:backend_wasm": "pnpm run --dir ./rust wasm",
     "construct:backend_ios": "pnpm run --dir ./rust ios",

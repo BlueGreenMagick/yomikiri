@@ -10,8 +10,6 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("Bincode {0}")]
     Bincode(#[from] bincode::Error),
-    #[error("Yomikiri Dictionary: {0}")]
-    Dictionary(#[from] yomikiri_dictionary::error::Error),
     #[error("Xml parse error: {0}")]
     RustyXml(#[from] rustyxml::ParserError),
     #[error("Expected {expected}, encountered {actual}")]
@@ -30,7 +28,7 @@ impl From<String> for Error {
 }
 
 impl From<&str> for Error {
-  fn from(value: &str) -> Self {
-      Self::Other(value.into())
-  }
+    fn from(value: &str) -> Self {
+        Self::Other(value.into())
+    }
 }

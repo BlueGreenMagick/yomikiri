@@ -3,13 +3,31 @@ name = "yomikiri-dictionary"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+default-run = "yomikiri-dictionary-builder"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+yomikiri-jmdict = { path = "../jmdict" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 thiserror = "1"
 flate2 = "1"
 byteorder = "1"
 bincode = "1"
+itertools = "0.11"
+
+# binary dependencies
+ureq = { version = "2.7", optional = true }
+tempfile = { version = "3.8", optional = true }
+chrono = { version = "0.4", optional = true, features = ["alloc"] }
+
+[features]
+default = []
+bin = ["dep:ureq", "dep:tempfile", "dep:chrono"]
+
+
+[[bin]]
+name = "yomikiri-dictionary-builder"
+path = "src/main.rs"
+required-features = ["bin"]

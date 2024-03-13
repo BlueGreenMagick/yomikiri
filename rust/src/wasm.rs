@@ -9,8 +9,7 @@ use js_sys::{Array, Uint8Array};
 use log::debug;
 use std::io::{Cursor, Read};
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::file::{write_entries, write_indexes, DictTermIndex};
-use yomikiri_jmdict::parse_jmdict_xml;
+use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes, DictTermIndex};
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"

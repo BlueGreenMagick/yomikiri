@@ -24,8 +24,6 @@ pub enum YomikiriError {
     #[cfg(uniffi)]
     #[error("[NetworkError] {0}")]
     NetworkError(#[from] ureq::Error),
-    #[error("[JMDict Error] {0}")]
-    JMDictError(#[from] yomikiri_jmdict::Error),
     #[error("[Yomikiri Dictionary Error] {0}")]
     DictionaryError(#[from] yomikiri_dictionary::Error),
     #[error("Not a valid UTF-8 string: {0}")]

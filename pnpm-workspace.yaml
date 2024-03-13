@@ -5,3 +5,4 @@ packages:
   - "jmdict"
   - "extra/generate-license"
   - "rust"
+  - "dictionary"
