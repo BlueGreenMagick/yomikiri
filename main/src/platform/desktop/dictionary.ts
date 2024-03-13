@@ -1,6 +1,6 @@
 import DICTIONARY_WASM_URL from "@yomikiri/yomikiri-dictionary/yomikiri_dictionary_bg.wasm";
 import initWasm, { create_dictionary } from "@yomikiri/yomikiri-dictionary"
-import BundledDictMetadata from "@yomikiri/dictionary/metadata.json";
+import BundledDictMetadata from "@yomikiri/dictionary/dictionary-metadata.json";
 import Utils from "~/utils";
 import type { DictionaryMetadata, IDictionary as IDictionary, } from "../common/dictionary"
 import { openDB, type DBSchema } from "idb"
@@ -39,10 +39,10 @@ export namespace Dictionary {
   async function _updateDictionary(progressFn: (msg: string) => any): Promise<DictionaryMetadata> {
     const [index_bytes, entries_bytes] = await _createNewDictionary(progressFn)
     progressFn("Saving dictionary file...")
-    const download_date = new Date();
+    const downloadDate = new Date();
     const metadata: DictionaryMetadata = {
-      download_date: download_date,
-      files_size: index_bytes.byteLength + entries_bytes.byteLength
+      downloadDate,
+      filesSize: index_bytes.byteLength + entries_bytes.byteLength
     };
     await Utils.nextDocumentPaint();
 
@@ -84,7 +84,7 @@ export namespace Dictionary {
     } else {
       return {
         ...BundledDictMetadata,
-        download_date: new Date(BundledDictMetadata.download_date),
+        downloadDate: new Date(BundledDictMetadata.download_date),
       }
     }
   }

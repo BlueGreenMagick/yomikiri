@@ -1,15 +1,16 @@
-import type Utils from "~/utils";
+import Utils from "~/utils";
 import type { DictionaryMetadata, IDictionary } from "../common/dictionary"
+import { Platform } from ".";
 
 export type { DictionaryMetadata } from "../common/dictionary";
 
 export namespace Dictionary {
   export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    throw new Error("Not yet implemented on ios");
+    return Utils.PromiseWithProgress.fromPromise(Platform.messageWebview("updateDict", null), "Updating dictionary... This may take up to a minute.")
   }
 
   export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
-    throw new Error("Not yet implemented on iosapp");
+    return Platform.messageWebview("dictMetadata", null);
   }
 }
 

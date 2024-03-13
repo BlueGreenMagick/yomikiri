@@ -1,9 +1,9 @@
 import type Utils from "~/utils";
 
 export interface DictionaryMetadata {
-  download_date: Date,
+  downloadDate: Date,
   // bytes len
-  files_size: number
+  filesSize: number
 }
 
 export interface IDictionary {

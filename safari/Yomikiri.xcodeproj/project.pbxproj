@@ -22,7 +22,6 @@
 		6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */; };
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
 		699B7D782A519B2C00E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
-		699B7D792A519B2C00E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		699B7D7B2A519B3000E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
 		699B7D7C2A519B3000E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DC52A52B07C00E506F2 /* OptionsView.swift */; };
@@ -93,17 +92,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				69439D632AB2E9AA00691B3E /* YomikiriTokenizer.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		699B7D7A2A519B2C00E506F2 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				699B7D792A519B2C00E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,7 +416,6 @@
 				69F2C25029FA4FA80088F503 /* Frameworks */,
 				69F2C25129FA4FA80088F503 /* Resources */,
 				69F2C2A529FA4FA80088F503 /* Embed Foundation Extensions */,
-				699B7D7A2A519B2C00E506F2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use flate2::read::GzDecoder;
 use std::env;
 use std::error::Error;
@@ -16,9 +16,13 @@ fn main() -> Result<()> {
     )?;
     let crate_dir = PathBuf::from(crate_dir);
     let resources_dir = crate_dir.join("resources");
-    let jmdict_file_path = resources_dir.join("JMdict_e");
+    let jmdict_dir = crate_dir.join("jmdict");
+    let jmdict_file_path = jmdict_dir.join("JMdict_e");
     let output_path = resources_dir.join("english.yomikiridict");
     let output_index_path = resources_dir.join("english.yomikiriindex");
+
+    std::fs::create_dir_all(&resources_dir)?;
+    std::fs::create_dir_all(&jmdict_dir)?;
 
     if !jmdict_file_path.exists() {
         println!("Downloading JMDict file from the web...");
@@ -46,12 +50,12 @@ fn main() -> Result<()> {
 
     let metadata_json = format!(
         "{{
-    \"download_date\": \"{}\",
-    \"file_size\": {}
+    \"downloadDate\": \"{}\",
+    \"filesSize\": {}
 }}",
         download_time, file_size
     );
-    let metadata_json_file = resources_dir.join("metadata.json");
+    let metadata_json_file = resources_dir.join("dictionary-metadata.json");
     fs::write(&metadata_json_file, &metadata_json)?;
 
     println!("Data writing complete.");
@@ -63,8 +67,6 @@ fn download_jmdict(output_path: &Path) -> Result<()> {
     let output_dir = output_path
         .parent()
         .ok_or("output_path does not have a parent directory.")?;
-    std::fs::create_dir_all(output_dir)?;
-
     // download jmdict gzip file
     let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
     let resp = ureq::get(download_url).call()?;

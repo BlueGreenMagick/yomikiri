@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import WebKit
+import YomikiriTokenizer
 
 class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
@@ -134,7 +135,10 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                     "version": appVersion
                 ]
                 return versionInfo
-
+            case "updateDict":
+                return try updateDictionary()
+            case "dictMetadata":
+                return try getDictionaryMetadata()
             default:
                 throw "Unknown key \(key)"
             }

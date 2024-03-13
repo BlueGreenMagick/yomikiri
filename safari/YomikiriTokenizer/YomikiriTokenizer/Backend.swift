@@ -8,8 +8,6 @@
 import Foundation
 
 public func createBackend() throws -> Backend {
-    let bundle = Bundle(identifier: "com.yoonchae.YomikiriTokenizer")!
-    let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex")!
-    let entriesPath = bundle.path(forResource: "english", ofType: "yomikiridict")!
+    let (indexPath, entriesPath) = try getDictionaryPath()
     return try Backend(indexPath: indexPath, entriesPath: entriesPath)
 }

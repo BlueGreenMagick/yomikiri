@@ -9,7 +9,7 @@
 <div>
   <GroupAppearance />
   <GroupAnki />
-  {#if Platform.IS_DESKTOP}
+  {#if Platform.IS_DESKTOP || Platform.IS_IOSAPP}
     <GroupDictionary />
   {/if}
   <GroupAbout />

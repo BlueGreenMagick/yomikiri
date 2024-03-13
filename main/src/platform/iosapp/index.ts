@@ -1,8 +1,9 @@
 import type Utils from "~/utils";
 import type { Module, TranslateResult, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
-import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
+import type { TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../desktop";
+import type { DictionaryMetadata } from "./dictionary";
 
 export * from "../common"
 
@@ -22,6 +23,8 @@ export namespace Platform {
     tokenize: [TokenizeRequest, string];
     searchTerm: [string, string[]];
     versionInfo: [null, VersionInfo]
+    updateDict: [null, DictionaryMetadata]
+    dictMetadata: [null, DictionaryMetadata]
 
     // action extension
     close: [null, void];

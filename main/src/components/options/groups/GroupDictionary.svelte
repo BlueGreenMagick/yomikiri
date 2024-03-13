@@ -9,7 +9,7 @@
   let dictDescClass = "";
 
   function update_description(metadata: DictionaryMetadata) {
-    const downloadDate = metadata.download_date.toDateString();
+    const downloadDate = metadata.downloadDate.toDateString();
     dictDescription = `Last updated: ${downloadDate}`;
   }
 

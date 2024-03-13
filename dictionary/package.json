@@ -10,9 +10,7 @@
     "./*": "./resources/*"
   },
   "files": [
-    "resources/english.yomikiridict",
-    "resources/english.yomikiriindex",
-    "resources/metadata.json"
+    "resources/*"
   ],
   "scripts": {
     "_clean_pkg": "rm -rf ./pkg",
