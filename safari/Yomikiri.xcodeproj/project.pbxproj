@@ -12,7 +12,6 @@
 		69439D362AB2C0E800691B3E /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
 		69439D372AB2C11400691B3E /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699EF6712A540C0400ECA9D1 /* SharedStorage.swift */; };
 		69439D622AB2E9AA00691B3E /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
-		69439D632AB2E9AA00691B3E /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69439D652AB2EC9300691B3E /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
 		695D33122AB1F211003F9C80 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 695D33112AB1F211003F9C80 /* UniformTypeIdentifiers.framework */; };
 		695D33152AB1F211003F9C80 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 695D33142AB1F211003F9C80 /* Media.xcassets */; };
@@ -23,7 +22,6 @@
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
 		699B7D782A519B2C00E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
 		699B7D7B2A519B3000E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
-		699B7D7C2A519B3000E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DC52A52B07C00E506F2 /* OptionsView.swift */; };
 		699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DC82A52B09200E506F2 /* YomikiriApp.swift */; };
 		699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DCC2A52BEA100E506F2 /* WebView.swift */; };
@@ -85,28 +83,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		69439D642AB2E9AB00691B3E /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				69439D632AB2E9AA00691B3E /* YomikiriTokenizer.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		699B7D7D2A519B3000E506F2 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				699B7D7C2A519B3000E506F2 /* YomikiriTokenizer.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		69F2C2A529FA4FA80088F503 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -397,7 +373,6 @@
 				695D330C2AB1F211003F9C80 /* Sources */,
 				695D330D2AB1F211003F9C80 /* Frameworks */,
 				695D330E2AB1F211003F9C80 /* Resources */,
-				69439D642AB2E9AB00691B3E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -454,7 +429,6 @@
 				699B7DD12A52C2BA00E506F2 /* Build extension */,
 				69F2C26D29FA4FA80088F503 /* Sources */,
 				6909CA772A2241150052FEF4 /* Frameworks */,
-				699B7D7D2A519B3000E506F2 /* Embed Frameworks */,
 				699B7DD32A52C33A00E506F2 /* Resources */,
 			);
 			buildRules = (
