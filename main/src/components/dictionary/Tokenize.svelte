@@ -27,7 +27,7 @@
 
   let tokenizeResult: TokenizeResult = TokenizeResult.empty();
   // may be bigger than total token characters
-  let selectedCharAt: number;
+  let selectedCharAt: number = 0;
   let selectedTool: Tools | null = null;
 
   /** modifies `searchTokens` */

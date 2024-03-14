@@ -5,7 +5,7 @@
 
   export let initialized: Promise<void>;
   export let context: "app" | "action";
-  export let searchText: string;
+  export let searchText: string = "";
 </script>
 
 <div id="main" use:platformClass>
