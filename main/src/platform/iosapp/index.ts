@@ -1,4 +1,4 @@
-import type Utils from "~/utils";
+import Utils from "~/utils";
 import type { Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
@@ -60,7 +60,15 @@ export namespace Platform {
   }
 
   export async function getConfig(): Promise<StoredConfiguration> {
-    return await messageWebview("loadConfig", null)
+    const config = await messageWebview("loadConfig", null);
+    if (typeof config !== "object") {
+      Utils.log("ERROR: Invalid configuration stored in app. Resetting.")
+      Utils.log(config)
+      console.error("Invalid configuration stored in app. Resetting.")
+      return {}
+    } else {
+      return config
+    }
   }
 
   /** Does nothiing in iosapp */
