@@ -43,6 +43,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             case "saveConfig":
                 let configJson: String = try jsonDeserialize(json: request)
                 try saveSharedConfig(configJson: configJson)
+            case "tts":
+                let req: TTSRequest = try jsonDeserialize(json: request)
+                try ttsSpeak(voice: req.voice, text: req.text)
             default:
                 return
             }
@@ -60,4 +63,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
 private struct TokenizeRequest: Codable {
     var text: String
     var charAt: UInt32
+}
+
+private struct TTSRequest: Decodable {
+    var text: String
+    var voice: TTSVoice?
 }

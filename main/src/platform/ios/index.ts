@@ -1,7 +1,7 @@
-import { type StoredConfiguration } from "~/config";
+import Config, { type StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import type { Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
+import type { IosTTSRequest, Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../desktop";
 
@@ -19,6 +19,7 @@ export namespace Platform {
     saveConfig: [string, null];
     search: [string, string[]];
     ttsVoices: [null, TTSVoice[]];
+    tts: [IosTTSRequest, null];
   }
 
   export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
@@ -119,7 +120,7 @@ export namespace Platform {
   }
 
   export async function playTTS(text: string): Promise<void> {
-    throw new Error("Not implemented!")
+    await Platform.requestToApp("tts", { voice: Config.get("tts.voice"), text })
   }
 
   export async function translate(text: string): Promise<TranslateResult> {

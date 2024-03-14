@@ -41,3 +41,8 @@ export interface TTSVoice {
    */
   quality: number,
 }
+
+export interface IosTTSRequest {
+  text: string,
+  voice: TTSVoice | null
+}

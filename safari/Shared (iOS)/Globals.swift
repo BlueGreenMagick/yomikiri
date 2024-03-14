@@ -11,6 +11,11 @@ import os.log
 import SwiftUI
 import YomikiriTokenizer
 
+// this is computed lazily
+let backend = try! newBackend()
+
+let synthesizer = AVSpeechSynthesizer()
+
 extension URL {
     func withPathComponents(_ pathComponents: [URLQueryItem]) -> URL? {
         var components = URLComponents(url: self, resolvingAgainstBaseURL: true)
@@ -34,9 +39,6 @@ extension URL {
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
 }
-
-// this is computed lazily
-let backend = try! newBackend()
 
 private func newBackend() throws -> Backend {
     os_log(.error, "start creating backend")
@@ -86,18 +88,20 @@ func japaneseTtsVoices() -> [TTSVoice] {
     return ttsVoices
 }
 
-func speak(voice: TTSVoice, text: String) throws {
+func ttsSpeak(voice: TTSVoice?, text: String) throws {
     let utterance = AVSpeechUtterance(string: text)
-    var voice = AVSpeechSynthesisVoice(identifier: voice.id)
-    if voice == nil {
-        voice = AVSpeechSynthesisVoice(language: "ja-JP")
+    var ssVoice: AVSpeechSynthesisVoice?
+    if let voice = voice {
+        ssVoice = AVSpeechSynthesisVoice(identifier: voice.id)
     }
-    guard let voice = voice else {
+    if ssVoice == nil {
+        ssVoice = AVSpeechSynthesisVoice(language: "ja-JP")
+    }
+    guard let ttsVoice = ssVoice else {
         throw "No Japanese voice found"
     }
 
-    utterance.voice = voice
-    let synthesizer = AVSpeechSynthesizer()
+    utterance.voice = ttsVoice
     synthesizer.speak(utterance)
 }
 

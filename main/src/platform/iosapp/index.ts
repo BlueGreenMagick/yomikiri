@@ -1,6 +1,6 @@
 import Utils from "~/utils";
-import type { Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
-import type { StoredConfiguration } from "~/config";
+import type { IosTTSRequest, Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
+import { Config, type StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../desktop";
 import type { RawDictionaryMetadata } from "./dictionary";
@@ -24,6 +24,8 @@ export namespace Platform {
     updateDict: [null, RawDictionaryMetadata]
     dictMetadata: [null, RawDictionaryMetadata]
     ttsVoices: [null, TTSVoice[]];
+    // IosTTSRequest JSON
+    tts: [string, null]
 
     // action extension
     close: [null, void];
@@ -94,7 +96,9 @@ export namespace Platform {
   }
 
   export async function playTTS(text: string): Promise<void> {
-    throw new Error("Not implemented!")
+    const voice = Config.get("tts.voice");
+    const req = { voice, text }
+    await Platform.messageWebview("tts", JSON.stringify(req));
   }
 
   export async function translate(text: string): Promise<TranslateResult> {

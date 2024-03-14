@@ -157,9 +157,21 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             case "ttsVoices":
                 let resp = japaneseTtsVoices()
                 return try jsonSerialize(obj: resp)
+            case "tts":
+                guard let reqJSON = request as? String else {
+                    throw "'tts' request is not a JSON string"
+                }
+                let req: TTSRequest = try jsonDeserialize(json: reqJSON)
+                try ttsSpeak(voice: req.voice, text: req.text)
+                return nil
             default:
                 throw "Unknown key \(key)"
             }
+        }
+
+        private struct TTSRequest: Decodable {
+            var text: String
+            var voice: TTSVoice?
         }
     }
 
