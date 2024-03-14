@@ -95,9 +95,14 @@ extension OptionsView {
             { [weak self] (key: String, _: Any) in
                 switch key {
                     case "ankiIsInstalled":
-                        return ankiIsInstalled()
+                        let val = ankiIsInstalled()
+                        return try jsonSerialize(obj: val)
                     case "ankiInfo":
-                        return self?.requestAnkiInfo()
+                        if let val = self?.requestAnkiInfo() {
+                            return try jsonSerialize(obj: val)
+                        } else {
+                            return nil
+                        }
                     default:
                         return nil
                 }

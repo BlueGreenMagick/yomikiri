@@ -9,8 +9,7 @@ export interface RawDictionaryMetadata {
   filesSize: number
 }
 
-function parseRawMetadata(json: string): DictionaryMetadata {
-  const raw: RawDictionaryMetadata = JSON.parse(json)
+function parseRawMetadata(raw: RawDictionaryMetadata): DictionaryMetadata {
   return {
     downloadDate: new Date(raw.downloadDate),
     filesSize: raw.filesSize

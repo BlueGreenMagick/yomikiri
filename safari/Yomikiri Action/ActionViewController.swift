@@ -76,8 +76,12 @@ class ActionViewController: UIViewController {
         { [weak self] (key: String, _: Any) in
             switch key {
                 case "close":
-                    self?.done()
-                    return Optional(nil)
+                    if let s = self {
+                        s.done()
+                        return Optional.some(nil)
+                    } else {
+                        return nil
+                    }
                 default:
                     return nil
             }

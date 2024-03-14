@@ -30,10 +30,9 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let req: TokenizeRequest = { text, charAt: charAt };
-    let rawResultJSON = await Platform.messageWebview("tokenize", req);
-    let rawResult = JSON.parse(rawResultJSON) as RawTokenizeResult;
-    return TokenizeResult.from(rawResult);
+    const req: TokenizeRequest = { text, charAt: charAt };
+    const raw = await Platform.messageWebview("tokenize", req);
+    return TokenizeResult.from(raw);
   }
 
   export async function search(term: string): Promise<Entry[]> {

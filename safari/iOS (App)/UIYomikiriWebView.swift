@@ -13,8 +13,8 @@ import YomikiriTokenizer
 class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
 
-    // return nil if not handled, Optional(nil) if returning nil to webview
-    public typealias AdditionalMessageHandler = (String, Any) async throws -> Any??
+    // return nil if not handled, Optional.some(nil) if returning nil to webview
+    public typealias AdditionalMessageHandler = (String, Any) async throws -> String??
 
     public enum LoadStatus {
         case initial, loading, complete, failed
@@ -76,15 +76,20 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             let message = didReceive.body
             Task {
                 do {
-                    let response = try await handleMessage(rawMsg: message)
-                    replyHandler(response, nil)
+                    if let response = try await handleMessage(rawMsg: message) {
+                        replyHandler(response, nil)
+                    } else {
+                        replyHandler(NSNull(), nil)
+                    }
+
                 } catch {
                     replyHandler(nil, error.localizedDescription)
                 }
             }
         }
 
-        private func handleMessage(rawMsg: Any) async throws -> Any? {
+        /// Returns JSON string or nil
+        private func handleMessage(rawMsg: Any) async throws -> String? {
             guard let msg = rawMsg as? [String: Any] else {
                 throw "Invalid message format"
             }
@@ -95,23 +100,30 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 throw "Message does not have 'request'"
             }
             os_log("%{public}s", "handleMessage: \(key)")
+
+            var additionallyHandled = false
             if let handler = self.additionalMessageHandler {
-                if let val = try await handler(key, request) {
-                    return val
+                if let resp = try await handler(key, request) {
+                    return resp
                 }
             }
-            return try await self.defaultMessageHandler(key: key, request: request)
+            if !additionallyHandled {
+                return try await self.defaultMessageHandler(key: key, request: request)
+            }
         }
 
-        private func defaultMessageHandler(key: String, request: Any) async throws -> Any? {
+        /// Returns JSON string or nil
+        private func defaultMessageHandler(key: String, request: Any) async throws -> String? {
             switch key {
             case "loadConfig":
-                return try loadSharedConfig()
+                let config = try loadSharedConfig()
+                return try jsonSerialize(obj: config)
             case "saveConfig":
                 guard let configJson = request as? String else {
                     throw "saveConfig tequest body must be JSON string"
                 }
-                return try saveSharedConfig(configJson: configJson)
+                try saveSharedConfig(configJson: configJson)
+                return nil
             case "tokenize":
                 guard let req = request as? NSDictionary else {
                     throw "'tokenize' request is not a Dictionary"
@@ -122,25 +134,26 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 guard let charAt = req["charAt"] as? UInt32 else {
                     throw "'tokenize' request.charAt is not UInt32"
                 }
-                let rawResult = try backend.tokenize(sentence: text, charAt: charAt)
-                return try jsonSerialize(obj: rawResult)
+                let resp = try backend.tokenize(sentence: text, charAt: charAt)
+                return try jsonSerialize(obj: resp)
             case "searchTerm":
                 guard let term = request as? String else {
                     throw "'searchTerm' request is not string"
                 }
-                return try backend.search(term: term)
+                let resp = try backend.search(term: term)
+                return try jsonSerialize(obj: resp)
             case "versionInfo":
                 let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
                 let versionInfo = [
                     "version": appVersion
                 ]
-                return versionInfo
+                return try jsonSerialize(obj: versionInfo)
             case "updateDict":
-                let metadata = try updateDictionary()
-                return try jsonSerialize(obj: metadata)
+                let resp = try updateDictionary()
+                return try jsonSerialize(obj: resp)
             case "dictMetadata":
-                let metadata = try getDictionaryMetadata()
-                return try jsonSerialize(obj: metadata)
+                let resp = try getDictionaryMetadata()
+                return try jsonSerialize(obj: resp)
             default:
                 throw "Unknown key \(key)"
             }

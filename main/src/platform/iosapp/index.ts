@@ -1,9 +1,9 @@
 import type Utils from "~/utils";
 import type { Module, TranslateResult, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
-import type { TokenizeRequest } from "../common/backend";
+import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../desktop";
-import type { DictionaryMetadata, RawDictionaryMetadata } from "./dictionary";
+import type { RawDictionaryMetadata } from "./dictionary";
 
 export * from "../common"
 
@@ -16,15 +16,13 @@ export namespace Platform {
     ankiIsInstalled: [null, boolean];
     // returns false if anki is not installed
     ankiInfo: [null, boolean];
-    // config in JSON string
-    loadConfig: [null, string];
+    loadConfig: [null, StoredConfiguration];
     saveConfig: [string, void];
-    // result: JSON-serialized RawTokenizeResult
-    tokenize: [TokenizeRequest, string];
+    tokenize: [TokenizeRequest, RawTokenizeResult];
     searchTerm: [string, string[]];
     versionInfo: [null, VersionInfo]
-    updateDict: [null, string]
-    dictMetadata: [null, string]
+    updateDict: [null, RawDictionaryMetadata]
+    dictMetadata: [null, RawDictionaryMetadata]
 
     // action extension
     close: [null, void];
@@ -49,14 +47,14 @@ export namespace Platform {
       request,
     };
     // @ts-ignore
-    return (await window.webkit.messageHandlers.yomikiri.postMessage(
+    let json = (await window.webkit.messageHandlers.yomikiri.postMessage(
       message
-    )) as WebviewResponse<K>;
+    )) as string;
+    return JSON.parse(json) as WebviewResponse<K>;
   }
 
   export async function getConfig(): Promise<StoredConfiguration> {
-    const configJson = await messageWebview("loadConfig", null)
-    return JSON.parse(configJson);
+    return await messageWebview("loadConfig", null)
   }
 
   /** Does nothiing in iosapp */
