@@ -47,11 +47,16 @@ export namespace Platform {
       key,
       request,
     };
+
     // @ts-ignore
-    let json = (await window.webkit.messageHandlers.yomikiri.postMessage(
+    let resp = await window.webkit.messageHandlers.yomikiri.postMessage(
       message
-    )) as string;
-    return JSON.parse(json) as WebviewResponse<K>;
+    );
+    if (resp === null) {
+      return resp
+    } else {
+      return JSON.parse(resp) as WebviewResponse<K>;
+    }
   }
 
   export async function getConfig(): Promise<StoredConfiguration> {
