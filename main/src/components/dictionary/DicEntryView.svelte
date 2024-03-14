@@ -122,13 +122,19 @@
     color: var(--button-light);
     fill: var(--button-light);
   }
-  .icon:hover {
+  :global(html:not(.ios):not(.iosapp)) .icon:hover {
     color: black;
     fill: black;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.07);
     border-radius: 3px;
   }
+
+  :global(html.ios) .icon:focus-visible,
+  :global(html.iosapp) .icon:focus-visible {
+    outline: none;
+  }
+
   .icon-anki-add.highlight {
     color: var(--accent);
     fill: var(--accent);
