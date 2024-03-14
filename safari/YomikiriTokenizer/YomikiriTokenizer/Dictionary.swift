@@ -14,19 +14,9 @@ public struct DictionaryMetadata: Codable {
 }
 
 let bundle = Bundle(for: Backend.self)
-let documentsDirUrl = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-let dictIndexUrl = documentsDirUrl?.appendingPathComponent("english.yomikiriindex")
-let dictEntriesUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
 
 public func updateDictionary() throws -> DictionaryMetadata {
-    guard let destIndexUrl = dictIndexUrl else {
-        throw YomikiriTokenizerError.CouldNotFindDocumentsDirectory
-    }
-    guard let destEntriesUrl = dictEntriesUrl else {
-        throw YomikiriTokenizerError.CouldNotFindDocumentsDirectory
-    }
-
-    let tmpDir = FileManager.default.temporaryDirectory
+    let tmpDir = try getSharedCacheDirectory()
     let tmpIndexUrl = tmpDir.appendingPathComponent("english.yomikiriindex")
     let tmpEntriesUrl = tmpDir.appendingPathComponent("english.yomikiridict")
     if FileManager.default.fileExists(atPath: tmpIndexUrl.path) {
@@ -38,12 +28,16 @@ public func updateDictionary() throws -> DictionaryMetadata {
 
     try updateDictionaryFile(indexPath: tmpIndexUrl.path, entriesPath: tmpEntriesUrl.path)
 
+    let dictionaryDirUrl = try getDictionaryDirUrl()
+    let destIndexUrl = dictionaryDirUrl.appendingPathComponent("english.yomikiriindex")
+    let destEntriesUrl = dictionaryDirUrl.appendingPathComponent("english.yomikiridict")
     if FileManager.default.fileExists(atPath: destIndexUrl.path) {
         try FileManager.default.removeItem(at: destIndexUrl)
     }
     if FileManager.default.fileExists(atPath: destEntriesUrl.path) {
         try FileManager.default.removeItem(at: destEntriesUrl)
     }
+
     try FileManager.default.copyItem(at: tmpIndexUrl, to: destIndexUrl)
     try FileManager.default.copyItem(at: tmpEntriesUrl, to: destEntriesUrl)
 
@@ -52,8 +46,10 @@ public func updateDictionary() throws -> DictionaryMetadata {
 
 func getDictionaryPath() throws -> (index: String, entries: String) {
     if let (index, entries) = tryGetInstalledDictionaryUrl() {
+        os_log(.debug, "Using updated JMDict")
         return (index.path, entries.path)
     } else {
+        os_log(.debug, "Using bundled JMDict")
         guard let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex", inDirectory: "res") else {
             throw YomikiriTokenizerError.BaseResourceNotFound
         }
@@ -65,12 +61,11 @@ func getDictionaryPath() throws -> (index: String, entries: String) {
 }
 
 func tryGetInstalledDictionaryUrl() -> (index: URL, entries: URL)? {
-    guard let dictIndexUrl = dictIndexUrl else {
+    guard let dictionaryDirUrl = try? getDictionaryDirUrl() else {
         return nil
     }
-    guard let dictEntriesUrl = dictEntriesUrl else {
-        return nil
-    }
+    let dictIndexUrl = dictionaryDirUrl.appendingPathComponent("english.yomikiriindex")
+    let dictEntriesUrl = dictionaryDirUrl.appendingPathComponent("english.yomikiridict")
     if !FileManager.default.fileExists(atPath: dictIndexUrl.path) {
         return nil
     }
@@ -123,4 +118,13 @@ func getDefaultDictionaryMetadata() throws -> DictionaryMetadata {
     }
     let metadata = try decoder.decode(DictionaryMetadata.self, from: jsonData)
     return metadata
+}
+
+func getDictionaryDirUrl() throws -> URL {
+    let rootDirUrl = try getSharedDirectory()
+    let dir = rootDirUrl.appendingPathComponent("dictionary")
+    if !FileManager.default.fileExists(atPath: dir.path) {
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    }
+    return dir
 }

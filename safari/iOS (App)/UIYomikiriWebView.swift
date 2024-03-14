@@ -106,12 +106,12 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         private func defaultMessageHandler(key: String, request: Any) async throws -> Any? {
             switch key {
             case "loadConfig":
-                return try SharedStorage.loadConfig()
+                return try loadSharedConfig()
             case "saveConfig":
                 guard let configJson = request as? String else {
                     throw "saveConfig tequest body must be JSON string"
                 }
-                return try SharedStorage.saveConfig(configJson: configJson)
+                return try saveSharedConfig(configJson: configJson)
             case "tokenize":
                 guard let req = request as? NSDictionary else {
                     throw "'tokenize' request is not a Dictionary"
