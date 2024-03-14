@@ -12,6 +12,8 @@ export interface Configuration {
   "anki.connect_url": string;
   "anki.template": NoteData | null;
   "anki.enabled": boolean;
+  /** On ios, if auto redirect back to safari */
+  "anki.ios_auto_redirect": boolean;
   /** set to null if voice is not available */
   "tts.voice": TTSVoice | null;
   /** Yomikiri semantic version on last config save */
@@ -26,6 +28,7 @@ const defaultOptions: Configuration = {
   "anki.connect_url": "http://127.0.0.1",
   "anki.template": null,
   "anki.enabled": false,
+  "anki.ios_auto_redirect": true,
   "tts.voice": null,
   "version": VERSION
 };

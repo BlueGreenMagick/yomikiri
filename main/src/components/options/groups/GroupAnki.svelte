@@ -96,6 +96,16 @@
   >
     {ankiTemplateDescription}
   </OptionClick>
+  {#if Platform.IS_IOSAPP}
+    <OptionToggle
+      title="Reopen Safari after adding Anki note"
+      key="anki.ios_auto_redirect"
+    >
+      If disabled, you can manually return to Safari by clicking
+      <span class="no-break">{"'\u{000025C0}\u{0000FE0E}Safari'"}</span>
+      on top left corner of the screen
+    </OptionToggle>
+  {/if}
 </GroupedOptions>
 {#if ankiTemplateModalHidden === false && Platform.IS_DESKTOP}
   <ModalAnkiTemplate
@@ -104,3 +114,9 @@
     }}
   />
 {/if}
+
+<style>
+  .no-break {
+    word-break: keep-all;
+  }
+</style>

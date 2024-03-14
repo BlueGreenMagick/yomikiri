@@ -17,12 +17,7 @@ export namespace AnkiApi {
 
   async function _addNote(note: NoteData): Promise<void> {
     const currentTab = await BrowserApi.currentTab();
-    if (currentTab.id === undefined) {
-      throw new Error("Current tab does not have an id");
-    }
-    await BrowserApi.setStorage("x-callback.tabId", currentTab.id);
-    await BrowserApi.setStorage("x-callback.tabUrl", location.href);
-
+    let willAutoRedirect = Config.get("anki.ios_auto_redirect")
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
       const queryKey = "fld" + field.name;
@@ -35,11 +30,27 @@ export namespace AnkiApi {
       // allow duplicate
       dupes: "1",
       ...fields,
-      "x-success": "http://yomikiri-redirect.bluegreenmagick.com",
     };
+
+    if (willAutoRedirect) {
+      if (currentTab.id === undefined) {
+        throw new Error("Current tab does not have an id");
+      }
+      await BrowserApi.setStorage("x-callback.tabId", currentTab.id);
+      await BrowserApi.setStorage("x-callback.tabUrl", location.href);
+      // @ts-ignore
+      params["x-success"] = "http://yomikiri-redirect.bluegreenmagick.com";
+    }
+
     const ankiLink =
       "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
-    BrowserApi.updateTab(currentTab.id, { url: ankiLink });
+
+
+    if (currentTab.id !== undefined) {
+      BrowserApi.updateTab(currentTab.id, { url: ankiLink });
+    } else {
+      location.href = ankiLink;
+    }
   }
 }
 
