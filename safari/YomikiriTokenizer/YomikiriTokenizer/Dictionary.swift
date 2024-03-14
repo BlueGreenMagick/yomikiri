@@ -15,7 +15,7 @@ public struct DictionaryMetadata: Codable {
 
 let bundle = Bundle(for: Backend.self)
 let documentsDirUrl = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-let dictIndexUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
+let dictIndexUrl = documentsDirUrl?.appendingPathComponent("english.yomikiriindex")
 let dictEntriesUrl = documentsDirUrl?.appendingPathComponent("english.yomikiridict")
 
 public func updateDictionary() throws -> DictionaryMetadata {
