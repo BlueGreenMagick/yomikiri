@@ -7,6 +7,12 @@ import type { RawDictionaryMetadata } from "./dictionary";
 
 export * from "../common"
 
+declare global {
+  interface Window {
+    iosConfigUpdated: (json: string) => void;
+  }
+}
+
 export namespace Platform {
   export const IS_DESKTOP = false;
   export const IS_IOS = false;
@@ -38,7 +44,16 @@ export namespace Platform {
     MessageWebviewMap[K]
   >;
 
-  export function initialize() { }
+  let _configSubscribers: ((config: StoredConfiguration) => any)[] = []
+
+  export function initialize() {
+    window.iosConfigUpdated = (json: string) => {
+      const config: StoredConfiguration = JSON.parse(json)
+      for (const subscriber of _configSubscribers) {
+        subscriber(config)
+      }
+    }
+  }
 
   /** Message to app inside app's WKWebview */
   export async function messageWebview<K extends keyof MessageWebviewMap>(
@@ -75,7 +90,7 @@ export namespace Platform {
 
   /** Does nothiing in iosapp */
   export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
-    return
+    _configSubscribers.push(subscriber)
   }
 
   export async function saveConfig(config: StoredConfiguration) {

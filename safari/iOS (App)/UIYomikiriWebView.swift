@@ -10,6 +10,14 @@ import UIKit
 import WebKit
 import YomikiriTokenizer
 
+var configUpdatedHandlers: [(_ messageHandler: UIYomikiriWebView.MessageHandler, _ configJSON: String) -> Void] = []
+
+func triggerConfigUpdateHook(messageHandler: UIYomikiriWebView.MessageHandler, configJSON: String) {
+    for fn in configUpdatedHandlers {
+        fn(messageHandler, configJSON)
+    }
+}
+
 class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
 
@@ -44,6 +52,18 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
 
         let request = URLRequest(url: self.viewModel.url)
         self.load(request)
+        configUpdatedHandlers.append { [weak self] (messageHandler: MessageHandler, configJSON: String) in
+            guard let self = self else {
+                return
+            }
+            // the triggering webview is current webview
+            if messageHandler === self.messageHandler { return }
+
+            var escaped = configJSON.replacingOccurrences(of: "\\", with: "\\\\")
+            escaped = escaped.replacingOccurrences(of: "\"", with: "\\\"")
+            escaped = escaped.replacingOccurrences(of: "\n", with: "\\n")
+            self.evaluateJavaScript("iosConfigUpdated(\"\(escaped)\")")
+        }
     }
 
     func webview(_ webview: WKWebView, didCommit navigation: WKNavigation!) {}
@@ -123,6 +143,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                     throw "saveConfig tequest body must be JSON string"
                 }
                 try saveSharedConfig(configJson: configJson)
+                triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
                 return nil
             case "tokenize":
                 guard let req = request as? NSDictionary else {
