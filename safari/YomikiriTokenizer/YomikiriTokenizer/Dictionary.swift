@@ -38,6 +38,12 @@ public func updateDictionary() throws -> DictionaryMetadata {
 
     try updateDictionaryFile(indexPath: tmpIndexUrl.path, entriesPath: tmpEntriesUrl.path)
 
+    if FileManager.default.fileExists(atPath: destIndexUrl.path) {
+        try FileManager.default.removeItem(at: destIndexUrl)
+    }
+    if FileManager.default.fileExists(atPath: destEntriesUrl.path) {
+        try FileManager.default.removeItem(at: destEntriesUrl)
+    }
     try FileManager.default.copyItem(at: tmpIndexUrl, to: destIndexUrl)
     try FileManager.default.copyItem(at: tmpEntriesUrl, to: destEntriesUrl)
 
