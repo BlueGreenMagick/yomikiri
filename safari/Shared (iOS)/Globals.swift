@@ -64,7 +64,11 @@ func ankiIsInstalled() -> Bool {
 
 func japaneseTtsVoices() -> [TTSVoice] {
     let voices = AVSpeechSynthesisVoice.speechVoices()
-    let ttsVoices = voices.map { voice in
+    var ttsVoices: [TTSVoice] = []
+    for voice in voices {
+        if voice.language != "ja-JP" {
+            continue
+        }
         let quality: Int
         switch voice.quality {
         case .default:
@@ -76,7 +80,8 @@ func japaneseTtsVoices() -> [TTSVoice] {
         default:
             quality = 50
         }
-        return TTSVoice(id: voice.identifier, name: voice.name, quality: quality)
+        let ttsVoice = TTSVoice(id: voice.identifier, name: voice.name, quality: quality)
+        ttsVoices.append(ttsVoice)
     }
     return ttsVoices
 }
