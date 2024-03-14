@@ -154,6 +154,9 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             case "dictMetadata":
                 let resp = try getDictionaryMetadata()
                 return try jsonSerialize(obj: resp)
+            case "ttsVoices":
+                let resp = japaneseTtsVoices()
+                return try jsonSerialize(obj: resp)
             default:
                 throw "Unknown key \(key)"
             }

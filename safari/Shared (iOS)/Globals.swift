@@ -5,6 +5,7 @@
 //  Created by Yoonchae Lee on 2023/07/04.
 //
 
+import AVFoundation
 import Foundation
 import os.log
 import SwiftUI
@@ -59,4 +60,47 @@ func jsonDeserialize<T: Decodable>(json: String) throws -> T {
 func ankiIsInstalled() -> Bool {
     let url = URL(string: "anki://x-callback-url/infoForAdding")!
     return UIApplication.shared.canOpenURL(url)
+}
+
+func japaneseTtsVoices() -> [TTSVoice] {
+    let voices = AVSpeechSynthesisVoice.speechVoices()
+    let ttsVoices = voices.map { voice in
+        let quality: Int
+        switch voice.quality {
+        case .default:
+            quality = 100
+        case .enhanced:
+            quality = 200
+        case .premium:
+            quality = 300
+        default:
+            quality = 50
+        }
+        return TTSVoice(id: voice.identifier, name: voice.name, quality: quality)
+    }
+    return ttsVoices
+}
+
+func speak(voice: TTSVoice, text: String) throws {
+    let utterance = AVSpeechUtterance(string: text)
+    var voice = AVSpeechSynthesisVoice(identifier: voice.id)
+    if voice == nil {
+        voice = AVSpeechSynthesisVoice(language: "ja-JP")
+    }
+    guard let voice = voice else {
+        throw "No Japanese voice found"
+    }
+
+    utterance.voice = voice
+    let synthesizer = AVSpeechSynthesizer()
+    synthesizer.speak(utterance)
+}
+
+struct TTSVoice: Codable {
+    let id: String
+    let name: String
+    /// default: 100
+    /// enhanced: 200
+    /// premium: 300
+    let quality: Int
 }

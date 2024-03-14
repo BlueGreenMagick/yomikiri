@@ -4,6 +4,7 @@ import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import Utils from "~/utils";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../platform/common/translate";
+import type { TTSVoice } from "~/platform/common";
 
 /**
  * Type map for messages between extension processes
@@ -386,6 +387,25 @@ export namespace BrowserApi {
     iAction.setBadgeBackgroundColor({
       color
     });
+  }
+
+  export async function japaneseTtsVoices(): Promise<TTSVoice[]> {
+    const [promise, resolve] = Utils.createPromise<chrome.tts.TtsVoice[]>();
+    chrome.tts.getVoices(resolve);
+    const voices = await promise;
+    const ttsVoices: TTSVoice[] = []
+    for (const voice of voices) {
+      const name = voice.voiceName
+      if (name === undefined) continue
+      const quality = voice.remote ? 100 : 200
+      const ttsVoice: TTSVoice = {
+        id: name,
+        name: name,
+        quality
+      }
+      ttsVoices.push(ttsVoice)
+    }
+    return ttsVoices
   }
 
   export function speakJapanese(text: string): Promise<void> {

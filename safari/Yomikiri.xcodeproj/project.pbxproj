@@ -19,6 +19,7 @@
 		695D331E2AB1F211003F9C80 /* Yomikiri Action.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 695D33102AB1F211003F9C80 /* Yomikiri Action.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		697EFFAB2BA2A9E00035360C /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
 		697EFFAC2BA2A9E00035360C /* YomikiriTokenizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		697EFFB42BA31F420035360C /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
 		6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */; };
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
 		699B7D7B2A519B3000E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
@@ -261,6 +262,7 @@
 		699EF6702A540BE600ECA9D1 /* Shared (iOS) */ = {
 			isa = PBXGroup;
 			children = (
+				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
 			);
 			path = "Shared (iOS)";
 			sourceTree = "<group>";
@@ -334,7 +336,6 @@
 				699B7DC52A52B07C00E506F2 /* OptionsView.swift */,
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
 				699B7DCC2A52BEA100E506F2 /* WebView.swift */,
-				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
 				69D839962A98D76F00618380 /* MainView.swift */,
 				69D839982A98D90900618380 /* DictionaryView.swift */,
 				69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */,
@@ -665,6 +666,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				697EFFB42BA31F420035360C /* Globals.swift in Sources */,
 				6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

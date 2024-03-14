@@ -5,21 +5,12 @@
 //  Created by Yoonchae Lee on 2023/05/19.
 //
 
+import AVFoundation
 import os.log
 import SafariServices
 import YomikiriTokenizer
 
 let SFExtensionMessageKey = "message"
-let backend = try! newBackend()
-
-func newBackend() throws -> Backend {
-    os_log(.error, "start creating backend")
-    let result = try createBackend()
-    os_log(.error, "finish creating backend")
-    return result
-}
-
-extension String: Error {}
 
 class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
     func beginRequest(with context: NSExtensionContext) {
@@ -64,17 +55,6 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         resp.userInfo = [SFExtensionMessageKey: realResponse]
         context.completeRequest(returningItems: [resp], completionHandler: nil)
     }
-}
-
-func jsonSerialize<T: Encodable>(obj: T?) throws -> String {
-    let encoder = JSONEncoder()
-    let data = try encoder.encode(obj)
-    return String(data: data, encoding: .utf8) ?? "null"
-}
-
-func jsonDeserialize<T: Decodable>(json: String) throws -> T {
-    let decoder = JSONDecoder()
-    return try decoder.decode(T.self, from: json.data(using: .utf8)!)
 }
 
 private struct TokenizeRequest: Codable {

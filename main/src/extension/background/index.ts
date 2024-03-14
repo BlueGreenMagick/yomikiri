@@ -6,6 +6,7 @@ import { AnkiApi } from "@platform/anki";
 import Utils from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
+import { updateTTSAvailability } from "~/common";
 
 let initialized: Promise<void> = initialize();
 let _backendInitialized: Promise<void> | undefined;
@@ -17,6 +18,14 @@ async function initialize(): Promise<void> {
   });
   Platform.initialize();
   await Config.initialize();
+
+  // queue task to run later
+  setTimeout(deferredInitialize, 0)
+}
+
+/** Non-essential code to run at startup but not immediately */
+async function deferredInitialize(): Promise<void> {
+  await updateTTSAvailability();
 }
 
 async function maybeInitBackend(): Promise<void> {

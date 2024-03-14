@@ -1,5 +1,5 @@
 import type Utils from "~/utils";
-import type { Module, TranslateResult, VersionInfo } from "../common";
+import type { Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
 import type { StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../desktop";
@@ -23,6 +23,7 @@ export namespace Platform {
     versionInfo: [null, VersionInfo]
     updateDict: [null, RawDictionaryMetadata]
     dictMetadata: [null, RawDictionaryMetadata]
+    ttsVoices: [null, TTSVoice[]];
 
     // action extension
     close: [null, void];
@@ -75,8 +76,8 @@ export namespace Platform {
     return await messageWebview("versionInfo", null);
   }
 
-  export function hasTTS(): boolean {
-    return false;
+  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return await Platform.messageWebview("ttsVoices", null)
   }
 
   export async function playTTS(text: string): Promise<void> {

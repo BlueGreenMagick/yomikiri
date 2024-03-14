@@ -1,7 +1,7 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
 import { VERSION } from "./generated";
-import Utils from "./utils";
+import type { TTSVoice } from "./platform/common";
 
 /** Must not be undefined */
 export interface Configuration {
@@ -12,6 +12,8 @@ export interface Configuration {
   "anki.connect_url": string;
   "anki.template": NoteData | null;
   "anki.enabled": boolean;
+  /** set to null if voice is not available */
+  "tts.voice": TTSVoice | null;
   /** Yomikiri semantic version on last config save */
   "version": string
 }
@@ -24,6 +26,7 @@ const defaultOptions: Configuration = {
   "anki.connect_url": "http://127.0.0.1",
   "anki.template": null,
   "anki.enabled": false,
+  "tts.voice": null,
   "version": VERSION
 };
 

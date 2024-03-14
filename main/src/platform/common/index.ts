@@ -15,11 +15,29 @@ export interface Module {
   saveConfig: (config: StoredConfiguration) => Promise<void>;
   openOptionsPage: () => void | Promise<void>;
   versionInfo: () => Promise<VersionInfo>;
-  hasTTS: () => boolean;
-  playTTS: (text: string) => Promise<void>;
+  japaneseTTSVoices(): Promise<TTSVoice[]>;
+  playTTS(text: string): Promise<void>;
   translate: (text: string) => Promise<TranslateResult>;
 }
 
 export interface VersionInfo {
   version: string
+}
+
+export interface TTSVoice {
+  id: string,
+  name: string,
+  /** 
+   * Higher is better.
+   * 
+   * For desktop:
+   * - remote: 100
+   * - non-remote: 200
+   * 
+   * For ios:
+   * - default: 100
+   * - enhanced: 200
+   * - premium: 300
+   */
+  quality: number,
 }

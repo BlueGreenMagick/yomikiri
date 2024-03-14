@@ -1,6 +1,6 @@
 import { BrowserApi } from "~/extension/browserApi";
-import type { Module, VersionInfo } from "../common";
-import type { StoredConfiguration } from "~/config";
+import type { Module, TTSVoice, VersionInfo } from "../common";
+import { Config, type StoredConfiguration } from "~/config";
 import { PLATFORM } from "~/generated";
 import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
@@ -40,15 +40,12 @@ export namespace Platform {
     }
   }
 
-  export function hasTTS(): boolean {
-    return (PLATFORM === "chrome")
+  /** This function is and only should be called in options page */
+  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return BrowserApi.japaneseTtsVoices()
   }
 
   export async function playTTS(text: string): Promise<void> {
-    if (!hasTTS()) {
-      throw new Error("Not implemented")
-    }
-
     if (BrowserApi.context === "contentScript") {
       await BrowserApi.request("tts", text);
     } else {

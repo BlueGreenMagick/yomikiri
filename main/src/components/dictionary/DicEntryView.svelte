@@ -73,7 +73,7 @@
           <IconAddCircleOutline />
         </div>
       {/if}
-      {#if Platform.hasTTS()}
+      {#if Config.get("tts.voice") !== null}
         <div
           class="icon"
           on:click={playAudio}
