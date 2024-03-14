@@ -48,7 +48,11 @@
   }
 
   function playAudio() {
-    Platform.playTTS(mainForm);
+    if (mainForm.length < 5) {
+      Platform.playTTS(readingForForm);
+    } else {
+      Platform.playTTS(mainForm);
+    }
   }
 
   $: mainForm = Entry.mainForm(entry);
