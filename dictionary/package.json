@@ -7,10 +7,10 @@
   "version": "0.1.0",
   "license": "MIT",
   "exports": {
-    "./*": "./resources/*"
+    "./*": "./res/*"
   },
   "files": [
-    "resources/*"
+    "res/*"
   ],
   "scripts": {
     "_clean_pkg": "rm -rf ./pkg",
@@ -18,7 +18,7 @@
     "test": "cargo test",
     "check": "cargo check && cargo check --target wasm32-unknown-unknown",
     "lint": "cargo lint",
-    "redownload": "rm -rf ./resources && cargo run",
+    "redownload": "rm -rf ./res && cargo run",
     "construct": "cargo run --features bin && pnpm run wasm"
   }
 }

@@ -48,10 +48,10 @@ func getDictionaryPath() throws -> (index: String, entries: String) {
     if let (index, entries) = tryGetInstalledDictionaryUrl() {
         return (index.path, entries.path)
     } else {
-        guard let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex", inDirectory: "resources") else {
+        guard let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex", inDirectory: "res") else {
             throw YomikiriTokenizerError.BaseResourceNotFound
         }
-        guard let entriesPath = bundle.path(forResource: "english", ofType: "yomikiridict", inDirectory: "resources") else {
+        guard let entriesPath = bundle.path(forResource: "english", ofType: "yomikiridict", inDirectory: "res") else {
             throw YomikiriTokenizerError.BaseResourceNotFound
         }
         return (indexPath, entriesPath)
@@ -107,7 +107,7 @@ public func getDictionaryMetadata() throws -> DictionaryMetadata {
 }
 
 func getDefaultDictionaryMetadata() throws -> DictionaryMetadata {
-    guard let jsonUrl = bundle.url(forResource: "dictionary-metadata", withExtension: "json", subdirectory: "resources") else {
+    guard let jsonUrl = bundle.url(forResource: "dictionary-metadata", withExtension: "json", subdirectory: "res") else {
         throw YomikiriTokenizerError.BaseResourceNotFound
     }
     let json = try String(contentsOf: jsonUrl, encoding: .utf8)

@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		6946AA2D2BA1848000668ACB /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2C2BA1848000668ACB /* Dictionary.swift */; };
 		6946AA2F2BA1879100668ACB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2E2BA1879100668ACB /* Error.swift */; };
-		6946AA322BA191B400668ACB /* resources in Resources */ = {isa = PBXBuildFile; fileRef = 6946AA312BA191B400668ACB /* resources */; };
+		6946AA322BA191B400668ACB /* res in Resources */ = {isa = PBXBuildFile; fileRef = 6946AA312BA191B400668ACB /* res */; };
 		699B7D6A2A519ADB00E506F2 /* YomikiriTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		699B7D842A519B9100E506F2 /* libyomikiri_rs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D802A519B9100E506F2 /* libyomikiri_rs.a */; };
 		699B7D852A519B9100E506F2 /* uniffi_yomikiri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7D822A519B9100E506F2 /* uniffi_yomikiri.swift */; };
@@ -20,7 +20,7 @@
 /* Begin PBXFileReference section */
 		6946AA2C2BA1848000668ACB /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		6946AA2E2BA1879100668ACB /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		6946AA312BA191B400668ACB /* resources */ = {isa = PBXFileReference; lastKnownFileType = folder; name = resources; path = ../../dictionary/resources; sourceTree = "<group>"; };
+		6946AA312BA191B400668ACB /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = res; path = ../../dictionary/res; sourceTree = "<group>"; };
 		699B7D662A519ADB00E506F2 /* YomikiriTokenizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YomikiriTokenizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YomikiriTokenizer.h; sourceTree = "<group>"; };
 		699B7D802A519B9100E506F2 /* libyomikiri_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs.a; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
 		699B7D5C2A519ADB00E506F2 = {
 			isa = PBXGroup;
 			children = (
-				6946AA312BA191B400668ACB /* resources */,
+				6946AA312BA191B400668ACB /* res */,
 				699B7D872A519C3400E506F2 /* scripts */,
 				699B7D7F2A519B9100E506F2 /* rust */,
 				699B7D682A519ADB00E506F2 /* YomikiriTokenizer */,
@@ -163,7 +163,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6946AA322BA191B400668ACB /* resources in Resources */,
+				6946AA322BA191B400668ACB /* res in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

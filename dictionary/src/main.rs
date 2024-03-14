@@ -15,7 +15,7 @@ fn main() -> Result<()> {
         "CARGO_MANIFEST_DIR env var not found. Are you not running the program with `cargo run`?",
     )?;
     let crate_dir = PathBuf::from(crate_dir);
-    let resources_dir = crate_dir.join("resources");
+    let resources_dir = crate_dir.join("res");
     let jmdict_dir = crate_dir.join("jmdict");
     let jmdict_file_path = jmdict_dir.join("JMdict_e");
     let output_path = resources_dir.join("english.yomikiridict");
