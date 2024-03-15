@@ -15,6 +15,7 @@ struct DictionaryView: View {
     var body: some View {
         WebView(viewModel: self.viewModel.webViewModel)
             .background(DictionaryView.BACKGROUND_COLOR)
+            .ignoresSafeArea(.keyboard)
     }
 
     class ViewModel: ObservableObject {
