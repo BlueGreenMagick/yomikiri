@@ -198,7 +198,7 @@ ${TAG_NAME}.unknown {
 
   /** Unhighlight all */
   export function unhighlight() {
-    for (const node of document.getElementsByTagName(TAG_NAME)) {
+    for (const node of [...document.getElementsByTagName(TAG_NAME)]) {
       unhighlightElement(node);
     }
     highlighted = false;
