@@ -19,6 +19,8 @@ export interface Module {
   japaneseTTSVoices(): Promise<TTSVoice[]>;
   playTTS(text: string): Promise<void>;
   translate: (text: string) => Promise<TranslateResult>;
+  /** Opens url in new tab */
+  openExternalLink(url: string): void;
 }
 
 export interface VersionInfo {

@@ -130,6 +130,12 @@ export namespace Platform {
       return BrowserApi.request("translate", text);
     }
   }
+
+  export function openExternalLink(url: string): void {
+    window
+      .open(url, "_blank")
+      ?.focus();
+  }
 }
 
 Platform satisfies Module;

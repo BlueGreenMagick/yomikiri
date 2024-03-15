@@ -30,6 +30,7 @@ export namespace Platform {
     updateDict: [null, RawDictionaryMetadata]
     dictMetadata: [null, RawDictionaryMetadata]
     ttsVoices: [null, TTSVoice[]];
+    openLink: [string, null];
     // IosTTSRequest JSON
     tts: [string, null]
 
@@ -123,6 +124,11 @@ export namespace Platform {
 
   export async function translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
+  }
+
+  /** Currently only works in options page */
+  export function openExternalLink(url: string): void {
+    Platform.messageWebview("openLink", url)
   }
 }
 

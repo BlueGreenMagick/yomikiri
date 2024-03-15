@@ -94,7 +94,7 @@ extension OptionsView {
         }
 
         private func makeMessageHandler() -> WebView.AdditionalMessageHandler {
-            { [weak self] (key: String, _: Any) in
+            { [weak self] (key: String, request: Any) in
                 switch key {
                     case "ankiIsInstalled":
                         let val = ankiIsInstalled()
@@ -103,8 +103,19 @@ extension OptionsView {
                         if let val = self?.requestAnkiInfo() {
                             return try jsonSerialize(obj: val)
                         } else {
-                            return nil
+                            return Optional.some(nil)
                         }
+                    case "openLink":
+                        guard let urlString = request as? String else {
+                            throw "'openLink' url is not string"
+                        }
+                        guard let url = URL(string: urlString) else {
+                            throw "'openLink' url is not valid: \(urlString)"
+                        }
+                        DispatchQueue.main.async {
+                            openUrl(url)
+                        }
+                        return Optional.some(nil)
                     default:
                         return nil
                 }

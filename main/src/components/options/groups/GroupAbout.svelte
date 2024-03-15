@@ -32,9 +32,7 @@
     title="View source code"
     buttonText={"GitHub"}
     on:trigger={() => {
-      window
-        .open("https://github.com/bluegreenmagick/yomikiri", "_blank")
-        ?.focus();
+      Platform.openExternalLink("https://github.com/bluegreenmagick/yomikiri");
     }}
   >
     Yomikiri is an open source project! You can view the code on GitHub.
