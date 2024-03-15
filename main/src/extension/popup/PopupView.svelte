@@ -97,6 +97,10 @@
     flex-direction: column;
   }
 
+  .tokenize-container {
+    flex: 1 1 auto;
+  }
+
   .tokenize-container.previewIsVisible {
     display: none;
   }
