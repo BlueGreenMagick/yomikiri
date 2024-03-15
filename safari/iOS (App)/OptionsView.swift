@@ -22,8 +22,10 @@ struct OptionsView: View {
                     WebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
                         .navigationTitle("Anki Template")
                         .navigationBarTitleDisplayMode(.inline)
+                        .ignoresSafeArea(.keyboard)
                 } label: { EmptyView() }
                 WebView(viewModel: self.viewModel.webViewModel)
+                    .ignoresSafeArea(.keyboard)
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
