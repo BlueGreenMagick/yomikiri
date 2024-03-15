@@ -10,9 +10,9 @@ import UIKit
 import WebKit
 import YomikiriTokenizer
 
-var configUpdatedHandlers: [(_ messageHandler: UIYomikiriWebView.MessageHandler, _ configJSON: String) -> Void] = []
+var configUpdatedHandlers: [(_ messageHandler: UIYomikiriWebView.MessageHandler?, _ configJSON: String) -> Void] = []
 
-func triggerConfigUpdateHook(messageHandler: UIYomikiriWebView.MessageHandler, configJSON: String) {
+func triggerConfigUpdateHook(messageHandler: UIYomikiriWebView.MessageHandler?, configJSON: String) {
     for fn in configUpdatedHandlers {
         fn(messageHandler, configJSON)
     }
@@ -52,17 +52,19 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
 
         let request = URLRequest(url: self.viewModel.url)
         self.load(request)
-        configUpdatedHandlers.append { [weak self] (messageHandler: MessageHandler, configJSON: String) in
+        configUpdatedHandlers.append { [weak self] (triggeringMessageHandler: MessageHandler?, configJSON: String) in
             guard let self = self else {
                 return
             }
             // the triggering webview is current webview
-            if messageHandler === self.messageHandler { return }
+            if self.messageHandler === triggeringMessageHandler { return }
 
             var escaped = configJSON.replacingOccurrences(of: "\\", with: "\\\\")
             escaped = escaped.replacingOccurrences(of: "\"", with: "\\\"")
             escaped = escaped.replacingOccurrences(of: "\n", with: "\\n")
-            self.evaluateJavaScript("iosConfigUpdated(\"\(escaped)\")")
+            DispatchQueue.main.async { [weak self] in
+                self?.evaluateJavaScript("iosConfigUpdated(\"\(escaped)\")")
+            }
         }
     }
 
@@ -144,6 +146,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 }
                 try saveSharedConfig(configJson: configJson)
                 triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
+
                 return nil
             case "tokenize":
                 guard let req = request as? NSDictionary else {
