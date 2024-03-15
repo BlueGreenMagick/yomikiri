@@ -29,7 +29,8 @@ chrome 88: manifest v3
 chrome 99 (2022 Mar): await on some extension functions fixed
 firefox 45: manifest v2
 firefox 55 (2017 Aug): runtime.onInstalled
+firefox 79: WeakRef
 -firefox 109 (2023 Jan): manifest v3
 safari 14: manifest v2
-safari 14.1 (2021 Apr): background.persistant
+safari 14.1 (2021 Apr): background.persistant, WeakRef
 -safari 15.4 (2022 Mar): manifest v3 (better supported)

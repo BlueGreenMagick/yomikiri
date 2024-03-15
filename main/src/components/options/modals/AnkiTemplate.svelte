@@ -6,7 +6,6 @@
     exampleMarkerData,
     exampleTranslatedSentence,
   } from "../exampleMarkerData";
-  import { updateConfig } from "../stores";
   import type { AnkiInfo } from "~/platform/common/anki";
 
   export let ankiInfo: AnkiInfo;
@@ -80,7 +79,6 @@
       });
     }
     Config.set("anki.template", template);
-    updateConfig();
   }
 
   function markerValue(field: string) {

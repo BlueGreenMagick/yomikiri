@@ -1,6 +1,5 @@
 <script lang="ts">
   import { type ConfigKeysOfType, Config } from "~/config";
-  import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
 
   export let key: ConfigKeysOfType<string>;
@@ -14,7 +13,6 @@
   function onChange(ev: Event) {
     if (value === undefined) return;
     Config.set(key, value);
-    updateConfig();
   }
 
   function onKeydown(ev: KeyboardEvent) {

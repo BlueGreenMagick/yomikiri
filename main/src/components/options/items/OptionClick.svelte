@@ -1,6 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
   import IconChevronForward from "@icons/chevron-forward.svg";
 
@@ -13,7 +12,6 @@
   function onKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Enter" || ev.key === " ") {
       dispatch("trigger");
-      updateConfig();
     }
   }
 </script>

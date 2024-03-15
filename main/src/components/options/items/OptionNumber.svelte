@@ -1,6 +1,5 @@
 <script lang="ts">
   import { type ConfigKeysOfType, Config } from "~/config";
-  import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
 
   export let key: ConfigKeysOfType<number>;
@@ -19,7 +18,6 @@
       value = max;
     }
     Config.set(key, value);
-    updateConfig();
   }
 
   function onKeydown(ev: KeyboardEvent) {

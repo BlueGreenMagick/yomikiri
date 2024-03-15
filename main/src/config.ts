@@ -48,11 +48,8 @@ export namespace Config {
   export let initialized: boolean = false;
 
   export let _storage: StoredConfiguration;
-  let _styleEl: HTMLStyleElement | undefined;
   let _subscribers: (() => any)[] = []
-
-
-
+  let _documents: WeakRef<Document>[] = []
 
   /** Platform must be initialized. */
   export async function initialize(): Promise<void> {
@@ -70,7 +67,12 @@ export namespace Config {
     });
 
     migrate()
+    Config.onChange(() => {
+      updateStyling()
+    })
+
     Config.initialized = true;
+
   }
 
   export function get<K extends keyof Configuration>(key: K): Configuration[K] {
@@ -122,16 +124,50 @@ export namespace Config {
     }
   }
 
-  /** Insert or update <style> properties from config */
-  export function setStyle(document: Document) {
-    const css = generateCss();
-    let styleEl = document.getElementById(STYLE_ELEMENT_ID);
-    if (styleEl === null) {
-      styleEl = document.createElement("style");
-      styleEl.id = STYLE_ELEMENT_ID;
-      document.head.appendChild(styleEl);
+  export function removeOnChange(subscriber: () => void): boolean {
+    const idx = _subscribers.indexOf(subscriber);
+    if (idx !== -1) {
+      _subscribers.splice(idx, 1);
+      return true
     }
-    styleEl.textContent = css;
+    return false
+  }
+
+  /** 
+   * Insert or update <style> properties from config,
+   * watch for config changes and auto-update <style>
+  */
+  export function setStyle(doc: Document) {
+    let alreadyExisting = false;
+    for (const docRef of _documents) {
+      const derefed = docRef.deref();
+      if (derefed === undefined) continue;
+      if (derefed === doc) {
+        alreadyExisting = true
+        break;
+      }
+    }
+    if (!alreadyExisting) {
+      let ref = new WeakRef(doc)
+      _documents.push(ref)
+    }
+    updateStyling()
+  }
+
+  /** Update <style> for all registered _documents */
+  function updateStyling() {
+    const css = generateCss()
+    for (const docref of _documents) {
+      const doc = docref.deref()
+      if (doc === undefined) continue
+      let styleEl = doc.getElementById(STYLE_ELEMENT_ID);
+      if (styleEl === null) {
+        styleEl = doc.createElement("style");
+        styleEl.id = STYLE_ELEMENT_ID;
+        doc.head.appendChild(styleEl);
+      }
+      styleEl.textContent = css;
+    }
   }
 
   function generateCss(): string {

@@ -1,7 +1,8 @@
 <script lang="ts">
   import DicEntriesView from "../dictionary/DicEntriesView.svelte";
   import { Entry } from "~/dicEntry";
-  import { updated } from "./stores";
+  import { Config } from "~/config";
+  import { onMount } from "svelte";
 
   const entriesData: Entry[] = [
     {
@@ -59,10 +60,24 @@
       priority: 163,
     },
   ].map(Entry.fromObject);
+
+  let updateTick: number = 0;
+
+  function update() {
+    updateTick += 1;
+  }
+
+  onMount(() => {
+    Config.onChange(update);
+
+    return () => {
+      Config.removeOnChange(update);
+    };
+  });
 </script>
 
 <div>
-  {#key $updated}
+  {#key updateTick}
     <DicEntriesView entries={entriesData} />
   {/key}
 </div>

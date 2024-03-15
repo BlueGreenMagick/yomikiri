@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { updateConfig } from "../stores";
   import OptionBase from "./OptionBase.svelte";
   import ToggleSwitch from "../../ToggleSwitch.svelte";
   import Config, { type ConfigKeysOfType } from "~/config";
@@ -10,7 +9,6 @@
 
   function update() {
     Config.set(key, value);
-    updateConfig();
   }
 </script>
 
