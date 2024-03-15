@@ -1,31 +1,34 @@
 <script lang="ts">
-  import { RubyString, containsJapaneseContent } from "~/japanese";
+  import { RubyString } from "~/japanese";
   import type { Token } from "@platform/backend";
   import RubyText from "../RubyText.svelte";
 
   export let tokens: Token[];
-  // may be bigger than total token character
+  // code point index
   export let selectedCharAt: number = 0;
 
   let selectedTokenIdx: number = 0;
   let invalidTokens: boolean[];
 
   function invalidToken(token: Token) {
-    return !containsJapaneseContent(token.text);
+    return token.pos === "UNK" || token.pos === "";
   }
 
-  function updateSelectedToken(tokens: Token[], selectedCharAt: number) {
+  function updateSelectedToken(_args: any[]): number {
     for (let i = 0; i < tokens.length; i++) {
       if (tokens[i].start > selectedCharAt) {
-        selectedTokenIdx = i - 1;
-        return;
+        return i - 1;
       }
     }
-    selectedTokenIdx = tokens.length - 1;
+    return tokens.length - 1;
   }
 
   $: invalidTokens = tokens.map(invalidToken);
-  $: updateSelectedToken(tokens, selectedCharAt);
+  $: selectedTokenIdx = updateSelectedToken([
+    tokens,
+    invalidTokens,
+    selectedCharAt,
+  ]);
 </script>
 
 <div class="sentence-view">
