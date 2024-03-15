@@ -9,7 +9,7 @@ export * from "../common"
 
 declare global {
   interface Window {
-    iosConfigUpdated: (json: string) => void;
+    iosConfigUpdated: () => void;
   }
 }
 
@@ -47,8 +47,8 @@ export namespace Platform {
   let _configSubscribers: ((config: StoredConfiguration) => any)[] = []
 
   export function initialize() {
-    window.iosConfigUpdated = (json: string) => {
-      const config: StoredConfiguration = JSON.parse(json)
+    window.iosConfigUpdated = async () => {
+      const config = await getConfig()
       for (const subscriber of _configSubscribers) {
         subscriber(config)
       }

@@ -52,18 +52,17 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
 
         let request = URLRequest(url: self.viewModel.url)
         self.load(request)
-        configUpdatedHandlers.append { [weak self] (triggeringMessageHandler: MessageHandler?, configJSON: String) in
+        configUpdatedHandlers.append { [weak self] (triggeringMessageHandler: MessageHandler?, _: String) in
             guard let self = self else {
                 return
             }
             // the triggering webview is current webview
-            if self.messageHandler === triggeringMessageHandler { return }
+            if self.messageHandler === triggeringMessageHandler {
+                return
+            }
 
-            var escaped = configJSON.replacingOccurrences(of: "\\", with: "\\\\")
-            escaped = escaped.replacingOccurrences(of: "\"", with: "\\\"")
-            escaped = escaped.replacingOccurrences(of: "\n", with: "\\n")
             DispatchQueue.main.async { [weak self] in
-                self?.evaluateJavaScript("iosConfigUpdated(\"\(escaped)\")")
+                self?.evaluateJavaScript("iosConfigUpdated()")
             }
         }
     }
