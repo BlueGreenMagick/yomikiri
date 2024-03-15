@@ -138,8 +138,8 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         private func defaultMessageHandler(key: String, request: Any) async throws -> String? {
             switch key {
             case "loadConfig":
-                let config = try loadSharedConfig()
-                return try jsonSerialize(obj: config)
+                let configJson = try loadSharedConfig()
+                return configJson
             case "saveConfig":
                 guard let configJson = request as? String else {
                     throw "saveConfig tequest body must be JSON string"
