@@ -96,6 +96,11 @@ export namespace Platform {
   export async function saveConfig(config: StoredConfiguration) {
     const configJson = JSON.stringify(config);
     await messageWebview("saveConfig", configJson);
+
+    // trigger update for this execution context
+    for (const subscriber of _configSubscribers) {
+      subscriber(config)
+    }
   }
 
   export async function openOptionsPage(): Promise<void> {

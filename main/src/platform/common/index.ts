@@ -11,6 +11,7 @@ export interface Module {
   /** Api must be initialized */
   initialize: () => void;
   getConfig(): Promise<StoredConfiguration>;
+  /** Triggers when config is changed (regardless of whether changed in current tab or not) */
   subscribeConfig(subscriber: (config: StoredConfiguration) => any): void;
   saveConfig: (config: StoredConfiguration) => Promise<void>;
   openOptionsPage: () => void | Promise<void>;
