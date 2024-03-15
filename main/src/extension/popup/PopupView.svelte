@@ -93,12 +93,16 @@
 <style>
   .popup {
     flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
   }
 
   .tokenize-container {
     flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .tokenize-container.previewIsVisible {
