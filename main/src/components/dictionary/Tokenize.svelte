@@ -33,13 +33,7 @@
   /** modifies `searchTokens` */
   const tokenize = Utils.SingleQueued(_tokenize);
   async function _tokenize(searchText: string, charAt: number) {
-    if (searchText === "") {
-      tokenizeResult = TokenizeResult.empty();
-      return;
-    }
-
     charAt = Math.min(charAt, searchText.length - 1);
-
     tokenizeResult = await Backend.tokenize(searchText, charAt);
   }
 
