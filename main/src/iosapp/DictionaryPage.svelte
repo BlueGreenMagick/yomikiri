@@ -1,7 +1,6 @@
 <script lang="ts">
   import { platformClass } from "../components/actions";
-  import Tokenize from "../components/dictionary/Tokenize.svelte";
-  import { Platform } from "~/platform/iosapp";
+  import DictionaryView from "./DictionaryView.svelte";
 
   export let initialized: Promise<void>;
   export let context: "app" | "action";
@@ -10,16 +9,7 @@
 
 <div id="main" use:platformClass>
   {#await initialized then}
-    <Tokenize
-      bind:searchText
-      showCloseButton={context === "action"}
-      onShowAnkiPreview={() => {
-        throw "Not yet implemented!";
-      }}
-      on:close={() => {
-        Platform.messageWebview("close", null);
-      }}
-    />
+    <DictionaryView {context} {searchText} />
   {/await}
 </div>
 

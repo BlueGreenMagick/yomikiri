@@ -16,7 +16,6 @@
   }
 
   export let searchText: string = "";
-  export let actionButtons: boolean = false;
   export let showCloseButton: boolean = false;
   export let onShowAnkiPreview: (
     selectedEntry: SelectedEntryForAnki,
@@ -92,7 +91,7 @@
         }}
       />
     </div>
-  {:else if actionButtons}
+  {:else}
     <slot />
   {/if}
 </div>

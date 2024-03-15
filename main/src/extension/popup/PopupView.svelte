@@ -66,7 +66,7 @@
 
 <div class="popup">
   <div class="tokenize-container" class:previewIsVisible>
-    <Tokenize actionButtons={true} {onShowAnkiPreview}>
+    <Tokenize {onShowAnkiPreview}>
       <div class="action-buttons">
         <button
           class="icon-action"
