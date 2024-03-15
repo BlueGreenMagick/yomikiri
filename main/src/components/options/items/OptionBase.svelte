@@ -17,7 +17,6 @@
 <style>
   .option-item {
     margin: 0px 8px;
-    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;

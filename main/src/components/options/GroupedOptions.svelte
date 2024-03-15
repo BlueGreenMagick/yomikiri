@@ -25,6 +25,5 @@
     margin-top: 8px;
     border-radius: 8px;
     background-color: white;
-    overflow: hidden;
   }
 </style>
