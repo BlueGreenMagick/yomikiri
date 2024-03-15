@@ -1,13 +1,20 @@
 <script lang="ts">
   import { platformClass } from "~/components/actions";
+  import { Platform } from "@platform";
+
   import PopupView from "./PopupView.svelte";
+  import ActionButtons from "./ActionButtons.svelte";
 
   export let initialized: Promise<void>;
 </script>
 
 <div id="main" use:platformClass>
   {#await initialized then}
-    <PopupView />
+    {#if Platform.IS_IOS}
+      <ActionButtons />
+    {:else}
+      <PopupView />
+    {/if}
   {/await}
 </div>
 
