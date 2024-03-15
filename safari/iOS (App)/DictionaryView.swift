@@ -11,12 +11,7 @@ struct DictionaryView: View {
     @StateObject var viewModel = ViewModel()
 
     var body: some View {
-        NavigationView {
-            WebView(viewModel: self.viewModel.webViewModel)
-                .navigationTitle("Dictionary")
-                .navigationBarTitleDisplayMode(.inline)
-        }
-        .navigationViewStyle(.stack)
+        WebView(viewModel: self.viewModel.webViewModel)
     }
 
     class ViewModel: ObservableObject {
