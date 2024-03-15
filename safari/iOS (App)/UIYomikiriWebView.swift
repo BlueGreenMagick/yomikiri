@@ -67,7 +67,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         }
     }
 
-    func webview(_ webview: WKWebView, didCommit navigation: WKNavigation!) {}
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {}
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.viewModel.loadStatus = .complete
@@ -79,6 +79,14 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.viewModel.loadStatus = .loading
+    }
+
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        if navigationAction.request.url?.isFileURL == true {
+            return WKNavigationActionPolicy.allow
+        } else {
+            return WKNavigationActionPolicy.cancel
+        }
     }
 
     @available(*, unavailable)
