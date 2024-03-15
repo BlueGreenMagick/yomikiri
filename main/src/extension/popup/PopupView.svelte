@@ -4,7 +4,6 @@
   import Utils from "~/utils";
   import Config from "~/config";
   import { Toast } from "~/toast";
-  import { BrowserApi } from "../browserApi";
   import { Platform } from "@platform";
   import type { TokenizeResult } from "@platform/backend";
   import {
