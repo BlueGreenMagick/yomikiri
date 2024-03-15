@@ -42,7 +42,7 @@ export namespace AnkiApi {
     let installed = await Platform.messageWebview("ankiInfo", null);
     if (installed === false) {
       throw new Error(
-        `<a href="${ANKI_MOBILE_INSTALL_LINK}">AnkiMobile</a> is not installed.`
+        `AnkiMobile is not installed.`
       );
     }
   }
@@ -55,7 +55,7 @@ export namespace AnkiApi {
     let installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (installed === false) {
       throw new Error(
-        `<a href="${ANKI_MOBILE_INSTALL_LINK}">AnkiMobile</a> is not installed.`
+        `AnkiMobile is not installed.`
       );
     }
   }

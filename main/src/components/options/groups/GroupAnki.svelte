@@ -8,6 +8,9 @@
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils from "~/utils";
 
+  const ANKIMOBILE_URL =
+    "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
+
   let ankiTemplateDescription = "";
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
@@ -67,27 +70,30 @@
     {:else if useAnkiDescription === "success"}
       <span class="success">Successfully connected to Anki.</span>
     {:else if useAnkiDescription === "error"}
-      <span class="warning">{useAnkiError}</span>
       {#if Platform.IS_DESKTOP}
+        <span class="warning">{useAnkiError}</span>
         <a href="https://apps.ankiweb.net/">(Anki)</a>
         <a href="https://ankiweb.net/shared/info/2055492159">(AnkiConnect)</a>
+      {:else}
+        <span class="warning">
+          <a href={ANKIMOBILE_URL}>AnkiMobile</a> is not installed.
+        </span>
       {/if}
     {:else if useAnkiDescription === "off"}
       {#if Platform.IS_DESKTOP}
         <a href="https://apps.ankiweb.net/">Anki</a> is a flashcard software.
       {:else}
-        <a
-          href="https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387"
-          >AnkiMobile</a
-        > is a flashcard app.
+        <a href={ANKIMOBILE_URL}>AnkiMobile</a> is a flashcard app.
       {/if}
     {/if}
   </OptionToggle>
+
   {#if Platform.IS_DESKTOP}
     <OptionNumber key="anki.connect_port" title="AnkiConnect port number">
       This is the AnkiConnect config `webBindPort`
     </OptionNumber>
   {/if}
+
   <OptionClick
     title="Configure Anki template"
     buttonText="Configure"
@@ -96,6 +102,7 @@
   >
     {ankiTemplateDescription}
   </OptionClick>
+
   {#if Platform.IS_IOSAPP}
     <OptionToggle
       title="Reopen Safari after adding Anki note"
