@@ -112,6 +112,11 @@
     transition: background-color 0.25s;
   }
 
+  :global(html.ios) .icon-action {
+    width: 48px;
+    height: 48px;
+  }
+
   .icon-action.active {
     background-color: var(--accent-orange);
   }
