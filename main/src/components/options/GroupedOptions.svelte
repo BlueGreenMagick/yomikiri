@@ -11,7 +11,11 @@
 
 <style>
   .grouped-options {
-    margin-top: 8px;
+    margin-top: 24px;
+  }
+
+  .grouped-options:first-child {
+    margin-top: 0px;
   }
 
   .title {

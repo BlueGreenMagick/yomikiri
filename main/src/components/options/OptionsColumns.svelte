@@ -27,6 +27,7 @@
   #main-column {
     max-width: 900px;
     flex: 2 1 0;
+    margin: 12px 0px;
   }
 
   #preview-column {
