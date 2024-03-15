@@ -135,7 +135,7 @@
 
   input {
     flex: 1;
-    margin: 4px;
+    margin: 0.4em;
     padding: 0px;
     border: 0;
     outline: none;
@@ -148,13 +148,13 @@
   }
 
   .icon-search {
-    width: 16px;
-    height: 16px;
+    width: 1.25em;
+    height: 1.25em;
     fill: #666666;
   }
   .icon-clear {
-    width: 14px;
-    height: 14px;
+    width: 1.2em;
+    height: 1.2em;
     fill: #666666;
     opacity: 0.8;
   }

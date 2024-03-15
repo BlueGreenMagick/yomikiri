@@ -116,9 +116,9 @@
     display: flex;
   }
   .icon {
-    width: 24px;
-    height: 24px;
-    padding: 4px;
+    width: 2em;
+    height: 2em;
+    padding: 0.3em;
     color: var(--button-light);
     fill: var(--button-light);
   }
