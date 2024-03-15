@@ -10,8 +10,11 @@ import SwiftUI
 struct DictionaryView: View {
     @StateObject var viewModel = ViewModel()
 
+    static let BACKGROUND_COLOR = Color(red: 0.933, green: 0.933, blue: 0.933)
+
     var body: some View {
         WebView(viewModel: self.viewModel.webViewModel)
+            .background(DictionaryView.BACKGROUND_COLOR)
     }
 
     class ViewModel: ObservableObject {

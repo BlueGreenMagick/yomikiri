@@ -183,5 +183,6 @@
   .entries {
     flex: 1 1;
     overflow-y: auto;
+    background-color: var(--background);
   }
 </style>

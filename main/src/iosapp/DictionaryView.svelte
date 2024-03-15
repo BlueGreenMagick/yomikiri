@@ -92,6 +92,7 @@
 
   .placeholder-container {
     flex: 1 1 auto;
+    background-color: var(--background);
     display: flex;
     align-items: center;
   }
