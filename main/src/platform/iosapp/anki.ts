@@ -19,9 +19,6 @@ interface RawAnkiInfo {
 }
 
 export namespace AnkiApi {
-  const ANKI_MOBILE_INSTALL_LINK =
-    "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
-
   let [_ankiInfoP, _ankiInfoResolve] = Utils.createPromise<AnkiInfo>();
 
   export function setAnkiInfo(ankiInfoJson: string): void {
@@ -42,7 +39,7 @@ export namespace AnkiApi {
     let installed = await Platform.messageWebview("ankiInfo", null);
     if (installed === false) {
       throw new Error(
-        `AnkiMobile is not installed.`
+        `AnkiMobile app is not installed.`
       );
     }
   }
@@ -55,7 +52,7 @@ export namespace AnkiApi {
     let installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (installed === false) {
       throw new Error(
-        `AnkiMobile is not installed.`
+        `AnkiMobile app is not installed.`
       );
     }
   }

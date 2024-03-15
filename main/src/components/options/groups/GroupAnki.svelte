@@ -11,22 +11,25 @@
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
 
-  let ankiTemplateDescription = "";
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
   let useAnkiDescription: "off" | "loading" | "success" | "error" = "off";
   let useAnkiError: string = "";
+  let ankiTemplateDescriptionError = false;
+  let ankiTemplateDescription = "";
   let ankiTemplateModalHidden: boolean = true;
   let requesting: boolean = false;
 
   async function openAnkiTemplateModal() {
+    ankiTemplateDescriptionError = false;
     ankiTemplateDescription = "";
     try {
       await AnkiApi.requestAnkiInfo();
       ankiTemplateModalHidden = false;
     } catch (err) {
       let errorMsg = Utils.errorMessage(err);
-      ankiTemplateDescription = `<span class="warning">${errorMsg}</span>`;
+      ankiTemplateDescriptionError = true;
+      ankiTemplateDescription = errorMsg;
     }
   }
 
@@ -76,7 +79,7 @@
         <a href="https://ankiweb.net/shared/info/2055492159">(AnkiConnect)</a>
       {:else}
         <span class="warning">
-          <a href={ANKIMOBILE_URL}>AnkiMobile</a> is not installed.
+          <a href={ANKIMOBILE_URL}>AnkiMobile</a> app is not installed.
         </span>
       {/if}
     {:else if useAnkiDescription === "off"}
@@ -100,7 +103,9 @@
     bind:disabled={ankiDisabled}
     on:trigger={openAnkiTemplateModal}
   >
-    {ankiTemplateDescription}
+    <span class:warning={ankiTemplateDescriptionError}>
+      {ankiTemplateDescription}
+    </span>
   </OptionClick>
 
   {#if Platform.IS_IOSAPP}
