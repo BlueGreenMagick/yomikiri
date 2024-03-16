@@ -8,16 +8,25 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var selectedTab = "Dictionary"
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             DictionaryView()
                 .tabItem {
                     Label("Dictionary", systemImage: "character.book.closed.fill")
                 }
+                .tag("Dictionary")
             OptionsView()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
+                .tag("Settings")
+        }
+        .onOpenURL { url in
+            if url.isOptions {
+                selectedTab = "Settings"
+            }
         }
     }
 }
