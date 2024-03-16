@@ -44,7 +44,6 @@
 		69F2C28729FA4FA80088F503 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24029FA4FA80088F503 /* Style.css */; };
 		69F2C28829FA4FA80088F503 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24129FA4FA80088F503 /* Script.js */; };
 		69F2C28929FA4FA80088F503 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24129FA4FA80088F503 /* Script.js */; };
-		69F2C28A29FA4FA80088F503 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24229FA4FA80088F503 /* ViewController.swift */; };
 		69F2C28B29FA4FA80088F503 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24229FA4FA80088F503 /* ViewController.swift */; };
 		69F2C28C29FA4FA80088F503 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Assets.xcassets */; };
 		69F2C28D29FA4FA80088F503 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Assets.xcassets */; };
@@ -643,7 +642,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				69D839992A98D90900618380 /* DictionaryView.swift in Sources */,
-				69F2C28A29FA4FA80088F503 /* ViewController.swift in Sources */,
 				69D839972A98D76F00618380 /* MainView.swift in Sources */,
 				699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */,
 				699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */,
