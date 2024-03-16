@@ -64,7 +64,7 @@
   .token {
     display: flex;
     margin: 2px;
-    min-height: 1.6em;
+    min-height: 2em;
     align-items: flex-end;
     user-select: none;
     -webkit-user-select: none;
