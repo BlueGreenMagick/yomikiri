@@ -45,7 +45,8 @@
     filter: opacity(0.5);
   }
 
-  .option-click:not(.disabled):hover {
+  :global(html.desktop) .option-click:not(.disabled):hover,
+  .option-click:not(.disabled):active {
     cursor: pointer;
     background-color: var(--background-alt-light);
   }

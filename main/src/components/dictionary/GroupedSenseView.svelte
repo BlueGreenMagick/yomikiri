@@ -69,7 +69,8 @@
     background-color: rgba(0, 0, 0, 0.07);
   }
 
-  .grouped-sense.anki .meaning:not(.selected):hover {
+  :global(html.desktop) .grouped-sense.anki .meaning:not(.selected):hover,
+  .grouped-sense.anki .meaning:not(.selected):active {
     background-color: rgba(0, 0, 0, 0.04);
   }
 

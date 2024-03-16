@@ -13,7 +13,8 @@ button[disabled] {
   border: 1px solid var(--border);
 }
 
-button:not([disabled]):hover, button:not([disabled]):active {
+:global(html.desktop) button:not([disabled]):hover,
+button:not([disabled]):active {
   cursor: pointer;
   filter: brightness(0.9);
 }
@@ -25,6 +26,7 @@ input:focus-visible {
 .warning {
   color: var(--text-warn);
 }
+
 .success {
   color: var(--text-success);
 }

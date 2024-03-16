@@ -122,7 +122,8 @@
     color: var(--button-light);
     fill: var(--button-light);
   }
-  :global(html:not(.ios):not(.iosapp)) .icon:hover {
+  :global(html.desktop) .icon:hover,
+  .icon:active {
     color: black;
     fill: black;
     cursor: pointer;

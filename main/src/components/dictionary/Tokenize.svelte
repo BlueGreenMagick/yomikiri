@@ -158,7 +158,8 @@
     fill: #666666;
     opacity: 0.8;
   }
-  .icon-clear:hover {
+  :global(html.desktop) .icon-clear:hover,
+  .icon-clear:active {
     opacity: 1;
     cursor: pointer;
   }

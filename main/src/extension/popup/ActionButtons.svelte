@@ -51,12 +51,11 @@
     background-color: var(--accent-orange);
   }
 
-  @media (hover: hover) {
-    .icon-action:hover,
-    .icon-action:focus {
-      filter: brightness(0.9);
-      cursor: pointer;
-    }
+  :global(html.desktop) .icon-action:hover,
+  :global(html.desktop) .icon-action:focus,
+  .icon-action:active {
+    filter: brightness(0.9);
+    cursor: pointer;
   }
 
   .action-buttons {
