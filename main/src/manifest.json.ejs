@@ -84,7 +84,9 @@
   ],
 <% } -%>
   "permissions": [
+<% if (!firefox) { -%>
     "tts",
+<% } -%>
 <% if (ios) { -%>
     "nativeMessaging",
     "declarativeNetRequestWithHostAccess",
