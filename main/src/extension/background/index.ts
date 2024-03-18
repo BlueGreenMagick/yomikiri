@@ -71,6 +71,15 @@ async function tts(text: string): Promise<void> {
   BrowserApi.speakJapanese(text);
 }
 
+/** On ios, toggle state.enabled when action item is clicked */
+async function onActionClick() {
+  await initialized;
+  const prevEnabled = Config.get("state.enabled");
+  const enabled = !prevEnabled;
+  Config.set("state.enabled", enabled);
+}
+
+
 BrowserApi.handleRequest("searchTerm", searchTerm);
 BrowserApi.handleRequest("tokenize", tokenize);
 BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
@@ -78,7 +87,12 @@ BrowserApi.handleRequest("tabId", tabId);
 BrowserApi.handleRequest("translate", handleTranslate);
 BrowserApi.handleRequest("tts", tts);
 
+if (Platform.IS_IOS) {
+  BrowserApi.handleActionClicked(onActionClick);
+}
+
 Config.onChange(updateStateEnabledBadge);
+
 
 // expose object to window for debugging purposes
 declare global {

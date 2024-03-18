@@ -22,6 +22,7 @@ export interface MessageMap {
   // ios
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
+  setActionIcon: [null, void];
 }
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
@@ -412,6 +413,17 @@ export namespace BrowserApi {
     const [promise, resolve] = Utils.createPromise<void>();
     chrome.tts.speak(text, { "lang": "ja-jp" }, resolve);
     return promise;
+  }
+
+  /** Manifest V3 required */
+  export function handleActionClicked(handler: (tab: browser.tabs.Tab, info?: browser.action.OnClickData | undefined) => void) {
+    browser.action.onClicked.addListener(handler)
+  }
+
+  export async function setActionIcon(iconPath: string) {
+    await browser.action.setIcon({
+      path: iconPath
+    })
   }
 
   function attachRequestHandler() {

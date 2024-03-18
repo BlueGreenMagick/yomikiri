@@ -55,8 +55,10 @@
     "default_icon": {
       "128": "res/assets/static/images/icon128.png"
     },
-    "default_title": "Yomikiri",
-    "default_popup": "res/popup.html"
+  <% if (!ios) { -%>
+    "default_popup": "res/popup.html",
+  <% } -%>
+    "default_title": "Yomikiri"
   },
 <% if (!ios) { -%>
   "options_ui": {
