@@ -22,6 +22,8 @@ struct HelpView: View {
                 .aspectRatio(contentMode: .fit)
                 .border(.gray)
                 .padding(10)
+                .id(viewModel.imageName)
+                .transition(.opacity.animation(.easeInOut(duration: 0.5)))
             Text(viewModel.description)
         }.padding(20)
             .task {
