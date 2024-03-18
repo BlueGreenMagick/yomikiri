@@ -12,6 +12,11 @@ struct MainView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
+            HelpView()
+                .tabItem {
+                    Label("Help", systemImage: "questionmark.circle")
+                }
+                .tag("Help")
             DictionaryView()
                 .tabItem {
                     Label("Dictionary", systemImage: "character.book.closed.fill")

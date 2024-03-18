@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6942E5192BA82EE800AB628A /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6942E5182BA82EE800AB628A /* HelpView.swift */; };
 		69439D332AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */; };
 		69439D342AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */; };
 		69439D362AB2C0E800691B3E /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
@@ -118,6 +119,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6942E5182BA82EE800AB628A /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIYomikiriWebView.swift; sourceTree = "<group>"; };
 		69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri (iOS).entitlements"; sourceTree = "<group>"; };
 		69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri Extension (iOS).entitlements"; sourceTree = "<group>"; };
@@ -338,6 +340,7 @@
 				69D839962A98D76F00618380 /* MainView.swift */,
 				69D839982A98D90900618380 /* DictionaryView.swift */,
 				69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */,
+				6942E5182BA82EE800AB628A /* HelpView.swift */,
 			);
 			path = "iOS (App)";
 			sourceTree = "<group>";
@@ -646,6 +649,7 @@
 				699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */,
 				699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */,
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,
+				6942E5192BA82EE800AB628A /* HelpView.swift in Sources */,
 				699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */,
 				69439D332AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */,
 			);
