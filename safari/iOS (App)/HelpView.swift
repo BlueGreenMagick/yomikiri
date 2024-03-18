@@ -12,55 +12,32 @@ struct HelpView: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
-            Picker("Table of Contents", selection: $viewModel.currentSectionIndex) {
+            Picker("Table of Contents", selection: $viewModel.currentItemId.section) {
                 ForEach(0 ..< ViewModel.sections.count, id: \.self) { idx in
                     Text(ViewModel.sections[idx].title).tag(idx)
                 }
             }
-            HStack {
-                Button(
-                    action: {
-                        viewModel.prevItem()
-                    },
-                    label: {
-                        Image(systemName: "arrowshape.backward.fill")
+            TabView(selection: $viewModel.currentItemId) {
+                ForEach(0 ..< ViewModel.sections.count, id: \.self) { sectionIdx in
+                    ForEach(0 ..< ViewModel.sections[sectionIdx].items.count, id: \.self) { itemIdx in
+                        let id = ItemId(section: sectionIdx, item: itemIdx)
+                        return HelpItemView(viewModel: viewModel.itemViewModel(id))
+                            .padding([.bottom], 60)
+                            .tag(id)
+                            .id(id)
                     }
-                )
-                .disabled(!viewModel.hasPrevItem)
-                .padding(6)
-                Image(viewModel.imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .border(.gray)
-                    .padding(4)
-                    .id(viewModel.imageName)
-                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
-                Button(
-                    action: {
-                        viewModel.nextItem()
-                    },
-                    label: {
-                        Image(systemName: "arrowshape.right.fill")
-                    }
-                )
-                .disabled(!viewModel.hasNextItem)
-                .padding(6)
-            }
-            Text(viewModel.description)
-        }.padding(12)
-            .task {
-                Task {
-                    repeat {
-                        try? await Task.sleep(nanoseconds: 3 * 1000 * 1000 * 1000)
-                        viewModel.nextImage()
-                    } while !Task.isCancelled
                 }
             }
+            .tabViewStyle(.page)
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
+
+        }.padding(12)
     }
 
     final class ViewModel: ObservableObject {
         static let sections: [Section] = [
             Section(title: "Main App", items: [
+                Item(description: "Type in Japanese text", images: ["help-1-1-1", "help-1-1-2"]),
                 Item(description: "Type in Japanese text", images: ["help-1-1-1", "help-1-1-2"]),
             ]),
             Section(title: "Safari Extension", items: [
@@ -71,77 +48,40 @@ struct HelpView: View {
             ]),
         ]
 
-        @Published var currentSectionIndex: Int
-        @Published var currentItemIndex: Int
-        @Published var currentImageIndex: Int
+        @Published var currentItemId: ItemId
 
         var currentSection: Section {
-            ViewModel.sections[currentSectionIndex]
-        }
-
-        var currentItem: Item {
-            currentSection.items[currentItemIndex]
-        }
-
-        var sectionTitle: String {
-            currentSection.title
-        }
-
-        var description: String {
-            currentItem.description
-        }
-
-        var imageName: String {
-            currentItem.images[currentImageIndex]
-        }
-
-        var hasNextItem: Bool {
-            !(currentSectionIndex == ViewModel.sections.count - 1 && currentItemIndex == currentSection.items.count - 1)
-        }
-
-        var hasPrevItem: Bool {
-            !(currentSectionIndex == 0 && currentItemIndex == 0)
+            ViewModel.sections[currentItemId.section]
         }
 
         init() {
-            currentSectionIndex = 0
-            currentItemIndex = 0
-            currentImageIndex = 0
+            currentItemId = ItemId(section: 0, item: 0)
         }
 
-        func nextImage() {
-            currentImageIndex += 1
-            if currentImageIndex >= currentItem.images.count {
-                currentImageIndex = 0
-            }
-        }
+        func itemViewModel(_ itemId: ItemId) -> HelpItemView.ViewModel {
+            let item = itemId.value
+            let nextId = itemId.next
+            let prevId = itemId.prev
 
-        func nextItem() {
-            if !hasNextItem {
-                return
-            }
-            if currentItemIndex >= currentSection.items.count - 1 {
-                currentSectionIndex += 1
-                currentItemIndex = 0
-                currentImageIndex = 0
-            } else {
-                currentItemIndex += 1
-                currentImageIndex = 0
-            }
-        }
+            return HelpItemView.ViewModel(
+                item.description, item.images,
+                hasPrevItem: prevId != nil, hasNextItem: nextId != nil,
+                prevItemClicked: { [weak self] in
+                    guard let self = self, let prev = prevId else {
+                        return
+                    }
+                    withAnimation {
+                        self.currentItemId = prev
+                    }
 
-        func prevItem() {
-            if !hasPrevItem {
-                return
-            }
-            if currentItemIndex == 0 {
-                currentSectionIndex -= 1
-                currentItemIndex = currentSection.items.count - 1
-                currentImageIndex = 0
-            } else {
-                currentItemIndex -= 1
-                currentImageIndex = 0
-            }
+                }, nextItemClicked: { [weak self] in
+                    guard let self = self, let next = nextId else {
+                        return
+                    }
+                    withAnimation {
+                        self.currentItemId = next
+                    }
+                })
         }
     }
 }
@@ -154,6 +94,39 @@ struct Section: Hashable {
 struct Item: Hashable {
     var description: String
     var images: [String]
+}
+
+struct ItemId: Hashable {
+    var section: Int
+    var item: Int
+}
+
+extension ItemId {
+    var value: Item {
+        HelpView.ViewModel.sections[section].items[item]
+    }
+
+    var next: ItemId? {
+        let sections = HelpView.ViewModel.sections
+        let lastItem: Bool = (item == sections[section].items.count - 1)
+        if section == sections.count - 1, lastItem {
+            return nil
+        } else if lastItem {
+            return ItemId(section: section + 1, item: 0)
+        } else {
+            return ItemId(section: section, item: item + 1)
+        }
+    }
+
+    var prev: ItemId? {
+        if section == 0, item == 0 {
+            return nil
+        } else if item == 0 {
+            return ItemId(section: section - 1, item: HelpView.ViewModel.sections[section - 1].items.count - 1)
+        } else {
+            return ItemId(section: section, item: item - 1)
+        }
+    }
 }
 
 #Preview {
