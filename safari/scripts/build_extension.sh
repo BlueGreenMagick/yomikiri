@@ -3,6 +3,12 @@
 # Exit if fail
 set -e
 
+# Skip script when previewing / testing swift code
+if [ "${ENABLE_PREVIEWS}" = "YES" ] || [ "${CONFIGURATION}" = "Test" ]; then
+  echo "Skipping scripts when building for previews"
+  exit 0
+fi
+
 # Import paths from bash and zsh, so .bashrc and zshrc paths are added.
 if output=$(bash -lic 'echo $PATH'); then
   PATH="$output:$PATH"
