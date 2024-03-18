@@ -4,6 +4,8 @@ Yomikiri is a Japanese immersion learning tool. As you browse the internet and e
 
 Yomikiri is available for Chrome, Firefox, and iOS.
 
+<a href="https://chromewebstore.google.com/detail/iecicegmfmljmefcaknlkaaniemghefc"><img alt="Get it on Google Chrome" src="https://i.imgur.com/Mw6ip7o.png" height="36px"/></img></a>  (Firefox and iOS app is coming soon!)
+
 ## Features
 - View definition for hovered word
 - Recognizes word boundary within sentence
