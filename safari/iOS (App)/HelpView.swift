@@ -12,6 +12,11 @@ struct HelpView: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
+            Picker("Table of Contents", selection: $viewModel.sectionLabel) {
+                ForEach(ViewModel.sections, id: \.self) { section in
+                    Text(section.title)
+                }
+            }
             Image("help-1-1-1")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -59,12 +64,12 @@ struct HelpView: View {
     }
 }
 
-struct Section {
+struct Section: Hashable {
     var title: String
     var items: [Item]
 }
 
-struct Item {
+struct Item: Hashable {
     var description: String
     var image: String
 }
