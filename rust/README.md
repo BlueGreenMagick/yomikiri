@@ -1,7 +1,6 @@
-Run `build.sh` after you edit the code.
-Increment ios framework version in XCode > framework > Build settings > Versioning.
+Run `pnpm wasm` after you edit the code.
 
-For development, I recommend setting `.vscode/settings.json` to the following, and open this crate as root. This lets rust-analyzer analyze both uniffi and wasm code.
+For development, it is recommended to set `.vscode/settings.json` to the following, and open this crate as root. This lets rust-analyzer analyze both uniffi and wasm code.
 
 ```json5
 {
