@@ -4,7 +4,7 @@
   "description": "Web extension to view definition for Japanese words and add to Anki.",
   "private": true,
   "author": "BlueGreenMagick",
-  "license": "MIT",
+  "license": "Custom",
   "url": "https://github.com/bluegreenmagick/yomikiri",
   "scripts": {
     "update_dictionary": "pnpm run --dir ./dictionary redownload",
