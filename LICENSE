@@ -2,12 +2,16 @@ All individual files in this software (repository) not specified otherwise is li
 The full text can be found in `license_mit.txt`
 
 
-The images in `iOS (App)/AppAssets.xcassets` are licensed under [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0).
-    Following the official interpretation, Share Alike resources may be used unmodified as a separate element in a larger work:
-        'ShareAlike photo being used unmodified in a larger work. Unless the larger work would be considered an adaptation of it,
-        using a ShareAlike photo as a separate element within it does not require original materials in the larger work to be
-        ShareAlike or compatible. The larger work may be licensed under any terms.'
-        https://wiki.creativecommons.org/wiki/ShareAlike_interpretation#Examples
+The images in `/safari/iOS (App)/AppAssets.xcassets` are licensed under CC-BY-SA-4.0.
+(https://creativecommons.org/licenses/by-sa/4.0)
+
+Following the official interpretation, Share Alike resources may be used unmodified
+as a separate element in a larger work:
+    'ShareAlike photo being used unmodified in a larger work. Unless the larger work would be considered 
+    an adaptation of it, using a ShareAlike photo as a separate element within it does not require 
+    original materials in the larger work to be ShareAlike or compatible. 
+    The larger work may be licensed under any terms.'
+    https://wiki.creativecommons.org/wiki/ShareAlike_interpretation#Examples
 
 
 The icon of this software is *NOT* licensed. You may not use the icon unless given express permission.
