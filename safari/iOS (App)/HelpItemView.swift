@@ -43,6 +43,7 @@ struct HelpItemView: View {
             }
             Text(viewModel.description)
                 .padding(4)
+                .multilineTextAlignment(.center)
         }
         .task {
             Task {
