@@ -37,14 +37,24 @@ struct HelpView: View {
     final class ViewModel: ObservableObject {
         static let sections: [Section] = [
             Section(title: "Main App", items: [
-                Item(description: "Type in Japanese text", images: ["help-1-1-1", "help-1-1-2"]),
-                Item(description: "Type in Japanese text", images: ["help-1-1-1", "help-1-1-2"]),
+                Item(description: "Type in Japanese text", images: ["Help-1-1-1", "Help-1-1-2"]),
+                Item(description: "Select a word", images: ["Help-1-2-1", "Help-1-2-2"]),
+                Item(description: "You can share text to Yomikiri.", images: ["Help-1-3-1", "Help-1-3-2", "Help-1-3-3"]),
             ]),
             Section(title: "Safari Extension", items: [
-                Item(description: "Select aA in address bar", images: ["help-1-1-1"]),
+                Item(description: "Select aA in address bar", images: ["Help-2-1-1"]),
+                Item(description: "Select 'Manage Extensions'", images: ["Help-2-2-1"]),
+                Item(description: "Enable Yomikiri", images: ["Help-2-3-1", "Help-2-3-2"]),
+                Item(description: "Tap Yomikiri, grant permission", images: ["Help-2-4-1"]),
+                Item(description: "Tap to enable or disable Yomikiri", images: ["Help-2-5-1", "Help-2-5-2"]),
+                Item(description: "Tap on a word to see its meanings", images: ["Help-2-6-1"]),
             ]),
             Section(title: "Anki", items: [
-                Item(description: "Go to Settings tab", images: ["help-1-1-1"]),
+                Item(description: "Enable Anki integration", images: ["Help-3-1-1", "Help-3-1-2"]),
+                Item(description: "Tap to retrieve metadata from AnkiMobile", images: ["Help-3-2-1"]),
+                Item(description: "Configure your Anki template", images: ["Help-3-3-1"]),
+                Item(description: "Add note to AnkiMobile", images: ["Help-3-4-1", "Help-3-4-2"]),
+                Item(description: "Select a specific meaning to add", images: ["Help-3-5-1"]),
             ]),
         ]
 

@@ -35,6 +35,7 @@
 		699B7DFC2A52C9E500E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DFB2A52C9E500E506F2 /* res */; };
 		699B7E082A52F00400E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
 		699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
+		69A858E82BA9E94200A4220F /* AppAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69A858E72BA9E94200A4220F /* AppAssets.xcassets */; };
 		69D839972A98D76F00618380 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D839962A98D76F00618380 /* MainView.swift */; };
 		69D839992A98D90900618380 /* DictionaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D839982A98D90900618380 /* DictionaryView.swift */; };
 		69F2C26829FA4FA80088F503 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C26729FA4FA80088F503 /* AppDelegate.swift */; };
@@ -50,8 +51,8 @@
 		69F2C28829FA4FA80088F503 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24129FA4FA80088F503 /* Script.js */; };
 		69F2C28929FA4FA80088F503 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24129FA4FA80088F503 /* Script.js */; };
 		69F2C28B29FA4FA80088F503 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24229FA4FA80088F503 /* ViewController.swift */; };
-		69F2C28C29FA4FA80088F503 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Assets.xcassets */; };
-		69F2C28D29FA4FA80088F503 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Assets.xcassets */; };
+		69F2C28C29FA4FA80088F503 /* Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Shared.xcassets */; };
+		69F2C28D29FA4FA80088F503 /* Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Shared.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,6 +149,7 @@
 		699B7DFD2A52DD0500E506F2 /* build_extension.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_extension.sh; sourceTree = "<group>"; };
 		699B7E072A52F00400E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		699B7E0B2A53DCE500E506F2 /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		69A858E72BA9E94200A4220F /* AppAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppAssets.xcassets; sourceTree = "<group>"; };
 		69D839962A98D76F00618380 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		69D839982A98D90900618380 /* DictionaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryView.swift; sourceTree = "<group>"; };
 		69F2C23E29FA4FA80088F503 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
@@ -155,7 +157,7 @@
 		69F2C24029FA4FA80088F503 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
 		69F2C24129FA4FA80088F503 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
 		69F2C24229FA4FA80088F503 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		69F2C24329FA4FA80088F503 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		69F2C24329FA4FA80088F503 /* Shared.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Shared.xcassets; sourceTree = "<group>"; };
 		69F2C25329FA4FA80088F503 /* Yomikiri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yomikiri.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2C26029FA4FA80088F503 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69F2C26529FA4FA80088F503 /* Yomikiri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yomikiri.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -271,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
+				69A858E72BA9E94200A4220F /* AppAssets.xcassets */,
 			);
 			path = "Shared (iOS)";
 			sourceTree = "<group>";
@@ -301,7 +304,7 @@
 			isa = PBXGroup;
 			children = (
 				69F2C24229FA4FA80088F503 /* ViewController.swift */,
-				69F2C24329FA4FA80088F503 /* Assets.xcassets */,
+				69F2C24329FA4FA80088F503 /* Shared.xcassets */,
 				69F2C23C29FA4FA80088F503 /* Resources */,
 			);
 			path = "Shared (App)";
@@ -578,9 +581,10 @@
 			files = (
 				69F2C28429FA4FA80088F503 /* Icon.png in Resources */,
 				69F2C28229FA4FA80088F503 /* Main.html in Resources */,
+				69A858E82BA9E94200A4220F /* AppAssets.xcassets in Resources */,
 				69F2C28829FA4FA80088F503 /* Script.js in Resources */,
 				699B7E082A52F00400E506F2 /* res in Resources */,
-				69F2C28C29FA4FA80088F503 /* Assets.xcassets in Resources */,
+				69F2C28C29FA4FA80088F503 /* Shared.xcassets in Resources */,
 				69F2C28629FA4FA80088F503 /* Style.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -593,7 +597,7 @@
 				69F2C28729FA4FA80088F503 /* Style.css in Resources */,
 				69F2C26B29FA4FA80088F503 /* Main.storyboard in Resources */,
 				69F2C28929FA4FA80088F503 /* Script.js in Resources */,
-				69F2C28D29FA4FA80088F503 /* Assets.xcassets in Resources */,
+				69F2C28D29FA4FA80088F503 /* Shared.xcassets in Resources */,
 				69F2C28329FA4FA80088F503 /* Main.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
