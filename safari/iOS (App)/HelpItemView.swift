@@ -29,7 +29,7 @@ struct HelpItemView: View {
                     .border(.gray)
                     .padding(4)
                     .id(self.viewModel.imageName)
-                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+                    .transition(.opacity.animation(.easeOut(duration: 0.5)))
                 Button(
                     action: {
                         viewModel.nextItemClicked()
@@ -49,7 +49,9 @@ struct HelpItemView: View {
             Task {
                 repeat {
                     try? await Task.sleep(nanoseconds: 3 * 1000 * 1000 * 1000)
-                    viewModel.nextImage()
+                    withAnimation {
+                        viewModel.nextImage()
+                    }
                 } while !Task.isCancelled
             }
         }
