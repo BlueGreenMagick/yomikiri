@@ -273,7 +273,6 @@
 			isa = PBXGroup;
 			children = (
 				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
-				69A858E72BA9E94200A4220F /* AppAssets.xcassets */,
 			);
 			path = "Shared (iOS)";
 			sourceTree = "<group>";
@@ -343,6 +342,7 @@
 		69F2C25529FA4FA80088F503 /* iOS (App) */ = {
 			isa = PBXGroup;
 			children = (
+				69A858E72BA9E94200A4220F /* AppAssets.xcassets */,
 				69F2C26029FA4FA80088F503 /* Info.plist */,
 				699B7DC52A52B07C00E506F2 /* OptionsView.swift */,
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
