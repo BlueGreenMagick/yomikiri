@@ -82,9 +82,13 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
-        if navigationAction.request.url?.isFileURL == true {
+        guard let url = navigationAction.request.url else {
+            return WKNavigationActionPolicy.cancel
+        }
+        if url.isFileURL == true {
             return WKNavigationActionPolicy.allow
         } else {
+            openUrl(url)
             return WKNavigationActionPolicy.cancel
         }
     }

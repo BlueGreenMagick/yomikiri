@@ -64,11 +64,6 @@ func ankiIsInstalled() -> Bool {
     return UIApplication.shared.canOpenURL(url)
 }
 
-@available(iOSApplicationExtension, unavailable)
-@MainActor func openUrl(_ url: URL) {
-    UIApplication.shared.open(url)
-}
-
 func japaneseTtsVoices() -> [TTSVoice] {
     let voices = AVSpeechSynthesisVoice.speechVoices()
     var ttsVoices: [TTSVoice] = []
