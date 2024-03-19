@@ -9,7 +9,7 @@
       }
     },
     "condition": {
-      "urlFilter": "yomikiri-redirect.bluegreenmagick.com",
+      "urlFilter": "yomikiri-redirect.yoonchae.com",
       "resourceTypes": [
         "main_frame"
       ]

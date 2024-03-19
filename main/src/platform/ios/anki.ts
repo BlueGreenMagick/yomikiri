@@ -39,7 +39,7 @@ export namespace AnkiApi {
       await BrowserApi.setStorage("x-callback.tabId", currentTab.id);
       await BrowserApi.setStorage("x-callback.tabUrl", location.href);
       // @ts-ignore
-      params["x-success"] = "http://yomikiri-redirect.bluegreenmagick.com";
+      params["x-success"] = "http://yomikiri-redirect.yoonchae.com";
     }
 
     const ankiLink =

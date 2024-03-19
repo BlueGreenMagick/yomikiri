@@ -20,6 +20,7 @@ class ActionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        os_log("loading...")
 
         // this gets the incoming information from the share sheet
         guard let item = extensionContext?.inputItems.first as? NSExtensionItem else {

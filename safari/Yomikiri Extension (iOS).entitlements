@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.bluegreenmagick.yomikiri</string>
+		<string>group.com.yoonchae.yomikiri</string>
 	</array>
 </dict>
 </plist>

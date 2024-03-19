@@ -2,7 +2,7 @@
 
 import Foundation
 
-public let APP_GROUP_ID = "group.com.bluegreenmagick.yomikiri"
+public let APP_GROUP_ID = "group.com.yoonchae.yomikiri"
 
 public func loadSharedConfig() throws -> String {
     guard let sharedDefault = UserDefaults(suiteName: APP_GROUP_ID) else {
