@@ -9,6 +9,6 @@
     Text size in pixels
   </OptionNumber>
   <OptionText key="general.font" title="Japanese Font" wide={true}>
-    For japanese text only
+    For Japanese text only
   </OptionText>
 </GroupedOptions>

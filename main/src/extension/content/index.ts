@@ -40,7 +40,7 @@ async function ensureInitialized() {
   return _initialized;
 }
 
-/** Return false if not triggered on japanese text */
+/** Return false if not triggered on Japanese text */
 /*
 1. Get char location at (x,y)
 2. If already highlighted, stop

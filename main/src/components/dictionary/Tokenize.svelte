@@ -54,7 +54,7 @@
       <input
         type="text"
         bind:value={searchText}
-        placeholder="Enter japanese word or sentence."
+        placeholder="Enter Japanese word or sentence."
       />
       <button
         class="icon icon-clear"
