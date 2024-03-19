@@ -23,6 +23,7 @@ struct HelpItemView: View {
                 )
                 .disabled(!self.viewModel.hasPrevItem)
                 .padding(6)
+                Spacer()
                 Image(self.viewModel.imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -30,6 +31,7 @@ struct HelpItemView: View {
                     .padding(4)
                     .id(self.viewModel.imageName)
                     .transition(.opacity.animation(.easeOut(duration: 0.5)))
+                Spacer()
                 Button(
                     action: {
                         viewModel.nextItemClicked()
@@ -42,7 +44,7 @@ struct HelpItemView: View {
                 .padding(6)
             }
             Text(viewModel.description)
-                .padding(4)
+                .padding([.top, .bottom], 12)
                 .multilineTextAlignment(.center)
         }
         .task {
