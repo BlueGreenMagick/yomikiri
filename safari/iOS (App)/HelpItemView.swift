@@ -5,10 +5,13 @@
 //  Created by Yoonchae Lee on 3/18/24.
 //
 
+import Combine
 import SwiftUI
 
 struct HelpItemView: View {
     @ObservedObject var viewModel: ViewModel
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let cancel: Cancellable? = nil
 
     var body: some View {
         VStack {
@@ -47,15 +50,11 @@ struct HelpItemView: View {
                 .padding([.top, .bottom], 12)
                 .multilineTextAlignment(.center)
         }
-        .task {
-            Task {
-                repeat {
-                    try? await Task.sleep(nanoseconds: 3 * 1000 * 1000 * 1000)
-                    withAnimation {
-                        viewModel.nextImage()
-                    }
-                } while !Task.isCancelled
-            }
+        .onAppear {
+            viewModel.startImageTimer()
+        }
+        .onDisappear {
+            viewModel.stopImageTimer()
         }
     }
 
@@ -67,6 +66,7 @@ struct HelpItemView: View {
         let prevItemClicked: () -> Void
         let nextItemClicked: () -> Void
         @Published var imageIndex: Int
+        var timer: Timer? = nil
 
         var imageName: String {
             imageNames[imageIndex]
@@ -87,6 +87,25 @@ struct HelpItemView: View {
             if imageIndex >= imageNames.count {
                 imageIndex = 0
             }
+        }
+
+        func startImageTimer() {
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true, block: { [weak self] tmr in
+                guard let self = self else {
+                    tmr.invalidate()
+                    return
+                }
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.nextImage()
+                    }
+                }
+            })
+        }
+
+        func stopImageTimer() {
+            timer?.invalidate()
         }
     }
 }
