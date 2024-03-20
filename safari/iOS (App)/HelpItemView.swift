@@ -92,6 +92,6 @@ struct HelpItemView: View {
 }
 
 #Preview {
-    let viewModel = HelpItemView.ViewModel("Some instruction", ["help-1-1-1", "help-1-1-2"], hasPrevItem: true, hasNextItem: false, prevItemClicked: {}, nextItemClicked: {})
+    let viewModel = HelpItemView.ViewModel("Some instruction", ["Help-1-1-1", "Help-1-1-2"], hasPrevItem: true, hasNextItem: false, prevItemClicked: {}, nextItemClicked: {})
     return HelpItemView(viewModel: viewModel)
 }
