@@ -17,6 +17,10 @@ struct HelpView: View {
                     Text(ViewModel.sections[idx].title).tag(idx)
                 }
             }
+            .onChange(of: viewModel.currentItemId.section) { _ in
+                viewModel.currentItemId.item = 0
+            }
+
             TabView(selection: $viewModel.currentItemId) {
                 ForEach(0 ..< ViewModel.sections.count, id: \.self) { sectionIdx in
                     ForEach(0 ..< ViewModel.sections[sectionIdx].items.count, id: \.self) { itemIdx in
