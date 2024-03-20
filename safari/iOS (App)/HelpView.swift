@@ -63,6 +63,7 @@ struct HelpView: View {
         ]
 
         @Published var currentItemId: ItemId
+        var cachedViewModels: [ItemId: HelpItemView.ViewModel] = [:]
 
         var currentSection: Section {
             ViewModel.sections[currentItemId.section]
@@ -73,11 +74,14 @@ struct HelpView: View {
         }
 
         func itemViewModel(_ itemId: ItemId) -> HelpItemView.ViewModel {
+            if let viewModel = cachedViewModels[itemId] {
+                return viewModel
+            }
             let item = itemId.value
             let nextId = itemId.next
             let prevId = itemId.prev
 
-            return HelpItemView.ViewModel(
+            let viewModel = HelpItemView.ViewModel(
                 item.description, item.images,
                 hasPrevItem: prevId != nil, hasNextItem: nextId != nil,
                 prevItemClicked: { [weak self] in
@@ -96,6 +100,8 @@ struct HelpView: View {
                         self.currentItemId = next
                     }
                 })
+            cachedViewModels[itemId] = viewModel
+            return viewModel
         }
     }
 }
