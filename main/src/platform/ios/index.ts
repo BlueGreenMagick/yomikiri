@@ -120,7 +120,12 @@ export namespace Platform {
   }
 
   export async function playTTS(text: string): Promise<void> {
-    await Platform.requestToApp("tts", { voice: Config.get("tts.voice"), text })
+    if (BrowserApi.context !== "contentScript") {
+      await Platform.requestToApp("tts", { voice: Config.get("tts.voice"), text })
+    } else {
+      await BrowserApi.request("tts", text)
+    }
+
   }
 
   export async function translate(text: string): Promise<TranslateResult> {

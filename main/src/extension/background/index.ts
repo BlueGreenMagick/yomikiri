@@ -1,3 +1,9 @@
+/**
+ * Background worker for extension
+ * 
+ * loaded on desktop / ios
+ */
+
 import type { Entry } from "../../dicEntry";
 import { Backend, type TokenizeResult, type TokenizeRequest } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
@@ -68,7 +74,7 @@ async function updateStateEnabledBadge(): Promise<void> {
 
 async function tts(text: string): Promise<void> {
   await initialized;
-  BrowserApi.speakJapanese(text);
+  Platform.playTTS(text)
 }
 
 /** On ios, toggle state.enabled when action item is clicked */
@@ -91,7 +97,10 @@ if (Platform.IS_IOS) {
   BrowserApi.handleActionClicked(onActionClick);
 }
 
+
 Config.onChange(updateStateEnabledBadge);
+
+
 
 
 // expose object to window for debugging purposes
