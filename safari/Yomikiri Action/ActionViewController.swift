@@ -74,15 +74,25 @@ class ActionViewController: UIViewController {
     }
 
     private func makeMessageHandler() -> UIYomikiriWebView.AdditionalMessageHandler {
-        { [weak self] (key: String, _: Any) in
+        { [weak self] (key: String, request: Any) in
+            guard let self = self else {
+                return nil
+            }
             switch key {
                 case "close":
-                    if let s = self {
-                        s.done()
-                        return Optional.some(nil)
-                    } else {
-                        return nil
+                    self.done()
+                    return Optional.some(nil)
+                case "openLink":
+                    guard let urlString = request as? String else {
+                        throw "'openLink' url is not string"
                     }
+                    guard let url = URL(string: urlString) else {
+                        throw "'openLink' url is not valid: \(urlString)"
+                    }
+                    DispatchQueue.main.async {
+                        self.openURL(url)
+                    }
+                    return Optional.some(nil)
                 default:
                     return nil
             }
@@ -93,6 +103,21 @@ class ActionViewController: UIViewController {
         // Return any edited content to the host app.
         // This template doesn't do anything, so we just echo the passed in items.
         self.extensionContext!.completeRequest(returningItems: self.extensionContext!.inputItems, completionHandler: nil)
+    }
+
+    func openURL(_ url: URL) {
+        guard let ctx = self.extensionContext else {
+            return
+        }
+        ctx.open(url)
+        var responder = self as UIResponder?
+        let selectorOpenURL = sel_registerName("openURL:")
+        while responder != nil {
+            if responder?.responds(to: selectorOpenURL) == true {
+                responder?.perform(selectorOpenURL, with: url)
+            }
+            responder = responder!.next
+        }
     }
 }
 
