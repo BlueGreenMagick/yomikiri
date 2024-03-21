@@ -1,6 +1,7 @@
-import type { AnkiInfo, IAnkiOptions } from "../common/anki";
+import { iosAnkiMobileURL, type AnkiInfo, type IAnkiAddNotes, type IAnkiOptions } from "../common/anki";
 import Utils from "~/utils";
 import { Platform } from ".";
+import type { NoteData } from "~/ankiNoteBuilder";
 
 interface Named {
   name: string;
@@ -56,6 +57,12 @@ export namespace AnkiApi {
       );
     }
   }
+
+  export async function addNote(note: NoteData): Promise<void> {
+    const url = iosAnkiMobileURL(note)
+    await Platform.messageWebview("openLink", url);
+  }
 }
 
 AnkiApi satisfies IAnkiOptions;
+AnkiApi satisfies IAnkiAddNotes;

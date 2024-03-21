@@ -1,4 +1,5 @@
 import type { NoteData } from "~/ankiNoteBuilder";
+import Utils from "~/utils";
 
 export interface NotetypeInfo {
   name: string;
@@ -24,4 +25,25 @@ export interface IAnkiOptions {
 
 export interface IAnkiAddNotes {
   addNote: (note: NoteData, tabId?: number) => Promise<void>;
+}
+
+export function iosAnkiMobileURL(note: NoteData, successUrl?: string): string {
+  const fields: Record<string, string> = {};
+  for (const field of note.fields) {
+    const queryKey = "fld" + field.name;
+    fields[queryKey] = field.value;
+  }
+  let params: { [key: string]: string } = {
+    type: note.notetype,
+    deck: note.deck,
+    tags: note.tags,
+    // allow duplicate
+    dupes: "1",
+    ...fields,
+  };
+  if (typeof successUrl === "string") {
+    params["x-success"] = successUrl
+  }
+  const url = "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
+  return url
 }

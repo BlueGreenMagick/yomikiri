@@ -189,6 +189,18 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             case "dictMetadata":
                 let resp = try getDictionaryMetadata()
                 return try jsonSerialize(obj: resp)
+            case "openLink":
+                guard let urlString = request as? String else {
+                    throw "'openLink' url is not string"
+                }
+                guard let url = URL(string: urlString) else {
+                    throw "'openLink' url is not valid: \(urlString)"
+                }
+                DispatchQueue.main.async {
+                    // does nothing in ios action
+                    openUrl(url)
+                }
+                return nil
             case "ttsVoices":
                 let resp = japaneseTtsVoices()
                 return try jsonSerialize(obj: resp)
