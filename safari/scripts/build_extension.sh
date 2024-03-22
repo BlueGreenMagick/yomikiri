@@ -27,6 +27,5 @@ else
 # pnpm run -w "construct:all"
   pnpm run -w "build:ios"
   # Update build version
-  agvtool next-version -all
 fi
 
