@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let transform_dir = crate_dir.join("transformed");
     let output_dir = crate_dir.join("output");
     let src_dir = crate_dir.join("src");
-    let resource_dir = crate_dir.join("../jmdict/resources");
+    let resource_dir = crate_dir.join("../dictionary/res");
     let unidic_types_dir = crate_dir.join("../unidic-types");
 
     if !output_dir.try_exists()? {
