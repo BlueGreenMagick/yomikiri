@@ -3,7 +3,8 @@ The full text can be found in `license_mit.txt`
 
 ================
 
-The images in `/safari/iOS (App)/AppAssets.xcassets` are licensed under CC-BY-SA-4.0.
+The images in `/safari/iOS (App)/AppAssets.xcassets/`, 
+and screenshot images in `/extra/resources/` are licensed under CC-BY-SA-4.0.
 (https://creativecommons.org/licenses/by-sa/4.0)
 
 Following the official interpretation, Share Alike resources may be used unmodified
@@ -18,5 +19,7 @@ as a separate element in a larger work:
 ================
 
 The icon of this software is *NOT* licensed. You may not use the icon unless given express permission.
-Which refers to 5 petal-ed image files including 
-`extra/resources/icon_inkscape.svg`, `/build/assets/static/images/icon.svg|icon128.png`,
+Which refers to 5 petal-ed image files, including but not limited to:
+`/extra/resources/icon_inkscape.svg`,
+`/extra/resources/github-splash.png`,
+`/build/assets/static/images/icon.svg|icon128.png`,

@@ -1,12 +1,19 @@
-# About
+<p align="center">
+<img src="./extra/resources/github-splash.png" alt="yomikiri"/>
+</p>
+
+# Yomikiri
 
 Yomikiri is a Japanese immersion learning tool. As you browse the internet and encounter words you don't know, you can look up the word definitions with Yomikiri and add the word to Anki flashcards.
 
 Yomikiri is available for Chrome, Firefox, and iOS.
 
-<a href="https://chromewebstore.google.com/detail/iecicegmfmljmefcaknlkaaniemghefc"><img alt="Get it on Google Chrome" src="https://i.imgur.com/Mw6ip7o.png" height="36px"/></img></a>  (Firefox and iOS app is coming soon!)
+<a href="https://chromewebstore.google.com/detail/iecicegmfmljmefcaknlkaaniemghefc"><img alt="Get it on Google Chrome" src="https://i.imgur.com/Mw6ip7o.png" height="48"/></img></a>  (Firefox and iOS app is coming soon!)
 
 ## Features
+
+<img src="./extra/resources/screenshot1.png?raw=true" style="max-height: 300px;"/>
+
 - View definition for hovered word
 - Recognizes word boundary within sentence
 - Recognizes conjugation forms of verbs or adjectives
@@ -14,13 +21,12 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 - View relevant grammar with a link to Tofugu.
 - Add word to Anki. You can preview and edit the note before adding.
 - Search and view how a sentence is structured
-- IOS app + integration with AnkiMobile. (Coming soon!)
 
 ## Building from source
 
 Please note that we do not support building the project on Windows. You may want to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to build the project.
 
-[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust/cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
+[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust & cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
 Run the following commands
 ```sh
