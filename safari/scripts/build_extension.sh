@@ -24,6 +24,6 @@ echo "$PATH"
 if [ "$CONFIGURATION" = "Debug" ]; then
   pnpm run -w "build:ios"
 else
-  pnpm run -w "construct:all"
+# pnpm run -w "construct:all"
   pnpm run -w "build:ios"
 fi
