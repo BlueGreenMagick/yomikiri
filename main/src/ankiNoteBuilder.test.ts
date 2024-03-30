@@ -152,7 +152,7 @@ const data: MarkerData = {
   entry: tokenized.entries[0],
   selectedMeaning: tokenized.entries[0].senses[2],
   sentence: "わたしは本が読みたい。",
-  url: "https://yomikiri.jest/",
+  url: "https://yomikiri.test/",
   pageTitle: "Yomikiri tests",
 };
 
@@ -245,12 +245,13 @@ describe("AnkiNoteBuilder marker", () => {
   });
   test("url", async () => {
     const value = await AnkiNoteBuilder.markerValue("url", data);
-    expect(value).toBe("https://yomikiri.jest/");
+    console.log(value)
+    expect(value).toBe("https://yomikiri.test/");
   });
   test("link", async () => {
     document.title = "Yomikiri tests";
     const value = await AnkiNoteBuilder.markerValue("link", data);
-    expect(value).toBe('<a href="https://yomikiri.jest/">Yomikiri tests</a>');
+    expect(value).toBe('<a href="https://yomikiri.test/">Yomikiri tests</a>');
   });
 });
 
@@ -309,7 +310,7 @@ const escapedData: MarkerData = {
   entry: escapeTokenizeResult.entries[0],
   selectedMeaning: escapeTokenizeResult.entries[0].senses[0],
   sentence: "図書<",
-  url: "https://yomikiri.jest/",
+  url: "https://yomikiri.test/",
   pageTitle: "Yomikiri tests",
 };
 
