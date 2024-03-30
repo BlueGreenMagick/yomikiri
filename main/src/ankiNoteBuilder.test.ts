@@ -1,4 +1,4 @@
-import { test, expect, describe, jest } from "@jest/globals";
+import { test, expect, describe } from "vitest";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
 import { Entry } from "./dicEntry";
 import type { TokenizeResult } from "@platform/backend";

@@ -1,4 +1,4 @@
-import { test, expect, describe, beforeAll } from "@jest/globals";
+import { test, expect, describe, beforeAll } from "vitest";
 import { sentenceAtCharLocation, nodesOfToken } from "./scanner";
 
 beforeAll(() => {
