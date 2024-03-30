@@ -124,7 +124,7 @@ describe("nodesOfToken", () => {
 
 function prepareHTML(html: string): HTMLElement {
   const container = document.createElement("div");
-  container.textContent = html;
+  container.innerHTML = html;
   document.body.appendChild(container);
   return container;
 }
