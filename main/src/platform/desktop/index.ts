@@ -19,7 +19,7 @@ export namespace Platform {
   }
 
   /** subscriber is called when config is changed. */
-  export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
+  export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     BrowserApi.handleStorageChange("config", (change) => {
       subscriber(change.newValue)
     })

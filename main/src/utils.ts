@@ -10,21 +10,21 @@ export interface Rect {
 namespace Utils {
   export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
 
-  export type First<T extends any[]> = T extends [infer FIRST, ...any[]]
+  export type First<T extends unknown[]> = T extends [infer FIRST, ...unknown[]]
     ? FIRST
     : never;
-  export type Second<T extends any[]> = T extends [any, infer SECOND, ...any[]]
+  export type Second<T extends unknown[]> = T extends [unknown, infer SECOND, ...unknown[]]
     ? SECOND
     : never;
   export type PromiseResolver<K> = (value: K | PromiseLike<K>) => void;
-  export type PromiseRejector = (reason?: any) => void;
+  export type PromiseRejector = (reason?: unknown) => void;
 
   export function createPromise<V>(): [
     Promise<V>,
     PromiseResolver<V>,
-    (reason?: any) => void
+    (reason?: unknown) => void
   ] {
-    let resolve: PromiseResolver<V>, reject: (reason?: any) => void;
+    let resolve: PromiseResolver<V>, reject: (reason?: unknown) => void;
     const promise = new Promise<V>((rs: PromiseResolver<V>, rj) => {
       resolve = rs;
       reject = rj;
@@ -63,7 +63,7 @@ namespace Utils {
     }
   }
 
-  export function listIsIdentical(l1: any[], l2: any[]) {
+  export function listIsIdentical(l1: unknown[], l2: unknown[]) {
     if (l1.length != l2.length) return false;
     for (let i = 0; i < l1.length; i++) {
       if (l1[i] !== l2[i]) return false;
@@ -139,7 +139,7 @@ namespace Utils {
   }
 
   export function errorMessage(
-    err: any,
+    err: unknown,
     other = "Unknown error: check the browser console for details"
   ): string {
     if (err instanceof Error) {
@@ -150,7 +150,7 @@ namespace Utils {
     }
   }
 
-  interface QueueItem<I extends any[], R> {
+  interface QueueItem<I extends unknown[], R> {
     inp: I;
     resolve: PromiseResolver<R>;
     reject: PromiseRejector;
@@ -162,7 +162,7 @@ namespace Utils {
    *
    * If there is an existing queue, it is replaced with new input and previous queued call returns with `null`.
    */
-  export function SingleQueued<I extends any[], R>(
+  export function SingleQueued<I extends unknown[], R>(
     fn: (...inp: I) => Promise<R>
   ): (...inp: I) => Promise<R | null> {
     let queue: QueueItem<I, R | null> | null = null;
@@ -236,9 +236,9 @@ namespace Utils {
     return promise;
   }
 
-  const _logs: any[] = [];
+  const _logs: unknown[] = [];
 
-  export function log(...args: any[]): void {
+  export function log(...args: unknown[]): void {
     _logs.push(args)
   }
 

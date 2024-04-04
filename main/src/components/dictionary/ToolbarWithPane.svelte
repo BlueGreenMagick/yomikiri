@@ -9,7 +9,7 @@
   export let sentence: string;
   export let tooltipMode: boolean;
 
-  export let changeSelectedTool: (tool: Tools | null) => any;
+  export let changeSelectedTool: (tool: Tools | null) => void;
 </script>
 
 <div

@@ -10,7 +10,7 @@
 
   let value: number = Config.get(key);
 
-  function onChange(_: any) {
+  function onChange(_: unknown) {
     if (min !== null && value < min) {
       value = min;
     }

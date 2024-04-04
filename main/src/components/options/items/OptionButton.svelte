@@ -4,7 +4,7 @@
   export let title: string;
   export let buttonText: string;
   export let disabled = false;
-  export let onClicked: () => any;
+  export let onClicked: () => void;
 </script>
 
 <div class="option-button" class:disabled>

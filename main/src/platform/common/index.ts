@@ -12,7 +12,7 @@ export interface Module {
   initialize: () => void;
   getConfig(): Promise<StoredConfiguration>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => any): void;
+  subscribeConfig(subscriber: (config: StoredConfiguration) => unknown): void;
   saveConfig: (config: StoredConfiguration) => Promise<void>;
   openOptionsPage: () => void | Promise<void>;
   versionInfo: () => Promise<VersionInfo>;

@@ -67,7 +67,7 @@ export namespace Platform {
    * Listens to web config changes, 
    * which may occur when a new script loads and app config is fetched
    */
-  export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
+  export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     BrowserApi.handleStorageChange("config", (change) => {
       subscriber(change.newValue)
     })

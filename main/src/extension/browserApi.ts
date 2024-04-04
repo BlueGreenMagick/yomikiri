@@ -143,7 +143,7 @@ export namespace BrowserApi {
       try {
         const response = handleRequestResponse(resp);
         resolve(response);
-      } catch (error: any) {
+      } catch (error: unknown) {
         reject(error);
       }
     };
@@ -325,9 +325,9 @@ export namespace BrowserApi {
   }
 
   /** value cannot be undefined or null */
-  export async function setStorage(key: string, value: NonNullable<any>) {
+  export async function setStorage(key: string, value: NonNullable<unknown>) {
     const [promise, resolve] = Utils.createPromise<void>();
-    const object: Record<string, any> = {};
+    const object: Record<string, unknown> = {};
     object[key] = value;
     BrowserApi.storage().set(object, resolve);
     return promise;

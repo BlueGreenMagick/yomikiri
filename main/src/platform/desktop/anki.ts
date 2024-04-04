@@ -26,7 +26,7 @@ export namespace AnkiApi {
   }
 
   /** Send Anki-connect request */
-  async function request(action: string, params?: any): Promise<any> {
+  async function request(action: string, params?: unknown): Promise<unknown> {
     const ankiConnectUrl = await ankiConnectURL();
     let response;
     try {

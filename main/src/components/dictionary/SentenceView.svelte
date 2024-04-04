@@ -14,7 +14,7 @@
     return token.pos === "UNK" || token.pos === "";
   }
 
-  function updateSelectedToken(_args: any[]): number {
+  function updateSelectedToken([,]: unknown[]): number {
     for (let i = 0; i < tokens.length; i++) {
       if (tokens[i].start > selectedCharAt) {
         return i - 1;

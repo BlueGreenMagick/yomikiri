@@ -36,7 +36,7 @@ export namespace Dictionary {
     return prom;
   }
 
-  async function _updateDictionary(progressFn: (msg: string) => any): Promise<DictionaryMetadata> {
+  async function _updateDictionary(progressFn: (msg: string) => unknown): Promise<DictionaryMetadata> {
     const [index_bytes, entries_bytes] = await _createNewDictionary(progressFn)
     progressFn("Saving dictionary file...")
     const downloadDate = new Date();
@@ -56,7 +56,7 @@ export namespace Dictionary {
     return metadata;
   }
 
-  async function _createNewDictionary(progressFn: (msg: string) => any): Promise<[Uint8Array, Uint8Array]> {
+  async function _createNewDictionary(progressFn: (msg: string) => unknown): Promise<[Uint8Array, Uint8Array]> {
     const wasmP = loadWasm();
     const bufferP = fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz").then((resp) => resp.arrayBuffer());
     const [_wasm, buffer] = await Promise.all([wasmP, bufferP]);

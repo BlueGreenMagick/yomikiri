@@ -25,7 +25,7 @@ export async function getTranslation(text: string): Promise<TranslateResult> {
     console.error(respBody);
     throw respBody;
   } else {
-    const translated: string = respBody.sentences
+    const translated = respBody.sentences
       .map((sent: any) => sent.trans)
       .join("");
     const result = {

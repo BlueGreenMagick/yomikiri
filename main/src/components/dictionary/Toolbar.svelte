@@ -14,7 +14,7 @@
   export let grammarDisabled = false;
   export let tooltipMode: boolean;
 
-  export let changeSelectedTool: (tool: Tools | null) => any;
+  export let changeSelectedTool: (tool: Tools | null) => unknown;
 
   function selectTranslate() {
     if (translateDisabled) return;

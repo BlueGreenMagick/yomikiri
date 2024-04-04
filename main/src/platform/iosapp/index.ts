@@ -45,7 +45,7 @@ export namespace Platform {
     MessageWebviewMap[K]
   >;
 
-  const _configSubscribers: ((config: StoredConfiguration) => any)[] = []
+  const _configSubscribers: ((config: StoredConfiguration) => void)[] = []
 
   export function initialize() {
     window.iosConfigUpdated = async () => {
@@ -90,7 +90,7 @@ export namespace Platform {
   }
 
   /** Does nothiing in iosapp */
-  export function subscribeConfig(subscriber: (config: StoredConfiguration) => any): void {
+  export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     _configSubscribers.push(subscriber)
   }
 

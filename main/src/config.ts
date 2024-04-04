@@ -33,9 +33,7 @@ const defaultOptions: Configuration = {
   "version": VERSION
 };
 
-export interface StoredConfiguration extends Partial<Configuration> {
-  [key: string]: any;
-}
+export type StoredConfiguration = Partial<Configuration>
 
 /** Get union of config keys that extends type T. */
 export type ConfigKeysOfType<T> = {
@@ -45,10 +43,10 @@ export type ConfigKeysOfType<T> = {
 export namespace Config {
   const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
 
-  export const initialized = false;
+  export let initialized = false;
 
   export let _storage: StoredConfiguration;
-  const _subscribers: (() => any)[] = []
+  const _subscribers: (() => unknown)[] = []
   const _documents: WeakRef<Document>[] = []
 
   /** Platform must be initialized. */
@@ -71,8 +69,7 @@ export namespace Config {
       updateStyling()
     })
 
-    Config.initialized = true;
-
+    initialized = true;
   }
 
   export function get<K extends keyof Configuration>(key: K): Configuration[K] {
