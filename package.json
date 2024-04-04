@@ -6,6 +6,7 @@
   "author": "BlueGreenMagick",
   "license": "Custom",
   "url": "https://github.com/bluegreenmagick/yomikiri",
+  "type": "module",
   "scripts": {
     "update_dictionary": "pnpm run --dir ./dictionary redownload",
     "construct:dictionary": "pnpm run --dir ./dictionary construct",
@@ -26,5 +27,14 @@
     "check": "pnpm run -r check",
     "lint": "pnpm run -r lint",
     "test": "pnpm run -r test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.57.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-regexp": "^2.4.0",
+    "eslint-plugin-svelte": "2.36.0-next.13",
+    "svelte-eslint-parser": "^0.33.1",
+    "typescript-eslint": "^7.5.0"
   }
 }

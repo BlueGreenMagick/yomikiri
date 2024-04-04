@@ -20,7 +20,8 @@
     "dev": "pnpm run dev:chrome",
     "run:firefox": "pnpm web-ext run -s ./build --devtools",
     "check": "svelte-check --compiler-warnings \"a11y-no-noninteractive-tabindex:ignore,a11y-click-events-have-key-events:ignore\"",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint --cache ."
   },
   "devDependencies": {
     "@swc/core": "^1.4.6",

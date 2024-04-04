@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "generate": "tsx index.ts > res/THIRD_PARTY.txt"
+    "generate": "tsx index.ts > res/THIRD_PARTY.txt",
+    "lint": "eslint --cache ."
   },
   "files": [
     "res/THIRD_PARTY.txt"

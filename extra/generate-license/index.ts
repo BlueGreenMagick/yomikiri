@@ -24,7 +24,7 @@ function getShell(): string {
   }
 
   try {
-    let shell = os.userInfo().shell;
+    const shell = os.userInfo().shell;
     if (shell) {
       return shell;
     }
@@ -34,7 +34,7 @@ function getShell(): string {
 }
 
 async function runRustCommand() {
-  const cargoPath = (await which("cargo")) as string;
+  const cargoPath = (await which("cargo"));
   const { stdout } = await child_process.spawn(cargoPath, ["run"], {
     shell: getShell(),
     cwd: "./rust",
@@ -47,9 +47,9 @@ async function runRustCommand() {
 
 function getRustLicenses(licensesMap: LicensesMap, licensesJSON: string) {
   const licenses = JSON.parse(licensesJSON);
-  let disclaimers: string[] = [];
+  const disclaimers: string[] = [];
   for (const pack of licenses.third_party_libraries) {
-    let name = `${pack.package_name}@${pack.package_version}`
+    const name = `${pack.package_name}@${pack.package_version}`
     addLicenses(licensesMap, [name], pack.licenses[0].text)
   }
 }
@@ -94,13 +94,13 @@ function getManualLicenses(licensesMap: LicensesMap) {
   }
 
   for (const res of resources.res) {
-    let name = `${res.name}${res.version ? '@' + res.version : ''}`
+    const name = `${res.name}${res.version ? '@' + res.version : ''}`
     addLicenses(licensesMap, [name], res.text);
   }
 }
 
 function generateLicensesText(licensesMap: LicensesMap): string {
-  let lines: string[] = []
+  const lines: string[] = []
   for (const [licenseText, names] of licensesMap) {
     lines.push(`Yomikiri uses following software${names.length > 1 ? 's' : ''}: ${names.join(", ")}`)
     lines.push('')
@@ -118,7 +118,7 @@ async function main() {
   const licensesMap: LicensesMap = new Map();
 
   await getPnpmLicenses(licensesMap);
-  let rustOutput = await runRustCommand();
+  const rustOutput = await runRustCommand();
   await getRustLicenses(licensesMap, rustOutput);
   getManualLicenses(licensesMap);
   const disclaimer = generateLicensesText(licensesMap);
