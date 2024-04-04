@@ -120,6 +120,9 @@ importers:
       '@types/pako':
         specifier: ^2.0.0
         version: 2.0.3
+      '@types/postcss-import':
+        specifier: ^14.0.3
+        version: 14.0.3
       adm-zip:
         specifier: ^0.5.10
         version: 0.5.10
@@ -908,6 +911,9 @@ packages:
 
   '@types/pako@2.0.3':
     resolution: {integrity: sha512-bq0hMV9opAcrmE0Byyo0fY3Ew4tgOevJmQ9grUhpXQhYfyLJ1Kqg3P33JT5fdbT2AjeAjR51zqqVjAL/HMkx7Q==}
+
+  '@types/postcss-import@14.0.3':
+    resolution: {integrity: sha512-raZhRVTf6Vw5+QbmQ7LOHSDML71A5rj4+EqDzAbrZPfxfoGzFxMHRCq16VlddGIZpHELw0BG4G0YE2ANkdZiIQ==}
 
   '@types/pug@2.0.10':
     resolution: {integrity: sha512-Sk/uYFOBAB7mb74XcpizmH0KOR2Pv3D2Hmrh1Dmy5BmK3MpdSa5kqZcg6EKBdklU0bFXX9gCfzvpnyUehrPIuA==}
@@ -4539,6 +4545,10 @@ snapshots:
       undici-types: 5.26.5
 
   '@types/pako@2.0.3': {}
+
+  '@types/postcss-import@14.0.3':
+    dependencies:
+      postcss: 8.4.38
 
   '@types/pug@2.0.10': {}
 
