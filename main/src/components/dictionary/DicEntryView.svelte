@@ -48,11 +48,8 @@
   }
 
   function playAudio() {
-    if (mainForm.length < 5) {
-      Platform.playTTS(readingForForm);
-    } else {
-      Platform.playTTS(mainForm);
-    }
+    const text = mainForm.length < 5 ? readingForForm : mainForm
+    Platform.playTTS(text).catch((err: unknown) => {throw err});
   }
 
   $: mainForm = Entry.mainForm(entry);
@@ -72,7 +69,7 @@
           class="icon icon-anki-add"
           class:highlight={$selectedSense?.entry === entry}
           on:click={selectEntryForAnki}
-          on:mousedown|preventDefault|stopPropagation={() => {}}
+          on:mousedown|preventDefault|stopPropagation={() => null}
         >
           <IconAddCircleOutline />
         </div>
@@ -81,7 +78,7 @@
         <div
           class="icon"
           on:click={playAudio}
-          on:mousedown|preventDefault|stopPropagation={() => {}}
+          on:mousedown|preventDefault|stopPropagation={() => null}
         >
           <IconVolumeHigh />
         </div>

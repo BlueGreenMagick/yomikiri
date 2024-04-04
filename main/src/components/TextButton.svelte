@@ -47,7 +47,7 @@
     return false;
   }
 
-  function onTouchStart(ev: TouchEvent) {
+  function onTouchStart(_ev: TouchEvent) {
     tapped = true;
   }
 

@@ -78,7 +78,7 @@
         value: fields[fieldName] ?? "",
       });
     }
-    Config.set("anki.template", template);
+    await Config.set("anki.template", template);
   }
 
   function markerValue(field: string) {

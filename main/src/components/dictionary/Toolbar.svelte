@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export type Tools = "translate" | "grammar";
+  export type Tools = "translate" | "grammar" | null;
 </script>
 
 <script lang="ts">
@@ -9,12 +9,12 @@
   import { Tooltip } from "~/extension/content/tooltip";
   import { Highlighter } from "~/extension/content/highlight";
 
-  export let selectedTool: Tools | null = null;
+  export let selectedTool: Tools = null;
   export let translateDisabled = false;
   export let grammarDisabled = false;
   export let tooltipMode: boolean;
 
-  export let changeSelectedTool: (tool: Tools | null) => unknown;
+  export let changeSelectedTool: (tool: Tools) => void;
 
   function selectTranslate() {
     if (translateDisabled) return;

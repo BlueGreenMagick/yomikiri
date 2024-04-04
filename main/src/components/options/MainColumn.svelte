@@ -9,6 +9,7 @@
 <div>
   <GroupAppearance />
   <GroupAnki />
+  <!-- eslint-disable-next-line -->
   {#if Platform.IS_DESKTOP || Platform.IS_IOSAPP}
     <GroupDictionary />
   {/if}

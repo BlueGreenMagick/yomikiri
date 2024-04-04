@@ -9,7 +9,7 @@
 
 <div class="option-button" class:disabled>
   <OptionBase {title} {disabled}>
-    <button on:click={() => onClicked()} {disabled}>
+    <button on:click={() => {onClicked()}} {disabled}>
       {buttonText}
     </button>
     <slot slot="description" />

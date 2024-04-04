@@ -19,7 +19,7 @@
         loading = false;
         value = v;
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         loading = false;
         errored = true;
         value = Utils.errorMessage(err);

@@ -33,7 +33,7 @@
     }
   }
 
-  async function onSentenceChange(sentence: string) {
+  function onSentenceChange(_sentence: string) {
     translation = null;
     failed = false;
     display = "";

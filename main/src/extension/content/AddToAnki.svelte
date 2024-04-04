@@ -16,7 +16,7 @@
   }
 
   interface Events {
-    back: void;
+    back: undefined;
   }
 
   export let noteData: LoadingNoteData;

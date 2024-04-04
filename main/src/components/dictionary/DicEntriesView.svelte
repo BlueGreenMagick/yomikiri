@@ -6,11 +6,11 @@
   export let entries: Entry[];
   let model: DicEntriesModel = new DicEntriesModel();
 
-  function onEntriesChange(e: Entry[]) {
+  function onEntriesChange(_e: Entry[]) {
     model.reset();
   }
 
-  function onMouseDown(ev: MouseEvent) {
+  function onMouseDown(_ev: MouseEvent) {
     model.unselectSense();
   }
 

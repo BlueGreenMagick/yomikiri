@@ -12,7 +12,7 @@
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
 
   interface Events {
-    close: void;
+    close: undefined;
   }
 
   export let searchText = "";

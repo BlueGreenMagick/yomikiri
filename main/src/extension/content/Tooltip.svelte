@@ -17,7 +17,7 @@
   import { Tooltip } from "./tooltip";
 
   interface Events {
-    updateHeight: void;
+    updateHeight: undefined;
   }
 
   export let tokenizeResult: TokenizeResult;
@@ -33,7 +33,7 @@
     dispatch("updateHeight");
   }
 
-  async function onTokenizeResultChanged(tokenizeResult: TokenizeResult) {
+  async function onTokenizeResultChanged(_tokenizeResult: TokenizeResult) {
     previewIsVisible = false;
     selectedTool = null;
     await tick();

@@ -10,7 +10,7 @@
 
   let value: string = Config.get(key);
 
-  function onChange(ev: Event) {
+  function onChange(_: Event) {
     if (value === undefined) return;
     Config.set(key, value);
   }

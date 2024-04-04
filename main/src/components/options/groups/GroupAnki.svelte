@@ -56,7 +56,7 @@
   async function onAnkiEnableChange(enabled: boolean) {
     if (enabled) {
       useAnkiDescription = "loading";
-      checkAnkiConnection();
+      await checkAnkiConnection();
     } else {
       useAnkiDescription = "off";
     }
