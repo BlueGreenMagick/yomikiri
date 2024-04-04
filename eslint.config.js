@@ -34,4 +34,10 @@ export default tseslint.config(
     files: ['**/*.js', '**/*.cjs'],
     ...tseslint.configs.disableTypeChecked,
   },
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-namespace': 'off'
+    }
+  }
 )
