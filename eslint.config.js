@@ -4,6 +4,7 @@ import eslintRegexp from 'eslint-plugin-regexp'
 import eslintSvelte from 'eslint-plugin-svelte'
 import eslintSvelteParser from 'svelte-eslint-parser'
 import tseslintParser from '@typescript-eslint/parser'
+import globals from 'globals'
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -26,6 +27,9 @@ export default tseslint.config(
       parser: eslintSvelteParser,
       parserOptions: {
         parser: tseslintParser
+      },
+      globals: {
+        ...globals.node,
       }
     },
     rules: {
@@ -33,6 +37,14 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-redundant-type-constituents': 'off',
       'svelte/valid-compile': ['error', {'ignoreWarnings': true}]
+    }
+  },
+  {
+    files: ['main/src/**/*'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      }
     }
   },
   {

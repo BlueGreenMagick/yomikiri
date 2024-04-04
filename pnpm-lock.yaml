@@ -23,6 +23,9 @@ importers:
       eslint-plugin-svelte:
         specifier: 2.36.0-next.13
         version: 2.36.0-next.13(eslint@8.57.0)(svelte@4.2.12)(ts-node@10.9.2(@swc/core@1.4.6)(@types/node@20.11.24)(typescript@5.4.2))
+      globals:
+        specifier: ^15.0.0
+        version: 15.0.0
       svelte-eslint-parser:
         specifier: 0.34.0-next.12
         version: 0.34.0-next.12(svelte@4.2.12)
@@ -1948,6 +1951,10 @@ packages:
   globals@13.24.0:
     resolution: {integrity: sha512-AhO5QUcj8llrbG09iWhPU2B204J1xnPeL8kQmVorSsy+Sjj1sk8gIyh6cUocGmH4L0UuhAJy+hJMRA4mgA4mFQ==}
     engines: {node: '>=8'}
+
+  globals@15.0.0:
+    resolution: {integrity: sha512-m/C/yR4mjO6pXDTm9/R/SpYTAIyaUB4EOzcaaMEl7mds7Mshct9GfejiJNQGjHHbdMPey13Kpu4TMbYi9ex1pw==}
+    engines: {node: '>=18'}
 
   globby@11.1.0:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
@@ -5793,6 +5800,8 @@ snapshots:
   globals@13.24.0:
     dependencies:
       type-fest: 0.20.2
+
+  globals@15.0.0: {}
 
   globby@11.1.0:
     dependencies:
