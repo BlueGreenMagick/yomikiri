@@ -89,9 +89,7 @@ export namespace AnkiNoteBuilder {
   } as const;
   export type Marker = keyof typeof MARKERS;
 
-  const _markerHandlers: {
-    [marker: string]: MarkerHandler;
-  } = {};
+  const _markerHandlers: Record<string, MarkerHandler> = {};
 
   export function markerKeys(): Marker[] {
     return Object.keys(MARKERS) as Marker[];
@@ -106,7 +104,7 @@ export namespace AnkiNoteBuilder {
     data: MarkerData
   ): string | Utils.PromiseWithProgress<string, string> {
     const handler = _markerHandlers[marker];
-    let value = "";
+    const value = "";
     if (handler === undefined) {
       throw new Error(`Invalid marker in Anki note template: {{${marker}}}`);
     }
@@ -152,7 +150,7 @@ export namespace AnkiNoteBuilder {
   });
   addMarker("word-furigana", (data: MarkerData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx];
-    let rubies = RubyString.generate(token.text, token.reading);
+    const rubies = RubyString.generate(token.text, token.reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
   addMarker("word-kana", (data: MarkerData) => {
@@ -325,7 +323,7 @@ export namespace AnkiNoteBuilder {
   });
   addMarker("meaning-short", (data: MarkerData) => {
     if (data.selectedMeaning === undefined) {
-      let meanings = [];
+      const meanings = [];
       const cnt = Math.min(3, data.entry.senses.length);
       for (let i = 0; i < cnt; i++) {
         meanings.push(data.entry.senses[i].meaning[0]);

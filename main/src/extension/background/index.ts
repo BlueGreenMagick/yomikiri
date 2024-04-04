@@ -14,7 +14,7 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import { updateTTSAvailability } from "~/common";
 
-let initialized: Promise<void> = initialize();
+const initialized: Promise<void> = initialize();
 let _backendInitialized: Promise<void> | undefined;
 
 async function initialize(): Promise<void> {
@@ -54,7 +54,7 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
 
 async function addAnkiNote(note: NoteData): Promise<void> {
   await initialized;
-  return await AnkiApi.addNote(note);
+  await AnkiApi.addNote(note);
 }
 
 function tabId(_req: null, sender: MessageSender): number | undefined {

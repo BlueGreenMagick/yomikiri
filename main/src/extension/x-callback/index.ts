@@ -51,12 +51,12 @@ async function getLastTabId(): Promise<number | null> {
 
 async function main() {
   const currentTab = await BrowserApi.currentTab();
-  if (currentTab === undefined || currentTab.id === undefined) {
+  if (currentTab.id === undefined) {
     throw new Error("Failed to get current tab id (Unreachable)");
   }
   
   try {
-    let lastTabId = await getLastTabId();
+    const lastTabId = await getLastTabId();
     if (lastTabId !== null) {
       await BrowserApi.goToTab(lastTabId);
     }

@@ -47,7 +47,7 @@ export namespace Dictionary {
     await Utils.nextDocumentPaint();
 
     const db = await openDictionaryDB();
-    let tx = await db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
+    const tx = await db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
     tx.objectStore("metadata").put(metadata, "value");
     tx.objectStore("yomikiri-index").put(index_bytes, "value");
     tx.objectStore("yomikiri-entries").put(entries_bytes, "value");
@@ -91,7 +91,7 @@ export namespace Dictionary {
 
   async function loadWasm(): Promise<void> {
     if (_wasm_initialized) return;
-    // @ts-ignore wasm is string
+    // @ts-expect-error wasm is string
     const resp = await fetch(DICTIONARY_WASM_URL);
     await initWasm(resp);
     _wasm_initialized = true;

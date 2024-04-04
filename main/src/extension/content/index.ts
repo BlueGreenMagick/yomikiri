@@ -20,7 +20,7 @@ declare global {
   }
 }
 
-let initialized: boolean = false;
+let initialized = false;
 
 let _initialized: Promise<void> | undefined;
 
@@ -84,7 +84,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     Highlighter.highlightRed(nodes);
   } else {
     Highlighter.highlightNodes(nodes);
-    let rects = Highlighter.highlightedRects();
+    const rects = Highlighter.highlightedRects();
     await Tooltip.show(result, rects, x, y);
   }
   return true;

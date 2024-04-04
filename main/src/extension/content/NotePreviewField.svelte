@@ -4,8 +4,8 @@
   import Utils from "~/utils";
 
   export let field: LoadingField;
-  export let bold: boolean = false;
-  export let errored: boolean = false;
+  export let bold = false;
+  export let errored = false;
 
   let loading: boolean;
   let value: string;

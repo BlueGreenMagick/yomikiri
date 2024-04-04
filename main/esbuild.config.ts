@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import esbuild, { BuildOptions, Plugin } from "esbuild";
+import esbuild, { type BuildOptions, type Plugin } from "esbuild";
 import { copy } from "esbuild-plugin-copy";
 import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
@@ -302,7 +302,7 @@ function cleanDirectory(dir) {
 
 
 async function compressDirectoryTo(dir: string, outfile: string) {
-  let zip = new AdmZip();
+  const zip = new AdmZip();
   await zip.addLocalFolderPromise(dir, { filter: (path) => !path.startsWith(".") });
   await zip.writeZipPromise(outfile, { overwrite: true });
 }
@@ -322,7 +322,7 @@ async function main() {
     ctx.dispose();
     if (PRODUCTION && (FOR_CHROME || FOR_FIREFOX)) {
 
-      let compressedFile = path.join(buildOptions.outdir, "..", `yomikiri_${TARGET}_v${VERSION}.zip`);
+      const compressedFile = path.join(buildOptions.outdir, "..", `yomikiri_${TARGET}_v${VERSION}.zip`);
       console.log("Compressing file to: " + compressedFile)
       compressDirectoryTo(buildOptions.outdir, compressedFile)
     }

@@ -17,12 +17,12 @@ export function charLocationAtPos(x: number, y: number): CharLocation | null {
   const node = childTextAt(element, x, y);
   if (node === null) return null;
 
-  let range = new Range();
+  const range = new Range();
   let start = 0;
   let end = node.data.length;
 
   while (end - start > 7) {
-    let mid = Math.floor((start + end) / 2);
+    const mid = Math.floor((start + end) / 2);
 
     range.setStart(node, start);
     range.setEnd(node, mid);
@@ -76,7 +76,7 @@ export function sentenceAtCharLocation(
   sentence = text.substring(start, charAt);
   charAtSentence = charAt - start;
   if (start === 0) {
-    let prev = sentenceBeforeNode(node);
+    const prev = sentenceBeforeNode(node);
     sentence = prev + sentence;
     charAtSentence += prev.length;
   }
@@ -112,7 +112,7 @@ export function nodesOfToken(
   tokenLength: number,
   tokenCharIdx: number
 ): Text[] {
-  let nextNodes: Text[] = [];
+  const nextNodes: Text[] = [];
   let node = currNode;
   let charCount = tokenLength - tokenCharIdx;
   const remaining = node.data.length - charIdxInCurrNode;
@@ -135,7 +135,7 @@ export function nodesOfToken(
     }
   }
 
-  let prevNodes: Text[] = [];
+  const prevNodes: Text[] = [];
   node = currNode;
   charCount = tokenCharIdx;
   if (charCount < charIdxInCurrNode) {
@@ -174,7 +174,7 @@ function inlineTextNode(curr: Node, PREV: boolean): Text | null {
     if (!nodeIsInline(curr)) return null;
   }
   // get inline prev(next) sibling
-  curr = (PREV ? curr.previousSibling : curr.nextSibling) as ChildNode;
+  curr = (PREV ? curr.previousSibling : curr.nextSibling)!;
   if (
     !(curr instanceof Element || curr instanceof Text) ||
     nodeIsOutOfFlow(curr)

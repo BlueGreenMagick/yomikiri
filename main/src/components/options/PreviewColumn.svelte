@@ -61,7 +61,7 @@
     },
   ].map(Entry.fromObject);
 
-  let updateTick: number = 0;
+  let updateTick = 0;
 
   function update() {
     updateTick += 1;

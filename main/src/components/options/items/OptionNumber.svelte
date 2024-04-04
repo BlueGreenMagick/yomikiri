@@ -6,7 +6,7 @@
   export let title: string;
   export let min: number | null = null;
   export let max: number | null = null;
-  export let disabled: boolean = false;
+  export let disabled = false;
 
   let value: number = Config.get(key);
 

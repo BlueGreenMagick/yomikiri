@@ -29,7 +29,7 @@ namespace Utils {
       resolve = rs;
       reject = rj;
     });
-    // @ts-ignore
+    // @ts-expect-error
     return [promise, resolve, reject];
   }
 
@@ -129,7 +129,7 @@ namespace Utils {
   }
 
   /** "http://url?" + Utils.urlParams({key: value}) */
-  export function generateUrlParams(params: { [key: string]: string }): string {
+  export function generateUrlParams(params: Record<string, string>): string {
     return Object.entries(params)
       .map(
         ([key, value]) =>
@@ -140,7 +140,7 @@ namespace Utils {
 
   export function errorMessage(
     err: any,
-    other: string = "Unknown error: check the browser console for details"
+    other = "Unknown error: check the browser console for details"
   ): string {
     if (err instanceof Error) {
       return err.message;
@@ -173,9 +173,9 @@ namespace Utils {
       if (queue === null) {
         return;
       }
-      let inp = queue.inp;
-      let resolve = queue.resolve;
-      let reject = queue.reject;
+      const inp = queue.inp;
+      const resolve = queue.resolve;
+      const reject = queue.reject;
       running = true;
       queue = null;
       try {
@@ -209,7 +209,7 @@ namespace Utils {
   export function urlParams<Type extends { string: any }>() { }
 
   let lastBench: number = performance.now();
-  let _benchLogs: string[] = [];
+  const _benchLogs: string[] = [];
 
   export function benchStart() {
     lastBench = performance.now();
@@ -236,7 +236,7 @@ namespace Utils {
     return promise;
   }
 
-  let _logs: any[] = [];
+  const _logs: any[] = [];
 
   export function log(...args: any[]): void {
     _logs.push(args)

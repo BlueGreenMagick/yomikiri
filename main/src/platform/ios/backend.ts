@@ -37,8 +37,8 @@ export namespace Backend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    let req: TokenizeRequest = { text, charAt };
-    let rawResult = await Platform.requestToApp("tokenize", req);
+    const req: TokenizeRequest = { text, charAt };
+    const rawResult = await Platform.requestToApp("tokenize", req);
     return TokenizeResult.from(rawResult);
   }
 

@@ -23,7 +23,7 @@ export namespace Dictionary {
   }
 
   export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
-    let raw = await Platform.messageWebview("dictMetadata", null);
+    const raw = await Platform.messageWebview("dictMetadata", null);
     return parseRawMetadata(raw);
   }
 }

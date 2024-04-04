@@ -6,9 +6,9 @@
   export let shown: boolean;
   export let translation: Promise<TranslateResult> | null = null;
 
-  let display: string = "Translating...";
+  let display = "Translating...";
   // current sentence translation errored
-  let failed: boolean = false;
+  let failed = false;
 
   async function requestTranslation() {
     let [promise, resolver, rejector] = Utils.createPromise<TranslateResult>();
@@ -27,7 +27,7 @@
   }
 
   function onShownChange(shown: boolean) {
-    if (shown == false) return;
+    if (!shown) return;
     if (translation == null || failed) {
       requestTranslation();
     }

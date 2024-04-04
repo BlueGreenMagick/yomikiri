@@ -133,9 +133,9 @@ function prepareHTML(html: string): HTMLElement {
 function selectTextNode(
   element: Element,
   selector: string,
-  idx: number = 0
+  idx = 0
 ): Text {
-  const elem = element.querySelector(selector) as Element;
+  const elem = element.querySelector(selector)!;
   const node = elem.childNodes[idx];
   if (node.nodeType !== Node.TEXT_NODE) {
     throw new Error("First child node is not Text");

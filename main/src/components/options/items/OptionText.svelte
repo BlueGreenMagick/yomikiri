@@ -4,9 +4,9 @@
 
   export let key: ConfigKeysOfType<string>;
   export let title: string;
-  export let disabled: boolean = false;
+  export let disabled = false;
   // Make Input box wider
-  export let wide: boolean = false;
+  export let wide = false;
 
   let value: string = Config.get(key);
 

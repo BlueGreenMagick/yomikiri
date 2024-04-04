@@ -5,7 +5,7 @@
 
   export let title: string;
   export let buttonText: string;
-  export let disabled: boolean = false;
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
 

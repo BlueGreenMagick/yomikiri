@@ -5,7 +5,7 @@
   const dispatch = createEventDispatcher();
 
   export let title: string;
-  export let hidden: boolean = false;
+  export let hidden = false;
 </script>
 
 <div class="modal-container" class:hidden>

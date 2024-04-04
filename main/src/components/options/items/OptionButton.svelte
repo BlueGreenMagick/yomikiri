@@ -3,7 +3,7 @@
 
   export let title: string;
   export let buttonText: string;
-  export let disabled: boolean = false;
+  export let disabled = false;
   export let onClicked: () => any;
 </script>
 

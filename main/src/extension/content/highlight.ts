@@ -44,7 +44,7 @@ namespace SelectionHighlighter {
       // Check if selection has not been changed
       // Firefox emit selectionchange events when Text nodes are normalized
       // which cannot be caught by ignoreNextSelectionEventFire
-      let selection = document.getSelection();
+      const selection = document.getSelection();
       if (
         selection !== null &&
         selectionData !== null &&
@@ -74,7 +74,7 @@ namespace SelectionHighlighter {
     changeSelectionColor("#ff2626a0");
   }
 
-  export function isHighlighted(node: Text, charIdx: number = 0): boolean {
+  export function isHighlighted(node: Text, charIdx = 0): boolean {
     if (!highlighted) return false;
     const selection = document.getSelection();
     if (selection === null) {
@@ -101,28 +101,28 @@ namespace SelectionHighlighter {
       return;
     }
     highlighted = false;
-    let selection = document.getSelection();
+    const selection = document.getSelection();
     if (selection === null) return;
     selection.removeAllRanges();
     revertSelectionColor();
   }
 
   export function highlightedRects(): Rect[] {
-    let selection = window.getSelection();
+    const selection = window.getSelection();
     if (selection === null) return [];
 
     return [...selection.getRangeAt(0).getClientRects()];
   }
 
   function _highlightNodes(nodes: Node[]) {
-    let selection = window.getSelection();
+    const selection = window.getSelection();
     if (selection === null) return;
 
     if (selection.rangeCount > 0) {
       selection.removeAllRanges();
       ignoreNextSelectionEventFire += 1;
     }
-    let lastNode = nodes[nodes.length - 1];
+    const lastNode = nodes[nodes.length - 1];
     selection.setBaseAndExtent(
       nodes[0],
       0,
@@ -204,22 +204,22 @@ ${TAG_NAME}.unknown {
     highlighted = false;
   }
 
-  export function isHighlighted(node: Text, charIdx: number = 0): boolean {
+  export function isHighlighted(node: Text, charIdx = 0): boolean {
     if (!highlighted) return false;
-    let parent = node.parentElement;
+    const parent = node.parentElement;
     if (parent === null) return false;
     return parent.tagName === TAG_NAME.toUpperCase();
   }
 
   export function highlightedRects(): Rect[] {
-    let nodes = document.getElementsByTagName(TAG_NAME);
-    let rects: Rect[] = [];
+    const nodes = document.getElementsByTagName(TAG_NAME);
+    const rects: Rect[] = [];
     for (const node of nodes) {
-      let nodeRects = [...node.getClientRects()];
+      const nodeRects = [...node.getClientRects()];
       // Join neighboring rects if part of a bigger rect
       if (rects.length != 0 && nodeRects.length != 0) {
-        let lastRect = rects[rects.length - 1];
-        let firstNodeRect = nodeRects[0];
+        const lastRect = rects[rects.length - 1];
+        const firstNodeRect = nodeRects[0];
         if (
           lastRect.top == firstNodeRect.top &&
           lastRect.bottom == firstNodeRect.bottom &&

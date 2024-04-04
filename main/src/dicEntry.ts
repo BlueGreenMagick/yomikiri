@@ -112,7 +112,7 @@ export namespace Entry {
   export function readingForForm(
     entry: Entry,
     form: string,
-    nokanji: boolean = true
+    nokanji = true
   ): Reading {
     for (const reading of entry.readings) {
       if (nokanji && reading.nokanji) continue;
@@ -132,8 +132,8 @@ export namespace Entry {
 
   /** Put in return value of .entityName() */
   export function entityInfo(name: string): string | null {
-    // @ts-ignore
-    let info = ENTITIES[name] as string | undefined;
+    // @ts-expect-error
+    const info = ENTITIES[name] as string | undefined;
     if (info === undefined) return null;
     return info;
   }
@@ -142,8 +142,8 @@ export namespace Entry {
   export function entityName(s: string): string | null {
     if (
       s.length > 2 &&
-      s[0] === "=" &&
-      s[s.length - 1] === "=" &&
+      s.startsWith("=") &&
+      s.endsWith("=") &&
       s[1] !== "="
     ) {
       return s.substring(1, s.length - 1);
@@ -151,7 +151,7 @@ export namespace Entry {
     return null;
   }
 
-  const unidicPosMap: { [unidicPos: string]: string } = {
+  const unidicPosMap: Record<string, string> = {
     名詞: "noun",
     動詞: "verb",
     形容詞: "adjective",
@@ -205,7 +205,7 @@ export namespace Entry {
       return [...entries];
     }
 
-    let validEntries: Entry[] = [];
+    const validEntries: Entry[] = [];
     for (const entry of entries) {
       for (const form of entry.forms) {
         let containsAll = true;
@@ -254,8 +254,8 @@ export namespace Entry {
         } else if (!aMatchesPos && bMatchesPos) {
           return 1;
         } else {
-          let aFormScore = formScoreForOrder(a, token);
-          let bFormScore = formScoreForOrder(b, token);
+          const aFormScore = formScoreForOrder(a, token);
+          const bFormScore = formScoreForOrder(b, token);
           if (aFormScore != bFormScore) {
             return bFormScore - aFormScore;
           } else {
@@ -361,7 +361,7 @@ export namespace Sense {
     };
   }
 
-  const tinyPosMap: { [key: string]: string } = {
+  const tinyPosMap: Record<string, string> = {
     n: "noun",
     v: "verb",
     a: "adjective",
@@ -380,7 +380,7 @@ export namespace Sense {
   };
 
   function parsePos(rawPos: string): string {
-    let pos = tinyPosMap[rawPos];
+    const pos = tinyPosMap[rawPos];
     if (pos !== undefined) {
       return pos;
     } else {

@@ -17,7 +17,7 @@ async function initialize() {
   await Config.initialize();
 }
 
-let initialized = initialize();
+const initialized = initialize();
 
 const mainSvelte = new OptionsAnkiTemplatePage({
   target: document.body,

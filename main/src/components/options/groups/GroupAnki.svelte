@@ -14,11 +14,11 @@
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
   let useAnkiDescription: "off" | "loading" | "success" | "error" = "off";
-  let useAnkiError: string = "";
+  let useAnkiError = "";
   let ankiTemplateDescriptionError = false;
   let ankiTemplateDescription = "";
-  let ankiTemplateModalHidden: boolean = true;
-  let requesting: boolean = false;
+  let ankiTemplateModalHidden = true;
+  let requesting = false;
 
   async function openAnkiTemplateModal() {
     ankiTemplateDescriptionError = false;
@@ -119,7 +119,7 @@
     </OptionToggle>
   {/if}
 </GroupedOptions>
-{#if ankiTemplateModalHidden === false && Platform.IS_DESKTOP}
+{#if !ankiTemplateModalHidden && Platform.IS_DESKTOP}
   <ModalAnkiTemplate
     on:close={() => {
       ankiTemplateModalHidden = true;

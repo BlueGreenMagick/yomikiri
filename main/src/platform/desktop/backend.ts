@@ -39,7 +39,7 @@ export namespace Backend {
   }
 
   async function loadWasm(): Promise<typeof BackendWasm> {
-    // @ts-ignore wasm is string
+    // @ts-expect-error wasm is string
     const resp = await fetch(wasm);
     await initWasm(resp);
 
@@ -87,7 +87,7 @@ export namespace Backend {
 
     const codePointAt = Utils.toCodePointIndex(text, charAt);
 
-    let rawResult = _wasm.tokenize(text, codePointAt);
+    const rawResult = _wasm.tokenize(text, codePointAt);
     return TokenizeResult.from(rawResult);
   }
 

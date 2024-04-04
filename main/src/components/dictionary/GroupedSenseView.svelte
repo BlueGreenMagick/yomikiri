@@ -33,7 +33,7 @@
       <div
         class="meaning"
         class:selected={$selectedSense?.sense === sense}
-        on:mousedown|stopPropagation={() => onSelectSense(sense)}
+        on:mousedown|stopPropagation={() => { onSelectSense(sense); }}
       >
         {idx + 1}. {sense.meaning.join(", ")}
       </div>

@@ -57,7 +57,7 @@ export namespace RubyString {
     if (reading === "" || reading === "*") {
       return [{ base: text }];
     }
-    let inKatakana = isKatakana(reading);
+    const inKatakana = isKatakana(reading);
     const splitted = splitKanjiSegment(text);
     let regexp = "";
     if (splitted[0] !== "") {
@@ -75,7 +75,7 @@ export namespace RubyString {
     const r = new RegExp("^" + regexp + "$", "u");
     const matches = reading.match(r);
 
-    let rubyString: RubyString = [];
+    const rubyString: RubyString = [];
     if (matches === null) {
       rubyString.push({
         base: text,
@@ -112,7 +112,7 @@ export namespace RubyString {
       if (unit.ruby === undefined) {
         ankiString += unit.base;
       } else {
-        if (ankiString !== "" && ankiString[ankiString.length - 1] !== ">") {
+        if (ankiString !== "" && !ankiString.endsWith(">")) {
           ankiString += " ";
         }
         ankiString += unit.base;

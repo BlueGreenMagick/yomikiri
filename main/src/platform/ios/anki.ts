@@ -18,7 +18,7 @@ export namespace AnkiApi {
   async function _addNote(note: NoteData): Promise<void> {
     const currentTab = await BrowserApi.currentTab();
 
-    let willAutoRedirect = Config.get("anki.ios_auto_redirect")
+    const willAutoRedirect = Config.get("anki.ios_auto_redirect")
     if (willAutoRedirect) {
       if (currentTab.id === undefined) {
         throw new Error("Current tab does not have an id");

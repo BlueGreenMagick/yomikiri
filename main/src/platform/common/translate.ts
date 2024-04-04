@@ -2,7 +2,7 @@ export interface TranslateResult {
   translated: string;
 }
 
-const translationCache: { [text: string]: TranslateResult } = {};
+const translationCache: Record<string, TranslateResult> = {};
 
 /**
  * This does not work in content scripts due to CORS.
@@ -25,10 +25,10 @@ export async function getTranslation(text: string): Promise<TranslateResult> {
     console.error(respBody);
     throw respBody;
   } else {
-    let translated: string = respBody.sentences
+    const translated: string = respBody.sentences
       .map((sent: any) => sent.trans)
       .join("");
-    let result = {
+    const result = {
       translated,
     };
     translationCache[text] = result;

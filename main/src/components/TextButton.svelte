@@ -13,7 +13,7 @@
   import Utils from "~/utils";
 
   export let label: string;
-  export let disabled: boolean = false;
+  export let disabled = false;
   export let style: "default" | "warn" = "default";
 
   interface Events {
@@ -23,7 +23,7 @@
   const dispatch = createEventDispatcher<Events>();
 
   let elem: HTMLElement;
-  let tapped: boolean = false;
+  let tapped = false;
 
   function onClick(ev: MouseEvent) {
     if (!disabled) {

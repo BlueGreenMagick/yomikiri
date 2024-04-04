@@ -37,9 +37,9 @@ async function deferredInitialize(): Promise<void> {
 }
 
 function createSvelte(initialized: Promise<void>): DictionaryPage {
-  let params = new URLSearchParams(window.location.search);
-  let context = params.get("context") as "app" | "action";
-  let searchText = params.get("search") ?? "";
+  const params = new URLSearchParams(window.location.search);
+  const context = params.get("context") as "app" | "action";
+  const searchText = params.get("search") ?? "";
   return new DictionaryPage({
     target: document.body,
     props: { initialized, context, searchText },

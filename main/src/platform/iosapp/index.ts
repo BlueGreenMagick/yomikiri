@@ -45,7 +45,7 @@ export namespace Platform {
     MessageWebviewMap[K]
   >;
 
-  let _configSubscribers: ((config: StoredConfiguration) => any)[] = []
+  const _configSubscribers: ((config: StoredConfiguration) => any)[] = []
 
   export function initialize() {
     window.iosConfigUpdated = async () => {
@@ -66,8 +66,8 @@ export namespace Platform {
       request,
     };
 
-    // @ts-ignore
-    let resp = await window.webkit.messageHandlers.yomikiri.postMessage(
+    // @ts-expect-error
+    const resp = await window.webkit.messageHandlers.yomikiri.postMessage(
       message
     );
     if (resp === null) {

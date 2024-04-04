@@ -91,7 +91,7 @@ export namespace BrowserApi {
     if (opts.handleConnection) {
       attachConnectionHandler();
     }
-    // @ts-ignore
+    // @ts-expect-error
     context = opts.context;
   }
 
@@ -99,9 +99,7 @@ export namespace BrowserApi {
     [K in keyof MessageMap]: RequestHandler<K>;
   }> = {};
 
-  const _storageHandlers: {
-    [key: string]: StorageHandler[];
-  } = {};
+  const _storageHandlers: Record<string, StorageHandler[]> = {};
 
   /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
   function action(): typeof chrome.action {
@@ -129,7 +127,7 @@ export namespace BrowserApi {
       }
       const error = new Error();
       for (const key of Object.getOwnPropertyNames(obj)) {
-        // @ts-ignore
+        // @ts-expect-error
         error[key] = obj[key];
       }
       throw error;
@@ -143,7 +141,7 @@ export namespace BrowserApi {
   ): (resp: RequestResponse<Response<K>>) => void {
     return (resp: RequestResponse<Response<K>>) => {
       try {
-        let response = handleRequestResponse(resp);
+        const response = handleRequestResponse(resp);
         resolve(response);
       } catch (error: any) {
         reject(error);
@@ -203,7 +201,7 @@ export namespace BrowserApi {
     };
 
     chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
-      let promises: Promise<Response<K>>[] = [];
+      const promises: Promise<Response<K>>[] = [];
       for (const tab of tabs) {
         if (tab.id !== undefined) {
           const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
@@ -236,7 +234,7 @@ export namespace BrowserApi {
     key: K,
     handler: RequestHandler<K>
   ) {
-    // @ts-ignore
+    // @ts-expect-error
     _requestHandlers[key] = handler;
   }
 
@@ -315,7 +313,7 @@ export namespace BrowserApi {
 
   export async function getStorage<T>(key: string, or?: T): Promise<T> {
     const [promise, resolve] = Utils.createPromise<T>();
-    let req: string | { [key: string]: T } = key;
+    let req: string | Record<string, T> = key;
     if (or !== undefined) {
       req = {};
       req[key] = or;
@@ -329,7 +327,7 @@ export namespace BrowserApi {
   /** value cannot be undefined or null */
   export async function setStorage(key: string, value: NonNullable<any>) {
     const [promise, resolve] = Utils.createPromise<void>();
-    const object: { [key: string]: any } = {};
+    const object: Record<string, any> = {};
     object[key] = value;
     BrowserApi.storage().set(object, resolve);
     return promise;
@@ -435,12 +433,12 @@ export namespace BrowserApi {
           response?: RequestResponse<Response<keyof MessageMap>>
         ) => void
       ): boolean => {
-        let handler = _requestHandlers[message.key];
+        const handler = _requestHandlers[message.key];
         if (handler) {
           (async () => {
             try {
-              // @ts-ignore
-              let resp = await handler(message.request, sender);
+              // @ts-expect-error
+              const resp = await handler(message.request, sender);
               sendResponse({
                 success: true,
                 resp,

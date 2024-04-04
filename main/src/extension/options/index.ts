@@ -24,7 +24,7 @@ async function initialize() {
   await Backend.initialize();
 }
 
-let initialized = initialize();
+const initialized = initialize();
 
 const optionsPage = new OptionsPage({
   target: document.body,

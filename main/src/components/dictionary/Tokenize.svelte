@@ -15,8 +15,8 @@
     close: void;
   }
 
-  export let searchText: string = "";
-  export let showCloseButton: boolean = false;
+  export let searchText = "";
+  export let showCloseButton = false;
   export let onShowAnkiPreview: (
     selectedEntry: SelectedEntryForAnki,
     tokenizeResult: TokenizeResult
@@ -26,7 +26,7 @@
 
   let tokenizeResult: TokenizeResult = TokenizeResult.empty();
   // may be bigger than total token characters
-  let selectedCharAt: number = 0;
+  let selectedCharAt = 0;
   let selectedTool: Tools | null = null;
 
   /** modifies `searchTokens` */

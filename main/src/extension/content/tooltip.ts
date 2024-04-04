@@ -60,7 +60,7 @@ export namespace Tooltip {
       _resizeObserverAttached = true;
     }
 
-    const iframeDoc = iframe.contentDocument as Document;
+    const iframeDoc = iframe.contentDocument!;
     if (iframeDoc.readyState === "complete") {
       setupEntriesPage(iframe);
       return iframe;
@@ -74,7 +74,7 @@ export namespace Tooltip {
     }
   }
 
-  let _repositionRequested: boolean = false;
+  let _repositionRequested = false;
   /** add ResizeObserver to document and change position on document resize */
   function attachResizeObserver() {
     const resizeObserver = new ResizeObserver((_) => {
@@ -83,7 +83,7 @@ export namespace Tooltip {
       requestAnimationFrame(() => {
         _repositionRequested = false;
         if (!_shown) return;
-        let tooltipEl = getTooltipEl();
+        const tooltipEl = getTooltipEl();
         if (!tooltipEl) return;
         const rects = Highlighter.highlightedRects();
         position(tooltipEl, rects[0]);
@@ -188,25 +188,25 @@ export namespace Tooltip {
   /** update tooltip height to match content height */
   function updateTooltipHeight(
     tooltip: HTMLIFrameElement,
-    max: boolean = false
+    max = false
   ) {
     let height: number;
 
     if (max) {
       height = 300; // MAX_HEIGHT
     } else {
-      let content = tooltip.contentDocument?.getElementById(
+      const content = tooltip.contentDocument?.getElementById(
         "main"
-      ) as HTMLElement;
+      )!;
       // getBoundingClientRect().height returns floating-precision number
-      let rect = content.getBoundingClientRect();
+      const rect = content.getBoundingClientRect();
       height = rect.height;
     }
     tooltip.style.height = height + "px";
   }
 
   function setupEntriesPage(tooltip: HTMLIFrameElement) {
-    const doc = tooltip.contentDocument as Document;
+    const doc = tooltip.contentDocument!;
     doc.head.textContent += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 `;

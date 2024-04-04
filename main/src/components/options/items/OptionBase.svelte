@@ -1,7 +1,7 @@
 <script lang="ts">
   export let title: string;
-  export let disabled: boolean = false;
-  export let wide: boolean = false;
+  export let disabled = false;
+  export let wide = false;
 </script>
 
 <div class="option-item" class:disabled>

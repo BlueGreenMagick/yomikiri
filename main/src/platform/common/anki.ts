@@ -33,7 +33,7 @@ export function iosAnkiMobileURL(note: NoteData, successUrl?: string): string {
     const queryKey = "fld" + field.name;
     fields[queryKey] = field.value;
   }
-  let params: { [key: string]: string } = {
+  const params: Record<string, string> = {
     type: note.notetype,
     deck: note.deck,
     tags: note.tags,

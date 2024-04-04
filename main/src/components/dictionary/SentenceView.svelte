@@ -5,9 +5,9 @@
 
   export let tokens: Token[];
   // code point index
-  export let selectedCharAt: number = 0;
+  export let selectedCharAt = 0;
 
-  let selectedTokenIdx: number = 0;
+  let selectedTokenIdx = 0;
   let invalidTokens: boolean[];
 
   function invalidToken(token: Token) {

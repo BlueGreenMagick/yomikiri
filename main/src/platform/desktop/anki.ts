@@ -18,7 +18,7 @@ export namespace AnkiApi {
 
   async function ankiConnectURL(): Promise<string> {
     let url = await Config.get("anki.connect_url");
-    let port = await Config.get("anki.connect_port");
+    const port = await Config.get("anki.connect_port");
     if (!url.includes("://")) {
       url = "http://" + url;
     }
@@ -73,7 +73,7 @@ export namespace AnkiApi {
   async function fetchAnkiInfo(): Promise<AnkiInfo> {
     const decks = (await request("deckNames")) as string[];
     const notetypes = (await request("modelNames")) as string[];
-    let ankiInfo: AnkiInfo = {
+    const ankiInfo: AnkiInfo = {
       decks,
       notetypes: [],
     };
@@ -103,7 +103,7 @@ export namespace AnkiApi {
       return BrowserApi.request("addAnkiNote", note);
     }
 
-    const fields: { [key: string]: string } = {};
+    const fields: Record<string, string> = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
     }

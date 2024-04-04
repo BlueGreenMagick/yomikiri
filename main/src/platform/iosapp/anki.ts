@@ -20,7 +20,7 @@ interface RawAnkiInfo {
 }
 
 export namespace AnkiApi {
-  let [_ankiInfoP, _ankiInfoResolve] = Utils.createPromise<AnkiInfo>();
+  const [_ankiInfoP, _ankiInfoResolve] = Utils.createPromise<AnkiInfo>();
 
   export function setAnkiInfo(ankiInfoJson: string): void {
     const rawAnkiInfo = JSON.parse(ankiInfoJson) as RawAnkiInfo;
@@ -37,8 +37,8 @@ export namespace AnkiApi {
   }
 
   export async function requestAnkiInfo(): Promise<void> {
-    let installed = await Platform.messageWebview("ankiInfo", null);
-    if (installed === false) {
+    const installed = await Platform.messageWebview("ankiInfo", null);
+    if (!installed) {
       throw new Error(
         `AnkiMobile app is not installed.`
       );
@@ -50,8 +50,8 @@ export namespace AnkiApi {
   }
 
   export async function checkConnection(): Promise<void> {
-    let installed = await Platform.messageWebview("ankiIsInstalled", null);
-    if (installed === false) {
+    const installed = await Platform.messageWebview("ankiIsInstalled", null);
+    if (!installed) {
       throw new Error(
         `AnkiMobile app is not installed.`
       );

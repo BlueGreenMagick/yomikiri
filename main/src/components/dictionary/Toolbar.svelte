@@ -10,8 +10,8 @@
   import { Highlighter } from "~/extension/content/highlight";
 
   export let selectedTool: Tools | null = null;
-  export let translateDisabled: boolean = false;
-  export let grammarDisabled: boolean = false;
+  export let translateDisabled = false;
+  export let grammarDisabled = false;
   export let tooltipMode: boolean;
 
   export let changeSelectedTool: (tool: Tools | null) => any;

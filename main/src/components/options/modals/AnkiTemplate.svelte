@@ -22,7 +22,7 @@
   let selectedNotetype: string;
   // fieldTemplates should not reload on note type change
   // so accidentally changing note type does not clear all data
-  let fieldTemplates: { [name: string]: string };
+  let fieldTemplates: Record<string, string>;
   let ankiTags: string;
 
   let prevDeck: string | null;
@@ -54,7 +54,7 @@
       (nt) => nt.name === notetypeName
     );
     if (notetypeInfo === undefined) {
-      return (template as NoteData).fields.map((f) => f.name);
+      return (template!).fields.map((f) => f.name);
     } else {
       return notetypeInfo.fields;
     }
@@ -63,7 +63,7 @@
   async function saveTemplate(
     deck: string,
     notetype: string,
-    fields: { [name: string]: string },
+    fields: Record<string, string>,
     tags: string
   ) {
     const template: NoteData = {

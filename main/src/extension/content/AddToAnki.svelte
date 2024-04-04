@@ -38,7 +38,7 @@
   };
   let errored: boolean[] = [];
   let anyErrored = false;
-  let allLoaded: boolean = false;
+  let allLoaded = false;
 
   function onBack() {
     dispatch("back");

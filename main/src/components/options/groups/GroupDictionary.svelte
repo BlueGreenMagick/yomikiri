@@ -5,7 +5,7 @@
   import Utils from "~/utils";
 
   let dictDescription = "Loading...";
-  let disabled: boolean = false;
+  let disabled = false;
   let dictDescClass = "";
 
   function update_description(metadata: DictionaryMetadata) {

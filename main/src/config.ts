@@ -45,11 +45,11 @@ export type ConfigKeysOfType<T> = {
 export namespace Config {
   const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
 
-  export let initialized: boolean = false;
+  export const initialized = false;
 
   export let _storage: StoredConfiguration;
-  let _subscribers: (() => any)[] = []
-  let _documents: WeakRef<Document>[] = []
+  const _subscribers: (() => any)[] = []
+  const _documents: WeakRef<Document>[] = []
 
   /** Platform must be initialized. */
   export async function initialize(): Promise<void> {
@@ -90,7 +90,7 @@ export namespace Config {
   export async function set<K extends keyof Configuration>(
     key: K,
     value: Configuration[K],
-    save: boolean = true
+    save = true
   ): Promise<void> {
     if (value === undefined) {
       delete _storage[key];
@@ -148,7 +148,7 @@ export namespace Config {
       }
     }
     if (!alreadyExisting) {
-      let ref = new WeakRef(doc)
+      const ref = new WeakRef(doc)
       _documents.push(ref)
     }
     updateStyling()
@@ -183,8 +183,8 @@ export namespace Config {
 
   // Make sure no race condition with migration occurs!
   function migrate() {
-    if (_storage["version"] !== defaultOptions["version"]) {
-      set("version", defaultOptions["version"])
+    if (_storage.version !== defaultOptions.version) {
+      set("version", defaultOptions.version)
     }
   }
 }

@@ -22,7 +22,7 @@ async function initialize(): Promise<void> {
   await Backend.initialize();
 }
 
-let initialized = initialize();
+const initialized = initialize();
 
 const page = new PopupPage({ target: document.body, props: { initialized } });
 
