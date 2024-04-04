@@ -34,7 +34,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-regexp": "^2.4.0",
     "eslint-plugin-svelte": "2.36.0-next.13",
-    "svelte-eslint-parser": "^0.33.1",
+    "svelte-eslint-parser": "0.34.0-next.12",
     "typescript-eslint": "^7.5.0"
   }
 }

@@ -28,7 +28,12 @@ export default tseslint.config(
         parser: tseslintParser
       }
     },
-    
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      'svelte/valid-compile': ['error', {'ignoreWarnings': true}]
+    }
   },
   {
     files: ['**/*.js', '**/*.cjs'],
@@ -47,5 +52,5 @@ export default tseslint.config(
         }
       ]
     }
-  }
+  },
 )
