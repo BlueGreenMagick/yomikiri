@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
       "target": "es2017",
-      "module":"ES6",
+      "module": "esnext",
       "moduleResolution": "node",
-      "rootDir": "src",
+      "rootDir": ".",
       "baseUrl": "src",
       "outDir": "dist",
       "lib": ["es2015", "es2016", "es2017", "DOM", "DOM.Iterable", "ES2020.Promise", "ES2021.WeakRef"],
