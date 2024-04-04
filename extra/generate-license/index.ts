@@ -9,6 +9,7 @@ import { getProjectLicenses } from "generate-license-file";
 
 type LicensesMap = Map<string, string[]>;
 
+
 function addLicenses(licensesMap: LicensesMap, names: string[], content: string) {
   const dependencies = licensesMap.get(content);
   if (dependencies !== undefined) {
@@ -20,7 +21,7 @@ function addLicenses(licensesMap: LicensesMap, names: string[], content: string)
 
 function getShell(): string {
   if (process.platform == "win32") {
-    return process.env.COMSPEC || "cmd.exe";
+    return process.env.COMSPEC ?? "cmd.exe";
   }
 
   try {
@@ -28,9 +29,11 @@ function getShell(): string {
     if (shell) {
       return shell;
     }
-  } catch { }
+  } catch {
+    // empty
+  }
 
-  return process.env.SHELL || "/bin/sh";
+  return process.env.SHELL ?? "/bin/sh";
 }
 
 async function runRustCommand() {
@@ -45,9 +48,26 @@ async function runRustCommand() {
   return stdout as string;
 }
 
+
+interface RustBundle {
+  root_name: string,
+  third_party_libraries: RustFinalizedLicense[]
+}
+
+interface RustFinalizedLicense {
+  package_name: string
+  package_version: string
+  license: string
+  licenses: RustLicenseAndText[]
+}
+
+interface RustLicenseAndText {
+  license: string
+  text: string
+}
+
 function getRustLicenses(licensesMap: LicensesMap, licensesJSON: string) {
-  const licenses = JSON.parse(licensesJSON);
-  const disclaimers: string[] = [];
+  const licenses = JSON.parse(licensesJSON) as RustBundle;
   for (const pack of licenses.third_party_libraries) {
     const name = `${pack.package_name}@${pack.package_version}`
     addLicenses(licensesMap, [name], pack.licenses[0].text)
@@ -85,7 +105,7 @@ function getManualLicenses(licensesMap: LicensesMap) {
 
   // remove existing license from licenses map
   for (const res of resources.res) {
-    for (const [key, names] of licensesMap) {
+    for (const [, names] of licensesMap) {
       let i;
       while ((i = names.indexOf(res.name)) != -1) {
         names.splice(i, 1);
@@ -119,10 +139,10 @@ async function main() {
 
   await getPnpmLicenses(licensesMap);
   const rustOutput = await runRustCommand();
-  await getRustLicenses(licensesMap, rustOutput);
+  getRustLicenses(licensesMap, rustOutput);
   getManualLicenses(licensesMap);
   const disclaimer = generateLicensesText(licensesMap);
   console.log(disclaimer);
 }
 
-main();
+await main();
