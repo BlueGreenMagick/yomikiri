@@ -64,7 +64,9 @@ export default tseslint.config(
           "destructuredArrayIgnorePattern": "^_",
         }
       ],
-      "@typescript-eslint/no-invalid-void-type": 'off'
+      "@typescript-eslint/no-invalid-void-type": 'off',
+      'no-inner-declarations': 'off',
+      'svelte/no-inner-declarations': 'off'
     }
   },
 )
