@@ -1,6 +1,6 @@
 import { test, expect, describe } from "vitest";
 import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
-import { Entry } from "./dicEntry";
+import { Entry, type EntryObject } from "./dicEntry";
 import type { TokenizeResult } from "@platform/backend";
 
 const tokenized: TokenizeResult = {
@@ -88,7 +88,7 @@ const tokenized: TokenizeResult = {
     }
   ],
   tokenIdx: 4,
-  entries: [
+  entries: ([
     {
       terms: ["読む", "讀む", "よむ"],
       forms: [
@@ -143,7 +143,7 @@ const tokenized: TokenizeResult = {
       ],
       priority: 163,
     },
-  ].map(Entry.fromObject),
+  ] as EntryObject[]).map(Entry.fromObject),
   grammars: [],
 };
 
@@ -279,7 +279,7 @@ const escapeTokenizeResult: TokenizeResult = {
     },
   ],
   tokenIdx: 0,
-  entries: [
+  entries: ([
     {
       forms: [
         {
@@ -302,7 +302,7 @@ const escapeTokenizeResult: TokenizeResult = {
       ],
       priority: 166,
     },
-  ].map(Entry.fromObject),
+  ] as EntryObject[]).map(Entry.fromObject),
   grammars: [],
 };
 const escapedData: MarkerData = {

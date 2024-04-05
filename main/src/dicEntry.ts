@@ -21,8 +21,23 @@ export interface Entry {
   id?: number;
 }
 
+export interface MinifiedEntry {
+  f?: FormObject[];
+  r?: ReadingObject[];
+  s?: SenseObject[];
+  p?: number;
+}
+
+interface PartialEntryObject extends Omit<Partial<Entry>, 'forms' | 'readings' | 'senses'> {
+  forms?: Form[] | FormObject[]
+  readings?: Reading[] | ReadingObject[]
+  senses?: Sense[] | SenseObject[]
+}
+
+export type EntryObject = PartialEntryObject & MinifiedEntry;
+
 export namespace Entry {
-  export function fromObject(obj: any): Entry {
+  export function fromObject(obj: EntryObject): Entry {
     let terms = obj.terms;
     const forms = [];
     const readings = [];
@@ -132,7 +147,6 @@ export namespace Entry {
 
   /** Put in return value of .entityName() */
   export function entityInfo(name: string): string | null {
-    // @ts-expect-error
     const info = ENTITIES[name] as string | undefined;
     if (info === undefined) return null;
     return info;
@@ -308,8 +322,16 @@ export interface Form {
   info: string[];
 }
 
+export interface MinifiedForm {
+  f?: string;
+  u?: boolean;
+  i?: string[];
+}
+
+export type FormObject = Partial<Form> & MinifiedForm
+
 export namespace Form {
-  export function fromObject(obj: any): Form {
+  export function fromObject(obj: FormObject): Form {
     return {
       form: obj.f ?? obj.form ?? "",
       uncommon: obj.u ?? obj.uncommon ?? false,
@@ -326,8 +348,18 @@ export interface Reading {
   info: string[];
 }
 
+export interface MinifiedReading {
+  r?: string;
+  nk?: boolean;
+  u?: boolean;
+  tf?: string[];
+  i?: string[];
+}
+
+export type ReadingObject = Partial<Reading> & MinifiedReading;
+
 export namespace Reading {
-  export function fromObject(obj: any): Reading {
+  export function fromObject(obj: ReadingObject): Reading {
     return {
       reading: obj.r ?? obj.reading ?? "",
       nokanji: obj.nk ?? obj.nokanji ?? false,
@@ -348,8 +380,20 @@ export interface Sense {
   meaning: string[];
 }
 
+export interface MinifiedSense {
+  tf?: string[];
+  tr?: string[];
+  p?: string[];
+  mc?: string[];
+  i?: string[];
+  d?: string[];
+  m?: string[];
+}
+
+export type SenseObject = Partial<Sense> & MinifiedSense;
+
 export namespace Sense {
-  export function fromObject(obj: any): Sense {
+  export function fromObject(obj: SenseObject): Sense {
     return {
       toForm: obj.tf ?? obj.toForm ?? [],
       toReading: obj.tr ?? obj.toReading ?? [],
@@ -361,7 +405,7 @@ export namespace Sense {
     };
   }
 
-  const tinyPosMap: Record<string, string> = {
+  const tinyPosMap: Record<string, string | undefined> = {
     n: "noun",
     v: "verb",
     a: "adjective",

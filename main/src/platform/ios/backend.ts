@@ -5,7 +5,7 @@ import {
   type TokenizeRequest,
   TokenizeResult,
 } from "../common/backend";
-import { Entry } from "~/dicEntry";
+import { Entry, type EntryObject } from "~/dicEntry";
 
 export {
   type Token,
@@ -52,7 +52,7 @@ export namespace Backend {
 
   async function _search(term: string): Promise<Entry[]> {
     const entries = (await Platform.requestToApp("search", term))
-      .map((json) => JSON.parse(json))
+      .map((json) => JSON.parse(json) as EntryObject)
       .map(Entry.fromObject);
     Entry.order(entries);
     return entries;

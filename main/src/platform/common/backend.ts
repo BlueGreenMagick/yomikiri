@@ -1,7 +1,7 @@
 import type {
   RawTokenizeResult,
 } from "@yomikiri/yomikiri-rs";
-import { Entry } from "~/dicEntry";
+import { Entry, type EntryObject } from "~/dicEntry";
 import { toHiragana } from "~/japanese";
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
@@ -35,7 +35,7 @@ export namespace TokenizeResult {
     });
 
     let entries = raw.entries
-      .map((json) => JSON.parse(json))
+      .map((json) => JSON.parse(json) as EntryObject)
       .map(Entry.fromObject);
     const selectedToken = raw.tokens[raw.tokenIdx];
     entries = Entry.validEntriesForSurface(entries, selectedToken.text);

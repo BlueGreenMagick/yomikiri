@@ -1,10 +1,10 @@
 <script lang="ts">
   import DicEntriesView from "../dictionary/DicEntriesView.svelte";
-  import { Entry } from "~/dicEntry";
+  import { Entry, type EntryObject } from "~/dicEntry";
   import { Config } from "~/config";
   import { onMount } from "svelte";
 
-  const entriesData: Entry[] = [
+  const entriesData: Entry[] = ([
     {
       terms: ["読む", "讀む", "よむ"],
       forms: [
@@ -24,15 +24,15 @@
       ],
       senses: [
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["=v5m=", "=vt="],
           meaning: ["to read"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["=v5m=", "=vt="],
           meaning: ["to recite (e.g. a sutra)", "to chant"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["=v5m=", "=vt="],
           meaning: [
             "to predict",
             "to guess",
@@ -43,23 +43,23 @@
           ],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["=v5m=", "=vt="],
           meaning: ["to decipher"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["=v5m=", "=vt="],
           info: ["now mostly used in idioms"],
           meaning: ["to count", "to estimate"],
         },
         {
-          partOfSpeech: ["=v5m=", "=vt="],
+          pos: ["=v5m=", "=vt="],
           info: ["also written as 訓む"],
           meaning: ["to read (a kanji) with its native Japanese reading"],
         },
       ],
       priority: 163,
     },
-  ].map(Entry.fromObject);
+  ] as EntryObject[]).map(Entry.fromObject);
 
   let updateTick = 0;
 

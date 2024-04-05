@@ -6,7 +6,7 @@ import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { Entry } from "~/dicEntry";
+import { Entry, type EntryObject } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
 import Utils from "~/utils";
@@ -102,7 +102,7 @@ export namespace Backend {
   async function _search(term: string): Promise<Entry[]> {
     const entries = _wasm
       .search(term)
-      .map((json) => JSON.parse(json))
+      .map((json) => JSON.parse(json) as EntryObject)
       .map(Entry.fromObject);
     Entry.order(entries);
     return entries;

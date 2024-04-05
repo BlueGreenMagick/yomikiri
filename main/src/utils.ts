@@ -206,8 +206,6 @@ namespace Utils {
     };
   }
 
-  export function urlParams<Type extends { string: any }>() { }
-
   let lastBench: number = performance.now();
   const _benchLogs: string[] = [];
 
