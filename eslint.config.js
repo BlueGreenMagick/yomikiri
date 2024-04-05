@@ -69,4 +69,7 @@ export default tseslint.config(
       'svelte/no-inner-declarations': 'off'
     }
   },
+  {
+    ignores: ['main/build/**/*']
+  }
 )
