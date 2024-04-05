@@ -18,10 +18,6 @@
       "noImplicitThis": true,
       "noImplicitAny": true,
       "resolveJsonModule": true,
-      "typeRoots": [
-        "./node_modules/@types",
-        "./src/global.d.ts"
-      ],
       "paths": {
         "~/*": ["./*"],
         "@icons/*": ["../node_modules/ionicons/dist/svg/*"],

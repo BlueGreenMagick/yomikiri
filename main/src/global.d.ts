@@ -1,36 +1,30 @@
-/// <reference types="svelte" />
-
 declare module "*.json.gz" {
-  let url: string;
+  const url: string;
   export default url;
 }
 
 declare module "*.yomikiridict" {
-  let url: string;
+  const url: string;
   export default url;
 }
 
 declare module "*.yomikiriindex" {
-  let url: string;
+  const url: string;
   export default url;
 }
 
-declare module "*.json" {
-  let content: any;
-  export default content;
-}
-
 declare module "*.svg" {
-  let content: any;
+  import { SvelteComponent_1 } from "svelte";
+  const content: SvelteComponent_1;
   export default content;
 }
 
 declare module "*.txt" {
-  let content: string;
+  const content: string;
   export default content;
 }
 
 declare module "*.chunk" {
-  let content: string;
+  const content: string;
   export default content;
 }
