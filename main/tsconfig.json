@@ -25,6 +25,5 @@
         "@platform/*": ["platform/desktop/*"]
       }
     },
-    "include": ["src", "esbuild.config.ts", "vitest.config.ts"],
-    "exclude": ["../tokenizer"],
+    "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]
   }
