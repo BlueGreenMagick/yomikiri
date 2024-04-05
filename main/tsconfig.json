@@ -21,8 +21,8 @@
       "paths": {
         "~/*": ["./*"],
         "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
-        "@platform": ["platform/desktop/index"],
-        "@platform/*": ["platform/desktop/*"]
+        "@platform": ["platform/common/index"],
+        "@platform/*": ["platform/common/*"]
       }
     },
     "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]

@@ -4,7 +4,7 @@ import type { BrowserApi } from "~/extension/browserApi";
 
 export type { TranslateResult } from "./translate";
 
-export interface Module {
+interface Module {
   IS_DESKTOP: boolean;
   IS_IOS: boolean;
   IS_IOSAPP: boolean;
@@ -50,3 +50,5 @@ export interface IosTTSRequest {
   text: string,
   voice: TTSVoice | null
 }
+
+export declare const Platform: Module

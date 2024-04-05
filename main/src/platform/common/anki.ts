@@ -47,3 +47,5 @@ export function iosAnkiMobileURL(note: NoteData, successUrl?: string): string {
   const url = "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
   return url
 }
+
+export declare const AnkiApi: IAnkiAddNotes & IAnkiOptions

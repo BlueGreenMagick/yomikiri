@@ -10,3 +10,5 @@ export interface IDictionary {
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string>;
   dictionaryMetadata(): Promise<DictionaryMetadata>;
 }
+
+export declare const Dictionary: IDictionary

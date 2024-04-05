@@ -55,3 +55,5 @@ export interface IBackend {
   tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
   search(term: string): Promise<Entry[]>;
 }
+
+export declare const Backend: IBackend
