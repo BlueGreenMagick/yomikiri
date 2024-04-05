@@ -65,6 +65,12 @@ export default tseslint.config(
         }
       ],
       "@typescript-eslint/no-invalid-void-type": 'off',
+      '@typescript-eslint/restrict-template-expressions': ['error', {
+        allowNever: true,
+        allowNumber: true
+      }],
+      '@typescript-eslint/no-unnecessary-condition': 'off',
+      'no-constant-condition': 'off',
       'no-inner-declarations': 'off',
       'svelte/no-inner-declarations': 'off'
     }
