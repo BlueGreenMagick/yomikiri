@@ -12,21 +12,25 @@ export namespace Platform {
   export const IS_IOS = false;
   export const IS_IOSAPP = false;
 
-  export function initialize() { }
+  let browserApi: BrowserApi
+
+  export function initialize(browserApiParam: BrowserApi) { 
+    browserApi = browserApiParam
+  }
 
   export async function getConfig(): Promise<StoredConfiguration> {
-    return await BrowserApi.getStorage<StoredConfiguration>("config", {});
+    return await browserApi.getStorage<StoredConfiguration>("config", {});
   }
 
   /** subscriber is called when config is changed. */
   export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    BrowserApi.handleStorageChange("config", (change) => {
+    browserApi.handleStorageChange("config", (change) => {
       subscriber(change.newValue)
     })
   }
 
   export function saveConfig(config: StoredConfiguration): Promise<void> {
-    return BrowserApi.setStorage("config", config);
+    return browserApi.setStorage("config", config);
   }
 
   export function openOptionsPage() {
@@ -34,7 +38,7 @@ export namespace Platform {
   }
 
   export async function versionInfo(): Promise<VersionInfo> {
-    const manifest = BrowserApi.manifest();
+    const manifest = browserApi.manifest();
     return {
       version: manifest.version
     }
@@ -42,22 +46,22 @@ export namespace Platform {
 
   /** This function is and only should be called in options page */
   export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return BrowserApi.japaneseTtsVoices()
+    return browserApi.japaneseTtsVoices()
   }
 
   export async function playTTS(text: string): Promise<void> {
-    if (BrowserApi.context === "contentScript") {
-      await BrowserApi.request("tts", text);
+    if (browserApi.context === "contentScript") {
+      await browserApi.request("tts", text);
     } else {
-      BrowserApi.speakJapanese(text);
+      browserApi.speakJapanese(text);
     }
   }
 
   export async function translate(text: string): Promise<TranslateResult> {
-    if (BrowserApi.context !== "contentScript") {
+    if (browserApi.context !== "contentScript") {
       return getTranslation(text)
     } else {
-      return BrowserApi.request("translate", text);
+      return browserApi.request("translate", text);
     }
   }
 

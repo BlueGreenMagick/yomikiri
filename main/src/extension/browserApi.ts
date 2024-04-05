@@ -1,10 +1,10 @@
 import type { Entry } from "~/dicEntry";
 import type { NoteData } from "~/ankiNoteBuilder";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
-import Utils from "~/utils";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSVoice } from "~/platform/common";
+import Utils from "~/utils";
 
 /**
  * Type map for messages between extension processes
@@ -23,7 +23,7 @@ export interface MessageMap {
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
   setActionIcon: [null, void];
-}
+} 
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
 export type Response<K extends keyof MessageMap> = Utils.Second<MessageMap[K]>;
@@ -67,364 +67,43 @@ export interface ApiInitializeOptions {
   context: ExecutionContext;
 }
 
-/**
- * The methods are loaded, but they should not be called
- * in a non-extension context
- */
-export namespace BrowserApi {
-  export let context: ExecutionContext;
-  let _tabId: number | undefined;
+type ConnectionKey = "dictionaryCheckInstall";
+type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
-  export function initialize(options: ApiInitializeOptions) {
+export class BrowserApi {
+  readonly context: ExecutionContext
+  private tabId: number | undefined
+
+  private _requestHandlers: {
+    [K in keyof MessageMap]?: RequestHandler<K>;
+  } = {};
+  private _storageHandlers: Record<string, StorageHandler[]> = {};
+  private _connectionHandlers: {
+    [K in ConnectionKey]?: ConnectionHandler[];
+  } = {};
+
+
+  /** Must be initialized in initial synchronous run */
+  constructor(options: ApiInitializeOptions) {
     const opts: ApiInitializeOptions = {
       handleRequests: true,
       handleStorageChange: true,
       ...options,
     };
+    this.context = opts.context
 
     if (opts.handleRequests) {
-      attachRequestHandler();
+      this.attachRequestHandler();
     }
     if (opts.handleStorageChange) {
-      attachStorageChangeHandler();
+      this.attachStorageChangeHandler();
     }
     if (opts.handleConnection) {
-      attachConnectionHandler();
-    }
-    // @ts-expect-error
-    context = opts.context;
-  }
-
-  const _requestHandlers: Partial<{
-    [K in keyof MessageMap]: RequestHandler<K>;
-  }> = {};
-
-  const _storageHandlers: Record<string, StorageHandler[]> = {};
-
-  /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
-  function action(): typeof chrome.action {
-    return chrome.action ?? chrome.browserAction
-  }
-
-  export function storage(): chrome.storage.StorageArea {
-    return chrome.storage.local;
-  }
-
-  export function manifest(): chrome.runtime.Manifest {
-    return chrome.runtime.getManifest();
-  }
-
-  /** Returns content of the response. Returns an Error object if an error occured. */
-  export function handleRequestResponse<R>(resp: RequestResponse<R>): R {
-    if (resp.success) {
-      return resp.resp;
-    } else {
-      let obj;
-      if (typeof resp.error === "string") {
-        obj = JSON.parse(resp.error);
-      } else {
-        obj = resp.error;
-      }
-      const error = new Error();
-      for (const key of Object.getOwnPropertyNames(obj)) {
-        // @ts-expect-error
-        error[key] = obj[key];
-      }
-      throw error;
+      this.attachConnectionHandler();
     }
   }
 
-  /** It is assumed that request does return a response. */
-  function createRequestResponseHandler<K extends keyof MessageMap>(
-    resolve: Utils.PromiseResolver<Response<K>>,
-    reject: (reason: Error) => void
-  ): (resp: RequestResponse<Response<K>>) => void {
-    return (resp: RequestResponse<Response<K>>) => {
-      try {
-        const response = handleRequestResponse(resp);
-        resolve(response);
-      } catch (error: unknown) {
-        reject(error);
-      }
-    };
-  }
-
-  /**
-   * Send request to all extension pages.
-   * Returns the return value of the request handler.
-   *
-   * Request is not sent to content scripts. Use `requestToTab()` instead.
-   */
-  export async function request<K extends keyof MessageMap>(
-    key: K,
-    request: Request<K>
-  ): Promise<Response<K>> {
-    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
-    const message = {
-      key,
-      request,
-    };
-    const handler = createRequestResponseHandler(resolve, reject);
-    chrome.runtime.sendMessage(message, handler);
-    return promise;
-  }
-
-  /** Send request to page and content script in tab. */
-  export async function requestToTab<K extends keyof MessageMap>(
-    tabId: number,
-    key: K,
-    request: Request<K>
-  ): Promise<Response<K>> {
-    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
-    const message = {
-      key,
-      request,
-    };
-    chrome.tabs.sendMessage(
-      tabId,
-      message,
-      createRequestResponseHandler(resolve, reject)
-    );
-    return promise;
-  }
-
-  /** Responses may contain undefined if a tab did not handle request */
-  export async function requestToAllTabs<K extends keyof MessageMap>(
-    key: K,
-    request: Request<K>
-  ): Promise<(Response<K> | undefined)[]> {
-    const [outerPromise, outerResolve, outerReject] =
-      Utils.createPromise<(Response<K> | undefined)[]>();
-    const message = {
-      key,
-      request,
-    };
-
-    chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
-      const promises: Promise<Response<K>>[] = [];
-      for (const tab of tabs) {
-        if (tab.id !== undefined) {
-          const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
-          const handler = createRequestResponseHandler(resolve, reject);
-          chrome.tabs.sendMessage(tab.id, message, (resp) => {
-            if (
-              resp === undefined ||
-              chrome.runtime.lastError?.message?.includes(
-                "Could not establish connection. Receiving end does not exist."
-              )
-            ) {
-              resolve(resp);
-            } else if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError.message);
-            } else {
-              handler(resp);
-            }
-          });
-          promises.push(promise);
-        }
-      }
-      Promise.all(promises).then(outerResolve).catch(outerReject);
-    });
-
-    return outerPromise;
-  }
-  /// Handle request by front-end for `key`. Return response in handler.
-  /// If there is an existing handler for `key`, replaces it.
-  export function handleRequest<K extends keyof MessageMap>(
-    key: K,
-    handler: RequestHandler<K>
-  ) {
-    // @ts-expect-error
-    _requestHandlers[key] = handler;
-  }
-
-  /** Must be called from within a tab, and not in a content script */
-  export async function currentTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
-    chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
-      if (result === undefined) {
-        reject(new Error("Could not get current tab"));
-      } else {
-        resolve(result);
-      }
-    });
-    return promise;
-  }
-
-  export async function currentTabId(): Promise<number> {
-    if (_tabId === undefined) {
-      const tab = await currentTab();
-      if (tab.id === undefined) {
-        throw new Error("Current tab does not have an id");
-      }
-      _tabId = tab.id;
-    }
-    return _tabId;
-  }
-
-  /** Must not be called from a content script. */
-  export async function activeTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab>();
-    const info = {
-      active: true,
-      currentWindow: true,
-    };
-
-    chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
-      resolve(result[0]);
-    });
-    return promise;
-  }
-
-  export async function tabs(info: chrome.tabs.QueryInfo): Promise<chrome.tabs.Tab[]> {
-    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab[]>();
-    chrome.tabs.query(info, (tabs: chrome.tabs.Tab[]) => {
-      resolve(tabs);
-    });
-    return promise;
-  }
-
-  export async function goToTab(tabId: number): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
-    chrome.tabs.update(tabId, { active: true }, () => {
-      resolve();
-    });
-    return promise;
-  }
-
-  export async function removeTab(tabId: number): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
-    chrome.tabs.remove(tabId, () => {
-      resolve();
-    });
-    return promise;
-  }
-
-  export async function updateTab(
-    tabId: number,
-    properties: chrome.tabs.UpdateProperties
-  ): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
-    chrome.tabs.update(tabId, properties, () => {
-      resolve();
-    });
-    return promise;
-  }
-
-  export async function getStorage<T>(key: string, or?: T): Promise<T> {
-    const [promise, resolve] = Utils.createPromise<T>();
-    let req: string | Record<string, T> = key;
-    if (or !== undefined) {
-      req = {};
-      req[key] = or;
-    }
-    BrowserApi.storage().get(req, (obj) => {
-      resolve(obj[key]);
-    });
-    return promise;
-  }
-
-  /** value cannot be undefined or null */
-  export async function setStorage(key: string, value: NonNullable<unknown>) {
-    const [promise, resolve] = Utils.createPromise<void>();
-    const object: Record<string, unknown> = {};
-    object[key] = value;
-    BrowserApi.storage().set(object, resolve);
-    return promise;
-  }
-
-  export async function removeStorage(key: string) {
-    const [promise, resolve] = Utils.createPromise<void>();
-    BrowserApi.storage().remove(key, resolve);
-    return promise;
-  }
-
-  export async function handleStorageChange(
-    key: string,
-    handler: StorageHandler
-  ) {
-    if (_storageHandlers[key] === undefined) {
-      _storageHandlers[key] = [handler];
-    } else {
-      _storageHandlers[key].push(handler);
-    }
-  }
-
-  type ConnectionKey = "dictionaryCheckInstall";
-  type ConnectionHandler = (port: chrome.runtime.Port) => void;
-
-  const _connectionHandlers: {
-    [K in ConnectionKey]?: ConnectionHandler[];
-  } = {};
-
-  export function connect(name: ConnectionKey) {
-    return chrome.runtime.connect({ name });
-  }
-
-  export function handleConnection(
-    name: ConnectionKey,
-    handler: ConnectionHandler
-  ) {
-    const handlers = _connectionHandlers[name];
-    if (handlers === undefined) {
-      _connectionHandlers[name] = [handler];
-    } else {
-      handlers.push(handler);
-    }
-  }
-
-
-  /** set text to "" to remove badge */
-  export function setBadge(text: string | number, color: string) {
-    const iAction = action();
-    if (typeof text === "number") {
-      text = text.toString()
-    }
-    iAction.setBadgeText({
-      text
-    })
-    iAction.setBadgeBackgroundColor({
-      color
-    });
-  }
-
-  export async function japaneseTtsVoices(): Promise<TTSVoice[]> {
-    const [promise, resolve] = Utils.createPromise<chrome.tts.TtsVoice[]>();
-    chrome.tts.getVoices(resolve);
-    const voices = await promise;
-    const ttsVoices: TTSVoice[] = []
-    for (const voice of voices) {
-      const name = voice.voiceName
-      if (name === undefined) continue
-      const quality = voice.remote ? 100 : 200
-      const ttsVoice: TTSVoice = {
-        id: name,
-        name: name,
-        quality
-      }
-      ttsVoices.push(ttsVoice)
-    }
-    return ttsVoices
-  }
-
-  export function speakJapanese(text: string): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
-    chrome.tts.speak(text, { "lang": "ja-jp" }, resolve);
-    return promise;
-  }
-
-  /** Manifest V3 required */
-  export function handleActionClicked(handler: (tab: browser.tabs.Tab, info?: browser.action.OnClickData | undefined) => void) {
-    browser.action.onClicked.addListener(handler)
-  }
-
-  export async function setActionIcon(iconPath: string) {
-    await browser.action.setIcon({
-      path: iconPath
-    })
-  }
-
-  function attachRequestHandler() {
+  private attachRequestHandler() {
     chrome.runtime.onMessage.addListener(
       (
         message: Message<keyof MessageMap>,
@@ -433,7 +112,7 @@ export namespace BrowserApi {
           response?: RequestResponse<Response<keyof MessageMap>>
         ) => void
       ): boolean => {
-        const handler = _requestHandlers[message.key];
+        const handler = this._requestHandlers[message.key];
         if (handler) {
           (async () => {
             try {
@@ -459,26 +138,353 @@ export namespace BrowserApi {
     );
   }
 
-  function attachStorageChangeHandler() {
-    BrowserApi.storage().onChanged.addListener((changes) => {
+  private attachStorageChangeHandler() {
+    this.storage().onChanged.addListener((changes) => {
       for (const key in changes) {
-        const handlers = _storageHandlers[key];
+        const handlers = this._storageHandlers[key];
         if (handlers === undefined) continue;
         for (const handler of handlers) {
-          handler(changes[key]);
+          handler(changes[key]!);
         }
       }
     });
   }
 
-  function attachConnectionHandler() {
+  private attachConnectionHandler() {
     chrome.runtime.onConnect.addListener((port) => {
-      if (!_connectionHandlers.hasOwnProperty(port.name)) return;
-      const handlers = _connectionHandlers[port.name as ConnectionKey];
+      if (!Object.prototype.hasOwnProperty.call(this._connectionHandlers, port.name)) return;
+      const handlers = this._connectionHandlers[port.name as ConnectionKey];
       if (handlers === undefined) return;
       for (const handler of handlers) {
         handler(port);
       }
     });
+  }
+
+
+  /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
+  action(): typeof chrome.action | typeof chrome.browserAction {
+    return chrome.action ?? chrome.browserAction
+  }
+
+  storage(): chrome.storage.StorageArea {
+    return chrome.storage.local;
+  }
+
+  manifest(): chrome.runtime.Manifest {
+    return chrome.runtime.getManifest();
+  }
+
+  
+
+  /** Returns content of the response. Returns an Error object if an error occured. */
+  handleRequestResponse<R>(resp: RequestResponse<R>): R {
+    if (resp.success) {
+      return resp.resp;
+    } else {
+      let obj;
+      if (typeof resp.error === "string") {
+        obj = JSON.parse(resp.error);
+      } else {
+        obj = resp.error;
+      }
+      const error = new Error();
+      for (const key of Object.getOwnPropertyNames(obj)) {
+        // @ts-expect-error
+        error[key] = obj[key];
+      }
+      throw error;
+    }
+  }
+
+  /** It is assumed that request does return a response. */
+  private createRequestResponseHandler<K extends keyof MessageMap>(
+    resolve: Utils.PromiseResolver<Response<K>>,
+    reject: (reason: Error) => void
+  ): (resp: RequestResponse<Response<K>>) => void {
+    return (resp: RequestResponse<Response<K>>) => {
+      try {
+        const response = this.handleRequestResponse(resp);
+        resolve(response);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          reject(error)
+        } else {
+          reject(new Error(Utils.errorMessage(error)))
+        }
+      }
+    };
+  }
+
+  /**
+   * Send request to all extension pages.
+   * Returns the return value of the request handler.
+   *
+   * Request is not sent to content scripts. Use `requestToTab()` instead.
+   */
+  async request<K extends keyof MessageMap>(
+    key: K,
+    request: Request<K>
+  ): Promise<Response<K>> {
+    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+    const message = {
+      key,
+      request,
+    };
+    const handler = this.createRequestResponseHandler(resolve, reject);
+    chrome.runtime.sendMessage(message, handler);
+    return promise;
+  }
+
+  /** Send request to page and content script in tab. */
+  async requestToTab<K extends keyof MessageMap>(
+    tabId: number,
+    key: K,
+    request: Request<K>
+  ): Promise<Response<K>> {
+    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+    const message = {
+      key,
+      request,
+    };
+    chrome.tabs.sendMessage(
+      tabId,
+      message,
+      this.createRequestResponseHandler(resolve, reject)
+    );
+    return promise;
+  }
+
+  /** Responses may contain undefined if a tab did not handle request */
+  async requestToAllTabs<K extends keyof MessageMap>(
+    key: K,
+    request: Request<K>
+  ): Promise<(Response<K> | undefined)[]> {
+    const [outerPromise, outerResolve, outerReject] =
+      Utils.createPromise<(Response<K> | undefined)[]>();
+    const message = {
+      key,
+      request,
+    };
+
+    chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
+      const promises: Promise<Response<K>>[] = [];
+      for (const tab of tabs) {
+        if (tab.id !== undefined) {
+          const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+          const handler = this.createRequestResponseHandler(resolve, reject);
+          chrome.tabs.sendMessage(tab.id, message, (resp) => {
+            if (
+              resp === undefined ||
+              chrome.runtime.lastError?.message?.includes(
+                "Could not establish connection. Receiving end does not exist."
+              )
+            ) {
+              resolve(resp);
+            } else if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError.message);
+            } else {
+              handler(resp);
+            }
+          });
+          promises.push(promise);
+        }
+      }
+      Promise.all(promises).then(outerResolve).catch(outerReject);
+    });
+
+    return outerPromise;
+  }
+  /// Handle request by front-end for `key`. Return response in handler.
+  /// If there is an existing handler for `key`, replaces it.
+  handleRequest<K extends keyof MessageMap>(
+    key: K,
+    handler: (typeof this._requestHandlers)[K]
+  ) {
+    this._requestHandlers[key] = handler
+  }
+
+  /** Must be called from within a tab, and not in a content script */
+  async currentTab(): Promise<chrome.tabs.Tab> {
+    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
+    chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
+      if (result === undefined) {
+        reject(new Error("Could not get current tab"));
+      } else {
+        resolve(result);
+      }
+    });
+    return promise;
+  }
+
+  async currentTabId(): Promise<number> {
+    if (this.tabId === undefined) {
+      const tab = await this.currentTab();
+      if (tab.id === undefined) {
+        throw new Error("Current tab does not have an id");
+      }
+      this.tabId = tab.id;
+    }
+    return this.tabId;
+  }
+
+  /** Must not be called from a content script. */
+  async activeTab(): Promise<chrome.tabs.Tab> {
+    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
+    const info = {
+      active: true,
+      currentWindow: true,
+    };
+
+    chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
+      if (result[0] !== undefined) {
+        resolve(result[0]);
+      } else {
+        reject(new Error('No tabs are active'))
+      }
+    });
+    return promise;
+  }
+
+  async tabs(info: chrome.tabs.QueryInfo): Promise<chrome.tabs.Tab[]> {
+    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab[]>();
+    chrome.tabs.query(info, (tabs: chrome.tabs.Tab[]) => {
+      resolve(tabs);
+    });
+    return promise;
+  }
+
+  async goToTab(tabId: number): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    chrome.tabs.update(tabId, { active: true }, () => {
+      resolve();
+    });
+    return promise;
+  }
+
+  async removeTab(tabId: number): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    chrome.tabs.remove(tabId, () => {
+      resolve();
+    });
+    return promise;
+  }
+
+  async updateTab(
+    tabId: number,
+    properties: chrome.tabs.UpdateProperties
+  ): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    chrome.tabs.update(tabId, properties, () => {
+      resolve();
+    });
+    return promise;
+  }
+
+  async getStorage<T>(key: string, or?: T): Promise<T> {
+    const [promise, resolve] = Utils.createPromise<T>();
+    let req: string | Record<string, T> = key;
+    if (or !== undefined) {
+      req = {};
+      req[key] = or;
+    }
+    this.storage().get(req, (obj) => {
+      resolve(obj[key]);
+    });
+    return promise;
+  }
+
+  /** value cannot be undefined or null */
+  async setStorage(key: string, value: NonNullable<unknown>) {
+    const [promise, resolve] = Utils.createPromise<void>();
+    const object: Record<string, unknown> = {};
+    object[key] = value;
+    this.storage().set(object, resolve);
+    return promise;
+  }
+
+  async removeStorage(key: string) {
+    const [promise, resolve] = Utils.createPromise<void>();
+    this.storage().remove(key, resolve);
+    return promise;
+  }
+
+  handleStorageChange(
+    key: string,
+    handler: StorageHandler
+  ) {
+    const storageHandlers = this._storageHandlers[key]
+    if (storageHandlers !== undefined) {
+      storageHandlers.push(handler);
+    } else {
+      this._storageHandlers[key] = [handler];
+    }
+  }
+
+  connect(name: ConnectionKey) {
+    return chrome.runtime.connect({ name });
+  }
+
+  handleConnection(
+    name: ConnectionKey,
+    handler: ConnectionHandler
+  ) {
+    const handlers = this._connectionHandlers[name];
+    if (handlers === undefined) {
+      this._connectionHandlers[name] = [handler];
+    } else {
+      handlers.push(handler);
+    }
+  }
+
+
+  /** set text to "" to remove badge */
+  setBadge(text: string | number, color: string) {
+    const iAction = this.action();
+    if (typeof text === "number") {
+      text = text.toString()
+    }
+    iAction.setBadgeText({
+      text
+    })
+    iAction.setBadgeBackgroundColor({
+      color
+    });
+  }
+
+  async japaneseTtsVoices(): Promise<TTSVoice[]> {
+    const [promise, resolve] = Utils.createPromise<chrome.tts.TtsVoice[]>();
+    chrome.tts.getVoices(resolve);
+    const voices = await promise;
+    const ttsVoices: TTSVoice[] = []
+    for (const voice of voices) {
+      const name = voice.voiceName
+      if (name === undefined) continue
+      const quality = voice.remote ? 100 : 200
+      const ttsVoice: TTSVoice = {
+        id: name,
+        name: name,
+        quality
+      }
+      ttsVoices.push(ttsVoice)
+    }
+    return ttsVoices
+  }
+
+  speakJapanese(text: string): Promise<void> {
+    const [promise, resolve] = Utils.createPromise<void>();
+    chrome.tts.speak(text, { "lang": "ja-jp" }, resolve);
+    return promise;
+  }
+
+  /** Manifest V3 required */
+  handleActionClicked(handler: (tab: browser.tabs.Tab, info?: browser.action.OnClickData | undefined) => void) {
+    browser.action.onClicked.addListener(handler)
+  }
+
+  async setActionIcon(iconPath: string) {
+    await browser.action.setIcon({
+      path: iconPath
+    })
   }
 }

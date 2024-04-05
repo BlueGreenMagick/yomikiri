@@ -63,7 +63,8 @@ export default tseslint.config(
           "caughtErrorsIgnorePattern": "^_",
           "destructuredArrayIgnorePattern": "^_",
         }
-      ]
+      ],
+      "@typescript-eslint/no-invalid-void-type": 'off'
     }
   },
 )

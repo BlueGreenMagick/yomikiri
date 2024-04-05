@@ -17,8 +17,8 @@ declare global {
 }
 
 async function initialize() {
-  BrowserApi.initialize({ context: "page" });
-  Platform.initialize();
+  const browserApi = new BrowserApi({ context: "page" });
+  Platform.initialize(browserApi);
   await Config.initialize();
   Config.setStyle(document);
   await Backend.initialize();

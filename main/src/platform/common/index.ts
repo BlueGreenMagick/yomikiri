@@ -1,5 +1,6 @@
 import type { StoredConfiguration } from "~/config";
 import type { TranslateResult } from "./translate";
+import type { BrowserApi } from "~/extension/browserApi";
 
 export type { TranslateResult } from "./translate";
 
@@ -9,7 +10,7 @@ export interface Module {
   IS_IOSAPP: boolean;
 
   /** Api must be initialized */
-  initialize: () => void;
+  initialize: ((browserApi: BrowserApi) => void) | (() => void);
   getConfig(): Promise<StoredConfiguration>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
   subscribeConfig(subscriber: (config: StoredConfiguration) => unknown): void;

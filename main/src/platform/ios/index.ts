@@ -12,6 +12,8 @@ export namespace Platform {
   export const IS_IOS = true;
   export const IS_IOSAPP = false;
 
+  let browserApi: BrowserApi
+
   /** Type map for messages sent with `requestToApp()`*/
   export interface AppMessageMap {
     tokenize: [TokenizeRequest, RawTokenizeResult];
@@ -30,13 +32,14 @@ export namespace Platform {
   >;
 
 
-  export function initialize() {
-    if (BrowserApi.context === "background") {
-      BrowserApi.handleRequest("loadConfig", async () => {
+  export function initialize(browserApiParam: BrowserApi) {
+    browserApi = browserApiParam
+    if (browserApi.context === "background") {
+      browserApi.handleRequest("loadConfig", async () => {
         const config = await updateConfig();
         return config;
       });
-      BrowserApi.handleRequest("saveConfig", (config) => {
+      browserApi.handleRequest("saveConfig", (config) => {
         return Platform.saveConfig(config);
       });
     }
@@ -51,13 +54,13 @@ export namespace Platform {
       key,
       request: JSON.stringify(request),
     });
-    const response = BrowserApi.handleRequestResponse<string>(resp);
+    const response = browserApi.handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }
 
   export async function getConfig(): Promise<StoredConfiguration> {
-    if (BrowserApi.context === "contentScript") {
-      return BrowserApi.request("loadConfig", null);
+    if (browserApi.context === "contentScript") {
+      return browserApi.request("loadConfig", null);
     } else {
       return updateConfig();
     }
@@ -68,48 +71,48 @@ export namespace Platform {
    * which may occur when a new script loads and app config is fetched
    */
   export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    BrowserApi.handleStorageChange("config", (change) => {
+    browserApi.handleStorageChange("config", (change) => {
       subscriber(change.newValue)
     })
   }
 
   // App config is the source of truth
   async function updateConfig(): Promise<StoredConfiguration> {
-    const webConfigP = BrowserApi.getStorage<StoredConfiguration>("config", {});
+    const webConfigP = browserApi.getStorage<StoredConfiguration>("config", {});
     const appConfigP = Platform.requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
-      await BrowserApi.setStorage("config", appConfig);
+      await browserApi.setStorage("config", appConfig);
     }
     return appConfig;
   }
 
   export async function saveConfig(config: StoredConfiguration): Promise<void> {
-    if (BrowserApi.context === "contentScript") {
-      await BrowserApi.request("saveConfig", config);
+    if (browserApi.context === "contentScript") {
+      await browserApi.request("saveConfig", config);
     } else {
       const configJson = JSON.stringify(config);
-      BrowserApi.setStorage("config", config);
+      browserApi.setStorage("config", config);
       await Platform.requestToApp("saveConfig", configJson);
     }
   }
 
   export async function openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
-    if (BrowserApi.context !== "popup") {
+    if (browserApi.context !== "popup") {
       location.href = OPTIONS_URL;
     } else {
-      const currentTab = await BrowserApi.currentTab();
+      const currentTab = await browserApi.currentTab();
       if (currentTab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await BrowserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
+      await browserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
       window.close();
     }
   }
 
   export async function versionInfo(): Promise<VersionInfo> {
-    const manifest = BrowserApi.manifest();
+    const manifest = browserApi.manifest();
     return {
       version: manifest.version
     }
@@ -120,19 +123,19 @@ export namespace Platform {
   }
 
   export async function playTTS(text: string): Promise<void> {
-    if (BrowserApi.context !== "contentScript") {
+    if (browserApi.context !== "contentScript") {
       await Platform.requestToApp("tts", { voice: Config.get("tts.voice"), text })
     } else {
-      await BrowserApi.request("tts", text)
+      await browserApi.request("tts", text)
     }
 
   }
 
   export async function translate(text: string): Promise<TranslateResult> {
-    if (BrowserApi.context !== "contentScript") {
+    if (browserApi.context !== "contentScript") {
       return getTranslation(text)
     } else {
-      return BrowserApi.request("translate", text);
+      return browserApi.request("translate", text);
     }
   }
 

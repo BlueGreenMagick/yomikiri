@@ -20,13 +20,12 @@ declare global {
   }
 }
 
+const browserApi = new BrowserApi({context: "contentScript"});
 let initialized = false;
-
 let _initialized: Promise<void> | undefined;
 
 async function _initialize() {
-  BrowserApi.initialize({ context: "contentScript" });
-  Platform.initialize();
+  Platform.initialize(browserApi)
   await Config.initialize();
   await Backend.initialize();
   await Highlighter.initialize();
@@ -68,7 +67,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     scannedSentence.text,
     scannedSentence.charAt,
   );
-  const currToken = result.tokens[result.tokenIdx];
+  const currToken = result.tokens[result.tokenIdx]!;
   if (!containsJapaneseContent(currToken.text)) {
     return false;
   }

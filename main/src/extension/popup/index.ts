@@ -15,8 +15,8 @@ declare global {
 }
 
 async function initialize(): Promise<void> {
-  BrowserApi.initialize({ context: "popup" });
-  Platform.initialize();
+  const browserApi = new BrowserApi({ context: "popup" });
+  Platform.initialize(browserApi);
   await Config.initialize();
   Config.setStyle(document);
   await Backend.initialize();

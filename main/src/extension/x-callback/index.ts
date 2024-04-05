@@ -2,6 +2,8 @@
 
 import { BrowserApi } from "~/extension/browserApi";
 
+const browserApi = new BrowserApi({context: "page"})
+
 /** 
  * Used for x-callback-url as x-success value to return back to current page. 
  * 
@@ -11,11 +13,11 @@ import { BrowserApi } from "~/extension/browserApi";
  * 3. tabId
  */
 async function getLastTabId(): Promise<number | null> {
-  const tabId = await BrowserApi.getStorage<number | null>(
+  const tabId = await browserApi.getStorage<number | null>(
     "x-callback.tabId",
     null
   );
-  const tabUrl = await BrowserApi.getStorage<string | null>(
+  const tabUrl = await browserApi.getStorage<string | null>(
     "x-callback.tabUrl",
     null
   );
@@ -25,7 +27,7 @@ async function getLastTabId(): Promise<number | null> {
     return null
   }
 
-  const tabs = await BrowserApi.tabs({url: tabUrl});
+  const tabs = await browserApi.tabs({url: tabUrl});
 
   // if tab exists with correct (tabId, tabUrl), return the tab.
   for (const tab of tabs) {
@@ -36,7 +38,7 @@ async function getLastTabId(): Promise<number | null> {
 
   // if no such tab exist, return other tab with identical url.
   // maybe safari has restarted and assigned different id to the tab.
-  for (let i = tabs.length - 1; i >= 0 ; i--) {
+  for (let i = tabs.length - 1; i >= 0; i--) {
     const tab = tabs[i];
     if (tab.id !== undefined) {
       return tab.id
@@ -50,7 +52,7 @@ async function getLastTabId(): Promise<number | null> {
 
 
 async function main() {
-  const currentTab = await BrowserApi.currentTab();
+  const currentTab = await browserApi.currentTab();
   if (currentTab.id === undefined) {
     throw new Error("Failed to get current tab id (Unreachable)");
   }
@@ -58,12 +60,11 @@ async function main() {
   try {
     const lastTabId = await getLastTabId();
     if (lastTabId !== null) {
-      await BrowserApi.goToTab(lastTabId);
+      await browserApi.goToTab(lastTabId);
     }
   } catch (e) {}
 
-  await BrowserApi.removeTab(currentTab.id);
+  await browserApi.removeTab(currentTab.id);
 }
 
-BrowserApi.initialize({ context: "page" });
 main();

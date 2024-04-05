@@ -14,17 +14,12 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import { updateTTSAvailability } from "~/common";
 
+const browserApi = new BrowserApi({context: "background"})
 const initialized: Promise<void> = initialize();
-let _backendInitialized: Promise<void> | undefined;
 
 async function initialize(): Promise<void> {
-  BrowserApi.initialize({
-    handleRequests: true,
-    context: "background",
-  });
-  Platform.initialize();
+  Platform.initialize(browserApi)
   await Config.initialize();
-
   // queue task to run later
   setTimeout(deferredInitialize, 0)
 }
@@ -34,6 +29,7 @@ async function deferredInitialize(): Promise<void> {
   await updateTTSAvailability();
 }
 
+let _backendInitialized: Promise<void> | undefined;
 async function maybeInitBackend(): Promise<void> {
   await initialized;
   if (_backendInitialized === undefined) {
@@ -69,7 +65,7 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
 async function updateStateEnabledBadge(): Promise<void> {
   const enabled = Config.get("state.enabled");
   const text = enabled ? "" : "off";
-  BrowserApi.setBadge(text, "#999999");
+  browserApi.setBadge(text, "#999999");
 }
 
 async function tts(text: string): Promise<void> {
@@ -86,21 +82,18 @@ async function onActionClick() {
 }
 
 
-BrowserApi.handleRequest("searchTerm", searchTerm);
-BrowserApi.handleRequest("tokenize", tokenize);
-BrowserApi.handleRequest("addAnkiNote", addAnkiNote);
-BrowserApi.handleRequest("tabId", tabId);
-BrowserApi.handleRequest("translate", handleTranslate);
-BrowserApi.handleRequest("tts", tts);
+browserApi.handleRequest("searchTerm", searchTerm);
+browserApi.handleRequest("tokenize", tokenize);
+browserApi.handleRequest("addAnkiNote", addAnkiNote);
+browserApi.handleRequest("tabId", tabId);
+browserApi.handleRequest("translate", handleTranslate);
+browserApi.handleRequest("tts", tts);
 
 if (Platform.IS_IOS) {
-  BrowserApi.handleActionClicked(onActionClick);
+  browserApi.handleActionClicked(onActionClick);
 }
 
-
 Config.onChange(updateStateEnabledBadge);
-
-
 
 
 // expose object to window for debugging purposes
