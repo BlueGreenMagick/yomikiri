@@ -25,13 +25,13 @@ export type RubyString = RubyUnit[];
  *   - \uff66-\uff9f: halfwidth katakana
  * \uffe0-\uffee: halfwidth/fullwidth symbols
  */
-const RE_HIRAGANA = /[\u3041-\u309f]/u;
+const _RE_HIRAGANA = /[\u3041-\u309f]/u;
 // including '゠', 'ー'
-const RE_KATAKANA = /[\u30a0-\u30ff]/u;
+const _RE_KATAKANA = /[\u30a0-\u30ff]/u;
 const RE_KANJI = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
-const RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
+const _RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 // including symbols
-const RE_JAPANESE_ALL =
+const _RE_JAPANESE_ALL =
   /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f\uffe0-\uffee]/u;
 // excluding most symbols or punctuations
 const RE_JAPANESE_CONTENT =

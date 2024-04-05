@@ -240,12 +240,12 @@ function sentenceAfterNode(t: Text): string {
       return sentence;
     }
     const text = node.data;
-    for (let i = 0; i < text.length; i++) {
-      if (isSentenceEndChar(text[i])) {
-        sentence = sentence + text[i];
+    for (const char of text) {
+      if (isSentenceEndChar(char)) {
+        sentence = sentence + char;
         return sentence;
       } else {
-        sentence = sentence + text[i];
+        sentence = sentence + char;
       }
     }
   }

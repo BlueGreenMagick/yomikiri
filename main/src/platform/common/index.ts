@@ -4,7 +4,7 @@ import type { BrowserApi } from "~/extension/browserApi";
 
 export type { TranslateResult } from "./translate";
 
-interface Module {
+export interface Module {
   IS_DESKTOP: boolean;
   IS_IOS: boolean;
   IS_IOSAPP: boolean;

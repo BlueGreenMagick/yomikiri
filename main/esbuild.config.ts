@@ -20,8 +20,7 @@ if (
   !["chrome", "firefox", "safari_desktop", "ios", "iosapp"].includes(TARGET)
 ) {
   throw new Error(
-    "TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios/iosapp, but is set to: " +
-    TARGET
+    `TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios/iosapp, but is set to: ${TARGET}`
   );
 }
 const FOR_CHROME = TARGET === "chrome";
@@ -128,13 +127,14 @@ const buildManifestPlugin: Plugin = {
       watching = false;
     });
 
-    build.onResolve({ filter: /./ }, (args) => {
+    build.onResolve({ filter: /./ }, (_args) => {
       if (!watching) {
         watching = true;
         return {
           watchFiles: ["./src/manifest.json.ejs"],
         };
       }
+      return
     });
   },
 };
@@ -147,7 +147,7 @@ const watchPlugin: Plugin = {
     build.onStart(() => {
       watching = false;
     });
-    build.onResolve({ filter: /./ }, (args) => {
+    build.onResolve({ filter: /./ }, (_args) => {
       if (!watching) {
         watching = true;
         return {
@@ -303,7 +303,7 @@ function generateBuildOptions(): BuildOptions {
   }
 }
 
-function cleanDirectory(dir) {
+function cleanDirectory(dir: string) {
   if (fs.existsSync(dir)) {
     fs.rmdirSync(dir, { recursive: true });
   }
@@ -319,7 +319,7 @@ async function compressDirectoryTo(dir: string, outfile: string) {
 async function main() {
   const buildOptions = generateBuildOptions();
   if (buildOptions.outdir === undefined) {
-    throw "esbuild outdir must be set!"
+    throw new Error("esbuild outdir must be set!")
   }
 
   cleanDirectory(buildOptions.outdir);
@@ -328,12 +328,12 @@ async function main() {
   await ctx.rebuild();
 
   if (!WATCH) {
-    ctx.dispose();
+    await ctx.dispose();
     if (PRODUCTION && (FOR_CHROME || FOR_FIREFOX)) {
 
       const compressedFile = path.join(buildOptions.outdir, "..", `yomikiri_${TARGET}_v${VERSION}.zip`);
       console.log("Compressing file to: " + compressedFile)
-      compressDirectoryTo(buildOptions.outdir, compressedFile)
+      await compressDirectoryTo(buildOptions.outdir, compressedFile)
     }
   } else {
     console.info("esbuild: Watching for changes to code..");

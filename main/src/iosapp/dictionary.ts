@@ -13,11 +13,6 @@ declare global {
   }
 }
 
-interface URLParams {
-  context: "app" | "action";
-  search?: string;
-}
-
 const initialized = initialize();
 createSvelte(initialized);
 

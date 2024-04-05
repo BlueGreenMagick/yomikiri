@@ -135,7 +135,7 @@ export namespace Tooltip {
     // reset tooltipEl style beforehand so tooltip does not affect document size.
     tooltip.style.left = "0px";
     tooltip.style.top = "0px";
-    tooltip.style.width = WIDTH + "px";
+    tooltip.style.width = `${WIDTH}px`;
     tooltip.style.height = "0px";
     tooltip.style.removeProperty("transform");
 
@@ -218,7 +218,7 @@ export namespace Tooltip {
       props: {},
     });
 
-    _tooltipPageSvelte.$on("updateHeight", (ev: CustomEvent<void>) => {
+    _tooltipPageSvelte.$on("updateHeight", (_: CustomEvent<void>) => {
       const tooltip = getTooltipEl();
       if (tooltip !== null) {
         updateTooltipHeight(tooltip);

@@ -1,4 +1,4 @@
-import { writable, type Readable, type Writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
 export interface Rect {
   top: number;

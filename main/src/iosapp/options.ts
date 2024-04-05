@@ -23,7 +23,7 @@ async function initialize() {
 
 const initialized = initialize();
 
-const optionsPage = new OptionsPage({
+const _optionsPage = new OptionsPage({
   target: document.body,
   props: { initialized },
 });

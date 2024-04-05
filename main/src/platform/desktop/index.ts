@@ -1,7 +1,6 @@
 import { BrowserApi } from "~/extension/browserApi";
 import type { Module, TTSVoice, VersionInfo } from "../common";
-import { Config, type StoredConfiguration } from "~/config";
-import { PLATFORM } from "~/generated";
+import { type StoredConfiguration } from "~/config";
 import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
 

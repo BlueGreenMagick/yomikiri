@@ -19,7 +19,7 @@ async function initialize() {
 
 const initialized = initialize();
 
-const mainSvelte = new OptionsAnkiTemplatePage({
+const _mainSvelte = new OptionsAnkiTemplatePage({
   target: document.body,
   props: { initialized },
 });

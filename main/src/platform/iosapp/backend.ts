@@ -1,10 +1,8 @@
-import type Utils from "~/utils";
 import { Platform } from ".";
 import {
   type IBackend,
   type TokenizeRequest,
   TokenizeResult,
-  type RawTokenizeResult,
 } from "../common/backend";
 import { Entry, type EntryObject } from "~/dicEntry";
 

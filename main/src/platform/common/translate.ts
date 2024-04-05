@@ -10,7 +10,7 @@ const translationCache: Record<string, TranslateResult> = {};
  * Use `BrowserApi.request("translate")` instead,
  */
 export async function getTranslation(text: string): Promise<TranslateResult> {
-  if (translationCache.hasOwnProperty(text)) {
+  if (Object.prototype.hasOwnProperty.call(translationCache, text)) {
     return translationCache[text];
   }
 

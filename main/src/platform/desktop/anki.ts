@@ -17,12 +17,12 @@ export namespace AnkiApi {
   const ANKI_CONNECT_VER = 6;
 
   async function ankiConnectURL(): Promise<string> {
-    let url = await Config.get("anki.connect_url");
-    const port = await Config.get("anki.connect_port");
+    let url = Config.get("anki.connect_url");
+    const port = Config.get("anki.connect_port");
     if (!url.includes("://")) {
       url = "http://" + url;
     }
-    return url + ":" + port;
+    return `${url}:${port}`
   }
 
   /** Send Anki-connect request */
