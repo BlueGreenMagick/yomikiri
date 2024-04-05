@@ -144,7 +144,7 @@ export class BrowserApi {
         const handlers = this._storageHandlers[key];
         if (handlers === undefined) continue;
         for (const handler of handlers) {
-          handler(changes[key]!);
+          handler(changes[key]);
         }
       }
     });

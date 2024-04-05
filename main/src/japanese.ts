@@ -217,7 +217,7 @@ export function toKatakana(text: string): string {
     if (char >= 12353 && char <= 12438) {
       katakana += String.fromCharCode(char + 96);
     } else {
-      katakana += text[i]!;
+      katakana += text[i];
     }
   }
   return katakana;

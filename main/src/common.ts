@@ -11,5 +11,5 @@ export async function updateTTSAvailability(): Promise<void> {
   if (voices.length === 0) return;
   // reverse order sort
   voices.sort((a, b) => b.quality - a.quality)
-  Config.set("tts.voice", voices[0]!)
+  Config.set("tts.voice", voices[0])
 }

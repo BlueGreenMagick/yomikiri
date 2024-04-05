@@ -144,32 +144,32 @@ export namespace AnkiNoteBuilder {
   });
 
   addMarker("word", (data: MarkerData) => {
-    const token = data.tokenized.tokens[data.tokenized.tokenIdx]!;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     return Utils.escapeHTML(token.text);
   });
   addMarker("word-furigana", (data: MarkerData) => {
-    const token = data.tokenized.tokens[data.tokenized.tokenIdx]!;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     const rubies = RubyString.generate(token.text, token.reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
   addMarker("word-kana", (data: MarkerData) => {
-    const token = data.tokenized.tokens[data.tokenized.tokenIdx]!;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     return Utils.escapeHTML(token.reading);
   });
 
   addMarker("dict", (data: MarkerData) => {
-    const token = data.tokenized.tokens[data.tokenized.tokenIdx]!;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     return Utils.escapeHTML(token.base);
   });
   addMarker("dict-furigana", (data: MarkerData) => {
-    const token = data.tokenized.tokens[data.tokenized.tokenIdx]!
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx]
     const form = token.base;
     const reading = Entry.readingForForm(data.entry, form, false).reading;
     const rubies = RubyString.generate(form, reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
   addMarker("dict-kana", (data: MarkerData) => {
-    const token = data.tokenized.tokens[data.tokenized.tokenIdx]!;
+    const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     const form = token.base;
     const kana = Entry.readingForForm(data.entry, form, false).reading;
     return Utils.escapeHTML(kana);
@@ -196,13 +196,13 @@ export namespace AnkiNoteBuilder {
 
     let sentence = "";
     for (let i = 0; i < tokenized.tokenIdx; i++) {
-      sentence += Utils.escapeHTML(tokens[i]!.text)
+      sentence += Utils.escapeHTML(tokens[i].text)
     }
     sentence += "<b>";
-    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx]!.text);
+    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].text);
     sentence += "</b>";
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
-      sentence += Utils.escapeHTML(tokens[i]!.text);
+      sentence += Utils.escapeHTML(tokens[i].text);
     }
     return sentence.trim();
   });
@@ -213,20 +213,20 @@ export namespace AnkiNoteBuilder {
     let rubies: RubyString = [];
 
     for (let i = 0; i < tokenized.tokenIdx; i++) {
-      rubies.push(...RubyString.generate(tokens[i]!.text, tokens[i]!.reading));
+      rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const before = Utils.escapeHTML(RubyString.toAnki(rubies))
 
     const tokenRuby = RubyString.generate(
-      tokens[tokenized.tokenIdx]!.text,
-      tokens[tokenized.tokenIdx]!.reading
+      tokens[tokenized.tokenIdx].text,
+      tokens[tokenized.tokenIdx].reading
     );
     const tokenString = Utils.escapeHTML(RubyString.toAnki(tokenRuby));
     const mid = "<b>" + tokenString + "</b>";
 
     rubies = [];
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
-      rubies.push(...RubyString.generate(tokens[i]!.text, tokens[i]!.reading));
+      rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const after = Utils.escapeHTML(RubyString.toAnki(rubies));
     const sentence = before + mid + after;
@@ -237,13 +237,13 @@ export namespace AnkiNoteBuilder {
     const tokenized = data.tokenized;
     const tokens = tokenized.tokens;
     for (let i = 0; i < tokenized.tokenIdx; i++) {
-      sentence += Utils.escapeHTML(tokens[i]!.reading);
+      sentence += Utils.escapeHTML(tokens[i].reading);
     }
     sentence += "<b>";
-    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx]!.reading);
+    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].reading);
     sentence += "</b>";
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
-      sentence += Utils.escapeHTML(tokens[i]!.reading);
+      sentence += Utils.escapeHTML(tokens[i].reading);
     }
 
     return sentence.trim();
@@ -266,13 +266,13 @@ export namespace AnkiNoteBuilder {
     let sentence = "";
 
     for (let i = 0; i < tokenized.tokenIdx; i++) {
-      sentence += Utils.escapeHTML(tokens[i]!.text);
+      sentence += Utils.escapeHTML(tokens[i].text);
     }
     sentence += "{{c1::";
-    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx]!.text);
+    sentence += Utils.escapeHTML(tokens[tokenized.tokenIdx].text);
     sentence += "}}";
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
-      sentence += Utils.escapeHTML(tokens[i]!.text);
+      sentence += Utils.escapeHTML(tokens[i].text);
     }
     return sentence.trim();
   });
@@ -282,20 +282,20 @@ export namespace AnkiNoteBuilder {
     let rubies: RubyString = [];
 
     for (let i = 0; i < tokenized.tokenIdx; i++) {
-      rubies.push(...RubyString.generate(tokens[i]!.text, tokens[i]!.reading));
+      rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const before = Utils.escapeHTML(RubyString.toAnki(rubies));
 
     const tokenRuby = RubyString.generate(
-      tokens[tokenized.tokenIdx]!.text,
-      tokens[tokenized.tokenIdx]!.reading
+      tokens[tokenized.tokenIdx].text,
+      tokens[tokenized.tokenIdx].reading
     );
     const tokenString = Utils.escapeHTML(RubyString.toAnki(tokenRuby));
     const mid = "{{c1::" + tokenString + "}}";
 
     rubies = [];
     for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
-      rubies.push(...RubyString.generate(tokens[i]!.text, tokens[i]!.reading));
+      rubies.push(...RubyString.generate(tokens[i].text, tokens[i].reading));
     }
     const after = Utils.escapeHTML(RubyString.toAnki(rubies));
     const sentence = before + mid + after;
@@ -325,7 +325,7 @@ export namespace AnkiNoteBuilder {
       const meanings = [];
       const cnt = Math.min(3, data.entry.senses.length);
       for (let i = 0; i < cnt; i++) {
-        meanings.push(data.entry.senses[i]!.meaning[0]);
+        meanings.push(data.entry.senses[i].meaning[0]);
       }
       return Utils.escapeHTML(meanings.join("; "));
     } else {
