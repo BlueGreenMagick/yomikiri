@@ -11,12 +11,12 @@
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../content/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import type { Platform } from "@platform"
-  import type { Config } from "~/config"
+  import type { Platform } from "@platform";
+  import type { Config } from "~/config";
 
-  export let platform: Platform
-  export let config: Config
-  export let backend: Backend
+  export let platform: Platform;
+  export let config: Config;
+  export let backend: Backend;
 
   let previewIsVisible = false;
   let previewNoteData: LoadingNoteData;
@@ -36,7 +36,7 @@
 
     let note: LoadingNoteData;
     try {
-      note = await AnkiNoteBuilder.buildNote(markerData);
+      note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
     } catch (err) {
       Toast.error(Utils.errorMessage(err));
       throw err;

@@ -57,7 +57,7 @@
 
     let note: LoadingNoteData;
     try {
-      note = await AnkiNoteBuilder.buildNote(markerData);
+      note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
     } catch (err) {
       Toast.error(Utils.errorMessage(err));
       throw err;
