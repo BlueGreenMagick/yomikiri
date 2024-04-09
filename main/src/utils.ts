@@ -10,6 +10,16 @@ export interface Rect {
 namespace Utils {
   export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
 
+  export interface Thennable {
+    then: () => void
+  }
+
+
+  // Limit the value `T` can take so below situation is avoided.
+  //
+  // const a : Promise<{}> | {} = Promise.resolve(5)
+  export type PromiseOrValue<T> = Promise<unknown> extends T ? never : Promise<T> | Exclude<T, Thennable>
+
   export type First<T extends unknown[]> = T extends [infer FIRST, ...unknown[]]
     ? FIRST
     : never;
@@ -60,6 +70,53 @@ namespace Utils {
 
     setProgress(progress: P) {
       this.progress.set(progress);
+    }
+  }
+
+  /* eslint-disable-next-line -- {} is any object except undefined or null */
+  export type NonUndefined = {} | null
+
+  export class Lazy<T extends NonUndefined> {
+    initializer: () => T
+    inner?: T = undefined
+
+    constructor(initializer: () => T) {
+      this.initializer = initializer
+    }
+
+    get(): T {
+      if (this.inner === undefined) {
+        this.inner = this.initializer()
+      }
+      return this.inner
+    }
+  }
+
+  export class LazyAsync<T extends NonUndefined> {
+    private initializer: () => PromiseOrValue<T>
+    private inner?: PromiseOrValue<T> = undefined
+    private innerValue?: T = undefined
+    initialized = false
+
+    constructor(initializer: () => PromiseOrValue<T>) {
+      this.initializer = initializer
+    }
+
+    async get(): Promise<T> {
+      if (this.inner === undefined) {
+        this.inner = this.initializer()
+        this.innerValue = await this.inner
+        this.initialized = true
+        return this.innerValue
+      }
+      return await this.inner
+    }
+
+    getIfInitialized(): T | undefined {
+      if (this.innerValue !== undefined) {
+        return this.innerValue
+      }
+      return
     }
   }
 

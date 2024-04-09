@@ -2,18 +2,22 @@
   import IconSettings from "@icons/settings.svg";
   import IconPower from "@icons/power.svg";
   import Config from "~/config";
-  import { Platform } from "@platform";
+  import type { Platform } from "@platform";
 
-  let stateEnabled = Config.get("state.enabled");
+  export let platform: Platform
+  export let config: Config
+
+
+  let stateEnabled = config.get("state.enabled");
 
   function openSettings() {
-    Platform.openOptionsPage();
+    platform.openOptionsPage();
   }
 
   function toggleEnable() {
-    let prevValue = Config.get("state.enabled");
+    let prevValue = config.get("state.enabled");
     stateEnabled = !prevValue;
-    Config.set("state.enabled", stateEnabled);
+    config.set("state.enabled", stateEnabled);
   }
 </script>
 

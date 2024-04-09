@@ -2,38 +2,47 @@ import { BrowserApi } from "~/extension/browserApi";
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
-import Utils from "~/utils";
+import {Platform as IosPlatform} from "./"
 
-export namespace AnkiApi {
+class IosAnkiApi implements IAnkiAddNotes{
+  browserApi: BrowserApi
+  config: Config
+
+  constructor(platform: IosPlatform, config: Config) {
+    this.browserApi = platform.browserApi
+    this.config = config
+  }
+
   /**
    * Does not wait for note to actually be added to Anki.
    */
-  export async function addNote(note: NoteData): Promise<void> {
-    if (BrowserApi.context === "contentScript") {
-      return BrowserApi.request("addAnkiNote", note);
+  async addNote(note: NoteData): Promise<void> {
+    if (this.browserApi.context === "contentScript") {
+      return this.browserApi.request("addAnkiNote", note);
     }
-    return _addNote(note);
+    return this._addNote(note);
   }
 
-  async function _addNote(note: NoteData): Promise<void> {
-    const currentTab = await BrowserApi.currentTab();
+  async _addNote(note: NoteData): Promise<void> {
+    const currentTab = await this.browserApi.currentTab();
 
-    const willAutoRedirect = Config.get("anki.ios_auto_redirect")
+    const willAutoRedirect = this.config.get("anki.ios_auto_redirect")
     if (willAutoRedirect) {
       if (currentTab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await BrowserApi.setStorage("x-callback.tabId", currentTab.id);
-      await BrowserApi.setStorage("x-callback.tabUrl", location.href);
+      await this.browserApi.setStorage("x-callback.tabId", currentTab.id);
+      await this.browserApi.setStorage("x-callback.tabUrl", location.href);
     }
 
     const ankiLink = iosAnkiMobileURL(note, willAutoRedirect ? "http://yomikiri-redirect.yoonchae.com" : undefined)
     if (currentTab.id !== undefined) {
-      BrowserApi.updateTab(currentTab.id, { url: ankiLink });
+      this.browserApi.updateTab(currentTab.id, { url: ankiLink });
     } else {
       location.href = ankiLink;
     }
   }
 }
 
-AnkiApi satisfies IAnkiAddNotes;
+export const AnkiApi = IosAnkiApi
+export type AnkiApi = IosAnkiApi

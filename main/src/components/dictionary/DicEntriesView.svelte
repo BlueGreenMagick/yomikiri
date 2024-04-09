@@ -2,8 +2,13 @@
   import type { Entry } from "~/dicEntry";
   import DicEntryView from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
+  import type { Platform } from "@platform"
+  import type { Config } from "~/config"
 
+  export let platform: Platform
+  export let config: Config
   export let entries: Entry[];
+
   let model: DicEntriesModel = new DicEntriesModel();
 
   function onEntriesChange(_e: Entry[]) {
@@ -19,7 +24,7 @@
 
 <div id="yomikiri-entries" on:mousedown={onMouseDown}>
   {#each entries as entry}
-    <DicEntryView {entry} {model} on:selectedEntryForAnki />
+    <DicEntryView {platform} {config} {entry} {model} on:selectedEntryForAnki />
   {/each}
 </div>
 

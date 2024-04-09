@@ -1,5 +1,12 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import Utils from "~/utils";
+import { AnkiApi as DesktopAnkiApi } from "../desktop/anki"
+import { AnkiApi as IosAnkiApi } from "../ios/anki"
+import { AnkiApi as IosAppAnkiApi } from "../iosapp/anki"
+
+export { AnkiApi as DesktopAnkiApi } from "../desktop/anki"
+export { AnkiApi as IosAnkiApi } from "../ios/anki"
+export { AnkiApi as IosAppAnkiApi } from "../iosapp/anki"
 
 export interface NotetypeInfo {
   name: string;
@@ -48,4 +55,6 @@ export function iosAnkiMobileURL(note: NoteData, successUrl?: string): string {
   return url
 }
 
-export declare const AnkiApi: IAnkiAddNotes & IAnkiOptions
+export declare const AnkiApi: typeof DesktopAnkiApi | typeof IosAnkiApi | typeof IosAppAnkiApi
+export type AnkiApi = DesktopAnkiApi | IosAnkiApi | IosAppAnkiApi
+export type AnkiOptionsApi = DesktopAnkiApi | IosAppAnkiApi

@@ -1,16 +1,18 @@
 <script lang="ts">
-  import { Platform } from "@platform";
+  import type { Platform } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import ModalThirdParty from "../modals/ModalThirdParty.svelte";
   import OptionBase from "../items/OptionBase.svelte";
 
+  export let platform: Platform;
+
   let modalThirdPartyVisible = false;
   let versionString = "Loading version...";
 
   async function initialize() {
-    await Platform.versionInfo();
-    const versionInfo = await Platform.versionInfo();
+    await platform.versionInfo();
+    const versionInfo = await platform.versionInfo();
     versionString = "v" + versionInfo.version;
   }
 
@@ -32,7 +34,7 @@
     title="View source code"
     buttonText={"GitHub"}
     on:trigger={() => {
-      Platform.openExternalLink("https://github.com/bluegreenmagick/yomikiri");
+      platform.openExternalLink("https://github.com/bluegreenmagick/yomikiri");
     }}
   >
     Yomikiri is an open source project! You can view the code on GitHub.

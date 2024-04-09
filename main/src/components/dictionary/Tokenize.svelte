@@ -10,11 +10,16 @@
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
+  import type { Platform } from "@platform";
+  import type { Config } from "~/config";
 
   interface Events {
     close: undefined;
   }
 
+  export let platform: Platform;
+  export let config: Config;
+  export let backend: Backend;
   export let searchText = "";
   export let showCloseButton = false;
   export let onShowAnkiPreview: (
@@ -33,7 +38,7 @@
   const tokenize = Utils.SingleQueued(_tokenize);
   async function _tokenize(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
-    tokenizeResult = await Backend.tokenize(searchText, charAt);
+    tokenizeResult = await backend.tokenize(searchText, charAt);
   }
 
   function close() {
@@ -77,6 +82,8 @@
       <SentenceView tokens={tokenizeResult.tokens} bind:selectedCharAt />
     </div>
     <ToolbarWithPane
+      {platform}
+      onClose={close}
       {selectedTool}
       grammars={tokenizeResult.grammars}
       sentence={searchText}
@@ -85,6 +92,8 @@
     />
     <div class="entries">
       <DicEntriesView
+        {platform}
+        {config}
         entries={tokenizeResult.entries}
         on:selectedEntryForAnki={(ev) => {
           onShowAnkiPreview(ev.detail, tokenizeResult);

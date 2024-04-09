@@ -3,44 +3,57 @@ import type { TokenizeResult } from "@platform/backend";
 import Config from "~/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
+import type { Platform } from "~/platform/ext";
 
-export namespace Tooltip {
-  const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
-  let _tooltipPageSvelte: TooltipPage;
-  let _shown = false;
-  let _resizeObserverAttached = false;
+const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
 
-  export async function show(
+export class Tooltip {
+  platform: Platform
+  config: Config
+  highlighter: Highlighter
+
+  private _tooltipPageSvelte: TooltipPage;
+  private _shown = false;
+  private _resizeObserverAttached = false;
+  private _repositionRequested = false;
+
+  constructor(platform: Platform, config: Config, highlighter: Highlighter) {
+    this.platform = platform
+    this.config = config
+    this.highlighter = highlighter
+  }
+
+  async show(
     tokenizeResult: TokenizeResult,
     highlightedRects: Rect[],
     mouseX: number,
     mouseY: number
   ) {
-    let tooltip = getTooltipEl();
+    let tooltip = this.getTooltipEl();
     if (tooltip === null) {
-      tooltip = await createTooltipIframe();
+      tooltip = await this.createTooltipIframe();
     }
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
-    _shown = true;
-    _tooltipPageSvelte.setTokenizeResult(tokenizeResult);
+    this._shown = true;
+    this._tooltipPageSvelte.setTokenizeResult(tokenizeResult);
     // fix bug where tooltip height is previous entry's height
     await 0;
-    const rect = findRectOfMouse(highlightedRects, mouseX, mouseY);
-    await position(tooltip, rect);
+    const rect = this.findRectOfMouse(highlightedRects, mouseX, mouseY);
+    this.position(tooltip, rect);
   }
 
-  export function hide() {
-    const tooltip = getTooltipEl();
+  hide() {
+    const tooltip = this.getTooltipEl();
     if (tooltip === null) {
       return;
     }
     tooltip.style.display = "none";
     tooltip.contentWindow?.getSelection()?.empty();
-    _shown = false;
+    this._shown = false;
   }
 
-  async function createTooltipIframe(): Promise<HTMLIFrameElement> {
+  private async createTooltipIframe(): Promise<HTMLIFrameElement> {
     const iframe = document.createElement("iframe");
     iframe.id = TOOLTIP_IFRAME_ID;
     iframe.style.position = "absolute";
@@ -55,50 +68,50 @@ export namespace Tooltip {
     iframe.style.boxSizing = "content-box";
     document.body.appendChild(iframe);
 
-    if (!_resizeObserverAttached) {
-      attachResizeObserver();
-      _resizeObserverAttached = true;
+    if (!this._resizeObserverAttached) {
+      this.attachResizeObserver();
+      this._resizeObserverAttached = true;
     }
 
     const iframeDoc = iframe.contentDocument!;
     if (iframeDoc.readyState === "complete") {
-      setupEntriesPage(iframe);
+      this.setupEntriesPage(iframe);
       return iframe;
     } else {
       const [promise, resolve] = Utils.createPromise<HTMLIFrameElement>();
       iframe.addEventListener("load", () => {
-        setupEntriesPage(iframe);
+        this.setupEntriesPage(iframe);
         resolve(iframe);
       });
       return promise;
     }
   }
 
-  let _repositionRequested = false;
+
   /** add ResizeObserver to document and change position on document resize */
-  function attachResizeObserver() {
+  private attachResizeObserver() {
     const resizeObserver = new ResizeObserver((_) => {
-      if (!_shown || _repositionRequested) return;
-      _repositionRequested = true;
+      if (!this._shown || this._repositionRequested) return;
+      this._repositionRequested = true;
       requestAnimationFrame(() => {
-        _repositionRequested = false;
-        if (!_shown) return;
-        const tooltipEl = getTooltipEl();
+        this._repositionRequested = false;
+        if (!this._shown) return;
+        const tooltipEl = this.getTooltipEl();
         if (!tooltipEl) return;
-        const rects = Highlighter.highlightedRects();
-        position(tooltipEl, rects[0]);
+        const rects = this.highlighter.highlightedRects();
+        this.position(tooltipEl, rects[0]);
       });
     });
     resizeObserver.observe(document.documentElement);
   }
 
-  function getTooltipEl(): HTMLIFrameElement | null {
+  private getTooltipEl(): HTMLIFrameElement | null {
     return document.getElementById(
       TOOLTIP_IFRAME_ID
     ) as HTMLIFrameElement | null;
   }
 
-  function findRectOfMouse(
+  private findRectOfMouse(
     rects: Rect[],
     mouseX: number,
     mouseY: number
@@ -123,7 +136,7 @@ export namespace Tooltip {
    *  prefer tooltip.top = rect.bottom + VERTICAL_SPACE,
    *  but sometimes tooltip.bottom = rect.top - VERTICAL_SPACE
    */
-  async function position(tooltip: HTMLIFrameElement, rect: Rect) {
+  private position(tooltip: HTMLIFrameElement, rect: Rect) {
     // min margin between tooltip and window
     const MARGIN = 10;
     // space between highlighted rect and tooltip
@@ -182,11 +195,11 @@ export namespace Tooltip {
       tooltip.style.transform = "translateY(-100%)";
     }
 
-    updateTooltipHeight(tooltip);
+    this.updateTooltipHeight(tooltip);
   }
 
   /** update tooltip height to match content height */
-  function updateTooltipHeight(
+  private updateTooltipHeight(
     tooltip: HTMLIFrameElement,
     max = false
   ) {
@@ -205,23 +218,23 @@ export namespace Tooltip {
     tooltip.style.height = height + "px";
   }
 
-  function setupEntriesPage(tooltip: HTMLIFrameElement) {
+  private setupEntriesPage(tooltip: HTMLIFrameElement) {
     const doc = tooltip.contentDocument!;
     doc.head.textContent += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 `;
-    Config.setStyle(doc);
+    this.config.setStyle(doc);
     doc.documentElement.classList.add("yomikiri");
 
-    _tooltipPageSvelte = new TooltipPage({
+    this._tooltipPageSvelte = new TooltipPage({
       target: doc.body,
-      props: {},
+      props: { platform: this.platform, config: this.config, onClose: () => { this.hide() } },
     });
 
-    _tooltipPageSvelte.$on("updateHeight", (_: CustomEvent<void>) => {
-      const tooltip = getTooltipEl();
+    this._tooltipPageSvelte.$on("updateHeight", (_: CustomEvent<void>) => {
+      const tooltip = this.getTooltipEl();
       if (tooltip !== null) {
-        updateTooltipHeight(tooltip);
+        this.updateTooltipHeight(tooltip);
       }
     });
   }

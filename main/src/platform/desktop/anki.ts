@@ -7,18 +7,29 @@ import type {
 import Config from "~/config";
 import type { NoteData } from "~/ankiNoteBuilder";
 import { BrowserApi } from "~/extension/browserApi";
+import type { DesktopPlatform } from ".";
+
+const ANKI_CONNECT_VER = 6;
 
 /**
  * Uses Anki-Connect on desktop.
  * Should not be used in content script
  * as Anki-connect allows only calls from trusted origins.
  */
-export namespace AnkiApi {
-  const ANKI_CONNECT_VER = 6;
+class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+  platform: DesktopPlatform
+  browserApi: BrowserApi
+  config: Config
 
-  async function ankiConnectURL(): Promise<string> {
-    let url = Config.get("anki.connect_url");
-    const port = Config.get("anki.connect_port");
+  constructor(platform: DesktopPlatform, config: Config) {
+    this.platform = platform
+    this.browserApi = platform.browserApi
+    this.config = config
+  }
+
+  private ankiConnectURL(): string {
+    let url = this.config.get("anki.connect_url");
+    const port = this.config.get("anki.connect_port");
     if (!url.includes("://")) {
       url = "http://" + url;
     }
@@ -26,8 +37,8 @@ export namespace AnkiApi {
   }
 
   /** Send Anki-connect request */
-  async function request(action: string, params?: unknown): Promise<unknown> {
-    const ankiConnectUrl = await ankiConnectURL();
+  private async request(action: string, params?: unknown): Promise<unknown> {
+    const ankiConnectUrl = this.ankiConnectURL();
     let response;
     try {
       response = await fetch(ankiConnectUrl, {
@@ -62,23 +73,23 @@ export namespace AnkiApi {
     return data.result;
   }
 
-  export async function getAnkiInfo(): Promise<AnkiInfo> {
-    return fetchAnkiInfo();
+  async getAnkiInfo(): Promise<AnkiInfo> {
+    return this.fetchAnkiInfo();
   }
 
-  export async function requestAnkiInfo(): Promise<void> {
-    await checkConnection();
+  async requestAnkiInfo(): Promise<void> {
+    await this.checkConnection();
   }
 
-  async function fetchAnkiInfo(): Promise<AnkiInfo> {
-    const decks = (await request("deckNames")) as string[];
-    const notetypes = (await request("modelNames")) as string[];
+  private async fetchAnkiInfo(): Promise<AnkiInfo> {
+    const decks = (await this.request("deckNames")) as string[];
+    const notetypes = (await this.request("modelNames")) as string[];
     const ankiInfo: AnkiInfo = {
       decks,
       notetypes: [],
     };
     for (const notetype of notetypes) {
-      const fields = await notetypeFields(notetype);
+      const fields = await this.notetypeFields(notetype);
       const notetypeInfo: NotetypeInfo = {
         name: notetype,
         fields: fields,
@@ -88,26 +99,26 @@ export namespace AnkiApi {
     return ankiInfo;
   }
 
-  async function notetypeFields(noteTypeName: string): Promise<string[]> {
-    return (await request("modelFieldNames", {
+  async notetypeFields(noteTypeName: string): Promise<string[]> {
+    return (await this.request("modelFieldNames", {
       modelName: noteTypeName,
     })) as string[];
   }
 
-  export async function tags(): Promise<string[]> {
-    return (await request("getTags")) as string[];
+  async tags(): Promise<string[]> {
+    return (await this.request("getTags")) as string[];
   }
 
-  export async function addNote(note: NoteData): Promise<void> {
-    if (BrowserApi.context === "contentScript") {
-      return BrowserApi.request("addAnkiNote", note);
+  async addNote(note: NoteData): Promise<void> {
+    if (this.browserApi.context === "contentScript") {
+      return this.browserApi.request("addAnkiNote", note);
     }
 
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
     }
-    await request("addNote", {
+    await this.request("addNote", {
       note: {
         deckName: note.deck,
         modelName: note.notetype,
@@ -121,9 +132,9 @@ export namespace AnkiApi {
   }
 
   /** Throws an error if not successfully connected. */
-  export async function checkConnection(): Promise<void> {
+  async checkConnection(): Promise<void> {
     try {
-      const resp = await request("requestPermission");
+      const resp = await this.request("requestPermission");
       if (resp.permission === "granted") {
         return;
       } else {
@@ -135,5 +146,5 @@ export namespace AnkiApi {
   }
 }
 
-AnkiApi satisfies IAnkiAddNotes;
-AnkiApi satisfies IAnkiOptions;
+export const AnkiApi = DesktopAnkiApi
+export type AnkiApi = DesktopAnkiApi

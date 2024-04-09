@@ -1,15 +1,19 @@
 <script lang="ts">
+  import type { IosAppPlatform } from "~/platform/ios";
   import { platformClass } from "../components/actions";
   import DictionaryView from "./DictionaryView.svelte";
+  import type Config from "~/config";
+  import type { IosAppBackend } from "~/platform/iosapp/backend";
 
-  export let initialized: Promise<void>;
+  export let initialized: Promise<[Config, IosAppBackend]>;
+  export let platform: IosAppPlatform;
   export let context: "app" | "action";
   export let searchText = "";
 </script>
 
 <div id="main" use:platformClass>
-  {#await initialized then}
-    <DictionaryView {context} {searchText} />
+  {#await initialized then [config, backend]}
+    <DictionaryView {context} {platform} {backend} {config} {searchText} />
   {/await}
 </div>
 

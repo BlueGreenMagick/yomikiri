@@ -1,63 +1,78 @@
 import Utils from "~/utils";
-import type { IosTTSRequest, Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
+import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic } from "../common";
 import { Config, type StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
-import { getTranslation } from "../desktop";
+import { getTranslation } from "../common/translate";
 import type { RawDictionaryMetadata } from "./dictionary";
+import {Backend as IosAppBackend} from "./backend"
+import {Dictionary as IosAppDictionary} from "./dictionary"
+import {AnkiApi as IosAppAnkiApi} from "./anki"
 
 export * from "../common"
 
 declare global {
   interface Window {
-    iosConfigUpdated: () => void;
+    iosConfigUpdated: () => Promise<void>;
   }
 }
 
-export namespace Platform {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = false;
-  export const IS_IOSAPP = true;
+export interface MessageWebviewMap {
+  ankiIsInstalled: [null, boolean];
+  // returns false if anki is not installed
+  ankiInfo: [null, boolean];
+  loadConfig: [null, StoredConfiguration];
+  saveConfig: [string, void];
+  tokenize: [TokenizeRequest, RawTokenizeResult];
+  searchTerm: [string, string[]];
+  versionInfo: [null, VersionInfo]
+  updateDict: [null, RawDictionaryMetadata]
+  dictMetadata: [null, RawDictionaryMetadata]
+  ttsVoices: [null, TTSVoice[]];
+  openLink: [string, null];
+  // IosTTSRequest JSON
+  tts: [string, null]
 
-  interface MessageWebviewMap {
-    ankiIsInstalled: [null, boolean];
-    // returns false if anki is not installed
-    ankiInfo: [null, boolean];
-    loadConfig: [null, StoredConfiguration];
-    saveConfig: [string, void];
-    tokenize: [TokenizeRequest, RawTokenizeResult];
-    searchTerm: [string, string[]];
-    versionInfo: [null, VersionInfo]
-    updateDict: [null, RawDictionaryMetadata]
-    dictMetadata: [null, RawDictionaryMetadata]
-    ttsVoices: [null, TTSVoice[]];
-    openLink: [string, null];
-    // IosTTSRequest JSON
-    tts: [string, null]
+  // action extension
+  close: [null, void];
+}
 
-    // action extension
-    close: [null, void];
-  }
+export type WebviewRequest<K extends keyof MessageWebviewMap> = Utils.First<
+MessageWebviewMap[K]
+>;
+export type WebviewResponse<K extends keyof MessageWebviewMap> = Utils.Second<
+MessageWebviewMap[K]
+>;
 
-  export type WebviewRequest<K extends keyof MessageWebviewMap> = Utils.First<
-    MessageWebviewMap[K]
-  >;
-  export type WebviewResponse<K extends keyof MessageWebviewMap> = Utils.Second<
-    MessageWebviewMap[K]
-  >;
+class IosAppPlatform implements IPlatform {
+  static IS_DESKTOP = false;
+  static IS_IOS = false;
+  static IS_IOSAPP = true;
 
-  const _configSubscribers: ((config: StoredConfiguration) => void)[] = []
+  _configSubscribers: ((config: StoredConfiguration) => void)[] = []
 
-  export function initialize() {
+  constructor() {
     window.iosConfigUpdated = async () => {
-      const config = await getConfig()
-      for (const subscriber of _configSubscribers) {
+      const config = await this.getConfig()
+      for (const subscriber of this._configSubscribers) {
         subscriber(config)
       }
     }
   }
 
+  newBackend(): IosAppBackend {
+    return new IosAppBackend(this)
+  }
+
+  newDictionary(): IosAppDictionary {
+    return new IosAppDictionary(this)
+  }
+
+  newAnkiApi(_config: Config): IosAppAnkiApi {
+    return new IosAppAnkiApi(this)
+  }
+
   /** Message to app inside app's WKWebview */
-  export async function messageWebview<K extends keyof MessageWebviewMap>(
+  async messageWebview<K extends keyof MessageWebviewMap>(
     key: K,
     request: WebviewRequest<K>
   ): Promise<WebviewResponse<K>> {
@@ -77,8 +92,8 @@ export namespace Platform {
     }
   }
 
-  export async function getConfig(): Promise<StoredConfiguration> {
-    const config = await messageWebview("loadConfig", null);
+  async getConfig(): Promise<StoredConfiguration> {
+    const config = await this.messageWebview("loadConfig", null);
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.")
       Utils.log(config)
@@ -90,46 +105,49 @@ export namespace Platform {
   }
 
   /** Does nothiing in iosapp */
-  export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    _configSubscribers.push(subscriber)
+  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+    this._configSubscribers.push(subscriber)
   }
 
-  export async function saveConfig(config: StoredConfiguration) {
+  async saveConfig(config: StoredConfiguration) {
     const configJson = JSON.stringify(config);
-    await messageWebview("saveConfig", configJson);
+    await this.messageWebview("saveConfig", configJson);
 
     // trigger update for this execution context
-    for (const subscriber of _configSubscribers) {
+    for (const subscriber of this._configSubscribers) {
       subscriber(config)
     }
   }
 
-  export async function openOptionsPage(): Promise<void> {
+  async openOptionsPage(): Promise<void> {
     throw new Error("Not implemented for iosapp");
   }
 
-  export async function versionInfo(): Promise<VersionInfo> {
-    return await messageWebview("versionInfo", null);
+  async versionInfo(): Promise<VersionInfo> {
+    return await this.messageWebview("versionInfo", null);
   }
 
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await Platform.messageWebview("ttsVoices", null)
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return await this.messageWebview("ttsVoices", null)
   }
 
-  export async function playTTS(text: string): Promise<void> {
+  async playTTS(text: string): Promise<void> {
     const voice = Config.get("tts.voice");
     const req = { voice, text }
-    await Platform.messageWebview("tts", JSON.stringify(req));
+    await this.messageWebview("tts", JSON.stringify(req));
   }
 
-  export async function translate(text: string): Promise<TranslateResult> {
+  async translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
   }
 
   /** Currently only works in options page */
-  export function openExternalLink(url: string): void {
-    Platform.messageWebview("openLink", url)
+  openExternalLink(url: string): void {
+    this.messageWebview("openLink", url)
   }
+
 }
 
-Platform satisfies Module;
+IosAppPlatform satisfies IPlatformStatic
+export const Platform = IosAppPlatform
+export type Platform = IosAppPlatform

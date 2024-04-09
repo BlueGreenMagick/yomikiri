@@ -1,9 +1,10 @@
 import OptionsPage from "../components/options/OptionsPage.svelte";
-import { Platform } from "@platform";
-import { AnkiApi } from "@platform/anki";
+import { Platform } from "~/platform/iosapp";
+import { AnkiApi, IosAppAnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
 import { Backend } from "@platform/backend";
+import type { IosAppDictionary } from "~/platform/common/dictionary";
 
 declare global {
   interface Window {
@@ -14,18 +15,22 @@ declare global {
   }
 }
 
-async function initialize() {
-  Platform.initialize();
-  await Config.initialize();
-  Config.setStyle(document);
-  await Backend.initialize();
+const platform = new Platform()
+const initialized = initialize();
+
+async function initialize(): Promise<[Config, IosAppAnkiApi, IosAppDictionary]> {
+  const config = await Config.initialize(platform);
+  config.setStyle(document);
+  const ankiApi = platform.newAnkiApi(config)
+  const dictionary = platform.newDictionary()
+  return [config, ankiApi, dictionary]
 }
 
-const initialized = initialize();
+
 
 const _optionsPage = new OptionsPage({
   target: document.body,
-  props: { initialized },
+  props: { initialized, platform },
 });
 
 window.Utils = Utils;

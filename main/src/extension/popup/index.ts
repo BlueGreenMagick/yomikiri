@@ -1,32 +1,36 @@
-import { Platform } from "@platform";
+import { Platform } from "@platform-ext";
 import PopupPage from "./PopupPage.svelte";
 import Config from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import { Backend } from "@platform/backend";
+import type { Backend } from "@platform/backend"
 
 declare global {
   interface Window {
-    Api: typeof BrowserApi;
+    browserApi: BrowserApi
+    platform: Platform
     Utils: typeof Utils;
     Config: typeof Config;
     Platform: typeof Platform;
   }
 }
 
-async function initialize(): Promise<void> {
-  const browserApi = new BrowserApi({ context: "popup" });
-  Platform.initialize(browserApi);
-  await Config.initialize();
-  Config.setStyle(document);
-  await Backend.initialize();
+const browserApi = new BrowserApi({ context: "popup" });
+const platform = new Platform(browserApi)
+
+async function initialize(): Promise<[Config, Backend]> {
+  const config = await Config.initialize(platform)
+  config.setStyle(document);
+  const backend = await platform.newBackend()
+  return [config, backend]
 }
 
 const initialized = initialize();
 
-const page = new PopupPage({ target: document.body, props: { initialized } });
+const page = new PopupPage({ target: document.body, props: { platform, initialized } });
 
-window.Api = BrowserApi;
+window.browserApi = browserApi
+window.platform = platform
 window.Utils = Utils;
 window.Config = Config;
 window.Platform = Platform;

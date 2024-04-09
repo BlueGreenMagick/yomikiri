@@ -1,5 +1,5 @@
-import { Platform } from "@platform";
-import { AnkiApi } from "@platform/anki";
+import { Platform } from "~/platform/iosapp";
+import { AnkiApi, IosAppAnkiApi } from "@platform/anki";
 import Utils from "~/utils";
 import Config from "~/config";
 import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
@@ -12,12 +12,16 @@ declare global {
   }
 }
 
-async function initialize() {
-  Platform.initialize();
-  await Config.initialize();
+const platform = new Platform()
+const initialized = initialize();
+
+async function initialize(): Promise<[Config, IosAppAnkiApi]> {
+  const config = await Config.initialize(platform);
+  const ankiApi = platform.newAnkiApi(config)
+  return [config, ankiApi]
 }
 
-const initialized = initialize();
+
 
 const _mainSvelte = new OptionsAnkiTemplatePage({
   target: document.body,

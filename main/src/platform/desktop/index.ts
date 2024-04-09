@@ -1,74 +1,94 @@
 import { BrowserApi } from "~/extension/browserApi";
-import type { Module, TTSVoice, VersionInfo } from "../common";
-import { type StoredConfiguration } from "~/config";
+import type { IPlatform, IPlatformStatic, TTSVoice, VersionInfo } from "../common";
+import Config, { type StoredConfiguration } from "~/config";
 import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
+import {Backend as DesktopBackend} from "./backend"
+import {Dictionary as DesktopDictionary} from "./dictionary"
+import { AnkiApi as DesktopAnkiApi } from "./anki";
 
-export * from "../common/translate";
+export * from "../common";
 
-export namespace Platform {
-  export const IS_DESKTOP = true;
-  export const IS_IOS = false;
-  export const IS_IOSAPP = false;
+class DesktopPlatform implements IPlatform {
+  static IS_DESKTOP = true
+  static IS_IOS = false
+  static IS_IOSAPP = false
 
-  let browserApi: BrowserApi
+  browserApi: BrowserApi
 
-  export function initialize(browserApiParam: BrowserApi) { 
-    browserApi = browserApiParam
+  constructor(browserApi: BrowserApi) {
+    this.browserApi = browserApi
   }
 
-  export async function getConfig(): Promise<StoredConfiguration> {
-    return await browserApi.getStorage<StoredConfiguration>("config", {});
+  async newBackend(): Promise<DesktopBackend> {
+    return await DesktopBackend.initialize(this.browserApi)
+  }
+
+  newDictionary(): DesktopDictionary {
+    return new DesktopDictionary()
+  }
+
+  newAnkiApi(config: Config): DesktopAnkiApi {
+    return new DesktopAnkiApi(this, config)
+  }
+
+  async getConfig(): Promise<StoredConfiguration> {
+    return await this.browserApi.getStorage<StoredConfiguration>("config", {});
   }
 
   /** subscriber is called when config is changed. */
-  export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    browserApi.handleStorageChange("config", (change) => {
+  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+    this.browserApi.handleStorageChange("config", (change) => {
       subscriber(change.newValue)
     })
   }
 
-  export function saveConfig(config: StoredConfiguration): Promise<void> {
-    return browserApi.setStorage("config", config);
+  saveConfig(config: StoredConfiguration): Promise<void> {
+    return this.browserApi.setStorage("config", config);
   }
 
-  export function openOptionsPage() {
+  openOptionsPage() {
     chrome.runtime.openOptionsPage();
   }
 
-  export async function versionInfo(): Promise<VersionInfo> {
-    const manifest = browserApi.manifest();
+  async versionInfo(): Promise<VersionInfo> {
+    const manifest = this.browserApi.manifest();
     return {
       version: manifest.version
     }
   }
 
   /** This function is and only should be called in options page */
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return browserApi.japaneseTtsVoices()
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return this.browserApi.japaneseTtsVoices()
   }
 
-  export async function playTTS(text: string): Promise<void> {
-    if (browserApi.context === "contentScript") {
-      await browserApi.request("tts", text);
+  async playTTS(text: string): Promise<void> {
+    if (this.browserApi.context === "contentScript") {
+      await this.browserApi.request("tts", text);
     } else {
-      browserApi.speakJapanese(text);
+      this.browserApi.speakJapanese(text);
     }
   }
 
-  export async function translate(text: string): Promise<TranslateResult> {
-    if (browserApi.context !== "contentScript") {
+  async translate(text: string): Promise<TranslateResult> {
+    if (this.browserApi.context !== "contentScript") {
       return getTranslation(text)
     } else {
-      return browserApi.request("translate", text);
+      return this.browserApi.request("translate", text);
     }
   }
 
-  export function openExternalLink(url: string): void {
+  openExternalLink(url: string): void {
     window
       .open(url, "_blank")
       ?.focus();
   }
 }
 
-Platform satisfies Module;
+DesktopPlatform satisfies IPlatformStatic
+
+// We set unique name for each platform class then rename to common name
+// for easier type debugging during development
+export const Platform = DesktopPlatform
+export type Platform = DesktopPlatform

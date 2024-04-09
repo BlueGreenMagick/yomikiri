@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { type ConfigKeysOfType, Config } from "~/config";
+  import type { ConfigKeysOfType, Config } from "~/config";
   import OptionBase from "./OptionBase.svelte";
 
+  export let config: Config
   export let key: ConfigKeysOfType<string>;
   export let title: string;
   export let disabled = false;
   // Make Input box wider
   export let wide = false;
 
-  let value: string = Config.get(key);
+  let value: string = config.get(key);
 
   function onChange(_: Event) {
     if (value === undefined) return;
-    Config.set(key, value);
+    config.set(key, value);
   }
 
   function onKeydown(ev: KeyboardEvent) {

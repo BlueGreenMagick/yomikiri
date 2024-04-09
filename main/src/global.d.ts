@@ -14,9 +14,7 @@ declare module "*.yomikiriindex" {
 }
 
 declare module "*.svg" {
-  import { SvelteComponent_1 } from "svelte";
-  const content: SvelteComponent_1;
-  export default content;
+  export { SvelteComponent as default } from 'svelte';
 }
 
 declare module "*.txt" {

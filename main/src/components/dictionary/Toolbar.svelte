@@ -6,9 +6,8 @@
   import IconSchool from "@icons/school.svg";
   import IconLanguage from "@icons/language.svg";
   import IconClose from "@icons/close.svg";
-  import { Tooltip } from "~/extension/content/tooltip";
-  import { Highlighter } from "~/extension/content/highlight";
 
+  export let onClose: () => void;
   export let selectedTool: Tools = null;
   export let translateDisabled = false;
   export let grammarDisabled = false;
@@ -34,11 +33,6 @@
     } else {
       changeSelectedTool("grammar");
     }
-  }
-
-  function closeTooltip() {
-    Tooltip.hide();
-    Highlighter.unhighlight();
   }
 </script>
 
@@ -66,7 +60,13 @@
   </div>
   <div class="right buttons">
     {#if tooltipMode}
-      <button class="tool-button" title="Close" on:click={closeTooltip}>
+      <button
+        class="tool-button"
+        title="Close"
+        on:click={() => {
+          onClose();
+        }}
+      >
         <div class="icon"><IconClose /></div>
       </button>
     {/if}

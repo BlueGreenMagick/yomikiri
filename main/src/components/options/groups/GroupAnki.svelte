@@ -1,15 +1,19 @@
 <script lang="ts">
   import { Platform } from "@platform";
-  import { AnkiApi } from "@platform/anki";
+  import { type AnkiOptionsApi } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
   import ModalAnkiTemplate from "../modals/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils from "~/utils";
+  import type Config from "~/config";
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
+
+  export let ankiApi: AnkiOptionsApi;
+  export let config: Config;
 
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
@@ -24,7 +28,7 @@
     ankiTemplateDescriptionError = false;
     ankiTemplateDescription = "";
     try {
-      await AnkiApi.requestAnkiInfo();
+      await ankiApi.requestAnkiInfo();
       ankiTemplateModalHidden = false;
     } catch (err) {
       let errorMsg = Utils.errorMessage(err);
@@ -38,7 +42,7 @@
     if (requesting) return;
     requesting = true;
     try {
-      await AnkiApi.checkConnection();
+      await ankiApi.checkConnection();
       useAnkiDescription = "success";
     } catch (err) {
       useAnkiError = Utils.errorMessage(err);
@@ -67,7 +71,12 @@
 </script>
 
 <GroupedOptions title="Anki">
-  <OptionToggle key="anki.enabled" title="Use Anki" bind:value={ankiEnabled}>
+  <OptionToggle
+    {config}
+    key="anki.enabled"
+    title="Use Anki"
+    bind:value={ankiEnabled}
+  >
     {#if useAnkiDescription === "loading"}
       Connecting to Anki...
     {:else if useAnkiDescription === "success"}
@@ -92,7 +101,11 @@
   </OptionToggle>
 
   {#if Platform.IS_DESKTOP}
-    <OptionNumber key="anki.connect_port" title="AnkiConnect port number">
+    <OptionNumber
+      {config}
+      key="anki.connect_port"
+      title="AnkiConnect port number"
+    >
       This is the AnkiConnect config `webBindPort`
     </OptionNumber>
   {/if}
@@ -110,6 +123,7 @@
 
   {#if Platform.IS_IOSAPP}
     <OptionToggle
+      {config}
       title="Reopen Safari after adding Anki note"
       key="anki.ios_auto_redirect"
     >
@@ -121,6 +135,8 @@
 </GroupedOptions>
 {#if !ankiTemplateModalHidden && Platform.IS_DESKTOP}
   <ModalAnkiTemplate
+    {config}
+    {ankiApi}
     on:close={() => {
       ankiTemplateModalHidden = true;
     }}

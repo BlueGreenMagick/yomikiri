@@ -8,35 +8,30 @@ import { Highlighter } from "./highlight";
 import { Tooltip } from "~/extension/content/tooltip";
 import Utils from "~/utils";
 import Config from "~/config";
-import { Platform } from "@platform";
-import { Backend } from "@platform/backend";
+import { Platform } from "@platform-ext";
 import { containsJapaneseContent } from "~/japanese";
 
 declare global {
   interface Window {
     Api: typeof BrowserApi;
     Config: typeof Config;
-    ensureInitialized: typeof ensureInitialized;
   }
 }
 
-const browserApi = new BrowserApi({context: "contentScript"});
-let initialized = false;
-let _initialized: Promise<void> | undefined;
+const browserApi = new BrowserApi({ context: "contentScript" });
+const platform = new Platform(browserApi)
+const lazyBackend = new Utils.Lazy(async () => await platform.newBackend())
+const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
+const highlighter = new Highlighter(() => { lazyTooltip.getIfInitialized()?.hide() })
+const lazyTooltip = new Utils.LazyAsync(async () => new Tooltip(platform, await lazyConfig.get(), highlighter))
 
-async function _initialize() {
-  Platform.initialize(browserApi)
-  await Config.initialize();
-  await Backend.initialize();
-  await Highlighter.initialize();
-  initialized = true;
-}
+const _initialized = initialize()
 
-async function ensureInitialized() {
-  if (_initialized === undefined) {
-    _initialized = _initialize();
-  }
-  return _initialized;
+async function initialize() {
+  const config = await lazyConfig.get();
+  config.onChange(() => { checkStateEnabled(config) });
+  document.addEventListener("mousemove", (ev) => { onMouseMove(ev, config) })
+  document.addEventListener("click", (ev) => { onClick(ev, config) })
 }
 
 /** Return false if not triggered on Japanese text */
@@ -49,12 +44,12 @@ async function ensureInitialized() {
 6. Highlight nodes, unhighlighting previous nodes
 */
 async function _trigger(x: number, y: number): Promise<boolean> {
-  await ensureInitialized();
+  const backend = await lazyBackend.get();
 
-  const charLoc = await charLocationAtPos(x, y);
+  const charLoc = charLocationAtPos(x, y);
   if (charLoc === null) return false;
 
-  if (Highlighter.isHighlighted(charLoc.node, charLoc.charAt)) {
+  if (highlighter.isHighlighted(charLoc.node, charLoc.charAt)) {
     return false;
   }
 
@@ -63,7 +58,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
-  const result = await Backend.tokenize(
+  const result = await backend.tokenize(
     scannedSentence.text,
     scannedSentence.charAt,
   );
@@ -79,65 +74,61 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     scannedSentence.charAt - currToken.start
   );
   if (result.entries.length === 0) {
-    Tooltip.hide();
-    Highlighter.highlightRed(nodes);
+    lazyTooltip.getIfInitialized()?.hide();
+    highlighter.highlightRed(nodes);
   } else {
-    Highlighter.highlightNodes(nodes);
-    const rects = Highlighter.highlightedRects();
-    await Tooltip.show(result, rects, x, y);
+    highlighter.highlightNodes(nodes);
+    const rects = highlighter.highlightedRects();
+    const tooltip = await lazyTooltip.get();
+    await tooltip.show(result, rects, x, y);
   }
   return true;
 }
 
 const trigger = Utils.SingleQueued(_trigger);
 
-document.addEventListener("mousemove", async (ev) => {
+function onMouseMove(ev: MouseEvent, config: Config) {
   // inside yomikiri tooltip
   if (document.documentElement.classList.contains("yomikiri")) {
     return;
   }
-  if (!Config.initialized || !Config.get("state.enabled")) {
+  if (!config.initialized || !config.get("state.enabled")) {
     return;
   }
 
   if (ev.shiftKey) {
-    await trigger(ev.clientX, ev.clientY);
+    trigger(ev.clientX, ev.clientY)
   }
-});
+}
 
-document.addEventListener("click", async (ev: MouseEvent) => {
+function onClick(ev: MouseEvent, config: Config) {
   // inside yomikiri tooltip
   if (document.documentElement.classList.contains("yomikiri")) {
     return;
   }
-  if (!Config.initialized || !Config.get("state.enabled")) {
+  if (!config.initialized || !config.get("state.enabled")) {
     return;
   }
 
   if (Utils.isTouchScreen) {
-    const triggered = await trigger(ev.clientX, ev.clientY);
-    if (triggered === false) {
-      Tooltip.hide();
-      Highlighter.unhighlight();
-    }
-  }
-});
-
-function checkStateEnabled() {
-  if (!initialized) return;
-
-
-  const value = Config.get("state.enabled");
-  if (!value) {
-    Tooltip.hide();
-    Highlighter.unhighlight();
+    trigger(ev.clientX, ev.clientY).then((triggered) => {
+      if (triggered === false) {
+        lazyTooltip.getIfInitialized()?.hide();
+        highlighter.unhighlight();
+      }
+    })
   }
 }
 
-Config.onChange(checkStateEnabled)
-ensureInitialized();
+function checkStateEnabled(config: Config) {
+  const value = config.get("state.enabled");
+  if (!value) {
+    lazyTooltip.getIfInitialized()?.hide();
+    highlighter.unhighlight();
+  }
+}
+
 
 
 window.Api = BrowserApi;
-window.ensureInitialized = ensureInitialized;
 window.Config = Config;

@@ -13,14 +13,18 @@
   import { Toast } from "~/toast";
   import Utils from "~/utils";
   import ToolbarWithPane from "~/components/dictionary/ToolbarWithPane.svelte";
-  import { Highlighter } from "./highlight";
-  import { Tooltip } from "./tooltip";
+  import type { Platform } from "@platform";
+  import type { Config } from "~/config";
 
   interface Events {
     updateHeight: undefined;
   }
 
+  export let platform: Platform;
+  export let config: Config;
+  export let onClose: () => void;
   export let tokenizeResult: TokenizeResult;
+
   let previewIsVisible = false;
   let previewNoteData: LoadingNoteData;
   let selectedTool: Tools | null = null;
@@ -71,8 +75,7 @@
   }
 
   function noteAdded() {
-    Tooltip.hide();
-    Highlighter.unhighlight();
+    onClose();
     previewIsVisible = false;
   }
 
@@ -83,6 +86,8 @@
 <div class="tooltip">
   <div class="dic-entries-container" class:previewIsVisible>
     <ToolbarWithPane
+      {platform}
+      {onClose}
       grammars={tokenizeResult.grammars}
       {sentence}
       {selectedTool}
@@ -90,6 +95,8 @@
       {changeSelectedTool}
     />
     <DicEntriesView
+      {platform}
+      {config}
       entries={tokenizeResult.entries}
       on:selectedEntryForAnki={selectedEntryForAnki}
     />

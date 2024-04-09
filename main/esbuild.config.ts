@@ -60,7 +60,9 @@ const platformAliasPlugin: Plugin = {
       } else {
         replacement = "platform/desktop$1";
       }
-      const replaced = args.path.replace(/^@platform($|\/)/, replacement);
+      const replaced = args.path
+        .replace(/^@platform($|\/)/, replacement)
+        .replace(/^@platform-ext($|\/)/, replacement);
       if (args.path === replaced) {
         return;
       }
@@ -73,10 +75,10 @@ const platformAliasPlugin: Plugin = {
 const buildGeneratedTsPlugin: Plugin = {
   name: "buildGeneratedTsPlugin",
   setup(build) {
-    build.onResolve({filter: /generated$/}, (args) => {
+    build.onResolve({ filter: /generated$/ }, (args) => {
       const relPath = path.relative(path.resolve('src'), path.join(args.resolveDir, args.path))
       if (relPath === 'generated') {
-        return {namespace: 'generated', path: 'generated'}
+        return { namespace: 'generated', path: 'generated' }
       } else {
         return
       }

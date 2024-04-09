@@ -5,52 +5,44 @@
  */
 
 import type { Entry } from "../../dicEntry";
-import { Backend, type TokenizeResult, type TokenizeRequest } from "@platform/backend";
+import { Backend, type TokenizeResult, type TokenizeRequest, type DesktopBackend, type IosBackend } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
-import { Platform, type TranslateResult } from "@platform";
-import { AnkiApi } from "@platform/anki";
+import { Platform, type TranslateResult } from "@platform-ext";
+import { AnkiApi } from "@platform-ext/anki";
 import Utils from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import { updateTTSAvailability } from "~/common";
 
-const browserApi = new BrowserApi({context: "background"})
-const initialized: Promise<void> = initialize();
+const browserApi = new BrowserApi({ context: "background" })
+const platform = new Platform(browserApi)
+const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
+const lazyAnkiApi = new Utils.LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
+const lazyBackend = new Utils.LazyAsync<DesktopBackend | IosBackend>(() => platform.newBackend())
+
+const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
-  Platform.initialize(browserApi)
-  await Config.initialize();
-  // queue task to run later
-  setTimeout(deferredInitialize, 0)
+  const config = await lazyConfig.get()
+  config.onChange(() => { updateStateEnabledBadge(config) });
+
+  await updateTTSAvailability(platform, config);
 }
 
-/** Non-essential code to run at startup but not immediately */
-async function deferredInitialize(): Promise<void> {
-  await updateTTSAvailability();
-}
-
-let _backendInitialized: Promise<void> | undefined;
-async function maybeInitBackend(): Promise<void> {
-  await initialized;
-  if (_backendInitialized === undefined) {
-    _backendInitialized = Backend.initialize();
-  }
-  await _backendInitialized;
-}
 
 async function searchTerm(term: string): Promise<Entry[]> {
-  await maybeInitBackend();
-  return await Backend.search(term);
+  const backend = await lazyBackend.get();
+  return await backend.search(term);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-  await maybeInitBackend();
-  return await Backend.tokenize(req.text, req.charAt);
+  const backend = await lazyBackend.get();
+  return await backend.tokenize(req.text, req.charAt);
 }
 
 async function addAnkiNote(note: NoteData): Promise<void> {
-  await initialized;
-  await AnkiApi.addNote(note);
+  const ankiApi = await lazyAnkiApi.get()
+  await ankiApi.addNote(note);
 }
 
 function tabId(_req: null, sender: MessageSender): number | undefined {
@@ -58,27 +50,25 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
 }
 
 async function handleTranslate(req: string): Promise<TranslateResult> {
-  await initialized;
-  return await Platform.translate(req);
+  return await platform.translate(req);
 }
 
-async function updateStateEnabledBadge(): Promise<void> {
-  const enabled = Config.get("state.enabled");
+function updateStateEnabledBadge(config: Config) {
+  const enabled = config.get("state.enabled");
   const text = enabled ? "" : "off";
   browserApi.setBadge(text, "#999999");
 }
 
 async function tts(text: string): Promise<void> {
-  await initialized;
-  Platform.playTTS(text)
+  platform.playTTS(text)
 }
 
 /** On ios, toggle state.enabled when action item is clicked */
 async function onActionClick() {
-  await initialized;
-  const prevEnabled = Config.get("state.enabled");
+  const config = await lazyConfig.get();
+  const prevEnabled = config.get("state.enabled");
   const enabled = !prevEnabled;
-  Config.set("state.enabled", enabled);
+  config.set("state.enabled", enabled);
 }
 
 
@@ -93,7 +83,6 @@ if (Platform.IS_IOS) {
   browserApi.handleActionClicked(onActionClick);
 }
 
-Config.onChange(updateStateEnabledBadge);
 
 
 // expose object to window for debugging purposes
@@ -105,7 +94,7 @@ declare global {
     Api: typeof BrowserApi;
     Utils: typeof Utils;
     Config: typeof Config;
-    maybeInitBackend: typeof maybeInitBackend;
+    lazyBackend: typeof lazyBackend;
   }
 }
 
@@ -114,4 +103,4 @@ self.AnkiApi = AnkiApi;
 self.Api = BrowserApi;
 self.Utils = Utils;
 self.Config = Config;
-self.maybeInitBackend = maybeInitBackend;
+self.lazyBackend = lazyBackend;

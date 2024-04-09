@@ -16,12 +16,14 @@
   import IconVolumeHigh from "@icons/volume-high.svg";
   import { createEventDispatcher } from "svelte";
   import { RubyString } from "~/japanese";
-  import Config from "~/config";
+  import type Config from "~/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
-  import { Platform } from "@platform";
+  import type { Platform } from "@platform";
   import RubyText from "../RubyText.svelte";
 
+  export let platform: Platform;
+  export let config: Config;
   export let entry: Entry;
   export let model: DicEntriesModel;
 
@@ -48,8 +50,10 @@
   }
 
   function playAudio() {
-    const text = mainForm.length < 5 ? readingForForm : mainForm
-    Platform.playTTS(text).catch((err: unknown) => {throw err});
+    const text = mainForm.length < 5 ? readingForForm : mainForm;
+    platform.playTTS(text).catch((err: unknown) => {
+      throw err;
+    });
   }
 
   $: mainForm = Entry.mainForm(entry);
@@ -64,7 +68,7 @@
       <span class="mainForm"><RubyText text={mainFormRuby} /></span>
     </div>
     <div class="icons">
-      {#if Config.get("anki.enabled")}
+      {#if config.get("anki.enabled")}
         <div
           class="icon icon-anki-add"
           class:highlight={$selectedSense?.entry === entry}
@@ -74,7 +78,7 @@
           <IconAddCircleOutline />
         </div>
       {/if}
-      {#if Config.get("tts.voice") !== null}
+      {#if config.get("tts.voice") !== null}
         <div
           class="icon"
           on:click={playAudio}
@@ -88,7 +92,12 @@
   <Badges {entry} />
   <div class="groups">
     {#each groups as group}
-      <GroupedSenseView {group} {model} on:selectSense={onSelectSense} />
+      <GroupedSenseView
+        {config}
+        {group}
+        {model}
+        on:selectSense={onSelectSense}
+      />
     {/each}
   </div>
 </div>

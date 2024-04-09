@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Sense, type GroupedSense } from "~/dicEntry";
-  import Config from "~/config";
+  import type { Config } from "~/config";
   import { createEventDispatcher } from "svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
 
@@ -8,6 +8,7 @@
     selectSense: Sense;
   }
 
+  export let config: Config;
   export let model: DicEntriesModel;
   export let group: GroupedSense;
 
@@ -24,7 +25,7 @@
   $: posText = group.pos.join(", ");
 </script>
 
-<div class="grouped-sense" class:anki={Config.get("anki.enabled")}>
+<div class="grouped-sense" class:anki={config.get("anki.enabled")}>
   <div class="part-of-speech">
     {posText}
   </div>
@@ -33,7 +34,9 @@
       <div
         class="meaning"
         class:selected={$selectedSense?.sense === sense}
-        on:mousedown|stopPropagation={() => { onSelectSense(sense); }}
+        on:mousedown|stopPropagation={() => {
+          onSelectSense(sense);
+        }}
       >
         {idx + 1}. {sense.meaning.join(", ")}
       </div>

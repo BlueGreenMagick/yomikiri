@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
   import Tokenize from "../components/dictionary/Tokenize.svelte";
-  import { Platform } from "~/platform/iosapp";
-  import type { TokenizeResult } from "@platform/backend";
+  import { type IosAppPlatform } from "~/platform/iosapp";
+  import type { IosAppBackend, TokenizeResult } from "@platform/backend";
   import {
     AnkiNoteBuilder,
     type LoadingNoteData,
@@ -11,7 +11,11 @@
   import Utils from "~/utils";
   import { Toast } from "~/toast";
   import AddToAnki from "~/extension/content/AddToAnki.svelte";
+  import type Config from "~/config";
 
+  export let platform: IosAppPlatform;
+  export let config: Config;
+  export let backend: IosAppBackend;
   export let context: "app" | "action";
   export let searchText: string;
 
@@ -54,11 +58,14 @@
 <div class="dictionary-view">
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize
+      {platform}
+      {config}
+      {backend}
       bind:searchText
       showCloseButton={context === "action"}
       {onShowAnkiPreview}
       on:close={() => {
-        Platform.messageWebview("close", null);
+        platform.messageWebview("close", null);
       }}
     >
       <div class="placeholder-container">

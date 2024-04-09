@@ -12,48 +12,38 @@ import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
 import Utils from "~/utils";
 import { Dictionary } from "./dictionary"
 
-export {
-  type Token,
-  type TokenizeRequest,
-  TokenizeResult,
-} from "../common/backend";
+export * from "../common/backend";
 
 
-export namespace Backend {
-  let _wasm: BackendWasm;
+class DesktopBackend implements IBackend {
+  wasm?: BackendWasm
+  browserApi: BrowserApi
 
-  export async function initialize(): Promise<void> {
-    if (BrowserApi.context === "background") {
-      return _initialize()
+  static async initialize(browserApi: BrowserApi): Promise<DesktopBackend> {
+    const backend = new DesktopBackend(browserApi)
+    if (browserApi.context === "background") {
+      await backend._initialize()
     }
+    return backend
   }
 
-  async function _initialize(): Promise<void> {
+  private constructor(browserApi: BrowserApi) {
+    this.browserApi = browserApi
+  }
+
+  async _initialize(): Promise<void> {
     Utils.bench("start")
     const BackendWasmConstructorP = loadWasm();
-    const dictionaryP = loadDictionary();
+    const dictionaryP = this.loadDictionary();
     const [BackendWasmConstructor, [indexBytes, entriesBytes]] = await Promise.all([BackendWasmConstructorP, dictionaryP]);
     Utils.bench("loaded")
-    _wasm = new BackendWasmConstructor(indexBytes, entriesBytes);
+    this.wasm = new BackendWasmConstructor(indexBytes, entriesBytes);
     Utils.bench("backend created")
   }
 
-  async function loadWasm(): Promise<typeof BackendWasm> {
-    // @ts-expect-error wasm is string
-    const resp = await fetch(wasm);
-    await initWasm(resp);
-
-    return BackendWasm;
-  }
-
-  async function fetchBytes(url: string): Promise<Uint8Array> {
-    const resp = await fetch(url);
-    const buffer = await resp.arrayBuffer();
-    return new Uint8Array(buffer, 0, buffer.byteLength);
-  }
-
-  async function loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
-    const saved = await Dictionary.loadSavedDictionary();
+  async loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
+    const dictionary = new Dictionary()
+    const saved = await dictionary.loadSavedDictionary();
     if (saved !== null) {
       return saved;
     }
@@ -67,15 +57,15 @@ export namespace Backend {
     return [indexBytes, entriesBytes];
   }
 
-  export async function tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
-    if (BrowserApi.context !== "background") {
-      return BrowserApi.request("tokenize", { text, charAt });
+  async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+    if (this.wasm === undefined) {
+      return this.browserApi.request("tokenize", { text, charAt });
     } else {
-      return _tokenize(text, charAt);
+      return this._tokenize(this.wasm, text, charAt);
     }
   }
 
-  async function _tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+  async _tokenize(wasm: BackendWasm, text: string, charAt?: number): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (text === "") {
@@ -87,20 +77,20 @@ export namespace Backend {
 
     const codePointAt = Utils.toCodePointIndex(text, charAt);
 
-    const rawResult = _wasm.tokenize(text, codePointAt);
+    const rawResult = wasm.tokenize(text, codePointAt);
     return TokenizeResult.from(rawResult);
   }
 
-  export async function search(term: string): Promise<Entry[]> {
-    if (BrowserApi.context !== "background") {
-      return BrowserApi.request("searchTerm", term);
+  async search(term: string): Promise<Entry[]> {
+    if (this.wasm === undefined) {
+      return this.browserApi.request("searchTerm", term);
     } else {
-      return _search(term);
+      return this._search(this.wasm, term);
     }
   }
 
-  async function _search(term: string): Promise<Entry[]> {
-    const entries = _wasm
+  async _search(wasm: BackendWasm, term: string): Promise<Entry[]> {
+    const entries = wasm
       .search(term)
       .map((json) => JSON.parse(json) as EntryObject)
       .map(Entry.fromObject);
@@ -109,5 +99,19 @@ export namespace Backend {
   }
 }
 
+async function loadWasm(): Promise<typeof BackendWasm> {
+  // @ts-expect-error wasm is string
+  const resp = await fetch(wasm);
+  await initWasm(resp);
 
-Backend satisfies IBackend;
+  return BackendWasm;
+}
+
+async function fetchBytes(url: string): Promise<Uint8Array> {
+  const resp = await fetch(url);
+  const buffer = await resp.arrayBuffer();
+  return new Uint8Array(buffer, 0, buffer.byteLength);
+}
+
+export const Backend = DesktopBackend
+export type Backend = DesktopBackend

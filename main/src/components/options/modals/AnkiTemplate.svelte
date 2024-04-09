@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { NoteData } from "~/ankiNoteBuilder";
-  import Config from "~/config";
+  import type { Config } from "~/config";
   import { AnkiNoteBuilder } from "~/ankiNoteBuilder";
   import {
     exampleMarkerData,
@@ -8,9 +8,10 @@
   } from "../exampleMarkerData";
   import type { AnkiInfo } from "~/platform/common/anki";
 
+  export let config: Config
   export let ankiInfo: AnkiInfo;
 
-  const template = Config.get("anki.template");
+  const template = config.get("anki.template");
 
   let previewMode = false;
 
@@ -78,7 +79,7 @@
         value: fields[fieldName] ?? "",
       });
     }
-    await Config.set("anki.template", template);
+    await config.set("anki.template", template);
   }
 
   function markerValue(field: string) {

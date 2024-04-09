@@ -4,14 +4,22 @@
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
   import { Platform } from "@platform";
+  import type Config from "~/config";
+  import type { Dictionary } from "@platform/dictionary";
+  import type { AnkiOptionsApi } from "@platform/anki";
+
+  export let platform: Platform;
+  export let config: Config;
+  export let ankiApi: AnkiOptionsApi;
+  export let dictionary: Dictionary;
 </script>
 
 <div>
-  <GroupAppearance />
-  <GroupAnki />
+  <GroupAppearance {config} />
+  <GroupAnki {config} {ankiApi} />
   <!-- eslint-disable-next-line -->
   {#if Platform.IS_DESKTOP || Platform.IS_IOSAPP}
-    <GroupDictionary />
+    <GroupDictionary {dictionary} />
   {/if}
-  <GroupAbout />
+  <GroupAbout {platform} />
 </div>

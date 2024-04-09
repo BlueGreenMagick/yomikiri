@@ -1,7 +1,7 @@
 <script lang="ts">
   import Utils from "~/utils";
   import { Toast } from "~/toast";
-  import type { TokenizeResult } from "@platform/backend";
+  import type { Backend, TokenizeResult } from "@platform/backend";
   import {
     AnkiNoteBuilder,
     LoadingNoteData,
@@ -11,6 +11,12 @@
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../content/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
+  import type { Platform } from "@platform"
+  import type { Config } from "~/config"
+
+  export let platform: Platform
+  export let config: Config
+  export let backend: Backend
 
   let previewIsVisible = false;
   let previewNoteData: LoadingNoteData;
@@ -50,8 +56,8 @@
 
 <div class="popup">
   <div class="tokenize-container" class:previewIsVisible>
-    <Tokenize {onShowAnkiPreview}>
-      <ActionButtons />
+    <Tokenize {onShowAnkiPreview} {platform} {config} {backend}>
+      <ActionButtons {platform} {config} />
     </Tokenize>
   </div>
   {#if previewIsVisible}

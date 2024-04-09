@@ -40,40 +40,46 @@ export type ConfigKeysOfType<T> = {
   [K in keyof Configuration]: Configuration[K] extends T ? K : never;
 }[keyof Configuration];
 
-export namespace Config {
-  const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
 
-  export let initialized = false;
+const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
 
-  export let _storage: StoredConfiguration;
-  const _subscribers: (() => unknown)[] = []
-  const _documents: WeakRef<Document>[] = []
+export class Config {
+  initialized = false
+  subscribers: (() => void)[] = []
+  documents: WeakRef<Document>[] = []
+  
+  private storage: StoredConfiguration
+  platform: Platform
+  
+  private constructor(platform: Platform, storage: StoredConfiguration) {
+    this.platform = platform
+    this.storage = storage
 
-  /** Platform must be initialized. */
-  export async function initialize(): Promise<void> {
-    _storage = await Platform.getConfig();
-
-    for (const subscriber of _subscribers) {
-      subscriber();
+    for (const subscriber of this.subscribers) {
+      subscriber()
     }
-
-    Platform.subscribeConfig((stored) => {
-      _storage = stored;
-      for (const subscriber of _subscribers) {
-        subscriber();
+    platform.subscribeConfig((cfg) => {
+      storage = cfg
+      for (const subscriber of this.subscribers) {
+        subscriber()
       }
     });
 
-    migrate()
-    Config.onChange(() => {
-      updateStyling()
+    this.migrate()
+    this.onChange(() => {
+      this.updateStyling()
     })
-
-    initialized = true;
+    this.initialized = true
   }
 
-  export function get<K extends keyof Configuration>(key: K): Configuration[K] {
-    const value = _storage[key];
+  static async initialize(platform: Platform): Promise<Config> {
+    const storage = await platform.getConfig()
+    return new Config(platform, storage)
+  }
+
+
+  get<K extends keyof Configuration>(key: K): Configuration[K] {
+    const value = this.storage[key];
     return value !== undefined
       ? (value as Configuration[K])
       : defaultOptions[key];
@@ -84,26 +90,27 @@ export namespace Config {
    * 
    * If `save` is `false`, only updates config values in this context.
    */
-  export async function set<K extends keyof Configuration>(
+  async set<K extends keyof Configuration>(
     key: K,
     value: Configuration[K],
     save = true
   ): Promise<void> {
     if (value === undefined) {
-      delete _storage[key];
+      /* eslint-disable-next-line */
+      delete this.storage[key];
     } else {
-      _storage[key] = value;
+      this.storage[key] = value;
     }
     if (save) {
-      await Config.save()
+      await this.save()
     }
   }
 
-  export async function save(): Promise<void> {
-    await Platform.saveConfig(_storage);
+  async save(): Promise<void> {
+    await this.platform.saveConfig(this.storage);
   }
 
-  export function defaultValue<K extends keyof Configuration>(
+  defaultValue<K extends keyof Configuration>(
     key: K
   ): Configuration[K] {
     return defaultOptions[key];
@@ -114,17 +121,17 @@ export namespace Config {
    * 
    * If Config isn't initialized yet, it will run on initialization.
    */
-  export function onChange(subscriber: () => void): void {
-    _subscribers.push(subscriber)
-    if (Config.initialized) {
+  onChange(subscriber: () => void): void {
+    this.subscribers.push(subscriber)
+    if (this.initialized) {
       subscriber()
     }
   }
 
-  export function removeOnChange(subscriber: () => void): boolean {
-    const idx = _subscribers.indexOf(subscriber);
+  removeOnChange(subscriber: () => void): boolean {
+    const idx = this.subscribers.indexOf(subscriber);
     if (idx !== -1) {
-      _subscribers.splice(idx, 1);
+      this.subscribers.splice(idx, 1);
       return true
     }
     return false
@@ -134,9 +141,9 @@ export namespace Config {
    * Insert or update <style> properties from config,
    * watch for config changes and auto-update <style>
   */
-  export function setStyle(doc: Document) {
+  setStyle(doc: Document) {
     let alreadyExisting = false;
-    for (const docRef of _documents) {
+    for (const docRef of this.documents) {
       const derefed = docRef.deref();
       if (derefed === undefined) continue;
       if (derefed === doc) {
@@ -146,15 +153,15 @@ export namespace Config {
     }
     if (!alreadyExisting) {
       const ref = new WeakRef(doc)
-      _documents.push(ref)
+      this.documents.push(ref)
     }
-    updateStyling()
+    this.updateStyling()
   }
 
   /** Update <style> for all registered _documents */
-  function updateStyling() {
-    const css = generateCss()
-    for (const docref of _documents) {
+  private updateStyling() {
+    const css = this.generateCss()
+    for (const docref of this.documents) {
       const doc = docref.deref()
       if (doc === undefined) continue
       let styleEl = doc.getElementById(STYLE_ELEMENT_ID);
@@ -167,9 +174,9 @@ export namespace Config {
     }
   }
 
-  function generateCss(): string {
-    const fontSize = Config.get("general.font_size");
-    const font = Config.get("general.font");
+  generateCss(): string {
+    const fontSize = this.get("general.font_size");
+    const font = this.get("general.font");
     const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
 
     return `:root {
@@ -179,11 +186,11 @@ export namespace Config {
   }
 
   // Make sure no race condition with migration occurs!
-  function migrate() {
-    if (_storage.version !== defaultOptions.version) {
-      set("version", defaultOptions.version)
+  migrate() {
+    if (this.storage.version !== defaultOptions.version) {
+      this.set("version", defaultOptions.version)
     }
   }
 }
 
-export default Config;
+export default Config

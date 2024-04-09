@@ -1,52 +1,62 @@
 import Config, { type StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import type { IosTTSRequest, Module, TTSVoice, TranslateResult, VersionInfo } from "../common";
+import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
-import { getTranslation } from "../desktop";
+import { getTranslation } from "../common/translate";
+import { Backend as IosBackend } from "./backend";
+import {AnkiApi as IosAnkiApi} from "./anki";
 
 export * from "../common";
 
-export namespace Platform {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = true;
-  export const IS_IOSAPP = false;
+/** Type map for messages sent with `requestToApp()`*/
+export interface AppMessageMap {
+  tokenize: [TokenizeRequest, RawTokenizeResult];
+  loadConfig: [null, StoredConfiguration];
+  saveConfig: [string, null];
+  search: [string, string[]];
+  ttsVoices: [null, TTSVoice[]];
+  tts: [IosTTSRequest, null];
+}
 
-  let browserApi: BrowserApi
-
-  /** Type map for messages sent with `requestToApp()`*/
-  export interface AppMessageMap {
-    tokenize: [TokenizeRequest, RawTokenizeResult];
-    loadConfig: [null, StoredConfiguration];
-    saveConfig: [string, null];
-    search: [string, string[]];
-    ttsVoices: [null, TTSVoice[]];
-    tts: [IosTTSRequest, null];
-  }
-
-  export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
-    AppMessageMap[K]
-  >;
-  export type AppResponse<K extends keyof AppMessageMap> = Utils.Second<
-    AppMessageMap[K]
-  >;
+export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
+  AppMessageMap[K]
+>;
+export type AppResponse<K extends keyof AppMessageMap> = Utils.Second<
+  AppMessageMap[K]
+>;
 
 
-  export function initialize(browserApiParam: BrowserApi) {
-    browserApi = browserApiParam
+class IosPlatform implements IPlatform {
+  static IS_DESKTOP = false;
+  static IS_IOS = true;
+  static IS_IOSAPP = false;
+
+  browserApi: BrowserApi
+
+  constructor(browserApi: BrowserApi) {
+    this.browserApi = browserApi
     if (browserApi.context === "background") {
       browserApi.handleRequest("loadConfig", async () => {
-        const config = await updateConfig();
+        const config = await this.updateConfig();
         return config;
       });
       browserApi.handleRequest("saveConfig", (config) => {
-        return Platform.saveConfig(config);
+        return this.saveConfig(config);
       });
     }
   }
 
+  newBackend(): IosBackend {
+    return new IosBackend(this, this.browserApi)
+  }
+
+  newAnkiApi(config: Config): IosAnkiApi {
+    return new IosAnkiApi(this, config)
+  }
+
   /** Only works in background & page */
-  export async function requestToApp<K extends keyof AppMessageMap>(
+  async requestToApp<K extends keyof AppMessageMap>(
     key: K,
     request: AppRequest<K>
   ): Promise<AppResponse<K>> {
@@ -54,15 +64,15 @@ export namespace Platform {
       key,
       request: JSON.stringify(request),
     });
-    const response = browserApi.handleRequestResponse<string>(resp);
+    const response = this.browserApi.handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }
 
-  export async function getConfig(): Promise<StoredConfiguration> {
-    if (browserApi.context === "contentScript") {
-      return browserApi.request("loadConfig", null);
+  async getConfig(): Promise<StoredConfiguration> {
+    if (this.browserApi.context === "contentScript") {
+      return browsthis.browserApierApi.request("loadConfig", null);
     } else {
-      return updateConfig();
+      return this.updateConfig();
     }
   }
 
@@ -70,80 +80,82 @@ export namespace Platform {
    * Listens to web config changes, 
    * which may occur when a new script loads and app config is fetched
    */
-  export function subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    browserApi.handleStorageChange("config", (change) => {
+  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+    this.browserApi.handleStorageChange("config", (change) => {
       subscriber(change.newValue)
     })
   }
 
   // App config is the source of truth
-  async function updateConfig(): Promise<StoredConfiguration> {
-    const webConfigP = browserApi.getStorage<StoredConfiguration>("config", {});
-    const appConfigP = Platform.requestToApp("loadConfig", null);
+  private async updateConfig(): Promise<StoredConfiguration> {
+    const webConfigP = this.browserApi.getStorage<StoredConfiguration>("config", {});
+    const appConfigP = this.requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
-      await browserApi.setStorage("config", appConfig);
+      await this.browserApi.setStorage("config", appConfig);
     }
     return appConfig;
   }
 
-  export async function saveConfig(config: StoredConfiguration): Promise<void> {
-    if (browserApi.context === "contentScript") {
-      await browserApi.request("saveConfig", config);
+  async saveConfig(config: StoredConfiguration): Promise<void> {
+    if (this.browserApi.context === "contentScript") {
+      await this.browserApi.request("saveConfig", config);
     } else {
       const configJson = JSON.stringify(config);
-      browserApi.setStorage("config", config);
-      await Platform.requestToApp("saveConfig", configJson);
+      this.browserApi.setStorage("config", config);
+      await this.requestToApp("saveConfig", configJson);
     }
   }
 
-  export async function openOptionsPage() {
+  async openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
-    if (browserApi.context !== "popup") {
+    if (this.browserApi.context !== "popup") {
       location.href = OPTIONS_URL;
     } else {
-      const currentTab = await browserApi.currentTab();
+      const currentTab = await this.browserApi.currentTab();
       if (currentTab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await browserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
+      await this.browserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
       window.close();
     }
   }
 
-  export async function versionInfo(): Promise<VersionInfo> {
-    const manifest = browserApi.manifest();
+  async versionInfo(): Promise<VersionInfo> {
+    const manifest = this.browserApi.manifest();
     return {
       version: manifest.version
     }
   }
 
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await Platform.requestToApp("ttsVoices", null)
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return await this.requestToApp("ttsVoices", null)
   }
 
-  export async function playTTS(text: string): Promise<void> {
-    if (browserApi.context !== "contentScript") {
-      await Platform.requestToApp("tts", { voice: Config.get("tts.voice"), text })
+  async playTTS(text: string): Promise<void> {
+    if (this.browserApi.context !== "contentScript") {
+      await this.requestToApp("tts", { voice: Config.get("tts.voice"), text })
     } else {
-      await browserApi.request("tts", text)
+      await this.browserApi.request("tts", text)
     }
 
   }
 
-  export async function translate(text: string): Promise<TranslateResult> {
-    if (browserApi.context !== "contentScript") {
+  async translate(text: string): Promise<TranslateResult> {
+    if (this.browserApi.context !== "contentScript") {
       return getTranslation(text)
     } else {
-      return browserApi.request("translate", text);
+      return this.browserApi.request("translate", text);
     }
   }
 
-  export function openExternalLink(url: string): void {
+  openExternalLink(url: string): void {
     window
       .open(url, "_blank")
       ?.focus();
   }
 }
 
-Platform satisfies Module;
+IosPlatform satisfies IPlatformStatic
+export const Platform = IosPlatform
+export type Platform = IosPlatform

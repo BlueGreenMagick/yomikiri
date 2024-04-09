@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Platform, type TranslateResult } from "@platform";
+  import type { Platform, TranslateResult } from "@platform";
   import Utils from "~/utils";
 
+  export let platform: Platform
   export let sentence: string;
   export let shown: boolean;
   export let translation: Promise<TranslateResult> | null = null;
@@ -16,7 +17,7 @@
     display = "Translating...";
 
     try {
-      let result = await Platform.translate(sentence);
+      let result = await platform.translate(sentence);
       display = result.translated;
       resolver(result);
     } catch (err) {

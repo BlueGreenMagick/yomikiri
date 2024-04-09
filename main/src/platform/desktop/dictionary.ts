@@ -7,37 +7,36 @@ import { openDB, type DBSchema } from "idb"
 
 export type { DictionaryMetadata } from "../common/dictionary";
 
-export namespace Dictionary {
-  let _wasm_initialized = false;
 
-
-  interface DictionaryDBSchema extends DBSchema {
-    "metadata": {
-      key: string,
-      value: DictionaryMetadata,
-    },
-    "yomikiri-index": {
-      key: "value",
-      value: Uint8Array,
-    },
-    "yomikiri-entries": {
-      key: "value",
-      value: Uint8Array,
-    }
+interface DictionaryDBSchema extends DBSchema {
+  "metadata": {
+    key: string,
+    value: DictionaryMetadata,
+  },
+  "yomikiri-index": {
+    key: "value",
+    value: Uint8Array,
+  },
+  "yomikiri-entries": {
+    key: "value",
+    value: Uint8Array,
   }
+}
 
+class DesktopDictionary implements IDictionary {
+  _wasm_initialized = false;
 
-  export function updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    let prom: Utils.PromiseWithProgress<DictionaryMetadata, string>;
-    const progressFn = (msg: string) => {
+  updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
+    const prom = Utils.PromiseWithProgress.fromPromise(this._updateDictionary(progressFn), "Downloading JMDict file...")
+
+    function progressFn(msg: string) {
       prom.setProgress(msg);
     }
-    prom = Utils.PromiseWithProgress.fromPromise(_updateDictionary(progressFn), "Downloading JMDict file...")
     return prom;
   }
 
-  async function _updateDictionary(progressFn: (msg: string) => unknown): Promise<DictionaryMetadata> {
-    const [index_bytes, entries_bytes] = await _createNewDictionary(progressFn)
+  private async _updateDictionary(progressFn: (msg: string) => unknown): Promise<DictionaryMetadata> {
+    const [index_bytes, entries_bytes] = await this._createNewDictionary(progressFn)
     progressFn("Saving dictionary file...")
     const downloadDate = new Date();
     const metadata: DictionaryMetadata = {
@@ -46,7 +45,7 @@ export namespace Dictionary {
     };
     await Utils.nextDocumentPaint();
 
-    const db = await openDictionaryDB();
+    const db = await this.openDictionaryDB();
     const tx = await db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
     tx.objectStore("metadata").put(metadata, "value");
     tx.objectStore("yomikiri-index").put(index_bytes, "value");
@@ -56,8 +55,8 @@ export namespace Dictionary {
     return metadata;
   }
 
-  async function _createNewDictionary(progressFn: (msg: string) => unknown): Promise<[Uint8Array, Uint8Array]> {
-    const wasmP = loadWasm();
+  private async _createNewDictionary(progressFn: (msg: string) => unknown): Promise<[Uint8Array, Uint8Array]> {
+    const wasmP = this.loadWasm();
     const bufferP = fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz").then((resp) => resp.arrayBuffer());
     const [_wasm, buffer] = await Promise.all([wasmP, bufferP]);
     const typedarray = new Uint8Array(buffer);
@@ -66,7 +65,7 @@ export namespace Dictionary {
     return create_dictionary(typedarray)
   }
 
-  export async function openDictionaryDB() {
+  async openDictionaryDB() {
     return await openDB<DictionaryDBSchema>("jmdict", 1, {
       upgrade(db, oldVersion, newVersion, transaction, event) {
         db.createObjectStore("metadata")
@@ -76,8 +75,8 @@ export namespace Dictionary {
     });
   }
 
-  export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
-    const db = await openDictionaryDB();
+  async dictionaryMetadata(): Promise<DictionaryMetadata> {
+    const db = await this.openDictionaryDB();
     const installedMetadata = await db.get("metadata", "value")
     if (installedMetadata !== undefined) {
       return installedMetadata
@@ -89,17 +88,17 @@ export namespace Dictionary {
     }
   }
 
-  async function loadWasm(): Promise<void> {
-    if (_wasm_initialized) return;
+  private async loadWasm(): Promise<void> {
+    if (this._wasm_initialized) return;
     // @ts-expect-error wasm is string
     const resp = await fetch(DICTIONARY_WASM_URL);
     await initWasm(resp);
-    _wasm_initialized = true;
+    this._wasm_initialized = true;
   }
 
   /** Loads (index, entries) if saved in db. Returns null otherwise. */
-  export async function loadSavedDictionary(): Promise<[Uint8Array, Uint8Array] | null> {
-    const db = await Dictionary.openDictionaryDB();
+  async loadSavedDictionary(): Promise<[Uint8Array, Uint8Array] | null> {
+    const db = await this.openDictionaryDB();
     const yomikiriIndexP = db.get("yomikiri-index", "value");
     const yomikiriEntriesP = db.get("yomikiri-entries", "value");
     const [yomikiriIndexBytes, yomikiriEntriesBytes] = await Promise.all([yomikiriIndexP, yomikiriEntriesP]);
@@ -111,4 +110,5 @@ export namespace Dictionary {
   }
 }
 
-Dictionary satisfies IDictionary
+export const Dictionary = DesktopDictionary
+export type Dictionary = DesktopDictionary

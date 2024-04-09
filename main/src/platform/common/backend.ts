@@ -3,6 +3,13 @@ import type {
 } from "@yomikiri/yomikiri-rs";
 import { Entry, type EntryObject } from "~/dicEntry";
 import { toHiragana } from "~/japanese";
+import type {Backend as DesktopBackend} from "../desktop/backend"
+import type {Backend as IosBackend} from "../ios/backend"
+import type {Backend as IosAppBackend} from "../iosapp/backend"
+
+export type {Backend as DesktopBackend} from "../desktop/backend"
+export type {Backend as IosBackend} from "../ios/backend"
+export type {Backend as IosAppBackend} from "../iosapp/backend"
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
@@ -51,9 +58,9 @@ export namespace TokenizeResult {
 }
 
 export interface IBackend {
-  initialize(): Promise<void>;
   tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
   search(term: string): Promise<Entry[]>;
 }
 
-export declare const Backend: IBackend
+export declare const Backend: typeof DesktopBackend | typeof IosBackend | typeof IosAppBackend
+export type Backend = DesktopBackend | IosBackend | IosAppBackend

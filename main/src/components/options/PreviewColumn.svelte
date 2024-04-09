@@ -3,6 +3,10 @@
   import { Entry, type EntryObject } from "~/dicEntry";
   import { Config } from "~/config";
   import { onMount } from "svelte";
+  import type { Platform } from "@platform";
+
+  export let platform: Platform
+  export let config: Config
 
   const entriesData: Entry[] = ([
     {
@@ -68,17 +72,17 @@
   }
 
   onMount(() => {
-    Config.onChange(update);
+    config.onChange(update);
 
     return () => {
-      Config.removeOnChange(update);
+      config.removeOnChange(update);
     };
   });
 </script>
 
 <div>
   {#key updateTick}
-    <DicEntriesView entries={entriesData} />
+    <DicEntriesView {platform} {config} entries={entriesData} />
   {/key}
 </div>
 
