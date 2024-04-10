@@ -1,5 +1,5 @@
 import Utils from "~/utils";
-import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
+import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import { Config, type StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
@@ -13,6 +13,14 @@ export * from "../common"
 declare global {
   interface Window {
     iosConfigUpdated: () => Promise<void>;
+    webkit: {
+      messageHandlers: {
+        yomikiri: {
+          // eslint-disable-next-line
+          postMessage: (message: any) => string | null
+        }
+      }
+    }
   }
 }
 
@@ -81,12 +89,12 @@ class IosAppPlatform implements IPlatform {
       request,
     };
 
-    // @ts-expect-error
+    // eslint-disable-next-line
     const resp = await window.webkit.messageHandlers.yomikiri.postMessage(
       message
     );
-    if (resp === null) {
-      return resp
+    if (typeof resp !== 'string') {
+      return resp as WebviewResponse<K>
     } else {
       return JSON.parse(resp) as WebviewResponse<K>;
     }
@@ -143,6 +151,9 @@ class IosAppPlatform implements IPlatform {
   /** Currently only works in options page */
   openExternalLink(url: string): void {
     this.messageWebview("openLink", url)
+      .catch((err: unknown) => {
+        console.error(err)
+      })
   }
 
 }

@@ -60,17 +60,19 @@ class IosPlatform implements IPlatform {
     key: K,
     request: AppRequest<K>
   ): Promise<AppResponse<K>> {
+    // eslint-disable-next-line
     const resp = await browser.runtime.sendNativeMessage("_", {
       key,
       request: JSON.stringify(request),
     });
+    // eslint-disable-next-line
     const response = this.browserApi.handleRequestResponse<string>(resp);
     return JSON.parse(response) as AppResponse<K>;
   }
 
   async getConfig(): Promise<StoredConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return browsthis.browserApierApi.request("loadConfig", null);
+      return this.browserApi.request("loadConfig", null);
     } else {
       return this.updateConfig();
     }
@@ -82,7 +84,7 @@ class IosPlatform implements IPlatform {
    */
   subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     this.browserApi.handleStorageChange("config", (change) => {
-      subscriber(change.newValue)
+      subscriber(change.newValue as StoredConfiguration)
     })
   }
 
@@ -102,8 +104,8 @@ class IosPlatform implements IPlatform {
       await this.browserApi.request("saveConfig", config);
     } else {
       const configJson = JSON.stringify(config);
-      this.browserApi.setStorage("config", config);
       await this.requestToApp("saveConfig", configJson);
+      await this.browserApi.setStorage("config", config);
     }
   }
 

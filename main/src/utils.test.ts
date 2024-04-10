@@ -2,7 +2,7 @@ import { test, expect, describe } from "vitest";
 import Utils from "./utils";
 
 describe("Utils", () => {
-  test("generateUrlParams", async () => {
+  test("generateUrlParams", () => {
     const value = Utils.generateUrlParams({ "key 1": "value 1" });
     expect(value).toBe("key%201=value%201");
   });

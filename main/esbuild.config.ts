@@ -107,7 +107,7 @@ const buildManifestPlugin: Plugin = {
 
     let watching = false;
 
-    build.onStart(async () => {
+    build.onStart(() => {
       const raw = fs.readFileSync("./src/manifest.json.ejs", {
         encoding: "utf-8",
       });

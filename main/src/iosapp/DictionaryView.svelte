@@ -22,7 +22,7 @@
   let previewIsVisible = false;
   let previewNoteData: LoadingNoteData;
 
-  async function onShowAnkiPreview(
+  function onShowAnkiPreview(
     selectedEntry: SelectedEntryForAnki,
     tokenizeResult: TokenizeResult
   ) {

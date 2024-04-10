@@ -27,7 +27,7 @@ async function initialize(): Promise<[Config, Backend]> {
 
 const initialized = initialize();
 
-const page = new PopupPage({ target: document.body, props: { platform, initialized } });
+const _page = new PopupPage({ target: document.body, props: { platform, initialized } });
 
 window.browserApi = browserApi
 window.platform = platform

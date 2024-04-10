@@ -22,6 +22,6 @@ export function platformClass(attached: HTMLElement) {
   }
 
   if (Platform.IS_IOS || Platform.IS_IOSAPP) {
-    attached.ownerDocument.body.addEventListener("touchstart", () => { })
+    attached.ownerDocument.body.addEventListener("touchstart", () => { return })
   }
 }

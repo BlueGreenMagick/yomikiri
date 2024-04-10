@@ -114,9 +114,9 @@ export class BrowserApi {
       ): boolean => {
         const handler = this._requestHandlers[message.key];
         if (handler) {
-          (async () => {
+          void (async () => {
             try {
-              // @ts-expect-error
+              // @ts-expect-error complex types
               const resp = await handler(message.request, sender);
               sendResponse({
                 success: true,
@@ -182,15 +182,16 @@ export class BrowserApi {
     if (resp.success) {
       return resp.resp;
     } else {
-      let obj;
+      let obj: object;
       if (typeof resp.error === "string") {
-        obj = JSON.parse(resp.error);
+        obj = JSON.parse(resp.error) as object;
       } else {
         obj = resp.error;
       }
       const error = new Error();
       for (const key of Object.getOwnPropertyNames(obj)) {
-        // @ts-expect-error
+        // @ts-expect-error copy over properties
+        // eslint-disable-next-line
         error[key] = obj[key];
       }
       throw error;
@@ -280,11 +281,11 @@ export class BrowserApi {
                 "Could not establish connection. Receiving end does not exist."
               )
             ) {
-              resolve(resp);
+              resolve(resp); // eslint-disable-line
             } else if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError.message);
             } else {
-              handler(resp);
+              handler(resp); // eslint-disable-line
             }
           });
           promises.push(promise);
@@ -381,15 +382,20 @@ export class BrowserApi {
     return promise;
   }
 
+  /**
+   * Assumption:
+   * `storage[key]?: T`
+   */
   async getStorage<T>(key: string, or?: T): Promise<T> {
     const [promise, resolve] = Utils.createPromise<T>();
     let req: string | Record<string, T> = key;
     if (or !== undefined) {
-      req = {};
-      req[key] = or;
+      req = {
+        [key]: or
+      };
     }
     this.storage().get(req, (obj) => {
-      resolve(obj[key]);
+      resolve(obj[key] as T);
     });
     return promise;
   }
