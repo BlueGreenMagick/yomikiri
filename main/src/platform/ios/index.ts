@@ -1,11 +1,11 @@
 import Config, { type StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic } from "../common";
+import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { Backend as IosBackend } from "./backend";
-import {AnkiApi as IosAnkiApi} from "./anki";
+import { AnkiApi as IosAnkiApi } from "./anki";
 
 export * from "../common";
 
@@ -16,7 +16,7 @@ export interface AppMessageMap {
   saveConfig: [string, null];
   search: [string, string[]];
   ttsVoices: [null, TTSVoice[]];
-  tts: [IosTTSRequest, null];
+  tts: [TTSRequest, null];
 }
 
 export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
@@ -132,13 +132,12 @@ class IosPlatform implements IPlatform {
     return await this.requestToApp("ttsVoices", null)
   }
 
-  async playTTS(text: string): Promise<void> {
+  async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     if (this.browserApi.context !== "contentScript") {
-      await this.requestToApp("tts", { voice: Config.get("tts.voice"), text })
+      await this.requestToApp("tts", { voice, text })
     } else {
-      await this.browserApi.request("tts", text)
+      await this.browserApi.request("tts", { voice, text })
     }
-
   }
 
   async translate(text: string): Promise<TranslateResult> {

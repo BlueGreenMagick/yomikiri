@@ -1,12 +1,12 @@
 import Utils from "~/utils";
-import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic } from "../common";
+import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import { Config, type StoredConfiguration } from "~/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import type { RawDictionaryMetadata } from "./dictionary";
-import {Backend as IosAppBackend} from "./backend"
-import {Dictionary as IosAppDictionary} from "./dictionary"
-import {AnkiApi as IosAppAnkiApi} from "./anki"
+import { Backend as IosAppBackend } from "./backend"
+import { Dictionary as IosAppDictionary } from "./dictionary"
+import { AnkiApi as IosAppAnkiApi } from "./anki"
 
 export * from "../common"
 
@@ -37,10 +37,10 @@ export interface MessageWebviewMap {
 }
 
 export type WebviewRequest<K extends keyof MessageWebviewMap> = Utils.First<
-MessageWebviewMap[K]
+  MessageWebviewMap[K]
 >;
 export type WebviewResponse<K extends keyof MessageWebviewMap> = Utils.Second<
-MessageWebviewMap[K]
+  MessageWebviewMap[K]
 >;
 
 class IosAppPlatform implements IPlatform {
@@ -131,9 +131,8 @@ class IosAppPlatform implements IPlatform {
     return await this.messageWebview("ttsVoices", null)
   }
 
-  async playTTS(text: string): Promise<void> {
-    const voice = Config.get("tts.voice");
-    const req = { voice, text }
+  async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
+    const req: TTSRequest = { text, voice }
     await this.messageWebview("tts", JSON.stringify(req));
   }
 

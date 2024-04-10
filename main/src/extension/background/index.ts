@@ -7,7 +7,7 @@
 import type { Entry } from "../../dicEntry";
 import { Backend, type TokenizeResult, type TokenizeRequest, type DesktopBackend, type IosBackend } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
-import { Platform, type TranslateResult } from "@platform-ext";
+import { Platform, type TTSRequest, type TranslateResult } from "@platform-ext";
 import { AnkiApi } from "@platform-ext/anki";
 import Utils from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
@@ -59,8 +59,8 @@ function updateStateEnabledBadge(config: Config) {
   browserApi.setBadge(text, "#999999");
 }
 
-async function tts(text: string): Promise<void> {
-  platform.playTTS(text)
+async function tts(req: TTSRequest): Promise<void> {
+  await platform.playTTS(req.text, req.voice)
 }
 
 /** On ios, toggle state.enabled when action item is clicked */

@@ -3,8 +3,8 @@ import type { IPlatform, IPlatformStatic, TTSVoice, VersionInfo } from "../commo
 import Config, { type StoredConfiguration } from "~/config";
 import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
-import {Backend as DesktopBackend} from "./backend"
-import {Dictionary as DesktopDictionary} from "./dictionary"
+import { Backend as DesktopBackend } from "./backend"
+import { Dictionary as DesktopDictionary } from "./dictionary"
 import { AnkiApi as DesktopAnkiApi } from "./anki";
 
 export * from "../common";
@@ -63,11 +63,11 @@ class DesktopPlatform implements IPlatform {
     return this.browserApi.japaneseTtsVoices()
   }
 
-  async playTTS(text: string): Promise<void> {
+  async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     if (this.browserApi.context === "contentScript") {
-      await this.browserApi.request("tts", text);
+      await this.browserApi.request("tts", { voice, text });
     } else {
-      this.browserApi.speakJapanese(text);
+      await this.browserApi.speakJapanese(text, voice);
     }
   }
 

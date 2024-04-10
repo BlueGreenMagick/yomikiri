@@ -3,7 +3,7 @@ import type { NoteData } from "~/ankiNoteBuilder";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../platform/common/translate";
-import type { TTSVoice } from "~/platform/common";
+import type { TTSRequest, TTSVoice } from "~/platform/common";
 import Utils from "~/utils";
 
 /**
@@ -18,12 +18,12 @@ export interface MessageMap {
   addAnkiNote: [NoteData, void];
   tabId: [null, number | undefined];
   translate: [string, TranslateResult];
-  tts: [string, void];
+  tts: [TTSRequest, void];
   // ios
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
   setActionIcon: [null, void];
-} 
+}
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
 export type Response<K extends keyof MessageMap> = Utils.Second<MessageMap[K]>;
@@ -175,7 +175,7 @@ export class BrowserApi {
     return chrome.runtime.getManifest();
   }
 
-  
+
 
   /** Returns content of the response. Returns an Error object if an error occured. */
   handleRequestResponse<R>(resp: RequestResponse<R>): R {
@@ -471,9 +471,15 @@ export class BrowserApi {
     return ttsVoices
   }
 
-  speakJapanese(text: string): Promise<void> {
+  speakJapanese(text: string, voice: TTSVoice | null): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
-    chrome.tts.speak(text, { "lang": "ja-jp" }, resolve);
+    let options
+    if (voice === null) {
+      options = { "lang": "ja-jp" }
+    } else {
+      options = { "voiceName": voice.name }
+    }
+    chrome.tts.speak(text, options, resolve);
     return promise;
   }
 

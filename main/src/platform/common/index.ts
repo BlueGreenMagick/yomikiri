@@ -4,7 +4,7 @@ import type { Platform as DesktopPlatform } from "../desktop"
 import type { Platform as IosPlatform } from "../ios"
 import type { Platform as IosAppPlatform } from "../iosapp"
 import type { Backend } from "./backend";
-import type {AnkiApi} from "./anki"
+import type { AnkiApi } from "./anki"
 import type Utils from "~/utils";
 
 export type { TranslateResult } from "./translate";
@@ -22,7 +22,7 @@ export interface IPlatform {
   openOptionsPage: () => void | Promise<void>;
   versionInfo: () => Promise<VersionInfo>;
   japaneseTTSVoices(): Promise<TTSVoice[]>;
-  playTTS(text: string): Promise<void>;
+  playTTS(text: string, voice: TTSVoice | null): Promise<void>;
   translate: (text: string) => Promise<TranslateResult>;
   /** Opens url in new tab */
   openExternalLink(url: string): void;
@@ -56,7 +56,7 @@ export interface TTSVoice {
   quality: number,
 }
 
-export interface IosTTSRequest {
+export interface TTSRequest {
   text: string,
   voice: TTSVoice | null
 }
