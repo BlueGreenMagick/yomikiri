@@ -226,7 +226,7 @@ export function SingleQueued<I extends unknown[], R>(
   let running = false;
 
   // pop from queue and run
-  const run = async () => {
+  const run = () => {
     if (queue === null) {
       return;
     }
@@ -235,15 +235,13 @@ export function SingleQueued<I extends unknown[], R>(
     const reject = queue.reject;
     running = true;
     queue = null;
-    try {
-      const result = await fn(...inp);
+    fn(...inp).then((result) => {
       running = false;
       resolve(result);
-    } catch (e) {
+    }).catch((e: unknown) => {
       running = false;
       reject(e);
-    }
-    run();
+    })
   };
 
   return (...inp: I) => {
