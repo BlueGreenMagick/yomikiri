@@ -46,12 +46,13 @@ class DesktopDictionary implements IDictionary {
     await Utils.nextDocumentPaint();
 
     const db = await this.openDictionaryDB();
-    const tx = await db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
-    tx.objectStore("metadata").put(metadata, "value");
-    tx.objectStore("yomikiri-index").put(index_bytes, "value");
-    tx.objectStore("yomikiri-entries").put(entries_bytes, "value");
+    const tx = db.transaction(["metadata", "yomikiri-index", "yomikiri-entries"], "readwrite");
+    await Promise.all([
+      tx.objectStore("metadata").put(metadata, "value"),
+      tx.objectStore("yomikiri-index").put(index_bytes, "value"),
+      tx.objectStore("yomikiri-entries").put(entries_bytes, "value")
+    ])
     await tx.done;
-
     return metadata;
   }
 
@@ -67,7 +68,7 @@ class DesktopDictionary implements IDictionary {
 
   async openDictionaryDB() {
     return await openDB<DictionaryDBSchema>("jmdict", 1, {
-      upgrade(db, oldVersion, newVersion, transaction, event) {
+      upgrade(db, _oldVersion, _newVersion, _transaction, _event) {
         db.createObjectStore("metadata")
         db.createObjectStore("yomikiri-index")
         db.createObjectStore("yomikiri-entries")

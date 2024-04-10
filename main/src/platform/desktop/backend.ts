@@ -89,7 +89,7 @@ class DesktopBackend implements IBackend {
     }
   }
 
-  async _search(wasm: BackendWasm, term: string): Promise<Entry[]> {
+  _search(wasm: BackendWasm, term: string): Entry[] {
     const entries = wasm
       .search(term)
       .map((json) => JSON.parse(json) as EntryObject)
