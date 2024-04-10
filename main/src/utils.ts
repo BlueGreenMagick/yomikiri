@@ -42,7 +42,7 @@ export function createPromise<V>(): [
     resolve = rs;
     reject = rj;
   });
-  // @ts-expect-error
+  // @ts-expect-error promise executor is run synchronously
   return [promise, resolve, reject];
 }
 
@@ -297,7 +297,7 @@ export function log(...args: unknown[]): void {
   _logs.push(args)
 }
 
-export function logs(): string[] {
+export function logs(): unknown[] {
   return _logs;
 }
 
