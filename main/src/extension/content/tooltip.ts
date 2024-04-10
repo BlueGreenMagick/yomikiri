@@ -162,8 +162,8 @@ export class Tooltip {
     const spaceBottom = window.innerHeight - rect.bottom;
     const requiredVerticalSpace = MAX_HEIGHT + VERTICAL_SPACE + MARGIN;
 
-    tooltip.style.left =
-      Math.min(rectLeft, rootRect.width - MARGIN - WIDTH) + "px";
+    const left = Math.min(rectLeft, rootRect.width - MARGIN - WIDTH)
+    tooltip.style.left = `${left}px`
 
     // default to below text, but above text if space is too small
     let atBottom = true;
@@ -189,9 +189,9 @@ export class Tooltip {
     }
 
     if (atBottom) {
-      tooltip.style.top = rectBottom + VERTICAL_SPACE + "px";
+      tooltip.style.top = `${rectBottom + VERTICAL_SPACE}px`;
     } else {
-      tooltip.style.top = rectTop - VERTICAL_SPACE + "px";
+      tooltip.style.top = `${rectTop - VERTICAL_SPACE}px`;
       tooltip.style.transform = "translateY(-100%)";
     }
 
@@ -203,24 +203,24 @@ export class Tooltip {
     tooltip: HTMLIFrameElement,
     max = false
   ) {
-    let height: number;
+    let height = 300; // MAX_HEIGHT
 
-    if (max) {
-      height = 300; // MAX_HEIGHT
-    } else {
+    if (!max) {
       const content = tooltip.contentDocument?.getElementById(
         "main"
-      )!;
-      // getBoundingClientRect().height returns floating-precision number
-      const rect = content.getBoundingClientRect();
-      height = rect.height;
+      );
+      if (content) {
+        // getBoundingClientRect().height returns floating-precision number
+        const rect = content.getBoundingClientRect();
+        height = rect.height;
+      }
     }
-    tooltip.style.height = height + "px";
+    tooltip.style.height = `${height}px`;
   }
 
   private setupEntriesPage(tooltip: HTMLIFrameElement) {
     const doc = tooltip.contentDocument!;
-    doc.head.textContent += `
+    doc.head.textContent! += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 `;
     this.config.setStyle(doc);
