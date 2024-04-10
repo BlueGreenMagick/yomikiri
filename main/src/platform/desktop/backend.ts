@@ -3,8 +3,8 @@ import {
   TokenizeResult,
 } from "../common/backend";
 import initWasm from "@yomikiri/yomikiri-rs";
-import ENYomikiridict from "@yomikiri/dictionary/english.yomikiridict";
-import ENYomikiriIndex from "@yomikiri/dictionary/english.yomikiriindex";
+import ENYomikiridict from "@yomikiri/dictionary/res/english.yomikiridict";
+import ENYomikiriIndex from "@yomikiri/dictionary/res/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry, type EntryObject } from "~/dicEntry";
 import { BrowserApi } from "~/extension/browserApi";

@@ -6,9 +6,6 @@
   "description": "Yomikiri dictionary files",
   "version": "0.1.0",
   "license": "MIT",
-  "exports": {
-    "./*": "./res/*"
-  },
   "files": [
     "res/*"
   ],
