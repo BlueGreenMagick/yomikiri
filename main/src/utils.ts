@@ -1,5 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 
+
 export interface Rect {
   top: number;
   bottom: number;
@@ -305,5 +306,28 @@ export async function nextDocumentPaint(): Promise<void> {
   requestAnimationFrame(() => { setTimeout(resolve) })
   return promise
 }
+
+/**
+ * expose objects to global context.
+ * 
+ * When a function `() => any` is provided, it is used as a getter for the property.
+ */
+export function exposeGlobals(objects: Record<string, object | (() => unknown)>) {
+  for (const prop in objects) {
+    const obj = objects[prop]
+    if (typeof obj === 'function') {
+      Object.defineProperty(self, prop, {
+        get() {
+          return obj() // eslint-disable-line
+        }
+      })
+    } else {
+      Object.defineProperty(self, prop, {
+        value: obj
+      })
+    }
+  }
+}
+
 
 export * as default from "./utils"

@@ -1,39 +1,42 @@
 import OptionsPage from "../components/options/OptionsPage.svelte";
 import { Platform } from "~/platform/iosapp";
-import { AnkiApi, IosAppAnkiApi } from "@platform/anki";
-import Utils from "~/utils";
+import { IosAppAnkiApi } from "@platform/anki";
+import Utils, { LazyAsync, exposeGlobals } from "~/utils";
 import Config from "~/config";
-import { Backend } from "@platform/backend";
 import type { IosAppDictionary } from "~/platform/common/dictionary";
 
-declare global {
-  interface Window {
-    Utils: typeof Utils;
-    AnkiApi: typeof AnkiApi;
-    Config: typeof Config;
-    Backend: typeof Backend;
-  }
-}
 
 const platform = new Platform()
+const lazyConfig = new LazyAsync(() => Config.initialize(platform))
+const lazyAnkiApi = new LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
+const dictionary = platform.newDictionary()
+
 const initialized = initialize();
 
 async function initialize(): Promise<[Config, IosAppAnkiApi, IosAppDictionary]> {
-  const config = await Config.initialize(platform);
+  const config = await lazyConfig.get();
   config.setStyle(document);
-  const ankiApi = platform.newAnkiApi(config)
-  const dictionary = platform.newDictionary()
+  const ankiApi = await lazyAnkiApi.get()
   return [config, ankiApi, dictionary]
 }
 
 
 
-const _optionsPage = new OptionsPage({
+const page = new OptionsPage({
   target: document.body,
   props: { initialized, platform },
 });
 
-window.Utils = Utils;
-window.AnkiApi = AnkiApi;
-window.Config = Config;
-window.Backend = Backend;
+exposeGlobals({
+  platform,
+  Utils,
+  ankiApi: () => {
+    void lazyAnkiApi.get()
+    return lazyAnkiApi.getIfInitialized()
+  },
+  config: () => {
+    void lazyConfig.get()
+    return lazyConfig.getIfInitialized()
+  },
+  page
+})

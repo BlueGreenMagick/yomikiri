@@ -63,7 +63,7 @@ interface AnkiConnectAddNoteParams {
   note: AnkiConnectNote
 }
 
-interface AnkiConnectRequestMap {
+export interface AnkiConnectRequestMap {
   deckNames: [never, string[]],
   modelNames: [never, string[]],
   modelFieldNames: [AnkiConnectModelFieldNamesParams, string[]],

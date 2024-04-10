@@ -5,11 +5,10 @@
  */
 
 import type { Entry } from "../../dicEntry";
-import { Backend, type TokenizeResult, type TokenizeRequest, type DesktopBackend, type IosBackend } from "@platform/backend";
+import { type TokenizeResult, type TokenizeRequest, type DesktopBackend, type IosBackend } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
 import { Platform, type TTSRequest, type TranslateResult } from "@platform-ext";
-import { AnkiApi } from "@platform-ext/anki";
-import Utils from "../../utils";
+import Utils, { exposeGlobals } from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import { updateTTSAvailability } from "~/common";
@@ -84,23 +83,20 @@ if (Platform.IS_IOS) {
 }
 
 
-
-// expose object to window for debugging purposes
-declare global {
-  // ServiceWorkerGlobalScope in service_worker
-  interface Window {
-    backend: typeof Backend;
-    AnkiApi: typeof AnkiApi;
-    Api: typeof BrowserApi;
-    Utils: typeof Utils;
-    Config: typeof Config;
-    lazyBackend: typeof lazyBackend;
+exposeGlobals({
+  platform,
+  browserApi,
+  Utils,
+  ankiApi: () => {
+    void lazyAnkiApi.get()
+    return lazyAnkiApi.getIfInitialized()
+  },
+  backend: () => {
+    void lazyBackend.get()
+    return lazyBackend.getIfInitialized()
+  },
+  config: () => {
+    void lazyConfig.get()
+    return lazyConfig.getIfInitialized()
   }
-}
-
-self.backend = Backend;
-self.AnkiApi = AnkiApi;
-self.Api = BrowserApi;
-self.Utils = Utils;
-self.Config = Config;
-self.lazyBackend = lazyBackend;
+})

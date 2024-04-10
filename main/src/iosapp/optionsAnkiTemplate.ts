@@ -1,18 +1,13 @@
 import { Platform } from "~/platform/iosapp";
-import { AnkiApi, IosAppAnkiApi } from "@platform/anki";
-import Utils from "~/utils";
+import { IosAppAnkiApi } from "@platform/anki";
+import { LazyAsync, exposeGlobals } from "~/utils";
 import Config from "~/config";
 import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
 
-declare global {
-  interface Window {
-    Utils: typeof Utils;
-    AnkiApi: typeof AnkiApi;
-    Config: typeof Config;
-  }
-}
 
 const platform = new Platform()
+const lazyConfig = new LazyAsync(() => Config.initialize(platform))
+
 const initialized = initialize();
 
 async function initialize(): Promise<[Config, IosAppAnkiApi]> {
@@ -23,11 +18,16 @@ async function initialize(): Promise<[Config, IosAppAnkiApi]> {
 
 
 
-const _mainSvelte = new OptionsAnkiTemplatePage({
+const page = new OptionsAnkiTemplatePage({
   target: document.body,
   props: { initialized },
 });
 
-window.Utils = Utils;
-window.AnkiApi = AnkiApi;
-window.Config = Config;
+exposeGlobals({
+  platform,
+  config: () => {
+    void lazyConfig.get()
+    return lazyConfig.getIfInitialized()
+  },
+  page
+})

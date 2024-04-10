@@ -6,17 +6,11 @@ import {
 import { BrowserApi } from "~/extension/browserApi";
 import { Highlighter } from "./highlight";
 import { Tooltip } from "~/extension/content/tooltip";
-import Utils from "~/utils";
+import Utils, { exposeGlobals } from "~/utils";
 import Config from "~/config";
 import { Platform } from "@platform-ext";
 import { containsJapaneseContent } from "~/japanese";
 
-declare global {
-  interface Window {
-    Api: typeof BrowserApi;
-    Config: typeof Config;
-  }
-}
 
 const browserApi = new BrowserApi({ context: "contentScript" });
 const platform = new Platform(browserApi)
@@ -128,7 +122,20 @@ function checkStateEnabled(config: Config) {
   }
 }
 
-
-
-window.Api = BrowserApi;
-window.Config = Config;
+exposeGlobals({
+  platform,
+  browserApi,
+  Utils,
+  backend: () => {
+    return lazyBackend.get()
+  },
+  config: () => {
+    void lazyConfig.get()
+    return lazyConfig.getIfInitialized()
+  },
+  highlighter,
+  tooltip: () => {
+    void lazyTooltip.get()
+    return lazyTooltip.getIfInitialized()
+  }
+})
