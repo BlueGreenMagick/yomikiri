@@ -8,8 +8,70 @@ import Config from "~/config";
 import type { NoteData } from "~/ankiNoteBuilder";
 import { BrowserApi } from "~/extension/browserApi";
 import type { DesktopPlatform } from ".";
+import type { First, Second } from "~/utils";
 
 const ANKI_CONNECT_VER = 6;
+
+interface AnkiConnectSuccess<T> {
+  result: T,
+  error: null
+}
+
+interface AnkiConnectError {
+  result: null
+  error: string
+}
+
+type AnkiConnectResponse<T> = AnkiConnectSuccess<T> | AnkiConnectError
+
+interface AnkiConnectPermission {
+  permission: "granted" | "denied"
+}
+
+interface AnkiConnectModelFieldNamesParams {
+  modelName: string
+}
+
+interface AnkiConnectNoteAttachment {
+  url: string,
+  filename: string,
+  skipHash: string,
+  fields: string[]
+}
+
+interface AnkiConnectNote {
+  deckName: string,
+  modelName: string,
+  fields: Record<string, string>,
+  tags?: string[] | null,
+  audio?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null,
+  video?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null,
+  picture?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null,
+  options?: {
+    allowDuplicate?: boolean | null,
+    duplicateScope?: "deck" | null,
+    duplicateScopeDeckName?: {
+      deckName?: string | null,
+      checkChildren: boolean,
+      checkAllModels: boolean
+    } | null
+  } | null
+}
+
+
+interface AnkiConnectAddNoteParams {
+  note: AnkiConnectNote
+}
+
+interface AnkiConnectRequestMap {
+  deckNames: [never, string[]],
+  modelNames: [never, string[]],
+  modelFieldNames: [AnkiConnectModelFieldNamesParams, string[]],
+  getTags: [never, string[]],
+  addNote: [AnkiConnectAddNoteParams, void],
+  requestPermission: [never, AnkiConnectPermission]
+}
+
 
 /**
  * Uses Anki-Connect on desktop.
@@ -37,7 +99,7 @@ class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   /** Send Anki-connect request */
-  private async request(action: string, params?: unknown): Promise<unknown> {
+  private async request<K extends keyof AnkiConnectRequestMap>(action: K, params?: First<AnkiConnectRequestMap[K]>): Promise<Second<AnkiConnectRequestMap[K]>> {
     const ankiConnectUrl = this.ankiConnectURL();
     let response;
     try {
@@ -56,7 +118,7 @@ class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       );
     }
 
-    const data = await response.json();
+    const data = await response.json() as AnkiConnectResponse<Second<AnkiConnectRequestMap[K]>>;
 
     if (Object.getOwnPropertyNames(data).length != 2) {
       throw new Error("response has an unexpected number of fields");
@@ -67,10 +129,11 @@ class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     if (!Object.prototype.hasOwnProperty.call(data, "result")) {
       throw new Error("response is missing required result field");
     }
-    if (data.error) {
+    if (data.error !== null) {
       throw new Error(data.error);
+    } else {
+      return data.result;
     }
-    return data.result;
   }
 
   async getAnkiInfo(): Promise<AnkiInfo> {
@@ -82,8 +145,8 @@ class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   private async fetchAnkiInfo(): Promise<AnkiInfo> {
-    const decks = (await this.request("deckNames")) as string[];
-    const notetypes = (await this.request("modelNames")) as string[];
+    const decks = await this.request("deckNames");
+    const notetypes = await this.request("modelNames");
     const ankiInfo: AnkiInfo = {
       decks,
       notetypes: [],
@@ -100,13 +163,13 @@ class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   async notetypeFields(noteTypeName: string): Promise<string[]> {
-    return (await this.request("modelFieldNames", {
+    return await this.request("modelFieldNames", {
       modelName: noteTypeName,
-    })) as string[];
+    });
   }
 
   async tags(): Promise<string[]> {
-    return (await this.request("getTags")) as string[];
+    return await this.request("getTags");
   }
 
   async addNote(note: NoteData): Promise<void> {
@@ -133,15 +196,11 @@ class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
 
   /** Throws an error if not successfully connected. */
   async checkConnection(): Promise<void> {
-    try {
-      const resp = await this.request("requestPermission");
-      if (resp.permission === "granted") {
-        return;
-      } else {
-        throw new Error("AnkiConnect did not allow this app to use its api.");
-      }
-    } catch (err) {
-      throw err;
+    const resp = await this.request("requestPermission");
+    if (resp.permission === "granted") {
+      return;
+    } else {
+      throw new Error("AnkiConnect did not allow this app to use its api.");
     }
   }
 }
