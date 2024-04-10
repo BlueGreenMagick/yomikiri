@@ -6,6 +6,7 @@ import type { Platform as IosAppPlatform } from "../iosapp"
 import type { Backend } from "./backend";
 import type { AnkiApi } from "./anki"
 import type Utils from "~/utils";
+import type { PromiseOrValue } from "~/utils";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop"
@@ -19,8 +20,8 @@ export interface IPlatform {
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
   subscribeConfig(subscriber: (config: StoredConfiguration) => unknown): void;
   saveConfig: (config: StoredConfiguration) => Promise<void>;
-  openOptionsPage: () => void | Promise<void>;
-  versionInfo: () => Promise<VersionInfo>;
+  openOptionsPage: () => PromiseOrValue<void>
+  versionInfo: () => PromiseOrValue<VersionInfo>;
   japaneseTTSVoices(): Promise<TTSVoice[]>;
   playTTS(text: string, voice: TTSVoice | null): Promise<void>;
   translate: (text: string) => Promise<TranslateResult>;

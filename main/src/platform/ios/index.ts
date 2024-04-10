@@ -1,7 +1,7 @@
 import Config, { type StoredConfiguration } from "~/config";
 import Utils from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import type { IosTTSRequest, IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
+import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { Backend as IosBackend } from "./backend";
@@ -121,7 +121,7 @@ class IosPlatform implements IPlatform {
     }
   }
 
-  async versionInfo(): Promise<VersionInfo> {
+  versionInfo(): VersionInfo {
     const manifest = this.browserApi.manifest();
     return {
       version: manifest.version

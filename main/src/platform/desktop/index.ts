@@ -47,11 +47,11 @@ class DesktopPlatform implements IPlatform {
     return this.browserApi.setStorage("config", config);
   }
 
-  openOptionsPage() {
-    chrome.runtime.openOptionsPage();
+  openOptionsPage(): Promise<void> {
+    return chrome.runtime.openOptionsPage();
   }
 
-  async versionInfo(): Promise<VersionInfo> {
+  versionInfo(): VersionInfo {
     const manifest = this.browserApi.manifest();
     return {
       version: manifest.version

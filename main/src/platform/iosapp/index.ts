@@ -119,7 +119,7 @@ class IosAppPlatform implements IPlatform {
     }
   }
 
-  async openOptionsPage(): Promise<void> {
+  openOptionsPage(): void {
     throw new Error("Not implemented for iosapp");
   }
 

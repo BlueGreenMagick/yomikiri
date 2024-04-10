@@ -65,7 +65,7 @@ class DesktopBackend implements IBackend {
     }
   }
 
-  async _tokenize(wasm: BackendWasm, text: string, charAt?: number): Promise<TokenizeResult> {
+  _tokenize(wasm: BackendWasm, text: string, charAt?: number): TokenizeResult {
     charAt = charAt ?? 0;
 
     if (text === "") {
