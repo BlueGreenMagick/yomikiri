@@ -20,7 +20,7 @@ export interface Configuration {
   "version": string
 }
 
-const defaultOptions: Configuration = {
+export const defaultOptions: Configuration = {
   "state.enabled": true,
   "general.font_size": 14,
   "general.font": "Meiryo",
@@ -47,10 +47,10 @@ export class Config {
   initialized = false
   subscribers: (() => void)[] = []
   documents: WeakRef<Document>[] = []
-  
+
   private storage: StoredConfiguration
   platform: Platform
-  
+
   private constructor(platform: Platform, storage: StoredConfiguration) {
     this.platform = platform
     this.storage = storage

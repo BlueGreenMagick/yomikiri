@@ -1,7 +1,10 @@
 import { test, expect, describe } from "vitest";
-import { AnkiNoteBuilder, type MarkerData } from "./ankiNoteBuilder";
+import { AnkiNoteBuilder, type MarkerContext, type MarkerData } from "./ankiNoteBuilder";
 import { Entry, type EntryObject } from "./dicEntry";
 import type { TokenizeResult } from "@platform/backend";
+import { DesktopPlatform } from "~/platform/desktop";
+import { BrowserApi } from "./extension/browserApi";
+import Config, { defaultOptions } from "./config";
 
 const tokenized: TokenizeResult = {
   tokens: [
@@ -147,6 +150,15 @@ const tokenized: TokenizeResult = {
   grammars: [],
 };
 
+const platform = new DesktopPlatform(new BrowserApi({ context: "page", handleConnection: false, handleRequests: false, handleStorageChange: false }))
+platform.getConfig = () => { return Promise.resolve(defaultOptions) }
+const config = await Config.initialize(platform);
+
+const ctx: MarkerContext = {
+  platform,
+  config
+}
+
 const data: MarkerData = {
   tokenized,
   entry: tokenized.entries[0],
@@ -158,71 +170,71 @@ const data: MarkerData = {
 
 describe("AnkiNoteBuilder marker", () => {
   test("''", async () => {
-    const value = await AnkiNoteBuilder.markerValue("", data);
+    const value = await AnkiNoteBuilder.markerValue("", ctx, data);
     expect(value).toBe("");
   });
   test("word", async () => {
-    const value = await AnkiNoteBuilder.markerValue("word", data);
+    const value = await AnkiNoteBuilder.markerValue("word", ctx, data);
     expect(value).toBe("読みたい");
   });
   test("word-furigana", async () => {
-    const value = await AnkiNoteBuilder.markerValue("word-furigana", data);
+    const value = await AnkiNoteBuilder.markerValue("word-furigana", ctx, data);
     expect(value).toBe("読[よ]みたい");
   });
   test("word-kana", async () => {
-    const value = await AnkiNoteBuilder.markerValue("word-kana", data);
+    const value = await AnkiNoteBuilder.markerValue("word-kana", ctx, data);
     expect(value).toBe("よみたい");
   });
   test("dict", async () => {
-    const value = await AnkiNoteBuilder.markerValue("dict", data);
+    const value = await AnkiNoteBuilder.markerValue("dict", ctx, data);
     expect(value).toBe("読む");
   });
   test("dict-furigana", async () => {
-    const value = await AnkiNoteBuilder.markerValue("dict-furigana", data);
+    const value = await AnkiNoteBuilder.markerValue("dict-furigana", ctx, data);
     expect(value).toBe("読[よ]む");
   });
   test("dict-kana", async () => {
-    const value = await AnkiNoteBuilder.markerValue("dict-kana", data);
+    const value = await AnkiNoteBuilder.markerValue("dict-kana", ctx, data);
     expect(value).toBe("よむ");
   });
   test("sentence", async () => {
-    const value = await AnkiNoteBuilder.markerValue("sentence", data);
+    const value = await AnkiNoteBuilder.markerValue("sentence", ctx, data);
     expect(value).toBe("わたしは本が<b>読みたい</b>。");
   });
   test("sentence-furigana", async () => {
-    const value = await AnkiNoteBuilder.markerValue("sentence-furigana", data);
+    const value = await AnkiNoteBuilder.markerValue("sentence-furigana", ctx, data);
     expect(value).toBe("わたしは 本[ほん]が<b>読[よ]みたい</b>。");
   });
   test("sentence-kana", async () => {
-    const value = await AnkiNoteBuilder.markerValue("sentence-kana", data);
+    const value = await AnkiNoteBuilder.markerValue("sentence-kana", ctx, data);
     expect(value).toBe("わたしはほんが<b>よみたい</b>。");
   });
   test("translated-sentence", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "translated-sentence",
+      "translated-sentence", ctx,
       data
     );
     expect(typeof value).toBe("string");
   });
   test("sentence-cloze", async () => {
-    const value = await AnkiNoteBuilder.markerValue("sentence-cloze", data);
+    const value = await AnkiNoteBuilder.markerValue("sentence-cloze", ctx, data);
     expect(value).toBe("わたしは本が{{c1::読みたい}}。");
   });
   test("sentence-cloze-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "sentence-cloze-furigana",
+      "sentence-cloze-furigana", ctx,
       data
     );
     expect(value).toBe("わたしは 本[ほん]が{{c1::読[よ]みたい}}。");
   });
   test("meaning", async () => {
-    const value = await AnkiNoteBuilder.markerValue("meaning", data);
+    const value = await AnkiNoteBuilder.markerValue("meaning", ctx, data);
     expect(value).toBe(
       "to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine"
     );
   });
   test("meaning-full", async () => {
-    const value = await AnkiNoteBuilder.markerValue("meaning-full", data);
+    const value = await AnkiNoteBuilder.markerValue("meaning-full", ctx, data);
     expect(value).toBe(
       [
         "to read",
@@ -237,20 +249,20 @@ describe("AnkiNoteBuilder marker", () => {
     );
   });
   test("meaning-short", async () => {
-    const value = await AnkiNoteBuilder.markerValue("meaning-short", data);
+    const value = await AnkiNoteBuilder.markerValue("meaning-short", ctx, data);
     expect(value).toBe("to predict, to guess");
     delete data.selectedMeaning;
-    const valueFull = await AnkiNoteBuilder.markerValue("meaning-short", data);
+    const valueFull = await AnkiNoteBuilder.markerValue("meaning-short", ctx, data);
     expect(valueFull).toBe("to read; to recite (e.g. a sutra); to predict");
   });
   test("url", async () => {
-    const value = await AnkiNoteBuilder.markerValue("url", data);
+    const value = await AnkiNoteBuilder.markerValue("url", ctx, data);
     console.log(value)
     expect(value).toBe("https://yomikiri.test/");
   });
   test("link", async () => {
     document.title = "Yomikiri tests";
-    const value = await AnkiNoteBuilder.markerValue("link", data);
+    const value = await AnkiNoteBuilder.markerValue("link", ctx, data);
     expect(value).toBe('<a href="https://yomikiri.test/">Yomikiri tests</a>');
   });
 });
@@ -316,44 +328,44 @@ const escapedData: MarkerData = {
 
 describe("AnkiNoteBuilder escape HTML", () => {
   test("sentence", async () => {
-    const value = await AnkiNoteBuilder.markerValue("sentence", escapedData);
+    const value = await AnkiNoteBuilder.markerValue("sentence", ctx, escapedData);
     expect(value).toBe("<b>図書</b>&lt;");
   });
   test("sentence-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "sentence-furigana",
+      "sentence-furigana", ctx,
       escapedData
     );
     expect(value).toBe("<b>図書[としょ]</b>&lt;");
   });
   test("sentence-cloze-furigana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "sentence-cloze-furigana",
+      "sentence-cloze-furigana", ctx,
       escapedData
     );
     expect(value).toBe("{{c1::図書[としょ]}}&lt;");
   });
   test("sentence-kana", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "sentence-kana",
+      "sentence-kana", ctx,
       escapedData
     );
     expect(value).toBe("<b>としょ</b>&lt;");
   });
   test("meaning", async () => {
-    const value = await AnkiNoteBuilder.markerValue("meaning", escapedData);
+    const value = await AnkiNoteBuilder.markerValue("meaning", ctx, escapedData);
     expect(value).toBe("books&lt;");
   });
   test("meaning-full", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "meaning-full",
+      "meaning-full", ctx,
       escapedData
     );
     expect(value).toBe('<span class="yk-meaning">books&lt;</span>');
   });
   test("meaning-short", async () => {
     const value = await AnkiNoteBuilder.markerValue(
-      "meaning-short",
+      "meaning-short", ctx,
       escapedData
     );
     expect(value).toBe("books&lt;");
