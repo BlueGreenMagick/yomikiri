@@ -69,4 +69,4 @@ async function main() {
   await browserApi.removeTab(currentTab.id);
 }
 
-await main();
+void main();
