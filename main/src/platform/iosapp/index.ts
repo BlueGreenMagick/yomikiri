@@ -16,8 +16,7 @@ declare global {
     webkit: {
       messageHandlers: {
         yomikiri: {
-          // eslint-disable-next-line
-          postMessage: (message: any) => string | null
+          postMessage: (message: { key: string, request: string }) => Promise<string | null>
         }
       }
     }
@@ -29,7 +28,7 @@ export interface MessageWebviewMap {
   // returns false if anki is not installed
   ankiInfo: [null, boolean];
   loadConfig: [null, StoredConfiguration];
-  saveConfig: [string, void];
+  saveConfig: [StoredConfiguration, void];
   tokenize: [TokenizeRequest, RawTokenizeResult];
   searchTerm: [string, string[]];
   versionInfo: [null, VersionInfo]
@@ -37,19 +36,14 @@ export interface MessageWebviewMap {
   dictMetadata: [null, RawDictionaryMetadata]
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
-  // IosTTSRequest JSON
-  tts: [string, null]
+  tts: [TTSRequest, null]
 
   // action extension
   close: [null, void];
 }
 
-export type WebviewRequest<K extends keyof MessageWebviewMap> = Utils.First<
-  MessageWebviewMap[K]
->;
-export type WebviewResponse<K extends keyof MessageWebviewMap> = Utils.Second<
-  MessageWebviewMap[K]
->;
+export type WebviewRequest<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][0]
+export type WebviewResponse<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][1]
 
 class IosAppPlatform implements IPlatform {
   static IS_DESKTOP = false;
@@ -86,17 +80,15 @@ class IosAppPlatform implements IPlatform {
   ): Promise<WebviewResponse<K>> {
     const message = {
       key,
-      request,
+      request: JSON.stringify(request),
     };
-
-    // eslint-disable-next-line
-    const resp = await window.webkit.messageHandlers.yomikiri.postMessage(
+    const response = await window.webkit.messageHandlers.yomikiri.postMessage(
       message
     );
-    if (typeof resp !== 'string') {
-      return resp as WebviewResponse<K>
+    if (response === null) {
+      return null
     } else {
-      return JSON.parse(resp) as WebviewResponse<K>;
+      return JSON.parse(response) as WebviewResponse<K>
     }
   }
 
@@ -118,8 +110,7 @@ class IosAppPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration) {
-    const configJson = JSON.stringify(config);
-    await this.messageWebview("saveConfig", configJson);
+    await this.messageWebview("saveConfig", config);
 
     // trigger update for this execution context
     for (const subscriber of this._configSubscribers) {
@@ -141,7 +132,7 @@ class IosAppPlatform implements IPlatform {
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     const req: TTSRequest = { text, voice }
-    await this.messageWebview("tts", JSON.stringify(req));
+    await this.messageWebview("tts", req);
   }
 
   async translate(text: string): Promise<TranslateResult> {

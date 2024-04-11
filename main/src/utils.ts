@@ -329,5 +329,37 @@ export function exposeGlobals(objects: Record<string, object | (() => unknown)>)
   }
 }
 
+export interface SuccessfulMessageResponse<R> {
+  success: true;
+  resp: R;
+}
+
+export interface FailedMessageResponse {
+  success: false;
+  error: string; // error json
+}
+
+export type MessageResponse<R> = SuccessfulMessageResponse<R> | FailedMessageResponse;
+
+export function handleMessageResponse<R>(resp: MessageResponse<R>): R {
+  if (resp.success) {
+    return resp.resp;
+  } else {
+    let obj: object;
+    if (typeof resp.error === "string") {
+      obj = JSON.parse(resp.error) as object;
+    } else {
+      obj = resp.error;
+    }
+    const error = new Error();
+    for (const key of Object.getOwnPropertyNames(obj)) {
+      // @ts-expect-error copy over properties
+      // eslint-disable-next-line
+      error[key] = obj[key];
+    }
+    throw error;
+  }
+}
+
 
 export * as default from "./utils"

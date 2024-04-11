@@ -114,7 +114,6 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                     } else {
                         replyHandler(NSNull(), nil)
                     }
-
                 } catch {
                     replyHandler(nil, error.localizedDescription)
                 }
@@ -129,52 +128,37 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             guard let key = msg["key"] as? String else {
                 throw "Message does not have 'key'"
             }
-            guard let request = msg["request"] else {
+            // request object in JSON
+            guard let request = msg["request"] as? String else {
                 throw "Message does not have 'request'"
             }
             os_log("%{public}s", "handleMessage: \(key)")
 
-            var additionallyHandled = false
             if let handler = self.additionalMessageHandler {
                 if let resp = try await handler(key, request) {
                     return resp
                 }
             }
-            if !additionallyHandled {
-                return try await self.defaultMessageHandler(key: key, request: request)
-            }
+            return try await self.defaultMessageHandler(key: key, request: request)
         }
 
         /// Returns JSON string or nil
-        private func defaultMessageHandler(key: String, request: Any) async throws -> String? {
+        private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
             case "loadConfig":
                 let configJson = try loadSharedConfig()
                 return configJson
             case "saveConfig":
-                guard let configJson = request as? String else {
-                    throw "saveConfig tequest body must be JSON string"
-                }
+                let configJson = request
                 try saveSharedConfig(configJson: configJson)
                 triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
-
                 return nil
             case "tokenize":
-                guard let req = request as? NSDictionary else {
-                    throw "'tokenize' request is not a Dictionary"
-                }
-                guard let text = req["text"] as? String else {
-                    throw "'tokenize' request.text is not String"
-                }
-                guard let charAt = req["charAt"] as? UInt32 else {
-                    throw "'tokenize' request.charAt is not UInt32"
-                }
-                let resp = try backend.tokenize(sentence: text, charAt: charAt)
+                let req: TokenizeRequest = try jsonDeserialize(json: request)
+                let resp = try backend.tokenize(sentence: req.text, charAt: req.charAt ?? 0)
                 return try jsonSerialize(obj: resp)
             case "searchTerm":
-                guard let term = request as? String else {
-                    throw "'searchTerm' request is not string"
-                }
+                let term: String = try jsonDeserialize(json: request)
                 let resp = try backend.search(term: term)
                 return try jsonSerialize(obj: resp)
             case "versionInfo":
@@ -190,9 +174,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 let resp = try getDictionaryMetadata()
                 return try jsonSerialize(obj: resp)
             case "openLink":
-                guard let urlString = request as? String else {
-                    throw "'openLink' url is not string"
-                }
+                let urlString: String = try jsonDeserialize(json: request)
                 guard let url = URL(string: urlString) else {
                     throw "'openLink' url is not valid: \(urlString)"
                 }
@@ -205,10 +187,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 let resp = japaneseTtsVoices()
                 return try jsonSerialize(obj: resp)
             case "tts":
-                guard let reqJSON = request as? String else {
-                    throw "'tts' request is not a JSON string"
-                }
-                let req: TTSRequest = try jsonDeserialize(json: reqJSON)
+                let req: TTSRequest = try jsonDeserialize(json: request)
                 try ttsSpeak(voice: req.voice, text: req.text)
                 return nil
             default:
@@ -266,4 +245,9 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             }
         }
     }
+}
+
+private struct TokenizeRequest: Decodable {
+    var text: String
+    var charAt: UInt32?
 }

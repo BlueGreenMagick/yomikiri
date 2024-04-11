@@ -4,7 +4,7 @@ import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "~/platform/common";
-import Utils from "~/utils";
+import Utils, { handleMessageResponse, type MessageResponse } from "~/utils";
 
 /**
  * Type map for messages between extension processes
@@ -32,16 +32,6 @@ interface Message<K extends keyof MessageMap> {
   key: K;
   request: Request<K>;
 }
-
-interface SuccessfulRequestResponse<R> {
-  success: true;
-  resp: R;
-}
-interface FailedRequestResponse {
-  success: false;
-  error: string; // JSON.stringify(error)
-}
-type RequestResponse<R> = SuccessfulRequestResponse<R> | FailedRequestResponse;
 
 export type MessageSender = chrome.runtime.MessageSender;
 
@@ -109,7 +99,7 @@ export class BrowserApi {
         message: Message<keyof MessageMap>,
         sender: MessageSender,
         sendResponse: (
-          response?: RequestResponse<Response<keyof MessageMap>>
+          response?: MessageResponse<Response<keyof MessageMap>>
         ) => void
       ): boolean => {
         const handler = this._requestHandlers[message.key];
@@ -175,37 +165,14 @@ export class BrowserApi {
     return chrome.runtime.getManifest();
   }
 
-
-
-  /** Returns content of the response. Returns an Error object if an error occured. */
-  handleRequestResponse<R>(resp: RequestResponse<R>): R {
-    if (resp.success) {
-      return resp.resp;
-    } else {
-      let obj: object;
-      if (typeof resp.error === "string") {
-        obj = JSON.parse(resp.error) as object;
-      } else {
-        obj = resp.error;
-      }
-      const error = new Error();
-      for (const key of Object.getOwnPropertyNames(obj)) {
-        // @ts-expect-error copy over properties
-        // eslint-disable-next-line
-        error[key] = obj[key];
-      }
-      throw error;
-    }
-  }
-
   /** It is assumed that request does return a response. */
   private createRequestResponseHandler<K extends keyof MessageMap>(
     resolve: Utils.PromiseResolver<Response<K>>,
     reject: (reason: Error) => void
-  ): (resp: RequestResponse<Response<K>>) => void {
-    return (resp: RequestResponse<Response<K>>) => {
+  ): (resp: MessageResponse<Response<K>>) => void {
+    return (resp: MessageResponse<Response<K>>) => {
       try {
-        const response = this.handleRequestResponse(resp);
+        const response = handleMessageResponse(resp);
         resolve(response);
       } catch (error: unknown) {
         if (error instanceof Error) {

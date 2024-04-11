@@ -1,5 +1,5 @@
 import Config, { type StoredConfiguration } from "~/config";
-import Utils from "~/utils";
+import { handleMessageResponse } from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
 import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
@@ -13,18 +13,14 @@ export * from "../common";
 export interface AppMessageMap {
   tokenize: [TokenizeRequest, RawTokenizeResult];
   loadConfig: [null, StoredConfiguration];
-  saveConfig: [string, null];
+  saveConfig: [StoredConfiguration, null];
   search: [string, string[]];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
 }
 
-export type AppRequest<K extends keyof AppMessageMap> = Utils.First<
-  AppMessageMap[K]
->;
-export type AppResponse<K extends keyof AppMessageMap> = Utils.Second<
-  AppMessageMap[K]
->;
+export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
+export type AppResponse<K extends keyof AppMessageMap> = AppMessageMap[K][1];
 
 
 class IosPlatform implements IPlatform {
@@ -66,8 +62,8 @@ class IosPlatform implements IPlatform {
       request: JSON.stringify(request),
     });
     // eslint-disable-next-line
-    const response = this.browserApi.handleRequestResponse<string>(resp);
-    return JSON.parse(response) as AppResponse<K>;
+    const jsonResponse = handleMessageResponse<string>(resp);
+    return JSON.parse(jsonResponse) as AppResponse<K>;
   }
 
   async getConfig(): Promise<StoredConfiguration> {
@@ -103,8 +99,7 @@ class IosPlatform implements IPlatform {
     if (this.browserApi.context === "contentScript") {
       await this.browserApi.request("saveConfig", config);
     } else {
-      const configJson = JSON.stringify(config);
-      await this.requestToApp("saveConfig", configJson);
+      await this.requestToApp("saveConfig", config);
       await this.browserApi.setStorage("config", config);
     }
   }
