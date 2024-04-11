@@ -19,7 +19,7 @@ interface RawAnkiInfo {
   profiles: Named[];
 }
 
-class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
+export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   platform: IosAppPlatform
   ankiInfoP: Promise<AnkiInfo>
   ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>

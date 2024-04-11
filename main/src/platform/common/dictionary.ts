@@ -1,9 +1,9 @@
 import type Utils from "~/utils";
-import type { Dictionary as DesktopDictionary } from "../desktop/dictionary"
-import type { Dictionary as IosAppDictionary } from "../iosapp/dictionary"
+import type { DesktopDictionary } from "../desktop/dictionary"
+import type { IosAppDictionary } from "../iosapp/dictionary"
 
-export type { Dictionary as DesktopDictionary } from "../desktop/dictionary"
-export type { Dictionary as IosAppDictionary } from "../iosapp/dictionary"
+export type { DesktopDictionary } from "../desktop/dictionary"
+export type { IosAppDictionary } from "../iosapp/dictionary"
 
 export interface DictionaryMetadata {
   downloadDate: Date,

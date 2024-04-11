@@ -45,7 +45,7 @@ export interface MessageWebviewMap {
 export type WebviewRequest<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][0]
 export type WebviewResponse<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][1]
 
-class IosAppPlatform implements IPlatform {
+export class IosAppPlatform implements IPlatform {
   static IS_DESKTOP = false;
   static IS_IOS = false;
   static IS_IOSAPP = true;

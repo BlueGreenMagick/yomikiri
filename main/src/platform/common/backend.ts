@@ -3,13 +3,13 @@ import type {
 } from "@yomikiri/yomikiri-rs";
 import { Entry, type EntryObject } from "~/dicEntry";
 import { toHiragana } from "~/japanese";
-import type {Backend as DesktopBackend} from "../desktop/backend"
-import type {Backend as IosBackend} from "../ios/backend"
-import type {Backend as IosAppBackend} from "../iosapp/backend"
+import type { DesktopBackend } from "../desktop/backend"
+import type { IosBackend } from "../ios/backend"
+import type { IosAppBackend } from "../iosapp/backend"
 
-export type {Backend as DesktopBackend} from "../desktop/backend"
-export type {Backend as IosBackend} from "../ios/backend"
-export type {Backend as IosAppBackend} from "../iosapp/backend"
+export type { DesktopBackend } from "../desktop/backend"
+export type { IosBackend } from "../ios/backend"
+export type { IosAppBackend } from "../iosapp/backend"
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 

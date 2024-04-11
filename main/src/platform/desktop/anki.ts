@@ -78,7 +78,7 @@ export interface AnkiConnectRequestMap {
  * Should not be used in content script
  * as Anki-connect allows only calls from trusted origins.
  */
-class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   platform: DesktopPlatform
   browserApi: BrowserApi
   config: Config

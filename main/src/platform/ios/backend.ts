@@ -9,7 +9,7 @@ import { Entry, type EntryObject } from "~/dicEntry";
 
 export * from "../common/backend";
 
-class IosBackend implements IBackend {
+export class IosBackend implements IBackend {
   platform: IosPlatform
   browserApi: BrowserApi
 

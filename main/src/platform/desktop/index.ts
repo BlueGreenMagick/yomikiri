@@ -9,7 +9,7 @@ import { AnkiApi as DesktopAnkiApi } from "./anki";
 
 export * from "../common";
 
-class DesktopPlatform implements IPlatform {
+export class DesktopPlatform implements IPlatform {
   static IS_DESKTOP = true
   static IS_IOS = false
   static IS_IOSAPP = false
@@ -88,7 +88,5 @@ class DesktopPlatform implements IPlatform {
 
 DesktopPlatform satisfies IPlatformStatic
 
-// We set unique name for each platform class then rename to common name
-// for easier type debugging during development
 export const Platform = DesktopPlatform
 export type Platform = DesktopPlatform

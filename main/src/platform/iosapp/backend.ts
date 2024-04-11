@@ -8,10 +8,10 @@ import { Entry, type EntryObject } from "~/dicEntry";
 
 export * from "../common/backend"
 
-class IosAppBackend implements IBackend {
+export class IosAppBackend implements IBackend {
   platform: IosAppPlatform
-  
-  constructor(platform: IosAppPlatform){
+
+  constructor(platform: IosAppPlatform) {
     this.platform = platform
   }
 

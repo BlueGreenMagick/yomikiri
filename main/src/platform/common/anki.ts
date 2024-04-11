@@ -1,12 +1,12 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import Utils from "~/utils";
-import { AnkiApi as DesktopAnkiApi } from "../desktop/anki"
-import { AnkiApi as IosAnkiApi } from "../ios/anki"
-import { AnkiApi as IosAppAnkiApi } from "../iosapp/anki"
+import { DesktopAnkiApi } from "../desktop/anki"
+import { IosAnkiApi } from "../ios/anki"
+import { IosAppAnkiApi } from "../iosapp/anki"
 
-export { AnkiApi as DesktopAnkiApi } from "../desktop/anki"
-export { AnkiApi as IosAnkiApi } from "../ios/anki"
-export { AnkiApi as IosAppAnkiApi } from "../iosapp/anki"
+export { DesktopAnkiApi } from "../desktop/anki"
+export { IosAnkiApi } from "../ios/anki"
+export { IosAppAnkiApi } from "../iosapp/anki"
 
 export interface NotetypeInfo {
   name: string;

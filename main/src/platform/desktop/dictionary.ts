@@ -23,7 +23,7 @@ interface DictionaryDBSchema extends DBSchema {
   }
 }
 
-class DesktopDictionary implements IDictionary {
+export class DesktopDictionary implements IDictionary {
   _wasm_initialized = false;
 
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {

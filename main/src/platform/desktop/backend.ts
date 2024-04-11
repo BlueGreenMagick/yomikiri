@@ -15,7 +15,7 @@ import { Dictionary } from "./dictionary"
 export * from "../common/backend";
 
 
-class DesktopBackend implements IBackend {
+export class DesktopBackend implements IBackend {
   wasm?: BackendWasm
   browserApi: BrowserApi
 

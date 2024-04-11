@@ -23,7 +23,7 @@ export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
 export type AppResponse<K extends keyof AppMessageMap> = AppMessageMap[K][1];
 
 
-class IosPlatform implements IPlatform {
+export class IosPlatform implements IPlatform {
   static IS_DESKTOP = false;
   static IS_IOS = true;
   static IS_IOSAPP = false;

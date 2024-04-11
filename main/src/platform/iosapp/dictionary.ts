@@ -16,7 +16,7 @@ function parseRawMetadata(raw: RawDictionaryMetadata): DictionaryMetadata {
   }
 }
 
-class IosAppDictionary implements IDictionary {
+export class IosAppDictionary implements IDictionary {
   platform: IosAppPlatform
 
   constructor(platform: IosAppPlatform) {
