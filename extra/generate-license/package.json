@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "generate": "tsx index.ts > res/THIRD_PARTY.txt",
-    "lint": "eslint --cache ."
+    "lint": "tsc --noemit; eslint --cache ."
   },
   "files": [
     "res/THIRD_PARTY.txt"
