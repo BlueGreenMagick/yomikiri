@@ -3,10 +3,9 @@
 import { BrowserApi } from "~/extension/browserApi";
 import OptionsPage from "../../components/options/OptionsPage.svelte";
 import { Platform } from "~/platform/desktop";
-import { AnkiApi, DesktopAnkiApi } from "@platform/anki";
+import { DesktopAnkiApi } from "@platform/anki";
 import Utils, { exposeGlobals } from "~/utils";
 import Config from "~/config";
-import { Backend } from "@platform/backend";
 import type { DesktopDictionary } from "~/platform/common/dictionary";
 
 const browserApi = new BrowserApi({ context: "page" });

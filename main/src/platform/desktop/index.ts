@@ -39,7 +39,7 @@ export class DesktopPlatform implements IPlatform {
   /** subscriber is called when config is changed. */
   subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     this.browserApi.handleStorageChange("config", (change) => {
-      subscriber(change.newValue)
+      subscriber(change.newValue as StoredConfiguration)
     })
   }
 

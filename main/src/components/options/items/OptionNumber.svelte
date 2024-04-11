@@ -2,7 +2,7 @@
   import type { ConfigKeysOfType, Config } from "~/config";
   import OptionBase from "./OptionBase.svelte";
 
-  export let config: Config
+  export let config: Config;
   export let key: ConfigKeysOfType<number>;
   export let title: string;
   export let min: number | null = null;
@@ -11,14 +11,14 @@
 
   let value: number = config.get(key);
 
-  function onChange(_: unknown) {
+  async function onChange(_: unknown) {
     if (min !== null && value < min) {
       value = min;
     }
     if (max !== null && value > max) {
       value = max;
     }
-    config.set(key, value);
+    await config.set(key, value);
   }
 
   function onKeydown(ev: KeyboardEvent) {

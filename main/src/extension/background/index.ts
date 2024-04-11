@@ -67,7 +67,7 @@ async function onActionClick() {
   const config = await lazyConfig.get();
   const prevEnabled = config.get("state.enabled");
   const enabled = !prevEnabled;
-  config.set("state.enabled", enabled);
+  await config.set("state.enabled", enabled);
 }
 
 
@@ -79,7 +79,9 @@ browserApi.handleRequest("translate", handleTranslate);
 browserApi.handleRequest("tts", tts);
 
 if (Platform.IS_IOS) {
-  browserApi.handleActionClicked(onActionClick);
+  browserApi.handleActionClicked(() => {
+    onActionClick().catch((err: unknown) => { throw err })
+  });
 }
 
 

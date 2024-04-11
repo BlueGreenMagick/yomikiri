@@ -92,6 +92,9 @@ function onMouseMove(ev: MouseEvent, config: Config) {
 
   if (ev.shiftKey) {
     trigger(ev.clientX, ev.clientY)
+      .catch((err: unknown) => {
+        throw err
+      })
   }
 }
 
@@ -105,12 +108,14 @@ function onClick(ev: MouseEvent, config: Config) {
   }
 
   if (Utils.isTouchScreen) {
-    trigger(ev.clientX, ev.clientY).then((triggered) => {
-      if (triggered === false) {
-        lazyTooltip.getIfInitialized()?.hide();
-        highlighter.unhighlight();
-      }
-    })
+    trigger(ev.clientX, ev.clientY)
+      .then((triggered) => {
+        if (triggered === false) {
+          lazyTooltip.getIfInitialized()?.hide();
+          highlighter.unhighlight();
+        }
+      })
+      .catch((err: unknown) => { throw err })
   }
 }
 

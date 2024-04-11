@@ -37,7 +37,7 @@ export class IosAnkiApi implements IAnkiAddNotes {
 
     const ankiLink = iosAnkiMobileURL(note, willAutoRedirect ? "http://yomikiri-redirect.yoonchae.com" : undefined)
     if (currentTab.id !== undefined) {
-      this.browserApi.updateTab(currentTab.id, { url: ankiLink });
+      await this.browserApi.updateTab(currentTab.id, { url: ankiLink });
     } else {
       location.href = ankiLink;
     }

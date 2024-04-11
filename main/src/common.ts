@@ -11,5 +11,5 @@ export async function updateTTSAvailability(platform: Platform, config: Config):
   if (voices.length === 0) return;
   // reverse order sort
   voices.sort((a, b) => b.quality - a.quality)
-  config.set("tts.voice", voices[0])
+  await config.set("tts.voice", voices[0])
 }

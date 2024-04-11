@@ -38,7 +38,7 @@ export class Tooltip {
     this._shown = true;
     this._tooltipPageSvelte.setTokenizeResult(tokenizeResult);
     // fix bug where tooltip height is previous entry's height
-    await 0;
+    await 0; // eslint-disable-line
     const rect = this.findRectOfMouse(highlightedRects, mouseX, mouseY);
     this.position(tooltip, rect);
   }

@@ -93,7 +93,7 @@ export namespace RubyString {
       for (let i = 1; i < splitted.length; i++) {
         rubyString.push({
           base: splitted[i],
-          ruby: i % 2 === 0 ? matches[i / 2 + first] : undefined,
+          ...((i % 2 === 0) && { ruby: matches[i / 2 + first] }),
         });
       }
     }

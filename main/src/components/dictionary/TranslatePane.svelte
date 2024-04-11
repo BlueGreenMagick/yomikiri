@@ -2,7 +2,7 @@
   import type { Platform, TranslateResult } from "@platform";
   import Utils from "~/utils";
 
-  export let platform: Platform
+  export let platform: Platform;
   export let sentence: string;
   export let shown: boolean;
   export let translation: Promise<TranslateResult> | null = null;
@@ -27,10 +27,10 @@
     }
   }
 
-  function onShownChange(shown: boolean) {
+  async function onShownChange(shown: boolean) {
     if (!shown) return;
     if (translation == null || failed) {
-      requestTranslation();
+      await requestTranslation();
     }
   }
 
