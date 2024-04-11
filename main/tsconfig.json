@@ -24,8 +24,6 @@
         "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
         "@platform": ["platform/common/index"],
         "@platform/*": ["platform/common/*"],
-        "@platform-ext": ["platform/ext/index"],
-        "@platform-ext/*": ["platform/ext/*"],
       }
     },
     "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]

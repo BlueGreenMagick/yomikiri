@@ -7,14 +7,14 @@
 import type { Entry } from "../../dicEntry";
 import { type TokenizeResult, type TokenizeRequest, type DesktopBackend, type IosBackend } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
-import { Platform, type TTSRequest, type TranslateResult } from "@platform-ext";
+import { Platform, type ExtensionPlatform, type TTSRequest, type TranslateResult } from "@platform";
 import Utils, { exposeGlobals } from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import { updateTTSAvailability } from "~/common";
 
 const browserApi = new BrowserApi({ context: "background" })
-const platform = new Platform(browserApi)
+const platform = new Platform(browserApi) as ExtensionPlatform
 const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
 const lazyAnkiApi = new Utils.LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
 const lazyBackend = new Utils.LazyAsync<DesktopBackend | IosBackend>(() => platform.newBackend())

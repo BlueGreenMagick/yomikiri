@@ -8,12 +8,12 @@ import { Highlighter } from "./highlight";
 import { Tooltip } from "~/extension/content/tooltip";
 import Utils, { exposeGlobals } from "~/utils";
 import Config from "~/config";
-import { Platform } from "@platform-ext";
+import { Platform, type ExtensionPlatform } from "@platform";
 import { containsJapaneseContent } from "~/japanese";
 
 
 const browserApi = new BrowserApi({ context: "contentScript" });
-const platform = new Platform(browserApi)
+const platform = new Platform(browserApi) as ExtensionPlatform
 const lazyBackend = new Utils.Lazy(async () => await platform.newBackend())
 const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
 const highlighter = new Highlighter(() => { lazyTooltip.getIfInitialized()?.hide() })

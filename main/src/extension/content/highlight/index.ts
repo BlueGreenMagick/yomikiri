@@ -1,7 +1,7 @@
 import type { Rect } from "~/utils";
 import { SelectionHighlighter } from "./selectionHighlighter";
 import { WrapHighlighter } from "./wrapHighlighter";
-import { Platform } from "@platform-ext"
+import { Platform } from "@platform"
 
 
 export interface IHighlighter {

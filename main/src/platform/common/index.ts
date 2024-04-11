@@ -62,5 +62,7 @@ export interface TTSRequest {
   voice: TTSVoice | null
 }
 
-export declare const Platform: typeof DesktopPlatform | typeof IosPlatform | typeof IosAppPlatform
+export type ExtensionPlatform = DesktopPlatform | IosPlatform
+
 export type Platform = DesktopPlatform | IosPlatform | IosAppPlatform
+export declare const Platform: typeof DesktopPlatform | typeof IosPlatform | typeof IosAppPlatform

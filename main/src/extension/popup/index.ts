@@ -1,15 +1,15 @@
-import { Platform } from "@platform-ext";
+import { Platform, type ExtensionPlatform } from "@platform";
 import PopupPage from "./PopupPage.svelte";
 import Config from "~/config";
-import Utils, { LazyAsync, exposeGlobals } from "~/utils";
+import Utils, { LazyAsync, exposeGlobals, type PromiseOrValue } from "~/utils";
 import { BrowserApi } from "~/extension/browserApi";
-import type { Backend } from "@platform/backend"
+import type { Backend, DesktopBackend, IosBackend } from "@platform/backend"
 
 
 const browserApi = new BrowserApi({ context: "popup" });
-const platform = new Platform(browserApi)
+const platform = new Platform(browserApi) as ExtensionPlatform
 const lazyConfig = new LazyAsync(() => Config.initialize(platform))
-const lazyBackend = new LazyAsync(() => platform.newBackend())
+const lazyBackend = new LazyAsync((): PromiseOrValue<DesktopBackend | IosBackend> => platform.newBackend())
 
 const initialized = initialize();
 
