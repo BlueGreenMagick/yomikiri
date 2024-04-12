@@ -7,12 +7,12 @@
   "type": "module",
   "scripts": {
     "_build_prepare": "pnpm -w run construct:all",
-    "_build": "f() { cross-env NODE_ENV=production TARGET_PLATFORM=$1 tsx esbuild.config.ts; }; f",
+    "_build": "f() { cross-env NODE_ENV=production TARGET_PLATFORM=$1 vite build; }; f",
     "build:firefox": "pnpm run _build firefox",
     "build:chrome": "pnpm run _build chrome",
     "build:safari_desktop": "pnpm run _build safari_desktop",
     "build:ios": "pnpm run _build ios && pnpm run _build iosapp",
-    "_dev": "f() { cross-env NODE_ENV=development TARGET_PLATFORM=$1 tsx esbuild.config.ts; }; f",
+    "_dev": "f() { cross-env NODE_ENV=development TARGET_PLATFORM=$1 vite build; }; f",
     "dev:chrome": "pnpm run _dev chrome",
     "dev:firefox": "pnpm run _dev firefox",
     "dev:safari_desktop": "pnpm run _dev safari_desktop",
@@ -24,6 +24,7 @@
     "lint": "tsc --noemit; eslint --cache ."
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@swc/core": "^1.4.6",
     "@types/adm-zip": "^0.5.5",
     "@types/chrome": "^0.0.263",
@@ -47,6 +48,7 @@
     "svelte-preprocess": "^5.0.3",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2",
+    "vite": "^5.2.8",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.4.0",
     "web-ext": "^7.6.2"

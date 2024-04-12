@@ -1,4 +1,4 @@
-import Utils, { type Rect } from "utils";
+import Utils, { type Rect } from "~/utils";
 import type { TokenizeResult } from "@platform/backend";
 import Config from "~/config";
 import TooltipPage from "./TooltipPage.svelte";

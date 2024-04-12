@@ -26,5 +26,5 @@
         "@platform/*": ["platform/common/*"],
       }
     },
-    "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]
+    "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts", "vite.config.ts"]
   }

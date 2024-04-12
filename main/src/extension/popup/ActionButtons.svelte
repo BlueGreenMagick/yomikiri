@@ -4,9 +4,8 @@
   import Config from "~/config";
   import type { Platform } from "@platform";
 
-  export let platform: Platform
-  export let config: Config
-
+  export let platform: Platform;
+  export let config: Config;
 
   let stateEnabled = config.get("state.enabled");
 
