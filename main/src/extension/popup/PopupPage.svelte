@@ -5,17 +5,18 @@
   import type Config from "~/config";
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
+  import type { AnkiApi } from "@platform/anki";
 
   export let platform: Platform;
-  export let initialized: Promise<[Config, Backend]>;
+  export let initialized: Promise<[Config, Backend, AnkiApi]>;
 </script>
 
 <div id="main" use:platformClass>
-  {#await initialized then [config, backend]}
+  {#await initialized then [config, backend, ankiApi]}
     {#if Platform.IS_IOS}
       <ActionButtons {platform} {config} />
     {:else}
-      <PopupView {platform} {backend} {config} />
+      <PopupView {platform} {backend} {config} {ankiApi} />
     {/if}
   {/await}
 </div>

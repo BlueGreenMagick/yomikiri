@@ -4,16 +4,24 @@
   import DictionaryView from "./DictionaryView.svelte";
   import type Config from "~/config";
   import type { IosAppBackend } from "~/platform/iosapp/backend";
+  import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
 
-  export let initialized: Promise<[Config, IosAppBackend]>;
+  export let initialized: Promise<[Config, IosAppBackend, IosAppAnkiApi]>;
   export let platform: IosAppPlatform;
   export let context: "app" | "action";
   export let searchText = "";
 </script>
 
 <div id="main" use:platformClass>
-  {#await initialized then [config, backend]}
-    <DictionaryView {context} {platform} {backend} {config} {searchText} />
+  {#await initialized then [config, backend, ankiApi]}
+    <DictionaryView
+      {context}
+      {platform}
+      {backend}
+      {config}
+      {ankiApi}
+      {searchText}
+    />
   {/await}
 </div>
 

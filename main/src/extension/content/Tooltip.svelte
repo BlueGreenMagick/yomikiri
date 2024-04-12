@@ -15,6 +15,7 @@
   import ToolbarWithPane from "~/components/dictionary/ToolbarWithPane.svelte";
   import type { Platform } from "@platform";
   import type { Config } from "~/config";
+  import type { AnkiApi } from "@platform/anki";
 
   interface Events {
     updateHeight: undefined;
@@ -22,6 +23,7 @@
 
   export let platform: Platform;
   export let config: Config;
+  export let ankiApi: AnkiApi;
   export let onClose: () => void;
   export let tokenizeResult: TokenizeResult;
 
@@ -103,7 +105,12 @@
   </div>
   {#if previewIsVisible}
     <div class="add-to-anki-container">
-      <AddToAnki noteData={previewNoteData} on:back={onBack} {noteAdded} />
+      <AddToAnki
+        noteData={previewNoteData}
+        on:back={onBack}
+        {ankiApi}
+        {noteAdded}
+      />
     </div>
   {/if}
 </div>

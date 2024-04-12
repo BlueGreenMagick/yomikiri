@@ -12,10 +12,12 @@
   import { Toast } from "~/toast";
   import AddToAnki from "~/extension/content/AddToAnki.svelte";
   import type Config from "~/config";
+  import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
 
   export let platform: IosAppPlatform;
   export let config: Config;
   export let backend: IosAppBackend;
+  export let ankiApi: IosAppAnkiApi;
   export let context: "app" | "action";
   export let searchText: string;
 
@@ -74,7 +76,12 @@
     </Tokenize>
   </div>
   {#if previewIsVisible}
-    <AddToAnki noteData={previewNoteData} on:back={onBack} {noteAdded} />
+    <AddToAnki
+      noteData={previewNoteData}
+      on:back={onBack}
+      {noteAdded}
+      {ankiApi}
+    />
   {/if}
 </div>
 

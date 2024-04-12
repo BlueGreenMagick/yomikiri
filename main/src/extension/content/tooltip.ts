@@ -3,13 +3,15 @@ import type { TokenizeResult } from "@platform/backend";
 import Config from "~/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
-import type { Platform } from "~/platform/ext";
+import type { ExtensionPlatform } from "@platform";
+import type { AnkiApi } from "@platform/anki";
 
 const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
 
 export class Tooltip {
-  platform: Platform
+  platform: ExtensionPlatform
   config: Config
+  ankiApi: AnkiApi
   highlighter: Highlighter
 
   private _tooltipPageSvelte: TooltipPage | null = null;
@@ -17,9 +19,10 @@ export class Tooltip {
   private _resizeObserverAttached = false;
   private _repositionRequested = false;
 
-  constructor(platform: Platform, config: Config, highlighter: Highlighter) {
+  constructor(platform: ExtensionPlatform, config: Config, ankiApi: AnkiApi, highlighter: Highlighter) {
     this.platform = platform
     this.config = config
+    this.ankiApi = ankiApi
     this.highlighter = highlighter
   }
 
@@ -228,7 +231,7 @@ export class Tooltip {
 
     this._tooltipPageSvelte = new TooltipPage({
       target: doc.body,
-      props: { platform: this.platform, config: this.config, onClose: () => { this.hide() } },
+      props: { platform: this.platform, config: this.config, ankiApi: this.ankiApi, onClose: () => { this.hide() } },
     });
 
     this._tooltipPageSvelte.$on("updateHeight", (_: CustomEvent<void>) => {

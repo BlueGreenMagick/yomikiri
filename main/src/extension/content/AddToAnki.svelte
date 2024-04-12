@@ -19,6 +19,7 @@
     back: undefined;
   }
 
+  export let ankiApi: AnkiApi;
   export let noteData: LoadingNoteData;
   export let noteAdded: () => void;
 
@@ -47,7 +48,7 @@
   async function onAdd() {
     let resolvedNoteData = await LoadingNoteData.resolve(noteData);
     try {
-      await AnkiApi.addNote(resolvedNoteData);
+      await ankiApi.addNote(resolvedNoteData);
 
       Toast.success("Note added to Anki");
       noteAdded();

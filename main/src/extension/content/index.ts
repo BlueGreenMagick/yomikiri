@@ -6,7 +6,7 @@ import {
 import { BrowserApi } from "~/extension/browserApi";
 import { Highlighter } from "./highlight";
 import { Tooltip } from "~/extension/content/tooltip";
-import Utils, { exposeGlobals } from "~/utils";
+import Utils, { LazyAsync, exposeGlobals } from "~/utils";
 import Config from "~/config";
 import { Platform, type ExtensionPlatform } from "@platform";
 import { containsJapaneseContent } from "~/japanese";
@@ -16,8 +16,9 @@ const browserApi = new BrowserApi({ context: "contentScript" });
 const platform = new Platform(browserApi) as ExtensionPlatform
 const lazyBackend = new Utils.Lazy(async () => await platform.newBackend())
 const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
+const lazyAnkiApi = new LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
 const highlighter = new Highlighter(() => { lazyTooltip.getIfInitialized()?.hide() })
-const lazyTooltip = new Utils.LazyAsync(async () => new Tooltip(platform, await lazyConfig.get(), highlighter))
+const lazyTooltip = new Utils.LazyAsync(async () => new Tooltip(platform, await lazyConfig.get(), await lazyAnkiApi.get(), highlighter))
 
 const _initialized = initialize()
 

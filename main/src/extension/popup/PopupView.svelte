@@ -13,10 +13,12 @@
   import ActionButtons from "./ActionButtons.svelte";
   import type { Platform } from "@platform";
   import type { Config } from "~/config";
+  import type { AnkiApi } from "@platform/anki";
 
   export let platform: Platform;
   export let config: Config;
   export let backend: Backend;
+  export let ankiApi: AnkiApi;
 
   let previewIsVisible = false;
   let previewNoteData: LoadingNoteData;
@@ -61,7 +63,12 @@
     </Tokenize>
   </div>
   {#if previewIsVisible}
-    <AddToAnki noteData={previewNoteData} on:back={onBack} {noteAdded} />
+    <AddToAnki
+      noteData={previewNoteData}
+      on:back={onBack}
+      {ankiApi}
+      {noteAdded}
+    />
   {/if}
 </div>
 

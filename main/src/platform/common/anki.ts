@@ -55,6 +55,8 @@ export function iosAnkiMobileURL(note: NoteData, successUrl?: string): string {
   return url
 }
 
-export declare const AnkiApi: typeof DesktopAnkiApi | typeof IosAnkiApi | typeof IosAppAnkiApi
+export type ExtensionAnkiApi = DesktopAnkiApi | IosAnkiApi
 export type AnkiApi = DesktopAnkiApi | IosAnkiApi | IosAppAnkiApi
 export type AnkiOptionsApi = DesktopAnkiApi | IosAppAnkiApi
+
+export declare const AnkiApi: typeof DesktopAnkiApi | typeof IosAnkiApi | typeof IosAppAnkiApi

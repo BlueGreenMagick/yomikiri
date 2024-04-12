@@ -15,7 +15,7 @@ export interface MarkerContext {
 export interface MarkerData {
   tokenized: TokenizeResult;
   entry: Entry;
-  selectedMeaning?: Sense;
+  selectedMeaning?: Sense | undefined;
   /** NFC normalized string */
   sentence: string;
   /** window.location.href */
