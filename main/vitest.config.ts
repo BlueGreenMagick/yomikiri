@@ -47,10 +47,11 @@ export default defineConfig({
   build: {
     target: [
       "es2017", "chrome99", "firefox55", "safari14.1"
-    ],
+    ]
   },
   test: {
-    environment: 'jsdom'
+    environment: 'jsdom',
+    watch: false
   }
 })
 
