@@ -19,9 +19,11 @@
     "dev:ios": "pnpm run _dev ios && pnpm run _dev iosapp",
     "dev": "pnpm run dev:chrome",
     "run:firefox": "pnpm web-ext run -s ./build --devtools",
-    "check": "svelte-check --compiler-warnings \"a11y-no-noninteractive-tabindex:ignore,a11y-click-events-have-key-events:ignore\"",
     "test": "vitest",
-    "lint": "tsc --noemit; eslint --cache ."
+    "lint:ts": "tsc --noemit",
+    "lint:svelte": "svelte-check --compiler-warnings \"a11y-no-noninteractive-tabindex:ignore,a11y-click-events-have-key-events:ignore\"",
+    "lint:eslint": "eslint --cache .",
+    "lint": "pnpm lint:ts; pnpm lint:svelte; pnpm lint:eslint"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
