@@ -1,3 +1,5 @@
+import { hasOwnProperty } from "~/utils";
+
 interface GoogleTranslateApiResult {
   sentences: {
     trans: string,
@@ -28,7 +30,7 @@ const translationCache: Record<string, TranslateResult> = {};
  * Use `BrowserApi.request("translate")` instead,
  */
 export async function getTranslation(text: string): Promise<TranslateResult> {
-  if (Object.prototype.hasOwnProperty.call(translationCache, text)) {
+  if (hasOwnProperty(translationCache, text)) {
     return translationCache[text];
   }
 

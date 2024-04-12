@@ -1,4 +1,4 @@
-import Utils from "./utils";
+import Utils, { hasOwnProperty } from "./utils";
 import ENTITIES from "./assets/dicEntities.json";
 import type { Token } from "@platform/backend";
 import { extractKanjis } from "./japanese";
@@ -147,9 +147,11 @@ export namespace Entry {
 
   /** Put in return value of .entityName() */
   export function entityInfo(name: string): string | null {
-    const info = ENTITIES[name] as string | undefined;
-    if (info === undefined) return null;
-    return info;
+    if (hasOwnProperty(ENTITIES, name)) {
+      return ENTITIES[name]
+    } else {
+      return null
+    }
   }
 
   /** Returns entity name if s is an entity, else return null. */

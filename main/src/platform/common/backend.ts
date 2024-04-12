@@ -18,7 +18,7 @@ export interface TokenizeRequest {
   /**
    * Defaults to 0 if not specified.
    */
-  charAt?: number;
+  charAt?: number | undefined;
 }
 
 export interface TokenizeResult extends Omit<RawTokenizeResult, "entries"> {

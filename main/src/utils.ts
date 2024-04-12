@@ -363,5 +363,13 @@ export function handleMessageResponse<R>(resp: MessageResponse<R>): R {
   }
 }
 
+export function hasOwnProperty<O extends object, K extends string>(obj: O, key: K): key is keyof O & K {
+  return Object.prototype.hasOwnProperty.call(obj, key)
+}
+
+export function keyInObject<O extends object, K extends string>(obj: O, key: K): key is keyof O & K {
+  return key in obj
+}
+
 
 export * as default from "./utils"

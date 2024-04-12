@@ -1,4 +1,4 @@
-import Utils, { type Rect } from "utils";
+import Utils, { type Rect } from "~/utils";
 import type { TokenizeResult } from "@platform/backend";
 import Config from "~/config";
 import TooltipPage from "./TooltipPage.svelte";
@@ -12,7 +12,7 @@ export class Tooltip {
   config: Config
   highlighter: Highlighter
 
-  private _tooltipPageSvelte: TooltipPage;
+  private _tooltipPageSvelte: TooltipPage | null = null;
   private _shown = false;
   private _resizeObserverAttached = false;
   private _repositionRequested = false;

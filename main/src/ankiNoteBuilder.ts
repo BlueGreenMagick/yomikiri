@@ -310,9 +310,9 @@ export namespace AnkiNoteBuilder {
     return sentence.trim()
   });
 
-  addMarker("meaning", (_ctx, data: MarkerData) => {
+  addMarker("meaning", (ctx, data: MarkerData) => {
     if (data.selectedMeaning === undefined) {
-      return markerValue("meaning-full", data) as string;
+      return markerValue("meaning-full", ctx, data) as string;
     } else {
       return Utils.escapeHTML(data.selectedMeaning.meaning.join(", "));
     }

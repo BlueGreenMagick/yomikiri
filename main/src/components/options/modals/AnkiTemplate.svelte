@@ -7,8 +7,10 @@
     exampleTranslatedSentence,
   } from "../exampleMarkerData";
   import type { AnkiInfo } from "~/platform/common/anki";
+  import type { Platform } from "@platform";
 
-  export let config: Config
+  export let platform: Platform;
+  export let config: Config;
   export let ankiInfo: AnkiInfo;
 
   const template = config.get("anki.template");
@@ -55,7 +57,7 @@
       (nt) => nt.name === notetypeName
     );
     if (notetypeInfo === undefined) {
-      return (template!).fields.map((f) => f.name);
+      return template!.fields.map((f) => f.name);
     } else {
       return notetypeInfo.fields;
     }
@@ -89,6 +91,7 @@
     } else {
       return AnkiNoteBuilder.markerValue(
         fieldTemplates[field],
+        { platform, config },
         exampleMarkerData
       );
     }

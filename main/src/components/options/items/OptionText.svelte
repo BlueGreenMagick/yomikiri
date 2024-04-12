@@ -2,7 +2,7 @@
   import type { ConfigKeysOfType, Config } from "~/config";
   import OptionBase from "./OptionBase.svelte";
 
-  export let config: Config
+  export let config: Config;
   export let key: ConfigKeysOfType<string>;
   export let title: string;
   export let disabled = false;
@@ -11,9 +11,9 @@
 
   let value: string = config.get(key);
 
-  function onChange(_: Event) {
+  async function onChange(_: Event) {
     if (value === undefined) return;
-    config.set(key, value);
+    await config.set(key, value);
   }
 
   function onKeydown(ev: KeyboardEvent) {

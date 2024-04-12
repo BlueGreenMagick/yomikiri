@@ -4,20 +4,19 @@
   import Config from "~/config";
   import type { Platform } from "@platform";
 
-  export let platform: Platform
-  export let config: Config
-
+  export let platform: Platform;
+  export let config: Config;
 
   let stateEnabled = config.get("state.enabled");
 
-  function openSettings() {
-    platform.openOptionsPage();
+  async function openSettings() {
+    await platform.openOptionsPage();
   }
 
-  function toggleEnable() {
+  async function toggleEnable() {
     let prevValue = config.get("state.enabled");
     stateEnabled = !prevValue;
-    config.set("state.enabled", stateEnabled);
+    await config.set("state.enabled", stateEnabled);
   }
 </script>
 

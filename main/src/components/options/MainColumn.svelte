@@ -16,7 +16,7 @@
 
 <div>
   <GroupAppearance {config} />
-  <GroupAnki {config} {ankiApi} />
+  <GroupAnki {platform} {config} {ankiApi} />
   <!-- eslint-disable-next-line -->
   {#if Platform.IS_DESKTOP || Platform.IS_IOSAPP}
     <GroupDictionary {dictionary} />

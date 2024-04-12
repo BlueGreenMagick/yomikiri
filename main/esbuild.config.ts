@@ -129,6 +129,7 @@ const watchPlugin: Plugin = {
           watchFiles: ["./src/global.css", "./options/styles.css"],
         };
       }
+      return null
     });
   },
 };
@@ -318,4 +319,4 @@ async function main() {
   }
 }
 
-main();
+void main();

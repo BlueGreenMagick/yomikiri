@@ -4,23 +4,25 @@
   import OptionClick from "../items/OptionClick.svelte";
   import ModalThirdParty from "../modals/ModalThirdParty.svelte";
   import OptionBase from "../items/OptionBase.svelte";
-
   export let platform: Platform;
 
   let modalThirdPartyVisible = false;
-  let versionString = "Loading version...";
+  let versionStringP = getVersionString();
 
-  async function initialize() {
-    await platform.versionInfo();
+  async function getVersionString() {
     const versionInfo = await platform.versionInfo();
-    versionString = "v" + versionInfo.version;
+    return "v" + versionInfo.version;
   }
-
-  initialize();
 </script>
 
 <GroupedOptions title="About">
-  <OptionBase title="About Yomikiri">{versionString}</OptionBase>
+  <OptionBase title="About Yomikiri">
+    {#await versionStringP}
+      Loading version.
+    {:then versionString}
+      {versionString}
+    {/await}
+  </OptionBase>
   <OptionClick
     title="Third party licenses"
     buttonText={"View"}

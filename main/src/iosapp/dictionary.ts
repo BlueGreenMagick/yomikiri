@@ -1,6 +1,6 @@
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "~/config";
-import Utils from "~/utils";
+import Utils, { LazyAsync, exposeGlobals } from "~/utils";
 import { Platform } from "~/platform/iosapp";
 import { updateTTSAvailability } from "~/common";
 import type { IosAppBackend } from "~/platform/iosapp/backend";
@@ -8,15 +8,17 @@ import type { IosAppBackend } from "~/platform/iosapp/backend";
 
 const platform = new Platform()
 const initialized = initialize();
+const lazyConfig = new LazyAsync(() => Config.initialize(platform))
+const backend = platform.newBackend()
+
 createSvelte(initialized);
 
 async function initialize(): Promise<[Config, IosAppBackend]> {
-  const config = await Config.initialize(platform);
+  const config = await lazyConfig.get()
   config.setStyle(document);
-  const backend = platform.newBackend()
 
   // queue task to run later
-  setTimeout(() => { deferredInitialize(config) }, 0);
+  setTimeout(() => { void deferredInitialize(config) }, 0);
   return [config, backend]
 }
 
@@ -35,5 +37,12 @@ function createSvelte(initialized: Promise<[Config, IosAppBackend]>): Dictionary
   });
 }
 
-window.Utils = Utils;
-window.Config = Config;
+exposeGlobals({
+  platform,
+  Utils,
+  config() {
+    void lazyConfig.get();
+    return lazyConfig.getIfInitialized()
+  },
+  backend
+})

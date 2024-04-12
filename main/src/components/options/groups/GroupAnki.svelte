@@ -12,6 +12,7 @@
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
 
+  export let platform: Platform;
   export let ankiApi: AnkiOptionsApi;
   export let config: Config;
 
@@ -135,6 +136,7 @@
 </GroupedOptions>
 {#if !ankiTemplateModalHidden && Platform.IS_DESKTOP}
   <ModalAnkiTemplate
+    {platform}
     {config}
     {ankiApi}
     on:close={() => {

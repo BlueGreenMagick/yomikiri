@@ -49,7 +49,7 @@
     selectedTool = tool;
   }
 
-  $: tokenize(searchText, selectedCharAt);
+  $: void tokenize(searchText, selectedCharAt);
 </script>
 
 <div class="search">

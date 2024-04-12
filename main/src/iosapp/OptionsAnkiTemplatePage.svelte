@@ -2,14 +2,16 @@
   import type Config from "~/config";
   import LoadAnkiTemplate from "../components/options/modals/LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";
-  import type { IosAppAnkiApi } from "~/platform/common/anki";
+  import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
+  import type { IosAppPlatform } from "~/platform/iosapp";
 
+  export let platform: IosAppPlatform;
   export let initialized: Promise<[Config, IosAppAnkiApi]>;
 </script>
 
 <div id="main" use:platformClass>
   {#await initialized then [config, ankiApi]}
-    <LoadAnkiTemplate {config} {ankiApi} />
+    <LoadAnkiTemplate {platform} {config} {ankiApi} />
   {/await}
 </div>
 

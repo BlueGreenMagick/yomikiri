@@ -36,7 +36,7 @@
     }
   }
 
-  initialize();
+  void initialize();
 </script>
 
 <GroupedOptions title="Dictionary">

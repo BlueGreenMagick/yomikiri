@@ -40,7 +40,7 @@
     display = "";
   }
 
-  $: onShownChange(shown);
+  $: void onShownChange(shown);
   $: onSentenceChange(sentence);
 </script>
 

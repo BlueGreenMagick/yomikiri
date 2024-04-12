@@ -20,7 +20,7 @@ async function initialize(): Promise<[Config, IosAppAnkiApi]> {
 
 const page = new OptionsAnkiTemplatePage({
   target: document.body,
-  props: { initialized },
+  props: { platform, initialized },
 });
 
 exposeGlobals({

@@ -3,13 +3,13 @@
   import ToggleSwitch from "../../ToggleSwitch.svelte";
   import type { Config, ConfigKeysOfType } from "~/config";
 
-  export let config: Config
+  export let config: Config;
   export let key: ConfigKeysOfType<boolean>;
   export let title: string;
   export let value: boolean = config.get(key);
 
-  function update() {
-    config.set(key, value);
+  async function update() {
+    await config.set(key, value);
   }
 </script>
 

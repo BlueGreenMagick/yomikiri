@@ -4,7 +4,7 @@ import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "~/platform/common";
-import Utils, { handleMessageResponse, type MessageResponse } from "~/utils";
+import Utils, { handleMessageResponse, hasOwnProperty, type MessageResponse } from "~/utils";
 
 /**
  * Type map for messages between extension processes
@@ -142,8 +142,8 @@ export class BrowserApi {
 
   private attachConnectionHandler() {
     chrome.runtime.onConnect.addListener((port) => {
-      if (!Object.prototype.hasOwnProperty.call(this._connectionHandlers, port.name)) return;
-      const handlers = this._connectionHandlers[port.name as ConnectionKey];
+      if (!hasOwnProperty(this._connectionHandlers, port.name)) return;
+      const handlers = this._connectionHandlers[port.name];
       if (handlers === undefined) return;
       for (const handler of handlers) {
         handler(port);
@@ -412,15 +412,15 @@ export class BrowserApi {
 
 
   /** set text to "" to remove badge */
-  setBadge(text: string | number, color: string) {
+  async setBadge(text: string | number, color: string) {
     const iAction = this.action();
     if (typeof text === "number") {
       text = text.toString()
     }
-    iAction.setBadgeText({
+    await iAction.setBadgeText({
       text
     })
-    iAction.setBadgeBackgroundColor({
+    await iAction.setBadgeBackgroundColor({
       color
     });
   }
