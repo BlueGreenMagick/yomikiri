@@ -7,7 +7,6 @@ import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "./package.json" assert { type: "json" };
 import AdmZip from "adm-zip";
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const DEVELOPMENT = !PRODUCTION;
@@ -64,24 +63,6 @@ function platformAliasDestination(): string {
   }
 }
 
-function buildGeneratedJsPlugin(): Plugin {
-  let rootSrc
-  return {
-    name: 'buildGeneratedJsPlugin',
-
-    resolveId(source, importer, options) {
-      if (path.resolve(importer ?? "", source) === fullpath('generated')) {
-        console.log('gen')
-      }
-      return null
-    },
-
-    configResolved(config) {
-      rootSrc = path.resolve(import.meta.dirname, config.root)
-    }
-  }
-}
-
 function buildManifestPlugin(): Plugin {
   return {
     name: 'buildManifestPlugin',
@@ -134,12 +115,23 @@ export default defineConfig({
     sourcemap: DEVELOPMENT ? 'inline' : false,
     minify: false,
     emptyOutDir: true,
-    watch: null,
+    watch: WATCH ? {} : null,
     rollupOptions: {
       input: {
         'content': 'src/extension/content/index.ts',
         'background': 'src/extension/background/index.ts',
-        'popup': 'src/extension/popup/index.ts'
+        'popup': 'src/extension/popup/index.html',
+        ...(!FOR_IOSAPP && {
+          'options': 'src/extension/options/index.html',
+        }),
+        ...(FOR_IOS && {
+          'x-callback': 'src/extension/x-callback/index.html',
+        }),
+        ...(FOR_IOSAPP && {
+          'options': 'src/iosapp/options.html',
+          'optionsAnkiTemplate': 'src/iosapp/optionsAnkiTemplate.html',
+          'dictionary': 'src/iosapp/dictionary.html'
+        })
       },
       output: {
         dir: `build/${TARGET}`,
@@ -154,8 +146,7 @@ export default defineConfig({
   },
   plugins: [
     svelteConfiguredPlugin,
-    buildManifestPlugin(),
-    buildGeneratedJsPlugin()
+    buildManifestPlugin()
   ],
   resolve: {
     alias: {
