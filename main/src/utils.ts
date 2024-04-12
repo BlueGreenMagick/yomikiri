@@ -218,7 +218,8 @@ interface QueueItem<I extends unknown[], R> {
  * Returns an async function that is executed consequently.
  * Execution starts when previous call of this function finishes.
  *
- * If there is an existing queue, it is replaced with new input and previous queued call returns with `null`.
+ * If there is an existing queue, it is replaced with new input and previous queued call is resolved with `null`.
+ * In such case, the second call resolves earlier than the first call.
  */
 export function SingleQueued<I extends unknown[], R>(
   fn: (...inp: I) => Promise<R>
@@ -239,6 +240,7 @@ export function SingleQueued<I extends unknown[], R>(
     fn(...inp).then((result) => {
       running = false;
       resolve(result);
+      run()
     }).catch((e: unknown) => {
       running = false;
       reject(e);
