@@ -173,8 +173,8 @@ function generateBuildOptions(): BuildOptions {
     // relative path is incorrect from background pages
     publicPath: "/",
     define: {
-      '__APP_VERSION__': VERSION,
-      '__APP_TARGET__': TARGET!
+      '__APP_VERSION__': `"${VERSION}"`,
+      '__APP_PLATFORM__': `"${TARGET!}"`
     },
     loader: {
       ".wasm": "file",
