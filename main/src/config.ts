@@ -1,6 +1,6 @@
 import type { NoteData } from "~/ankiNoteBuilder";
 import { Platform } from "@platform";
-import { VERSION } from "./generated";
+import { VERSION } from "./common";
 import type { TTSVoice } from "./platform/common";
 
 /** Must not be undefined */

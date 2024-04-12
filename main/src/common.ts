@@ -2,6 +2,11 @@ import Config from "./config";
 import { Platform } from "@platform"
 import Utils from "./utils";
 
+
+export const VERSION = __APP_VERSION__;
+export const PLATFORM = __APP_PLATFORM__;
+
+
 /** If config['tts.voice'] is null, re-check if tts is available and update config */
 export async function updateTTSAvailability(platform: Platform, config: Config): Promise<void> {
   Utils.log("updateTTS");

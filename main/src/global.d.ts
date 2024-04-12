@@ -26,3 +26,6 @@ declare module "*.chunk" {
   const content: string;
   export default content;
 }
+
+declare const __APP_VERSION__: string
+declare const __APP_PLATFORM__: "chrome" | "firefox" | "safari_desktop" | "ios" | "iosapp"
