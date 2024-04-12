@@ -24,6 +24,7 @@
     "lint": "tsc --noemit; eslint --cache ."
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@swc/core": "^1.4.6",
     "@types/adm-zip": "^0.5.5",
     "@types/chrome": "^0.0.263",
@@ -47,7 +48,6 @@
     "svelte-preprocess": "^5.0.3",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2",
-    "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.4.0",
     "web-ext": "^7.6.2"
   },
