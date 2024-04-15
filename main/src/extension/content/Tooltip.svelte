@@ -105,12 +105,7 @@
   </div>
   {#if previewIsVisible}
     <div class="add-to-anki-container">
-      <AddToAnki
-        noteData={previewNoteData}
-        on:back={onBack}
-        {ankiApi}
-        {noteAdded}
-      />
+      <AddToAnki noteData={previewNoteData} {onBack} {ankiApi} {noteAdded} />
     </div>
   {/if}
 </div>

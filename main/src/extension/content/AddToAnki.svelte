@@ -5,7 +5,6 @@
 <script lang="ts">
   import { type Field, LoadingNoteData } from "~/ankiNoteBuilder";
   import NotePreviewField from "./NotePreviewField.svelte";
-  import { createEventDispatcher } from "svelte";
   import TextButton from "~/components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "~/toast";
@@ -15,15 +14,10 @@
     _value: string;
   }
 
-  interface Events {
-    back: undefined;
-  }
-
   export let ankiApi: AnkiApi;
   export let noteData: LoadingNoteData;
   export let noteAdded: () => void;
-
-  const dispatch = createEventDispatcher<Events>();
+  export let onBack: () => void;
 
   let tagField: FieldWatch = {
     name: "Tags",
@@ -40,10 +34,6 @@
   let errored: boolean[] = [];
   let anyErrored = false;
   let allLoaded = false;
-
-  function onBack() {
-    dispatch("back");
-  }
 
   async function onAdd() {
     let resolvedNoteData = await LoadingNoteData.resolve(noteData);

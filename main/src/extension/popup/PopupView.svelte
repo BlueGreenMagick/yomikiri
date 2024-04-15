@@ -63,12 +63,7 @@
     </Tokenize>
   </div>
   {#if previewIsVisible}
-    <AddToAnki
-      noteData={previewNoteData}
-      on:back={onBack}
-      {ankiApi}
-      {noteAdded}
-    />
+    <AddToAnki noteData={previewNoteData} {onBack} {ankiApi} {noteAdded} />
   {/if}
 </div>
 
