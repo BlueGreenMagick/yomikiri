@@ -431,6 +431,7 @@ export class BrowserApi {
     const voices = await promise;
     const ttsVoices: TTSVoice[] = []
     for (const voice of voices) {
+      if (voice.lang != 'ja-JP') continue
       const name = voice.voiceName
       if (name === undefined) continue
       const quality = voice.remote ? 100 : 200
@@ -444,13 +445,14 @@ export class BrowserApi {
     return ttsVoices
   }
 
-  speakJapanese(text: string, voice: TTSVoice | null): Promise<void> {
+  async speakJapanese(text: string, voice: TTSVoice | null): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
-    let options
-    if (voice === null) {
-      options = { "lang": "ja-jp" }
-    } else {
-      options = { "voiceName": voice.name }
+    let options: chrome.tts.SpeakOptions = { "lang": "ja-jp" }
+    if (voice !== null) {
+      const voices = await this.japaneseTtsVoices()
+      if (voices.find((value) => { value.name === voice.name }) !== undefined) {
+        options = { "voiceName": voice.name }
+      }
     }
     chrome.tts.speak(text, options, resolve);
     return promise;
