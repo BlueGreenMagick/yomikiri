@@ -30,6 +30,9 @@ jobs:
       - name: Install cargo
         run: rustup toolchain install stable
 
+      - name: Cache cargo dependencies
+        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
+
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
