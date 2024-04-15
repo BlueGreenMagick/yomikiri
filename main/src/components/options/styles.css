@@ -2,13 +2,6 @@ body {
   background-color: var(--background-alt);
 }
 
-button {
-  border: 1px solid black;
-  outline: none;
-  border-radius: 3px;
-  background-color: var(--background-alt);
-}
-
 button[disabled] {
   border: 1px solid var(--border);
 }

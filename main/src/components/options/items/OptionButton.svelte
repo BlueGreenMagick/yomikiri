@@ -9,7 +9,12 @@
 
 <div class="option-button" class:disabled>
   <OptionBase {title} {disabled}>
-    <button on:click={() => {onClicked()}} {disabled}>
+    <button
+      on:click={() => {
+        onClicked();
+      }}
+      {disabled}
+    >
       {buttonText}
     </button>
     <slot slot="description" />
@@ -22,6 +27,10 @@
   }
 
   button {
+    border: 1px solid black;
+    outline: none;
+    border-radius: 3px;
+    background-color: var(--background-alt);
     padding: 2px 4px;
     min-width: 120px;
     transition: background-color 0.125s ease-in-out;

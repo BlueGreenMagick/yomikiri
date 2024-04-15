@@ -71,6 +71,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    border: 1px solid black;
+    outline: none;
+    border-radius: 3px;
+    background-color: var(--background-alt);
   }
 
   .icon-close {

@@ -26,7 +26,7 @@ css variables set using Config.generateCSS()
 */
 
 button {
-  background-color: transparent;
+  background-color: unset;
   border: none;
   margin: 0;
   padding: 0;
