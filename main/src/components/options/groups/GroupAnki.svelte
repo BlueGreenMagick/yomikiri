@@ -139,7 +139,7 @@
     {platform}
     {config}
     {ankiApi}
-    on:close={() => {
+    onClose={() => {
       ankiTemplateModalHidden = true;
     }}
   />

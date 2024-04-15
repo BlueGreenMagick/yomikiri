@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import IconClose from "@icons/close.svg";
 
-  const dispatch = createEventDispatcher();
+  export let onClose: () => void;
 
   export let title: string;
   export let hidden = false;
@@ -12,11 +11,8 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">{title}</div>
-      <button
-        class="close-button"
-        on:click={() => {
-          dispatch("close");
-        }}><div class="icon-close"><IconClose /></div></button
+      <button class="close-button" on:click={onClose}
+        ><div class="icon-close"><IconClose /></div></button
       >
     </div>
     <div class="modal-content"><slot /></div>

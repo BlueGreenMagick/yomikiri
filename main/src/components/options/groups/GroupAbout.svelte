@@ -45,7 +45,7 @@
 
 {#if modalThirdPartyVisible}
   <ModalThirdParty
-    on:close={() => {
+    onClose={() => {
       modalThirdPartyVisible = false;
     }}
   />

@@ -8,8 +8,9 @@
   export let platform: Platform;
   export let config: Config;
   export let ankiApi: AnkiOptionsApi;
+  export let onClose: () => void;
 </script>
 
-<Modal title="Anki Template" on:close>
+<Modal title="Anki Template" {onClose}>
   <LoadAnkiTemplate {platform} {config} {ankiApi} />
 </Modal>

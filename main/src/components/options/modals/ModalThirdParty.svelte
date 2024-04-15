@@ -1,9 +1,11 @@
 <script lang="ts">
   import Modal from "../Modal.svelte";
   import licensesDisclaimer from "@yomikiri/generate-license/res/THIRD_PARTY.txt";
+
+  export let onClose: () => void;
 </script>
 
-<Modal title="Third Party Licenses" on:close>
+<Modal title="Third Party Licenses" {onClose}>
   <div class="licenses">
     <div class="jmdict">
       <h3>Dictionary Files</h3>
