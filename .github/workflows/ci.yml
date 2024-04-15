@@ -30,11 +30,11 @@ jobs:
       - name: Install cargo
         run: rustup toolchain install stable
 
-      - name: Install pnpm deps
-        run: pnpm install
-
       - name: Construct
         run: pnpm run construct:all
+
+      - name: Install pnpm deps
+        run: pnpm install
 
       - name: Lint
         run: pnpm run lint
