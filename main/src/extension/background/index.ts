@@ -23,7 +23,7 @@ const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
   const config = await lazyConfig.get()
-  config.onChange(() => { void updateStateEnabledBadge(config) });
+  config.subscribe(() => { void updateStateEnabledBadge(config) });
 
   await updateTTSAvailability(platform, config);
 }

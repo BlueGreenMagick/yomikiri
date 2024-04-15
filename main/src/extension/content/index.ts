@@ -24,7 +24,7 @@ const _initialized = initialize()
 
 async function initialize() {
   const config = await lazyConfig.get();
-  config.onChange(() => { checkStateEnabled(config) });
+  config.subscribe(() => { checkStateEnabled(config) });
   document.addEventListener("mousemove", (ev) => { onMouseMove(ev, config) })
   document.addEventListener("click", (ev) => { onClick(ev, config) })
 }

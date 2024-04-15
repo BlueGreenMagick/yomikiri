@@ -55,18 +55,25 @@ export class Config {
     this.platform = platform
     this.storage = storage
 
-    for (const subscriber of this.subscribers) {
-      subscriber()
+    const runSubscribers = () => {
+      for (const subscriber of this.subscribers) {
+        try {
+          subscriber()
+        } catch (err) {
+          console.error("Uncaught config subscriber error:", err)
+        }
+      }
     }
+
+    runSubscribers()
+
     platform.subscribeConfig((cfg) => {
       storage = cfg
-      for (const subscriber of this.subscribers) {
-        subscriber()
-      }
+      runSubscribers()
     });
 
     this.migrate()
-    this.onChange(() => {
+    this.subscribe(() => {
       this.updateStyling()
     })
     this.initialized = true
@@ -121,14 +128,14 @@ export class Config {
    * 
    * If Config isn't initialized yet, it will run on initialization.
    */
-  onChange(subscriber: () => void): void {
+  subscribe(subscriber: () => void): void {
     this.subscribers.push(subscriber)
     if (this.initialized) {
       subscriber()
     }
   }
 
-  removeOnChange(subscriber: () => void): boolean {
+  removeSubscriber(subscriber: () => void): boolean {
     const idx = this.subscribers.indexOf(subscriber);
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
