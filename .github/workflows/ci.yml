@@ -36,6 +36,12 @@ jobs:
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
+      - name: Cache unidic
+        uses: actions/cache@v4
+        with:
+          path: unidic/original
+          key: unidic-2.1.2
+
       - name: Construct
         run: pnpm run construct:all
 
