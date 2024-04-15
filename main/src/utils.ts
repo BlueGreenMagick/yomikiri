@@ -196,7 +196,7 @@ export function generateUrlParams(params: Record<string, string>): string {
     .join("&");
 }
 
-export function errorMessage(
+export function getErrorMessage(
   err: unknown,
   other = "Unknown error: check the browser console for details"
 ): string {

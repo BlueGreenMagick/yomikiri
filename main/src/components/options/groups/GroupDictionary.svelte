@@ -31,7 +31,7 @@
       dictDescription = "Successfully updated dictionary!";
       dictDescClass = "success";
     } catch (e) {
-      dictDescription = "Error: " + Utils.errorMessage(e);
+      dictDescription = "Error: " + Utils.getErrorMessage(e);
       console.error(e);
     }
   }

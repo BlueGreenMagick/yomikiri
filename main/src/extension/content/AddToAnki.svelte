@@ -8,7 +8,7 @@
   import TextButton from "~/components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "~/toast";
-  import { errorMessage, SingleQueued } from "~/utils";
+  import { getErrorMessage, SingleQueued } from "~/utils";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -44,7 +44,7 @@
       noteAdded();
     } catch (err) {
       console.error(err);
-      const msg = errorMessage(
+      const msg = getErrorMessage(
         err,
         "An unknown error occured... Check the browser console for more info."
       );

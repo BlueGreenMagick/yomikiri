@@ -32,7 +32,7 @@
       await ankiApi.requestAnkiInfo();
       ankiTemplateModalHidden = false;
     } catch (err) {
-      let errorMsg = Utils.errorMessage(err);
+      let errorMsg = Utils.getErrorMessage(err);
       ankiTemplateDescriptionError = true;
       ankiTemplateDescription = errorMsg;
     }
@@ -50,7 +50,7 @@
         await ankiApi.checkConnection();
         useAnkiDescription = "success";
       } catch (err) {
-        useAnkiError = Utils.errorMessage(err);
+        useAnkiError = Utils.getErrorMessage(err);
         useAnkiDescription = "error";
         retryConnectTimeout = window.setTimeout(() => {
           void checkAnkiConnection(sAnkiEnabled);

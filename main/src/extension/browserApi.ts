@@ -178,7 +178,7 @@ export class BrowserApi {
         if (error instanceof Error) {
           reject(error)
         } else {
-          reject(new Error(Utils.errorMessage(error)))
+          reject(new Error(Utils.getErrorMessage(error)))
         }
       }
     };

@@ -22,7 +22,7 @@
       resolver(result);
     } catch (err) {
       failed = true;
-      display = `Error occured: ${Utils.errorMessage(err)}`;
+      display = `Error occured: ${Utils.getErrorMessage(err)}`;
       rejector(err);
     }
   }

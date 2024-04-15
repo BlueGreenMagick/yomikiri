@@ -40,7 +40,7 @@
     try {
       note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
     } catch (err) {
-      Toast.error(Utils.errorMessage(err));
+      Toast.error(Utils.getErrorMessage(err));
       throw err;
     }
     previewNoteData = note;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
   import type { LoadingField } from "~/ankiNoteBuilder";
-  import { PromiseWithProgress, errorMessage } from "~/utils";
+  import { PromiseWithProgress, getErrorMessage } from "~/utils";
 
   export let field: LoadingField;
   export let bold = false;
@@ -22,7 +22,7 @@
       .catch((err: unknown) => {
         loading = false;
         errored = true;
-        value = errorMessage(err);
+        value = getErrorMessage(err);
       });
   } else {
     loading = false;
