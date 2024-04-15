@@ -28,12 +28,15 @@
 
   button {
     border: 1px solid black;
-    outline: none;
     border-radius: 3px;
     background-color: var(--background-alt);
     padding: 2px 4px;
     min-width: 120px;
     transition: background-color 0.125s ease-in-out;
     text-align: center;
+  }
+
+  button:focus-visible {
+    border: 1px solid transparent;
   }
 </style>
