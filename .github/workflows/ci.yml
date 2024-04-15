@@ -28,7 +28,10 @@ jobs:
           cache: "pnpm"
 
       - name: Install cargo
-        run: rustup toolchain install stable
+        run: |
+          rustup toolchain install stable
+          rustup target add aarch64-apple-ios
+          rustup target add aarch64-apple-ios-sim
 
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
