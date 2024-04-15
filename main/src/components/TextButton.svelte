@@ -54,22 +54,21 @@
   }
 </script>
 
-<span
+<button
   bind:this={elem}
   class:tapped
   class:disabled
   class:warn={style == "warn"}
-  role="button"
-  tabindex="0"
   on:click={onElemClick}
   on:touchstart={onTouchStart}
   on:touchcancel={onTouchEnd}
   on:touchend={onTouchEnd}
-  on:touchmove={onTouchMove}>{label}</span
+  on:touchmove={onTouchMove}>{label}</button
 >
 
 <style>
-  span {
+  button {
+    display: inline;
     color: var(--selected-blue);
     -webkit-tap-highlight-color: transparent;
     transition: filter 0.2s;
@@ -77,19 +76,23 @@
     user-select: none;
   }
 
-  span.warn {
+  button.warn {
     color: var(--text-warn);
   }
-  span.disabled {
+  button.disabled {
     opacity: 0.4;
   }
 
-  span.tapped:not(.disabled),
-  :global(html.desktop) span:not(.disabled):active:hover {
+  button:focus-visible {
+    outline-offset: 4px;
+  }
+
+  button.tapped:not(.disabled),
+  :global(html.desktop) button:not(.disabled):active:hover {
     filter: opacity(0.6);
   }
 
-  span:not(.disabled):hover {
+  button:not(.disabled):hover {
     cursor: pointer;
   }
 </style>
