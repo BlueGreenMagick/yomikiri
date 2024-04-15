@@ -17,6 +17,8 @@
 <div
   class="option-click"
   class:disabled
+  role="button"
+  tabindex="0"
   on:keydown={onKeyDown}
   on:click={() => {
     if (!disabled) {

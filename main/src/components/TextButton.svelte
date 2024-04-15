@@ -59,6 +59,8 @@
   class:tapped
   class:disabled
   class:warn={style == "warn"}
+  role="button"
+  tabindex="0"
   on:click={onElemClick}
   on:touchstart={onTouchStart}
   on:touchcancel={onTouchEnd}

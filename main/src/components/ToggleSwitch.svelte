@@ -7,6 +7,9 @@
   class="toggle-switch"
   class:active
   style:--height="{height}px"
+  role="button"
+  tabindex="0"
+  aria-pressed={active ? "true" : "false"}
   on:click={() => {
     active = !active;
   }}
