@@ -41,8 +41,7 @@
     onUpdateHeight();
   }
 
-  async function selectedEntryForAnki(ev: CustomEvent<SelectedEntryForAnki>) {
-    const request = ev.detail;
+  async function selectedEntryForAnki(request: SelectedEntryForAnki) {
     const markerData: MarkerData = {
       tokenized: tokenizeResult,
       entry: request.entry,
@@ -95,7 +94,7 @@
       {platform}
       {config}
       entries={tokenizeResult.entries}
-      on:selectedEntryForAnki={selectedEntryForAnki}
+      onSelectEntryForAnki={selectedEntryForAnki}
     />
   </div>
   {#if previewIsVisible}
