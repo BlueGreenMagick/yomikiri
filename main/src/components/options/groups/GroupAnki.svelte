@@ -6,7 +6,7 @@
   import OptionNumber from "../items/OptionNumber.svelte";
   import ModalAnkiTemplate from "../modals/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
-  import Utils from "~/utils";
+  import Utils, { SingleQueued } from "~/utils";
   import type Config from "~/config";
 
   const ANKIMOBILE_URL =
@@ -23,7 +23,7 @@
   let ankiTemplateDescriptionError = false;
   let ankiTemplateDescription = "";
   let ankiTemplateModalHidden = true;
-  let requesting = false;
+  let retryConnectTimeout: number | null = null;
 
   async function openAnkiTemplateModal() {
     ankiTemplateDescriptionError = false;
@@ -39,36 +39,30 @@
   }
 
   // Checks if anki can be connected. On fail, tries again every 3 seconds.
-  async function checkAnkiConnection() {
-    if (requesting) return;
-    requesting = true;
-    try {
-      await ankiApi.checkConnection();
-      useAnkiDescription = "success";
-    } catch (err) {
-      useAnkiError = Utils.errorMessage(err);
-      useAnkiDescription = "error";
-
-      setTimeout(() => {
-        if (ankiEnabled) {
-          checkAnkiConnection();
-        }
-      }, 3000);
+  const checkAnkiConnection = SingleQueued(async (sAnkiEnabled) => {
+    if (retryConnectTimeout !== null) {
+      clearTimeout(retryConnectTimeout);
+      retryConnectTimeout = null;
     }
-    requesting = false;
-  }
-
-  async function onAnkiEnableChange(enabled: boolean) {
-    if (enabled) {
+    if (sAnkiEnabled) {
       useAnkiDescription = "loading";
-      await checkAnkiConnection();
+      try {
+        await ankiApi.checkConnection();
+        useAnkiDescription = "success";
+      } catch (err) {
+        useAnkiError = Utils.errorMessage(err);
+        useAnkiDescription = "error";
+        retryConnectTimeout = window.setTimeout(() => {
+          void checkAnkiConnection(sAnkiEnabled);
+        }, 3000);
+      }
     } else {
       useAnkiDescription = "off";
     }
-  }
+  });
 
   $: ankiDisabled = !ankiEnabled;
-  $: onAnkiEnableChange(ankiEnabled);
+  $: void checkAnkiConnection(ankiEnabled);
 </script>
 
 <GroupedOptions title="Anki">
