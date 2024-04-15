@@ -77,7 +77,7 @@
   }
 
   $: sentence = tokenizeResult.tokens.map((t) => t.text).join("");
-  $: onTokenizeResultChanged(tokenizeResult);
+  $: void onTokenizeResultChanged(tokenizeResult);
 </script>
 
 <div class="tooltip">

@@ -102,7 +102,12 @@
   $: invalidDeck = !deckNames.includes(selectedDeck);
   $: invalidNotetype = !notetypeNames.includes(selectedNotetype);
   $: fieldNames = loadFieldNames(selectedNotetype);
-  $: saveTemplate(selectedDeck, selectedNotetype, fieldTemplates, ankiTags);
+  $: void saveTemplate(
+    selectedDeck,
+    selectedNotetype,
+    fieldTemplates,
+    ankiTags
+  );
 </script>
 
 <div>

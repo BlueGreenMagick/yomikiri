@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
   import type { LoadingField } from "~/ankiNoteBuilder";
-  import Utils from "~/utils";
+  import { PromiseWithProgress, errorMessage } from "~/utils";
 
   export let field: LoadingField;
   export let bold = false;
@@ -11,7 +11,7 @@
   let value: string;
   let valueStore: Writable<string>;
 
-  if (field.value instanceof Utils.PromiseWithProgress) {
+  if (field.value instanceof PromiseWithProgress) {
     loading = true;
     valueStore = field.value.progress;
     field.value
@@ -22,7 +22,7 @@
       .catch((err: unknown) => {
         loading = false;
         errored = true;
-        value = Utils.errorMessage(err);
+        value = errorMessage(err);
       });
   } else {
     loading = false;

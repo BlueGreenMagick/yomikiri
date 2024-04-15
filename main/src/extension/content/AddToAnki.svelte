@@ -8,7 +8,7 @@
   import TextButton from "~/components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "~/toast";
-  import Utils from "~/utils";
+  import { errorMessage, SingleQueued } from "~/utils";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -44,18 +44,23 @@
       noteAdded();
     } catch (err) {
       console.error(err);
-      const errorMessage = Utils.errorMessage(
+      const msg = errorMessage(
         err,
         "An unknown error occured... Check the browser console for more info."
       );
-      Toast.error(errorMessage);
+      Toast.error(msg);
     }
   }
 
-  LoadingNoteData.loadComplete(noteData).then((_) => {
+  /** muatates: `allLoaded` */
+  const loadNote = SingleQueued(async (_noteData: LoadingNoteData) => {
+    allLoaded = false;
+    errored = [];
+    await LoadingNoteData.loadComplete(_noteData);
     allLoaded = true;
   });
 
+  $: void loadNote(noteData);
   $: anyErrored = errored.includes(true);
 </script>
 
