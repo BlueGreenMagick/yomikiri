@@ -23,7 +23,7 @@ const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
   const config = await lazyConfig.get()
-  config.onChange(() => { updateStateEnabledBadge(config) });
+  config.onChange(() => { void updateStateEnabledBadge(config) });
 
   await updateTTSAvailability(platform, config);
 }
@@ -52,10 +52,10 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
   return await platform.translate(req);
 }
 
-function updateStateEnabledBadge(config: Config) {
+async function updateStateEnabledBadge(config: Config) {
   const enabled = config.get("state.enabled");
   const text = enabled ? "" : "off";
-  browserApi.setBadge(text, "#999999");
+  await browserApi.setBadge(text, "#999999");
 }
 
 async function tts(req: TTSRequest): Promise<void> {

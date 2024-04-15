@@ -33,13 +33,15 @@ export class Tooltip {
     mouseY: number
   ) {
     let tooltip = this.getTooltipEl();
-    if (tooltip === null) {
-      tooltip = await this.createTooltipIframe();
+    let tooltipPage = this._tooltipPageSvelte
+    if (tooltip === null || tooltipPage === null) {
+      [tooltip, tooltipPage] = await this.createTooltipIframe();
+      this._tooltipPageSvelte = tooltipPage
     }
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
     this._shown = true;
-    this._tooltipPageSvelte.setTokenizeResult(tokenizeResult);
+    tooltipPage.setTokenizeResult(tokenizeResult); // eslint-disable-line
     // fix bug where tooltip height is previous entry's height
     await 0; // eslint-disable-line
     const rect = this.findRectOfMouse(highlightedRects, mouseX, mouseY);
@@ -56,7 +58,7 @@ export class Tooltip {
     this._shown = false;
   }
 
-  private async createTooltipIframe(): Promise<HTMLIFrameElement> {
+  private async createTooltipIframe(): Promise<[HTMLIFrameElement, TooltipPage]> {
     const iframe = document.createElement("iframe");
     iframe.id = TOOLTIP_IFRAME_ID;
     iframe.style.position = "absolute";
@@ -78,13 +80,13 @@ export class Tooltip {
 
     const iframeDoc = iframe.contentDocument!;
     if (iframeDoc.readyState === "complete") {
-      this.setupEntriesPage(iframe);
-      return iframe;
+      const tooltipPage = this.setupEntriesPage(iframe);
+      return [iframe, tooltipPage];
     } else {
-      const [promise, resolve] = Utils.createPromise<HTMLIFrameElement>();
+      const [promise, resolve] = Utils.createPromise<[HTMLIFrameElement, TooltipPage]>();
       iframe.addEventListener("load", () => {
-        this.setupEntriesPage(iframe);
-        resolve(iframe);
+        const tooltipPage = this.setupEntriesPage(iframe);
+        resolve([iframe, tooltipPage]);
       });
       return promise;
     }
@@ -229,16 +231,17 @@ export class Tooltip {
     this.config.setStyle(doc);
     doc.documentElement.classList.add("yomikiri");
 
-    this._tooltipPageSvelte = new TooltipPage({
+    const tooltipPage = new TooltipPage({
       target: doc.body,
       props: { platform: this.platform, config: this.config, ankiApi: this.ankiApi, onClose: () => { this.hide() } },
     });
 
-    this._tooltipPageSvelte.$on("updateHeight", (_: CustomEvent<void>) => {
+    tooltipPage.$on("updateHeight", (_: CustomEvent<void>) => {
       const tooltip = this.getTooltipEl();
       if (tooltip !== null) {
         this.updateTooltipHeight(tooltip);
       }
     });
+    return tooltipPage
   }
 }
