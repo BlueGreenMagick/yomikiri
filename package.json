@@ -14,7 +14,7 @@
     "construct:backend_wasm": "pnpm run --dir ./rust wasm",
     "construct:backend_ios": "pnpm run --dir ./rust ios",
     "construct:backend": "pnpm run construct:backend_wasm && pnpm run construct:backend_ios",
-    "construct:web": "pnpm run construct:dictionary && pnpm run construct:unidic && pnpm run construct:backend_wasm && pnpm run construct:licenses",
+    "construct:web": "pnpm run construct:dictionary && pnpm run construct:unidic && pnpm run construct:backend_wasm",
     "construct:all": "pnpm run construct:web && pnpm construct:backend_ios",
     "generate-licenses": "pnpm run --dir ./extra/generate-license generate",
     "build:firefox": "pnpm run --dir ./main build:firefox",
