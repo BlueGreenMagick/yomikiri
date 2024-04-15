@@ -1,13 +1,18 @@
 <script lang="ts">
   import type { Entry } from "~/dicEntry";
-  import DicEntryView from "./DicEntryView.svelte";
+  import DicEntryView, {
+    type SelectedEntryForAnki,
+  } from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
-  import type { Platform } from "@platform"
-  import type { Config } from "~/config"
+  import type { Platform } from "@platform";
+  import type { Config } from "~/config";
 
-  export let platform: Platform
-  export let config: Config
+  export let platform: Platform;
+  export let config: Config;
   export let entries: Entry[];
+  export let onSelectEntryForAnki: (
+    selected: SelectedEntryForAnki
+  ) => void = () => null;
 
   let model: DicEntriesModel = new DicEntriesModel();
 
@@ -24,7 +29,7 @@
 
 <div id="yomikiri-entries" on:mousedown={onMouseDown}>
   {#each entries as entry}
-    <DicEntryView {platform} {config} {entry} {model} on:selectedEntryForAnki />
+    <DicEntryView {platform} {config} {entry} {model} {onSelectEntryForAnki} />
   {/each}
 </div>
 

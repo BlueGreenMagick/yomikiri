@@ -9,25 +9,19 @@
 -->
 
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import Utils from "~/utils";
 
   export let label: string;
   export let disabled = false;
   export let style: "default" | "warn" = "default";
-
-  interface Events {
-    click: MouseEvent;
-  }
-
-  const dispatch = createEventDispatcher<Events>();
+  export let onClick: (ev: MouseEvent) => void = (_) => null;
 
   let elem: HTMLElement;
   let tapped = false;
 
-  function onClick(ev: MouseEvent) {
+  function onElemClick(ev: MouseEvent) {
     if (!disabled) {
-      dispatch("click", ev);
+      onClick(ev);
     }
   }
 
@@ -65,7 +59,7 @@
   class:tapped
   class:disabled
   class:warn={style == "warn"}
-  on:click={onClick}
+  on:click={onElemClick}
   on:touchstart={onTouchStart}
   on:touchcancel={onTouchEnd}
   on:touchend={onTouchEnd}

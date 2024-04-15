@@ -5,17 +5,12 @@
   import IconCloseCircle from "@icons/close-circle.svg";
   import SentenceView from "./SentenceView.svelte";
   import DicEntriesView from "./DicEntriesView.svelte";
-  import { createEventDispatcher } from "svelte";
   import TextButton from "../TextButton.svelte";
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
   import type { Platform } from "@platform";
   import type { Config } from "~/config";
-
-  interface Events {
-    close: undefined;
-  }
 
   export let platform: Platform;
   export let config: Config;
@@ -26,8 +21,7 @@
     selectedEntry: SelectedEntryForAnki,
     tokenizeResult: TokenizeResult
   ) => void;
-
-  const dispatch = createEventDispatcher<Events>();
+  export let onClose: () => void = () => null;
 
   let tokenizeResult: TokenizeResult = TokenizeResult.empty();
   // may be bigger than total token characters
@@ -39,10 +33,6 @@
   async function _tokenize(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
     tokenizeResult = await backend.tokenize(searchText, charAt);
-  }
-
-  function close() {
-    dispatch("close");
   }
 
   function changeSelectedTool(tool: Tools | null) {
@@ -73,7 +63,7 @@
     </div>
     {#if showCloseButton}
       <div class="close-button">
-        <TextButton label="Close" on:click={close} />
+        <TextButton label="Close" onClick={onClose} />
       </div>
     {/if}
   </div>
@@ -83,7 +73,7 @@
     </div>
     <ToolbarWithPane
       {platform}
-      onClose={close}
+      {onClose}
       {selectedTool}
       grammars={tokenizeResult.grammars}
       sentence={searchText}
@@ -95,8 +85,8 @@
         {platform}
         {config}
         entries={tokenizeResult.entries}
-        on:selectedEntryForAnki={(ev) => {
-          onShowAnkiPreview(ev.detail, tokenizeResult);
+        onSelectEntryForAnki={(selected) => {
+          onShowAnkiPreview(selected, tokenizeResult);
         }}
       />
     </div>

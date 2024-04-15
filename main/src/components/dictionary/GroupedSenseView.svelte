@@ -1,26 +1,16 @@
 <script lang="ts">
   import { Sense, type GroupedSense } from "~/dicEntry";
   import type { Config } from "~/config";
-  import { createEventDispatcher } from "svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
-
-  interface Events {
-    selectSense: Sense;
-  }
 
   export let config: Config;
   export let model: DicEntriesModel;
   export let group: GroupedSense;
+  export let onSelectSense: (sense: Sense) => void;
 
   const selectedSense = model.selectedSense;
 
-  const dispatch = createEventDispatcher<Events>();
-
   let posText: string;
-
-  function onSelectSense(sense: Sense) {
-    dispatch("selectSense", sense);
-  }
 
   $: posText = group.pos.join(", ");
 </script>

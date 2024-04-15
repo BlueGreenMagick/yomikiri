@@ -61,12 +61,12 @@
 
 <div class="add-to-anki">
   <div class="title-bar">
-    <div class="title-left"><TextButton label="Back" on:click={onBack} /></div>
+    <div class="title-left"><TextButton label="Back" onClick={onBack} /></div>
     <div class="title-center">Add to Anki</div>
     <div class="title-right">
       <TextButton
         label="Add"
-        on:click={onAdd}
+        onClick={onAdd}
         disabled={!allLoaded || anyErrored}
         style={anyErrored ? "warn" : "default"}
       />

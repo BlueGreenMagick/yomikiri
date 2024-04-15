@@ -1,11 +1,7 @@
 <script lang="ts" context="module">
   export interface SelectedEntryForAnki {
     entry: Entry;
-    sense?: Sense;
-  }
-
-  interface Events {
-    selectedEntryForAnki: SelectedEntryForAnki;
+    sense?: Sense | undefined;
   }
 </script>
 
@@ -14,7 +10,6 @@
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import IconVolumeHigh from "@icons/volume-high.svg";
-  import { createEventDispatcher } from "svelte";
   import { RubyString } from "~/japanese";
   import type Config from "~/config";
   import Badges from "./Badges.svelte";
@@ -26,8 +21,9 @@
   export let config: Config;
   export let entry: Entry;
   export let model: DicEntriesModel;
-
-  const dispatch = createEventDispatcher<Events>();
+  export let onSelectEntryForAnki: (
+    selected: SelectedEntryForAnki
+  ) => void = () => null;
 
   let mainForm: string;
   let readingForForm: string;
@@ -38,14 +34,10 @@
 
   function selectEntryForAnki() {
     const sense = $selectedSense?.sense ?? undefined;
-    dispatch("selectedEntryForAnki", {
-      entry,
-      sense,
-    });
+    onSelectEntryForAnki({ entry, sense });
   }
 
-  function onSelectSense(ev: CustomEvent<Sense>) {
-    const sense = ev.detail;
+  function onSelectSense(sense: Sense) {
     model.selectSense(entry, sense);
   }
 
@@ -92,12 +84,7 @@
   <Badges {entry} />
   <div class="groups">
     {#each groups as group}
-      <GroupedSenseView
-        {config}
-        {group}
-        {model}
-        on:selectSense={onSelectSense}
-      />
+      <GroupedSenseView {config} {group} {model} {onSelectSense} />
     {/each}
   </div>
 </div>

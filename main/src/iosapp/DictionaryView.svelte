@@ -66,7 +66,7 @@
       bind:searchText
       showCloseButton={context === "action"}
       {onShowAnkiPreview}
-      on:close={async () => {
+      onClose={async () => {
         await platform.messageWebview("close", null);
       }}
     >
