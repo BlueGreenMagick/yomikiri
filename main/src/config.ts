@@ -55,7 +55,8 @@ export class Config {
     this.platform = platform
     this.storage = storage
 
-    const runSubscribers = () => {
+    platform.subscribeConfig((cfg) => {
+      storage = cfg
       for (const subscriber of this.subscribers) {
         try {
           subscriber()
@@ -63,16 +64,8 @@ export class Config {
           console.error("Uncaught config subscriber error:", err)
         }
       }
-    }
-
-    runSubscribers()
-
-    platform.subscribeConfig((cfg) => {
-      storage = cfg
-      runSubscribers()
     });
 
-    this.migrate()
     this.subscribe(() => {
       this.updateStyling()
     })
@@ -81,7 +74,9 @@ export class Config {
 
   static async initialize(platform: Platform): Promise<Config> {
     const storage = await platform.getConfig()
-    return new Config(platform, storage)
+    const config = new Config(platform, storage)
+    await config.migrate()
+    return config
   }
 
 
@@ -193,9 +188,9 @@ export class Config {
   }
 
   // Make sure no race condition with migration occurs!
-  migrate() {
+  async migrate() {
     if (this.storage.version !== defaultOptions.version) {
-      this.set("version", defaultOptions.version)
+      await this.set("version", defaultOptions.version)
     }
   }
 }
