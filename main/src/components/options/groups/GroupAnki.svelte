@@ -115,7 +115,7 @@
     title="Configure Anki template"
     buttonText="Configure"
     bind:disabled={ankiDisabled}
-    on:trigger={openAnkiTemplateModal}
+    onClick={openAnkiTemplateModal}
   >
     <span class:warning={ankiTemplateDescriptionError}>
       {ankiTemplateDescription}

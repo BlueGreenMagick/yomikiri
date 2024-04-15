@@ -1,17 +1,15 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import OptionBase from "./OptionBase.svelte";
   import IconChevronForward from "@icons/chevron-forward.svg";
 
   export let title: string;
   export let buttonText: string;
   export let disabled = false;
-
-  const dispatch = createEventDispatcher();
+  export let onClick: () => void;
 
   function onKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Enter" || ev.key === " ") {
-      dispatch("trigger");
+      onClick();
     }
   }
 </script>
@@ -22,7 +20,7 @@
   on:keydown={onKeyDown}
   on:click={() => {
     if (!disabled) {
-      dispatch("trigger");
+      onClick();
     }
   }}
 >

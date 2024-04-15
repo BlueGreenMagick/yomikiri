@@ -26,7 +26,7 @@
   <OptionClick
     title="Third party licenses"
     buttonText={"View"}
-    on:trigger={() => {
+    onClick={() => {
       modalThirdPartyVisible = true;
     }}
   >
@@ -35,7 +35,7 @@
   <OptionClick
     title="View source code"
     buttonText={"GitHub"}
-    on:trigger={() => {
+    onClick={() => {
       platform.openExternalLink("https://github.com/bluegreenmagick/yomikiri");
     }}
   >

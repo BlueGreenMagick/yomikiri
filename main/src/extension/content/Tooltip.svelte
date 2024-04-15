@@ -6,7 +6,7 @@
     type MarkerData,
   } from "~/ankiNoteBuilder";
   import AddToAnki from "./AddToAnki.svelte";
-  import { createEventDispatcher, tick } from "svelte";
+  import { tick } from "svelte";
   import { type Tools } from "~/components/dictionary/Toolbar.svelte";
   import { TokenizeResult } from "@platform/backend";
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
@@ -17,33 +17,28 @@
   import type { Config } from "~/config";
   import type { AnkiApi } from "@platform/anki";
 
-  interface Events {
-    updateHeight: undefined;
-  }
-
   export let platform: Platform;
   export let config: Config;
   export let ankiApi: AnkiApi;
-  export let onClose: () => void;
   export let tokenizeResult: TokenizeResult;
+  export let onClose: () => void;
+  export let onUpdateHeight: () => void = () => null;
 
   let previewIsVisible = false;
   let previewNoteData: LoadingNoteData;
   let selectedTool: Tools | null = null;
 
-  const dispatch = createEventDispatcher<Events>();
-
   async function onBack() {
     previewIsVisible = false;
     await tick();
-    dispatch("updateHeight");
+    onUpdateHeight();
   }
 
   async function onTokenizeResultChanged(_tokenizeResult: TokenizeResult) {
     previewIsVisible = false;
     selectedTool = null;
     await tick();
-    dispatch("updateHeight");
+    onUpdateHeight();
   }
 
   async function selectedEntryForAnki(ev: CustomEvent<SelectedEntryForAnki>) {
@@ -67,13 +62,13 @@
     previewNoteData = note;
     previewIsVisible = true;
     await tick();
-    dispatch("updateHeight");
+    onUpdateHeight();
   }
 
   async function changeSelectedTool(tool: Tools | null): Promise<void> {
     selectedTool = tool;
     await tick();
-    dispatch("updateHeight");
+    onUpdateHeight();
   }
 
   function noteAdded() {
