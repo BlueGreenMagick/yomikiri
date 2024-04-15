@@ -43,7 +43,7 @@
 
   function playAudio() {
     const text = mainForm.length < 5 ? readingForForm : mainForm;
-    platform.playTTS(text).catch((err: unknown) => {
+    platform.playTTS(text, config.get("tts.voice")).catch((err: unknown) => {
       throw err;
     });
   }
