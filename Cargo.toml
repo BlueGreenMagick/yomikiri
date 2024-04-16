@@ -13,3 +13,6 @@ resolver = "2"
 [profile.release]
 # Tell `rustc` to optimize for small code size.
 opt-level = "z"
+
+[workspace.lints.clippy]
+needless_borrows_for_generic_args = "allow"

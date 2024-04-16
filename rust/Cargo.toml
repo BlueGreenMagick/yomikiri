@@ -64,3 +64,6 @@ uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "c
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
+
+[lints]
+workspace = true

@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 cargo-bundle-licenses = { git = "https://github.com/BlueGreenMagick/cargo-bundle-licenses.git", branch = "yomikiri" }
 clap = { version = "4", features = ["derive"] }
+
+
+[lints]
+workspace = true

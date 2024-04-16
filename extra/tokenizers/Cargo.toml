@@ -13,3 +13,7 @@ lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", br
 lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 yomikiri-unidic-types = { path = "../../unidic-types" }
+
+
+[lints]
+workspace = true

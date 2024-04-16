@@ -45,3 +45,6 @@ cfg_aliases = "0.1.0"
 name = "yomikiri-dictionary-builder"
 path = "src/main.rs"
 required-features = ["bin"]
+
+[lints]
+workspace = true
