@@ -124,7 +124,7 @@ impl TokenDetails {
         let mut details = details.iter();
         let (pos, pos2) = details
             .next()
-            .and_then(|p| p.as_bytes().get(0))
+            .and_then(|p| p.as_bytes().first())
             .and_then(|short| UnidicPos::from_short(*short).ok())
             .map(|pos| pos.to_unidic())
             .unwrap_or(("UNK", "*"));
@@ -132,7 +132,7 @@ impl TokenDetails {
         let pos2 = pos2.to_string();
         let conj_form = details
             .next()
-            .and_then(|p| p.as_bytes().get(0))
+            .and_then(|p| p.as_bytes().first())
             .and_then(|short| UnidicConjugationForm::from_short(*short).ok())
             .map(|conj| conj.to_unidic())
             .unwrap_or("*")

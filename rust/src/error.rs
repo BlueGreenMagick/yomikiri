@@ -47,10 +47,9 @@ err_from!(ureq::Error);
 err_from!(yomikiri_dictionary::Error);
 err_from!(FromUtf8Error);
 
-
 #[cfg(wasm)]
-impl Into<JsValue> for YomikiriError {
-    fn into(self) -> JsValue {
-        JsValue::from_str(&self.to_string())
+impl From<YomikiriError> for JsValue {
+    fn from(value: YomikiriError) -> Self {
+        JsValue::from_str(&value.to_string())
     }
 }

@@ -78,7 +78,7 @@ fn parse_part_of_speech(value: &str) -> PartOfSpeech {
         "adj-pn" => PartOfSpeech::Adnomial,
         "exp" => PartOfSpeech::Expression,
         "unc" => PartOfSpeech::Unclassified,
-        s if s.starts_with("v") => PartOfSpeech::Verb,
+        s if s.starts_with('v') => PartOfSpeech::Verb,
         s if s.starts_with("adj-") => PartOfSpeech::Adjective,
         s if s.starts_with("n-") => PartOfSpeech::Noun,
         other => panic!("Unknown part of speech: {}", other),

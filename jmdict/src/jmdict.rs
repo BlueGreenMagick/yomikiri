@@ -10,7 +10,7 @@ pub struct JMEntry {
 
 impl JMEntry {
     pub fn priority(&self) -> u16 {
-        let priorities = &self.readings.get(0).unwrap().priority;
+        let priorities = &self.readings.first().unwrap().priority;
         let mut priority: u16 = 0;
 
         for p in priorities {
@@ -25,8 +25,8 @@ impl JMEntry {
             } else if ["news2", "ichi2", "spec2", "gai2"].contains(&p.as_str()) {
                 priority += 5
             // 01 ~ 48, each with ~500 entries
-            } else if p.starts_with("nf") {
-                let freq = p[2..]
+            } else if let Some(stripped) = p.strip_prefix("nf") {
+                let freq = stripped
                     .parse::<u16>()
                     .expect("could not parse XX as number where priority nfXX");
                 priority += 50 - freq;
@@ -52,7 +52,7 @@ impl JMForm {
                 return true;
             }
         }
-        return false;
+        false
     }
 }
 
@@ -75,7 +75,7 @@ impl JMReading {
                 return true;
             }
         }
-        return false;
+        false
     }
 }
 

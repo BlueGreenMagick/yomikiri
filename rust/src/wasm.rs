@@ -4,11 +4,10 @@ use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 use bincode::Options;
-use js_sys::{Array, Uint8Array};
-use log::debug;
-use std::io::{Cursor, Read};
+use js_sys::Uint8Array;
+use std::io::Cursor;
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes, DictTermIndex};
+use yomikiri_dictionary::file::DictTermIndex;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"
@@ -69,7 +68,7 @@ impl Backend {
         serde_wasm_bindgen::to_value(&result).map_err(|e| {
             YomikiriError::ConversionError(format!(
                 "Failed to serialize tokenizer result.\n{}",
-                e.to_string()
+                e
             ))
         })
     }
@@ -81,7 +80,7 @@ impl Backend {
         serde_wasm_bindgen::to_value(&entries_json).map_err(|e| {
             YomikiriError::ConversionError(format!(
                 "Failed to serialize dictionary entries.\n{}",
-                e.to_string()
+                e
             ))
         })
     }
@@ -97,7 +96,7 @@ impl Dictionary<Cursor<&[u8]>> {
         let index: Vec<DictTermIndex> = options.deserialize_from(index_bytes).map_err(|e| {
             YomikiriError::InvalidDictionaryFile(format!(
                 "Failed to parse dictionary index file. {}",
-                e.to_string()
+                e
             ))
         })?;
         let cursor = Cursor::new(entries_bytes);

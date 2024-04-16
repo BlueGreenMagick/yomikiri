@@ -10,9 +10,9 @@ use log::debug;
 use wasm_bindgen::prelude::*;
 
 #[cfg(wasm)]
-impl Into<JsValue> for Error {
-    fn into(self) -> JsValue {
-        JsValue::from_str(&self.to_string())
+impl From<Error> for JsValue {
+    fn from(value: Error) -> JsValue {
+        JsValue::from_str(&value.to_string())
     }
 }
 

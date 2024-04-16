@@ -8,7 +8,7 @@ use crate::{Error, Result};
 
 /// RustyXML errors upon custom entity `&xx;`
 /// So unescape to `=xx=` before parsing
-pub fn unescape_entity<'a>(xml: &'a str) -> Cow<'a, str> {
+pub fn unescape_entity(xml: &str) -> Cow<'_, str> {
     let re = Regex::new(r#"&([\w\d-]+);"#).unwrap();
     re.replace_all(xml, "=$1=")
 }
@@ -24,13 +24,10 @@ pub fn parse_xml(xml_string: &str) -> Result<Vec<JMEntry>> {
     parser.feed_str(xml_string);
 
     loop {
-        match parser.next().ok_or("<JMDict> not found")?? {
-            Event::ElementStart(tag) => {
-                if &tag.name == "JMdict" {
-                    return parse_jmdict(&mut parser);
-                }
+        if let Event::ElementStart(tag) = parser.next().ok_or("<JMDict> not found")?? {
+            if &tag.name == "JMdict" {
+                return parse_jmdict(&mut parser);
             }
-            _ => {}
         }
     }
 }
@@ -223,7 +220,7 @@ fn parse_sense(parser: &mut Parser) -> Result<JMSense> {
 
 pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
     let mut characters = String::new();
-    while let Some(event) = parser.next() {
+    for event in parser {
         match event? {
             Event::ElementStart(tag) => {
                 return Err(Error::Unexpected {
@@ -232,7 +229,7 @@ pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
                 });
             }
             Event::ElementEnd(tag) => {
-                if &tag.name == in_tag {
+                if tag.name == in_tag {
                     return Ok(characters);
                 } else {
                     return Err(Error::Unexpected {
