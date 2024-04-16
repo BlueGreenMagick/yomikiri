@@ -23,14 +23,30 @@ pub enum YomikiriError {
     ConversionError(String),
     #[cfg(uniffi)]
     #[error("[NetworkError] {0}")]
-    NetworkError(#[from] ureq::Error),
+    NetworkError(#[from] Box<ureq::Error>),
     #[error("[Yomikiri Dictionary Error] {0}")]
-    DictionaryError(#[from] yomikiri_dictionary::Error),
+    DictionaryError(#[from] Box<yomikiri_dictionary::Error>),
     #[error("Not a valid UTF-8 string: {0}")]
-    FromUTF8Error(#[from] FromUtf8Error),
+    FromUTF8Error(#[from] Box<FromUtf8Error>),
     #[error("[Other Error] {0}")]
     OtherError(String),
 }
+
+macro_rules! err_from {
+    ($typ:path) => {
+        impl From<$typ> for YomikiriError {
+            fn from(value: $typ) -> Self {
+                YomikiriError::from(Box::new(value))
+            }
+        }
+    }
+}
+
+#[cfg(uniffi)]
+err_from!(ureq::Error);
+err_from!(yomikiri_dictionary::Error);
+err_from!(FromUtf8Error);
+
 
 #[cfg(wasm)]
 impl Into<JsValue> for YomikiriError {
