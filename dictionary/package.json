@@ -14,7 +14,7 @@
     "wasm": "pnpm run _clean_pkg && wasm-pack build --scope yomikiri --target web",
     "test": "cargo test",
     "check": "cargo check --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown",
-    "lint": "cargo clippy --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown",
+    "lint": "cargo clippy --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown -- -D warnings",
     "redownload": "rm -rf ./res && cargo run",
     "construct": "cargo run --features bin && pnpm run wasm"
   }
