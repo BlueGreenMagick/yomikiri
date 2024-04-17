@@ -2,16 +2,7 @@
 #![deny(unreachable_patterns)]
 
 use crate::error::{Result, UnknownValueError};
-
-macro_rules! fallback_to_name {
-    ($name:ident) => {
-        stringify!($name)
-    };
-
-    ($value:literal $name:ident) => {
-        $value
-    };
-}
+use crate::utils::value_else_name;
 
 macro_rules! unidic_conjugation_form {
     (
@@ -31,7 +22,7 @@ macro_rules! unidic_conjugation_form {
             pub fn from_unidic(unidic: &str) -> Result<Self> {
                 match unidic {
                     $(
-                        fallback_to_name!($($value)? $name) => Ok(UnidicConjugationForm::$name),
+                        value_else_name!($($value)? $name) => Ok(UnidicConjugationForm::$name),
                     )+
                     other => Err(UnknownValueError::new(other)),
                 }
@@ -40,7 +31,7 @@ macro_rules! unidic_conjugation_form {
             pub fn to_unidic(&self) -> &'static str {
                 match self {
                     $(
-                        UnidicConjugationForm::$name => fallback_to_name!($($value)? $name),
+                        UnidicConjugationForm::$name => value_else_name!($($value)? $name),
                     )+
                 }
             }
