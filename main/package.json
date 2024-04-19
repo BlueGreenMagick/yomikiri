@@ -27,14 +27,14 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
-    "@swc/core": "^1.4.13",
+    "@swc/core": "^1.4.16",
     "@types/adm-zip": "^0.5.5",
     "@types/babel__core": "^7.20.5",
     "@types/chrome": "^0.0.263",
     "@types/ejs": "^3.1.5",
     "@types/firefox-webext-browser": "^120.0.3",
     "@types/jsdom": "^21.1.6",
-    "@types/node": "^20.11.20",
+    "@types/node": "^20.12.7",
     "@types/pako": "^2.0.3",
     "@types/postcss-import": "^14.0.3",
     "adm-zip": "^0.5.12",
@@ -50,7 +50,7 @@
     "postcss-load-config": "^5.0.3",
     "sass": "^1.75.0",
     "svelte-check": "^3.6.9",
-    "svelte-preprocess": "^5.1.3",
+    "svelte-preprocess": "^5.1.4",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",
     "vitest": "^1.5.0",
@@ -63,7 +63,7 @@
     "@yomikiri/yomikiri-rs": "workspace:*",
     "idb": "^8.0.0",
     "normalize.css": "^8.0.1",
-    "svelte": "^4.2.14",
+    "svelte": "^4.2.15",
     "svelte-french-toast": "^1.2.0"
   }
 }

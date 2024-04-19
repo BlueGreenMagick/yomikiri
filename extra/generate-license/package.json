@@ -12,16 +12,16 @@
     "res/THIRD_PARTY.txt"
   ],
   "devDependencies": {
-    "@types/node": "^20.11.20",
+    "@types/node": "^20.12.7",
     "@types/which": "^3.0.3",
-    "generate-license-file": "^3.0.1",
+    "generate-license-file": "^3.3.0",
     "import": "^0.0.6",
     "promisify-child-process": "^4.1.2",
     "toml": "^3.0.0",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5",
     "which": "^4.0.0"
   }
 }
