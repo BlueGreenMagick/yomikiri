@@ -110,8 +110,8 @@ fn skip_file_entry(entry: &DirEntry) -> bool {
 /// `output_path` must exist and be a directory
 fn download_unidic_original(output_path: &Path) -> Result<(), Box<dyn Error>> {
     let download_url =
-        "https://clrd.ninjal.ac.jp/unidic_archive/cwj/2.1.2/unidic-mecab_kana-accent-2.1.2_src.zip";
-    println!("Downloading unidic from {}", &download_url);
+        "https://github.com/BlueGreenMagick/unidic-2.1.2-kana-accent/archive/refs/tags/2.1.2.zip";
+    println!("Downloading unidic from \"{}\"", &download_url);
     let resp = ureq::get(download_url).call()?;
     let mut tmpfile = tempfile::tempfile()?;
     std::io::copy(&mut resp.into_reader(), &mut tmpfile)?;
