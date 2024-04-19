@@ -30,8 +30,8 @@ lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", b
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 yomikiri-dictionary = { path = "../dictionary" }
 yomikiri-unidic-types = { path = "../unidic-types" }
-unicode-normalization = "0.1.22"
-unicode-segmentation = "1.9.0"
+unicode-normalization = "0.1"
+unicode-segmentation = "1.9"
 log = { version = "0.4" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
@@ -40,11 +40,11 @@ thiserror = "1.0"
 
 [target.'cfg(target_family="wasm")'.dependencies]
 serde-wasm-bindgen = { version = "0.5" }
-wasm-bindgen = { version = "0.2.63" }
-wasm-logger = { version = "0.2" }
+wasm-bindgen = "0.2"
+wasm-logger = "0.2"
 web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
 js-sys = "0.3"
-console_error_panic_hook = { version = "0.1.6" }
+console_error_panic_hook = { version = "0.1" }
 
 [target.'cfg(not(target_family="wasm"))'.dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom" }
@@ -55,7 +55,7 @@ flate2 = "1"
 oslog = { version = "0.2" }
 
 [build-dependencies]
-cfg_aliases = "0.1.0"
+cfg_aliases = "0.2"
 
 [target.'cfg(not(target_family="wasm"))'.build-dependencies]
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [
@@ -63,7 +63,7 @@ uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "c
 ] }
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.13"
+wasm-bindgen-test = "0.3"
 
 [lints]
 workspace = true
