@@ -1,13 +1,12 @@
-use bincode::Options;
 use flate2::read::GzDecoder;
-use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes, DictTermIndex};
+use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
 
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 use std::fs::File;
-use std::io::{BufReader, Write};
+use std::io::Write;
 use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
@@ -62,22 +61,6 @@ pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResu
     let mut index_file = File::create(&index_path)?;
     write_indexes(&mut index_file, &term_indexes)?;
     Ok(())
-}
-
-impl Dictionary<File> {
-    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
-        let index_file = File::open(index_path)?;
-        let reader = BufReader::new(index_file);
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictTermIndex> = options.deserialize_from(reader).map_err(|e| {
-            YomikiriError::InvalidDictionaryFile(format!(
-                "Failed to parse dictionary index file. {}",
-                e
-            ))
-        })?;
-        let entries_file = File::open(entries_path)?;
-        Ok(Dictionary::new(index, entries_file))
-    }
 }
 
 fn download_dictionary<W: Write>(writer: &mut W) -> YResult<()> {
