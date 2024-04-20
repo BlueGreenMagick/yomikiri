@@ -1,4 +1,4 @@
-`/original` is UniDic 2.1.2 downloaded from [here](https://github.com/BlueGreenMagick/unidic-2.1.2-kana-accent/archive/refs/tags/2.1.2.zip).
+`/original` is UniDic 2.1.2 downloaded from [here](https://github.com/BlueGreenMagick/yomikiri/releases/download/unidic-2.1.2-kana-accent/unidic-2.1.2-kana-accent-2.1.2.zip).
 
 ## Lex Data
 
