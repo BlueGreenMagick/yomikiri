@@ -13,7 +13,7 @@
     "_build_release_lib": "cargo build --release --lib",
     "_build_uniffi_bindgen": "cargo run --features \"uniffi/cli uniffi-bindgen\" --bin uniffi-bindgen generate --language swift --lib-file ../target/release/libyomikiri_rs.a --out-dir ./swift ./src/uniffi_yomikiri.udl",
     "_build_ios": "cargo build --release --lib --target aarch64-apple-ios",
-    "_build_ios_sim": "cargo build --release --lib --target aarch64-apple-ios-sim",
+    "_build_ios_sim": "if [[ \"$(rustup show)\" = *'aarch64-apple-ios-sim'* ]]; then cargo build --release --lib --target aarch64-apple-ios-sim; fi",
     "_ios_uniffi": "pnpm run _build_uniffi_bindgen && pnpm run _clean_safari_rust && pnpm run _copy_swift_files",
     "chunk_wasm": "cargo run --bin chunk-wasm",
     "ios": "pnpm run _clean_swift && pnpm run _build_release_lib && pnpm run _ios_uniffi && pnpm run _build_ios && pnpm run _build_ios_sim",
