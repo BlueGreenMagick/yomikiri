@@ -458,9 +458,8 @@ export class BrowserApi {
     return promise;
   }
 
-  /** Manifest V3 required */
-  handleActionClicked(handler: (tab: browser.tabs.Tab, info?: browser.action.OnClickData | undefined) => void) {
-    browser.action.onClicked.addListener(handler)
+  handleActionClicked(handler: (tab: chrome.tabs.Tab) => void) {
+    chrome.action.onClicked.addListener(handler)
   }
 
   async setActionIcon(iconPath: string) {

@@ -84,9 +84,7 @@ browserApi.handleBrowserLoad(() => { void initialize() })
 
 
 if (Platform.IS_IOS) {
-  browserApi.handleActionClicked(() => {
-    onActionClick().catch((err: unknown) => { throw err })
-  });
+  browserApi.handleActionClicked(() => { void onActionClick() });
 }
 
 
