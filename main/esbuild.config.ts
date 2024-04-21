@@ -181,10 +181,11 @@ function generateBuildOptions(): BuildOptions {
       ".wasm": "file",
       ".json.gz": "file",
       ".svg": "text",
+      ".png": "file",
       ".yomikiridict": "file",
       ".yomikiriindex": "file",
       ".txt": "text",
-      ".chunk": "file"
+      ".chunk": "file",
     },
   };
 

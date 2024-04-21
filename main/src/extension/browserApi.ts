@@ -464,8 +464,12 @@ export class BrowserApi {
   }
 
   async setActionIcon(iconPath: string) {
-    await browser.action.setIcon({
+    await chrome.action.setIcon({
       path: iconPath
     })
+  }
+
+  handleBrowserLoad(handler: () => void) {
+    chrome.runtime.onStartup.addListener(handler)
   }
 }

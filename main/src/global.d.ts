@@ -17,6 +17,11 @@ declare module "*.svg" {
   export { SvelteComponent as default } from 'svelte';
 }
 
+declare module "*.png" {
+  const url: string;
+  export default url;
+}
+
 declare module "*.txt" {
   const content: string;
   export default content;

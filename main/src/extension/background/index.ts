@@ -12,6 +12,8 @@ import Utils, { exposeGlobals } from "../../utils";
 import type { NoteData } from "~/ankiNoteBuilder";
 import Config from "~/config";
 import { updateTTSAvailability } from "~/common";
+import DefaultIcon from "assets/static/images/icon128.png"
+import GreyIcon from "assets/static/images/icon128-semigray.png"
 
 const browserApi = new BrowserApi({ context: "background" })
 const platform = new Platform(browserApi) as ExtensionPlatform
@@ -23,7 +25,7 @@ const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
   const config = await lazyConfig.get()
-  config.subscribe(() => { void updateStateEnabledBadge(config) });
+  config.subscribe(() => { void updateStateEnabledIcon(config) });
 
   await updateTTSAvailability(platform, config);
 }
@@ -52,10 +54,10 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
   return await platform.translate(req);
 }
 
-async function updateStateEnabledBadge(config: Config) {
+async function updateStateEnabledIcon(config: Config) {
   const enabled = config.get("state.enabled");
-  const text = enabled ? "" : "off";
-  await browserApi.setBadge(text, "#999999");
+  const icon = enabled ? DefaultIcon : GreyIcon;
+  await browserApi.setActionIcon(icon)
 }
 
 async function tts(req: TTSRequest): Promise<void> {
@@ -77,6 +79,9 @@ browserApi.handleRequest("addAnkiNote", addAnkiNote);
 browserApi.handleRequest("tabId", tabId);
 browserApi.handleRequest("translate", handleTranslate);
 browserApi.handleRequest("tts", tts);
+
+browserApi.handleBrowserLoad(() => { void initialize() })
+
 
 if (Platform.IS_IOS) {
   browserApi.handleActionClicked(() => {
