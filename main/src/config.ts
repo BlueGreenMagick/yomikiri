@@ -56,7 +56,7 @@ export class Config {
     this.storage = storage
 
     platform.subscribeConfig((cfg) => {
-      storage = cfg
+      this.storage = cfg
       for (const subscriber of this.subscribers) {
         try {
           subscriber()
