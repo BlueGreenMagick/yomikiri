@@ -659,7 +659,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
             (token.text == "な"
                 && data.next().is_none()
                 && !data.global_next_is(|next| !next.is_unknown_pos())
-                && data.global_prev_is(|prev| prev.conj_form.starts_with("終止形")))
+                && data.global_prev_is(|prev| prev.conj_form.starts_with("終止形") || prev.conj_form == "連体形-撥音便"))
                 || (token.text == "んな"
                     && data.next().is_none()
                     && !data.global_next_is(|next| !next.is_unknown_pos())
