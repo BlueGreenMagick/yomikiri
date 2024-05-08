@@ -9,7 +9,7 @@
   } from "~/ankiNoteBuilder";
   import Tokenize from "~/components/dictionary/Tokenize.svelte";
   import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
-  import AddToAnki from "../content/AddToAnki.svelte";
+  import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import type { Platform } from "@platform";
   import type { Config } from "~/config";

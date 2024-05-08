@@ -10,7 +10,7 @@
   } from "~/ankiNoteBuilder";
   import Utils from "~/utils";
   import { Toast } from "~/toast";
-  import AddToAnki from "~/extension/content/AddToAnki.svelte";
+  import AddToAnki from "~/components/anki/AddToAnki.svelte";
   import type Config from "~/config";
   import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
 
