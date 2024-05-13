@@ -110,7 +110,7 @@
   );
 </script>
 
-<div>
+<div class="anki-template-modal">
   <div class="selects group">
     <div class="item-title">Deck</div>
     <select
@@ -152,16 +152,21 @@
   </div>
   <div class="fields group">
     {#each fieldNames as field}
-      <div class="field-name">{field}</div>
-      {#if previewMode}
-        <input class="field-marker" disabled value={markerValue(field)} />
-      {:else}
-        <select class="field-marker" bind:value={fieldTemplates[field]}>
-          {#each AnkiNoteBuilder.markerKeys() as marker}
-            <option value={marker}>{AnkiNoteBuilder.MARKERS[marker]}</option>
-          {/each}
-        </select>
-      {/if}
+      <div class="field-item">
+        <div class="field-name">{field}</div>
+        <div class="field-row">
+          {#if previewMode}
+            <input class="field-marker" disabled value={markerValue(field)} />
+          {:else}
+            <select class="field-marker" bind:value={fieldTemplates[field]}>
+              {#each AnkiNoteBuilder.markerKeys() as marker}
+                <option value={marker}>{AnkiNoteBuilder.MARKERS[marker]}</option
+                >
+              {/each}
+            </select>
+          {/if}
+        </div>
+      </div>
     {/each}
   </div>
   <div class="tags-container group">
@@ -173,6 +178,10 @@
 </div>
 
 <style>
+  .anki-template-modal {
+    background-color: var(--background-alt);
+  }
+
   input {
     width: 100%;
   }
@@ -208,19 +217,10 @@
     width: initial;
   }
 
-  .fields {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    row-gap: 8px;
-    column-gap: 12px;
-    align-items: center;
-  }
   .field-name {
-    grid-column: 1 / 2;
     font-size: 1em;
   }
   .field-marker {
-    grid-column: 2 / 3;
     width: 100%;
     height: 1.6em;
     font-size: 1em;
@@ -243,6 +243,5 @@
   .group {
     padding: 8px 12px;
     border-radius: 8px;
-    background-color: white;
   }
 </style>
