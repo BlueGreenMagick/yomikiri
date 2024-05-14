@@ -103,6 +103,7 @@ export class BrowserApi {
           response?: MessageResponse<Response<keyof MessageMap>>
         ) => void
       ): boolean => {
+        console.debug(message.key, message)
         const handler = this._requestHandlers[message.key];
         if (handler) {
           void (async () => {

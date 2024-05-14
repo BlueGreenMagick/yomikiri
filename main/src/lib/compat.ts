@@ -39,6 +39,7 @@ export async function migrateIfNeeded(platform: Platform, configObject: StoredCo
 /** Don't call this function directly. Instead, call `migrateIfNeeded()`. */
 export function migrateConfigObject(configObject: StoredCompatConfiguration): StoredConfiguration {
   const configVersion = getConfigVersion(configObject)
+  console.debug(`Migrating config object from '${configVersion}' to '${CONFIG_VERSION}'`)
 
   if (configVersion === CONFIG_VERSION) {
     return configObject as StoredConfiguration

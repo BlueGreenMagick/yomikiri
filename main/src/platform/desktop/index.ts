@@ -50,6 +50,7 @@ export class DesktopPlatform implements IPlatform {
   }
 
   saveConfig(config: StoredConfiguration): Promise<void> {
+    console.debug("config saved")
     return this.browserApi.setStorage("config", config);
   }
 
