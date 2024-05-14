@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { NoteData } from "lib/ankiNoteBuilder";
+  import { type NoteData, AnkiNoteBuilder } from "lib/anki";
   import type { Config } from "lib/config";
-  import { AnkiNoteBuilder } from "lib/ankiNoteBuilder";
   import {
     exampleMarkerData,
     exampleTranslatedSentence,

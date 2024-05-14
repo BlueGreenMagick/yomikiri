@@ -7,7 +7,7 @@
     AnkiNoteBuilder,
     type LoadingNoteData,
     type MarkerData,
-  } from "lib/ankiNoteBuilder";
+  } from "lib/anki";
   import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import AddToAnki from "components/anki/AddToAnki.svelte";

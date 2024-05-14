@@ -3,7 +3,7 @@
   passed-in noteData object is modified live when user changes field value
 -->
 <script lang="ts">
-  import { type Field, LoadingNoteData } from "lib/ankiNoteBuilder";
+  import { type Field, LoadingNoteData } from "lib/anki";
   import NotePreviewField from "./NotePreviewField.svelte";
   import TextButton from "components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";

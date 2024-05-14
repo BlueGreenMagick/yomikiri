@@ -1,9 +1,9 @@
 import type { TokenizeResult } from "@platform/backend";
-import Config from "./config";
-import { Entry, type Sense } from "./dicEntry";
-import { RubyString } from "./japanese";
+import Config from "../config";
+import { Entry, type Sense } from "../dicEntry";
+import { RubyString } from "../japanese";
 import { Platform } from "@platform";
-import Utils from "./utils";
+import Utils from "../utils";
 
 export interface MarkerContext {
   platform: Platform,

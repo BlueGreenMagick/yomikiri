@@ -2,11 +2,7 @@
   import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import type { Backend, TokenizeResult } from "@platform/backend";
-  import {
-    AnkiNoteBuilder,
-    LoadingNoteData,
-    type MarkerData,
-  } from "lib/ankiNoteBuilder";
+  import { AnkiNoteBuilder, LoadingNoteData, type MarkerData } from "lib/anki";
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";

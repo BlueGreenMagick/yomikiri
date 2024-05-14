@@ -1,10 +1,10 @@
 import { test, expect, describe } from "vitest";
 import { AnkiNoteBuilder, type MarkerContext, type MarkerData } from "./ankiNoteBuilder";
-import { Entry, type EntryObject } from "./dicEntry";
+import { Entry, type EntryObject } from "../dicEntry";
 import type { TokenizeResult } from "@platform/backend";
 import { DesktopPlatform } from "platform/desktop";
-import { BrowserApi } from "../extension/browserApi";
-import Config, { defaultOptions } from "./config";
+import { BrowserApi } from "../../extension/browserApi";
+import Config, { defaultOptions } from "../config";
 
 const tokenized: TokenizeResult = {
   tokens: [

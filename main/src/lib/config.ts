@@ -1,4 +1,4 @@
-import type { NoteData } from "./ankiNoteBuilder";
+import type { NoteData } from "./anki/ankiNoteBuilder";
 import { Platform } from "@platform";
 import { VERSION } from "../common";
 import type { TTSVoice } from "../platform/common";

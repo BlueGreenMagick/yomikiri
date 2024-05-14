@@ -5,7 +5,7 @@ import type {
   NotetypeInfo,
 } from "../common/anki";
 import Config from "lib/config";
-import type { NoteData } from "lib/ankiNoteBuilder";
+import type { NoteData } from "lib/anki";
 import { BrowserApi } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
 import type { First, Second } from "lib/utils";

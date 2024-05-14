@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
-  import type { LoadingField } from "lib/ankiNoteBuilder";
+  import type { LoadingField } from "lib/anki";
   import { PromiseWithProgress, getErrorMessage } from "lib/utils";
 
   export let field: LoadingField;

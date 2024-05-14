@@ -9,7 +9,7 @@ import { type TokenizeResult, type TokenizeRequest, type DesktopBackend, type Io
 import { BrowserApi, type MessageSender } from "extension/browserApi";
 import { Platform, type ExtensionPlatform, type TTSRequest, type TranslateResult } from "@platform";
 import Utils, { exposeGlobals } from "../../lib/utils";
-import type { NoteData } from "lib/ankiNoteBuilder";
+import type { NoteData } from "lib/anki";
 import Config from "lib/config";
 import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png"

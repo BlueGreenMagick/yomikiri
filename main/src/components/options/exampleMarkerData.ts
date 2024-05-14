@@ -1,4 +1,4 @@
-import type { MarkerData } from "lib/ankiNoteBuilder";
+import type { MarkerData } from "lib/anki";
 import type { TokenizeResult } from "@platform/backend";
 import { Entry } from "lib/dicEntry";
 

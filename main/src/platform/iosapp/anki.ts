@@ -1,7 +1,7 @@
 import { iosAnkiMobileURL, type AnkiInfo, type IAnkiAddNotes, type IAnkiOptions } from "../common/anki";
 import Utils from "lib/utils";
 import type { IosAppPlatform } from ".";
-import type { NoteData } from "lib/ankiNoteBuilder";
+import type { NoteData } from "lib/anki";
 
 interface Named {
   name: string;

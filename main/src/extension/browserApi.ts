@@ -1,5 +1,5 @@
 import type { Entry } from "lib/dicEntry";
-import type { NoteData } from "lib/ankiNoteBuilder";
+import type { NoteData } from "lib/anki";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
