@@ -1,7 +1,7 @@
-import { Platform } from "~/platform/iosapp";
+import { Platform } from "platform/iosapp";
 import { IosAppAnkiApi } from "@platform/anki";
-import { LazyAsync, exposeGlobals } from "~/lib/utils";
-import Config from "~/lib/config";
+import { LazyAsync, exposeGlobals } from "lib/utils";
+import Config from "lib/config";
 import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
 
 

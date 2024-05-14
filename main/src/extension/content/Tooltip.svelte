@@ -1,20 +1,20 @@
 <script lang="ts">
-  import DicEntriesView from "~/components/dictionary/DicEntriesView.svelte";
+  import DicEntriesView from "components/dictionary/DicEntriesView.svelte";
   import {
     AnkiNoteBuilder,
     type LoadingNoteData,
     type MarkerData,
-  } from "~/lib/ankiNoteBuilder";
+  } from "lib/ankiNoteBuilder";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import { tick } from "svelte";
-  import { type Tools } from "~/components/dictionary/Toolbar.svelte";
+  import { type Tools } from "components/dictionary/Toolbar.svelte";
   import { TokenizeResult } from "@platform/backend";
-  import type { SelectedEntryForAnki } from "~/components/dictionary/DicEntryView.svelte";
-  import { Toast } from "~/lib/toast";
-  import Utils from "~/lib/utils";
-  import ToolbarWithPane from "~/components/dictionary/ToolbarWithPane.svelte";
+  import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
+  import { Toast } from "lib/toast";
+  import Utils from "lib/utils";
+  import ToolbarWithPane from "components/dictionary/ToolbarWithPane.svelte";
   import type { Platform } from "@platform";
-  import type { Config } from "~/lib/config";
+  import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
 
   export let platform: Platform;

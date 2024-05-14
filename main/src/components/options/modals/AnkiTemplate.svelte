@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { NoteData } from "~/lib/ankiNoteBuilder";
-  import type { Config } from "~/lib/config";
-  import { AnkiNoteBuilder } from "~/lib/ankiNoteBuilder";
+  import type { NoteData } from "lib/ankiNoteBuilder";
+  import type { Config } from "lib/config";
+  import { AnkiNoteBuilder } from "lib/ankiNoteBuilder";
   import {
     exampleMarkerData,
     exampleTranslatedSentence,
   } from "../exampleMarkerData";
-  import type { AnkiInfo } from "~/platform/common/anki";
+  import type { AnkiInfo } from "platform/common/anki";
   import type { Platform } from "@platform";
 
   export let platform: Platform;

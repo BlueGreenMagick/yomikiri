@@ -1,6 +1,6 @@
 /// For IOS
 
-import { BrowserApi } from "~/extension/browserApi";
+import { BrowserApi } from "extension/browserApi";
 
 const browserApi = new BrowserApi({ context: "page" })
 

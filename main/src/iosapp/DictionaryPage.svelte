@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { IosAppPlatform } from "~/platform/ios";
+  import type { IosAppPlatform } from "platform/ios";
   import { platformClass } from "../components/actions";
   import DictionaryView from "./DictionaryView.svelte";
-  import type Config from "~/lib/config";
-  import type { IosAppBackend } from "~/platform/iosapp/backend";
-  import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
+  import type Config from "lib/config";
+  import type { IosAppBackend } from "platform/iosapp/backend";
+  import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
   export let initialized: Promise<[Config, IosAppBackend, IosAppAnkiApi]>;
   export let platform: IosAppPlatform;

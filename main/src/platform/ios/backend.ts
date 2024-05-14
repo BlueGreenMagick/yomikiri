@@ -1,11 +1,11 @@
-import { BrowserApi } from "~/extension/browserApi";
+import { BrowserApi } from "extension/browserApi";
 import { Platform as IosPlatform } from ".";
 import {
   type IBackend,
   type TokenizeRequest,
   TokenizeResult,
 } from "../common/backend";
-import { Entry, type EntryObject } from "~/lib/dicEntry";
+import { Entry, type EntryObject } from "lib/dicEntry";
 
 export * from "../common/backend";
 

@@ -1,5 +1,5 @@
-import type { NoteData } from "~/lib/ankiNoteBuilder";
-import Utils from "~/lib/utils";
+import type { NoteData } from "lib/ankiNoteBuilder";
+import Utils from "lib/utils";
 import { DesktopAnkiApi } from "../desktop/anki"
 import { IosAnkiApi } from "../ios/anki"
 import { IosAppAnkiApi } from "../iosapp/anki"

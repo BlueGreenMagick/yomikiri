@@ -6,10 +6,10 @@ import initWasm from "@yomikiri/yomikiri-rs";
 import ENYomikiridict from "@yomikiri/dictionary/res/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/res/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { Entry, type EntryObject } from "~/lib/dicEntry";
-import { BrowserApi } from "~/extension/browserApi";
+import { Entry, type EntryObject } from "lib/dicEntry";
+import { BrowserApi } from "extension/browserApi";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
-import Utils from "~/lib/utils";
+import Utils from "lib/utils";
 import { Dictionary } from "./dictionary"
 
 export * from "../common/backend";

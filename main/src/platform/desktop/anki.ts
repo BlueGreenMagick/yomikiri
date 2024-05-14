@@ -4,11 +4,11 @@ import type {
   IAnkiOptions,
   NotetypeInfo,
 } from "../common/anki";
-import Config from "~/lib/config";
-import type { NoteData } from "~/lib/ankiNoteBuilder";
-import { BrowserApi } from "~/extension/browserApi";
+import Config from "lib/config";
+import type { NoteData } from "lib/ankiNoteBuilder";
+import { BrowserApi } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
-import type { First, Second } from "~/lib/utils";
+import type { First, Second } from "lib/utils";
 
 const ANKI_CONNECT_VER = 6;
 

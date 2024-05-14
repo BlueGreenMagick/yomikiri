@@ -1,4 +1,4 @@
-import Utils from "~/lib/utils";
+import Utils from "lib/utils";
 import type { DictionaryMetadata, IDictionary } from "../common/dictionary"
 import type { IosAppPlatform } from ".";
 

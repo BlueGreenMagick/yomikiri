@@ -1,6 +1,6 @@
-import Utils, { type Rect } from "~/lib/utils";
+import Utils, { type Rect } from "lib/utils";
 import type { TokenizeResult } from "@platform/backend";
-import Config from "~/lib/config";
+import Config from "lib/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
 import type { ExtensionPlatform } from "@platform";

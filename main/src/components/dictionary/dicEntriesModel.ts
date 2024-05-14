@@ -1,5 +1,5 @@
 import { writable, type Writable } from "svelte/store";
-import type { Entry, Sense } from "~/lib/dicEntry";
+import type { Entry, Sense } from "lib/dicEntry";
 
 export interface SelectedSense {
   entry: Entry;

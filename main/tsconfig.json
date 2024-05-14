@@ -20,7 +20,6 @@
       "exactOptionalPropertyTypes": true,
       "resolveJsonModule": true,
       "paths": {
-        "~/*": ["./*"],
         "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
         "@platform": ["platform/common/index"],
         "@platform/*": ["platform/common/*"],

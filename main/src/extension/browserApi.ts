@@ -1,10 +1,10 @@
-import type { Entry } from "~/lib/dicEntry";
-import type { NoteData } from "~/lib/ankiNoteBuilder";
+import type { Entry } from "lib/dicEntry";
+import type { NoteData } from "lib/ankiNoteBuilder";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
-import type { TTSRequest, TTSVoice } from "~/platform/common";
-import Utils, { handleMessageResponse, hasOwnProperty, type MessageResponse } from "~/lib/utils";
+import type { TTSRequest, TTSVoice } from "platform/common";
+import Utils, { handleMessageResponse, hasOwnProperty, type MessageResponse } from "lib/utils";
 
 /**
  * Type map for messages between extension processes

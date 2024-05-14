@@ -3,13 +3,13 @@ import {
   sentenceAtCharLocation,
   nodesOfToken,
 } from "./scanner";
-import { BrowserApi } from "~/extension/browserApi";
+import { BrowserApi } from "extension/browserApi";
 import { Highlighter } from "./highlight";
-import { Tooltip } from "~/extension/content/tooltip";
-import Utils, { LazyAsync, exposeGlobals } from "~/lib/utils";
-import Config from "~/lib/config";
+import { Tooltip } from "extension/content/tooltip";
+import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
+import Config from "lib/config";
 import { Platform, type ExtensionPlatform } from "@platform";
-import { containsJapaneseContent } from "~/lib/japanese";
+import { containsJapaneseContent } from "lib/japanese";
 
 
 const browserApi = new BrowserApi({ context: "contentScript" });

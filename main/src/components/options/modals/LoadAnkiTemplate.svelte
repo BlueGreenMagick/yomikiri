@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { AnkiOptionsApi } from "@platform/anki";
   import AnkiTemplate from "./AnkiTemplate.svelte";
-  import type { Config } from "~/lib/config";
+  import type { Config } from "lib/config";
   import type { Platform } from "@platform";
 
   export let platform: Platform;

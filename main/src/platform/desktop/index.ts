@@ -1,6 +1,6 @@
-import { BrowserApi } from "~/extension/browserApi";
+import { BrowserApi } from "extension/browserApi";
 import type { IPlatform, IPlatformStatic, TTSVoice, VersionInfo } from "../common";
-import Config, { type StoredConfiguration } from "~/lib/config";
+import Config, { type StoredConfiguration } from "lib/config";
 import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
 import { Backend as DesktopBackend } from "./backend"

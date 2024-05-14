@@ -6,8 +6,8 @@
   import OptionNumber from "../items/OptionNumber.svelte";
   import ModalAnkiTemplate from "../modals/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
-  import Utils, { SingleQueued } from "~/lib/utils";
-  import type Config from "~/lib/config";
+  import Utils, { SingleQueued } from "lib/utils";
+  import type Config from "lib/config";
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";

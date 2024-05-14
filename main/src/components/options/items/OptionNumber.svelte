@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ConfigKeysOfType, Config } from "~/lib/config";
+  import type { ConfigKeysOfType, Config } from "lib/config";
   import OptionBase from "./OptionBase.svelte";
 
   export let config: Config;

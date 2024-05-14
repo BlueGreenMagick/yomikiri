@@ -1,7 +1,7 @@
 import DICTIONARY_WASM_URL from "@yomikiri/yomikiri-dictionary/yomikiri_dictionary_bg.wasm";
 import initWasm, { create_dictionary } from "@yomikiri/yomikiri-dictionary"
 import BundledDictMetadata from "@yomikiri/dictionary/res/dictionary-metadata.json";
-import Utils from "~/lib/utils";
+import Utils from "lib/utils";
 import type { DictionaryMetadata, IDictionary as IDictionary, } from "../common/dictionary"
 import { openDB, type DBSchema } from "idb"
 
