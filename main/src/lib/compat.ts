@@ -60,8 +60,10 @@ export function migrateConfigObject(configObject: StoredCompatConfiguration): St
   }
 
 
-  // if configVersion > CONFIG_VERSION
-  throw new Error(`Encountered future configVersion: ${configVersion}`)
+  // if config was created in future version,
+  // try using as-is as it's mostly backwards-compatible
+  console.error(`Encountered future configVersion: ${configVersion}. Using the config as-is. Unexpected error may occur.`)
+  return configObject as StoredConfiguration
 }
 
 
