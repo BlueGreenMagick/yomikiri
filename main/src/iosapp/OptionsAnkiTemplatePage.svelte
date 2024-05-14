@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type Config from "~/config";
+  import type Config from "~/lib/config";
   import LoadAnkiTemplate from "../components/options/modals/LoadAnkiTemplate.svelte";
   import { platformClass } from "~/components/actions";
   import type { IosAppAnkiApi } from "~/platform/iosapp/anki";

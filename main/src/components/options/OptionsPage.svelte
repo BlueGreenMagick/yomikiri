@@ -3,7 +3,7 @@
   import { Platform } from "@platform";
   import type { AnkiOptionsApi } from "@platform/anki";
   import type { Dictionary } from "@platform/dictionary";
-  import type { Config } from "~/config";
+  import type { Config } from "~/lib/config";
   import OptionsColumns from "./OptionsColumns.svelte";
 
   export let platform: Platform;

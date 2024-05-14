@@ -6,12 +6,12 @@
 </script>
 
 <script lang="ts">
-  import { Entry, Sense, type GroupedSense } from "~/dicEntry";
+  import { Entry, Sense, type GroupedSense } from "~/lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import IconVolumeHigh from "@icons/volume-high.svg";
-  import { RubyString } from "~/japanese";
-  import type Config from "~/config";
+  import { RubyString } from "~/lib/japanese";
+  import type Config from "~/lib/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { Platform } from "@platform";

@@ -7,11 +7,11 @@
     AnkiNoteBuilder,
     type LoadingNoteData,
     type MarkerData,
-  } from "~/ankiNoteBuilder";
-  import Utils from "~/utils";
-  import { Toast } from "~/toast";
+  } from "~/lib/ankiNoteBuilder";
+  import Utils from "~/lib/utils";
+  import { Toast } from "~/lib/toast";
   import AddToAnki from "~/components/anki/AddToAnki.svelte";
-  import type Config from "~/config";
+  import type Config from "~/lib/config";
   import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
 
   export let platform: IosAppPlatform;

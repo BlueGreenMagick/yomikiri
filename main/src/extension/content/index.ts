@@ -6,10 +6,10 @@ import {
 import { BrowserApi } from "~/extension/browserApi";
 import { Highlighter } from "./highlight";
 import { Tooltip } from "~/extension/content/tooltip";
-import Utils, { LazyAsync, exposeGlobals } from "~/utils";
-import Config from "~/config";
+import Utils, { LazyAsync, exposeGlobals } from "~/lib/utils";
+import Config from "~/lib/config";
 import { Platform, type ExtensionPlatform } from "@platform";
-import { containsJapaneseContent } from "~/japanese";
+import { containsJapaneseContent } from "~/lib/japanese";
 
 
 const browserApi = new BrowserApi({ context: "contentScript" });

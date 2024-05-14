@@ -1,7 +1,7 @@
 import { Platform, type ExtensionPlatform } from "@platform";
 import PopupPage from "./PopupPage.svelte";
-import Config from "~/config";
-import Utils, { LazyAsync, exposeGlobals, type PromiseOrValue } from "~/utils";
+import Config from "~/lib/config";
+import Utils, { LazyAsync, exposeGlobals, type PromiseOrValue } from "~/lib/utils";
 import { BrowserApi } from "~/extension/browserApi";
 import type { Backend, DesktopBackend, IosBackend } from "@platform/backend"
 import type { AnkiApi } from "@platform/anki";

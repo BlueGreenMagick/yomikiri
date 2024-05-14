@@ -1,12 +1,12 @@
-import type { Config, StoredConfiguration } from "~/config";
+import type { Config, StoredConfiguration } from "~/lib/config";
 import type { TranslateResult } from "./translate";
 import type { Platform as DesktopPlatform } from "../desktop"
 import type { Platform as IosPlatform } from "../ios"
 import type { Platform as IosAppPlatform } from "../iosapp"
 import type { Backend } from "./backend";
 import type { AnkiApi } from "./anki"
-import type Utils from "~/utils";
-import type { PromiseOrValue } from "~/utils";
+import type Utils from "~/lib/utils";
+import type { PromiseOrValue } from "~/lib/utils";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop"

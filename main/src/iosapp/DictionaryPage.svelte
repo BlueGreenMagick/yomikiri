@@ -2,7 +2,7 @@
   import type { IosAppPlatform } from "~/platform/ios";
   import { platformClass } from "../components/actions";
   import DictionaryView from "./DictionaryView.svelte";
-  import type Config from "~/config";
+  import type Config from "~/lib/config";
   import type { IosAppBackend } from "~/platform/iosapp/backend";
   import type { IosAppAnkiApi } from "~/platform/iosapp/anki";
 

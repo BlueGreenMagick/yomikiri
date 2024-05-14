@@ -1,6 +1,6 @@
 import DictionaryPage from "./DictionaryPage.svelte";
-import Config from "~/config";
-import Utils, { LazyAsync, exposeGlobals } from "~/utils";
+import Config from "~/lib/config";
+import Utils, { LazyAsync, exposeGlobals } from "~/lib/utils";
 import { Platform } from "~/platform/iosapp";
 import { updateTTSAvailability } from "~/common";
 import type { IosAppBackend } from "~/platform/iosapp/backend";

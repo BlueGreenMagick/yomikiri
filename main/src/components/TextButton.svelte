@@ -9,7 +9,7 @@
 -->
 
 <script lang="ts">
-  import Utils from "~/utils";
+  import Utils from "~/lib/utils";
 
   export let label: string;
   export let disabled = false;

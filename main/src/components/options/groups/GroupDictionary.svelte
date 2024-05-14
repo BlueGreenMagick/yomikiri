@@ -2,7 +2,7 @@
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
   import type { Dictionary, DictionaryMetadata } from "@platform/dictionary";
-  import Utils from "~/utils";
+  import Utils from "~/lib/utils";
 
   export let dictionary: Dictionary;
 

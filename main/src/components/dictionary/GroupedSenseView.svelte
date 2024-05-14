@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Sense, type GroupedSense } from "~/dicEntry";
-  import type { Config } from "~/config";
+  import { Sense, type GroupedSense } from "~/lib/dicEntry";
+  import type { Config } from "~/lib/config";
   import type { DicEntriesModel } from "./dicEntriesModel";
 
   export let config: Config;

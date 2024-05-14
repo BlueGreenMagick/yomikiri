@@ -1,7 +1,7 @@
 <script lang="ts">
   import DicEntriesView from "../dictionary/DicEntriesView.svelte";
-  import { Entry, type EntryObject } from "~/dicEntry";
-  import { Config } from "~/config";
+  import { Entry, type EntryObject } from "~/lib/dicEntry";
+  import { Config } from "~/lib/config";
   import { onMount } from "svelte";
   import type { Platform } from "@platform";
 

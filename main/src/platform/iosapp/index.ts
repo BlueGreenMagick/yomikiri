@@ -1,6 +1,6 @@
-import Utils from "~/utils";
+import Utils from "~/lib/utils";
 import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
-import { Config, type StoredConfiguration } from "~/config";
+import { Config, type StoredConfiguration } from "~/lib/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import type { RawDictionaryMetadata } from "./dictionary";

@@ -4,13 +4,13 @@
  * loaded on desktop / ios
  */
 
-import type { Entry } from "../../dicEntry";
+import type { Entry } from "../../lib/dicEntry";
 import { type TokenizeResult, type TokenizeRequest, type DesktopBackend, type IosBackend } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "~/extension/browserApi";
 import { Platform, type ExtensionPlatform, type TTSRequest, type TranslateResult } from "@platform";
-import Utils, { exposeGlobals } from "../../utils";
-import type { NoteData } from "~/ankiNoteBuilder";
-import Config from "~/config";
+import Utils, { exposeGlobals } from "../../lib/utils";
+import type { NoteData } from "~/lib/ankiNoteBuilder";
+import Config from "~/lib/config";
 import { updateTTSAvailability } from "~/common";
 import DefaultIcon from "assets/static/images/icon128.png"
 import GreyIcon from "assets/static/images/icon128-semigray.png"

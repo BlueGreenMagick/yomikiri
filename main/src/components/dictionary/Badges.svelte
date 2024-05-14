@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Entry } from "~/dicEntry";
+  import { Entry } from "~/lib/dicEntry";
 
   export let entry: Entry;
 

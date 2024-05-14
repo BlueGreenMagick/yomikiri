@@ -1,6 +1,6 @@
 <script lang="ts">
   import { TokenizeResult, Backend } from "@platform/backend";
-  import Utils from "~/utils";
+  import Utils from "~/lib/utils";
   import IconSearch from "@icons/search.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
   import SentenceView from "./SentenceView.svelte";
@@ -10,7 +10,7 @@
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
   import type { Platform } from "@platform";
-  import type { Config } from "~/config";
+  import type { Config } from "~/lib/config";
 
   export let platform: Platform;
   export let config: Config;

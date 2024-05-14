@@ -1,8 +1,8 @@
 import OptionsPage from "../components/options/OptionsPage.svelte";
 import { Platform } from "~/platform/iosapp";
 import { IosAppAnkiApi } from "@platform/anki";
-import Utils, { LazyAsync, exposeGlobals } from "~/utils";
-import Config from "~/config";
+import Utils, { LazyAsync, exposeGlobals } from "~/lib/utils";
+import Config from "~/lib/config";
 import type { IosAppDictionary } from "~/platform/common/dictionary";
 
 

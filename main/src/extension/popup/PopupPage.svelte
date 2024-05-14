@@ -2,7 +2,7 @@
   import { platformClass } from "~/components/actions";
   import { Platform } from "@platform";
   import { Backend } from "@platform/backend";
-  import type Config from "~/config";
+  import type Config from "~/lib/config";
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import type { AnkiApi } from "@platform/anki";

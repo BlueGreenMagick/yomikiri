@@ -5,7 +5,7 @@ import {
   type TokenizeRequest,
   TokenizeResult,
 } from "../common/backend";
-import { Entry, type EntryObject } from "~/dicEntry";
+import { Entry, type EntryObject } from "~/lib/dicEntry";
 
 export * from "../common/backend";
 

@@ -4,7 +4,7 @@
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
   import { Platform } from "@platform";
-  import type Config from "~/config";
+  import type Config from "~/lib/config";
   import type { Dictionary } from "@platform/dictionary";
   import type { AnkiOptionsApi } from "@platform/anki";
 

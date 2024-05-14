@@ -3,7 +3,7 @@ import { AnkiNoteBuilder, type MarkerContext, type MarkerData } from "./ankiNote
 import { Entry, type EntryObject } from "./dicEntry";
 import type { TokenizeResult } from "@platform/backend";
 import { DesktopPlatform } from "~/platform/desktop";
-import { BrowserApi } from "./extension/browserApi";
+import { BrowserApi } from "../extension/browserApi";
 import Config, { defaultOptions } from "./config";
 
 const tokenized: TokenizeResult = {

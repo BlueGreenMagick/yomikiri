@@ -1,6 +1,6 @@
-import Config from "./config";
+import Config from "./lib/config";
 import { Platform } from "@platform"
-import Utils from "./utils";
+import Utils from "./lib/utils";
 
 
 export const VERSION = __APP_VERSION__;

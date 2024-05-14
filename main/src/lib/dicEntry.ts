@@ -1,5 +1,5 @@
 import Utils, { hasOwnProperty } from "./utils";
-import ENTITIES from "./assets/dicEntities.json";
+import ENTITIES from "../assets/dicEntities.json";
 import type { Token } from "@platform/backend";
 import { extractKanjis } from "./japanese";
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import OptionBase from "./OptionBase.svelte";
   import ToggleSwitch from "../../ToggleSwitch.svelte";
-  import type { Config, ConfigKeysOfType } from "~/config";
+  import type { Config, ConfigKeysOfType } from "~/lib/config";
 
   export let config: Config;
   export let key: ConfigKeysOfType<boolean>;

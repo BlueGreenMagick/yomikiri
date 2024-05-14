@@ -1,4 +1,4 @@
-import { hasOwnProperty } from "~/utils";
+import { hasOwnProperty } from "~/lib/utils";
 
 interface GoogleTranslateApiResult {
   sentences: {

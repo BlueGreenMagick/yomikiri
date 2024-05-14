@@ -1,6 +1,6 @@
-import type { MarkerData } from "~/ankiNoteBuilder";
+import type { MarkerData } from "~/lib/ankiNoteBuilder";
 import type { TokenizeResult } from "@platform/backend";
-import { Entry } from "~/dicEntry";
+import { Entry } from "~/lib/dicEntry";
 
 const tokenized: TokenizeResult = {
   "tokens": [

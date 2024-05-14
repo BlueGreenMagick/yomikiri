@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
-  import type { LoadingField } from "~/ankiNoteBuilder";
-  import { PromiseWithProgress, getErrorMessage } from "~/utils";
+  import type { LoadingField } from "~/lib/ankiNoteBuilder";
+  import { PromiseWithProgress, getErrorMessage } from "~/lib/utils";
 
   export let field: LoadingField;
   export let bold = false;

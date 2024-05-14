@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { Entry } from "~/dicEntry";
+  import type { Entry } from "~/lib/dicEntry";
   import DicEntryView, {
     type SelectedEntryForAnki,
   } from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
   import type { Platform } from "@platform";
-  import type { Config } from "~/config";
+  import type { Config } from "~/lib/config";
 
   export let platform: Platform;
   export let config: Config;

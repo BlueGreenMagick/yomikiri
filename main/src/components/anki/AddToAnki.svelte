@@ -3,12 +3,12 @@
   passed-in noteData object is modified live when user changes field value
 -->
 <script lang="ts">
-  import { type Field, LoadingNoteData } from "~/ankiNoteBuilder";
+  import { type Field, LoadingNoteData } from "~/lib/ankiNoteBuilder";
   import NotePreviewField from "./NotePreviewField.svelte";
   import TextButton from "~/components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
-  import { Toast } from "~/toast";
-  import { getErrorMessage, SingleQueued } from "~/utils";
+  import { Toast } from "~/lib/toast";
+  import { getErrorMessage, SingleQueued } from "~/lib/utils";
 
   interface FieldWatch extends Field {
     _value: string;

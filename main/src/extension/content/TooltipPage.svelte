@@ -3,7 +3,7 @@
   import Tooltip from "./Tooltip.svelte";
   import { TokenizeResult } from "@platform/backend";
   import { AnkiApi } from "@platform/anki";
-  import type Config from "~/config";
+  import type Config from "~/lib/config";
   import type { Platform } from "@platform";
 
   export let platform: Platform;

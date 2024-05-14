@@ -1,4 +1,4 @@
-import type Utils from "~/utils";
+import type Utils from "~/lib/utils";
 import type { DesktopDictionary } from "../desktop/dictionary"
 import type { IosAppDictionary } from "../iosapp/dictionary"
 

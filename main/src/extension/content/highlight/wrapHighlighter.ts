@@ -1,4 +1,4 @@
-import type { Rect } from "~/utils";
+import type { Rect } from "~/lib/utils";
 
 const TAG_NAME = "yomikirihl";
 const HIGHLIGHT_CSS = `${TAG_NAME} {

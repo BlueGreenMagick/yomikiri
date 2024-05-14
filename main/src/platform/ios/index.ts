@@ -1,5 +1,5 @@
-import Config, { type StoredConfiguration } from "~/config";
-import { handleMessageResponse } from "~/utils";
+import Config, { type StoredConfiguration } from "~/lib/config";
+import { handleMessageResponse } from "~/lib/utils";
 import { BrowserApi } from "~/extension/browserApi";
 import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";

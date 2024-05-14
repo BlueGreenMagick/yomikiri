@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconSettings from "@icons/settings.svg";
   import IconPower from "@icons/power.svg";
-  import Config from "~/config";
+  import Config from "~/lib/config";
   import type { Platform } from "@platform";
 
   export let platform: Platform;

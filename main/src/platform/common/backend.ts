@@ -1,8 +1,8 @@
 import type {
   RawTokenizeResult,
 } from "@yomikiri/yomikiri-rs";
-import { Entry, type EntryObject } from "~/dicEntry";
-import { toHiragana } from "~/japanese";
+import { Entry, type EntryObject } from "~/lib/dicEntry";
+import { toHiragana } from "~/lib/japanese";
 import type { DesktopBackend } from "../desktop/backend"
 import type { IosBackend } from "../ios/backend"
 import type { IosAppBackend } from "../iosapp/backend"

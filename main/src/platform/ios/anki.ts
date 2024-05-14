@@ -1,7 +1,7 @@
 import { BrowserApi } from "~/extension/browserApi";
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
-import type { NoteData } from "~/ankiNoteBuilder";
-import Config from "~/config";
+import type { NoteData } from "~/lib/ankiNoteBuilder";
+import Config from "~/lib/config";
 import { Platform as IosPlatform } from "./"
 
 export class IosAnkiApi implements IAnkiAddNotes {
