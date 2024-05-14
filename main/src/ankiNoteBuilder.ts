@@ -41,6 +41,59 @@ export interface LoadingNoteData {
   tags: string;
 }
 
+interface AnkiTemplate {
+  deck: string;
+  notetype: string;
+  tags: string;
+  fields: AnyFieldTemplate[];
+}
+
+interface FieldTemplateOptionsMap {
+  "word": FieldTemplateWordOptions
+  "dictionary-form": FieldTemplateDictionaryFormOptions
+  "main-dictionary-form": FieldTemplateMainDictionaryFormOptions
+  "sentence": FieldTemplateSentenceOptions,
+  "translated-sentence": never,
+  "meaning": FieldTemplateMeaningOptions,
+  "url": never,
+  "link": never
+}
+
+
+interface FieldTemplate<T extends keyof FieldTemplateOptionsMap> {
+  field: string;
+  type: T;
+  options: FieldTemplateOptionsMap[T]
+}
+
+type AnyFieldTemplate = FieldTemplate<keyof FieldTemplateOptionsMap>
+
+interface FieldTemplateWordOptions {
+  form: "default" | "kanji" | "kana"
+  furigana: "none" | "furigana-anki" | "furigana-html"
+}
+
+interface FieldTemplateDictionaryFormOptions {
+  form: "default" | "kanji" | "kana"
+  furigana: "none" | "furigana-anki" | "furigana-html"
+}
+
+interface FieldTemplateMainDictionaryFormOptions {
+  furigana: "none" | "furigana-anki" | "furigana-html"
+  kana: boolean
+}
+
+interface FieldTemplateSentenceOptions {
+  form: "default" | "kanji" | "kana"
+  furigana: "none" | "furigana-anki" | "furigana-html"
+  bold: boolean
+  cloze: boolean
+}
+
+interface FieldTemplateMeaningOptions {
+  format: "default" | "short"
+}
+
 export interface NoteData extends LoadingNoteData {
   fields: Field[];
 }
