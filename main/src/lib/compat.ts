@@ -1,3 +1,15 @@
+/*
+Migrate config objects created in previous versions.
+
+When `Configuration` structure is modified, `config_version` is incremented.
+
+Configurations are backwards-compatible to best efforts.
+Existing keys are not re-used for different meaning, or deleted.
+Instead, a new key is always created.
+And if needed, value is transformed and moved from existing key.
+*/
+
+
 import type { Platform, TTSVoice } from "@platform";
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
 import type { NoteData } from "./anki";
