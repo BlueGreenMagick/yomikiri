@@ -10,7 +10,7 @@ import { BrowserApi, type MessageSender } from "extension/browserApi";
 import { Platform, type ExtensionPlatform, type TTSRequest, type TranslateResult } from "@platform";
 import Utils, { exposeGlobals } from "../../lib/utils";
 import type { NoteData } from "lib/anki";
-import Config from "lib/config";
+import Config, { type StoredConfiguration } from "lib/config";
 import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png"
 import GreyIcon from "assets/static/images/icon128-semigray.png"
@@ -64,6 +64,10 @@ async function tts(req: TTSRequest): Promise<void> {
   await platform.playTTS(req.text, req.voice)
 }
 
+async function handleMigrateConfig(): Promise<StoredConfiguration> {
+  return await platform.migrateConfig()
+}
+
 /** On ios, toggle state.enabled when action item is clicked */
 async function onActionClick() {
   const config = await lazyConfig.get();
@@ -73,12 +77,15 @@ async function onActionClick() {
 }
 
 
+
+
 browserApi.handleRequest("searchTerm", searchTerm);
 browserApi.handleRequest("tokenize", tokenize);
 browserApi.handleRequest("addAnkiNote", addAnkiNote);
 browserApi.handleRequest("tabId", tabId);
 browserApi.handleRequest("translate", handleTranslate);
 browserApi.handleRequest("tts", tts);
+browserApi.handleRequest("migrateConfig", handleMigrateConfig)
 
 browserApi.handleBrowserLoad(() => { void initialize() })
 

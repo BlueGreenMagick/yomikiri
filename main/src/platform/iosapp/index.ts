@@ -7,6 +7,7 @@ import type { RawDictionaryMetadata } from "./dictionary";
 import { Backend as IosAppBackend } from "./backend"
 import { Dictionary as IosAppDictionary } from "./dictionary"
 import { AnkiApi as IosAppAnkiApi } from "./anki"
+import { migrateConfigObject } from "lib/compat";
 
 export * from "../common"
 
@@ -147,6 +148,12 @@ export class IosAppPlatform implements IPlatform {
       })
   }
 
+  async migrateConfig(): Promise<StoredConfiguration> {
+    const configObject = await this.getConfig()
+    const migrated = migrateConfigObject(configObject)
+    await this.saveConfig(migrated)
+    return migrated
+  }
 }
 
 IosAppPlatform satisfies IPlatformStatic

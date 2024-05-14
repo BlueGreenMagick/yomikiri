@@ -1,11 +1,12 @@
 import Config, { type StoredConfiguration } from "lib/config";
-import { handleMessageResponse } from "lib/utils";
+import { LazyAsync, handleMessageResponse } from "lib/utils";
 import { BrowserApi } from "extension/browserApi";
 import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { Backend as IosBackend } from "./backend";
 import { AnkiApi as IosAnkiApi } from "./anki";
+import { migrateConfigObject, type StoredCompatConfiguration } from "lib/compat";
 
 export * from "../common";
 
@@ -29,6 +30,10 @@ export class IosPlatform implements IPlatform {
   static IS_IOSAPP = false;
 
   browserApi: BrowserApi
+  // config migration is done only once even if requested multiple times
+  configMigration = new LazyAsync<StoredConfiguration>(async () => {
+    return await this.migrateConfigInner()
+  })
 
   constructor(browserApi: BrowserApi) {
     this.browserApi = browserApi
@@ -66,7 +71,7 @@ export class IosPlatform implements IPlatform {
     return JSON.parse(jsonResponse) as AppResponse<K>;
   }
 
-  async getConfig(): Promise<StoredConfiguration> {
+  async getConfig(): Promise<StoredCompatConfiguration> {
     if (this.browserApi.context === "contentScript") {
       return this.browserApi.request("loadConfig", null);
     } else {
@@ -149,6 +154,21 @@ export class IosPlatform implements IPlatform {
     window
       .open(url, "_blank")
       ?.focus();
+  }
+
+  async migrateConfig(): Promise<StoredConfiguration> {
+    if (this.browserApi.context === "contentScript") {
+      return await this.browserApi.request("migrateConfig", null);
+    } else {
+      return await this.configMigration.get()
+    }
+  }
+
+  private async migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await this.getConfig()
+    const migrated = migrateConfigObject(configObject)
+    await this.saveConfig(migrated)
+    return migrated
   }
 }
 

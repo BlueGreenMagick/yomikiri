@@ -6,6 +6,8 @@ import { getTranslation } from "../common/translate";
 import { Backend as DesktopBackend } from "./backend"
 import { Dictionary as DesktopDictionary } from "./dictionary"
 import { AnkiApi as DesktopAnkiApi } from "./anki";
+import { migrateConfigObject, type StoredCompatConfiguration } from "lib/compat";
+import { LazyAsync } from "lib/utils";
 
 export * from "../common";
 
@@ -15,6 +17,10 @@ export class DesktopPlatform implements IPlatform {
   static IS_IOSAPP = false
 
   browserApi: BrowserApi
+  // config migration is done only once even if requested multiple times
+  configMigration = new LazyAsync<StoredConfiguration>(async () => {
+    return await this.migrateConfigInner()
+  })
 
   constructor(browserApi: BrowserApi) {
     this.browserApi = browserApi
@@ -32,8 +38,8 @@ export class DesktopPlatform implements IPlatform {
     return new DesktopAnkiApi(this, config)
   }
 
-  async getConfig(): Promise<StoredConfiguration> {
-    return await this.browserApi.getStorage<StoredConfiguration>("config", {});
+  async getConfig(): Promise<StoredCompatConfiguration> {
+    return await this.browserApi.getStorage<StoredCompatConfiguration>("config", {});
   }
 
   /** subscriber is called when config is changed. */
@@ -83,6 +89,21 @@ export class DesktopPlatform implements IPlatform {
     window
       .open(url, "_blank")
       ?.focus();
+  }
+
+  async migrateConfig(): Promise<StoredConfiguration> {
+    if (this.browserApi.context === "contentScript") {
+      return await this.browserApi.request("migrateConfig", null);
+    } else {
+      return await this.configMigration.get()
+    }
+  }
+
+  private async migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await this.getConfig()
+    const migrated = migrateConfigObject(configObject)
+    await this.saveConfig(migrated)
+    return migrated
   }
 }
 

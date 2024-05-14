@@ -36,7 +36,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-redundant-type-constituents': 'off',
-      'svelte/valid-compile': ['error', {'ignoreWarnings': true}]
+      'svelte/valid-compile': ['error', { 'ignoreWarnings': true }]
     }
   },
   {
@@ -72,7 +72,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'off',
       'no-constant-condition': 'off',
       'no-inner-declarations': 'off',
-      'svelte/no-inner-declarations': 'off'
+      'svelte/no-inner-declarations': 'off',
+      '@typescript-eslint/dot-notation': 'off'
     }
   },
   {

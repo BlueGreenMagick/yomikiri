@@ -19,6 +19,7 @@ export interface MessageMap {
   tabId: [null, number | undefined];
   translate: [string, TranslateResult];
   tts: [TTSRequest, void];
+  migrateConfig: [null, StoredConfiguration];
   // ios
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];

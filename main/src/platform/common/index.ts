@@ -7,6 +7,7 @@ import type { Backend } from "./backend";
 import type { AnkiApi } from "./anki"
 import type Utils from "lib/utils";
 import type { PromiseOrValue } from "lib/utils";
+import type { StoredCompatConfiguration } from "lib/compat";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop"
@@ -16,7 +17,7 @@ export type { Platform as IosAppPlatform } from "../iosapp"
 export interface IPlatform {
   newBackend(): Utils.PromiseOrValue<Backend>;
   newAnkiApi(config: Config): AnkiApi;
-  getConfig(): Promise<StoredConfiguration>;
+  getConfig(): Promise<StoredCompatConfiguration>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
   subscribeConfig(subscriber: (config: StoredConfiguration) => unknown): void;
   saveConfig: (config: StoredConfiguration) => Promise<void>;
@@ -27,6 +28,7 @@ export interface IPlatform {
   translate: (text: string) => Promise<TranslateResult>;
   /** Opens url in new tab */
   openExternalLink(url: string): void;
+  migrateConfig(): Promise<StoredConfiguration>;
 }
 
 export interface IPlatformStatic {

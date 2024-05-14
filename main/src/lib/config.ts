@@ -1,7 +1,10 @@
-import type { NoteData } from "./anki/ankiNoteBuilder";
+import type { NoteData } from "./anki";
 import { Platform } from "@platform";
 import { VERSION } from "../common";
 import type { TTSVoice } from "../platform/common";
+import { migrateIfNeeded } from "./compat";
+
+export const CONFIG_VERSION = 2
 
 /** Must not be undefined */
 export interface Configuration {
@@ -18,6 +21,7 @@ export interface Configuration {
   "tts.voice": TTSVoice | null;
   /** Yomikiri semantic version on last config save */
   "version": string
+  "config_version": typeof CONFIG_VERSION
 }
 
 export const defaultOptions: Configuration = {
@@ -30,7 +34,8 @@ export const defaultOptions: Configuration = {
   "anki.enabled": false,
   "anki.ios_auto_redirect": true,
   "tts.voice": null,
-  "version": VERSION
+  "version": VERSION,
+  "config_version": CONFIG_VERSION
 };
 
 export type StoredConfiguration = Partial<Configuration>
@@ -73,9 +78,10 @@ export class Config {
   }
 
   static async initialize(platform: Platform): Promise<Config> {
-    const storage = await platform.getConfig()
+    const stored = await platform.getConfig()
+    const storage = await migrateIfNeeded(platform, stored)
     const config = new Config(platform, storage)
-    await config.migrate()
+    await config.updateVersion()
     return config
   }
 
@@ -187,8 +193,8 @@ export class Config {
     }`;
   }
 
-  // Make sure no race condition with migration occurs!
-  async migrate() {
+  /** Migration must occur only on background */
+  async updateVersion() {
     if (this.storage.version !== defaultOptions.version) {
       await this.set("version", defaultOptions.version)
     }
