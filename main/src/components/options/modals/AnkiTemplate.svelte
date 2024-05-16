@@ -136,6 +136,10 @@
 <style>
   .anki-template-modal {
     background-color: var(--background-alt);
+    height: 100%;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
   }
 
   input {
@@ -159,6 +163,10 @@
   }
   .item-select.invalid {
     color: red;
+  }
+
+  .fields {
+    flex: 1 0 auto;
   }
 
   .tags-container {
