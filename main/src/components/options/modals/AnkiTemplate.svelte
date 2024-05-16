@@ -13,8 +13,6 @@
 
   const template = config.get("anki.template");
 
-  let previewMode = false;
-
   let deckNames = ankiInfo.decks;
   let notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
   let fieldNames: string[];
@@ -122,17 +120,6 @@
       {/if}
     </select>
   </div>
-  <div class="preview-toggle">
-    <label for="preview-checkbox" title={exampleMarkerData.sentence}>
-      Preview
-    </label>
-    <input
-      type="checkbox"
-      id="preview-checkbox"
-      title={exampleMarkerData.sentence}
-      bind:checked={previewMode}
-    />
-  </div>
   <div class="fields group">
     {#each fieldNames as fieldName}
       <AnkiTemplateField fieldTemplate={fieldTemplates[fieldName]} />
@@ -172,18 +159,6 @@
   }
   .item-select.invalid {
     color: red;
-  }
-
-  .preview-toggle {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 6px;
-    margin: 6px 12px;
-  }
-  .preview-toggle input {
-    flex: 0 0 auto;
-    width: initial;
   }
 
   .tags-container {
