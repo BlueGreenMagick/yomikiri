@@ -5,7 +5,8 @@
   export let template: AnyFieldTemplate;
 </script>
 
-<div>
+<div class="anki-template-field-options">
+  <div class="title">Options</div>
   {#if template.type === "word" || template.type === "dict-form" || template.type === "sentence"}
     <div class="row">
       <div>Form:</div>
@@ -31,6 +32,12 @@
 </div>
 
 <style>
+  .title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--text-light);
+  }
+
   .row {
     display: flex;
     align-items: center;

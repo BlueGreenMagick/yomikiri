@@ -30,7 +30,7 @@
   });
 </script>
 
-<div class="field-item">
+<div class="anki-template-field">
   <div class="field-name">{fieldTemplate.field}</div>
   <div class="field-row">
     <Select options={selectOptions} bind:selected={fieldTemplate.type} />
@@ -55,24 +55,37 @@
       <IconOptions />
     </button>
   </div>
-  <div class="field-preview" class:hidden={!previewShown}></div>
-  <div class="field-options" class:hidden={!optionsShown}>
-    <AnkiTemplateFieldOptions template={fieldTemplate} />
+  <div class="section" class:hidden={!previewShown && !optionsShown}>
+    <div class="field-preview" class:hidden={!previewShown}></div>
+    <div class="field-options" class:hidden={!optionsShown}>
+      <AnkiTemplateFieldOptions template={fieldTemplate} />
+    </div>
   </div>
 </div>
 
 <style>
+  .anki-template-field {
+    background-color: white;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+  }
+
   .field-name {
     font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+
+  .hidden {
+    display: none;
   }
 
   .field-row {
     display: flex;
     align-items: center;
-  }
-
-  .hidden {
-    display: none;
+    gap: 6px;
   }
 
   .field-row > :global(select) {
@@ -80,18 +93,22 @@
     height: 1.6em;
     font-size: 1em;
     padding: 0px 2px;
-    margin-right: 0.3em;
   }
 
   .icon {
     flex: 0 0 auto;
-    width: 2em;
-    height: 2em;
-    padding: 0.3em;
+    width: 1.4em;
+    height: 1.4em;
     fill: var(--button-light);
   }
 
   .icon.active {
     fill: var(--text);
+  }
+
+  .section {
+    margin-top: 8px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
   }
 </style>
