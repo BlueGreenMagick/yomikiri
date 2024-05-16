@@ -67,7 +67,7 @@
 
 <style>
   .anki-template-field {
-    background-color: white;
+    background-color: var(--background);
     margin: 8px 0;
     border-radius: 8px;
     /* disable margin collapsing */

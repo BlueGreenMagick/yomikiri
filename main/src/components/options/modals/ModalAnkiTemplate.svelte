@@ -11,6 +11,8 @@
   export let onClose: () => void;
 </script>
 
-<Modal title="Anki Template" {onClose}>
-  <LoadAnkiTemplate {platform} {config} {ankiApi} />
-</Modal>
+<div class="modal-anki-template">
+  <Modal title="Anki Template" {onClose}>
+    <LoadAnkiTemplate {platform} {config} {ankiApi} />
+  </Modal>
+</div>

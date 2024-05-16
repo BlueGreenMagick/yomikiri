@@ -11,12 +11,13 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">{title}</div>
-      <button class="close-button" on:click={onClose}
-        ><div class="icon-close"><IconClose /></div></button
-      >
+      <button class="close-button" on:click={onClose}>
+        <IconClose />
+      </button>
     </div>
     <div class="modal-content"><slot /></div>
   </div>
+  <div class="modal-background" />
 </div>
 
 <style>
@@ -30,11 +31,18 @@
     align-items: center;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.3);
   }
 
   .modal-container.hidden {
     display: none;
+  }
+
+  .modal-background {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
   }
 
   .modal {
@@ -45,7 +53,7 @@
     max-width: 90%;
     max-height: 90%;
     border-radius: 8px;
-    background-color: white;
+    background-color: var(--background-alt);
   }
 
   .modal-header {
@@ -57,7 +65,7 @@
   .modal-content {
     flex: 1 1 auto;
     overflow-y: auto;
-    border-top: 1px solid lightgray;
+    border-top: 1px solid var(--border);
   }
 
   .modal-title {
@@ -66,22 +74,11 @@
 
   .close-button {
     flex: 0 0 auto;
-    padding: 6px 18px;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    border: 1px solid black;
-    border-radius: 3px;
-    background-color: var(--background-alt);
-  }
-
-  .close-button:focus-visible {
-    border: 1px solid transparent;
-  }
-
-  .icon-close {
     width: 18px;
     height: 18px;
     fill: black;

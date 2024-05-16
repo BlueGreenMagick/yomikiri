@@ -135,7 +135,6 @@
 
 <style>
   .anki-template-modal {
-    background-color: var(--background-alt);
     height: 100%;
     overflow-y: scroll;
     display: flex;
