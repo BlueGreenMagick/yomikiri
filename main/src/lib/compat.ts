@@ -12,7 +12,7 @@ And if needed, value is transformed and moved from existing key.
 
 import type { Platform, TTSVoice } from "@platform";
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import type { NoteData } from "./anki";
+import { type AnyFieldTemplate, type Field, type FieldDictFormOptions, type FieldMainDictFormOptions, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
 
 /** 
  * v0.1.0 - 0.1.3 
@@ -90,4 +90,75 @@ function getConfigVersion(configObject: StoredCompatConfiguration): number {
   // in v0.1.0-0.1.3, "config_version" key did not exist, but "version" key was mandatory.
   if (configObject["version"] !== undefined) return 1
   return -1
+}
+
+export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyFieldTemplate {
+  const type = fld.value
+  const field = fld.name
+  if (type === "") {
+    return {
+      field,
+      type,
+      options: {}
+    }
+  } else if (type === "word" || type === "word-furigana" || type === "word-kana") {
+    const options: FieldWordOptions = {
+      furigana: type === "word-furigana" ? "furigana-anki" : "none",
+      form: type === "word-kana" ? "kana" : "default"
+    }
+    return {
+      field, type: "word", options
+    }
+  } else if (type === "dict" || type === "dict-furigana" || type === "dict-kana") {
+    const options: FieldDictFormOptions = {
+      furigana: type === "dict-furigana" ? "furigana-anki" : "none",
+      form: type === "dict-kana" ? "kana" : "default"
+    }
+    return {
+      field,
+      type: "dict-form",
+      options
+    }
+  } else if (type === "main-dict" || type === "main-dict-furigana" || type === "main-dict-kana") {
+    const options: FieldMainDictFormOptions = {
+      furigana: type === "main-dict-furigana" ? "furigana-anki" : "none",
+      kana: type === "main-dict-kana"
+    }
+    return {
+      field,
+      type: "main-dict-form",
+      options: options
+    }
+  } else if (
+    type === "sentence" ||
+    type === "sentence-furigana" ||
+    type === "sentence-kana" ||
+    type === "sentence-cloze" ||
+    type === "sentence-cloze-furigana"
+  ) {
+    const isCloze = type === "sentence-cloze" || type === "sentence-cloze-furigana"
+    const options: FieldSentenceOptions = {
+      form: type === "sentence-kana" ? "kana" : "default",
+      furigana: type === "sentence-furigana" || type === "sentence-cloze-furigana" ? "furigana-anki" : "none",
+      cloze: isCloze,
+      bold: !isCloze
+    }
+    return {
+      field,
+      type: "sentence",
+      options
+    }
+  } else if (type === "meaning" || type === "meaning-full" || type === "meaning-short") {
+    return {
+      field, type: "meaning", options: { format: type === "meaning-short" ? "short" : "default" }
+    }
+  } else if (type === "translated-sentence" || type === "url" || type === "link") {
+    return {
+      field,
+      type: type as "translated-sentence" || "url" || "link",
+      options: {}
+    }
+  } else {
+    throw new Error(`Invalid Anki field template type '${type}' encountered for field: '${field}'`)
+  }
 }

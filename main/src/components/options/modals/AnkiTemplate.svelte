@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { type NoteData, AnkiNoteBuilder } from "lib/anki";
+  import { type AnyFieldTemplate, type AnkiTemplate } from "lib/anki";
   import type { Config } from "lib/config";
-  import {
-    exampleMarkerData,
-    exampleTranslatedSentence,
-  } from "../exampleMarkerData";
+  import { exampleMarkerData } from "../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
   import type { Platform } from "@platform";
+  import AnkiTemplateField from "./AnkiTemplateField.svelte";
+  import { fieldTemplateToAnyFieldTemplate } from "lib/compat";
 
   export let platform: Platform;
   export let config: Config;
@@ -24,7 +23,7 @@
   let selectedNotetype: string;
   // fieldTemplates should not reload on note type change
   // so accidentally changing note type does not clear all data
-  let fieldTemplates: Record<string, string>;
+  let fieldTemplates: Record<string, AnyFieldTemplate>;
   let ankiTags: string;
 
   let prevDeck: string | null;
@@ -43,7 +42,7 @@
       selectedNotetype = template.notetype;
       fieldTemplates = {};
       for (const field of template.fields) {
-        fieldTemplates[field.name] = field.value;
+        fieldTemplates[field.name] = fieldTemplateToAnyFieldTemplate(field);
       }
       ankiTags = template.tags;
       prevDeck = template.deck;
@@ -65,35 +64,20 @@
   async function saveTemplate(
     deck: string,
     notetype: string,
-    fields: Record<string, string>,
+    fields: Record<string, AnyFieldTemplate>,
     tags: string
   ) {
-    const template: NoteData = {
+    const template: AnkiTemplate = {
       deck,
       notetype,
       fields: [],
       tags,
     };
     for (const fieldName of fieldNames) {
-      template.fields.push({
-        name: fieldName,
-        value: fields[fieldName] ?? "",
-      });
+      template.fields.push(fields[fieldName]);
     }
-    await config.set("anki.template", template);
-  }
-
-  function markerValue(field: string) {
-    let marker = fieldTemplates[field] as AnkiNoteBuilder.Marker;
-    if (marker === "translated-sentence") {
-      return exampleTranslatedSentence;
-    } else {
-      return AnkiNoteBuilder.markerValue(
-        fieldTemplates[field],
-        { platform, config },
-        exampleMarkerData
-      );
-    }
+    // config.set("anki.template", template);
+    await Promise.resolve(null);
   }
 
   loadSelected();
@@ -150,22 +134,8 @@
     />
   </div>
   <div class="fields group">
-    {#each fieldNames as field}
-      <div class="field-item">
-        <div class="field-name">{field}</div>
-        <div class="field-row">
-          {#if previewMode}
-            <input class="field-marker" disabled value={markerValue(field)} />
-          {:else}
-            <select class="field-marker" bind:value={fieldTemplates[field]}>
-              {#each AnkiNoteBuilder.markerKeys() as marker}
-                <option value={marker}>{AnkiNoteBuilder.MARKERS[marker]}</option
-                >
-              {/each}
-            </select>
-          {/if}
-        </div>
-      </div>
+    {#each fieldNames as fieldName}
+      <AnkiTemplateField fieldTemplate={fieldTemplates[fieldName]} />
     {/each}
   </div>
   <div class="tags-container group">
@@ -214,16 +184,6 @@
   .preview-toggle input {
     flex: 0 0 auto;
     width: initial;
-  }
-
-  .field-name {
-    font-size: 1em;
-  }
-  .field-marker {
-    width: 100%;
-    height: 1.6em;
-    font-size: 1em;
-    padding: 0px 2px;
   }
 
   .tags-container {

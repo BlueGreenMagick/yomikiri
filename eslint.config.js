@@ -36,7 +36,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-redundant-type-constituents': 'off',
-      'svelte/valid-compile': ['error', { 'ignoreWarnings': true }]
+      'svelte/valid-compile': ['error', { 'ignoreWarnings': true }],
+      // does not support 'generics' attribute
+      'no-undef': 'off'
     }
   },
   {
