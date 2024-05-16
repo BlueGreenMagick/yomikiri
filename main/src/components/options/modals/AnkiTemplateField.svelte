@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { ANKI_TEMPLATE_FIELD_TYPES, type AnyFieldTemplate } from "lib/anki";
+  import {
+    ANKI_TEMPLATE_FIELD_TYPES,
+    ankiTemplateFieldLabel,
+    type AnkiTemplateFieldType,
+    type AnyFieldTemplate,
+    type FieldTemplateOptionsMap,
+  } from "lib/anki";
   import AnkiTemplateFieldOptions from "./AnkiTemplateFieldOptions.svelte";
   import Select from "components/Select.svelte";
   import IconEye from "@icons/eye.svg";
@@ -10,18 +16,24 @@
   let previewShown = false;
   let optionsShown = false;
 
-  if (fieldTemplate.type === "word") {
-    fieldTemplate.options;
-  }
+  // fieldTemplates should not reload on type change
+  // so accidentally changing type does not clear all options data
+  let fieldTemplates = new Map<
+    string,
+    FieldTemplateOptionsMap[AnkiTemplateFieldType]
+  >();
+
+  const selectOptions = ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
+    const options = fieldTemplates.get(type);
+    const label = ankiTemplateFieldLabel(type, options);
+    return [type, label] as [AnkiTemplateFieldType, string];
+  });
 </script>
 
 <div class="field-item">
   <div class="field-name">{fieldTemplate.field}</div>
   <div class="field-row">
-    <Select
-      options={ANKI_TEMPLATE_FIELD_TYPES}
-      bind:selected={fieldTemplate.type}
-    />
+    <Select options={selectOptions} bind:selected={fieldTemplate.type} />
     <button
       class="icon"
       class:active={previewShown}

@@ -20,8 +20,6 @@ export interface FieldTemplateOptionsMap {
 
 export type AnkiTemplateFieldType = keyof FieldTemplateOptionsMap
 
-export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldType[] = ["", "word", "dict-form", "main-dict-form", "sentence", "translated-sentence", "meaning", "url", "link"]
-
 export interface FieldTemplate<T extends AnkiTemplateFieldType> {
   field: string;
   type: T;
@@ -59,6 +57,68 @@ export interface FieldSentenceOptions {
 export interface FieldMeaningOptions {
   format: "default" | "short"
 }
+
+
+export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldType[] = ["", "word", "dict-form", "main-dict-form", "sentence", "translated-sentence", "meaning", "url", "link"]
+
+const ANKI_TEMPLATE_FIELD_TYPE_LABELS: { [K in AnkiTemplateFieldType]: string } = {
+  "": "-",
+  "word": "word",
+  "dict-form": "dictionary form",
+  "main-dict-form": "main dictionary form",
+  "sentence": "sentence",
+  "translated-sentence": "translated-sentence",
+  "meaning": "meaning",
+  "url": "url",
+  "link": "link",
+}
+
+export function ankiTemplateFieldLabel<T extends AnkiTemplateFieldType>(type: T, options?: FieldTemplateOptionsMap[T]): string {
+  let label: string = ANKI_TEMPLATE_FIELD_TYPE_LABELS[type]
+  if (options === undefined) {
+    return label
+  }
+
+  if (type === "sentence") {
+    const opts = options as FieldTemplateOptionsMap["sentence"]
+    if (opts.cloze) {
+      label += " (cloze)"
+    }
+    if (opts.bold) {
+      label += " (bold)"
+    }
+  }
+  if (type === "meaning") {
+    const opts = options as FieldTemplateOptionsMap["meaning"]
+    if (opts.format === "short") {
+      label += " (short)"
+    }
+  }
+  if (type === "word" || type === "dict-form" || type === "sentence") {
+    const opts = options as FieldTemplateOptionsMap["word" | "dict-form" | "sentence"]
+    if (opts.form === "kanji") {
+      label += " (kanji)"
+    } else if (opts.form === "kana") {
+      label += " (kana)"
+    }
+  }
+  if (type === "main-dict-form") {
+    const opts = options as FieldTemplateOptionsMap["main-dict-form"]
+    if (opts.kana) {
+      label += " (kana)"
+    }
+  }
+  if (type === "word" || type === "dict-form" || type === "main-dict-form" || type === "sentence") {
+    const opts = options as FieldTemplateOptionsMap["word" | "dict-form" | "main-dict-form" | "sentence"]
+    if (opts.furigana === "furigana-anki") {
+      label += " (furigana-anki)"
+    } else if (opts.furigana === "furigana-html") {
+      label += " (furigana-html)"
+    }
+  }
+  return label
+}
+
 
 export function defaultFieldWordOptions(): FieldWordOptions {
   return {
