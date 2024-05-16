@@ -31,34 +31,36 @@
 </script>
 
 <div class="anki-template-field">
-  <div class="field-name">{fieldTemplate.field}</div>
-  <div class="field-row">
-    <Select options={selectOptions} bind:selected={fieldTemplate.type} />
-    <button
-      class="icon"
-      class:active={previewShown}
-      on:click={() => {
-        previewShown = !previewShown;
-        optionsShown = false;
-      }}
-    >
-      <IconEye />
-    </button>
-    <button
-      class="icon"
-      class:active={optionsShown}
-      on:click={() => {
-        optionsShown = !optionsShown;
-        previewShown = false;
-      }}
-    >
-      <IconOptions />
-    </button>
-  </div>
-  <div class="section" class:hidden={!previewShown && !optionsShown}>
-    <div class="field-preview" class:hidden={!previewShown}></div>
-    <div class="field-options" class:hidden={!optionsShown}>
-      <AnkiTemplateFieldOptions template={fieldTemplate} />
+  <div class="inner">
+    <div class="field-name">{fieldTemplate.field}</div>
+    <div class="field-row">
+      <Select options={selectOptions} bind:selected={fieldTemplate.type} />
+      <button
+        class="icon"
+        class:active={previewShown}
+        on:click={() => {
+          previewShown = !previewShown;
+          optionsShown = false;
+        }}
+      >
+        <IconEye />
+      </button>
+      <button
+        class="icon"
+        class:active={optionsShown}
+        on:click={() => {
+          optionsShown = !optionsShown;
+          previewShown = false;
+        }}
+      >
+        <IconOptions />
+      </button>
+    </div>
+    <div class="section" class:hidden={!previewShown && !optionsShown}>
+      <div class="field-preview" class:hidden={!previewShown}></div>
+      <div class="field-options" class:hidden={!optionsShown}>
+        <AnkiTemplateFieldOptions template={fieldTemplate} />
+      </div>
     </div>
   </div>
 </div>
@@ -66,16 +68,20 @@
 <style>
   .anki-template-field {
     background-color: white;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    padding: 6px 8px;
+    margin: 8px 0;
     border-radius: 8px;
+    /* disable margin collapsing */
+    contain: layout;
+  }
+
+  .inner {
+    margin: 8px;
   }
 
   .field-name {
     font-size: 1em;
     font-weight: bold;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
   }
 
   .hidden {
@@ -107,7 +113,7 @@
   }
 
   .section {
-    margin-top: 8px;
+    margin-top: 12px;
     padding-top: 4px;
     border-top: 1px solid var(--border);
   }
