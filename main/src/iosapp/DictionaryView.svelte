@@ -5,7 +5,7 @@
   import type { IosAppBackend, TokenizeResult } from "@platform/backend";
   import {
     AnkiNoteBuilder,
-    type LoadingNoteData,
+    type LoadingAnkiNote,
     type MarkerData,
   } from "lib/anki";
   import Utils from "lib/utils";
@@ -22,7 +22,7 @@
   export let searchText: string;
 
   let previewIsVisible = false;
-  let previewNoteData: LoadingNoteData;
+  let previewNoteData: LoadingAnkiNote;
 
   function onShowAnkiPreview(
     selectedEntry: SelectedEntryForAnki,
@@ -37,7 +37,7 @@
       pageTitle: "",
     };
 
-    let note: LoadingNoteData;
+    let note: LoadingAnkiNote;
     try {
       note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
     } catch (err) {

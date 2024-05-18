@@ -2,7 +2,11 @@
   import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import type { Backend, TokenizeResult } from "@platform/backend";
-  import { AnkiNoteBuilder, LoadingNoteData, type MarkerData } from "lib/anki";
+  import {
+    AnkiNoteBuilder,
+    type LoadingAnkiNote,
+    type MarkerData,
+  } from "lib/anki";
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
@@ -17,7 +21,7 @@
   export let ankiApi: AnkiApi;
 
   let previewIsVisible = false;
-  let previewNoteData: LoadingNoteData;
+  let previewNoteData: LoadingAnkiNote;
 
   function onShowAnkiPreview(
     selectedEntry: SelectedEntryForAnki,
@@ -32,7 +36,7 @@
       pageTitle: "",
     };
 
-    let note: LoadingNoteData;
+    let note: LoadingAnkiNote;
     try {
       note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
     } catch (err) {

@@ -1,5 +1,5 @@
 import { test, expect, describe } from "vitest";
-import { AnkiNoteBuilder, type MarkerContext, type MarkerData } from "./ankiNoteBuilder";
+import { AnkiNoteBuilder, type AnkiBuilderContext, type AnkiBuilderData } from "./ankiNoteBuilder";
 import { Entry, type EntryObject } from "../dicEntry";
 import type { TokenizeResult } from "@platform/backend";
 import { DesktopPlatform } from "platform/desktop";
@@ -154,12 +154,12 @@ const platform = new DesktopPlatform(new BrowserApi({ context: "page", handleCon
 platform.getConfig = () => { return Promise.resolve(defaultOptions) }
 const config = await Config.initialize(platform);
 
-const ctx: MarkerContext = {
+const ctx: AnkiBuilderContext = {
   platform,
   config
 }
 
-const data: MarkerData = {
+const data: AnkiBuilderData = {
   tokenized,
   entry: tokenized.entries[0],
   selectedMeaning: tokenized.entries[0].senses[2],
@@ -317,7 +317,7 @@ const escapeTokenizeResult: TokenizeResult = {
   ] as EntryObject[]).map(Entry.fromObject),
   grammars: [],
 };
-const escapedData: MarkerData = {
+const escapedData: AnkiBuilderData = {
   tokenized: escapeTokenizeResult,
   entry: escapeTokenizeResult.entries[0],
   selectedMeaning: escapeTokenizeResult.entries[0].senses[0],

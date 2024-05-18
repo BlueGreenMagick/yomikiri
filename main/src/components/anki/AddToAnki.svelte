@@ -3,7 +3,12 @@
   passed-in noteData object is modified live when user changes field value
 -->
 <script lang="ts">
-  import { type Field, LoadingNoteData } from "lib/anki";
+  import {
+    type Field,
+    type LoadingAnkiNote,
+    resolveAnkiNote,
+    waitForNoteToLoad,
+  } from "lib/anki";
   import NotePreviewField from "./NotePreviewField.svelte";
   import TextButton from "components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
@@ -15,7 +20,7 @@
   }
 
   export let ankiApi: AnkiApi;
-  export let noteData: LoadingNoteData;
+  export let noteData: LoadingAnkiNote;
   export let noteAdded: () => void;
   export let onBack: () => void;
 
@@ -36,9 +41,9 @@
   let allLoaded = false;
 
   async function onAdd() {
-    let resolvedNoteData = await LoadingNoteData.resolve(noteData);
+    let ankiNote = await resolveAnkiNote(noteData);
     try {
-      await ankiApi.addNote(resolvedNoteData);
+      await ankiApi.addNote(ankiNote);
 
       Toast.success("Note added to Anki");
       noteAdded();
@@ -53,10 +58,10 @@
   }
 
   /** muatates: `allLoaded` */
-  const loadNote = SingleQueued(async (_noteData: LoadingNoteData) => {
+  const loadNote = SingleQueued(async (_noteData: LoadingAnkiNote) => {
     allLoaded = false;
     errored = [];
-    await LoadingNoteData.loadComplete(_noteData);
+    await waitForNoteToLoad(_noteData);
     allLoaded = true;
   });
 

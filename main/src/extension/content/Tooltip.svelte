@@ -2,7 +2,7 @@
   import DicEntriesView from "components/dictionary/DicEntriesView.svelte";
   import {
     AnkiNoteBuilder,
-    type LoadingNoteData,
+    type LoadingAnkiNote,
     type MarkerData,
   } from "lib/anki";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
@@ -25,7 +25,7 @@
   export let onUpdateHeight: () => void = () => null;
 
   let previewIsVisible = false;
-  let previewNoteData: LoadingNoteData;
+  let previewNoteData: LoadingAnkiNote;
   let selectedTool: Tools | null = null;
 
   async function onBack() {
@@ -51,7 +51,7 @@
       pageTitle: document.title,
     };
 
-    let note: LoadingNoteData;
+    let note: LoadingAnkiNote;
     try {
       note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
     } catch (err) {

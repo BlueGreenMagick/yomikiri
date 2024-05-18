@@ -5,23 +5,15 @@ import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils from "../utils";
 
-export interface MarkerContext {
-  platform: Platform,
-  config: Config
+export interface LoadingAnkiNote {
+  deck: string;
+  notetype: string;
+  fields: (LoadingField | Field)[];
+  tags: string;
 }
 
-
-/** This data is saved in the history */
-export interface MarkerData {
-  tokenized: TokenizeResult;
-  entry: Entry;
-  selectedMeaning?: Sense | undefined;
-  /** NFC normalized string */
-  sentence: string;
-  /** window.location.href */
-  url: string;
-  /** document.title */
-  pageTitle: string;
+export interface AnkiNote extends LoadingAnkiNote {
+  fields: Field[];
 }
 
 export interface Field {
@@ -34,42 +26,50 @@ export interface LoadingField {
   value: string | Utils.PromiseWithProgress<string, string>;
 }
 
-export interface LoadingNoteData {
-  deck: string;
-  notetype: string;
-  fields: (LoadingField | Field)[];
-  tags: string;
+
+export interface AnkiBuilderContext {
+  platform: Platform,
+  config: Config
+}
+
+/** This data is saved in the history */
+export interface AnkiBuilderData {
+  tokenized: TokenizeResult;
+  entry: Entry;
+  selectedMeaning?: Sense | undefined;
+  /** NFC normalized string */
+  sentence: string;
+  /** window.location.href */
+  url: string;
+  /** document.title */
+  pageTitle: string;
 }
 
 
-export interface NoteData extends LoadingNoteData {
-  fields: Field[];
-}
-
-export namespace LoadingNoteData {
-  export async function loadComplete(note: LoadingNoteData): Promise<void> {
-    const promises = [];
-    for (const field of note.fields) {
-      if (field.value instanceof Promise) {
-        promises.push(field.value);
-      }
-    }
-    await Promise.allSettled(promises);
-  }
-
-  /** LoadingNoteData is in-place resolved to NoteData */
-  export async function resolve(note: LoadingNoteData): Promise<NoteData> {
-    for (const field of note.fields) {
-      field.value = await field.value;
-    }
-    return note as NoteData;
-  }
-}
-
-export type MarkerHandler = (
-  ctx: MarkerContext,
-  data: MarkerData
+export type AnkiFieldBuilder = (
+  ctx: AnkiBuilderContext,
+  data: AnkiBuilderData
 ) => string | Utils.PromiseWithProgress<string, string>;
+
+
+
+export async function waitForNoteToLoad(note: LoadingAnkiNote): Promise<void> {
+  const promises = [];
+  for (const field of note.fields) {
+    if (field.value instanceof Promise) {
+      promises.push(field.value);
+    }
+  }
+  await Promise.allSettled(promises);
+}
+
+/** LoadingNoteData is in-place resolved to NoteData */
+export async function resolveAnkiNote(note: LoadingAnkiNote): Promise<AnkiNote> {
+  for (const field of note.fields) {
+    field.value = await field.value;
+  }
+  return note as AnkiNote;
+}
 
 export namespace AnkiNoteBuilder {
   export const MARKERS = {
@@ -97,20 +97,20 @@ export namespace AnkiNoteBuilder {
   } as const;
   export type Marker = keyof typeof MARKERS;
 
-  const _markerHandlers: Record<string, MarkerHandler> = {};
+  const _markerHandlers: Record<string, AnkiFieldBuilder> = {};
 
   export function markerKeys(): Marker[] {
     return Object.keys(MARKERS) as Marker[];
   }
 
-  export function addMarker(marker: Marker, fn: MarkerHandler) {
+  export function addMarker(marker: Marker, fn: AnkiFieldBuilder) {
     _markerHandlers[marker] = fn;
   }
 
   export function markerValue(
     marker: string,
-    ctx: MarkerContext,
-    data: MarkerData
+    ctx: AnkiBuilderContext,
+    data: AnkiBuilderData
   ): string | Utils.PromiseWithProgress<string, string> {
     const handler = _markerHandlers[marker];
     if (handler === undefined) {
@@ -119,8 +119,8 @@ export namespace AnkiNoteBuilder {
     return handler(ctx, data);
   }
 
-  function cloneNote(n: NoteData): NoteData {
-    const note: NoteData = {
+  function cloneNote(n: AnkiNote): AnkiNote {
+    const note: AnkiNote = {
       ...n,
       fields: [],
     };
@@ -132,7 +132,7 @@ export namespace AnkiNoteBuilder {
     return note;
   }
 
-  export function buildNote(ctx: MarkerContext, data: MarkerData): LoadingNoteData {
+  export function buildNote(ctx: AnkiBuilderContext, data: AnkiBuilderData): LoadingAnkiNote {
     const template = ctx.config.get("anki.template");
     if (template === null) {
       throw new Error(
@@ -140,7 +140,7 @@ export namespace AnkiNoteBuilder {
       );
     }
 
-    const note = cloneNote(template) as LoadingNoteData;
+    const note = cloneNote(template) as LoadingAnkiNote;
     for (const field of note.fields) {
       const marker = field.value as string;
       field.value = markerValue(marker, ctx, data);
@@ -148,58 +148,58 @@ export namespace AnkiNoteBuilder {
     return note;
   }
 
-  addMarker("", (_ctx, _data: MarkerData) => {
+  addMarker("", (_ctx, _data: AnkiBuilderData) => {
     return "";
   });
 
-  addMarker("word", (_ctx, data: MarkerData) => {
+  addMarker("word", (_ctx, data: AnkiBuilderData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     return Utils.escapeHTML(token.text);
   });
-  addMarker("word-furigana", (_ctx, data: MarkerData) => {
+  addMarker("word-furigana", (_ctx, data: AnkiBuilderData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     const rubies = RubyString.generate(token.text, token.reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
-  addMarker("word-kana", (_ctx, data: MarkerData) => {
+  addMarker("word-kana", (_ctx, data: AnkiBuilderData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     return Utils.escapeHTML(token.reading);
   });
 
-  addMarker("dict", (_ctx, data: MarkerData) => {
+  addMarker("dict", (_ctx, data: AnkiBuilderData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     return Utils.escapeHTML(token.base);
   });
-  addMarker("dict-furigana", (_ctx, data: MarkerData) => {
+  addMarker("dict-furigana", (_ctx, data: AnkiBuilderData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx]
     const form = token.base;
     const reading = Entry.readingForForm(data.entry, form, false).reading;
     const rubies = RubyString.generate(form, reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
-  addMarker("dict-kana", (_ctx, data: MarkerData) => {
+  addMarker("dict-kana", (_ctx, data: AnkiBuilderData) => {
     const token = data.tokenized.tokens[data.tokenized.tokenIdx];
     const form = token.base;
     const kana = Entry.readingForForm(data.entry, form, false).reading;
     return Utils.escapeHTML(kana);
   });
 
-  addMarker("main-dict", (_ctx, data: MarkerData) => {
+  addMarker("main-dict", (_ctx, data: AnkiBuilderData) => {
     return Utils.escapeHTML(Entry.mainForm(data.entry));
   });
-  addMarker("main-dict-furigana", (_ctx, data: MarkerData) => {
+  addMarker("main-dict-furigana", (_ctx, data: AnkiBuilderData) => {
     const form = Entry.mainForm(data.entry);
     const reading = Entry.readingForForm(data.entry, form, false).reading;
     const rubies = RubyString.generate(form, reading);
     return Utils.escapeHTML(RubyString.toAnki(rubies));
   });
-  addMarker("main-dict-kana", (_ctx, data: MarkerData) => {
+  addMarker("main-dict-kana", (_ctx, data: AnkiBuilderData) => {
     const form = Entry.mainForm(data.entry);
     const kana = Entry.readingForForm(data.entry, form, false).reading;
     return Utils.escapeHTML(kana);
   });
 
-  addMarker("sentence", (_ctx, data: MarkerData) => {
+  addMarker("sentence", (_ctx, data: AnkiBuilderData) => {
     const tokenized = data.tokenized;
     const tokens = tokenized.tokens;
 
@@ -215,7 +215,7 @@ export namespace AnkiNoteBuilder {
     }
     return sentence.trim();
   });
-  addMarker("sentence-furigana", (_ctx, data: MarkerData) => {
+  addMarker("sentence-furigana", (_ctx, data: AnkiBuilderData) => {
     const tokenized = data.tokenized;
     const tokens = tokenized.tokens;
 
@@ -241,7 +241,7 @@ export namespace AnkiNoteBuilder {
     const sentence = before + mid + after;
     return sentence.trim();
   });
-  addMarker("sentence-kana", (_ctx, data: MarkerData) => {
+  addMarker("sentence-kana", (_ctx, data: AnkiBuilderData) => {
     let sentence = "";
     const tokenized = data.tokenized;
     const tokens = tokenized.tokens;
@@ -259,7 +259,7 @@ export namespace AnkiNoteBuilder {
   });
   addMarker(
     "translated-sentence",
-    (ctx, data: MarkerData): Utils.PromiseWithProgress<string, string> => {
+    (ctx, data: AnkiBuilderData): Utils.PromiseWithProgress<string, string> => {
       const translatePromise = ctx.platform.translate(data.sentence);
       const promise = Utils.PromiseWithProgress.fromPromise(
         translatePromise.then((result) => result.translated.trim()),
@@ -269,7 +269,7 @@ export namespace AnkiNoteBuilder {
     }
   );
 
-  addMarker("sentence-cloze", (_ctx, data: MarkerData) => {
+  addMarker("sentence-cloze", (_ctx, data: AnkiBuilderData) => {
     const tokenized = data.tokenized;
     const tokens = tokenized.tokens;
     let sentence = "";
@@ -285,7 +285,7 @@ export namespace AnkiNoteBuilder {
     }
     return sentence.trim();
   });
-  addMarker("sentence-cloze-furigana", (_ctx, data: MarkerData) => {
+  addMarker("sentence-cloze-furigana", (_ctx, data: AnkiBuilderData) => {
     const tokenized = data.tokenized;
     const tokens = tokenized.tokens;
     let rubies: RubyString = [];
@@ -311,14 +311,14 @@ export namespace AnkiNoteBuilder {
     return sentence.trim()
   });
 
-  addMarker("meaning", (ctx, data: MarkerData) => {
+  addMarker("meaning", (ctx, data: AnkiBuilderData) => {
     if (data.selectedMeaning === undefined) {
       return markerValue("meaning-full", ctx, data) as string;
     } else {
       return Utils.escapeHTML(data.selectedMeaning.meaning.join(", "));
     }
   });
-  addMarker("meaning-full", (_ctx, data: MarkerData) => {
+  addMarker("meaning-full", (_ctx, data: AnkiBuilderData) => {
     const lines = [];
     const grouped = Entry.groupSenses(data.entry);
     for (const group of grouped) {
@@ -329,7 +329,7 @@ export namespace AnkiNoteBuilder {
     }
     return lines.join("<br>");
   });
-  addMarker("meaning-short", (_ctx, data: MarkerData) => {
+  addMarker("meaning-short", (_ctx, data: AnkiBuilderData) => {
     if (data.selectedMeaning === undefined) {
       const meanings = [];
       const cnt = Math.min(3, data.entry.senses.length);
@@ -343,10 +343,10 @@ export namespace AnkiNoteBuilder {
     }
   });
 
-  addMarker("url", (_ctx, data: MarkerData) => {
+  addMarker("url", (_ctx, data: AnkiBuilderData) => {
     return data.url;
   });
-  addMarker("link", (_ctx, data: MarkerData) => {
+  addMarker("link", (_ctx, data: AnkiBuilderData) => {
     const el = document.createElement("a");
     el.textContent = data.pageTitle;
     el.href = data.url;
