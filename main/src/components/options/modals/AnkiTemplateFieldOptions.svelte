@@ -6,7 +6,6 @@
 </script>
 
 <div class="anki-template-field-options">
-  <div class="title">Options</div>
   {#if template.type === "word" || template.type === "dict-form" || template.type === "sentence"}
     <div class="row">
       <div class="label">Form</div>
@@ -29,6 +28,9 @@
       </div>
     </div>
   {/if}
+  {#if template.type === "" || template.type === "translated-sentence" || template.type === "url" || template.type === "link"}
+    <div class="gray">No configurable options</div>
+  {/if}
 </div>
 
 <style>
@@ -36,12 +38,6 @@
     display: flex;
     align-items: center;
     margin: 8px 0;
-  }
-
-  .title {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: var(--text-light);
   }
 
   .label {
@@ -54,5 +50,9 @@
 
   .option :global(select) {
     width: 100%;
+  }
+
+  .gray {
+    color: var(--text-light);
   }
 </style>
