@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type AnyFieldTemplate, type AnkiTemplate } from "lib/anki";
+  import { type AnyAnkiTemplateField, type AnkiTemplate } from "lib/anki";
   import type { Config } from "lib/config";
   import { exampleMarkerData } from "../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
@@ -21,7 +21,7 @@
   let selectedNotetype: string;
   // fieldTemplates should not reload on note type change
   // so accidentally changing note type does not clear all data
-  let fieldTemplates: Record<string, AnyFieldTemplate>;
+  let fieldTemplates: Record<string, AnyAnkiTemplateField>;
   let ankiTags: string;
 
   let prevDeck: string | null;
@@ -62,7 +62,7 @@
   async function saveTemplate(
     deck: string,
     notetype: string,
-    fields: Record<string, AnyFieldTemplate>,
+    fields: Record<string, AnyAnkiTemplateField>,
     tags: string
   ) {
     const template: AnkiTemplate = {

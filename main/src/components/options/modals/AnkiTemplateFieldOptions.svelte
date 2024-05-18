@@ -1,8 +1,8 @@
 <script lang="ts">
   import Select from "components/Select.svelte";
-  import type { AnyFieldTemplate } from "lib/anki";
+  import type { AnyAnkiTemplateField } from "lib/anki";
 
-  export let template: AnyFieldTemplate;
+  export let template: AnyAnkiTemplateField;
 </script>
 
 <div class="anki-template-field-options">

@@ -1,27 +1,24 @@
 <script lang="ts">
   import {
+    type AnkiTemplateFieldType,
+    type AnyAnkiTemplateField,
+    type AnyAnkiTemplateFieldOptions,
     ANKI_TEMPLATE_FIELD_TYPES,
     ankiTemplateFieldLabel,
-    type AnkiTemplateFieldType,
-    type AnyFieldTemplate,
-    type FieldTemplateOptionsMap,
   } from "lib/anki";
   import AnkiTemplateFieldOptions from "./AnkiTemplateFieldOptions.svelte";
   import Select from "components/Select.svelte";
   import IconEye from "@icons/eye.svg";
   import IconOptions from "@icons/options.svg";
 
-  export let fieldTemplate: AnyFieldTemplate;
+  export let fieldTemplate: AnyAnkiTemplateField;
 
   let previewShown = false;
   let optionsShown = false;
 
   // fieldTemplates should not reload on type change
   // so accidentally changing type does not clear all options data
-  let fieldTemplates = new Map<
-    string,
-    FieldTemplateOptionsMap[AnkiTemplateFieldType]
-  >();
+  let fieldTemplates = new Map<string, AnyAnkiTemplateFieldOptions>();
 
   const selectOptions = ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
     const options = fieldTemplates.get(type);

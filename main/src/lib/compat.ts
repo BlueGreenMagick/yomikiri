@@ -12,7 +12,7 @@ And if needed, value is transformed and moved from existing key.
 
 import type { Platform, TTSVoice } from "@platform";
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import { type AnyFieldTemplate, type Field, type FieldDictFormOptions, type FieldMainDictFormOptions, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
+import { type AnyAnkiTemplateField, type Field, type FieldDictFormOptions, type FieldMainDictFormOptions, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
 
 /** 
  * v0.1.0 - 0.1.3 
@@ -92,7 +92,7 @@ function getConfigVersion(configObject: StoredCompatConfiguration): number {
   return -1
 }
 
-export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyFieldTemplate {
+export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateField {
   const type = fld.value
   const field = fld.name
   if (type === "") {
