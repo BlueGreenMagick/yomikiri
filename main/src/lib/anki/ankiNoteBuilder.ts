@@ -4,6 +4,7 @@ import { Entry, type Sense } from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils from "../utils";
+import type { AnkiTemplateField, AnkiTemplateFieldOptionsMap, AnkiTemplateFieldType } from "./template";
 
 export interface LoadingAnkiNote {
   deck: string;
@@ -70,6 +71,47 @@ export async function resolveAnkiNote(note: LoadingAnkiNote): Promise<AnkiNote> 
   }
   return note as AnkiNote;
 }
+
+
+type FieldBuilder<T extends AnkiTemplateFieldType> = (opts: AnkiTemplateFieldOptionsMap[T], ctx: AnkiBuilderContext, data: AnkiBuilderData) => string | Utils.PromiseWithProgress<string, string>;
+
+const fieldBuilders: Partial<{ [K in AnkiTemplateFieldType]: FieldBuilder<K> }> = {}
+
+export function buildAnkiField<T extends AnkiTemplateFieldType>(ctx: AnkiBuilderContext, data: AnkiBuilderData, template: AnkiTemplateField<T>): LoadingField | Field {
+  const builder = fieldBuilders[template.type]
+  if (builder === undefined) {
+    throw new Error(`Invalid Anki template field type: '${template.type}'`);
+  }
+  const value = builder(template.options, ctx, data)
+
+  return {
+    name: template.field,
+    value
+  }
+}
+
+function setBuilder<T extends AnkiTemplateFieldType>(type: T, builder: (typeof fieldBuilders)[T]) {
+  fieldBuilders[type] = builder
+}
+
+setBuilder("word", (opts, _ctx, data) => {
+  const token = data.tokenized.tokens[data.tokenized.tokenIdx];
+  const text = Utils.escapeHTML(token.text)
+  const reading = Utils.escapeHTML(token.reading)
+
+  // TODO: opts.form config
+  if (opts.furigana === "furigana-anki") {
+    const rubied = RubyString.generate(text, reading)
+    return RubyString.toAnki(rubied)
+  } else if (opts.furigana === "furigana-html") {
+    const rubied = RubyString.generate(text, reading)
+    return RubyString.toHtml(rubied)
+  } else {
+    return text
+  }
+})
+
+
 
 export namespace AnkiNoteBuilder {
   export const MARKERS = {
