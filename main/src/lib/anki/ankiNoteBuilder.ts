@@ -1,9 +1,9 @@
-import type { TokenizeResult } from "@platform/backend";
+import type { Token, TokenizeResult } from "@platform/backend";
 import Config from "../config";
 import { Entry, type Sense } from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
-import Utils from "../utils";
+import Utils, { escapeHTML } from "../utils";
 import type { AnkiTemplateField, AnkiTemplateFieldOptionsMap, AnkiTemplateFieldType } from "./template";
 
 export interface LoadingAnkiNote {
@@ -73,7 +73,7 @@ export async function resolveAnkiNote(note: LoadingAnkiNote): Promise<AnkiNote> 
 }
 
 
-type FieldBuilder<T extends AnkiTemplateFieldType> = (opts: AnkiTemplateFieldOptionsMap[T], ctx: AnkiBuilderContext, data: AnkiBuilderData) => string | Utils.PromiseWithProgress<string, string>;
+type FieldBuilder<T extends AnkiTemplateFieldType> = (opts: AnkiTemplateFieldOptionsMap[T], data: AnkiBuilderData, ctx: AnkiBuilderContext) => string | Utils.PromiseWithProgress<string, string>;
 
 const fieldBuilders: Partial<{ [K in AnkiTemplateFieldType]: FieldBuilder<K> }> = {}
 
@@ -82,7 +82,7 @@ export function buildAnkiField<T extends AnkiTemplateFieldType>(ctx: AnkiBuilder
   if (builder === undefined) {
     throw new Error(`Invalid Anki template field type: '${template.type}'`);
   }
-  const value = builder(template.options, ctx, data)
+  const value = builder(template.options, data, ctx)
 
   return {
     name: template.field,
@@ -90,30 +90,152 @@ export function buildAnkiField<T extends AnkiTemplateFieldType>(ctx: AnkiBuilder
   }
 }
 
-function setBuilder<T extends AnkiTemplateFieldType>(type: T, builder: (typeof fieldBuilders)[T]) {
+function addBuilder<T extends AnkiTemplateFieldType>(type: T, builder: (typeof fieldBuilders)[T]) {
   fieldBuilders[type] = builder
 }
 
-setBuilder("word", (opts, _ctx, data) => {
+addBuilder("word", (opts, data) => {
   const token = data.tokenized.tokens[data.tokenized.tokenIdx];
-  const text = Utils.escapeHTML(token.text)
-  const reading = Utils.escapeHTML(token.reading)
 
-  // TODO: opts.form config
-  if (opts.style === "furigana-anki") {
-    const rubied = RubyString.generate(text, reading)
+  let word: string
+  let reading: string;
+  if (opts.form === "as-is") {
+    word = token.text
+    reading = token.reading
+  } else if (opts.form === "dict-form") {
+    word = token.base
+    reading = Entry.readingForForm(data.entry, word, false).reading
+  } else if (opts.form === "main-dict-form") {
+    word = Entry.mainForm(data.entry)
+    reading = Entry.readingForForm(data.entry, word, false).reading
+  } else {
+    throw new Error(`Invalid Anki template field option value for 'form': '${opts.form}'`)
+  }
+
+  word = escapeHTML(word)
+  reading = escapeHTML(reading)
+
+  if (opts.style === "basic") {
+    return word
+  }
+  else if (opts.style === "furigana-anki") {
+    const rubied = RubyString.generate(word, reading)
     return RubyString.toAnki(rubied)
   } else if (opts.style === "furigana-html") {
-    const rubied = RubyString.generate(text, reading)
+    const rubied = RubyString.generate(word, reading)
     return RubyString.toHtml(rubied)
   } else if (opts.style === "kana-only") {
     return reading
   } else {
-    return text
+    throw new Error(`Invalid Anki template field option value for 'style': '${opts.style}`)
   }
 })
 
+addBuilder("meaning", (opts, data) => {
+  if (opts.format === "default") {
+    const lines = [];
+    const grouped = Entry.groupSenses(data.entry);
+    for (const group of grouped) {
+      for (const meaning of group.senses) {
+        const meaningLine = Utils.escapeHTML(meaning.meaning.join(", "));
+        lines.push(`<span class="yk-meaning">${meaningLine}</span>`);
+      }
+    }
+    return lines.join("<br>");
+  } else if (opts.format === "short") {
+    if (data.selectedMeaning === undefined) {
+      const meanings = [];
+      const cnt = Math.min(3, data.entry.senses.length);
+      for (let i = 0; i < cnt; i++) {
+        meanings.push(data.entry.senses[i].meaning[0]);
+      }
+      return escapeHTML(meanings.join("; "));
+    } else {
+      const raw = data.selectedMeaning.meaning.slice(0, 2).join(", ");
+      return escapeHTML(raw);
+    }
+  } else {
+    throw new Error(`Invalid Anki template field option value for 'format': '${opts.format}'`)
+  }
+})
 
+addBuilder("sentence", (opts, data) => {
+  const tokenized = data.tokenized;
+  const tokens = tokenized.tokens;
+  const wordToken = tokens[tokenized.tokenIdx]
+  const optStyle = opts.style
+  const optWord = opts.word
+
+  let rubiesToString: (ruby: RubyString) => string
+  if (optStyle === "furigana-html") {
+    rubiesToString = RubyString.toHtml
+  } else {
+    rubiesToString = RubyString.toAnki
+  }
+
+  let getText: (token: Token) => RubyString
+  if (optStyle === "basic") {
+    getText = (token) => RubyString.generate(token.text)
+  } else if (optStyle === "furigana-anki" || optStyle === "furigana-html") {
+    getText = (token) => RubyString.generate(token.text, token.reading)
+  } else if (optStyle === "kana-only") {
+    getText = (token) => RubyString.generate(token.reading)
+  } else {
+    throw new Error(`Invalid Anki template field option value for 'style': '${optStyle}`)
+  }
+
+  let wrapWord: (word: string) => string
+  if (optWord === "none") {
+    wrapWord = (word) => word
+  } else if (optWord === "bold") {
+    wrapWord = (word) => `<b>${word}</b>`
+  } else if (optWord === "cloze") {
+    wrapWord = (word) => `{{c1::${word}}}`
+  } else if (optWord === "span") {
+    wrapWord = (word) => `<span class="yomi-word">${word}</span>`
+  } else {
+    throw new Error(`Invalid Anki template field option value for 'word': '${optWord}`)
+  }
+
+  let rubies: RubyString = []
+  for (let i = 0; i < tokenized.tokenIdx; i++) {
+    rubies.push(...getText(tokens[i]))
+  }
+  const pre = Utils.escapeHTML(rubiesToString(rubies))
+
+  const tokenRuby = getText(wordToken)
+  const wordString = Utils.escapeHTML(rubiesToString(tokenRuby))
+  const mid = wrapWord(wordString)
+
+  rubies = []
+  for (let i = tokenized.tokenIdx + 1; i < tokens.length; i++) {
+    rubies.push(...getText(tokens[i]));
+  }
+  const suf = Utils.escapeHTML(rubiesToString(rubies))
+
+  const sentence = pre + mid + suf
+  return sentence.trim()
+})
+
+addBuilder("translated-sentence", (_opts, data, { platform }) => {
+  const translatePromise = platform.translate(data.sentence);
+  const promise = Utils.PromiseWithProgress.fromPromise(
+    translatePromise.then((result) => result.translated.trim()),
+    "Translating Sentence..."
+  );
+  return promise;
+})
+
+addBuilder("url", (_opts, data) => {
+  return data.url
+})
+
+addBuilder("link", (_opts, data) => {
+  const el = document.createElement("a");
+  el.textContent = data.pageTitle;
+  el.href = data.url;
+  return el.outerHTML;
+})
 
 export namespace AnkiNoteBuilder {
   export const MARKERS = {
@@ -158,7 +280,8 @@ export namespace AnkiNoteBuilder {
   ): string | Utils.PromiseWithProgress<string, string> {
     const handler = _markerHandlers[marker];
     if (handler === undefined) {
-      throw new Error(`Invalid marker in Anki note template: {{${marker}}}`);
+      throw new Error(`Invalid marker in Anki note template: {{ ${marker}}
+}`);
     }
     return handler(ctx, data);
   }
@@ -368,7 +491,7 @@ export namespace AnkiNoteBuilder {
     for (const group of grouped) {
       for (const meaning of group.senses) {
         const meaningLine = Utils.escapeHTML(meaning.meaning.join(", "));
-        lines.push(`<span class="yk-meaning">${meaningLine}</span>`);
+        lines.push(`< span class= "yk-meaning"> ${meaningLine} < /span>`);
       }
     }
     return lines.join("<br>");

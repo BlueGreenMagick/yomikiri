@@ -50,11 +50,11 @@ export namespace RubyString {
    * Assumes `text` to not contain any regex special characters.
    * (No JMDict entry forms contains regex special characters)
    */
-  export function generate(text: string, reading: string): RubyString {
+  export function generate(text: string, reading?: string): RubyString {
     if (text === "") {
       return [];
     }
-    if (reading === "" || reading === "*") {
+    if (reading === undefined || reading === "" || reading === "*") {
       return [{ base: text }];
     }
     const inKatakana = isKatakana(reading);
