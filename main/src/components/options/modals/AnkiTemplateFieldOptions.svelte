@@ -6,24 +6,35 @@
 </script>
 
 <div class="anki-template-field-options">
-  {#if template.type === "word" || template.type === "dict-form" || template.type === "sentence"}
+  {#if template.type === "word"}
     <div class="row">
       <div class="label">Form</div>
       <div class="option">
         <Select
           selected={template.options.form}
-          options={["default", "kanji", "kana"]}
+          options={["as-is", "dict-form", "main-dict-form"]}
         />
       </div>
     </div>
   {/if}
-  {#if template.type === "word" || template.type === "dict-form" || template.type === "main-dict-form" || template.type === "sentence"}
+  {#if template.type === "sentence"}
     <div class="row">
-      <div class="label">Furigana</div>
+      <div class="label">Style selected word</div>
       <div class="option">
         <Select
-          selected={template.options.furigana}
-          options={["none", "furigana-anki", "furigana-html"]}
+          selected={template.options.word}
+          options={["none", "cloze", "bold", "span"]}
+        />
+      </div>
+    </div>
+  {/if}
+  {#if template.type === "word" || template.type === "sentence"}
+    <div class="row">
+      <div class="label">Style</div>
+      <div class="option">
+        <Select
+          selected={template.options.style}
+          options={["basic", "furigana-anki", "furigana-html", "kana-only"]}
         />
       </div>
     </div>

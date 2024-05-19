@@ -7,15 +7,13 @@ export interface AnkiTemplate {
 }
 
 export interface AnkiTemplateFieldOptionsMap {
-  "": Record<string, never>
-  "word": FieldWordOptions
-  "dict-form": FieldDictFormOptions
-  "main-dict-form": FieldMainDictFormOptions
-  "sentence": FieldSentenceOptions,
-  "translated-sentence": Record<string, never>,
-  "meaning": FieldMeaningOptions,
-  "url": Record<string, never>,
-  "link": Record<string, never>
+  "": Record<string, never>;
+  "word": FieldWordOptions;
+  "sentence": FieldSentenceOptions;
+  "translated-sentence": Record<string, never>;
+  "meaning": FieldMeaningOptions;
+  "url": Record<string, never>;
+  "link": Record<string, never>;
 }
 
 export type AnkiTemplateFieldType = keyof AnkiTemplateFieldOptionsMap
@@ -26,7 +24,7 @@ export interface AnkiTemplateField<T extends AnkiTemplateFieldType> {
   options: AnkiTemplateFieldOptionsMap[T]
 }
 
-// AnkiTemplateField<"word"> | AnkiTemplateField<"dict-form"> | ...
+// AnkiTemplateField<"word"> | AnkiTemplateField<"sentence"> | ...
 export type AnyAnkiTemplateField = {
   [K in keyof AnkiTemplateFieldOptionsMap]: AnkiTemplateField<K>;
 }[keyof AnkiTemplateFieldOptionsMap];
@@ -35,39 +33,24 @@ export type AnyAnkiTemplateField = {
 export type AnyAnkiTemplateFieldOptions = AnkiTemplateFieldOptionsMap[AnkiTemplateFieldType]
 
 export interface FieldWordOptions {
-  form: "default" | "kanji" | "kana"
-  furigana: "none" | "furigana-anki" | "furigana-html"
-}
-
-export interface FieldDictFormOptions {
-  form: "default" | "kanji" | "kana"
-  furigana: "none" | "furigana-anki" | "furigana-html"
-}
-
-export interface FieldMainDictFormOptions {
-  furigana: "none" | "furigana-anki" | "furigana-html"
-  kana: boolean
+  form: "as-is" | "dict-form" | "main-dict-form"
+  style: "basic" | "furigana-anki" | "furigana-html" | "kana-only"
 }
 
 export interface FieldSentenceOptions {
-  form: "default" | "kanji" | "kana"
-  furigana: "none" | "furigana-anki" | "furigana-html"
-  bold: boolean
-  cloze: boolean
+  word: "none" | "cloze" | "bold" | "span"
+  style: "basic" | "furigana-anki" | "furigana-html" | "kana-only"
 }
 
 export interface FieldMeaningOptions {
   format: "default" | "short"
 }
 
-
-export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldType[] = ["", "word", "dict-form", "main-dict-form", "sentence", "translated-sentence", "meaning", "url", "link"]
+export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldType[] = ["", "word", "sentence", "translated-sentence", "meaning", "url", "link"]
 
 const ANKI_TEMPLATE_FIELD_TYPE_LABELS: { [K in AnkiTemplateFieldType]: string } = {
   "": "-",
   "word": "word",
-  "dict-form": "dictionary form",
-  "main-dict-form": "main dictionary form",
   "sentence": "sentence",
   "translated-sentence": "translated-sentence",
   "meaning": "meaning",
@@ -83,11 +66,12 @@ export function ankiTemplateFieldLabel<T extends AnkiTemplateFieldType>(type: T,
 
   if (type === "sentence") {
     const opts = options as AnkiTemplateFieldOptionsMap["sentence"]
-    if (opts.cloze) {
-      label += " (cloze)"
-    }
-    if (opts.bold) {
+    if (opts.word === "bold") {
       label += " (bold)"
+    } else if (opts.word === "cloze") {
+      label += " (cloze)"
+    } else if (opts.word === "span") {
+      label += " (span)"
     }
   }
   if (type === "meaning") {
@@ -96,26 +80,22 @@ export function ankiTemplateFieldLabel<T extends AnkiTemplateFieldType>(type: T,
       label += " (short)"
     }
   }
-  if (type === "word" || type === "dict-form" || type === "sentence") {
-    const opts = options as AnkiTemplateFieldOptionsMap["word" | "dict-form" | "sentence"]
-    if (opts.form === "kanji") {
-      label += " (kanji)"
-    } else if (opts.form === "kana") {
-      label += " (kana)"
+  if (type === "word") {
+    const opts = options as AnkiTemplateFieldOptionsMap["word"]
+    if (opts.form === "dict-form") {
+      label += " (dict)"
+    } else if (opts.form === "main-dict-form") {
+      label += " (main dict)"
     }
   }
-  if (type === "main-dict-form") {
-    const opts = options as AnkiTemplateFieldOptionsMap["main-dict-form"]
-    if (opts.kana) {
-      label += " (kana)"
-    }
-  }
-  if (type === "word" || type === "dict-form" || type === "main-dict-form" || type === "sentence") {
-    const opts = options as AnkiTemplateFieldOptionsMap["word" | "dict-form" | "main-dict-form" | "sentence"]
-    if (opts.furigana === "furigana-anki") {
+  if (type === "word" || type === "sentence") {
+    const opts = options as AnkiTemplateFieldOptionsMap["word" | "sentence"]
+    if (opts.style === "furigana-anki") {
       label += " (furigana-anki)"
-    } else if (opts.furigana === "furigana-html") {
+    } else if (opts.style === "furigana-html") {
       label += " (furigana-html)"
+    } else if (opts.style === "kana-only") {
+      label += " (kana)"
     }
   }
   return label
@@ -124,31 +104,15 @@ export function ankiTemplateFieldLabel<T extends AnkiTemplateFieldType>(type: T,
 
 export function defaultFieldWordOptions(): FieldWordOptions {
   return {
-    form: "default",
-    furigana: "none"
-  }
-}
-
-export function defaultFieldDictionaryFormOptions(): FieldDictFormOptions {
-  return {
-    form: "default",
-    furigana: "none"
-  }
-}
-
-export function defaultFieldMainDictionaryFormOptions(): FieldMainDictFormOptions {
-  return {
-    furigana: "none",
-    kana: false
+    form: "as-is",
+    style: "basic"
   }
 }
 
 export function defaultFieldSentenceOptions(): FieldSentenceOptions {
   return {
-    form: "default",
-    furigana: "none",
-    bold: true,
-    cloze: false
+    style: "basic",
+    word: "none",
   }
 }
 

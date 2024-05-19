@@ -12,7 +12,7 @@ And if needed, value is transformed and moved from existing key.
 
 import type { Platform, TTSVoice } from "@platform";
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import { type AnyAnkiTemplateField, type Field, type FieldDictFormOptions, type FieldMainDictFormOptions, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
+import { type AnyAnkiTemplateField, type Field, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
 
 /** 
  * v0.1.0 - 0.1.3 
@@ -101,32 +101,35 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
       type,
       options: {}
     }
-  } else if (type === "word" || type === "word-furigana" || type === "word-kana") {
+  } else if (
+    ["word", "word-furigana", "word-kana"].includes(type)) {
     const options: FieldWordOptions = {
-      furigana: type === "word-furigana" ? "furigana-anki" : "none",
-      form: type === "word-kana" ? "kana" : "default"
+      form: "as-is",
+      style: type === "word-furigana" ? "furigana-anki"
+        : type === "word-kana" ? "kana-only"
+          : "basic",
     }
     return {
       field, type: "word", options
     }
   } else if (type === "dict" || type === "dict-furigana" || type === "dict-kana") {
-    const options: FieldDictFormOptions = {
-      furigana: type === "dict-furigana" ? "furigana-anki" : "none",
-      form: type === "dict-kana" ? "kana" : "default"
+    const options: FieldWordOptions = {
+      form: "dict-form",
+      style: type === "dict-furigana" ? "furigana-anki"
+        : type === "dict-kana" ? "kana-only"
+          : "basic",
     }
-    return {
-      field,
-      type: "dict-form",
-      options
-    }
+    return { field, type: "word", options }
   } else if (type === "main-dict" || type === "main-dict-furigana" || type === "main-dict-kana") {
-    const options: FieldMainDictFormOptions = {
-      furigana: type === "main-dict-furigana" ? "furigana-anki" : "none",
-      kana: type === "main-dict-kana"
+    const options: FieldWordOptions = {
+      form: "main-dict-form",
+      style: type === "main-dict-furigana" ? "furigana-anki"
+        : type === "main-dict-kana" ? "kana-only"
+          : "basic",
     }
     return {
       field,
-      type: "main-dict-form",
+      type: "word",
       options: options
     }
   } else if (
@@ -138,10 +141,8 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
   ) {
     const isCloze = type === "sentence-cloze" || type === "sentence-cloze-furigana"
     const options: FieldSentenceOptions = {
-      form: type === "sentence-kana" ? "kana" : "default",
-      furigana: type === "sentence-furigana" || type === "sentence-cloze-furigana" ? "furigana-anki" : "none",
-      cloze: isCloze,
-      bold: !isCloze
+      style: (type === "sentence-furigana" || type === "sentence-cloze-furigana") ? "furigana-anki" : type === "sentence-kana" ? "kana-only" : "basic",
+      word: isCloze ? "cloze" : "bold"
     }
     return {
       field,

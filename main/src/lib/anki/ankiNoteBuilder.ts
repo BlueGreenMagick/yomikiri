@@ -100,12 +100,14 @@ setBuilder("word", (opts, _ctx, data) => {
   const reading = Utils.escapeHTML(token.reading)
 
   // TODO: opts.form config
-  if (opts.furigana === "furigana-anki") {
+  if (opts.style === "furigana-anki") {
     const rubied = RubyString.generate(text, reading)
     return RubyString.toAnki(rubied)
-  } else if (opts.furigana === "furigana-html") {
+  } else if (opts.style === "furigana-html") {
     const rubied = RubyString.generate(text, reading)
     return RubyString.toHtml(rubied)
+  } else if (opts.style === "kana-only") {
+    return reading
   } else {
     return text
   }
