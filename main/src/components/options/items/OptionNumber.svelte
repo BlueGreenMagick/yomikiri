@@ -1,24 +1,21 @@
 <script lang="ts">
-  import type { ConfigKeysOfType, Config } from "lib/config";
   import OptionBase from "./OptionBase.svelte";
 
-  export let config: Config;
-  export let key: ConfigKeysOfType<number>;
+  export let value: number;
   export let title: string;
   export let min: number | null = null;
   export let max: number | null = null;
   export let disabled = false;
 
-  let value: number = config.get(key);
-
-  async function onChange(_: unknown) {
-    if (min !== null && value < min) {
-      value = min;
+  function onChange(ev: Event) {
+    const element = ev.currentTarget as HTMLInputElement;
+    let val = element.valueAsNumber;
+    if (min !== null && val < min) {
+      val = min;
+    } else if (max !== null && val > max) {
+      val = max;
     }
-    if (max !== null && value > max) {
-      value = max;
-    }
-    await config.set(key, value);
+    value = val;
   }
 
   function onKeydown(ev: KeyboardEvent) {
@@ -32,7 +29,7 @@
   <OptionBase {title} {disabled}>
     <input
       type="number"
-      bind:value
+      {value}
       {min}
       {max}
       {disabled}

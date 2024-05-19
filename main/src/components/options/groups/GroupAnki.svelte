@@ -16,6 +16,8 @@
   export let ankiApi: AnkiOptionsApi;
   export let config: Config;
 
+  const ankiConnectPortConfig = config.store("anki.connect_port");
+
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
   let useAnkiDescription: "off" | "loading" | "success" | "error" = "off";
@@ -97,8 +99,7 @@
 
   {#if Platform.IS_DESKTOP}
     <OptionNumber
-      {config}
-      key="anki.connect_port"
+      bind:value={$ankiConnectPortConfig}
       title="AnkiConnect port number"
     >
       This is the AnkiConnect config `webBindPort`

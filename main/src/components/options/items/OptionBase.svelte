@@ -21,7 +21,7 @@
     justify-content: center;
     align-items: center;
     padding: 6px 0px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--border);
     min-height: 2.5em;
   }
   .option-item.disabled .left {
@@ -46,7 +46,7 @@
     font-size: 1em;
   }
   .description {
-    color: gray;
+    color: var(--text-light);
     font-size: 0.8em;
   }
 </style>

@@ -3,6 +3,7 @@ import { Platform } from "@platform";
 import { VERSION } from "../common";
 import type { TTSVoice } from "../platform/common";
 import { migrateIfNeeded } from "./compat";
+import { writable, type Writable } from "svelte/store";
 
 export const CONFIG_VERSION = 2
 
@@ -47,6 +48,12 @@ export type ConfigKeysOfType<T> = {
 
 
 const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
+
+export interface WritableConfig<T> extends Writable<T> {
+  /** Deletes the saved config */
+  delete: () => void
+}
+
 
 export class Config {
   initialized = false
@@ -100,7 +107,7 @@ export class Config {
    */
   async set<K extends keyof Configuration>(
     key: K,
-    value: Configuration[K],
+    value: Configuration[K] | undefined,
     save = true
   ): Promise<void> {
     if (value === undefined) {
@@ -197,6 +204,42 @@ export class Config {
   async updateVersion() {
     if (this.storage.version !== defaultOptions.version) {
       await this.set("version", defaultOptions.version)
+    }
+  }
+
+  store<K extends keyof Configuration>(key: K): WritableConfig<Configuration[K]> {
+    let stored = this.get(key)
+    const { subscribe, set } = writable<Configuration[K]>(stored)
+
+    const setValue = (val: Configuration[K]) => {
+      stored = val
+      void this.set(key, stored)
+      set(stored)
+    }
+    const changeHandler = () => {
+      const val = this.get(key)
+      setValue(val)
+    }
+
+    this.subscribe(changeHandler)
+
+    return {
+      subscribe: (run, invalidate) => {
+        const unsubscribe = subscribe(run, invalidate)
+        return () => {
+          this.removeSubscriber(changeHandler)
+          unsubscribe()
+        }
+      },
+      set: setValue,
+      update: (updater) => {
+        setValue(updater(stored))
+      },
+      delete: () => {
+        void this.set(key, undefined);
+        stored = this.get(key)
+        set(stored)
+      }
     }
   }
 }

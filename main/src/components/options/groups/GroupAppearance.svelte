@@ -5,16 +5,12 @@
   import type Config from "lib/config";
 
   export let config: Config;
+
+  const fontSizeConfig = config.store("general.font_size");
 </script>
 
 <GroupedOptions title="Appearance">
-  <OptionNumber
-    {config}
-    key="general.font_size"
-    title="Font size"
-    min={9}
-    max={24}
-  >
+  <OptionNumber bind:value={$fontSizeConfig} title="Font size" min={9} max={24}>
     Text size in pixels
   </OptionNumber>
   <OptionText {config} key="general.font" title="Japanese Font" wide={true}>
