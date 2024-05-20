@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Platform } from "@platform";
   import type Config from "lib/config";
-  import Modal from "../Modal.svelte";
+  import Modal from "../../Modal.svelte";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
   import type { AnkiOptionsApi } from "@platform/anki";
 

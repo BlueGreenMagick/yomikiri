@@ -4,7 +4,7 @@
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
-  import ModalAnkiTemplate from "../modals/ModalAnkiTemplate.svelte";
+  import ModalAnkiTemplate from "../modals/ankiTemplate/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "lib/utils";
   import type Config from "lib/config";

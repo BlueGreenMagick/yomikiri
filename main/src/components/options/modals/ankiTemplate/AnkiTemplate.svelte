@@ -1,7 +1,7 @@
 <script lang="ts">
   import { type AnyAnkiTemplateField, type AnkiTemplate } from "lib/anki";
   import type { Config } from "lib/config";
-  import { exampleMarkerData } from "../exampleMarkerData";
+  import { exampleMarkerData } from "../../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
   import type { Platform } from "@platform";
   import AnkiTemplateField from "./AnkiTemplateField.svelte";
