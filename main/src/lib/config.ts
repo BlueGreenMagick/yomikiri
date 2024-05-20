@@ -72,19 +72,15 @@ export class Config {
 
     platform.subscribeConfig((cfg) => {
       this.storage = cfg
-      for (const subscriber of this.subscribers) {
-        try {
-          subscriber()
-        } catch (err) {
-          console.error("Uncaught config subscriber error:", err)
-        }
-      }
+      this.runSubscribers()
     });
 
     this.subscribe(() => {
       this.updateStyling()
     })
+
     this.initialized = true
+    this.runSubscribers()
   }
 
   static async initialize(platform: Platform): Promise<Config> {
@@ -113,14 +109,16 @@ export class Config {
     value: Configuration[K] | undefined,
     save = true
   ): Promise<void> {
+    if (value === this.storage[key]) return;
+
     if (value === undefined) {
       /* eslint-disable-next-line */
       delete this.storage[key];
-    } else if (value === this.storage[key]) {
-      save = false
     } else {
       this.storage[key] = value;
     }
+
+    this.runSubscribers()
     if (save) {
       await this.save()
     }
@@ -155,6 +153,16 @@ export class Config {
       return true
     }
     return false
+  }
+
+  private runSubscribers(): void {
+    for (const subscriber of this.subscribers) {
+      try {
+        subscriber()
+      } catch (err) {
+        console.error("Uncaught config subscriber error:", err)
+      }
+    }
   }
 
   /** 
