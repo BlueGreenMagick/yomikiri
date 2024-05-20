@@ -17,6 +17,8 @@
   export let config: Config;
 
   const ankiConnectPortConfig = config.store("anki.connect_port");
+  const ankiEnabledConfig = config.store("anki.enabled");
+  const ankiIosAutoRedirectConfig = config.store("anki.ios_auto_redirect");
 
   let ankiEnabled: boolean;
   let ankiDisabled: boolean;
@@ -68,12 +70,7 @@
 </script>
 
 <GroupedOptions title="Anki">
-  <OptionToggle
-    {config}
-    key="anki.enabled"
-    title="Use Anki"
-    bind:value={ankiEnabled}
-  >
+  <OptionToggle bind:value={$ankiEnabledConfig} title="Use Anki">
     {#if useAnkiDescription === "loading"}
       Connecting to Anki...
     {:else if useAnkiDescription === "success"}
@@ -119,9 +116,8 @@
 
   {#if Platform.IS_IOSAPP}
     <OptionToggle
-      {config}
+      bind:value={$ankiIosAutoRedirectConfig}
       title="Reopen Safari after adding Anki note"
-      key="anki.ios_auto_redirect"
     >
       If disabled, you can manually return to Safari by clicking
       <span class="no-break">{"'\u{000025C0}\u{0000FE0E}Safari'"}</span>
