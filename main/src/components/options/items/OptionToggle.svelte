@@ -8,14 +8,7 @@
 
 <div>
   <OptionBase {title}>
-    <ToggleSwitch
-      bind:active={value}
-      height={18}
-      on:click={() => {
-        value = !value;
-      }}
-      on:click
-    />
+    <ToggleSwitch bind:active={value} height={18} on:click />
     <slot slot="description" />
   </OptionBase>
 </div>

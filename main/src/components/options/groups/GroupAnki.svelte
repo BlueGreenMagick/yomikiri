@@ -20,8 +20,6 @@
   const ankiEnabledConfig = config.store("anki.enabled");
   const ankiIosAutoRedirectConfig = config.store("anki.ios_auto_redirect");
 
-  let ankiEnabled: boolean;
-  let ankiDisabled: boolean;
   let useAnkiDescription: "off" | "loading" | "success" | "error" = "off";
   let useAnkiError = "";
   let ankiTemplateDescriptionError = false;
@@ -65,8 +63,7 @@
     }
   });
 
-  $: ankiDisabled = !ankiEnabled;
-  $: void checkAnkiConnection(ankiEnabled);
+  $: void checkAnkiConnection($ankiEnabledConfig);
 </script>
 
 <GroupedOptions title="Anki">
@@ -106,7 +103,7 @@
   <OptionClick
     title="Configure Anki template"
     buttonText="Configure"
-    bind:disabled={ankiDisabled}
+    disabled={!$ankiEnabledConfig}
     onClick={openAnkiTemplateModal}
   >
     <span class:warning={ankiTemplateDescriptionError}>
