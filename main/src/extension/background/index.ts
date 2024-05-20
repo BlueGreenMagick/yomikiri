@@ -25,7 +25,7 @@ const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
   const config = await lazyConfig.get()
-  config.subscribe(() => { void updateStateEnabledIcon(config) });
+  updateStateEnabledIcon(config)
 
   await updateTTSAvailability(platform, config);
 }
@@ -54,10 +54,12 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
   return await platform.translate(req);
 }
 
-async function updateStateEnabledIcon(config: Config) {
-  const enabled = config.get("state.enabled");
-  const icon = enabled ? DefaultIcon : GreyIcon;
-  await browserApi.setActionIcon(icon)
+function updateStateEnabledIcon(config: Config) {
+  const enabledStore = config.store("state.enabled")
+  enabledStore.subscribe((enabled) => {
+    const icon = enabled ? DefaultIcon : GreyIcon
+    void browserApi.setActionIcon(icon);
+  })
 }
 
 async function tts(req: TTSRequest): Promise<void> {

@@ -24,7 +24,7 @@ const _initialized = initialize()
 
 async function initialize() {
   const config = await lazyConfig.get();
-  config.subscribe(() => { checkStateEnabled(config) });
+  handleStateEnabledChange(config)
   document.addEventListener("mousemove", (ev) => { onMouseMove(ev, config) })
   document.addEventListener("click", (ev) => { onClick(ev, config) })
 }
@@ -120,12 +120,14 @@ function onClick(ev: MouseEvent, config: Config) {
   }
 }
 
-function checkStateEnabled(config: Config) {
-  const value = config.get("state.enabled");
-  if (!value) {
-    lazyTooltip.getIfInitialized()?.hide();
-    highlighter.unhighlight();
-  }
+function handleStateEnabledChange(config: Config) {
+  const enabledState = config.store("state.enabled")
+  enabledState.subscribe((enabled) => {
+    if (!enabled) {
+      lazyTooltip.getIfInitialized()?.hide();
+      highlighter.unhighlight();
+    }
+  })
 }
 
 exposeGlobals({
