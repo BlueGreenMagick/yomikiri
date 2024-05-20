@@ -1,12 +1,11 @@
 <script lang="ts">
-  import Select from "components/Select.svelte";
   import OptionSelect from "components/options/items/OptionSelect.svelte";
   import type { AnyAnkiTemplateField } from "lib/anki";
 
   export let template: AnyAnkiTemplateField;
 </script>
 
-<div class="anki-template-field-options">
+<div class="anki-template-field-options grouped">
   {#if template.type === "word"}
     <OptionSelect
       bind:selected={template.options.form}
