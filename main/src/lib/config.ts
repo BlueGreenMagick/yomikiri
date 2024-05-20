@@ -116,6 +116,8 @@ export class Config {
     if (value === undefined) {
       /* eslint-disable-next-line */
       delete this.storage[key];
+    } else if (value === this.storage[key]) {
+      save = false
     } else {
       this.storage[key] = value;
     }
