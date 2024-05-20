@@ -39,6 +39,7 @@ export const defaultOptions: Configuration = {
   "config_version": CONFIG_VERSION
 };
 
+export type ConfigKey = keyof Configuration
 export type StoredConfiguration = Partial<Configuration>
 
 /** Get union of config keys that extends type T. */
@@ -56,16 +57,18 @@ export interface WritableConfig<T> extends Writable<T> {
 
 
 export class Config {
+  platform: Platform
+  private storage: StoredConfiguration
+  private stores: Map<ConfigKey, WritableConfig<Configuration[ConfigKey]>>
+
   initialized = false
   subscribers: (() => void)[] = []
   documents: WeakRef<Document>[] = []
 
-  private storage: StoredConfiguration
-  platform: Platform
-
   private constructor(platform: Platform, storage: StoredConfiguration) {
     this.platform = platform
     this.storage = storage
+    this.stores = new Map()
 
     platform.subscribeConfig((cfg) => {
       this.storage = cfg
@@ -207,7 +210,18 @@ export class Config {
     }
   }
 
-  store<K extends keyof Configuration>(key: K): WritableConfig<Configuration[K]> {
+  store<K extends ConfigKey>(key: K): WritableConfig<Configuration[K]> {
+    const existing = this.stores.get(key) as WritableConfig<Configuration[K]>
+    if (existing !== undefined) {
+      return existing
+    }
+
+    const store = this.createStore(key)
+    this.stores.set(key, store)
+    return store
+  }
+
+  private createStore<K extends keyof Configuration>(key: K): WritableConfig<Configuration[K]> {
     let stored = this.get(key)
     const { subscribe, set } = writable<Configuration[K]>(stored)
 
