@@ -22,21 +22,27 @@
 
   // fieldTemplates should not reload on type change
   // so accidentally changing type does not clear all options data
-  let fieldTemplates = new Map<string, AnyAnkiTemplateFieldOptions>();
+  let fieldTemplates = new Map<string, AnyAnkiTemplateField>();
 
   function generateFieldOptions(_: unknown): [AnkiTemplateFieldType, string][] {
     return ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
-      const options = fieldTemplates.get(type);
-      const label = ankiTemplateFieldLabel(type, options);
+      const template = fieldTemplates.get(type);
+      const label = ankiTemplateFieldLabel(type, template?.options);
       return [type, label] as [AnkiTemplateFieldType, string];
     });
   }
 
   function onTypeChange(_ev: unknown) {
-    fieldTemplate = newAnkiTemplateField(fieldTemplate.field, type);
+    const cached = fieldTemplates.get(type);
+    if (cached === undefined) {
+      fieldTemplate = newAnkiTemplateField(fieldTemplate.field, type);
+    } else {
+      fieldTemplate = cached;
+    }
   }
 
   function onFieldTemplateChange(_: unknown) {
+    fieldTemplates.set(type, fieldTemplate);
     type = fieldTemplate.type;
   }
 
