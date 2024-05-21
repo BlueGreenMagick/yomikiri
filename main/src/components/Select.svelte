@@ -9,7 +9,7 @@
   export let selected: T;
 </script>
 
-<select bind:value={selected}>
+<select bind:value={selected} on:change>
   {#each options as option}
     {#if typeof option === "string"}
       <option value={option}>{option}</option>

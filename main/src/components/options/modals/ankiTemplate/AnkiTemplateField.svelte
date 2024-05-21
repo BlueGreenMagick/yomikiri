@@ -5,6 +5,7 @@
     type AnyAnkiTemplateFieldOptions,
     ANKI_TEMPLATE_FIELD_TYPES,
     ankiTemplateFieldLabel,
+    newAnkiTemplateField,
   } from "lib/anki";
   import AnkiTemplateFieldOptions from "./AnkiTemplateFieldOptions.svelte";
   import Select from "components/Select.svelte";
@@ -13,25 +14,45 @@
 
   export let fieldTemplate: AnyAnkiTemplateField;
 
+  let type: AnkiTemplateFieldType;
+
   let previewShown = false;
   let optionsShown = false;
+  let selectOptions: [AnkiTemplateFieldType, string][];
 
   // fieldTemplates should not reload on type change
   // so accidentally changing type does not clear all options data
   let fieldTemplates = new Map<string, AnyAnkiTemplateFieldOptions>();
 
-  const selectOptions = ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
-    const options = fieldTemplates.get(type);
-    const label = ankiTemplateFieldLabel(type, options);
-    return [type, label] as [AnkiTemplateFieldType, string];
-  });
+  function generateFieldOptions(_: unknown): [AnkiTemplateFieldType, string][] {
+    return ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
+      const options = fieldTemplates.get(type);
+      const label = ankiTemplateFieldLabel(type, options);
+      return [type, label] as [AnkiTemplateFieldType, string];
+    });
+  }
+
+  function onTypeChange(_ev: unknown) {
+    fieldTemplate = newAnkiTemplateField(fieldTemplate.field, type);
+  }
+
+  function onFieldTemplateChange(_: unknown) {
+    type = fieldTemplate.type;
+  }
+
+  $: onFieldTemplateChange(fieldTemplate);
+  $: selectOptions = generateFieldOptions([fieldTemplate]);
 </script>
 
 <div class="anki-template-field">
   <div class="inner">
     <div class="field-name">{fieldTemplate.field}</div>
     <div class="field-row">
-      <Select options={selectOptions} bind:selected={fieldTemplate.type} />
+      <Select
+        options={selectOptions}
+        bind:selected={type}
+        on:change={onTypeChange}
+      />
       <button
         class="icon"
         class:active={previewShown}
@@ -56,7 +77,7 @@
     <div class="section" class:hidden={!previewShown && !optionsShown}>
       <div class="field-preview" class:hidden={!previewShown}></div>
       <div class="field-options" class:hidden={!optionsShown}>
-        <AnkiTemplateFieldOptions template={fieldTemplate} />
+        <AnkiTemplateFieldOptions bind:template={fieldTemplate} />
       </div>
     </div>
   </div>

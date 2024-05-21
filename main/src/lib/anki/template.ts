@@ -121,3 +121,31 @@ export function defaultFieldMeaningOptions(): FieldMeaningOptions {
     format: "default"
   }
 }
+
+export function defaultFieldOptionsForType(type: AnkiTemplateFieldType): AnyAnkiTemplateFieldOptions {
+  if (type === "") {
+    return {}
+  } else if (type === "word") {
+    return defaultFieldWordOptions()
+  } else if (type === "sentence") {
+    return defaultFieldSentenceOptions()
+  } else if (type === "translated-sentence") {
+    return {}
+  } else if (type === "meaning") {
+    return defaultFieldMeaningOptions()
+  } else if (type === "url") {
+    return {}
+  } else if (type === "link") {
+    return {}
+  } else {
+    throw new Error(`Invalid Anki template field type '${type}'`)
+  }
+}
+
+export function newAnkiTemplateField(field: string, type: AnkiTemplateFieldType): AnyAnkiTemplateField {
+  return {
+    field,
+    type,
+    options: defaultFieldOptionsForType(type)
+  } as AnyAnkiTemplateField
+}
