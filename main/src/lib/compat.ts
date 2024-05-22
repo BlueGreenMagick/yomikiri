@@ -18,6 +18,12 @@ interface DeprecatedConfiguration {
   "anki.template": NoteData | null;
 }
 
+/* Ensure that no keys overlap between Configuration and Deprecated Configuration */
+type OverlappingKeys<A, B> = keyof A & keyof B
+type NoOverlappingKeys<A, B> = OverlappingKeys<A, B> extends never ? object : { overlap: OverlappingKeys<A, B> };
+const _checkOverlap: NoOverlappingKeys<Configuration, DeprecatedConfiguration> = {};
+
+
 /** v0.2.0-dev */
 type Configuration_2_Conf = Configuration_1_Conf
 type Configuration_2 = Configuration_2_Conf & { config_version: 2 }
