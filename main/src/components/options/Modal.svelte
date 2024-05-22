@@ -48,10 +48,10 @@
   .modal {
     display: flex;
     flex-flow: column nowrap;
-    width: 600px;
-    height: 400px;
-    max-width: 90%;
-    max-height: 90%;
+    width: 90%;
+    height: 90%;
+    max-width: 810px;
+    max-height: 540px;
     border-radius: 8px;
     background-color: var(--background-alt);
   }
