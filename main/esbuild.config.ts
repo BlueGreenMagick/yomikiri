@@ -175,7 +175,8 @@ function generateBuildOptions(): BuildOptions {
     publicPath: "/",
     define: {
       '__APP_VERSION__': `"${VERSION}"`,
-      '__APP_PLATFORM__': `"${TARGET!}"`
+      '__APP_PLATFORM__': `"${TARGET!}"`,
+      'import.meta.vitest': 'undefined'
     },
     loader: {
       ".wasm": "file",

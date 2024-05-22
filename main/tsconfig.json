@@ -23,7 +23,8 @@
         "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
         "@platform": ["platform/common/index"],
         "@platform/*": ["platform/common/*"],
-      }
+      },
+      "types": ["vitest/importMeta"]
     },
     "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]
   }
