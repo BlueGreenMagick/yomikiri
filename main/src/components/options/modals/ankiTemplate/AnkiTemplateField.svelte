@@ -159,4 +159,8 @@
     padding-top: 4px;
     border-top: 1px solid var(--border);
   }
+
+  .field-preview {
+    margin: 6px 0;
+  }
 </style>
