@@ -12,6 +12,8 @@ import YomikiriTokenizer
 
 var configUpdatedHandlers: [(_ messageHandler: UIYomikiriWebView.MessageHandler?, _ configJSON: String) -> Void] = []
 
+var configMigrated: Bool = false
+
 func triggerConfigUpdateHook(messageHandler: UIYomikiriWebView.MessageHandler?, configJSON: String) {
     for fn in configUpdatedHandlers {
         fn(messageHandler, configJSON)
@@ -153,6 +155,13 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 try saveSharedConfig(configJson: configJson)
                 triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
                 return nil
+            case "migrateConfig":
+                if (configMigrated) {
+                    return "false"
+                } else {
+                    configMigrated = true
+                    return "true"
+                }
             case "tokenize":
                 let req: TokenizeRequest = try jsonDeserialize(json: request)
                 let resp = try backend.tokenize(sentence: req.text, charAt: req.charAt ?? 0)

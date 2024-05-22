@@ -1,4 +1,4 @@
-import Utils from "lib/utils";
+import Utils, { LazyAsync } from "lib/utils";
 import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
 import { Config, type StoredConfiguration } from "lib/config";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
@@ -30,6 +30,11 @@ export interface MessageWebviewMap {
   ankiInfo: [null, boolean];
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
+  /** 
+   * Returns true if migrated config is 'ok' to save.
+   * If config was already migrated elsewhere, returns false.
+   */
+  migrateConfig: [null, boolean];
   tokenize: [TokenizeRequest, RawTokenizeResult];
   searchTerm: [string, string[]];
   versionInfo: [null, VersionInfo]
@@ -53,9 +58,13 @@ export class IosAppPlatform implements IPlatform {
 
   _configSubscribers: ((config: StoredConfiguration) => void)[] = []
 
+  configMigration = new LazyAsync<StoredConfiguration>(async () => {
+    return await this.migrateConfigInner()
+  })
+
   constructor() {
     window.iosConfigUpdated = async () => {
-      const config = await this.getConfig()
+      const config = await this.getConfig() as StoredConfiguration
       for (const subscriber of this._configSubscribers) {
         // TODO: migrate config for iosapp
         subscriber(config)
@@ -150,9 +159,16 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async migrateConfig(): Promise<StoredConfiguration> {
+    return await this.configMigration.get()
+  }
+
+  private async migrateConfigInner(): Promise<StoredConfiguration> {
     const configObject = await this.getConfig()
     const migrated = migrateConfigObject(configObject)
-    await this.saveConfig(migrated)
+    const continueMigration = await this.messageWebview("migrateConfig", null)
+    if (continueMigration) {
+      await this.saveConfig(migrated)
+    }
     return migrated
   }
 }

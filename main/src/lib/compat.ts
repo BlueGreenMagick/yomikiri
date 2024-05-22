@@ -1,7 +1,10 @@
 /*
 Migrate config objects created in previous versions.
 
-The migration is initiated by `Platform` to run in background context, and run only once.
+The migration is initiated by `Platform`.
+In extension, the migration runs only once in background context.
+In iosapp, migration may run multiple times in each page,
+but it is commited only once.
 
 When `Configuration` structure is modified, `config_version` is incremented.
 
