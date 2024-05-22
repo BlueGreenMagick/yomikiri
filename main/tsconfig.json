@@ -24,7 +24,7 @@
         "@platform": ["platform/common/index"],
         "@platform/*": ["platform/common/*"],
       },
-      "types": ["vitest/importMeta"]
+      "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]
     },
     "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]
   }
