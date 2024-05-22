@@ -9,7 +9,7 @@
     resolveAnkiNote,
     waitForNoteToLoad,
   } from "lib/anki";
-  import NotePreviewField from "./NotePreviewField.svelte";
+  import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
@@ -85,16 +85,25 @@
   <div class="scrollable">
     <div class="fields-container">
       {#each noteData.fields as field, i}
-        <NotePreviewField {field} bind:errored={errored[i]} />
+        <div class="anki-preview-field">
+          <div class="field-name">{field.name}</div>
+          <NoteFieldEditor {field} bind:errored={errored[i]} />
+        </div>
       {/each}
     </div>
     <div class="tags">
-      <NotePreviewField field={tagField} bold />
+      <div class="field-name"><em>{tagField.name}</em></div>
+      <NoteFieldEditor field={tagField} />
     </div>
   </div>
 </div>
 
 <style>
+  .anki-preview-field {
+    width: 100%;
+    margin-top: 4px;
+  }
+
   .add-to-anki {
     flex: 1 1 auto;
 

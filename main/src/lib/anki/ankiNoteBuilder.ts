@@ -94,6 +94,8 @@ function addBuilder<T extends AnkiTemplateFieldType>(type: T, builder: (typeof f
   fieldBuilders[type] = builder
 }
 
+addBuilder("", () => "")
+
 addBuilder("word", (opts, data) => {
   const token = data.tokenized.tokens[data.tokenized.tokenIdx];
 

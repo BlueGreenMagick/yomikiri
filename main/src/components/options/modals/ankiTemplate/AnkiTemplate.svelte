@@ -122,7 +122,11 @@
   </div>
   <div class="fields group">
     {#each fieldNames as fieldName}
-      <AnkiTemplateField fieldTemplate={fieldTemplates[fieldName]} />
+      <AnkiTemplateField
+        {platform}
+        {config}
+        fieldTemplate={fieldTemplates[fieldName]}
+      />
     {/each}
   </div>
   <div class="tags-container group">

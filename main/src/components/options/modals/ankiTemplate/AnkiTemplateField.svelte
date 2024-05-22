@@ -2,7 +2,6 @@
   import {
     type AnkiTemplateFieldType,
     type AnyAnkiTemplateField,
-    type AnyAnkiTemplateFieldOptions,
     ANKI_TEMPLATE_FIELD_TYPES,
     ankiTemplateFieldLabel,
     newAnkiTemplateField,
@@ -11,7 +10,18 @@
   import Select from "components/Select.svelte";
   import IconEye from "@icons/eye.svg";
   import IconOptions from "@icons/options.svg";
+  import NotePreviewField from "components/anki/NoteFieldEditor.svelte";
+  import {
+    buildAnkiField,
+    type Field,
+    type LoadingField,
+  } from "lib/anki/ankiNoteBuilder";
+  import type { Platform } from "@platform";
+  import type Config from "lib/config";
+  import { exampleMarkerData } from "components/options/exampleMarkerData";
 
+  export let platform: Platform;
+  export let config: Config;
   export let fieldTemplate: AnyAnkiTemplateField;
 
   let type: AnkiTemplateFieldType;
@@ -19,7 +29,7 @@
   let previewShown = false;
   let optionsShown = false;
   let selectOptions: [AnkiTemplateFieldType, string][];
-
+  let previewField: LoadingField | Field;
   // fieldTemplates should not reload on type change
   // so accidentally changing type does not clear all options data
   let fieldTemplates = new Map<string, AnyAnkiTemplateField>();
@@ -30,6 +40,11 @@
       const label = ankiTemplateFieldLabel(type, template?.options);
       return [type, label] as [AnkiTemplateFieldType, string];
     });
+  }
+
+  function newPreviewField(_: unknown) {
+    const ctx = { platform, config };
+    previewField = buildAnkiField(ctx, exampleMarkerData, fieldTemplate);
   }
 
   function onTypeChange(_ev: unknown) {
@@ -48,6 +63,7 @@
 
   $: onFieldTemplateChange(fieldTemplate);
   $: selectOptions = generateFieldOptions([fieldTemplate]);
+  $: newPreviewField(fieldTemplate);
 </script>
 
 <div class="anki-template-field">
@@ -81,7 +97,9 @@
       </button>
     </div>
     <div class="section" class:hidden={!previewShown && !optionsShown}>
-      <div class="field-preview" class:hidden={!previewShown}></div>
+      <div class="field-preview" class:hidden={!previewShown}>
+        <NotePreviewField readonly field={previewField} />
+      </div>
       <div class="field-options" class:hidden={!optionsShown}>
         <AnkiTemplateFieldOptions bind:template={fieldTemplate} />
       </div>
