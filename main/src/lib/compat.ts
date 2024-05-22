@@ -9,32 +9,38 @@ Instead, a new key is always created.
 And if needed, value is transformed and moved from existing key.
 */
 
-
-import type { Platform, TTSVoice } from "@platform";
+import type { Platform } from "@platform";
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
 import { type AnyAnkiTemplateField, type Field, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
+
+interface DeprecatedConfiguration {
+  /** Deprecated in conf v3 */
+  "anki.template": NoteData | null;
+}
+
+/** v0.2.0-dev */
+type Configuration_2_Conf = Configuration_1_Conf
+type Configuration_2 = Configuration_2_Conf & { config_version: 2 }
 
 /** 
  * v0.1.0 - 0.1.3 
  * In these versions, 'config_version' did not exist yet.
 */
-interface Configuration_1 {
-  "state.enabled": boolean;
-  "general.font_size": number;
-  "general.font": string;
-  "anki.connect_port": number;
-  "anki.connect_url": string;
-  "anki.template": NoteData | null;
-  "anki.enabled": boolean;
-  /** On ios, if auto redirect back to safari */
-  "anki.ios_auto_redirect": boolean;
-  /** set to null if voice is not available */
-  "tts.voice": TTSVoice | null;
-  /** Yomikiri semantic version on last config save */
-  "version": string
-  /** This property was not defined in this config */
-  "config_version"?: undefined
-}
+type Configuration_1_Conf = Pick<Configuration,
+  "state.enabled"
+  | "general.font_size"
+  | "general.font"
+  | "anki.connect_port"
+  | "anki.connect_url"
+  | "anki.enabled"
+  | "anki.ios_auto_redirect"
+  | "tts.voice"
+  | "version"
+  | "config_version">
+  & Pick<DeprecatedConfiguration, "anki.template">
+
+type Configuration_1 = Configuration_1_Conf & { config_version?: undefined }
+
 
 export type CompatConfiguration = Configuration | Configuration_1 | Record<string, never>
 export type StoredCompatConfiguration = Partial<CompatConfiguration>

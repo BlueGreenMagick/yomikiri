@@ -1,11 +1,12 @@
-import type { NoteData } from "./anki";
 import { Platform } from "@platform";
 import { VERSION } from "../common";
 import type { TTSVoice } from "../platform/common";
 import { migrateIfNeeded } from "./compat";
 import { writable, type Writable } from "svelte/store";
+import type AnkiTemplate from "components/options/modals/ankiTemplate/AnkiTemplate.svelte";
 
-export const CONFIG_VERSION = 2
+/** Incremented each time Configuration interface is modified */
+export const CONFIG_VERSION = 3
 
 /** Must not be undefined */
 export interface Configuration {
@@ -14,7 +15,7 @@ export interface Configuration {
   "general.font": string;
   "anki.connect_port": number;
   "anki.connect_url": string;
-  "anki.template": NoteData | null;
+  "anki.anki_template": AnkiTemplate | null
   "anki.enabled": boolean;
   /** On ios, if auto redirect back to safari */
   "anki.ios_auto_redirect": boolean;
@@ -23,6 +24,7 @@ export interface Configuration {
   /** Yomikiri semantic version on last config save */
   "version": string
   "config_version": typeof CONFIG_VERSION
+
 }
 
 export const defaultOptions: Configuration = {
@@ -31,7 +33,7 @@ export const defaultOptions: Configuration = {
   "general.font": "Meiryo",
   "anki.connect_port": 8765,
   "anki.connect_url": "http://127.0.0.1",
-  "anki.template": null,
+  "anki.anki_template": null,
   "anki.enabled": false,
   "anki.ios_auto_redirect": true,
   "tts.voice": null,
