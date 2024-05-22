@@ -50,7 +50,7 @@
   function onTypeChange(_ev: unknown) {
     const cached = fieldTemplates.get(type);
     if (cached === undefined) {
-      fieldTemplate = newAnkiTemplateField(fieldTemplate.field, type);
+      fieldTemplate = newAnkiTemplateField(fieldTemplate.name, type);
     } else {
       fieldTemplate = cached;
     }
@@ -68,7 +68,7 @@
 
 <div class="anki-template-field">
   <div class="inner">
-    <div class="field-name">{fieldTemplate.field}</div>
+    <div class="field-name">{fieldTemplate.name}</div>
     <div class="field-row">
       <Select
         options={selectOptions}

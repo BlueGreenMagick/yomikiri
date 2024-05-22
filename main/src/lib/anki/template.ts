@@ -19,7 +19,7 @@ export interface AnkiTemplateFieldOptionsMap {
 export type AnkiTemplateFieldType = keyof AnkiTemplateFieldOptionsMap
 
 export interface AnkiTemplateField<T extends AnkiTemplateFieldType> {
-  field: string;
+  name: string;
   type: T;
   options: AnkiTemplateFieldOptionsMap[T]
 }
@@ -144,7 +144,7 @@ export function defaultFieldOptionsForType(type: AnkiTemplateFieldType): AnyAnki
 
 export function newAnkiTemplateField(field: string, type: AnkiTemplateFieldType): AnyAnkiTemplateField {
   return {
-    field,
+    name: field,
     type,
     options: defaultFieldOptionsForType(type)
   } as AnyAnkiTemplateField

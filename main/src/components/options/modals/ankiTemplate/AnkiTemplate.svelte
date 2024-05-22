@@ -1,17 +1,16 @@
 <script lang="ts">
   import { type AnyAnkiTemplateField, type AnkiTemplate } from "lib/anki";
   import type { Config } from "lib/config";
-  import { exampleMarkerData } from "../../exampleMarkerData";
+  // import { exampleMarkerData } from "../../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
   import type { Platform } from "@platform";
   import AnkiTemplateField from "./AnkiTemplateField.svelte";
-  import { fieldTemplateToAnyFieldTemplate } from "lib/compat";
 
   export let platform: Platform;
   export let config: Config;
   export let ankiInfo: AnkiInfo;
 
-  const template = config.get("anki.template");
+  const template = config.get("anki.anki_template");
 
   let deckNames = ankiInfo.decks;
   let notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
@@ -40,7 +39,7 @@
       selectedNotetype = template.notetype;
       fieldTemplates = {};
       for (const field of template.fields) {
-        fieldTemplates[field.name] = fieldTemplateToAnyFieldTemplate(field);
+        fieldTemplates[field.name] = field;
       }
       ankiTags = template.tags;
       prevDeck = template.deck;
@@ -48,12 +47,12 @@
     }
   }
 
-  function loadFieldNames(notetypeName: string): string[] {
+  function loadFieldNames(_: unknown): string[] {
     let notetypeInfo = ankiInfo.notetypes.find(
-      (nt) => nt.name === notetypeName
+      (nt) => nt.name === selectedNotetype
     );
     if (notetypeInfo === undefined) {
-      return template!.fields.map((f) => f.name);
+      return template?.fields.map((f) => f.name) ?? [];
     } else {
       return notetypeInfo.fields;
     }
@@ -74,8 +73,7 @@
     for (const fieldName of fieldNames) {
       template.fields.push(fields[fieldName]);
     }
-    // config.set("anki.template", template);
-    await Promise.resolve(null);
+    await config.set("anki.anki_template", template);
   }
 
   loadSelected();

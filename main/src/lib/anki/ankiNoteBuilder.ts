@@ -85,7 +85,7 @@ export function buildAnkiField<T extends AnkiTemplateFieldType>(ctx: AnkiBuilder
   const value = builder(template.options, data, ctx)
 
   return {
-    name: template.field,
+    name: template.name,
     value
   }
 }
@@ -288,28 +288,18 @@ export namespace AnkiNoteBuilder {
     return handler(ctx, data);
   }
 
-  function cloneNote(n: AnkiNote): AnkiNote {
-    const note: AnkiNote = {
-      ...n,
-      fields: [],
-    };
-    for (const field of n.fields) {
-      note.fields.push({
-        ...field,
-      });
-    }
-    return note;
-  }
-
   export function buildNote(ctx: AnkiBuilderContext, data: AnkiBuilderData): LoadingAnkiNote {
-    const template = ctx.config.get("anki.template");
+    const template = ctx.config.get("anki.anki_template");
     if (template === null) {
       throw new Error(
         "You need to set up Anki template in the extension settings first."
       );
     }
 
-    const note = cloneNote(template) as LoadingAnkiNote;
+    const note: LoadingAnkiNote = {
+      ...template,
+      fields: []
+    }
     for (const field of note.fields) {
       const marker = field.value as string;
       field.value = markerValue(marker, ctx, data);

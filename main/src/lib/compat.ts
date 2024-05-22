@@ -1,6 +1,8 @@
 /*
 Migrate config objects created in previous versions.
 
+The migration is initiated by `Platform` to run in background context, and run only once.
+
 When `Configuration` structure is modified, `config_version` is incremented.
 
 Configurations are backwards-compatible to best efforts.
@@ -9,9 +11,9 @@ Instead, a new key is always created.
 And if needed, value is transformed and moved from existing key.
 */
 
-import type { Platform } from "@platform";
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import { type AnyAnkiTemplateField, type Field, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
+import { type AnkiTemplate, type AnyAnkiTemplateField, type Field, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
+import { VERSION } from "common";
 
 interface DeprecatedConfiguration {
   /** Deprecated in conf v3 */
@@ -23,6 +25,8 @@ type OverlappingKeys<A, B> = keyof A & keyof B
 type NoOverlappingKeys<A, B> = OverlappingKeys<A, B> extends never ? object : { overlap: OverlappingKeys<A, B> };
 const _checkOverlap: NoOverlappingKeys<Configuration, DeprecatedConfiguration> = {};
 
+
+/* Configurations of previous versions */
 
 /** v0.2.0-dev */
 type Configuration_2_Conf = Configuration_1_Conf
@@ -41,75 +45,102 @@ type Configuration_1_Conf = Pick<Configuration,
   | "anki.enabled"
   | "anki.ios_auto_redirect"
   | "tts.voice"
-  | "version"
-  | "config_version">
+  | "version">
   & Pick<DeprecatedConfiguration, "anki.template">
 
 type Configuration_1 = Configuration_1_Conf & { config_version?: undefined }
 
-
-export type CompatConfiguration = Configuration | Configuration_1 | Record<string, never>
-export type StoredCompatConfiguration = Partial<CompatConfiguration>
-
-export async function migrateIfNeeded(platform: Platform, configObject: StoredCompatConfiguration): Promise<StoredConfiguration> {
-  const configVersion = getConfigVersion(configObject)
-  if (configVersion === CONFIG_VERSION) {
-    return configObject as StoredConfiguration
-  }
-
-  return await platform.migrateConfig()
+interface Configuration_New {
+  config_version?: undefined
+  version?: undefined
 }
 
-/** Don't call this function directly. Instead, call `migrateIfNeeded()`. */
-export function migrateConfigObject(configObject: StoredCompatConfiguration): StoredConfiguration {
-  const configVersion = getConfigVersion(configObject)
-  console.debug(`Migrating config object from '${configVersion}' to '${CONFIG_VERSION}'`)
 
-  if (configVersion === CONFIG_VERSION) {
-    return configObject as StoredConfiguration
-  }
+/* Stored & Misc Configuration Types */
 
-  // new config
-  if (configVersion === -1) {
-    return {
-      config_version: CONFIG_VERSION
-    }
-  }
-
-  if (configVersion === 1) {
-    return {
-      ...(configObject as Configuration_1),
-      config_version: CONFIG_VERSION
-    }
-  }
-
-
-  // if config was created in future version,
-  // try using as-is as it's mostly backwards-compatible
-  console.error(`Encountered future configVersion: ${configVersion}. Using the config as-is. Unexpected error may occur.`)
-  return configObject as StoredConfiguration
+interface ConfigBase {
+  config_version?: number | undefined
+  version?: string | undefined
 }
+
+export type StoredConfig<C extends ConfigBase> = Partial<C> & Pick<C, "config_version" | "version">
+
+interface Configurations { 0: Configuration_New, 1: Configuration_1, 2: Configuration_2, 3: Configuration }
+
+export type CompatConfiguration = Configurations[keyof Configurations]
+export type StoredCompatConfiguration = { [K in keyof Configurations]: StoredConfig<Configurations[K]> }[keyof Configurations]
+
+
+/* Migration code */
 
 
 /** 
- * Returns -1 for initial app install before any config saves.
+ * Don't call this function directly. Instead, call `migrateIfNeeded()`. 
  * 
- * Returns 1 for v0.1.0-0.1.3 config before "config_version" key was introduced
- */
-function getConfigVersion(configObject: StoredCompatConfiguration): number {
-  const configVersion = configObject["config_version"]
-  if (configVersion !== undefined) return configVersion
-  // in v0.1.0-0.1.3, "config_version" key did not exist, but "version" key was mandatory.
-  if (configObject["version"] !== undefined) return 1
-  return -1
+ * This function is called by `platform.migrateConfig()`
+*/
+export function migrateConfigObject(config: StoredCompatConfiguration): StoredConfiguration {
+  if (config.config_version !== undefined && config.config_version > CONFIG_VERSION) {
+    // if config was created in future version,
+    // try using as-is as it's mostly backwards-compatible
+    console.error(`Encountered future config_version: ${config.config_version}. Using the config as-is. Unexpected error may occur.`)
+    return config as StoredConfiguration
+  } else if (config.config_version === CONFIG_VERSION) {
+    return config
+  } else if (config.config_version === undefined && config.version === undefined) {
+    return {
+      config_version: CONFIG_VERSION,
+      version: VERSION
+    }
+  }
+
+  if (config.config_version === undefined) {
+    console.debug(`Migrating config object from v1 to v2`)
+    config = migrateConfiguration_1(config)
+  }
+  if (config.config_version === 2) {
+    console.debug(`Migrating config object from v2 to v3`)
+    config = migrateConfiguration_2(config)
+  }
+
+  return config
+}
+
+function migrateConfiguration_1(config: StoredConfig<Configuration_1>): StoredConfig<Configuration_2> {
+  return {
+    ...config,
+    config_version: 2
+  }
+}
+
+function migrateConfiguration_2(config: StoredConfig<Configuration_2>): StoredConfig<Configuration> {
+  const newConfig = {
+    ...config,
+    config_version: 3
+  } as StoredConfig<Configuration>
+
+
+  const ankiTemplate = config["anki.template"]
+  if (ankiTemplate !== undefined && ankiTemplate !== null) {
+    newConfig["anki.anki_template"] = migrateAnkiTemplate_2(ankiTemplate)
+  }
+
+  return newConfig
+}
+
+function migrateAnkiTemplate_2(template: NoteData): AnkiTemplate {
+  return {
+    ...template,
+    fields: template.fields.map(fieldTemplateToAnyFieldTemplate)
+  }
 }
 
 export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateField {
   const type = fld.value
-  const field = fld.name
+  const name = fld.name
   if (type === "") {
     return {
-      field,
+      name,
       type,
       options: {}
     }
@@ -122,7 +153,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
           : "basic",
     }
     return {
-      field, type: "word", options
+      name, type: "word", options
     }
   } else if (type === "dict" || type === "dict-furigana" || type === "dict-kana") {
     const options: FieldWordOptions = {
@@ -131,7 +162,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
         : type === "dict-kana" ? "kana-only"
           : "basic",
     }
-    return { field, type: "word", options }
+    return { name, type: "word", options }
   } else if (type === "main-dict" || type === "main-dict-furigana" || type === "main-dict-kana") {
     const options: FieldWordOptions = {
       form: "main-dict-form",
@@ -140,7 +171,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
           : "basic",
     }
     return {
-      field,
+      name,
       type: "word",
       options: options
     }
@@ -157,21 +188,21 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
       word: isCloze ? "cloze" : "bold"
     }
     return {
-      field,
+      name,
       type: "sentence",
       options
     }
   } else if (type === "meaning" || type === "meaning-full" || type === "meaning-short") {
     return {
-      field, type: "meaning", options: { format: type === "meaning-short" ? "short" : "default" }
+      name, type: "meaning", options: { format: type === "meaning-short" ? "short" : "default" }
     }
   } else if (type === "translated-sentence" || type === "url" || type === "link") {
     return {
-      field,
+      name,
       type: type as "translated-sentence" || "url" || "link",
       options: {}
     }
   } else {
-    throw new Error(`Invalid Anki field template type '${type}' encountered for field: '${field}'`)
+    throw new Error(`Invalid Anki field template type '${type}' encountered for field: '${name}'`)
   }
 }

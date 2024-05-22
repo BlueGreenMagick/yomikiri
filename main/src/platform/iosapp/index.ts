@@ -7,7 +7,7 @@ import type { RawDictionaryMetadata } from "./dictionary";
 import { Backend as IosAppBackend } from "./backend"
 import { Dictionary as IosAppDictionary } from "./dictionary"
 import { AnkiApi as IosAppAnkiApi } from "./anki"
-import { migrateConfigObject } from "lib/compat";
+import { migrateConfigObject, type StoredCompatConfiguration } from "lib/compat";
 
 export * from "../common"
 
@@ -57,6 +57,7 @@ export class IosAppPlatform implements IPlatform {
     window.iosConfigUpdated = async () => {
       const config = await this.getConfig()
       for (const subscriber of this._configSubscribers) {
+        // TODO: migrate config for iosapp
         subscriber(config)
       }
     }
@@ -93,7 +94,7 @@ export class IosAppPlatform implements IPlatform {
     }
   }
 
-  async getConfig(): Promise<StoredConfiguration> {
+  async getConfig(): Promise<StoredCompatConfiguration> {
     const config = await this.messageWebview("loadConfig", null);
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.")

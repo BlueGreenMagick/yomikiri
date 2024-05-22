@@ -91,7 +91,7 @@ export class IosPlatform implements IPlatform {
 
   // App config is the source of truth
   private async updateConfig(): Promise<StoredConfiguration> {
-    const webConfigP = this.browserApi.getStorage<StoredConfiguration>("config", {});
+    const webConfigP = this.browserApi.getStorage<StoredCompatConfiguration>("config", {});
     const appConfigP = this.requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {

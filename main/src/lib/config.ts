@@ -1,9 +1,9 @@
 import { Platform } from "@platform";
 import { VERSION } from "../common";
 import type { TTSVoice } from "../platform/common";
-import { migrateIfNeeded } from "./compat";
+import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
-import type AnkiTemplate from "components/options/modals/ankiTemplate/AnkiTemplate.svelte";
+import type { AnkiTemplate } from "./anki";
 
 /** Incremented each time Configuration interface is modified */
 export const CONFIG_VERSION = 3
@@ -42,7 +42,8 @@ export const defaultOptions: Configuration = {
 };
 
 export type ConfigKey = keyof Configuration
-export type StoredConfiguration = Partial<Configuration>
+
+export type StoredConfiguration = StoredConfig<Configuration>
 
 /** Get union of config keys that extends type T. */
 export type ConfigKeysOfType<T> = {
@@ -92,7 +93,6 @@ export class Config {
     await config.updateVersion()
     return config
   }
-
 
   get<K extends keyof Configuration>(key: K): Configuration[K] {
     const value = this.storage[key];
@@ -268,6 +268,14 @@ export class Config {
       }
     }
   }
+}
+
+export async function migrateIfNeeded(platform: Platform, configObject: StoredCompatConfiguration): Promise<StoredConfiguration> {
+  if (configObject.config_version === CONFIG_VERSION) {
+    return configObject as StoredConfiguration
+  }
+
+  return await platform.migrateConfig()
 }
 
 export default Config
