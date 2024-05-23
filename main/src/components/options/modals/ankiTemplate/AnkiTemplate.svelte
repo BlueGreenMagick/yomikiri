@@ -123,7 +123,7 @@
       <AnkiTemplateField
         {platform}
         {config}
-        fieldTemplate={fieldTemplates[fieldName]}
+        bind:fieldTemplate={fieldTemplates[fieldName]}
       />
     {/each}
   </div>
