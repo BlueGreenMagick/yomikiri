@@ -1,9 +1,9 @@
 <script lang="ts">
   import DicEntriesView from "components/dictionary/DicEntriesView.svelte";
   import {
-    AnkiNoteBuilder,
     type LoadingAnkiNote,
     type MarkerData,
+    buildAnkiNote,
   } from "lib/anki";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import { tick } from "svelte";
@@ -53,7 +53,7 @@
 
     let note: LoadingAnkiNote;
     try {
-      note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
+      note = buildAnkiNote({ platform, config }, markerData);
     } catch (err) {
       Toast.error(Utils.getErrorMessage(err));
       throw err;

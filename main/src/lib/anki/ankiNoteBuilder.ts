@@ -73,6 +73,26 @@ export async function resolveAnkiNote(note: LoadingAnkiNote): Promise<AnkiNote> 
 }
 
 
+export function buildAnkiNote(ctx: AnkiBuilderContext, data: AnkiBuilderData): LoadingAnkiNote {
+  const template = ctx.config.get("anki.anki_template");
+  if (template === null) {
+    throw new Error(
+      "You need to set up Anki template in the extension settings first."
+    );
+  }
+
+  const note: LoadingAnkiNote = {
+    ...template,
+    fields: []
+  }
+  for (const templateField of template.fields) {
+    const fieldValue = buildAnkiField(ctx, data, templateField);
+    note.fields.push(fieldValue)
+  }
+  return note;
+}
+
+
 type FieldBuilder<T extends AnkiTemplateFieldType> = (opts: AnkiTemplateFieldOptionsMap[T], data: AnkiBuilderData, ctx: AnkiBuilderContext) => string | Utils.PromiseWithProgress<string, string>;
 
 const fieldBuilders: Partial<{ [K in AnkiTemplateFieldType]: FieldBuilder<K> }> = {}
@@ -288,24 +308,6 @@ export namespace AnkiNoteBuilder {
     return handler(ctx, data);
   }
 
-  export function buildNote(ctx: AnkiBuilderContext, data: AnkiBuilderData): LoadingAnkiNote {
-    const template = ctx.config.get("anki.anki_template");
-    if (template === null) {
-      throw new Error(
-        "You need to set up Anki template in the extension settings first."
-      );
-    }
-
-    const note: LoadingAnkiNote = {
-      ...template,
-      fields: []
-    }
-    for (const field of note.fields) {
-      const marker = field.value as string;
-      field.value = markerValue(marker, ctx, data);
-    }
-    return note;
-  }
 
   addMarker("", (_ctx, _data: AnkiBuilderData) => {
     return "";

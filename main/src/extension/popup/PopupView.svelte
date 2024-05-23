@@ -3,9 +3,9 @@
   import { Toast } from "lib/toast";
   import type { Backend, TokenizeResult } from "@platform/backend";
   import {
-    AnkiNoteBuilder,
     type LoadingAnkiNote,
     type MarkerData,
+    buildAnkiNote,
   } from "lib/anki";
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
@@ -38,7 +38,7 @@
 
     let note: LoadingAnkiNote;
     try {
-      note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
+      note = buildAnkiNote({ platform, config }, markerData);
     } catch (err) {
       Toast.error(Utils.getErrorMessage(err));
       throw err;

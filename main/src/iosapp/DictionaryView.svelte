@@ -3,16 +3,13 @@
   import Tokenize from "../components/dictionary/Tokenize.svelte";
   import { type IosAppPlatform } from "platform/iosapp";
   import type { IosAppBackend, TokenizeResult } from "@platform/backend";
-  import {
-    AnkiNoteBuilder,
-    type LoadingAnkiNote,
-    type MarkerData,
-  } from "lib/anki";
+  import type { LoadingAnkiNote, MarkerData } from "lib/anki";
   import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import AddToAnki from "components/anki/AddToAnki.svelte";
   import type Config from "lib/config";
   import type { IosAppAnkiApi } from "platform/iosapp/anki";
+  import { buildAnkiNote } from "lib/anki/ankiNoteBuilder";
 
   export let platform: IosAppPlatform;
   export let config: Config;
@@ -39,7 +36,7 @@
 
     let note: LoadingAnkiNote;
     try {
-      note = AnkiNoteBuilder.buildNote({ platform, config }, markerData);
+      note = buildAnkiNote({ platform, config }, markerData);
     } catch (err) {
       Toast.error(Utils.getErrorMessage(err));
       throw err;
