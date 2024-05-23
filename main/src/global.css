@@ -11,9 +11,14 @@ body {
   border: none;
 }
 
-body {
+html {
   font-size: var(--font-size);
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Prevent Chrome setting body font-size to 75% on extension pages */
+body {
+  font-size: 100%;
 }
 
 /**
