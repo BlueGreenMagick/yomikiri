@@ -19,6 +19,7 @@
   import type { Platform } from "@platform";
   import type Config from "lib/config";
   import { exampleMarkerData } from "components/options/exampleMarkerData";
+  import IconedButton from "components/IconedButton.svelte";
 
   export let platform: Platform;
   export let config: Config;
@@ -75,26 +76,26 @@
         bind:selected={type}
         on:change={onTypeChange}
       />
-      <button
-        class="icon"
-        class:active={previewShown}
-        on:click={() => {
-          previewShown = !previewShown;
-          optionsShown = false;
-        }}
-      >
-        <IconEye />
-      </button>
-      <button
-        class="icon"
-        class:active={optionsShown}
-        on:click={() => {
-          optionsShown = !optionsShown;
-          previewShown = false;
-        }}
-      >
-        <IconOptions />
-      </button>
+      <div class="buttons">
+        <IconedButton
+          active={previewShown}
+          on:click={() => {
+            previewShown = !previewShown;
+            optionsShown = false;
+          }}
+        >
+          <IconEye />
+        </IconedButton>
+        <IconedButton
+          active={optionsShown}
+          on:click={() => {
+            optionsShown = !optionsShown;
+            previewShown = false;
+          }}
+        >
+          <IconOptions />
+        </IconedButton>
+      </div>
     </div>
     <div class="section" class:hidden={!previewShown && !optionsShown}>
       <div class="field-preview" class:hidden={!previewShown}>
@@ -133,7 +134,7 @@
   .field-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
 
   .field-row > :global(select) {
@@ -143,15 +144,9 @@
     padding: 0px 2px;
   }
 
-  .icon {
-    flex: 0 0 auto;
-    width: 1.4em;
-    height: 1.4em;
-    fill: var(--button-light);
-  }
-
-  .icon.active {
-    fill: var(--text);
+  .buttons {
+    display: flex;
+    align-items: center;
   }
 
   .section {

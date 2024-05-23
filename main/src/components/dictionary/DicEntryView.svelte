@@ -16,6 +16,7 @@
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { Platform } from "@platform";
   import RubyText from "../RubyText.svelte";
+  import IconedButton from "components/IconedButton.svelte";
 
   export let platform: Platform;
   export let config: Config;
@@ -61,14 +62,13 @@
     </div>
     <div class="icons">
       {#if config.get("anki.enabled")}
-        <button
-          class="icon icon-anki-add"
-          class:highlight={$selectedSense?.entry === entry}
+        <IconedButton
+          size="2em"
+          highlight={$selectedSense?.entry === entry}
           on:click={selectEntryForAnki}
-          on:mousedown|preventDefault|stopPropagation={() => null}
         >
           <IconAddCircleOutline />
-        </button>
+        </IconedButton>
       {/if}
       {#if config.get("tts.voice") !== null}
         <button
@@ -108,34 +108,7 @@
 
     display: flex;
   }
-  .icon {
-    width: 2em;
-    height: 2em;
-    padding: 0.3em;
-    color: var(--button-light);
-    fill: var(--button-light);
-    background-color: unset;
-    border: unset;
-    border-radius: unset;
-  }
-  :global(html.desktop) .icon:hover,
-  .icon:active {
-    color: black;
-    fill: black;
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.07);
-    border-radius: 3px;
-  }
 
-  :global(html.ios) .icon:focus-visible,
-  :global(html.iosapp) .icon:focus-visible {
-    outline: none;
-  }
-
-  .icon-anki-add.highlight {
-    color: var(--accent);
-    fill: var(--accent);
-  }
   .mainForm {
     font-size: 1.5em;
     font-family: var(--japanese-font-family);
