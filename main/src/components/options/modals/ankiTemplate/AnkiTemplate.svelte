@@ -119,7 +119,7 @@
     </select>
   </div>
   <div class="fields group">
-    {#each fieldNames as fieldName}
+    {#each fieldNames as fieldName (fieldName)}
       <AnkiTemplateField
         {platform}
         {config}
