@@ -29,6 +29,8 @@
     color: var(--color);
     fill: var(--color);
     padding: var(--padding);
+
+    border-radius: 4px;
   }
 
   button.hidden {
@@ -41,14 +43,20 @@
     filter: saturate(0.9);
   }
 
+  button.active,
+  :global(html.desktop) button.active:hover,
+  button.active:active {
+    color: var(--text);
+    fill: var(--text);
+    background-color: rgba(0, 0, 0, 0.12);
+  }
+
   :global(html.desktop) button:hover,
-  button:active,
-  button.active {
+  button:active {
     color: var(--text);
     fill: var(--text);
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.07);
-    border-radius: 4px;
   }
 
   :global(html.desktop) button.highlight:hover,
