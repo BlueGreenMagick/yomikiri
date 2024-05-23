@@ -1,15 +1,18 @@
 <script lang="ts">
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
-  import Tokenize from "../components/dictionary/Tokenize.svelte";
+  import Tokenize from "components/dictionary/Tokenize.svelte";
+  import AddToAnki from "components/anki/AddToAnki.svelte";
   import { type IosAppPlatform } from "platform/iosapp";
-  import type { IosAppBackend, TokenizeResult } from "@platform/backend";
-  import type { LoadingAnkiNote, MarkerData } from "lib/anki";
+  import type { IosAppAnkiApi } from "platform/iosapp/anki";
+  import type { IosAppBackend, TokenizeResult } from "platform/iosapp/backend";
+  import {
+    type LoadingAnkiNote,
+    type MarkerData,
+    buildAnkiNote,
+  } from "lib/anki";
   import Utils from "lib/utils";
   import { Toast } from "lib/toast";
-  import AddToAnki from "components/anki/AddToAnki.svelte";
   import type Config from "lib/config";
-  import type { IosAppAnkiApi } from "platform/iosapp/anki";
-  import { buildAnkiNote } from "lib/anki/ankiNoteBuilder";
 
   export let platform: IosAppPlatform;
   export let config: Config;

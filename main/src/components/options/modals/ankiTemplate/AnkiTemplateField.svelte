@@ -5,17 +5,15 @@
     ANKI_TEMPLATE_FIELD_TYPES,
     ankiTemplateFieldLabel,
     newAnkiTemplateField,
+    type Field,
+    type LoadingField,
+    buildAnkiField,
   } from "lib/anki";
   import AnkiTemplateFieldOptions from "./AnkiTemplateFieldOptions.svelte";
   import Select from "components/Select.svelte";
   import IconEye from "@icons/eye.svg";
   import IconOptions from "@icons/options.svg";
   import NotePreviewField from "components/anki/NoteFieldEditor.svelte";
-  import {
-    buildAnkiField,
-    type Field,
-    type LoadingField,
-  } from "lib/anki/ankiNoteBuilder";
   import type { Platform } from "@platform";
   import type Config from "lib/config";
   import { exampleMarkerData } from "components/options/exampleMarkerData";

@@ -1,5 +1,5 @@
 import { test, expect, describe } from "vitest";
-import { AnkiNoteBuilder, type AnkiBuilderContext, type AnkiBuilderData } from "./ankiNoteBuilder";
+import { AnkiNoteBuilder, type AnkiBuilderContext, type AnkiBuilderData } from "./ankiBuilder";
 import { Entry, type EntryObject } from "../dicEntry";
 import type { TokenizeResult } from "@platform/backend";
 import { DesktopPlatform } from "platform/desktop";
