@@ -86,7 +86,7 @@ export function migrateConfigObject(config: StoredCompatConfiguration): StoredCo
   if (config.config_version !== undefined && config.config_version > CONFIG_VERSION) {
     // if config was created in future version,
     // try using as-is as it's mostly backwards-compatible
-    console.error(`Encountered future config_version: ${config.config_version}. Using the config as-is. Unexpected error may occur.`)
+    console.error(`Encountered future config_version '${config.config_version}'. Current CONFIG_VERSION is '${CONFIG_VERSION}'. Using config as-is. Unexpected error may occur.`)
     return config as StoredConfiguration
   } else if (config.config_version === CONFIG_VERSION) {
     return config
