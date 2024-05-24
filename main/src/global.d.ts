@@ -13,6 +13,11 @@ declare module "*.yomikiriindex" {
   export default url;
 }
 
+declare module "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm" {
+  const url: string;
+  export default url;
+}
+
 declare module "*.svg" {
   export { SvelteComponent as default } from 'svelte';
 }

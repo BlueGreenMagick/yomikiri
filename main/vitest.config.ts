@@ -3,7 +3,9 @@ import sveltePreprocess from "svelte-preprocess";
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import path from "node:path";
 import postCssImport from "postcss-import";
+import tsconfigPathsPlugin from "vite-tsconfig-paths"
 import Package from "./package.json" assert { type: "json" };
+
 
 const svelteConfiguredPlugin = svelte({
   preprocess: sveltePreprocess({
@@ -31,7 +33,7 @@ function fullpath(relative: string): string {
 }
 
 export default defineConfig({
-  plugins: [svelteConfiguredPlugin],
+  plugins: [tsconfigPathsPlugin(), svelteConfiguredPlugin],
   define: {
     __APP_VERSION__: `"${Package.version}"`,
     __APP_PLATFORM__: '"chrome"',

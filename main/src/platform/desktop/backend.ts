@@ -2,15 +2,12 @@ import {
   type IBackend,
   TokenizeResult,
 } from "../common/backend";
-import initWasm from "@yomikiri/yomikiri-rs";
-import ENYomikiridict from "@yomikiri/dictionary/res/english.yomikiridict";
-import ENYomikiriIndex from "@yomikiri/dictionary/res/english.yomikiriindex";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry, type EntryObject } from "lib/dicEntry";
 import { BrowserApi } from "extension/browserApi";
-import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
+
 import Utils from "lib/utils";
-import { Dictionary } from "./dictionary"
+import { loadDictionary, loadWasm } from "./fetch";
 
 export * from "../common/backend";
 
@@ -34,28 +31,13 @@ export class DesktopBackend implements IBackend {
   async _initialize(): Promise<void> {
     Utils.bench("start")
     const BackendWasmConstructorP = loadWasm();
-    const dictionaryP = this.loadDictionary();
+    const dictionaryP = loadDictionary();
     const [BackendWasmConstructor, [indexBytes, entriesBytes]] = await Promise.all([BackendWasmConstructorP, dictionaryP]);
     Utils.bench("loaded")
     this.wasm = new BackendWasmConstructor(indexBytes, entriesBytes);
     Utils.bench("backend created")
   }
 
-  async loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
-    const dictionary = new Dictionary()
-    const saved = await dictionary.loadSavedDictionary();
-    if (saved !== null) {
-      return saved;
-    }
-
-    const defaultIndexP = fetchBytes(ENYomikiriIndex);
-    const defaultEntriesP = fetchBytes(ENYomikiridict);
-    const [indexBytes, entriesBytes] = await Promise.all([
-      defaultIndexP,
-      defaultEntriesP,
-    ]);
-    return [indexBytes, entriesBytes];
-  }
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
@@ -99,19 +81,6 @@ export class DesktopBackend implements IBackend {
   }
 }
 
-async function loadWasm(): Promise<typeof BackendWasm> {
-  // @ts-expect-error wasm is string
-  const resp = await fetch(wasm);
-  await initWasm(resp);
-
-  return BackendWasm;
-}
-
-async function fetchBytes(url: string): Promise<Uint8Array> {
-  const resp = await fetch(url);
-  const buffer = await resp.arrayBuffer();
-  return new Uint8Array(buffer, 0, buffer.byteLength);
-}
 
 export const Backend = DesktopBackend
 export type Backend = DesktopBackend

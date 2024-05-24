@@ -23,8 +23,9 @@
         "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
         "@platform": ["platform/common/index"],
         "@platform/*": ["platform/common/*"],
+        "@test/*": ["../test/*"]
       },
       "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]
     },
-    "include": ["src/**/*", "esbuild.config.ts", "vitest.config.ts"]
+    "include": ["src/**/*", "test/**/*", "esbuild.config.ts", "vitest.config.ts"]
   }
