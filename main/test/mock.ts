@@ -1,5 +1,5 @@
 /*
-  Mock to load backend wasm in tests.
+  Replaces code that uses browser-specific api (e.g. `fetch()`) or extension API.
 
   This module must be imported before any other imports.
 */
@@ -11,7 +11,23 @@ import fs from "node:fs/promises"
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
 import ENYomikiridict from "@yomikiri/dictionary/res/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/res/english.yomikiriindex";
+import type { StoredConfiguration } from "lib/config";
+import { DesktopPlatform } from "platform/desktop";
 
+/* Mock config */
+let storedConfig: StoredConfiguration | Record<string, never> = {}
+
+DesktopPlatform.prototype.getConfig = () => { return Promise.resolve(storedConfig) }
+DesktopPlatform.prototype.saveConfig = (conf) => {
+  storedConfig = conf;
+  return Promise.resolve()
+}
+
+export function setStoredConfig(conf: StoredConfiguration | Record<string, never>) {
+  storedConfig = conf
+}
+
+/* Mock load process of backend wasm */
 
 vi.mock("platform/desktop/fetch.ts", async (importOriginal) => {
   console.log("Mocked desktop backend fetch")

@@ -1,0 +1,1485 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Test that special character is escaped: 図＄書<-> > '-' 1`] = `""`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (short)' 1`] = `"books"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning' 1`] = `"<span class="yk-meaning">books</span>"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (furigana-anki)' 1`] = `"<b>図書[としょ]</b>&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (furigana-html)' 1`] = `"<b>&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby></b>&amp;lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (kana)' 1`] = `"<b>としょ</b>&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold)' 1`] = `"<b>図書</b>&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (furigana-anki)' 1`] = `"{{c1::図書[としょ]}}&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby>}}&amp;lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (kana)' 1`] = `"{{c1::としょ}}&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze)' 1`] = `"{{c1::図書}}&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (furigana-anki)' 1`] = `"図書[としょ]&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (furigana-html)' 1`] = `"&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby>&amp;lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (kana)' 1`] = `"としょ&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (furigana-anki)' 1`] = `"<span class="yomi-word">図書[としょ]</span>&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby></span>&amp;lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (kana)' 1`] = `"<span class="yomi-word">としょ</span>&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span)' 1`] = `"<span class="yomi-word">図書</span>&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence' 1`] = `"図書&lt;->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'translated-sentence' 1`] = `"Books<->"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'url' 1`] = `"https://yomikiri.test/"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (dict) (furigana-anki)' 1`] = `"図書[としょ]"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (dict) (furigana-html)' 1`] = `"<ruby>図書<rt>としょ</rt></ruby>"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (dict) (kana)' 1`] = `"としょ"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (dict)' 1`] = `"図書"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (furigana-anki)' 1`] = `"図書[としょ]"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (furigana-html)' 1`] = `"<ruby>図書<rt>としょ</rt></ruby>"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (kana)' 1`] = `"としょ"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict) (furigana-anki)' 1`] = `"図書[としょ]"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict) (furigana-html)' 1`] = `"<ruby>図書<rt>としょ</rt></ruby>"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict) (kana)' 1`] = `"としょ"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict)' 1`] = `"図書"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'word' 1`] = `"図書"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > Check that tokenization result has not changed 1`] = `
+{
+  "entry": {
+    "forms": [
+      {
+        "form": "図書",
+        "info": [],
+        "uncommon": false,
+      },
+    ],
+    "priority": 166,
+    "readings": [
+      {
+        "info": [],
+        "nokanji": false,
+        "reading": "としょ",
+        "toForm": [],
+        "uncommon": false,
+      },
+      {
+        "info": [
+          "=ok=",
+        ],
+        "nokanji": false,
+        "reading": "ずしょ",
+        "toForm": [],
+        "uncommon": true,
+      },
+    ],
+    "senses": [
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "books",
+        ],
+        "misc": [],
+        "pos": [
+          "noun",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+    ],
+    "terms": [
+      "図書",
+      "としょ",
+      "ずしょ",
+    ],
+  },
+  "pageTitle": "Yomikiri Tests",
+  "sentence": "図書<->",
+  "tokenized": {
+    "entries": [
+      {
+        "forms": [
+          {
+            "form": "図書",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 166,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "としょ",
+            "toForm": [],
+            "uncommon": false,
+          },
+          {
+            "info": [
+              "=ok=",
+            ],
+            "nokanji": false,
+            "reading": "ずしょ",
+            "toForm": [],
+            "uncommon": true,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "books",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "図書",
+          "としょ",
+          "ずしょ",
+        ],
+      },
+    ],
+    "grammars": [],
+    "tokenIdx": 0,
+    "tokens": [
+      {
+        "base": "図書",
+        "children": [],
+        "conj_form": "*",
+        "pos": "名詞",
+        "pos2": "普通名詞",
+        "reading": "としょ",
+        "start": 0,
+        "text": "図書",
+      },
+      {
+        "base": "<->",
+        "children": [],
+        "conj_form": "*",
+        "pos": "UNK",
+        "pos2": "*",
+        "reading": "<->",
+        "start": 2,
+        "text": "<->",
+      },
+    ],
+  },
+  "url": "https://yomikiri.test/",
+}
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > '-' 1`] = `""`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (short)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning' 1`] = `"<span class="yk-meaning">indicates sentence subject (occasionally object)</span><br><span class="yk-meaning">indicates possessive (esp. in literary expressions)</span><br><span class="yk-meaning">but, however, still, and</span><br><span class="yk-meaning">regardless of, whether (or not)</span>"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (furigana-anki)' 1`] = `"彼[かれ]<b>が</b>学生[がくせい]"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby><b>が</b>&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (kana)' 1`] = `"かれ<b>が</b>がくせい"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold)' 1`] = `"彼<b>が</b>学生"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (furigana-anki)' 1`] = `"彼[かれ]{{c1::が}}学生[がくせい]"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby>{{c1::が}}&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (kana)' 1`] = `"かれ{{c1::が}}がくせい"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze)' 1`] = `"彼{{c1::が}}学生"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (furigana-anki)' 1`] = `"彼[かれ]が学生[がくせい]"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby>が&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (kana)' 1`] = `"かれががくせい"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (furigana-anki)' 1`] = `"彼[かれ]<span class="yomi-word">が</span>学生[がくせい]"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby><span class="yomi-word">が</span>&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (kana)' 1`] = `"かれ<span class="yomi-word">が</span>がくせい"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span)' 1`] = `"彼<span class="yomi-word">が</span>学生"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence' 1`] = `"彼が学生"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'translated-sentence' 1`] = `"he is a student"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'url' 1`] = `"https://yomikiri.test/"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (dict) (furigana-anki)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (dict) (furigana-html)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (dict) (kana)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (dict)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (furigana-anki)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (furigana-html)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (kana)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (furigana-anki)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (furigana-html)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (kana)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict)' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > Check that tokenization result has not changed 1`] = `
+{
+  "entry": {
+    "forms": [],
+    "priority": 100,
+    "readings": [
+      {
+        "info": [],
+        "nokanji": false,
+        "reading": "が",
+        "toForm": [],
+        "uncommon": false,
+      },
+    ],
+    "senses": [
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "indicates sentence subject (occasionally object)",
+        ],
+        "misc": [],
+        "pos": [
+          "particle",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "indicates possessive (esp. in literary expressions)",
+        ],
+        "misc": [],
+        "pos": [
+          "particle",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "but",
+          "however",
+          "still",
+          "and",
+        ],
+        "misc": [],
+        "pos": [
+          "conjunction",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [
+          "after the volitional form of a verb",
+        ],
+        "meaning": [
+          "regardless of",
+          "whether (or not)",
+        ],
+        "misc": [],
+        "pos": [
+          "conjunction",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+    ],
+    "terms": [
+      "が",
+    ],
+  },
+  "pageTitle": "Yomikiri Tests",
+  "sentence": "彼が学生",
+  "tokenized": {
+    "entries": [
+      {
+        "forms": [],
+        "priority": 100,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "indicates sentence subject (occasionally object)",
+            ],
+            "misc": [],
+            "pos": [
+              "particle",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "indicates possessive (esp. in literary expressions)",
+            ],
+            "misc": [],
+            "pos": [
+              "particle",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "but",
+              "however",
+              "still",
+              "and",
+            ],
+            "misc": [],
+            "pos": [
+              "conjunction",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [
+              "after the volitional form of a verb",
+            ],
+            "meaning": [
+              "regardless of",
+              "whether (or not)",
+            ],
+            "misc": [],
+            "pos": [
+              "conjunction",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "が",
+        ],
+      },
+      {
+        "forms": [
+          {
+            "form": "絵",
+            "info": [],
+            "uncommon": false,
+          },
+          {
+            "form": "画",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 148,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "え",
+            "toForm": [],
+            "uncommon": false,
+          },
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [
+              "画",
+            ],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "picture",
+              "drawing",
+              "painting",
+              "sketch",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "image (TV, film, etc.)",
+              "picture",
+              "footage",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "絵",
+          "画",
+          "え",
+          "が",
+        ],
+      },
+      {
+        "forms": [
+          {
+            "form": "蛾",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 15,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [],
+            "uncommon": false,
+          },
+          {
+            "info": [],
+            "nokanji": true,
+            "reading": "ガ",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "moth",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "蛾",
+          "が",
+          "ガ",
+        ],
+      },
+      {
+        "forms": [
+          {
+            "form": "我",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 0,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "obstinacy",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "atman",
+              "the self",
+              "the ego",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "我",
+          "が",
+        ],
+      },
+      {
+        "forms": [
+          {
+            "form": "雅",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 0,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "elegance",
+              "grace",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+              "na-adjective",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "festal song (genre of the Shi Jing)",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "雅",
+          "が",
+        ],
+      },
+      {
+        "forms": [
+          {
+            "form": "賀",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 0,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "congratulation",
+              "celebration",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "賀",
+          "が",
+        ],
+      },
+      {
+        "forms": [
+          {
+            "form": "駕",
+            "info": [],
+            "uncommon": false,
+          },
+        ],
+        "priority": 0,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "が",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "vehicle",
+              "horse-drawn carriage",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "駕",
+          "が",
+        ],
+      },
+    ],
+    "grammars": [
+      {
+        "name": "が",
+        "short": "subject",
+        "tofugu": "https://www.tofugu.com/japanese-grammar/particle-ga/",
+      },
+    ],
+    "tokenIdx": 1,
+    "tokens": [
+      {
+        "base": "彼",
+        "children": [],
+        "conj_form": "*",
+        "pos": "代名詞",
+        "pos2": "*",
+        "reading": "かれ",
+        "start": 0,
+        "text": "彼",
+      },
+      {
+        "base": "が",
+        "children": [],
+        "conj_form": "*",
+        "pos": "助詞",
+        "pos2": "格助詞",
+        "reading": "が",
+        "start": 1,
+        "text": "が",
+      },
+      {
+        "base": "学生",
+        "children": [],
+        "conj_form": "*",
+        "pos": "名詞",
+        "pos2": "普通名詞",
+        "reading": "がくせい",
+        "start": 3,
+        "text": "学生",
+      },
+    ],
+  },
+  "url": "https://yomikiri.test/",
+}
+`;
+
+exports[`春の茶が飲＄みたいです > '-' 1`] = `""`;
+
+exports[`春の茶が飲＄みたいです > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (short)' 1`] = `"dollar; money"`;
+
+exports[`春の茶が飲＄みたいです > 'meaning' 1`] = `"<span class="yk-meaning">dollar</span><br><span class="yk-meaning">money, cash</span>"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (bold) (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]<b>＄[どる]</b>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (bold) (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby><b>&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby></b>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (bold) (kana)' 1`] = `"はるのちゃがいん<b>どる</b>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (bold)' 1`] = `"春の茶が飲<b>＄</b>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (cloze) (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]{{c1::＄[どる]}}みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (cloze) (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby>{{c1::&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby>}}みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (cloze) (kana)' 1`] = `"はるのちゃがいん{{c1::どる}}みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (cloze)' 1`] = `"春の茶が飲{{c1::＄}}みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]＄[どる]みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby>&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (kana)' 1`] = `"はるのちゃがいんどるみたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (span) (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]<span class="yomi-word">＄[どる]</span>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (span) (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby><span class="yomi-word">&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby></span>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (span) (kana)' 1`] = `"はるのちゃがいん<span class="yomi-word">どる</span>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence (span)' 1`] = `"春の茶が飲<span class="yomi-word">＄</span>みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'sentence' 1`] = `"春の茶が飲＄みたいです"`;
+
+exports[`春の茶が飲＄みたいです > 'translated-sentence' 1`] = `"Spring tea is like drinking $"`;
+
+exports[`春の茶が飲＄みたいです > 'url' 1`] = `"https://yomikiri.test/"`;
+
+exports[`春の茶が飲＄みたいです > 'word (dict) (furigana-anki)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (dict) (furigana-html)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (dict) (kana)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (dict)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (furigana-anki)' 1`] = `"＄[どる]"`;
+
+exports[`春の茶が飲＄みたいです > 'word (furigana-html)' 1`] = `"<ruby>＄<rt>どる</rt></ruby>"`;
+
+exports[`春の茶が飲＄みたいです > 'word (kana)' 1`] = `"どる"`;
+
+exports[`春の茶が飲＄みたいです > 'word (main dict) (furigana-anki)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (main dict) (furigana-html)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (main dict) (kana)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word (main dict)' 1`] = `"ドル"`;
+
+exports[`春の茶が飲＄みたいです > 'word' 1`] = `"＄"`;
+
+exports[`春の茶が飲＄みたいです > Check that tokenization result has not changed 1`] = `
+{
+  "entry": {
+    "forms": [
+      {
+        "form": "弗",
+        "info": [
+          "=ateji=",
+          "=rK=",
+        ],
+        "uncommon": true,
+      },
+    ],
+    "priority": 125,
+    "readings": [
+      {
+        "info": [],
+        "nokanji": false,
+        "reading": "ドル",
+        "toForm": [],
+        "uncommon": false,
+      },
+    ],
+    "senses": [
+      {
+        "dialect": [],
+        "info": [
+          "orig. an abbr. of ドルラル",
+        ],
+        "meaning": [
+          "dollar",
+        ],
+        "misc": [
+          "=uk=",
+        ],
+        "pos": [
+          "noun",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "money",
+          "cash",
+        ],
+        "misc": [
+          "=uk=",
+        ],
+        "pos": [
+          "noun",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+    ],
+    "terms": [
+      "弗",
+      "ドル",
+    ],
+  },
+  "pageTitle": "Yomikiri Tests",
+  "sentence": "春の茶が飲＄みたいです",
+  "tokenized": {
+    "entries": [
+      {
+        "forms": [
+          {
+            "form": "弗",
+            "info": [
+              "=ateji=",
+              "=rK=",
+            ],
+            "uncommon": true,
+          },
+        ],
+        "priority": 125,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "ドル",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [
+              "orig. an abbr. of ドルラル",
+            ],
+            "meaning": [
+              "dollar",
+            ],
+            "misc": [
+              "=uk=",
+            ],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "money",
+              "cash",
+            ],
+            "misc": [
+              "=uk=",
+            ],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "弗",
+          "ドル",
+        ],
+      },
+    ],
+    "grammars": [],
+    "tokenIdx": 5,
+    "tokens": [
+      {
+        "base": "春",
+        "children": [],
+        "conj_form": "*",
+        "pos": "名詞",
+        "pos2": "普通名詞",
+        "reading": "はる",
+        "start": 0,
+        "text": "春",
+      },
+      {
+        "base": "の",
+        "children": [],
+        "conj_form": "*",
+        "pos": "助詞",
+        "pos2": "格助詞",
+        "reading": "の",
+        "start": 1,
+        "text": "の",
+      },
+      {
+        "base": "茶",
+        "children": [],
+        "conj_form": "*",
+        "pos": "名詞",
+        "pos2": "普通名詞",
+        "reading": "ちゃ",
+        "start": 2,
+        "text": "茶",
+      },
+      {
+        "base": "が",
+        "children": [],
+        "conj_form": "*",
+        "pos": "助詞",
+        "pos2": "格助詞",
+        "reading": "が",
+        "start": 3,
+        "text": "が",
+      },
+      {
+        "base": "飲",
+        "children": [],
+        "conj_form": "*",
+        "pos": "名詞",
+        "pos2": "普通名詞",
+        "reading": "いん",
+        "start": 4,
+        "text": "飲",
+      },
+      {
+        "base": "ドル",
+        "children": [],
+        "conj_form": "*",
+        "pos": "名詞",
+        "pos2": "普通名詞",
+        "reading": "どる",
+        "start": 5,
+        "text": "＄",
+      },
+      {
+        "base": "みたいです",
+        "children": [
+          {
+            "base": "みたい",
+            "children": [],
+            "conj_form": "*",
+            "pos": "形状詞",
+            "pos2": "助動詞語幹",
+            "reading": "ミタイ",
+            "start": 6,
+            "text": "みたい",
+          },
+          {
+            "base": "です",
+            "children": [],
+            "conj_form": "終止形-一般",
+            "pos": "助動詞",
+            "pos2": "*",
+            "reading": "デス",
+            "start": 9,
+            "text": "です",
+          },
+        ],
+        "conj_form": "*",
+        "pos": "=exp=",
+        "pos2": "*",
+        "reading": "みたいです",
+        "start": 6,
+        "text": "みたいです",
+      },
+    ],
+  },
+  "url": "https://yomikiri.test/",
+}
+`;
+
+exports[`＄読みたい > '-' 1`] = `""`;
+
+exports[`＄読みたい > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
+
+exports[`＄読みたい > 'meaning (short)' 1`] = `"to read; to recite (e.g. a sutra); to predict"`;
+
+exports[`＄読みたい > 'meaning' 1`] = `"<span class="yk-meaning">to read</span><br><span class="yk-meaning">to recite (e.g. a sutra), to chant</span><br><span class="yk-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</span><br><span class="yk-meaning">to pronounce, to read (e.g. a kanji)</span><br><span class="yk-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</span><br><span class="yk-meaning">to count, to estimate</span><br><span class="yk-meaning">to read (a kanji) with its native Japanese reading</span>"`;
+
+exports[`＄読みたい > 'sentence (bold) (furigana-anki)' 1`] = `"<b>読[よ]みたい</b>"`;
+
+exports[`＄読みたい > 'sentence (bold) (furigana-html)' 1`] = `"<b>&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい</b>"`;
+
+exports[`＄読みたい > 'sentence (bold) (kana)' 1`] = `"<b>よみたい</b>"`;
+
+exports[`＄読みたい > 'sentence (bold)' 1`] = `"<b>読みたい</b>"`;
+
+exports[`＄読みたい > 'sentence (cloze) (furigana-anki)' 1`] = `"{{c1::読[よ]みたい}}"`;
+
+exports[`＄読みたい > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい}}"`;
+
+exports[`＄読みたい > 'sentence (cloze) (kana)' 1`] = `"{{c1::よみたい}}"`;
+
+exports[`＄読みたい > 'sentence (cloze)' 1`] = `"{{c1::読みたい}}"`;
+
+exports[`＄読みたい > 'sentence (furigana-anki)' 1`] = `"読[よ]みたい"`;
+
+exports[`＄読みたい > 'sentence (furigana-html)' 1`] = `"&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい"`;
+
+exports[`＄読みたい > 'sentence (kana)' 1`] = `"よみたい"`;
+
+exports[`＄読みたい > 'sentence (span) (furigana-anki)' 1`] = `"<span class="yomi-word">読[よ]みたい</span>"`;
+
+exports[`＄読みたい > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい</span>"`;
+
+exports[`＄読みたい > 'sentence (span) (kana)' 1`] = `"<span class="yomi-word">よみたい</span>"`;
+
+exports[`＄読みたい > 'sentence (span)' 1`] = `"<span class="yomi-word">読みたい</span>"`;
+
+exports[`＄読みたい > 'sentence' 1`] = `"読みたい"`;
+
+exports[`＄読みたい > 'translated-sentence' 1`] = `"I want to read it"`;
+
+exports[`＄読みたい > 'url' 1`] = `"https://yomikiri.test/"`;
+
+exports[`＄読みたい > 'word (dict) (furigana-anki)' 1`] = `"読[よ]む"`;
+
+exports[`＄読みたい > 'word (dict) (furigana-html)' 1`] = `"<ruby>読<rt>よ</rt></ruby>む"`;
+
+exports[`＄読みたい > 'word (dict) (kana)' 1`] = `"よむ"`;
+
+exports[`＄読みたい > 'word (dict)' 1`] = `"読む"`;
+
+exports[`＄読みたい > 'word (furigana-anki)' 1`] = `"読[よ]みたい"`;
+
+exports[`＄読みたい > 'word (furigana-html)' 1`] = `"<ruby>読<rt>よ</rt></ruby>みたい"`;
+
+exports[`＄読みたい > 'word (kana)' 1`] = `"よみたい"`;
+
+exports[`＄読みたい > 'word (main dict) (furigana-anki)' 1`] = `"読[よ]む"`;
+
+exports[`＄読みたい > 'word (main dict) (furigana-html)' 1`] = `"<ruby>読<rt>よ</rt></ruby>む"`;
+
+exports[`＄読みたい > 'word (main dict) (kana)' 1`] = `"よむ"`;
+
+exports[`＄読みたい > 'word (main dict)' 1`] = `"読む"`;
+
+exports[`＄読みたい > 'word' 1`] = `"読みたい"`;
+
+exports[`＄読みたい > Check that tokenization result has not changed 1`] = `
+{
+  "entry": {
+    "forms": [
+      {
+        "form": "読む",
+        "info": [],
+        "uncommon": false,
+      },
+      {
+        "form": "讀む",
+        "info": [
+          "=sK=",
+        ],
+        "uncommon": true,
+      },
+      {
+        "form": "訓む",
+        "info": [
+          "=sK=",
+        ],
+        "uncommon": true,
+      },
+    ],
+    "priority": 163,
+    "readings": [
+      {
+        "info": [],
+        "nokanji": false,
+        "reading": "よむ",
+        "toForm": [],
+        "uncommon": false,
+      },
+    ],
+    "senses": [
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "to read",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "to recite (e.g. a sutra)",
+          "to chant",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "to predict",
+          "to guess",
+          "to forecast",
+          "to read (someone's thoughts)",
+          "to see (e.g. into someone's heart)",
+          "to divine",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "to pronounce",
+          "to read (e.g. a kanji)",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "to decipher",
+          "to read (a meter, graph, music, etc.)",
+          "to tell (the time)",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [
+          "now mostly used in idioms",
+        ],
+        "meaning": [
+          "to count",
+          "to estimate",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [
+          "also written as 訓む",
+        ],
+        "meaning": [
+          "to read (a kanji) with its native Japanese reading",
+        ],
+        "misc": [],
+        "pos": [
+          "verb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+    ],
+    "terms": [
+      "読む",
+      "讀む",
+      "訓む",
+      "よむ",
+    ],
+  },
+  "pageTitle": "Yomikiri Tests",
+  "sentence": "読みたい",
+  "tokenized": {
+    "entries": [
+      {
+        "forms": [
+          {
+            "form": "読む",
+            "info": [],
+            "uncommon": false,
+          },
+          {
+            "form": "讀む",
+            "info": [
+              "=sK=",
+            ],
+            "uncommon": true,
+          },
+          {
+            "form": "訓む",
+            "info": [
+              "=sK=",
+            ],
+            "uncommon": true,
+          },
+        ],
+        "priority": 163,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "よむ",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "to read",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "to recite (e.g. a sutra)",
+              "to chant",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "to predict",
+              "to guess",
+              "to forecast",
+              "to read (someone's thoughts)",
+              "to see (e.g. into someone's heart)",
+              "to divine",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "to pronounce",
+              "to read (e.g. a kanji)",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "to decipher",
+              "to read (a meter, graph, music, etc.)",
+              "to tell (the time)",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [
+              "now mostly used in idioms",
+            ],
+            "meaning": [
+              "to count",
+              "to estimate",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [
+              "also written as 訓む",
+            ],
+            "meaning": [
+              "to read (a kanji) with its native Japanese reading",
+            ],
+            "misc": [],
+            "pos": [
+              "verb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "読む",
+          "讀む",
+          "訓む",
+          "よむ",
+        ],
+      },
+    ],
+    "grammars": [
+      {
+        "name": "ーたい",
+        "short": "desire",
+        "tofugu": "https://www.tofugu.com/japanese-grammar/tai-form/",
+      },
+    ],
+    "tokenIdx": 0,
+    "tokens": [
+      {
+        "base": "読む",
+        "children": [
+          {
+            "base": "読む",
+            "children": [],
+            "conj_form": "連用形-一般",
+            "pos": "動詞",
+            "pos2": "一般",
+            "reading": "ヨミ",
+            "start": 0,
+            "text": "読み",
+          },
+          {
+            "base": "たい",
+            "children": [],
+            "conj_form": "終止形-一般",
+            "pos": "助動詞",
+            "pos2": "*",
+            "reading": "タイ",
+            "start": 2,
+            "text": "たい",
+          },
+        ],
+        "conj_form": "*",
+        "pos": "動詞",
+        "pos2": "*",
+        "reading": "よみたい",
+        "start": 0,
+        "text": "読みたい",
+      },
+    ],
+  },
+  "url": "https://yomikiri.test/",
+}
+`;

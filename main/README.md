@@ -1,5 +1,7 @@
 ### Development
 
+### How to run the extension
+
 **Chrome**
 
 1. Run `pnpm dev`
@@ -10,6 +12,12 @@
 1. Run `pnpm dev:firefox`
 2. Go to `about:debugging` > `This firefox`
 3. Click `Load Temporary Add-on` and add `build/firefox/manifest.json`
+
+### Tests
+
+Run `pnpm test` to run tests.
+
+To update the snapshots, run `pnpm test -- -u`
 
 ### Minimum Target
 
