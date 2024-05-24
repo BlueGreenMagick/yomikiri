@@ -215,7 +215,6 @@ export class Config {
     }`;
   }
 
-  /** Migration must occur only on background */
   async updateVersion() {
     if (this.storage.version !== defaultOptions.version) {
       await this.set("version", defaultOptions.version)
