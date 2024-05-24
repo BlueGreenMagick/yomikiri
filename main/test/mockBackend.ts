@@ -25,15 +25,22 @@ vi.mock("platform/desktop/fetch.ts", async (importOriginal) => {
 })
 
 async function loadWasm(): Promise<typeof BackendWasm> {
-  console.log("Using mocked loadWasm()")
-  const buffer = await fs.readFile(wasm)
+  const buffer = await fs.readFile(vitePath(wasm))
   await initWasm(buffer)
 
   return BackendWasm;
 }
 
 async function loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
-  const indexBuffer = await fs.readFile(ENYomikiriIndex)
-  const entriesBuffer = await fs.readFile(ENYomikiridict)
+  const indexBuffer = await fs.readFile(vitePath(ENYomikiriIndex))
+  const entriesBuffer = await fs.readFile(vitePath(ENYomikiridict))
   return [indexBuffer, entriesBuffer];
+}
+
+function vitePath(path: string): string {
+  if (path.startsWith("/@fs/")) {
+    return path.substring("/@fs".length)
+  } else {
+    return path
+  }
 }
