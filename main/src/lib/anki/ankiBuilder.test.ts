@@ -1,172 +1,52 @@
 import { test, expect, describe } from "vitest";
-import { AnkiNoteBuilder, type AnkiBuilderContext, type AnkiBuilderData } from "./ankiBuilder";
+import { AnkiNoteBuilder, buildAnkiField, type AnkiBuilderContext, type AnkiBuilderData } from "./ankiBuilder";
 import { Entry, type EntryObject } from "../dicEntry";
 import type { TokenizeResult } from "@platform/backend";
 import { DesktopPlatform } from "platform/desktop";
 import { BrowserApi } from "../../extension/browserApi";
 import Config, { defaultOptions } from "../config";
+import type { AnyAnkiTemplateField } from "./template";
 
-const tokenized: TokenizeResult = {
-  tokens: [
-    {
-      "text": "わたし",
-      "start": 0,
-      "children": [],
-      "pos": "代名詞",
-      "pos2": "*",
-      "base": "私",
-      "reading": "わたし",
-      "conj_form": "*"
-    },
-    {
-      "text": "は",
-      "start": 3,
-      "children": [],
-      "pos": "助詞",
-      "pos2": "係助詞",
-      "base": "は",
-      "reading": "は",
-      "conj_form": "*"
-    },
-    {
-      "text": "本",
-      "start": 4,
-      "children": [],
-      "pos": "名詞",
-      "pos2": "普通名詞",
-      "base": "本",
-      "reading": "ほん",
-      "conj_form": "*"
-    },
-    {
-      "text": "が",
-      "start": 5,
-      "children": [],
-      "pos": "助詞",
-      "pos2": "格助詞",
-      "base": "が",
-      "reading": "が",
-      "conj_form": "*"
-    },
-    {
-      "text": "読みたい",
-      "start": 6,
-      "children": [
-        {
-          "text": "読み",
-          "start": 6,
-          "children": [],
-          "pos": "動詞",
-          "pos2": "一般",
-          "base": "読む",
-          "reading": "ヨミ",
-          "conj_form": "連用形-一般"
-        },
-        {
-          "text": "たい",
-          "start": 8,
-          "children": [],
-          "pos": "助動詞",
-          "pos2": "*",
-          "base": "たい",
-          "reading": "タイ",
-          "conj_form": "連体形-一般"
-        }
-      ],
-      "pos": "動詞",
-      "pos2": "*",
-      "base": "読む",
-      "reading": "よみたい",
-      "conj_form": "*"
-    },
-    {
-      "text": "。",
-      "start": 10,
-      "children": [],
-      "pos": "UNK",
-      "pos2": "*",
-      "base": "",
-      "reading": "。",
-      "conj_form": "*"
-    }
-  ],
-  tokenIdx: 4,
-  entries: ([
-    {
-      terms: ["読む", "讀む", "よむ"],
-      forms: [
-        {
-          form: "読む",
-        },
-        {
-          form: "讀む",
-          uncommon: true,
-          info: ["=sK="],
-        },
-      ],
-      readings: [
-        {
-          reading: "よむ",
-        },
-      ],
-      senses: [
-        {
-          pos: ["verb"],
-          meaning: ["to read"],
-        },
-        {
-          pos: ["verb"],
-          meaning: ["to recite (e.g. a sutra)", "to chant"],
-        },
-        {
-          pos: ["verb"],
-          meaning: [
-            "to predict",
-            "to guess",
-            "to forecast",
-            "to read (someone's thoughts)",
-            "to see (e.g. into someone's heart)",
-            "to divine",
-          ],
-        },
-        {
-          pos: ["verb"],
-          meaning: ["to decipher"],
-        },
-        {
-          pos: ["verb"],
-          info: ["now mostly used in idioms"],
-          meaning: ["to count", "to estimate"],
-        },
-        {
-          pos: ["verb"],
-          info: ["also written as 訓む"],
-          meaning: ["to read (a kanji) with its native Japanese reading"],
-        },
-      ],
-      priority: 163,
-    },
-  ] as EntryObject[]).map(Entry.fromObject),
-  grammars: [],
-};
-
-const platform = new DesktopPlatform(new BrowserApi({ context: "page", handleConnection: false, handleRequests: false, handleStorageChange: false }))
-platform.getConfig = () => { return Promise.resolve(defaultOptions) }
+const browserApi = new BrowserApi({ context: "background", handleConnection: false, handleRequests: false, handleStorageChange: false })
+const platform = new DesktopPlatform(browserApi)
+platform.getConfig = () => { return Promise.resolve({}) }
 const config = await Config.initialize(platform);
-
+const backend = await platform.newBackend()
 const ctx: AnkiBuilderContext = {
   platform,
   config
 }
 
-const data: AnkiBuilderData = {
-  tokenized,
-  entry: tokenized.entries[0],
-  selectedMeaning: tokenized.entries[0].senses[2],
-  sentence: "わたしは本が読みたい。",
-  url: "https://yomikiri.test/",
-  pageTitle: "Yomikiri tests",
-};
+function generateAllFieldTemplates(): AnyAnkiTemplateField[] {
+
+}
+
+
+
+
+describe("Build Anki Fields 1", async () => {
+  const sentence = "Abc"
+  const tokenizedResult = await backend.tokenize(sentence, 10)
+  const data: AnkiBuilderData = {
+    tokenized: tokenizedResult,
+    entry: tokenizedResult.entries[0],
+    sentence,
+    url: "https://yomikiri.test/",
+    pageTitle: "Yomikiri Tests"
+  }
+
+  test("Tokenization result has not changed", () => {
+    expect(data).toMatchSnapshot()
+  })
+
+  test.each(generateAllFieldTemplates())("name", () => {
+
+  })
+})
+
+
+
+
 
 describe("AnkiNoteBuilder marker", () => {
   test("''", async () => {

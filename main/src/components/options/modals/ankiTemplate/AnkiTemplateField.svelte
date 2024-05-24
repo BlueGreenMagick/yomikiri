@@ -1,13 +1,13 @@
 <script lang="ts">
   import {
-    type AnkiTemplateFieldType,
-    type AnyAnkiTemplateField,
+    type AnkiTemplateFieldContent,
     ANKI_TEMPLATE_FIELD_TYPES,
     ankiTemplateFieldLabel,
     newAnkiTemplateField,
     type Field,
     type LoadingField,
     buildAnkiField,
+    type AnkiTemplateField,
   } from "lib/anki";
   import AnkiTemplateFieldOptions from "./AnkiTemplateFieldOptions.svelte";
   import Select from "components/Select.svelte";
@@ -21,23 +21,27 @@
 
   export let platform: Platform;
   export let config: Config;
-  export let fieldTemplate: AnyAnkiTemplateField;
+  export let fieldTemplate: AnkiTemplateField;
 
-  let type: AnkiTemplateFieldType;
+  let content: AnkiTemplateFieldContent;
 
   let previewShown = false;
   let optionsShown = false;
-  let selectOptions: [AnkiTemplateFieldType, string][];
+  let selectOptions: [AnkiTemplateFieldContent, string][];
   let previewField: LoadingField | Field;
   // fieldTemplates should not reload on type change
   // so accidentally changing type does not clear all options data
-  let fieldTemplates = new Map<string, AnyAnkiTemplateField>();
+  let fieldTemplates = new Map<string, AnkiTemplateField>();
 
-  function generateFieldOptions(_: unknown): [AnkiTemplateFieldType, string][] {
+  function generateFieldOptions(
+    _: unknown
+  ): [AnkiTemplateFieldContent, string][] {
     return ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
-      const template = fieldTemplates.get(type);
-      const label = ankiTemplateFieldLabel(type, template?.options);
-      return [type, label] as [AnkiTemplateFieldType, string];
+      const cached =
+        fieldTemplates.get(type) ??
+        newAnkiTemplateField(fieldTemplate.name, type);
+      const label = ankiTemplateFieldLabel(cached);
+      return [type, label] as [AnkiTemplateFieldContent, string];
     });
   }
 
@@ -47,17 +51,17 @@
   }
 
   function onTypeChange(_ev: unknown) {
-    const cached = fieldTemplates.get(type);
+    const cached = fieldTemplates.get(content);
     if (cached === undefined) {
-      fieldTemplate = newAnkiTemplateField(fieldTemplate.name, type);
+      fieldTemplate = newAnkiTemplateField(fieldTemplate.name, content);
     } else {
       fieldTemplate = cached;
     }
   }
 
   function onFieldTemplateChange(_: unknown) {
-    fieldTemplates.set(type, fieldTemplate);
-    type = fieldTemplate.type;
+    fieldTemplates.set(content, fieldTemplate);
+    content = fieldTemplate.content;
   }
 
   $: onFieldTemplateChange(fieldTemplate);
@@ -71,7 +75,7 @@
     <div class="field-row">
       <Select
         options={selectOptions}
-        bind:selected={type}
+        bind:selected={content}
         on:change={onTypeChange}
       />
       <div class="buttons">

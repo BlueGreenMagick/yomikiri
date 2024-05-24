@@ -3,52 +3,46 @@ export interface AnkiTemplate {
   deck: string;
   notetype: string;
   tags: string;
-  fields: AnyAnkiTemplateField[];
+  fields: AnkiTemplateField[];
 }
 
-export interface AnkiTemplateFieldOptionsMap {
-  "": Record<string, never>;
-  "word": FieldWordOptions;
-  "sentence": FieldSentenceOptions;
-  "translated-sentence": Record<string, never>;
-  "meaning": FieldMeaningOptions;
-  "url": Record<string, never>;
-  "link": Record<string, never>;
-}
+export type AnkiTemplateFieldContent = keyof AnkiTemplateFieldTypes
 
-export type AnkiTemplateFieldType = keyof AnkiTemplateFieldOptionsMap
-
-export interface AnkiTemplateField<T extends AnkiTemplateFieldType> {
+interface FieldBase<C extends keyof AnkiTemplateFieldTypes> {
   name: string;
-  type: T;
-  options: AnkiTemplateFieldOptionsMap[T]
+  content: C
 }
 
-// AnkiTemplateField<"word"> | AnkiTemplateField<"sentence"> | ...
-export type AnyAnkiTemplateField = {
-  [K in keyof AnkiTemplateFieldOptionsMap]: AnkiTemplateField<K>;
-}[keyof AnkiTemplateFieldOptionsMap];
+export interface AnkiTemplateFieldTypes {
+  "": FieldBase<"">;
+  "word": FieldBase<"word"> & AnkiTemplateFieldWordOptions;
+  "sentence": FieldBase<"sentence"> & AnkiTemplateFieldSentenceOptions;
+  "translated-sentence": FieldBase<"translated-sentence">;
+  "meaning": FieldBase<"meaning"> & AnkiTemplateFieldMeaningOptions;
+  "url": FieldBase<"url">;
+  "link": FieldBase<"link">;
+}
 
+export type AnkiTemplateField = AnkiTemplateFieldTypes[keyof AnkiTemplateFieldTypes]
 
-export type AnyAnkiTemplateFieldOptions = AnkiTemplateFieldOptionsMap[AnkiTemplateFieldType]
-
-export interface FieldWordOptions {
+/* Field Options */
+export interface AnkiTemplateFieldWordOptions {
   form: "as-is" | "dict-form" | "main-dict-form"
   style: "basic" | "furigana-anki" | "furigana-html" | "kana-only"
 }
 
-export interface FieldSentenceOptions {
+export interface AnkiTemplateFieldSentenceOptions {
   word: "none" | "cloze" | "bold" | "span"
   style: "basic" | "furigana-anki" | "furigana-html" | "kana-only"
 }
 
-export interface FieldMeaningOptions {
+export interface AnkiTemplateFieldMeaningOptions {
   format: "default" | "short"
 }
 
-export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldType[] = ["", "word", "sentence", "translated-sentence", "meaning", "url", "link"]
+export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldContent[] = ["", "word", "sentence", "translated-sentence", "meaning", "url", "link"]
 
-const ANKI_TEMPLATE_FIELD_TYPE_LABELS: { [K in AnkiTemplateFieldType]: string } = {
+const ANKI_TEMPLATE_FIELD_TYPE_LABELS: { [K in AnkiTemplateFieldContent]: string } = {
   "": "-",
   "word": "word",
   "sentence": "sentence",
@@ -58,94 +52,66 @@ const ANKI_TEMPLATE_FIELD_TYPE_LABELS: { [K in AnkiTemplateFieldType]: string } 
   "link": "link",
 }
 
-export function ankiTemplateFieldLabel<T extends AnkiTemplateFieldType>(type: T, options?: AnkiTemplateFieldOptionsMap[T]): string {
-  let label: string = ANKI_TEMPLATE_FIELD_TYPE_LABELS[type]
-  if (options === undefined) {
-    return label
-  }
+export function ankiTemplateFieldLabel(field: AnkiTemplateField): string {
+  const content = field.content
+  let label = ANKI_TEMPLATE_FIELD_TYPE_LABELS[content]
 
-  if (type === "sentence") {
-    const opts = options as AnkiTemplateFieldOptionsMap["sentence"]
-    if (opts.word === "bold") {
+  if (content === "sentence") {
+    if (field.word === "bold") {
       label += " (bold)"
-    } else if (opts.word === "cloze") {
+    } else if (field.word === "cloze") {
       label += " (cloze)"
-    } else if (opts.word === "span") {
+    } else if (field.word === "span") {
       label += " (span)"
     }
   }
-  if (type === "meaning") {
-    const opts = options as AnkiTemplateFieldOptionsMap["meaning"]
-    if (opts.format === "short") {
+  if (content === "meaning") {
+    if (field.format === "short") {
       label += " (short)"
     }
   }
-  if (type === "word") {
-    const opts = options as AnkiTemplateFieldOptionsMap["word"]
-    if (opts.form === "dict-form") {
+  if (content === "word") {
+    if (field.form === "dict-form") {
       label += " (dict)"
-    } else if (opts.form === "main-dict-form") {
+    } else if (field.form === "main-dict-form") {
       label += " (main dict)"
     }
   }
-  if (type === "word" || type === "sentence") {
-    const opts = options as AnkiTemplateFieldOptionsMap["word" | "sentence"]
-    if (opts.style === "furigana-anki") {
+  if (content === "word" || content === "sentence") {
+    if (field.style === "furigana-anki") {
       label += " (furigana-anki)"
-    } else if (opts.style === "furigana-html") {
+    } else if (field.style === "furigana-html") {
       label += " (furigana-html)"
-    } else if (opts.style === "kana-only") {
+    } else if (field.style === "kana-only") {
       label += " (kana)"
     }
   }
   return label
 }
 
-
-export function defaultFieldWordOptions(): FieldWordOptions {
-  return {
-    form: "as-is",
-    style: "basic"
-  }
-}
-
-export function defaultFieldSentenceOptions(): FieldSentenceOptions {
-  return {
-    style: "basic",
-    word: "none",
-  }
-}
-
-export function defaultFieldMeaningOptions(): FieldMeaningOptions {
-  return {
-    format: "default"
-  }
-}
-
-export function defaultFieldOptionsForType(type: AnkiTemplateFieldType): AnyAnkiTemplateFieldOptions {
-  if (type === "") {
-    return {}
-  } else if (type === "word") {
-    return defaultFieldWordOptions()
-  } else if (type === "sentence") {
-    return defaultFieldSentenceOptions()
-  } else if (type === "translated-sentence") {
-    return {}
-  } else if (type === "meaning") {
-    return defaultFieldMeaningOptions()
-  } else if (type === "url") {
-    return {}
-  } else if (type === "link") {
-    return {}
+export function newAnkiTemplateField(name: string, content: AnkiTemplateFieldContent): AnkiTemplateField {
+  if (content === "" || content === "translated-sentence" || content === "url" || content === "link") {
+    return {
+      name, content: content
+    }
+  } else if (content === "word") {
+    return {
+      name, content: content,
+      form: "as-is",
+      style: "basic"
+    }
+  } else if (content === "sentence") {
+    return {
+      name, content: content,
+      style: "basic",
+      word: "none"
+    }
+  } else if (content === "meaning") {
+    return {
+      name, content: content,
+      format: "default"
+    }
   } else {
-    throw new Error(`Invalid Anki template field type '${type}'`)
+    throw new Error(`Invalid Anki template field type '${content}'`)
   }
-}
-
-export function newAnkiTemplateField(field: string, type: AnkiTemplateFieldType): AnyAnkiTemplateField {
-  return {
-    name: field,
-    type,
-    options: defaultFieldOptionsForType(type)
-  } as AnyAnkiTemplateField
 }

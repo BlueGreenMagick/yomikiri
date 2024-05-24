@@ -15,7 +15,7 @@ And if needed, value is transformed and moved from existing key.
 */
 
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import { type AnkiTemplate, type AnyAnkiTemplateField, type Field, type FieldSentenceOptions, type FieldWordOptions, type NoteData } from "./anki";
+import { type AnkiTemplate, type AnkiTemplateField, type Field, type AnkiTemplateFieldSentenceOptions, type AnkiTemplateFieldWordOptions, type NoteData } from "./anki";
 import { VERSION } from "common";
 
 interface DeprecatedConfiguration {
@@ -138,36 +138,35 @@ function migrateAnkiTemplate_2(template: NoteData): AnkiTemplate {
   }
 }
 
-export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateField {
+export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
   const type = fld.value
   const name = fld.name
   if (type === "") {
     return {
       name,
-      type,
-      options: {}
+      content: type
     }
   } else if (
     ["word", "word-furigana", "word-kana"].includes(type)) {
-    const options: FieldWordOptions = {
+    const options: AnkiTemplateFieldWordOptions = {
       form: "as-is",
       style: type === "word-furigana" ? "furigana-anki"
         : type === "word-kana" ? "kana-only"
           : "basic",
     }
     return {
-      name, type: "word", options
+      name, content: "word", ...options
     }
   } else if (type === "dict" || type === "dict-furigana" || type === "dict-kana") {
-    const options: FieldWordOptions = {
+    const options: AnkiTemplateFieldWordOptions = {
       form: "dict-form",
       style: type === "dict-furigana" ? "furigana-anki"
         : type === "dict-kana" ? "kana-only"
           : "basic",
     }
-    return { name, type: "word", options }
+    return { name, content: "word", ...options }
   } else if (type === "main-dict" || type === "main-dict-furigana" || type === "main-dict-kana") {
-    const options: FieldWordOptions = {
+    const options: AnkiTemplateFieldWordOptions = {
       form: "main-dict-form",
       style: type === "main-dict-furigana" ? "furigana-anki"
         : type === "main-dict-kana" ? "kana-only"
@@ -175,8 +174,8 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
     }
     return {
       name,
-      type: "word",
-      options: options
+      content: "word",
+      ...options
     }
   } else if (
     type === "sentence" ||
@@ -186,24 +185,25 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnyAnkiTemplateFiel
     type === "sentence-cloze-furigana"
   ) {
     const isCloze = type === "sentence-cloze" || type === "sentence-cloze-furigana"
-    const options: FieldSentenceOptions = {
+    const options: AnkiTemplateFieldSentenceOptions = {
       style: (type === "sentence-furigana" || type === "sentence-cloze-furigana") ? "furigana-anki" : type === "sentence-kana" ? "kana-only" : "basic",
       word: isCloze ? "cloze" : "bold"
     }
     return {
       name,
-      type: "sentence",
-      options
+      content: "sentence",
+      ...options
     }
   } else if (type === "meaning" || type === "meaning-full" || type === "meaning-short") {
     return {
-      name, type: "meaning", options: { format: type === "meaning-short" ? "short" : "default" }
+      name,
+      content: "meaning",
+      format: type === "meaning-short" ? "short" : "default"
     }
   } else if (type === "translated-sentence" || type === "url" || type === "link") {
     return {
       name,
-      type: type as "translated-sentence" || "url" || "link",
-      options: {}
+      content: type,
     }
   } else {
     throw new Error(`Invalid Anki field template type '${type}' encountered for field: '${name}'`)

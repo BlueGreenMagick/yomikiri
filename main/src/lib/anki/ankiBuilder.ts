@@ -4,7 +4,7 @@ import { Entry, type Sense } from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils, { escapeHTML } from "../utils";
-import type { AnkiTemplateField, AnkiTemplateFieldOptionsMap, AnkiTemplateFieldType } from "./template";
+import type { AnkiTemplateField, AnkiTemplateFieldContent, AnkiTemplateFieldTypes } from "./template";
 
 export interface LoadingAnkiNote {
   deck: string;
@@ -93,16 +93,17 @@ export function buildAnkiNote(ctx: AnkiBuilderContext, data: AnkiBuilderData): L
 }
 
 
-type FieldBuilder<T extends AnkiTemplateFieldType> = (opts: AnkiTemplateFieldOptionsMap[T], data: AnkiBuilderData, ctx: AnkiBuilderContext) => string | Utils.PromiseWithProgress<string, string>;
+type FieldBuilder<T extends AnkiTemplateFieldContent> = (template: AnkiTemplateFieldTypes[T], data: AnkiBuilderData, ctx: AnkiBuilderContext) => string | Utils.PromiseWithProgress<string, string>;
 
-const fieldBuilders: Partial<{ [K in AnkiTemplateFieldType]: FieldBuilder<K> }> = {}
+const fieldBuilders: Partial<{ [K in AnkiTemplateFieldContent]: FieldBuilder<K> }> = {}
 
-export function buildAnkiField<T extends AnkiTemplateFieldType>(ctx: AnkiBuilderContext, data: AnkiBuilderData, template: AnkiTemplateField<T>): LoadingField | Field {
-  const builder = fieldBuilders[template.type]
+export function buildAnkiField(ctx: AnkiBuilderContext, data: AnkiBuilderData, template: AnkiTemplateField): LoadingField | Field {
+  const builder = fieldBuilders[template.content]
   if (builder === undefined) {
-    throw new Error(`Invalid Anki template field type: '${template.type}'`);
+    throw new Error(`Invalid Anki template field type: '${template.content}'`);
   }
-  const value = builder(template.options, data, ctx)
+  // @ts-expect-error -- template type is correct
+  const value = builder(template, data, ctx)
 
   return {
     name: template.name,
@@ -110,7 +111,7 @@ export function buildAnkiField<T extends AnkiTemplateFieldType>(ctx: AnkiBuilder
   }
 }
 
-function addBuilder<T extends AnkiTemplateFieldType>(type: T, builder: (typeof fieldBuilders)[T]) {
+function addBuilder<T extends AnkiTemplateFieldContent>(type: T, builder: (typeof fieldBuilders)[T]) {
   fieldBuilders[type] = builder
 }
 

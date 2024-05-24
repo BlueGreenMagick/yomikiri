@@ -1,14 +1,14 @@
 <script lang="ts">
   import OptionSelect from "components/options/items/OptionSelect.svelte";
-  import type { AnyAnkiTemplateField } from "lib/anki";
+  import type { AnkiTemplateField } from "lib/anki";
 
-  export let template: AnyAnkiTemplateField;
+  export let template: AnkiTemplateField;
 </script>
 
 <div class="anki-template-field-options grouped">
-  {#if template.type === "word"}
+  {#if template.content === "word"}
     <OptionSelect
-      bind:selected={template.options.form}
+      bind:selected={template.form}
       options={[
         ["as-is", "Form used in sentence"],
         ["dict-form", "Dictionary conjugation form (ーる）"],
@@ -19,18 +19,18 @@
       Which form of word to use.
     </OptionSelect>
   {/if}
-  {#if template.type === "sentence"}
+  {#if template.content === "sentence"}
     <OptionSelect
-      bind:selected={template.options.word}
+      bind:selected={template.word}
       options={["none", "cloze", "bold", "span"]}
       title="Selected Word Style"
     >
       Style selected word within sentence
     </OptionSelect>
   {/if}
-  {#if template.type === "word" || template.type === "sentence"}
+  {#if template.content === "word" || template.content === "sentence"}
     <OptionSelect
-      bind:selected={template.options.style}
+      bind:selected={template.style}
       options={["basic", "furigana-anki", "furigana-html", "kana-only"]}
       title="Style"
     >
@@ -41,7 +41,7 @@
       >.
     </OptionSelect>
   {/if}
-  {#if template.type === "" || template.type === "translated-sentence" || template.type === "url" || template.type === "link"}
+  {#if template.content === "" || template.content === "translated-sentence" || template.content === "url" || template.content === "link"}
     <div class="gray">No configurable options</div>
   {/if}
 </div>
