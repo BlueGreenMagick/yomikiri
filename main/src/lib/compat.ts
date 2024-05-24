@@ -15,12 +15,12 @@ And if needed, value is transformed and moved from existing key.
 */
 
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import { type AnkiTemplate, type AnkiTemplateField, type Field, type AnkiTemplateFieldSentenceOptions, type AnkiTemplateFieldWordOptions, type NoteData } from "./anki";
+import { type AnkiTemplate, type AnkiTemplateField, type Field, type AnkiTemplateFieldSentenceOptions, type AnkiTemplateFieldWordOptions, type AnkiNote } from "./anki";
 import { VERSION } from "common";
 
 interface DeprecatedConfiguration {
   /** Deprecated in conf v3 */
-  "anki.template": NoteData | null;
+  "anki.template": AnkiNote | null;
 }
 
 /* Ensure that no keys overlap between Configuration and Deprecated Configuration */
@@ -131,7 +131,7 @@ function migrateConfiguration_2(config: StoredConfig<Configuration_2>): StoredCo
   return newConfig
 }
 
-function migrateAnkiTemplate_2(template: NoteData): AnkiTemplate {
+function migrateAnkiTemplate_2(template: AnkiNote): AnkiTemplate {
   return {
     ...template,
     fields: template.fields.map(fieldTemplateToAnyFieldTemplate)

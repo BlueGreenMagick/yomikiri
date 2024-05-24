@@ -2,7 +2,7 @@
   import DicEntriesView from "components/dictionary/DicEntriesView.svelte";
   import {
     type LoadingAnkiNote,
-    type MarkerData,
+    type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
@@ -42,7 +42,7 @@
   }
 
   async function selectedEntryForAnki(request: SelectedEntryForAnki) {
-    const markerData: MarkerData = {
+    const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
       entry: request.entry,
       selectedMeaning: request.sense,

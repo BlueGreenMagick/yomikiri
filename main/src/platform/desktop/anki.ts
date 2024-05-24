@@ -5,7 +5,7 @@ import type {
   NotetypeInfo,
 } from "../common/anki";
 import Config from "lib/config";
-import type { NoteData } from "lib/anki";
+import type { AnkiNote } from "lib/anki";
 import { BrowserApi } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
 import type { First, Second } from "lib/utils";
@@ -172,7 +172,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     return await this.request("getTags");
   }
 
-  async addNote(note: NoteData): Promise<void> {
+  async addNote(note: AnkiNote): Promise<void> {
     if (this.browserApi.context === "contentScript") {
       return this.browserApi.request("addAnkiNote", note);
     }

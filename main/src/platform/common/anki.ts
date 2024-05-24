@@ -1,4 +1,4 @@
-import type { NoteData } from "lib/anki";
+import type { AnkiNote } from "lib/anki";
 import Utils from "lib/utils";
 import { DesktopAnkiApi } from "../desktop/anki"
 import { IosAnkiApi } from "../ios/anki"
@@ -31,10 +31,10 @@ export interface IAnkiOptions {
 }
 
 export interface IAnkiAddNotes {
-  addNote: (note: NoteData, tabId?: number) => Promise<void>;
+  addNote: (note: AnkiNote, tabId?: number) => Promise<void>;
 }
 
-export function iosAnkiMobileURL(note: NoteData, successUrl?: string): string {
+export function iosAnkiMobileURL(note: AnkiNote, successUrl?: string): string {
   const fields: Record<string, string> = {};
   for (const field of note.fields) {
     const queryKey = "fld" + field.name;

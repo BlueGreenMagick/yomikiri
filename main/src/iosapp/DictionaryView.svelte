@@ -7,7 +7,7 @@
   import type { IosAppBackend, TokenizeResult } from "platform/iosapp/backend";
   import {
     type LoadingAnkiNote,
-    type MarkerData,
+    type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
   import Utils from "lib/utils";
@@ -28,7 +28,7 @@
     selectedEntry: SelectedEntryForAnki,
     tokenizeResult: TokenizeResult
   ) {
-    const markerData: MarkerData = {
+    const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
       entry: selectedEntry.entry,
       selectedMeaning: selectedEntry.sense,

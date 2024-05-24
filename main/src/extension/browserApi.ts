@@ -1,5 +1,5 @@
 import type { Entry } from "lib/dicEntry";
-import type { NoteData } from "lib/anki";
+import type { AnkiNote } from "lib/anki";
 import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
@@ -15,7 +15,7 @@ import Utils, { handleMessageResponse, hasOwnProperty, type MessageResponse } fr
 export interface MessageMap {
   searchTerm: [string, Entry[]];
   tokenize: [TokenizeRequest, TokenizeResult];
-  addAnkiNote: [NoteData, void];
+  addAnkiNote: [AnkiNote, void];
   tabId: [null, number | undefined];
   translate: [string, TranslateResult];
   tts: [TTSRequest, void];

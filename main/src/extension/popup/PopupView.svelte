@@ -4,7 +4,7 @@
   import type { Backend, TokenizeResult } from "@platform/backend";
   import {
     type LoadingAnkiNote,
-    type MarkerData,
+    type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
   import Tokenize from "components/dictionary/Tokenize.svelte";
@@ -27,7 +27,7 @@
     selectedEntry: SelectedEntryForAnki,
     tokenizeResult: TokenizeResult
   ) {
-    const markerData: MarkerData = {
+    const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
       entry: selectedEntry.entry,
       selectedMeaning: selectedEntry.sense,

@@ -1,4 +1,4 @@
-import type { MarkerData } from "lib/anki";
+import type { AnkiBuilderData } from "lib/anki";
 import type { TokenizeResult } from "@platform/backend";
 import { Entry } from "lib/dicEntry";
 
@@ -174,7 +174,7 @@ const tokenized: TokenizeResult = {
   "grammars": []
 }
 
-export const exampleMarkerData: MarkerData = {
+export const exampleMarkerData: AnkiBuilderData = {
   tokenized,
   entry: tokenized.entries[0],
   selectedMeaning: tokenized.entries[0].senses[0],

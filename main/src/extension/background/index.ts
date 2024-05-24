@@ -9,7 +9,7 @@ import { type TokenizeResult, type TokenizeRequest, type DesktopBackend, type Io
 import { BrowserApi, type MessageSender } from "extension/browserApi";
 import { Platform, type ExtensionPlatform, type TTSRequest, type TranslateResult } from "@platform";
 import Utils, { exposeGlobals } from "../../lib/utils";
-import type { NoteData } from "lib/anki";
+import type { AnkiNote } from "lib/anki";
 import Config, { type StoredConfiguration } from "lib/config";
 import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png"
@@ -41,7 +41,7 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   return await backend.tokenize(req.text, req.charAt);
 }
 
-async function addAnkiNote(note: NoteData): Promise<void> {
+async function addAnkiNote(note: AnkiNote): Promise<void> {
   const ankiApi = await lazyAnkiApi.get()
   await ankiApi.addNote(note);
 }
