@@ -9,7 +9,7 @@
     buildAnkiField,
     type AnkiTemplateField,
   } from "lib/anki";
-  import AnkiTemplateFieldOptions from "./AnkiTemplateFieldOptions.svelte";
+  import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import Select from "components/Select.svelte";
   import IconEye from "@icons/eye.svg";
   import IconOptions from "@icons/options.svg";
@@ -104,7 +104,7 @@
         <NotePreviewField readonly field={previewField} />
       </div>
       <div class="field-options" class:hidden={!optionsShown}>
-        <AnkiTemplateFieldOptions bind:template={fieldTemplate} />
+        <AnkiTemplateFieldOptionsEdit bind:template={fieldTemplate} />
       </div>
     </div>
   </div>

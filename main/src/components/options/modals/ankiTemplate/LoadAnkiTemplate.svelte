@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AnkiOptionsApi } from "@platform/anki";
-  import AnkiTemplate from "./AnkiTemplate.svelte";
+  import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
   import type { Config } from "lib/config";
   import type { Platform } from "@platform";
 
@@ -14,7 +14,7 @@
 {#await ankiInfoP}
   <div>Connecting to Anki...</div>
 {:then ankiInfo}
-  <AnkiTemplate {ankiInfo} {platform} {config} />
+  <AnkiTemplateEdit {ankiInfo} {platform} {config} />
 {:catch err}
   <div class="error">{err.toString()}</div>
 {/await}

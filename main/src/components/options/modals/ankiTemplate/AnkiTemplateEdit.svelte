@@ -4,7 +4,7 @@
   // import { exampleMarkerData } from "../../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
   import type { Platform } from "@platform";
-  import AnkiTemplateFieldSvelte from "./AnkiTemplateField.svelte";
+  import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
 
   export let platform: Platform;
   export let config: Config;
@@ -120,7 +120,7 @@
   </div>
   <div class="fields group">
     {#each fieldNames as fieldName (fieldName)}
-      <AnkiTemplateFieldSvelte
+      <AnkiTemplateFieldEdit
         {platform}
         {config}
         bind:fieldTemplate={fieldTemplates[fieldName]}
