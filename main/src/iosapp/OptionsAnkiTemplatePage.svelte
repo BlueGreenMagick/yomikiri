@@ -1,6 +1,6 @@
 <script lang="ts">
   import type Config from "lib/config";
-  import LoadAnkiTemplate from "components/options/modals/ankiTemplate/LoadAnkiTemplate.svelte";
+  import LoadAnkiTemplate from "components/options/ankiTemplate/LoadAnkiTemplate.svelte";
   import { platformClass } from "components/actions";
   import type { IosAppAnkiApi } from "platform/iosapp/anki";
   import type { IosAppPlatform } from "platform/iosapp";
