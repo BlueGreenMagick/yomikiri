@@ -10,10 +10,20 @@
   function onChange(ev: Event) {
     const element = ev.currentTarget as HTMLInputElement;
     let val = element.valueAsNumber;
+    // Putting in "", "-" evaluates to NaN
+    if (isNaN(val)) {
+      val = 0;
+    }
+
     if (min !== null && val < min) {
       val = min;
     } else if (max !== null && val > max) {
       val = max;
+    }
+    // when input is changed from 0 to invalid value
+    // ensure input is updated to 0
+    if (val === 0 && value === val) {
+      element.valueAsNumber = val;
     }
     value = val;
   }
