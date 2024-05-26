@@ -161,39 +161,53 @@ addBuilder("meaning", (opts, data) => {
       throw new Error(`Invalid Anki template field option value for 'full_format': '${format}`)
     }
 
-    const lines = []
+    let indent = 0;
+    const lines: string[] = []
     const grouped = Entry.groupSenses(data.entry);
 
+    const addLine = (text: string) => {
+      lines.push("  ".repeat(indent) + text)
+    }
+
     if (format === "div") {
-      lines.push('<div class="yomi-entry">')
+      addLine('<div class="yomi-entry">')
+      indent += 1;
     } else if (format === "yomichan") {
-      lines.push('<div style="text-align: left;"><ol>')
+      addLine('<div style="text-align: left;">')
+      indent += 1;
+      addLine('<ol>')
+      indent += 1;
     }
 
     for (const group of grouped) {
       if (format === "div") {
-        lines.push('<div class="yomi-group">')
+        addLine('<div class="yomi-group">')
+        indent += 1;
       } else if (format === "yomichan") {
-        lines.push("<li>")
+        addLine("<li>")
+        indent += 1;
       }
 
       if (opts.full_pos) {
         const poss = escapeHTML(group.pos.join(", "))
         if (format === "yomichan") {
-          lines.push(`<i>(${poss})</i>`)
+          addLine(`<i>(${poss})</i>`)
         } else if (format === "line") {
-          lines.push(`(${escapeHTML(poss)})`)
+          addLine(`(${escapeHTML(poss)})`)
         } else {
-          lines.push(`<div class="yomi-pos">(${poss})</div>`)
+          addLine(`<div class="yomi-pos">(${poss})</div>`)
         }
       }
 
       if (format === "numbered") {
-        lines.push("<ol>")
+        addLine("<ol>")
+        indent += 1;
       } else if (format === "unnumbered" || format === "yomichan") {
-        lines.push("<ul>")
+        addLine("<ul>")
+        indent += 1;
       } else if (format === "div") {
-        lines.push('<div class="yomi-meanings">')
+        addLine('<div class="yomi-meanings">')
+        indent += 1;
       }
 
       const lineMeanings: string[] = []
@@ -207,41 +221,54 @@ addBuilder("meaning", (opts, data) => {
         }
         if (format === "yomichan") {
           for (const item of items) {
-            lines.push(`<li>${escapeHTML(item)}</li>`)
+            addLine(`<li>${escapeHTML(item)}</li>`)
           }
         } else {
           const itemsLine = escapeHTML(items.join(", "))
           if (format === "numbered" || format === "unnumbered") {
-            lines.push(`<li>${itemsLine}</li>`)
+            addLine(`<li>${itemsLine}</li>`)
           } else if (format === "div") {
-            lines.push(`<div class="yomi-meaning">${itemsLine}</div>`)
+            addLine(`<div class="yomi-meaning">${itemsLine}</div>`)
           } else if (format === "line") {
             lineMeanings.push(itemsLine)
           }
         }
       }
       if (format === "line") {
-        lines.push(lineMeanings.join("; "))
+        addLine(lineMeanings.join("; "))
       }
 
       if (format === "numbered") {
-        lines.push("</ol>")
+        indent -= 1;
+        addLine("</ol>")
       } else if (format === "unnumbered") {
-        lines.push("</ul>")
+        indent -= 1;
+        addLine("</ul>")
       } else if (format === "div") {
-        lines.push("</div>")
-        lines.push("</div>")
+        indent -= 1;
+        addLine("</div>")
+        indent -= 1;
+        addLine("</div>")
       } else if (format === "yomichan") {
-        lines.push("</ul>")
-        lines.push("</li>")
+        indent -= 1;
+        addLine("</ul>")
+        indent -= 1;
+        addLine("</li>")
       }
     }
 
     if (format === "div") {
-      lines.push("</div>")
+      indent -= 1;
+      addLine("</div>")
     } else if (format === "yomichan") {
-      lines.push("</ol>")
-      lines.push("</div>")
+      indent -= 1;
+      addLine("</ol>")
+      indent -= 1;
+      addLine("</div>")
+    }
+
+    if (indent !== 0) {
+      throw new Error("An unexpected error occured while building Anki field content for meaning. Indentation level is not valid.")
     }
 
     if (format === "line") {

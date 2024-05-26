@@ -6,49 +6,49 @@ exports[`Test that special character is escaped: 図＄書<-> > 'link' 1`] = `"<
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">books</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">books</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(noun)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">books</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(noun)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">books</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (pos)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(noun)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">books</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(noun)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">books</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">books</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">books</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (item <= 2)' 1`] = `
 "<ol>
-<li>books</li>
+  <li>books</li>
 </ol>"
 `;
 
@@ -63,92 +63,96 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line)'
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ol>
-<li>books</li>
+  <li>books</li>
 </ol>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ol>
-<li>books</li>
+  <li>books</li>
 </ol>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (item <= 2)' 1`] = `
 "<ul>
-<li>books</li>
+  <li>books</li>
 </ul>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ul>
-<li>books</li>
+  <li>books</li>
 </ul>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (pos)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ul>
-<li>books</li>
+  <li>books</li>
 </ul>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered)' 1`] = `
 "<ul>
-<li>books</li>
+  <li>books</li>
 </ul>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>books</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>books</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(noun)</i>
-<ul>
-<li>books</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(noun)</i>
+      <ul>
+        <li>books</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (pos)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(noun)</i>
-<ul>
-<li>books</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(noun)</i>
+      <ul>
+        <li>books</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>books</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>books</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning' 1`] = `
 "<ol>
-<li>books</li>
+  <li>books</li>
 </ol>"
 `;
 
@@ -358,84 +362,84 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'link' 1`] = `"<a href
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
-<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
-</div>
-</div>
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">but, however</div>
-<div class="yomi-meaning">regardless of, whether (or not)</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+      <div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">but, however</div>
+      <div class="yomi-meaning">regardless of, whether (or not)</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(particle)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
-<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
-</div>
-</div>
-<div class="yomi-group">
-<div class="yomi-pos">(conjunction)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">but, however</div>
-<div class="yomi-meaning">regardless of, whether (or not)</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(particle)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+      <div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(conjunction)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">but, however</div>
+      <div class="yomi-meaning">regardless of, whether (or not)</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (pos)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(particle)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
-<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
-</div>
-</div>
-<div class="yomi-group">
-<div class="yomi-pos">(conjunction)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">but, however, still, and</div>
-<div class="yomi-meaning">regardless of, whether (or not)</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(particle)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+      <div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(conjunction)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">but, however, still, and</div>
+      <div class="yomi-meaning">regardless of, whether (or not)</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
-<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
-</div>
-</div>
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">but, however, still, and</div>
-<div class="yomi-meaning">regardless of, whether (or not)</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+      <div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">but, however, still, and</div>
+      <div class="yomi-meaning">regardless of, whether (or not)</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (item <= 2)' 1`] = `
 "<ol>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ol>
 <ol>
-<li>but, however</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however</li>
+  <li>regardless of, whether (or not)</li>
 </ol>"
 `;
 
@@ -450,173 +454,177 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line)' 1`] =
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(particle)</div>
 <ol>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ol>
 <div class="yomi-pos">(conjunction)</div>
 <ol>
-<li>but, however</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however</li>
+  <li>regardless of, whether (or not)</li>
 </ol>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos)' 1`] = `
 "<div class="yomi-pos">(particle)</div>
 <ol>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ol>
 <div class="yomi-pos">(conjunction)</div>
 <ol>
-<li>but, however, still, and</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however, still, and</li>
+  <li>regardless of, whether (or not)</li>
 </ol>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (item <= 2)' 1`] = `
 "<ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ul>
 <ul>
-<li>but, however</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however</li>
+  <li>regardless of, whether (or not)</li>
 </ul>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(particle)</div>
 <ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ul>
 <div class="yomi-pos">(conjunction)</div>
 <ul>
-<li>but, however</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however</li>
+  <li>regardless of, whether (or not)</li>
 </ul>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (pos)' 1`] = `
 "<div class="yomi-pos">(particle)</div>
 <ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ul>
 <div class="yomi-pos">(conjunction)</div>
 <ul>
-<li>but, however, still, and</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however, still, and</li>
+  <li>regardless of, whether (or not)</li>
 </ul>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered)' 1`] = `
 "<ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ul>
 <ul>
-<li>but, however, still, and</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however, still, and</li>
+  <li>regardless of, whether (or not)</li>
 </ul>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
-</ul>
-</li>
-<li>
-<ul>
-<li>but</li>
-<li>however</li>
-<li>regardless of</li>
-<li>whether (or not)</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>indicates sentence subject (occasionally object)</li>
+        <li>indicates possessive (esp. in literary expressions)</li>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>but</li>
+        <li>however</li>
+        <li>regardless of</li>
+        <li>whether (or not)</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(particle)</i>
-<ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
-</ul>
-</li>
-<li>
-<i>(conjunction)</i>
-<ul>
-<li>but</li>
-<li>however</li>
-<li>regardless of</li>
-<li>whether (or not)</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(particle)</i>
+      <ul>
+        <li>indicates sentence subject (occasionally object)</li>
+        <li>indicates possessive (esp. in literary expressions)</li>
+      </ul>
+    </li>
+    <li>
+      <i>(conjunction)</i>
+      <ul>
+        <li>but</li>
+        <li>however</li>
+        <li>regardless of</li>
+        <li>whether (or not)</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (pos)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(particle)</i>
-<ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
-</ul>
-</li>
-<li>
-<i>(conjunction)</i>
-<ul>
-<li>but</li>
-<li>however</li>
-<li>still</li>
-<li>and</li>
-<li>regardless of</li>
-<li>whether (or not)</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(particle)</i>
+      <ul>
+        <li>indicates sentence subject (occasionally object)</li>
+        <li>indicates possessive (esp. in literary expressions)</li>
+      </ul>
+    </li>
+    <li>
+      <i>(conjunction)</i>
+      <ul>
+        <li>but</li>
+        <li>however</li>
+        <li>still</li>
+        <li>and</li>
+        <li>regardless of</li>
+        <li>whether (or not)</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
-</ul>
-</li>
-<li>
-<ul>
-<li>but</li>
-<li>however</li>
-<li>still</li>
-<li>and</li>
-<li>regardless of</li>
-<li>whether (or not)</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>indicates sentence subject (occasionally object)</li>
+        <li>indicates possessive (esp. in literary expressions)</li>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>but</li>
+        <li>however</li>
+        <li>still</li>
+        <li>and</li>
+        <li>regardless of</li>
+        <li>whether (or not)</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning' 1`] = `
 "<ol>
-<li>indicates sentence subject (occasionally object)</li>
-<li>indicates possessive (esp. in literary expressions)</li>
+  <li>indicates sentence subject (occasionally object)</li>
+  <li>indicates possessive (esp. in literary expressions)</li>
 </ol>
 <ol>
-<li>but, however, still, and</li>
-<li>regardless of, whether (or not)</li>
+  <li>but, however, still, and</li>
+  <li>regardless of, whether (or not)</li>
 </ol>"
 `;
 
@@ -1200,54 +1208,54 @@ exports[`春の茶が飲＄みたいです > 'link' 1`] = `"<a href="https://yom
 
 exports[`春の茶が飲＄みたいです > 'meaning (div) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">dollar</div>
-<div class="yomi-meaning">money, cash</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">dollar</div>
+      <div class="yomi-meaning">money, cash</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (div) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(noun)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">dollar</div>
-<div class="yomi-meaning">money, cash</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(noun)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">dollar</div>
+      <div class="yomi-meaning">money, cash</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (div) (pos)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(noun)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">dollar</div>
-<div class="yomi-meaning">money, cash</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(noun)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">dollar</div>
+      <div class="yomi-meaning">money, cash</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (div)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">dollar</div>
-<div class="yomi-meaning">money, cash</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">dollar</div>
+      <div class="yomi-meaning">money, cash</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (item <= 2)' 1`] = `
 "<ol>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ol>"
 `;
 
@@ -1262,107 +1270,111 @@ exports[`春の茶が飲＄みたいです > 'meaning (line)' 1`] = `"dollar; mo
 exports[`春の茶が飲＄みたいです > 'meaning (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ol>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ol>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (pos)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ol>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ol>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (item <= 2)' 1`] = `
 "<ul>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ul>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ul>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ul>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (pos)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ul>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ul>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (unnumbered)' 1`] = `
 "<ul>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ul>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>dollar</li>
-<li>money</li>
-<li>cash</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>dollar</li>
+        <li>money</li>
+        <li>cash</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(noun)</i>
-<ul>
-<li>dollar</li>
-<li>money</li>
-<li>cash</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(noun)</i>
+      <ul>
+        <li>dollar</li>
+        <li>money</li>
+        <li>cash</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (pos)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(noun)</i>
-<ul>
-<li>dollar</li>
-<li>money</li>
-<li>cash</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(noun)</i>
+      <ul>
+        <li>dollar</li>
+        <li>money</li>
+        <li>cash</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning (yomichan)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>dollar</li>
-<li>money</li>
-<li>cash</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>dollar</li>
+        <li>money</li>
+        <li>cash</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`春の茶が飲＄みたいです > 'meaning' 1`] = `
 "<ol>
-<li>dollar</li>
-<li>money, cash</li>
+  <li>dollar</li>
+  <li>money, cash</li>
 </ol>"
 `;
 
@@ -1669,79 +1681,79 @@ exports[`＄読みたい > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomik
 
 exports[`＄読みたい > 'meaning (div) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">to read</div>
-<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
-<div class="yomi-meaning">to predict, to guess</div>
-<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
-<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.)</div>
-<div class="yomi-meaning">to count, to estimate</div>
-<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">to read</div>
+      <div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+      <div class="yomi-meaning">to predict, to guess</div>
+      <div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+      <div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.)</div>
+      <div class="yomi-meaning">to count, to estimate</div>
+      <div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (div) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(verb)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">to read</div>
-<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
-<div class="yomi-meaning">to predict, to guess</div>
-<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
-<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.)</div>
-<div class="yomi-meaning">to count, to estimate</div>
-<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(verb)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">to read</div>
+      <div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+      <div class="yomi-meaning">to predict, to guess</div>
+      <div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+      <div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.)</div>
+      <div class="yomi-meaning">to count, to estimate</div>
+      <div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (div) (pos)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-pos">(verb)</div>
-<div class="yomi-meanings">
-<div class="yomi-meaning">to read</div>
-<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
-<div class="yomi-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</div>
-<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
-<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</div>
-<div class="yomi-meaning">to count, to estimate</div>
-<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(verb)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">to read</div>
+      <div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+      <div class="yomi-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</div>
+      <div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+      <div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</div>
+      <div class="yomi-meaning">to count, to estimate</div>
+      <div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (div)' 1`] = `
 "<div class="yomi-entry">
-<div class="yomi-group">
-<div class="yomi-meanings">
-<div class="yomi-meaning">to read</div>
-<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
-<div class="yomi-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</div>
-<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
-<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</div>
-<div class="yomi-meaning">to count, to estimate</div>
-<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
-</div>
-</div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">to read</div>
+      <div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+      <div class="yomi-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</div>
+      <div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+      <div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</div>
+      <div class="yomi-meaning">to count, to estimate</div>
+      <div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+    </div>
+  </div>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (item <= 2)' 1`] = `
 "<ol>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ol>"
 `;
 
@@ -1756,188 +1768,192 @@ exports[`＄読みたい > 'meaning (line)' 1`] = `"to read; to recite (e.g. a s
 exports[`＄読みたい > 'meaning (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ol>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ol>"
 `;
 
 exports[`＄読みたい > 'meaning (pos)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ol>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ol>"
 `;
 
 exports[`＄読みたい > 'meaning (unnumbered) (item <= 2)' 1`] = `
 "<ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ul>"
 `;
 
 exports[`＄読みたい > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ul>"
 `;
 
 exports[`＄読みたい > 'meaning (unnumbered) (pos)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ul>"
 `;
 
 exports[`＄読みたい > 'meaning (unnumbered)' 1`] = `
 "<ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ul>"
 `;
 
 exports[`＄読みたい > 'meaning (yomichan) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra)</li>
-<li>to chant</li>
-<li>to predict</li>
-<li>to guess</li>
-<li>to pronounce</li>
-<li>to read (e.g. a kanji)</li>
-<li>to decipher</li>
-<li>to read (a meter, graph, music, etc.)</li>
-<li>to count</li>
-<li>to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>to read</li>
+        <li>to recite (e.g. a sutra)</li>
+        <li>to chant</li>
+        <li>to predict</li>
+        <li>to guess</li>
+        <li>to pronounce</li>
+        <li>to read (e.g. a kanji)</li>
+        <li>to decipher</li>
+        <li>to read (a meter, graph, music, etc.)</li>
+        <li>to count</li>
+        <li>to estimate</li>
+        <li>to read (a kanji) with its native Japanese reading</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(verb)</i>
-<ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra)</li>
-<li>to chant</li>
-<li>to predict</li>
-<li>to guess</li>
-<li>to pronounce</li>
-<li>to read (e.g. a kanji)</li>
-<li>to decipher</li>
-<li>to read (a meter, graph, music, etc.)</li>
-<li>to count</li>
-<li>to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(verb)</i>
+      <ul>
+        <li>to read</li>
+        <li>to recite (e.g. a sutra)</li>
+        <li>to chant</li>
+        <li>to predict</li>
+        <li>to guess</li>
+        <li>to pronounce</li>
+        <li>to read (e.g. a kanji)</li>
+        <li>to decipher</li>
+        <li>to read (a meter, graph, music, etc.)</li>
+        <li>to count</li>
+        <li>to estimate</li>
+        <li>to read (a kanji) with its native Japanese reading</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (yomichan) (pos)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<i>(verb)</i>
-<ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra)</li>
-<li>to chant</li>
-<li>to predict</li>
-<li>to guess</li>
-<li>to forecast</li>
-<li>to read (someone's thoughts)</li>
-<li>to see (e.g. into someone's heart)</li>
-<li>to divine</li>
-<li>to pronounce</li>
-<li>to read (e.g. a kanji)</li>
-<li>to decipher</li>
-<li>to read (a meter, graph, music, etc.)</li>
-<li>to tell (the time)</li>
-<li>to count</li>
-<li>to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(verb)</i>
+      <ul>
+        <li>to read</li>
+        <li>to recite (e.g. a sutra)</li>
+        <li>to chant</li>
+        <li>to predict</li>
+        <li>to guess</li>
+        <li>to forecast</li>
+        <li>to read (someone's thoughts)</li>
+        <li>to see (e.g. into someone's heart)</li>
+        <li>to divine</li>
+        <li>to pronounce</li>
+        <li>to read (e.g. a kanji)</li>
+        <li>to decipher</li>
+        <li>to read (a meter, graph, music, etc.)</li>
+        <li>to tell (the time)</li>
+        <li>to count</li>
+        <li>to estimate</li>
+        <li>to read (a kanji) with its native Japanese reading</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning (yomichan)' 1`] = `
-"<div style="text-align: left;"><ol>
-<li>
-<ul>
-<li>to read</li>
-<li>to recite (e.g. a sutra)</li>
-<li>to chant</li>
-<li>to predict</li>
-<li>to guess</li>
-<li>to forecast</li>
-<li>to read (someone's thoughts)</li>
-<li>to see (e.g. into someone's heart)</li>
-<li>to divine</li>
-<li>to pronounce</li>
-<li>to read (e.g. a kanji)</li>
-<li>to decipher</li>
-<li>to read (a meter, graph, music, etc.)</li>
-<li>to tell (the time)</li>
-<li>to count</li>
-<li>to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
-</ul>
-</li>
-</ol>
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>to read</li>
+        <li>to recite (e.g. a sutra)</li>
+        <li>to chant</li>
+        <li>to predict</li>
+        <li>to guess</li>
+        <li>to forecast</li>
+        <li>to read (someone's thoughts)</li>
+        <li>to see (e.g. into someone's heart)</li>
+        <li>to divine</li>
+        <li>to pronounce</li>
+        <li>to read (e.g. a kanji)</li>
+        <li>to decipher</li>
+        <li>to read (a meter, graph, music, etc.)</li>
+        <li>to tell (the time)</li>
+        <li>to count</li>
+        <li>to estimate</li>
+        <li>to read (a kanji) with its native Japanese reading</li>
+      </ul>
+    </li>
+  </ol>
 </div>"
 `;
 
 exports[`＄読みたい > 'meaning' 1`] = `
 "<ol>
-<li>to read</li>
-<li>to recite (e.g. a sutra), to chant</li>
-<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
-<li>to pronounce, to read (e.g. a kanji)</li>
-<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
-<li>to count, to estimate</li>
-<li>to read (a kanji) with its native Japanese reading</li>
+  <li>to read</li>
+  <li>to recite (e.g. a sutra), to chant</li>
+  <li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+  <li>to pronounce, to read (e.g. a kanji)</li>
+  <li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+  <li>to count, to estimate</li>
+  <li>to read (a kanji) with its native Japanese reading</li>
 </ol>"
 `;
 
