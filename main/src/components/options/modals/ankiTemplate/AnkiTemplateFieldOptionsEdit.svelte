@@ -79,11 +79,15 @@
     <div class="section-header">
       <h4 class="second">Selected Meaning</h4>
       <p>
-        When you select a meaning in the dictionary entry, '<IconAddCircleOutline
-        />' button turns orange.
+        When you select a meaning in the dictionary entry,
+        <span class="hidden">'+' button</span><IconAddCircleOutline /> button turns
+        orange.
         <br />
-        Clicking '<IconAddCircleOutline />' will let you add only that meaning
-        of the word to Anki.
+        Clicking
+        <span class="orange-icon"
+          ><span class="hidden">'+' button</span><IconAddCircleOutline /></span
+        >
+        will let you add only that meaning of the word to Anki.
         <br />
       </p>
       <p>Below options apply for such case.</p>
@@ -120,10 +124,19 @@
     margin: 0.25rem 0 0 0;
   }
 
+  /* Have it show up when copied to clipboard */
+  .hidden {
+    font-size: 0;
+  }
+
   p :global(svg) {
     display: inline;
     width: 1em;
     vertical-align: bottom;
+  }
+
+  .orange-icon :global(svg) {
+    color: var(--accent);
   }
 
   .section-header {
