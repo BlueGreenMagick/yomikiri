@@ -1,11 +1,17 @@
 <script lang="ts">
+  import OptionNumber from "components/options/items/OptionNumber.svelte";
   import OptionSelect from "components/options/items/OptionSelect.svelte";
+  import OptionToggle from "components/options/items/OptionToggle.svelte";
   import type { AnkiTemplateField } from "lib/anki";
+  import IconAddCircleOutline from "@icons/add-circle-outline.svg";
 
   export let template: AnkiTemplateField;
 </script>
 
-<div class="anki-template-field-options grouped">
+<div class="anki-template-field-options-edit grouped">
+  {#if template.content === "" || template.content === "translated-sentence" || template.content === "url" || template.content === "link"}
+    <div class="gray">No configurable options</div>
+  {/if}
   {#if template.content === "word"}
     <OptionSelect
       bind:selected={template.form}
@@ -41,13 +47,88 @@
       >.
     </OptionSelect>
   {/if}
-  {#if template.content === "" || template.content === "translated-sentence" || template.content === "url" || template.content === "link"}
-    <div class="gray">No configurable options</div>
+  {#if template.content === "meaning"}
+    <div class="section-header">
+      <h4>Full Entry</h4>
+      <p>Below options apply if the whole dictionary entry is added to Anki.</p>
+    </div>
+    <OptionSelect
+      bind:selected={template.full_format}
+      options={[
+        ["numbered", "Numbered list"],
+        ["unnumbered", "Bulleted list"],
+        ["line", "Single line"],
+        ["div", "divs"],
+        ["yomichan", "Yomichan style"],
+      ]}
+      title="Format"
+    >
+      How the meanings should be formatted.
+    </OptionSelect>
+    <OptionToggle bind:value={template.full_pos} title="Part of Speech">
+      Include part of speech
+    </OptionToggle>
+    <OptionNumber
+      bind:value={template.full_max_item}
+      title="Max Items Per Meaning"
+      min={0}
+    >
+      Use the first N glossaries per meaning. Use 0 to set no limit.
+    </OptionNumber>
+
+    <div class="section-header">
+      <h4 class="second">Selected Meaning</h4>
+      <p>
+        When you select a meaning in the dictionary entry, '<IconAddCircleOutline
+        />' button turns orange.
+        <br />
+        Clicking '<IconAddCircleOutline />' will let you add only that meaning
+        of the word to Anki.
+        <br />
+      </p>
+      <p>Below options apply for such case.</p>
+    </div>
+    <OptionToggle bind:value={template.single_pos} title="Part of Speech">
+      Include part of speech
+    </OptionToggle>
+    <OptionNumber
+      bind:value={template.single_max_item}
+      title="Max Items"
+      min={0}
+    >
+      Use the first N glossaries. Use 0 to set no limit.
+    </OptionNumber>
   {/if}
 </div>
 
 <style>
   .gray {
     color: var(--text-light);
+  }
+
+  h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  h4.second {
+    margin-top: 2rem;
+  }
+
+  p {
+    color: var(--text-light);
+    margin: 0.25rem 0 0 0;
+  }
+
+  p :global(svg) {
+    display: inline;
+    width: 1em;
+    vertical-align: bottom;
+  }
+
+  .section-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin: 0 8px;
   }
 </style>

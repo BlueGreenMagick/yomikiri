@@ -155,30 +155,117 @@ addBuilder("word", (opts, data) => {
 })
 
 addBuilder("meaning", (opts, data) => {
-  if (opts.format === "default") {
-    const lines = [];
+  if (data.selectedMeaning === undefined) {
+    const format = opts.full_format
+    if (!["numbered", "unnumbered", "line", "div", "yomichan"].includes(format)) {
+      throw new Error(`Invalid Anki template field option value for 'full_format': '${format}`)
+    }
+
+    const lines = []
     const grouped = Entry.groupSenses(data.entry);
+
+    if (format === "div") {
+      lines.push('<div class="yomi-entry">')
+    } else if (format === "yomichan") {
+      lines.push('<div style="text-align: left;"><ol>')
+    }
+
     for (const group of grouped) {
-      for (const meaning of group.senses) {
-        const meaningLine = Utils.escapeHTML(meaning.meaning.join(", "));
-        lines.push(`<span class="yk-meaning">${meaningLine}</span>`);
+      if (format === "div") {
+        lines.push('<div class="yomi-group">')
+      } else if (format === "yomichan") {
+        lines.push("<li>")
+      }
+
+      if (opts.full_pos) {
+        const poss = escapeHTML(group.pos.join(", "))
+        if (format === "yomichan") {
+          lines.push(`<i>(${poss})</i>`)
+        } else if (format === "line") {
+          lines.push(`(${escapeHTML(poss)})`)
+        } else {
+          lines.push(`<div class="yomi-pos">(${poss})</div>`)
+        }
+      }
+
+      if (format === "numbered") {
+        lines.push("<ol>")
+      } else if (format === "unnumbered" || format === "yomichan") {
+        lines.push("<ul>")
+      } else if (format === "div") {
+        lines.push('<div class="yomi-meanings">')
+      }
+
+      const lineMeanings: string[] = []
+
+      for (const sense of group.senses) {
+        let items
+        if (opts.full_max_item > 0) {
+          items = sense.meaning.slice(0, opts.full_max_item)
+        } else {
+          items = sense.meaning
+        }
+        if (format === "yomichan") {
+          for (const item of items) {
+            lines.push(`<li>${escapeHTML(item)}</li>`)
+          }
+        } else {
+          const itemsLine = escapeHTML(items.join(", "))
+          if (format === "numbered" || format === "unnumbered") {
+            lines.push(`<li>${itemsLine}</li>`)
+          } else if (format === "div") {
+            lines.push(`<div class="yomi-meaning">${itemsLine}</div>`)
+          } else if (format === "line") {
+            lineMeanings.push(itemsLine)
+          }
+        }
+      }
+      if (format === "line") {
+        lines.push(lineMeanings.join("; "))
+      }
+
+      if (format === "numbered") {
+        lines.push("</ol>")
+      } else if (format === "unnumbered") {
+        lines.push("</ul>")
+      } else if (format === "div") {
+        lines.push("</div>")
+        lines.push("</div>")
+      } else if (format === "yomichan") {
+        lines.push("</ul>")
+        lines.push("</li>")
       }
     }
-    return lines.join("<br>");
-  } else if (opts.format === "short") {
-    if (data.selectedMeaning === undefined) {
-      const meanings = [];
-      const cnt = Math.min(3, data.entry.senses.length);
-      for (let i = 0; i < cnt; i++) {
-        meanings.push(data.entry.senses[i].meaning[0]);
-      }
-      return escapeHTML(meanings.join("; "));
+
+    if (format === "div") {
+      lines.push("</div>")
+    } else if (format === "yomichan") {
+      lines.push("</ol>")
+      lines.push("</div>")
+    }
+
+    if (format === "line") {
+      return lines.join("")
     } else {
-      const raw = data.selectedMeaning.meaning.slice(0, 2).join(", ");
-      return escapeHTML(raw);
+      return lines.join("\n")
     }
   } else {
-    throw new Error(`Invalid Anki template field option value for 'format': '${opts.format}'`)
+    const sense = data.selectedMeaning
+    let line = ""
+    if (opts.single_pos) {
+      const poss = sense.pos.join(", ")
+      line += `(${escapeHTML(poss)}) `
+    }
+
+    let items: string[]
+    if (opts.single_max_item > 0) {
+      items = sense.meaning.slice(0, opts.single_max_item)
+    } else {
+      items = sense.meaning
+    }
+
+    line += escapeHTML(items.join(", "))
+    return line
   }
 })
 

@@ -37,7 +37,18 @@ export interface AnkiTemplateFieldSentenceOptions {
 }
 
 export interface AnkiTemplateFieldMeaningOptions {
-  format: "default" | "short"
+  full_format: "numbered" | "unnumbered" | "line" | "div" | "yomichan"
+  full_pos: boolean
+  /** Use the first N glossaries per meaning. 0 to set if off. */
+  full_max_item: number
+  /** TODO: Use the first N meanings evenly across each pos group. 0 to set it off. */
+  // Contain at least 1 meaning from each pos group, then by order
+  // full_max_meaning: number
+  // short_max_meaning: number
+
+  /* Options for single selected meaning */
+  single_pos: boolean
+  single_max_item: number
 }
 
 export const ANKI_TEMPLATE_FIELD_TYPES: AnkiTemplateFieldContent[] = ["", "word", "sentence", "translated-sentence", "meaning", "url", "link"]
@@ -66,8 +77,30 @@ export function ankiTemplateFieldLabel(field: AnkiTemplateField): string {
     }
   }
   if (content === "meaning") {
-    if (field.format === "short") {
-      label += " (short)"
+    if (field.full_format === "unnumbered") {
+      label += " (unnumbered)"
+    } else if (field.full_format === "line") {
+      label += " (line)"
+    } else if (field.full_format === "div") {
+      label += " (div)"
+    } else if (field.full_format === "yomichan") {
+      label += " (yomichan)"
+    }
+
+    if (field.full_pos) {
+      if (field.single_pos) {
+        label += " (pos)"
+      } else {
+        label += " (full-pos)"
+      }
+    } else if (field.single_pos) {
+      label += " (single-pos)"
+    }
+    if (field.full_max_item > 0) {
+      label += ` (item <= ${field.full_max_item})`
+    }
+    if (field.single_max_item > 0) {
+      label += ` (single-item <= ${field.single_max_item})`
     }
   }
   if (content === "word") {
@@ -109,7 +142,11 @@ export function newAnkiTemplateField(name: string, content: AnkiTemplateFieldCon
   } else if (content === "meaning") {
     return {
       name, content: content,
-      format: "default"
+      full_format: "numbered",
+      full_pos: false,
+      full_max_item: 0,
+      single_pos: false,
+      single_max_item: 0
     }
   } else {
     throw new Error(`Invalid Anki template field type '${content}'`)
