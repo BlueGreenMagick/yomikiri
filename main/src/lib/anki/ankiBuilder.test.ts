@@ -65,13 +65,23 @@ async function testSentence(sentence: string, charIdx: number): Promise<void> {
   })
 
   const options = generateAllFieldTemplateOptions()
-
   test.each(options)("$label", async ({ template }) => {
     const field = buildAnkiField(ctx, data, template)
     const value = await field.value
     expect(value).toMatchSnapshot()
   })
 
+  // Test specific meaning field generation
+  const singleTemplateFields = generateSingleMeaningFieldTemplates()
+  const singleData: AnkiBuilderData = {
+    ...data,
+    selectedMeaning: data.entry.senses[0]
+  }
+  test.each(singleTemplateFields)("(single) $label", async ({ template }) => {
+    const field = buildAnkiField(ctx, singleData, template)
+    const value = await field.value
+    expect(value).toMatchSnapshot()
+  })
 }
 
 
@@ -112,13 +122,20 @@ function generateAllFieldTemplateOptions(): TemplateFieldAndLabel[] {
       })
     }
   }
-  // content: "meaning"
-  for (const format of ["default", "short"] as const) {
-    templates.push({
-      name: "field",
-      content: "meaning",
-      format
-    })
+
+  // content: "meaning" (full)
+  for (const full_format of ["numbered", "unnumbered", "line", "div", "yomichan"] as const) {
+    for (const full_pos of [true, false]) {
+      for (const full_max_item of [0, 2]) {
+        templates.push({
+          name: "field",
+          content: "meaning",
+          full_format, full_pos, full_max_item,
+          single_pos: full_pos,
+          single_max_item: 0
+        })
+      }
+    }
   }
 
   return templates.map((template) => {
@@ -127,4 +144,22 @@ function generateAllFieldTemplateOptions(): TemplateFieldAndLabel[] {
       label: ankiTemplateFieldLabel(template)
     }
   })
+}
+
+/** content: "meaning" for specific meaning */
+function generateSingleMeaningFieldTemplates(): TemplateFieldAndLabel[] {
+  const templates: AnkiTemplateField[] = []
+  for (const single_pos of [true, false]) {
+    for (const single_max_item of [0, 2]) {
+      templates.push({
+        name: "field",
+        content: "meaning",
+        full_format: "numbered",
+        full_pos: single_pos,
+        full_max_item: 0,
+        single_pos, single_max_item
+      })
+    }
+  }
+  return templates.map((template) => ({ template, label: ankiTemplateFieldLabel(template) }))
 }

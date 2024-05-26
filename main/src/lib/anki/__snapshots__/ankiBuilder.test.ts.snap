@@ -4,41 +4,185 @@ exports[`Test that special character is escaped: 図＄書<-> > '-' 1`] = `""`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (short)' 1`] = `"books"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">books</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning' 1`] = `"<span class="yk-meaning">books</span>"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(noun)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">books</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (furigana-anki)' 1`] = `"<b>図書[としょ]</b>&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (pos)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(noun)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">books</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (furigana-html)' 1`] = `"<b>&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby></b>&amp;lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">books</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (kana)' 1`] = `"<b>としょ</b>&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (item <= 2)' 1`] = `
+"<ol>
+<li>books</li>
+</ol>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold)' 1`] = `"<b>図書</b>&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (item <= 2)' 1`] = `"books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (furigana-anki)' 1`] = `"{{c1::図書[としょ]}}&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun)books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby>}}&amp;lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos)' 1`] = `"(noun)books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (kana)' 1`] = `"{{c1::としょ}}&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line)' 1`] = `"books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze)' 1`] = `"{{c1::図書}}&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ol>
+<li>books</li>
+</ol>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (furigana-anki)' 1`] = `"図書[としょ]&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ol>
+<li>books</li>
+</ol>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (furigana-html)' 1`] = `"&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby>&amp;lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (item <= 2)' 1`] = `
+"<ul>
+<li>books</li>
+</ul>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (kana)' 1`] = `"としょ&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ul>
+<li>books</li>
+</ul>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (furigana-anki)' 1`] = `"<span class="yomi-word">図書[としょ]</span>&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (pos)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ul>
+<li>books</li>
+</ul>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">&lt;ruby>図書&lt;rt>としょ&lt;/rt>&lt;/ruby></span>&amp;lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered)' 1`] = `
+"<ul>
+<li>books</li>
+</ul>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (kana)' 1`] = `"<span class="yomi-word">としょ</span>&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>books</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span)' 1`] = `"<span class="yomi-word">図書</span>&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(noun)</i>
+<ul>
+<li>books</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'sentence' 1`] = `"図書&lt;->"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (pos)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(noun)</i>
+<ul>
+<li>books</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>books</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning' 1`] = `
+"<ol>
+<li>books</li>
+</ol>"
+`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (furigana-anki)' 1`] = `"<b>図書[としょ]</b>&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (furigana-html)' 1`] = `"<b>&lt;ruby&gt;図書&lt;rt&gt;としょ&lt;/rt&gt;&lt;/ruby&gt;</b>&amp;lt;-&amp;gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold) (kana)' 1`] = `"<b>としょ</b>&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (bold)' 1`] = `"<b>図書</b>&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (furigana-anki)' 1`] = `"{{c1::図書[としょ]}}&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::&lt;ruby&gt;図書&lt;rt&gt;としょ&lt;/rt&gt;&lt;/ruby&gt;}}&amp;lt;-&amp;gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze) (kana)' 1`] = `"{{c1::としょ}}&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (cloze)' 1`] = `"{{c1::図書}}&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (furigana-anki)' 1`] = `"図書[としょ]&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (furigana-html)' 1`] = `"&lt;ruby&gt;図書&lt;rt&gt;としょ&lt;/rt&gt;&lt;/ruby&gt;&amp;lt;-&amp;gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (kana)' 1`] = `"としょ&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (furigana-anki)' 1`] = `"<span class="yomi-word">図書[としょ]</span>&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">&lt;ruby&gt;図書&lt;rt&gt;としょ&lt;/rt&gt;&lt;/ruby&gt;</span>&amp;lt;-&amp;gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span) (kana)' 1`] = `"<span class="yomi-word">としょ</span>&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence (span)' 1`] = `"<span class="yomi-word">図書</span>&lt;-&gt;"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > 'sentence' 1`] = `"図書&lt;-&gt;"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'translated-sentence' 1`] = `"Books<->"`;
 
@@ -67,6 +211,14 @@ exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict
 exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict)' 1`] = `"図書"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'word' 1`] = `"図書"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(noun) books"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (pos)' 1`] = `"(noun) books"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (single-item <= 2)' 1`] = `"books"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning' 1`] = `"books"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > Check that tokenization result has not changed 1`] = `
 {
@@ -204,13 +356,273 @@ exports[`Test unicode normalization: 彼か＄゙学生 > '-' 1`] = `""`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (short)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+</div>
+</div>
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">but, however</div>
+<div class="yomi-meaning">regardless of, whether (or not)</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning' 1`] = `"<span class="yk-meaning">indicates sentence subject (occasionally object)</span><br><span class="yk-meaning">indicates possessive (esp. in literary expressions)</span><br><span class="yk-meaning">but, however, still, and</span><br><span class="yk-meaning">regardless of, whether (or not)</span>"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(particle)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+</div>
+</div>
+<div class="yomi-group">
+<div class="yomi-pos">(conjunction)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">but, however</div>
+<div class="yomi-meaning">regardless of, whether (or not)</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (pos)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(particle)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+</div>
+</div>
+<div class="yomi-group">
+<div class="yomi-pos">(conjunction)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">but, however, still, and</div>
+<div class="yomi-meaning">regardless of, whether (or not)</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">indicates sentence subject (occasionally object)</div>
+<div class="yomi-meaning">indicates possessive (esp. in literary expressions)</div>
+</div>
+</div>
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">but, however, still, and</div>
+<div class="yomi-meaning">regardless of, whether (or not)</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (item <= 2)' 1`] = `
+"<ol>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ol>
+<ol>
+<li>but, however</li>
+<li>regardless of, whether (or not)</li>
+</ol>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (item <= 2)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)but, however; regardless of, whether (or not)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos) (item <= 2)' 1`] = `"(particle)indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)(conjunction)but, however; regardless of, whether (or not)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos)' 1`] = `"(particle)indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)(conjunction)but, however, still, and; regardless of, whether (or not)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)but, however, still, and; regardless of, whether (or not)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(particle)</div>
+<ol>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ol>
+<div class="yomi-pos">(conjunction)</div>
+<ol>
+<li>but, however</li>
+<li>regardless of, whether (or not)</li>
+</ol>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos)' 1`] = `
+"<div class="yomi-pos">(particle)</div>
+<ol>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ol>
+<div class="yomi-pos">(conjunction)</div>
+<ol>
+<li>but, however, still, and</li>
+<li>regardless of, whether (or not)</li>
+</ol>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (item <= 2)' 1`] = `
+"<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+<ul>
+<li>but, however</li>
+<li>regardless of, whether (or not)</li>
+</ul>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(particle)</div>
+<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+<div class="yomi-pos">(conjunction)</div>
+<ul>
+<li>but, however</li>
+<li>regardless of, whether (or not)</li>
+</ul>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (pos)' 1`] = `
+"<div class="yomi-pos">(particle)</div>
+<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+<div class="yomi-pos">(conjunction)</div>
+<ul>
+<li>but, however, still, and</li>
+<li>regardless of, whether (or not)</li>
+</ul>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered)' 1`] = `
+"<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+<ul>
+<li>but, however, still, and</li>
+<li>regardless of, whether (or not)</li>
+</ul>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>but</li>
+<li>however</li>
+<li>regardless of</li>
+<li>whether (or not)</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(particle)</i>
+<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+</li>
+<li>
+<i>(conjunction)</i>
+<ul>
+<li>but</li>
+<li>however</li>
+<li>regardless of</li>
+<li>whether (or not)</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (pos)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(particle)</i>
+<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+</li>
+<li>
+<i>(conjunction)</i>
+<ul>
+<li>but</li>
+<li>however</li>
+<li>still</li>
+<li>and</li>
+<li>regardless of</li>
+<li>whether (or not)</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>but</li>
+<li>however</li>
+<li>still</li>
+<li>and</li>
+<li>regardless of</li>
+<li>whether (or not)</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning' 1`] = `
+"<ol>
+<li>indicates sentence subject (occasionally object)</li>
+<li>indicates possessive (esp. in literary expressions)</li>
+</ol>
+<ol>
+<li>but, however, still, and</li>
+<li>regardless of, whether (or not)</li>
+</ol>"
+`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (furigana-anki)' 1`] = `"彼[かれ]<b>が</b>学生[がくせい]"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby><b>が</b>&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (furigana-html)' 1`] = `"&lt;ruby&gt;彼&lt;rt&gt;かれ&lt;/rt&gt;&lt;/ruby&gt;<b>が</b>&lt;ruby&gt;学生&lt;rt&gt;がくせい&lt;/rt&gt;&lt;/ruby&gt;"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold) (kana)' 1`] = `"かれ<b>が</b>がくせい"`;
 
@@ -218,7 +630,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (bold)' 1`] 
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (furigana-anki)' 1`] = `"彼[かれ]{{c1::が}}学生[がくせい]"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby>{{c1::が}}&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (furigana-html)' 1`] = `"&lt;ruby&gt;彼&lt;rt&gt;かれ&lt;/rt&gt;&lt;/ruby&gt;{{c1::が}}&lt;ruby&gt;学生&lt;rt&gt;がくせい&lt;/rt&gt;&lt;/ruby&gt;"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze) (kana)' 1`] = `"かれ{{c1::が}}がくせい"`;
 
@@ -226,13 +638,13 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (cloze)' 1`]
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (furigana-anki)' 1`] = `"彼[かれ]が学生[がくせい]"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby>が&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (furigana-html)' 1`] = `"&lt;ruby&gt;彼&lt;rt&gt;かれ&lt;/rt&gt;&lt;/ruby&gt;が&lt;ruby&gt;学生&lt;rt&gt;がくせい&lt;/rt&gt;&lt;/ruby&gt;"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (kana)' 1`] = `"かれががくせい"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (furigana-anki)' 1`] = `"彼[かれ]<span class="yomi-word">が</span>学生[がくせい]"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (furigana-html)' 1`] = `"&lt;ruby>彼&lt;rt>かれ&lt;/rt>&lt;/ruby><span class="yomi-word">が</span>&lt;ruby>学生&lt;rt>がくせい&lt;/rt>&lt;/ruby>"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (furigana-html)' 1`] = `"&lt;ruby&gt;彼&lt;rt&gt;かれ&lt;/rt&gt;&lt;/ruby&gt;<span class="yomi-word">が</span>&lt;ruby&gt;学生&lt;rt&gt;がくせい&lt;/rt&gt;&lt;/ruby&gt;"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'sentence (span) (kana)' 1`] = `"かれ<span class="yomi-word">が</span>がくせい"`;
 
@@ -267,6 +679,14 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (kan
 exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict)' 1`] = `"が"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'word' 1`] = `"が"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(particle) indicates sentence subject (occasionally object)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (pos)' 1`] = `"(particle) indicates sentence subject (occasionally object)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (single-item <= 2)' 1`] = `"indicates sentence subject (occasionally object)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning' 1`] = `"indicates sentence subject (occasionally object)"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > Check that tokenization result has not changed 1`] = `
 {
@@ -778,13 +1198,177 @@ exports[`春の茶が飲＄みたいです > '-' 1`] = `""`;
 
 exports[`春の茶が飲＄みたいです > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (short)' 1`] = `"dollar; money"`;
+exports[`春の茶が飲＄みたいです > 'meaning (div) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">dollar</div>
+<div class="yomi-meaning">money, cash</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`春の茶が飲＄みたいです > 'meaning' 1`] = `"<span class="yk-meaning">dollar</span><br><span class="yk-meaning">money, cash</span>"`;
+exports[`春の茶が飲＄みたいです > 'meaning (div) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(noun)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">dollar</div>
+<div class="yomi-meaning">money, cash</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (div) (pos)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(noun)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">dollar</div>
+<div class="yomi-meaning">money, cash</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (div)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">dollar</div>
+<div class="yomi-meaning">money, cash</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (item <= 2)' 1`] = `
+"<ol>
+<li>dollar</li>
+<li>money, cash</li>
+</ol>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (line) (item <= 2)' 1`] = `"dollar; money, cash"`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun)dollar; money, cash"`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (line) (pos)' 1`] = `"(noun)dollar; money, cash"`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (line)' 1`] = `"dollar; money, cash"`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ol>
+<li>dollar</li>
+<li>money, cash</li>
+</ol>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (pos)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ol>
+<li>dollar</li>
+<li>money, cash</li>
+</ol>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (item <= 2)' 1`] = `
+"<ul>
+<li>dollar</li>
+<li>money, cash</li>
+</ul>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ul>
+<li>dollar</li>
+<li>money, cash</li>
+</ul>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (pos)' 1`] = `
+"<div class="yomi-pos">(noun)</div>
+<ul>
+<li>dollar</li>
+<li>money, cash</li>
+</ul>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (unnumbered)' 1`] = `
+"<ul>
+<li>dollar</li>
+<li>money, cash</li>
+</ul>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>dollar</li>
+<li>money</li>
+<li>cash</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(noun)</i>
+<ul>
+<li>dollar</li>
+<li>money</li>
+<li>cash</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (pos)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(noun)</i>
+<ul>
+<li>dollar</li>
+<li>money</li>
+<li>cash</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning (yomichan)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>dollar</li>
+<li>money</li>
+<li>cash</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`春の茶が飲＄みたいです > 'meaning' 1`] = `
+"<ol>
+<li>dollar</li>
+<li>money, cash</li>
+</ol>"
+`;
 
 exports[`春の茶が飲＄みたいです > 'sentence (bold) (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]<b>＄[どる]</b>みたいです"`;
 
-exports[`春の茶が飲＄みたいです > 'sentence (bold) (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby><b>&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby></b>みたいです"`;
+exports[`春の茶が飲＄みたいです > 'sentence (bold) (furigana-html)' 1`] = `"&lt;ruby&gt;春&lt;rt&gt;はる&lt;/rt&gt;&lt;/ruby&gt;の&lt;ruby&gt;茶&lt;rt&gt;ちゃ&lt;/rt&gt;&lt;/ruby&gt;が&lt;ruby&gt;飲&lt;rt&gt;いん&lt;/rt&gt;&lt;/ruby&gt;<b>&lt;ruby&gt;＄&lt;rt&gt;どる&lt;/rt&gt;&lt;/ruby&gt;</b>みたいです"`;
 
 exports[`春の茶が飲＄みたいです > 'sentence (bold) (kana)' 1`] = `"はるのちゃがいん<b>どる</b>みたいです"`;
 
@@ -792,7 +1376,7 @@ exports[`春の茶が飲＄みたいです > 'sentence (bold)' 1`] = `"春の茶
 
 exports[`春の茶が飲＄みたいです > 'sentence (cloze) (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]{{c1::＄[どる]}}みたいです"`;
 
-exports[`春の茶が飲＄みたいです > 'sentence (cloze) (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby>{{c1::&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby>}}みたいです"`;
+exports[`春の茶が飲＄みたいです > 'sentence (cloze) (furigana-html)' 1`] = `"&lt;ruby&gt;春&lt;rt&gt;はる&lt;/rt&gt;&lt;/ruby&gt;の&lt;ruby&gt;茶&lt;rt&gt;ちゃ&lt;/rt&gt;&lt;/ruby&gt;が&lt;ruby&gt;飲&lt;rt&gt;いん&lt;/rt&gt;&lt;/ruby&gt;{{c1::&lt;ruby&gt;＄&lt;rt&gt;どる&lt;/rt&gt;&lt;/ruby&gt;}}みたいです"`;
 
 exports[`春の茶が飲＄みたいです > 'sentence (cloze) (kana)' 1`] = `"はるのちゃがいん{{c1::どる}}みたいです"`;
 
@@ -800,13 +1384,13 @@ exports[`春の茶が飲＄みたいです > 'sentence (cloze)' 1`] = `"春の�
 
 exports[`春の茶が飲＄みたいです > 'sentence (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]＄[どる]みたいです"`;
 
-exports[`春の茶が飲＄みたいです > 'sentence (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby>&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby>みたいです"`;
+exports[`春の茶が飲＄みたいです > 'sentence (furigana-html)' 1`] = `"&lt;ruby&gt;春&lt;rt&gt;はる&lt;/rt&gt;&lt;/ruby&gt;の&lt;ruby&gt;茶&lt;rt&gt;ちゃ&lt;/rt&gt;&lt;/ruby&gt;が&lt;ruby&gt;飲&lt;rt&gt;いん&lt;/rt&gt;&lt;/ruby&gt;&lt;ruby&gt;＄&lt;rt&gt;どる&lt;/rt&gt;&lt;/ruby&gt;みたいです"`;
 
 exports[`春の茶が飲＄みたいです > 'sentence (kana)' 1`] = `"はるのちゃがいんどるみたいです"`;
 
 exports[`春の茶が飲＄みたいです > 'sentence (span) (furigana-anki)' 1`] = `"春[はる]の 茶[ちゃ]が 飲[いん]<span class="yomi-word">＄[どる]</span>みたいです"`;
 
-exports[`春の茶が飲＄みたいです > 'sentence (span) (furigana-html)' 1`] = `"&lt;ruby>春&lt;rt>はる&lt;/rt>&lt;/ruby>の&lt;ruby>茶&lt;rt>ちゃ&lt;/rt>&lt;/ruby>が&lt;ruby>飲&lt;rt>いん&lt;/rt>&lt;/ruby><span class="yomi-word">&lt;ruby>＄&lt;rt>どる&lt;/rt>&lt;/ruby></span>みたいです"`;
+exports[`春の茶が飲＄みたいです > 'sentence (span) (furigana-html)' 1`] = `"&lt;ruby&gt;春&lt;rt&gt;はる&lt;/rt&gt;&lt;/ruby&gt;の&lt;ruby&gt;茶&lt;rt&gt;ちゃ&lt;/rt&gt;&lt;/ruby&gt;が&lt;ruby&gt;飲&lt;rt&gt;いん&lt;/rt&gt;&lt;/ruby&gt;<span class="yomi-word">&lt;ruby&gt;＄&lt;rt&gt;どる&lt;/rt&gt;&lt;/ruby&gt;</span>みたいです"`;
 
 exports[`春の茶が飲＄みたいです > 'sentence (span) (kana)' 1`] = `"はるのちゃがいん<span class="yomi-word">どる</span>みたいです"`;
 
@@ -841,6 +1425,14 @@ exports[`春の茶が飲＄みたいです > 'word (main dict) (kana)' 1`] = `"�
 exports[`春の茶が飲＄みたいです > 'word (main dict)' 1`] = `"ドル"`;
 
 exports[`春の茶が飲＄みたいです > 'word' 1`] = `"＄"`;
+
+exports[`春の茶が飲＄みたいです > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(noun) dollar"`;
+
+exports[`春の茶が飲＄みたいです > (single) 'meaning (pos)' 1`] = `"(noun) dollar"`;
+
+exports[`春の茶が飲＄みたいです > (single) 'meaning (single-item <= 2)' 1`] = `"dollar"`;
+
+exports[`春の茶が飲＄みたいです > (single) 'meaning' 1`] = `"dollar"`;
 
 exports[`春の茶が飲＄みたいです > Check that tokenization result has not changed 1`] = `
 {
@@ -1075,13 +1667,283 @@ exports[`＄読みたい > '-' 1`] = `""`;
 
 exports[`＄読みたい > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`＄読みたい > 'meaning (short)' 1`] = `"to read; to recite (e.g. a sutra); to predict"`;
+exports[`＄読みたい > 'meaning (div) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">to read</div>
+<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+<div class="yomi-meaning">to predict, to guess</div>
+<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.)</div>
+<div class="yomi-meaning">to count, to estimate</div>
+<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+</div>
+</div>
+</div>"
+`;
 
-exports[`＄読みたい > 'meaning' 1`] = `"<span class="yk-meaning">to read</span><br><span class="yk-meaning">to recite (e.g. a sutra), to chant</span><br><span class="yk-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</span><br><span class="yk-meaning">to pronounce, to read (e.g. a kanji)</span><br><span class="yk-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</span><br><span class="yk-meaning">to count, to estimate</span><br><span class="yk-meaning">to read (a kanji) with its native Japanese reading</span>"`;
+exports[`＄読みたい > 'meaning (div) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(verb)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">to read</div>
+<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+<div class="yomi-meaning">to predict, to guess</div>
+<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.)</div>
+<div class="yomi-meaning">to count, to estimate</div>
+<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning (div) (pos)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-pos">(verb)</div>
+<div class="yomi-meanings">
+<div class="yomi-meaning">to read</div>
+<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+<div class="yomi-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</div>
+<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</div>
+<div class="yomi-meaning">to count, to estimate</div>
+<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning (div)' 1`] = `
+"<div class="yomi-entry">
+<div class="yomi-group">
+<div class="yomi-meanings">
+<div class="yomi-meaning">to read</div>
+<div class="yomi-meaning">to recite (e.g. a sutra), to chant</div>
+<div class="yomi-meaning">to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</div>
+<div class="yomi-meaning">to pronounce, to read (e.g. a kanji)</div>
+<div class="yomi-meaning">to decipher, to read (a meter, graph, music, etc.), to tell (the time)</div>
+<div class="yomi-meaning">to count, to estimate</div>
+<div class="yomi-meaning">to read (a kanji) with its native Japanese reading</div>
+</div>
+</div>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning (item <= 2)' 1`] = `
+"<ol>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ol>"
+`;
+
+exports[`＄読みたい > 'meaning (line) (item <= 2)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+
+exports[`＄読みたい > 'meaning (line) (pos) (item <= 2)' 1`] = `"(verb)to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+
+exports[`＄読みたい > 'meaning (line) (pos)' 1`] = `"(verb)to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+
+exports[`＄読みたい > 'meaning (line)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+
+exports[`＄読みたい > 'meaning (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(verb)</div>
+<ol>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ol>"
+`;
+
+exports[`＄読みたい > 'meaning (pos)' 1`] = `
+"<div class="yomi-pos">(verb)</div>
+<ol>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ol>"
+`;
+
+exports[`＄読みたい > 'meaning (unnumbered) (item <= 2)' 1`] = `
+"<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>"
+`;
+
+exports[`＄読みたい > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(verb)</div>
+<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>"
+`;
+
+exports[`＄読みたい > 'meaning (unnumbered) (pos)' 1`] = `
+"<div class="yomi-pos">(verb)</div>
+<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>"
+`;
+
+exports[`＄読みたい > 'meaning (unnumbered)' 1`] = `
+"<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>"
+`;
+
+exports[`＄読みたい > 'meaning (yomichan) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra)</li>
+<li>to chant</li>
+<li>to predict</li>
+<li>to guess</li>
+<li>to pronounce</li>
+<li>to read (e.g. a kanji)</li>
+<li>to decipher</li>
+<li>to read (a meter, graph, music, etc.)</li>
+<li>to count</li>
+<li>to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(verb)</i>
+<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra)</li>
+<li>to chant</li>
+<li>to predict</li>
+<li>to guess</li>
+<li>to pronounce</li>
+<li>to read (e.g. a kanji)</li>
+<li>to decipher</li>
+<li>to read (a meter, graph, music, etc.)</li>
+<li>to count</li>
+<li>to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning (yomichan) (pos)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<i>(verb)</i>
+<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra)</li>
+<li>to chant</li>
+<li>to predict</li>
+<li>to guess</li>
+<li>to forecast</li>
+<li>to read (someone's thoughts)</li>
+<li>to see (e.g. into someone's heart)</li>
+<li>to divine</li>
+<li>to pronounce</li>
+<li>to read (e.g. a kanji)</li>
+<li>to decipher</li>
+<li>to read (a meter, graph, music, etc.)</li>
+<li>to tell (the time)</li>
+<li>to count</li>
+<li>to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning (yomichan)' 1`] = `
+"<div style="text-align: left;"><ol>
+<li>
+<ul>
+<li>to read</li>
+<li>to recite (e.g. a sutra)</li>
+<li>to chant</li>
+<li>to predict</li>
+<li>to guess</li>
+<li>to forecast</li>
+<li>to read (someone's thoughts)</li>
+<li>to see (e.g. into someone's heart)</li>
+<li>to divine</li>
+<li>to pronounce</li>
+<li>to read (e.g. a kanji)</li>
+<li>to decipher</li>
+<li>to read (a meter, graph, music, etc.)</li>
+<li>to tell (the time)</li>
+<li>to count</li>
+<li>to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ul>
+</li>
+</ol>
+</div>"
+`;
+
+exports[`＄読みたい > 'meaning' 1`] = `
+"<ol>
+<li>to read</li>
+<li>to recite (e.g. a sutra), to chant</li>
+<li>to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine</li>
+<li>to pronounce, to read (e.g. a kanji)</li>
+<li>to decipher, to read (a meter, graph, music, etc.), to tell (the time)</li>
+<li>to count, to estimate</li>
+<li>to read (a kanji) with its native Japanese reading</li>
+</ol>"
+`;
 
 exports[`＄読みたい > 'sentence (bold) (furigana-anki)' 1`] = `"<b>読[よ]みたい</b>"`;
 
-exports[`＄読みたい > 'sentence (bold) (furigana-html)' 1`] = `"<b>&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい</b>"`;
+exports[`＄読みたい > 'sentence (bold) (furigana-html)' 1`] = `"<b>&lt;ruby&gt;読&lt;rt&gt;よ&lt;/rt&gt;&lt;/ruby&gt;みたい</b>"`;
 
 exports[`＄読みたい > 'sentence (bold) (kana)' 1`] = `"<b>よみたい</b>"`;
 
@@ -1089,7 +1951,7 @@ exports[`＄読みたい > 'sentence (bold)' 1`] = `"<b>読みたい</b>"`;
 
 exports[`＄読みたい > 'sentence (cloze) (furigana-anki)' 1`] = `"{{c1::読[よ]みたい}}"`;
 
-exports[`＄読みたい > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい}}"`;
+exports[`＄読みたい > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::&lt;ruby&gt;読&lt;rt&gt;よ&lt;/rt&gt;&lt;/ruby&gt;みたい}}"`;
 
 exports[`＄読みたい > 'sentence (cloze) (kana)' 1`] = `"{{c1::よみたい}}"`;
 
@@ -1097,13 +1959,13 @@ exports[`＄読みたい > 'sentence (cloze)' 1`] = `"{{c1::読みたい}}"`;
 
 exports[`＄読みたい > 'sentence (furigana-anki)' 1`] = `"読[よ]みたい"`;
 
-exports[`＄読みたい > 'sentence (furigana-html)' 1`] = `"&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい"`;
+exports[`＄読みたい > 'sentence (furigana-html)' 1`] = `"&lt;ruby&gt;読&lt;rt&gt;よ&lt;/rt&gt;&lt;/ruby&gt;みたい"`;
 
 exports[`＄読みたい > 'sentence (kana)' 1`] = `"よみたい"`;
 
 exports[`＄読みたい > 'sentence (span) (furigana-anki)' 1`] = `"<span class="yomi-word">読[よ]みたい</span>"`;
 
-exports[`＄読みたい > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">&lt;ruby>読&lt;rt>よ&lt;/rt>&lt;/ruby>みたい</span>"`;
+exports[`＄読みたい > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">&lt;ruby&gt;読&lt;rt&gt;よ&lt;/rt&gt;&lt;/ruby&gt;みたい</span>"`;
 
 exports[`＄読みたい > 'sentence (span) (kana)' 1`] = `"<span class="yomi-word">よみたい</span>"`;
 
@@ -1138,6 +2000,14 @@ exports[`＄読みたい > 'word (main dict) (kana)' 1`] = `"よむ"`;
 exports[`＄読みたい > 'word (main dict)' 1`] = `"読む"`;
 
 exports[`＄読みたい > 'word' 1`] = `"読みたい"`;
+
+exports[`＄読みたい > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(verb) to read"`;
+
+exports[`＄読みたい > (single) 'meaning (pos)' 1`] = `"(verb) to read"`;
+
+exports[`＄読みたい > (single) 'meaning (single-item <= 2)' 1`] = `"to read"`;
+
+exports[`＄読みたい > (single) 'meaning' 1`] = `"to read"`;
 
 exports[`＄読みたい > Check that tokenization result has not changed 1`] = `
 {
