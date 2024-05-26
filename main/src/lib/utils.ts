@@ -173,11 +173,11 @@ export function toCodePointIndex(text: string, codeUnitIdx: number): number {
 
 // https://stackoverflow.com/a/25612313/15537371
 /**
- * Replaces '&' and '<' for use inside HTML tag.
- * Not suitable for HTML attributes
+ * Replaces '&', '<', and '>' for use inside HTML tag.
+ * Not suitable for HTML attributes, which also needs quotes escaped.
  */
 export function escapeHTML(input: string): string {
-  return input.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export function escapeRegex(text: string): string {
