@@ -122,6 +122,8 @@ export function ankiTemplateFieldLabel(field: AnkiTemplateField): string {
   return label
 }
 
+
+export function newAnkiTemplateField<C extends AnkiTemplateFieldContent>(name: string, content: C): AnkiTemplateFieldTypes[C]
 export function newAnkiTemplateField(name: string, content: AnkiTemplateFieldContent): AnkiTemplateField {
   if (content === "" || content === "translated-sentence" || content === "url" || content === "link") {
     return {

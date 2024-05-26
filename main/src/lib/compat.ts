@@ -15,7 +15,7 @@ And if needed, value is transformed and moved from existing key.
 */
 
 import { CONFIG_VERSION, type Configuration, type StoredConfiguration } from "./config";
-import { type AnkiTemplate, type AnkiTemplateField, type Field, type AnkiTemplateFieldSentenceOptions, type AnkiTemplateFieldWordOptions, type AnkiNote } from "./anki";
+import { type AnkiTemplate, type AnkiTemplateField, type Field, type AnkiTemplateFieldSentenceOptions, type AnkiTemplateFieldWordOptions, type AnkiNote, newAnkiTemplateField } from "./anki";
 import { VERSION } from "common";
 
 interface DeprecatedConfiguration {
@@ -196,9 +196,8 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     }
   } else if (type === "meaning" || type === "meaning-full" || type === "meaning-short") {
     return {
-      name,
-      content: "meaning",
-      format: type === "meaning-short" ? "short" : "default"
+      ...newAnkiTemplateField(name, "meaning"),
+      full_format: type === "meaning-short" ? "line" : "numbered",
     }
   } else if (type === "translated-sentence" || type === "url" || type === "link") {
     return {
