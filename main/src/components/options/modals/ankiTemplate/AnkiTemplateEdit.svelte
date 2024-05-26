@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { type AnkiTemplate, type AnkiTemplateField } from "lib/anki";
+  import {
+    newAnkiTemplateField,
+    type AnkiTemplate,
+    type AnkiTemplateField,
+  } from "lib/anki";
   import type { Config } from "lib/config";
   // import { exampleMarkerData } from "../../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
@@ -10,8 +14,6 @@
   export let config: Config;
   export let ankiInfo: AnkiInfo;
 
-  const template = config.get("anki.anki_template");
-
   let deckNames = ankiInfo.decks;
   let notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
   let fieldNames: string[];
@@ -20,73 +22,85 @@
   let selectedNotetype: string;
   // fieldTemplates should not reload on note type change
   // so accidentally changing note type does not clear all data
-  let fieldTemplates: Record<string, AnkiTemplateField>;
+  let fieldTemplates: Record<string, AnkiTemplateField> = {};
   let ankiTags: string;
 
+  let prevTemplate: AnkiTemplate | null;
   let prevDeck: string | null;
   let prevNotetype: string | null;
 
-  function loadSelected() {
+  /** `() -> prevTemplate, selectedDeck, selectedNotetype, ankiTags`*/
+  function initialize() {
+    let template = config.get("anki.anki_template");
     if (template === null) {
-      selectedNotetype = notetypeNames[0];
+      prevTemplate = null;
       selectedDeck = deckNames[0];
-      fieldTemplates = {};
+      selectedNotetype = notetypeNames[0];
       ankiTags = "";
-      prevDeck = null;
-      prevNotetype = null;
     } else {
+      prevTemplate = template;
       selectedDeck = template.deck;
       selectedNotetype = template.notetype;
-      fieldTemplates = {};
-      for (const field of template.fields) {
-        fieldTemplates[field.name] = field;
-      }
       ankiTags = template.tags;
-      prevDeck = template.deck;
-      prevNotetype = template.notetype;
     }
   }
 
-  function loadFieldNames(_: unknown): string[] {
+  /** (`selectedNotetype`) -> `fieldNames`, `fieldTemplates` */
+  function loadFields(_: unknown) {
     let notetypeInfo = ankiInfo.notetypes.find(
       (nt) => nt.name === selectedNotetype
     );
     if (notetypeInfo === undefined) {
-      return template?.fields.map((f) => f.name) ?? [];
+      fieldNames = prevTemplate?.fields.map((f) => f.name) ?? [];
     } else {
-      return notetypeInfo.fields;
+      fieldNames = notetypeInfo.fields;
+    }
+    for (const fieldName of fieldNames) {
+      if (fieldTemplates[fieldName] === undefined) {
+        fieldTemplates[fieldName] = newAnkiTemplateField(fieldName, "");
+      }
     }
   }
 
-  async function saveTemplate(
-    deck: string,
-    notetype: string,
-    fields: Record<string, AnkiTemplateField>,
-    tags: string
-  ) {
+  function createTemplate(): AnkiTemplate {
     const template: AnkiTemplate = {
-      deck,
-      notetype,
+      deck: selectedDeck,
+      notetype: selectedNotetype,
       fields: [],
-      tags,
+      tags: ankiTags,
     };
     for (const fieldName of fieldNames) {
-      template.fields.push(fields[fieldName]);
+      const field = fieldTemplates[fieldName];
+      if (field === undefined) {
+        template.fields.push({
+          name: fieldName,
+          content: "",
+        });
+      } else {
+        template.fields.push(fieldTemplates[fieldName]);
+      }
     }
+    return template;
+  }
+
+  async function saveTemplate(_: unknown) {
+    const template = createTemplate();
     await config.set("anki.anki_template", template);
   }
 
-  loadSelected();
+  initialize();
 
-  $: invalidDeck = !deckNames.includes(selectedDeck);
-  $: invalidNotetype = !notetypeNames.includes(selectedNotetype);
-  $: fieldNames = loadFieldNames(selectedNotetype);
-  $: void saveTemplate(
+  $: loadFields(selectedNotetype);
+  $: void saveTemplate([
     selectedDeck,
     selectedNotetype,
     fieldTemplates,
-    ankiTags
-  );
+    ankiTags,
+  ]);
+  $: invalidDeck = !deckNames.includes(selectedDeck);
+  $: invalidNotetype = !notetypeNames.includes(selectedNotetype);
+  $: prevDeck = prevTemplate?.deck ?? null;
+  $: prevNotetype = prevTemplate?.notetype ?? null;
 </script>
 
 <div class="anki-template-modal">
