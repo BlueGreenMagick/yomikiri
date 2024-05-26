@@ -14,8 +14,8 @@
   export let config: Config;
   export let ankiInfo: AnkiInfo;
 
-  let deckNames = ankiInfo.decks;
-  let notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
+  let deckNames: string[];
+  let notetypeNames: string[];
   let fieldNames: string[];
 
   let selectedDeck: string;
@@ -29,7 +29,7 @@
   let prevDeck: string | null;
   let prevNotetype: string | null;
 
-  /** `() -> prevTemplate, selectedDeck, selectedNotetype, ankiTags`*/
+  /** `() -> prevTemplate, selectedDeck, selectedNotetype, ankiTags, fieldTemplates `*/
   function initialize() {
     let template = config.get("anki.anki_template");
     if (template === null) {
@@ -42,6 +42,9 @@
       selectedDeck = template.deck;
       selectedNotetype = template.notetype;
       ankiTags = template.tags;
+      for (const field of template.fields) {
+        fieldTemplates[field.name] = field;
+      }
     }
   }
 
@@ -62,7 +65,7 @@
     }
   }
 
-  function createTemplate(): AnkiTemplate {
+  async function saveTemplate() {
     const template: AnkiTemplate = {
       deck: selectedDeck,
       notetype: selectedNotetype,
@@ -71,32 +74,22 @@
     };
     for (const fieldName of fieldNames) {
       const field = fieldTemplates[fieldName];
-      if (field === undefined) {
-        template.fields.push({
-          name: fieldName,
-          content: "",
-        });
-      } else {
-        template.fields.push(fieldTemplates[fieldName]);
-      }
+      template.fields.push(field);
     }
-    return template;
-  }
-
-  async function saveTemplate(_: unknown) {
-    const template = createTemplate();
     await config.set("anki.anki_template", template);
   }
 
   initialize();
 
   $: loadFields(selectedNotetype);
-  $: void saveTemplate([
-    selectedDeck,
+  $: selectedDeck,
     selectedNotetype,
     fieldTemplates,
     ankiTags,
-  ]);
+    void saveTemplate();
+
+  $: deckNames = ankiInfo.decks;
+  $: notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
   $: invalidDeck = !deckNames.includes(selectedDeck);
   $: invalidNotetype = !notetypeNames.includes(selectedNotetype);
   $: prevDeck = prevTemplate?.deck ?? null;
