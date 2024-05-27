@@ -31,7 +31,7 @@ const FOR_DESKTOP = ["chrome", "firefox", "safari_desktop"].includes(TARGET);
 const FOR_IOS = TARGET === "ios";
 const FOR_IOSAPP = TARGET === "iosapp";
 
-const WATCH = DEVELOPMENT && !FOR_IOS;
+const WATCH = DEVELOPMENT && !FOR_IOS && !FOR_IOSAPP;
 
 /** Package */
 const VERSION = Package.version;
