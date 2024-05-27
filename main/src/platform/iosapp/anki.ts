@@ -23,27 +23,33 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   platform: IosAppPlatform
   ankiInfoP: Promise<AnkiInfo>
   ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>
+  ankiInfoReject: Utils.PromiseRejector
 
   constructor(platform: IosAppPlatform) {
     this.platform = platform
 
-    const [ankiInfoP, ankiInfoResolve] = Utils.createPromise<AnkiInfo>();
+    const [ankiInfoP, ankiInfoResolve, ankiInfoReject] = Utils.createPromise<AnkiInfo>();
     this.ankiInfoP = ankiInfoP
     this.ankiInfoResolve = ankiInfoResolve
+    this.ankiInfoReject = ankiInfoReject
   }
 
   setAnkiInfo(ankiInfoJson: string): void {
-    const rawAnkiInfo = JSON.parse(ankiInfoJson) as RawAnkiInfo;
-    const ankiInfo: AnkiInfo = {
-      decks: rawAnkiInfo.decks.map((named) => named.name),
-      notetypes: rawAnkiInfo.notetypes.map((rawNotetype) => {
-        return {
-          name: rawNotetype.name,
-          fields: rawNotetype.fields.map((named) => named.name),
-        };
-      }),
-    };
-    this.ankiInfoResolve(ankiInfo);
+    try {
+      const rawAnkiInfo = JSON.parse(ankiInfoJson) as RawAnkiInfo;
+      const ankiInfo: AnkiInfo = {
+        decks: rawAnkiInfo.decks.map((named) => named.name),
+        notetypes: rawAnkiInfo.notetypes.map((rawNotetype) => {
+          return {
+            name: rawNotetype.name,
+            fields: rawNotetype.fields.map((named) => named.name),
+          };
+        }),
+      };
+      this.ankiInfoResolve(ankiInfo);
+    } catch (err) {
+      this.ankiInfoReject(err);
+    }
   }
 
   async requestAnkiInfo(): Promise<void> {

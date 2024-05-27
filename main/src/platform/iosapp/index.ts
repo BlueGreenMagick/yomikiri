@@ -80,7 +80,7 @@ export class IosAppPlatform implements IPlatform {
     return new IosAppDictionary(this)
   }
 
-  newAnkiApi(_config: Config): IosAppAnkiApi {
+  newAnkiApi(_config?: Config): IosAppAnkiApi {
     return new IosAppAnkiApi(this)
   }
 

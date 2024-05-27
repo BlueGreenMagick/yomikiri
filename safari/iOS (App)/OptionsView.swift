@@ -78,7 +78,7 @@ extension OptionsView {
             let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
             let script = """
             setTimeout(() => {
-                AnkiApi.setAnkiInfo(`\(escaped)`);
+                ankiApi.setAnkiInfo(`\(escaped)`);
             }, 50);
             """
             if webViewModel.getLoadStatus() == .complete {

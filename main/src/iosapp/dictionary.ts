@@ -9,7 +9,7 @@ import type { IosAppAnkiApi } from "platform/iosapp/anki";
 const platform = new Platform()
 const lazyConfig = new LazyAsync(() => Config.initialize(platform))
 const backend = platform.newBackend()
-const lazyAnkiApi = new LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
+const ankiApi = platform.newAnkiApi()
 
 const initialized = initialize();
 
@@ -18,8 +18,6 @@ createSvelte(initialized);
 async function initialize(): Promise<[Config, IosAppBackend, IosAppAnkiApi]> {
   const config = await lazyConfig.get()
   config.setStyle(document);
-
-  const ankiApi = await lazyAnkiApi.get()
 
   // queue task to run later
   setTimeout(() => { void deferredInitialize(config) }, 0);
@@ -48,5 +46,6 @@ exposeGlobals({
     void lazyConfig.get();
     return lazyConfig.getIfInitialized()
   },
-  backend
+  backend,
+  ankiApi
 })
