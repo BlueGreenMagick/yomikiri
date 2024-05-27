@@ -8,9 +8,6 @@
   {#if unit.ruby === undefined}
     {unit.base}
   {:else}
-    <ruby>
-      {unit.base}
-      <rt>{unit.ruby}</rt>
-    </ruby>
+    <ruby>{unit.base}<rt>{unit.ruby}</rt></ruby>
   {/if}
 {/each}
