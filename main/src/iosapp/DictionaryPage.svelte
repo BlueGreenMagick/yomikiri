@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { IosAppPlatform } from "platform/ios";
+  import type { IosAppPlatform } from "platform/iosapp";
   import { platformClass } from "../components/actions";
   import DictionaryView from "./DictionaryView.svelte";
   import type Config from "lib/config";
