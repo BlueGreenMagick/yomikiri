@@ -1,0 +1,228 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`migrate v2 config to v3 1`] = `
+{
+  "anki.anki_template": {
+    "deck": "Default",
+    "fields": [
+      {
+        "content": "word",
+        "form": "as-is",
+        "name": "Front",
+        "style": "basic",
+      },
+      {
+        "content": "word",
+        "form": "as-is",
+        "name": "Back",
+        "style": "furigana-anki",
+      },
+      {
+        "content": "word",
+        "form": "as-is",
+        "name": "3",
+        "style": "kana-only",
+      },
+      {
+        "content": "word",
+        "form": "dict-form",
+        "name": "4",
+        "style": "basic",
+      },
+      {
+        "content": "word",
+        "form": "dict-form",
+        "name": "5",
+        "style": "furigana-anki",
+      },
+      {
+        "content": "word",
+        "form": "dict-form",
+        "name": "6",
+        "style": "kana-only",
+      },
+      {
+        "content": "word",
+        "form": "main-dict-form",
+        "name": "7",
+        "style": "basic",
+      },
+      {
+        "content": "word",
+        "form": "main-dict-form",
+        "name": "8",
+        "style": "furigana-anki",
+      },
+      {
+        "content": "word",
+        "form": "main-dict-form",
+        "name": "9",
+        "style": "kana-only",
+      },
+      {
+        "content": "sentence",
+        "name": "10",
+        "style": "basic",
+        "word": "bold",
+      },
+      {
+        "content": "sentence",
+        "name": "11",
+        "style": "furigana-anki",
+        "word": "bold",
+      },
+      {
+        "content": "sentence",
+        "name": "12",
+        "style": "kana-only",
+        "word": "bold",
+      },
+      {
+        "content": "sentence",
+        "name": "13",
+        "style": "basic",
+        "word": "cloze",
+      },
+      {
+        "content": "sentence",
+        "name": "14",
+        "style": "furigana-anki",
+        "word": "cloze",
+      },
+      {
+        "content": "translated-sentence",
+        "name": "15",
+      },
+      {
+        "content": "meaning",
+        "full_format": "numbered",
+        "full_max_item": 0,
+        "full_pos": false,
+        "name": "16",
+        "single_max_item": 0,
+        "single_pos": false,
+      },
+      {
+        "content": "meaning",
+        "full_format": "numbered",
+        "full_max_item": 0,
+        "full_pos": false,
+        "name": "a",
+        "single_max_item": 0,
+        "single_pos": false,
+      },
+      {
+        "content": "meaning",
+        "full_format": "line",
+        "full_max_item": 0,
+        "full_pos": false,
+        "name": "b",
+        "single_max_item": 0,
+        "single_pos": false,
+      },
+      {
+        "content": "url",
+        "name": "c",
+      },
+      {
+        "content": "link",
+        "name": "d",
+      },
+    ],
+    "notetype": "Many Fields",
+    "tags": "tag1 tag2",
+  },
+  "anki.connect_port": 8766,
+  "anki.enabled": true,
+  "anki.template": {
+    "deck": "Default",
+    "fields": [
+      {
+        "name": "Front",
+        "value": "word",
+      },
+      {
+        "name": "Back",
+        "value": "word-furigana",
+      },
+      {
+        "name": "3",
+        "value": "word-kana",
+      },
+      {
+        "name": "4",
+        "value": "dict",
+      },
+      {
+        "name": "5",
+        "value": "dict-furigana",
+      },
+      {
+        "name": "6",
+        "value": "dict-kana",
+      },
+      {
+        "name": "7",
+        "value": "main-dict",
+      },
+      {
+        "name": "8",
+        "value": "main-dict-furigana",
+      },
+      {
+        "name": "9",
+        "value": "main-dict-kana",
+      },
+      {
+        "name": "10",
+        "value": "sentence",
+      },
+      {
+        "name": "11",
+        "value": "sentence-furigana",
+      },
+      {
+        "name": "12",
+        "value": "sentence-kana",
+      },
+      {
+        "name": "13",
+        "value": "sentence-cloze",
+      },
+      {
+        "name": "14",
+        "value": "sentence-cloze-furigana",
+      },
+      {
+        "name": "15",
+        "value": "translated-sentence",
+      },
+      {
+        "name": "16",
+        "value": "meaning",
+      },
+      {
+        "name": "a",
+        "value": "meaning-full",
+      },
+      {
+        "name": "b",
+        "value": "meaning-short",
+      },
+      {
+        "name": "c",
+        "value": "url",
+      },
+      {
+        "name": "d",
+        "value": "link",
+      },
+    ],
+    "notetype": "Many Fields",
+    "tags": "tag1 tag2",
+  },
+  "config_version": 3,
+  "general.font_size": 16,
+  "version": "0.1.3",
+}
+`;
