@@ -7,10 +7,11 @@ import type { IosAppBackend } from "platform/iosapp/backend";
 import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
 const platform = new Platform()
-const initialized = initialize();
 const lazyConfig = new LazyAsync(() => Config.initialize(platform))
 const backend = platform.newBackend()
 const lazyAnkiApi = new LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
+
+const initialized = initialize();
 
 createSvelte(initialized);
 
