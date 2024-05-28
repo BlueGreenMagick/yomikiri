@@ -1,8 +1,9 @@
 use std::collections::HashSet;
 use std::error::Error;
 use std::fs::File;
-use std::io::{BufReader, Cursor};
+use std::io::{BufReader, BufWriter, Cursor, Write};
 use std::path::Path;
+use std::str::FromStr;
 use std::{cmp, fs};
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
 use yomikiri_dictionary::file::{read_entries, read_indexes, DictEntryIndex};
@@ -12,8 +13,8 @@ type TResult<T> = core::result::Result<T, Box<dyn Error>>;
 
 struct LexItem {
     surface: String,
-    lid: String,
-    rid: String,
+    lid: u32,
+    rid: u32,
     cost: String,
     base: String,
     reading: String,
@@ -59,8 +60,8 @@ impl LexItem {
                     }
                     let item = LexItem {
                         surface: form.form.clone(),
-                        lid: "0".into(),
-                        rid: "0".into(),
+                        lid: 0,
+                        rid: 0,
                         cost: cost.to_string(),
                         base: base.clone(),
                         reading: reading.reading.clone(),
@@ -91,8 +92,8 @@ impl LexItem {
                     }
                     let item = LexItem {
                         surface: reading.reading.clone(),
-                        lid: "0".into(),
-                        rid: "0".into(),
+                        lid: 0,
+                        rid: 0,
                         cost: cost.to_string(),
                         base: base.clone(),
                         reading: reading.reading.clone(),
@@ -137,20 +138,33 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
             let copy_to = transform_dir.join(&file_name);
             let file_name = file_name.to_str().unwrap();
             match file_name {
-                "lex.csv" => {
-                    transform_lex(
-                        &copy_from,
-                        transform_dir,
-                        &resource_dir.join("english.yomikiriindex"),
-                        &resource_dir.join("english.yomikiridict"),
-                    )?;
-                }
+                "lex.csv" | "matrix.def" => {}
                 _ => {
                     fs::copy(&copy_from, &copy_to)?;
                 }
             }
         }
     }
+
+    let lex_csv_path = input_dir.join("lex.csv");
+    let matrix_def_path = input_dir.join("matrix.def");
+
+    if !lex_csv_path.exists() {
+        return Err("lex.csv file was not found".into());
+    }
+    if !matrix_def_path.exists() {
+        return Err("matrix.def file was not found".into());
+    }
+
+    let (lid_map, rid_map) = transform_lex(
+        &lex_csv_path,
+        transform_dir,
+        &resource_dir.join("english.yomikiriindex"),
+        &resource_dir.join("english.yomikiridict"),
+    )?;
+
+    transform_matrix(&matrix_def_path, transform_dir, lid_map, rid_map)?;
+
     Ok(())
 }
 
@@ -162,7 +176,7 @@ fn transform_lex(
     output_dir: &Path,
     index_path: &Path,
     dict_path: &Path,
-) -> TResult<()> {
+) -> TResult<(IdMap, IdMap)> {
     let mut items: Vec<LexItem> = Vec::with_capacity(1500000);
 
     let mut reader = csv::Reader::from_path(lex_path)?;
@@ -175,8 +189,8 @@ fn transform_lex(
 
         let mut item = LexItem {
             surface: record.get(0).unwrap().into(),
-            lid: record.get(1).unwrap().into(),
-            rid: record.get(2).unwrap().into(),
+            lid: record.get(1).unwrap().parse()?,
+            rid: record.get(2).unwrap().parse()?,
             cost: record.get(3).unwrap().into(),
             pos: record.get(4).unwrap().into(),
             pos2: record.get(5).unwrap().into(),
@@ -207,12 +221,66 @@ fn transform_lex(
         writer.write_record(&item.to_record()?)?;
     }
 
+    let (lid_map, rid_map) = reindex_ids(&mut items);
+
     let output_lex_path = output_dir.join("lex.csv");
     let mut writer = csv::Writer::from_path(&output_lex_path)?;
     for item in items {
         writer.write_record(&item.to_record()?)?;
     }
 
+    Ok((lid_map, rid_map))
+}
+
+fn transform_matrix(
+    matrix_path: &Path,
+    output_dir: &Path,
+    lid_map: IdMap,
+    rid_map: IdMap,
+) -> TResult<()> {
+    let prev_matrix_contents = fs::read_to_string(matrix_path)?;
+    let mut lines = Vec::with_capacity(4 * 1000 * 1000);
+    for string_line in prev_matrix_contents.lines() {
+        let parsed: Vec<i32> = string_line
+            .split_ascii_whitespace()
+            .map(i32::from_str)
+            .collect::<Result<_, _>>()?;
+        lines.push(parsed);
+    }
+    let mut lines_iter = lines.iter();
+    let header = lines_iter.next().unwrap();
+    let prev_rid_len = header[0] as u32;
+    let prev_lid_len = header[1] as u32;
+    let len = 2 + (prev_rid_len * prev_lid_len) as usize;
+    let mut costs = vec![i16::MAX; len];
+    for fields in lines_iter {
+        let rid = fields[0] as u32;
+        let lid = fields[1] as u32;
+        let cost = fields[2] as i16;
+        costs[(lid + rid * prev_lid_len) as usize] = cost
+    }
+
+    // note that in matrix.def, the order is (right, left)
+    // instead of (left,right) as used in lex.csv
+    let output_matrix_path = output_dir.join("matrix.def");
+    let file = File::create(output_matrix_path)?;
+    let mut writer = BufWriter::new(file);
+
+    let rid_len = rid_map.new_to_old.len();
+    let lid_len = lid_map.new_to_old.len();
+
+    // header
+    writer.write(format!("{} {}\n", rid_len, lid_len).as_bytes())?;
+
+    for r in 0..rid_len {
+        for l in 0..lid_len {
+            let old_r = rid_map.new_to_old[r];
+            let old_l = lid_map.new_to_old[l];
+
+            let cost = costs[(old_l + old_r * prev_lid_len) as usize];
+            writer.write(format!("{} {} {}\n", r, l, cost).as_bytes())?;
+        }
+    }
     Ok(())
 }
 
@@ -339,6 +407,77 @@ pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> TResult<
     let mut reader = Cursor::new(dict_bytes);
     let entries = read_entries(&mut reader, &entry_indexes)?;
     Ok(entries)
+}
+
+struct IdMap {
+    old_to_new: Vec<Option<u32>>,
+    new_to_old: Vec<u32>,
+}
+
+/// Reindex left-id and right-ids of lex items
+///
+/// Returns (left-id map, right-id map)
+/// where the id map is a vector of [new id] -> old id
+///
+/// Mutates item.lid and item.rid to new id
+fn reindex_ids(items: &mut [LexItem]) -> (IdMap, IdMap) {
+    // get largest lid/rid
+    let mut largest_lid = 0;
+    let mut largest_rid = 0;
+    for item in items.iter() {
+        largest_lid = u32::max(largest_lid, item.lid);
+        largest_rid = u32::max(largest_rid, item.rid);
+    }
+    let lid_len = (largest_lid + 1) as usize;
+    let rid_len = (largest_rid + 1) as usize;
+
+    // mark if lid/rid is used
+    let mut used_lids: Vec<bool> = vec![false; lid_len];
+    let mut used_rids: Vec<bool> = vec![false; rid_len];
+    for item in items.iter() {
+        used_lids[item.lid as usize] = true;
+        used_rids[item.rid as usize] = true;
+    }
+
+    // create ids map
+    let mut old_to_new_lids: Vec<Option<u32>> = vec![None; lid_len];
+    let mut old_to_new_rids: Vec<Option<u32>> = vec![None; rid_len];
+    let mut new_to_old_lids: Vec<u32> = Vec::with_capacity(lid_len);
+    let mut new_to_old_rids: Vec<u32> = Vec::with_capacity(rid_len);
+
+    for old_lid in 0..used_lids.len() {
+        if !used_lids[old_lid] {
+            continue;
+        }
+        let new_lid = new_to_old_lids.len() as u32;
+        old_to_new_lids[old_lid] = Some(new_lid);
+        new_to_old_lids.push(old_lid as u32);
+    }
+
+    for old_rid in 0..used_rids.len() {
+        if !used_lids[old_rid] {
+            continue;
+        }
+        let new_rid = new_to_old_rids.len() as u32;
+        old_to_new_rids[old_rid] = Some(new_rid);
+        new_to_old_rids.push(old_rid as u32);
+    }
+
+    // change item lid and rid
+    for item in items.iter_mut() {
+        item.lid = old_to_new_lids[item.lid as usize].unwrap();
+        item.rid = old_to_new_rids[item.rid as usize].unwrap();
+    }
+
+    let left_map = IdMap {
+        old_to_new: old_to_new_lids,
+        new_to_old: new_to_old_lids,
+    };
+    let right_map = IdMap {
+        old_to_new: old_to_new_rids,
+        new_to_old: new_to_old_rids,
+    };
+    return (left_map, right_map);
 }
 
 pub trait JapaneseChar {
