@@ -13,65 +13,63 @@ import type { First, Second } from "lib/utils";
 const ANKI_CONNECT_VER = 6;
 
 interface AnkiConnectSuccess<T> {
-  result: T,
-  error: null
+  result: T;
+  error: null;
 }
 
 interface AnkiConnectError {
-  result: null
-  error: string
+  result: null;
+  error: string;
 }
 
-type AnkiConnectResponse<T> = AnkiConnectSuccess<T> | AnkiConnectError
+type AnkiConnectResponse<T> = AnkiConnectSuccess<T> | AnkiConnectError;
 
 interface AnkiConnectPermission {
-  permission: "granted" | "denied"
+  permission: "granted" | "denied";
 }
 
 interface AnkiConnectModelFieldNamesParams {
-  modelName: string
+  modelName: string;
 }
 
 interface AnkiConnectNoteAttachment {
-  url: string,
-  filename: string,
-  skipHash: string,
-  fields: string[]
+  url: string;
+  filename: string;
+  skipHash: string;
+  fields: string[];
 }
 
 interface AnkiConnectNote {
-  deckName: string,
-  modelName: string,
-  fields: Record<string, string>,
-  tags?: string[] | null,
-  audio?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null,
-  video?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null,
-  picture?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null,
+  deckName: string;
+  modelName: string;
+  fields: Record<string, string>;
+  tags?: string[] | null;
+  audio?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null;
+  video?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null;
+  picture?: AnkiConnectNoteAttachment | AnkiConnectNoteAttachment[] | null;
   options?: {
-    allowDuplicate?: boolean | null,
-    duplicateScope?: "deck" | null,
+    allowDuplicate?: boolean | null;
+    duplicateScope?: "deck" | null;
     duplicateScopeDeckName?: {
-      deckName?: string | null,
-      checkChildren: boolean,
-      checkAllModels: boolean
-    } | null
-  } | null
+      deckName?: string | null;
+      checkChildren: boolean;
+      checkAllModels: boolean;
+    } | null;
+  } | null;
 }
 
-
 interface AnkiConnectAddNoteParams {
-  note: AnkiConnectNote
+  note: AnkiConnectNote;
 }
 
 export interface AnkiConnectRequestMap {
-  deckNames: [never, string[]],
-  modelNames: [never, string[]],
-  modelFieldNames: [AnkiConnectModelFieldNamesParams, string[]],
-  getTags: [never, string[]],
-  addNote: [AnkiConnectAddNoteParams, void],
-  requestPermission: [never, AnkiConnectPermission]
+  deckNames: [never, string[]];
+  modelNames: [never, string[]];
+  modelFieldNames: [AnkiConnectModelFieldNamesParams, string[]];
+  getTags: [never, string[]];
+  addNote: [AnkiConnectAddNoteParams, void];
+  requestPermission: [never, AnkiConnectPermission];
 }
-
 
 /**
  * Uses Anki-Connect on desktop.
@@ -79,14 +77,14 @@ export interface AnkiConnectRequestMap {
  * as Anki-connect allows only calls from trusted origins.
  */
 export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
-  platform: DesktopPlatform
-  browserApi: BrowserApi
-  config: Config
+  platform: DesktopPlatform;
+  browserApi: BrowserApi;
+  config: Config;
 
   constructor(platform: DesktopPlatform, config: Config) {
-    this.platform = platform
-    this.browserApi = platform.browserApi
-    this.config = config
+    this.platform = platform;
+    this.browserApi = platform.browserApi;
+    this.config = config;
   }
 
   private ankiConnectURL(): string {
@@ -95,11 +93,14 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     if (!url.includes("://")) {
       url = "http://" + url;
     }
-    return `${url}:${port}`
+    return `${url}:${port}`;
   }
 
   /** Send Anki-connect request */
-  private async request<K extends keyof AnkiConnectRequestMap>(action: K, params?: First<AnkiConnectRequestMap[K]>): Promise<Second<AnkiConnectRequestMap[K]>> {
+  private async request<K extends keyof AnkiConnectRequestMap>(
+    action: K,
+    params?: First<AnkiConnectRequestMap[K]>,
+  ): Promise<Second<AnkiConnectRequestMap[K]>> {
     const ankiConnectUrl = this.ankiConnectURL();
     let response;
     try {
@@ -114,11 +115,13 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     } catch (e) {
       console.error(e);
       throw new Error(
-        "Failed to connect to Anki. Please check that Anki is running and AnkiConnect add-on is configured correctly."
+        "Failed to connect to Anki. Please check that Anki is running and AnkiConnect add-on is configured correctly.",
       );
     }
 
-    const data = await response.json() as AnkiConnectResponse<Second<AnkiConnectRequestMap[K]>>;
+    const data = (await response.json()) as AnkiConnectResponse<
+      Second<AnkiConnectRequestMap[K]>
+    >;
 
     if (Object.getOwnPropertyNames(data).length != 2) {
       throw new Error("response has an unexpected number of fields");
@@ -205,5 +208,5 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 }
 
-export const AnkiApi = DesktopAnkiApi
-export type AnkiApi = DesktopAnkiApi
+export const AnkiApi = DesktopAnkiApi;
+export type AnkiApi = DesktopAnkiApi;

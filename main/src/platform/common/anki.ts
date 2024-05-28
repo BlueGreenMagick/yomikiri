@@ -1,12 +1,12 @@
 import type { AnkiNote } from "lib/anki";
 import Utils from "lib/utils";
-import { DesktopAnkiApi } from "../desktop/anki"
-import { IosAnkiApi } from "../ios/anki"
-import { IosAppAnkiApi } from "../iosapp/anki"
+import { DesktopAnkiApi } from "../desktop/anki";
+import { IosAnkiApi } from "../ios/anki";
+import { IosAppAnkiApi } from "../iosapp/anki";
 
-export { DesktopAnkiApi } from "../desktop/anki"
-export { IosAnkiApi } from "../ios/anki"
-export { IosAppAnkiApi } from "../iosapp/anki"
+export { DesktopAnkiApi } from "../desktop/anki";
+export { IosAnkiApi } from "../ios/anki";
+export { IosAppAnkiApi } from "../iosapp/anki";
 
 export interface NotetypeInfo {
   name: string;
@@ -49,14 +49,18 @@ export function iosAnkiMobileURL(note: AnkiNote, successUrl?: string): string {
     ...fields,
   };
   if (typeof successUrl === "string") {
-    params["x-success"] = successUrl
+    params["x-success"] = successUrl;
   }
-  const url = "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
-  return url
+  const url =
+    "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
+  return url;
 }
 
-export type ExtensionAnkiApi = DesktopAnkiApi | IosAnkiApi
-export type AnkiApi = DesktopAnkiApi | IosAnkiApi | IosAppAnkiApi
-export type AnkiOptionsApi = DesktopAnkiApi | IosAppAnkiApi
+export type ExtensionAnkiApi = DesktopAnkiApi | IosAnkiApi;
+export type AnkiApi = DesktopAnkiApi | IosAnkiApi | IosAppAnkiApi;
+export type AnkiOptionsApi = DesktopAnkiApi | IosAppAnkiApi;
 
-export declare const AnkiApi: typeof DesktopAnkiApi | typeof IosAnkiApi | typeof IosAppAnkiApi
+export declare const AnkiApi:
+  | typeof DesktopAnkiApi
+  | typeof IosAnkiApi
+  | typeof IosAppAnkiApi;

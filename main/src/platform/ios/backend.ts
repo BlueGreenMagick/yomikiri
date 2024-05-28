@@ -10,12 +10,12 @@ import { Entry, type EntryObject } from "lib/dicEntry";
 export * from "../common/backend";
 
 export class IosBackend implements IBackend {
-  platform: IosPlatform
-  browserApi: BrowserApi
+  platform: IosPlatform;
+  browserApi: BrowserApi;
 
   constructor(platform: IosPlatform, browserApi: BrowserApi) {
-    this.platform = platform
-    this.browserApi = browserApi
+    this.platform = platform;
+    this.browserApi = browserApi;
   }
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
@@ -58,5 +58,5 @@ export class IosBackend implements IBackend {
   }
 }
 
-export const Backend = IosBackend
-export type Backend = IosBackend
+export const Backend = IosBackend;
+export type Backend = IosBackend;

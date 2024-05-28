@@ -1,31 +1,33 @@
 import Utils from "lib/utils";
-import type { DictionaryMetadata, IDictionary } from "../common/dictionary"
+import type { DictionaryMetadata, IDictionary } from "../common/dictionary";
 import type { IosAppPlatform } from ".";
 
 export type { DictionaryMetadata } from "../common/dictionary";
 
 export interface RawDictionaryMetadata {
-  downloadDate: string,
-  filesSize: number
+  downloadDate: string;
+  filesSize: number;
 }
 
 function parseRawMetadata(raw: RawDictionaryMetadata): DictionaryMetadata {
   return {
     downloadDate: new Date(raw.downloadDate),
-    filesSize: raw.filesSize
-  }
+    filesSize: raw.filesSize,
+  };
 }
 
 export class IosAppDictionary implements IDictionary {
-  platform: IosAppPlatform
+  platform: IosAppPlatform;
 
   constructor(platform: IosAppPlatform) {
-    this.platform = platform
+    this.platform = platform;
   }
 
-
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    return Utils.PromiseWithProgress.fromPromise(this.platform.messageWebview("updateDict", null).then(parseRawMetadata), "Updating dictionary... This may take up to a minute.")
+    return Utils.PromiseWithProgress.fromPromise(
+      this.platform.messageWebview("updateDict", null).then(parseRawMetadata),
+      "Updating dictionary... This may take up to a minute.",
+    );
   }
 
   async dictionaryMetadata(): Promise<DictionaryMetadata> {
@@ -34,5 +36,5 @@ export class IosAppDictionary implements IDictionary {
   }
 }
 
-export const Dictionary = IosAppDictionary
-export type Dictionary = IosAppDictionary
+export const Dictionary = IosAppDictionary;
+export type Dictionary = IosAppDictionary;

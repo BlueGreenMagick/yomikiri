@@ -11,7 +11,7 @@ interface SelectionData {
 const STYLE_ID = "yomikiri-selection-css";
 
 export class SelectionHighlighter {
-  readonly type = "selection"
+  readonly type = "selection";
 
   highlighted = false;
   ignoreNextSelectionEventFire = 0;
@@ -113,7 +113,7 @@ export class SelectionHighlighter {
       nodes[0],
       0,
       lastNode,
-      lastNode.textContent?.length ?? lastNode.childNodes.length
+      lastNode.textContent?.length ?? lastNode.childNodes.length,
     );
     this.ignoreNextSelectionEventFire += 1;
     if (selection.anchorNode === null || selection.focusNode === null) {

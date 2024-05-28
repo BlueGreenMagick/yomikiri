@@ -6,13 +6,13 @@ import {
 } from "../common/backend";
 import { Entry, type EntryObject } from "lib/dicEntry";
 
-export * from "../common/backend"
+export * from "../common/backend";
 
 export class IosAppBackend implements IBackend {
-  platform: IosAppPlatform
+  platform: IosAppPlatform;
 
   constructor(platform: IosAppPlatform) {
-    this.platform = platform
+    this.platform = platform;
   }
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
@@ -39,5 +39,5 @@ export class IosAppBackend implements IBackend {
   }
 }
 
-export const Backend = IosAppBackend
-export type Backend = IosAppBackend
+export const Backend = IosAppBackend;
+export type Backend = IosAppBackend;

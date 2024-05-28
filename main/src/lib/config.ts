@@ -6,7 +6,7 @@ import { writable, type Writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
 
 /** Incremented each time Configuration interface is modified */
-export const CONFIG_VERSION = 3
+export const CONFIG_VERSION = 3;
 
 /** Must not be undefined */
 export interface Configuration {
@@ -15,16 +15,15 @@ export interface Configuration {
   "general.font": string;
   "anki.connect_port": number;
   "anki.connect_url": string;
-  "anki.anki_template": AnkiTemplate | null
+  "anki.anki_template": AnkiTemplate | null;
   "anki.enabled": boolean;
   /** On ios, if auto redirect back to safari */
   "anki.ios_auto_redirect": boolean;
   /** set to null if voice is not available */
   "tts.voice": TTSVoice | null;
   /** Yomikiri semantic version on last config save */
-  "version": string
-  "config_version": typeof CONFIG_VERSION
-
+  version: string;
+  config_version: typeof CONFIG_VERSION;
 }
 
 export const defaultOptions: Configuration = {
@@ -37,61 +36,59 @@ export const defaultOptions: Configuration = {
   "anki.enabled": false,
   "anki.ios_auto_redirect": true,
   "tts.voice": null,
-  "version": VERSION,
-  "config_version": CONFIG_VERSION
+  version: VERSION,
+  config_version: CONFIG_VERSION,
 };
 
-export type ConfigKey = keyof Configuration
+export type ConfigKey = keyof Configuration;
 
-export type StoredConfiguration = StoredConfig<Configuration>
+export type StoredConfiguration = StoredConfig<Configuration>;
 
 /** Get union of config keys that extends type T. */
 export type ConfigKeysOfType<T> = {
   [K in keyof Configuration]: Configuration[K] extends T ? K : never;
 }[keyof Configuration];
 
-
 const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
 
 export interface WritableConfig<T> extends Writable<T> {
   /** Deletes the saved config */
-  delete: () => void
+  delete: () => void;
 }
 
-
 export class Config {
-  platform: Platform
-  private storage: StoredConfiguration
-  private stores: Map<ConfigKey, WritableConfig<Configuration[ConfigKey]>>
+  platform: Platform;
+  private storage: StoredConfiguration;
+  private stores: Map<ConfigKey, WritableConfig<Configuration[ConfigKey]>>;
 
-  initialized = false
-  subscribers: (() => void)[] = []
-  documents: WeakRef<Document>[] = []
+  initialized = false;
+  subscribers: (() => void)[] = [];
+  documents: WeakRef<Document>[] = [];
 
   private constructor(platform: Platform, storage: StoredConfiguration) {
-    this.platform = platform
-    this.storage = storage
-    this.stores = new Map()
+    this.platform = platform;
+    this.storage = storage;
+    this.stores = new Map();
 
     platform.subscribeConfig((cfg) => {
-      this.storage = cfg
-      this.runSubscribers()
+      this.storage = cfg;
+      this.runSubscribers();
     });
 
     this.subscribe(() => {
-      this.updateStyling()
-    })
+      this.updateStyling();
+    });
 
-    this.initialized = true
-    this.runSubscribers()
+    this.initialized = true;
+    this.runSubscribers();
   }
 
   static async initialize(platform: Platform): Promise<Config> {
-    const stored = await platform.getConfig()
-    const storage = await migrateIfNeeded(platform, stored)
-    const config = new Config(platform, storage)
-    await config.updateVersion()
-    return config
+    const stored = await platform.getConfig();
+    const storage = await migrateIfNeeded(platform, stored);
+    const config = new Config(platform, storage);
+    await config.updateVersion();
+    return config;
   }
 
   get<K extends keyof Configuration>(key: K): Configuration[K] {
@@ -101,15 +98,15 @@ export class Config {
       : defaultOptions[key];
   }
 
-  /** 
+  /**
    * To remove from storage, set value to `undefined`.
-   * 
+   *
    * If `save` is `false`, only updates config values in this context.
    */
   async set<K extends keyof Configuration>(
     key: K,
     value: Configuration[K] | undefined,
-    save = true
+    save = true,
   ): Promise<void> {
     if (value === this.storage[key]) return;
 
@@ -120,9 +117,9 @@ export class Config {
       this.storage[key] = value;
     }
 
-    this.runSubscribers()
+    this.runSubscribers();
     if (save) {
-      await this.save()
+      await this.save();
     }
   }
 
@@ -130,21 +127,19 @@ export class Config {
     await this.platform.saveConfig(this.storage);
   }
 
-  defaultValue<K extends keyof Configuration>(
-    key: K
-  ): Configuration[K] {
+  defaultValue<K extends keyof Configuration>(key: K): Configuration[K] {
     return defaultOptions[key];
   }
 
-  /** 
+  /**
    * If Config is initialized, subscriber will run immediately.
-   * 
+   *
    * If Config isn't initialized yet, it will run on initialization.
    */
   subscribe(subscriber: () => void): void {
-    this.subscribers.push(subscriber)
+    this.subscribers.push(subscriber);
     if (this.initialized) {
-      subscriber()
+      subscriber();
     }
   }
 
@@ -152,48 +147,48 @@ export class Config {
     const idx = this.subscribers.indexOf(subscriber);
     if (idx !== -1) {
       this.subscribers.splice(idx, 1);
-      return true
+      return true;
     }
-    return false
+    return false;
   }
 
   private runSubscribers(): void {
     for (const subscriber of this.subscribers) {
       try {
-        subscriber()
+        subscriber();
       } catch (err) {
-        console.error("Uncaught config subscriber error:", err)
+        console.error("Uncaught config subscriber error:", err);
       }
     }
   }
 
-  /** 
+  /**
    * Insert or update <style> properties from config,
    * watch for config changes and auto-update <style>
-  */
+   */
   setStyle(doc: Document) {
     let alreadyExisting = false;
     for (const docRef of this.documents) {
       const derefed = docRef.deref();
       if (derefed === undefined) continue;
       if (derefed === doc) {
-        alreadyExisting = true
+        alreadyExisting = true;
         break;
       }
     }
     if (!alreadyExisting) {
-      const ref = new WeakRef(doc)
-      this.documents.push(ref)
+      const ref = new WeakRef(doc);
+      this.documents.push(ref);
     }
-    this.updateStyling()
+    this.updateStyling();
   }
 
   /** Update <style> for all registered _documents */
   private updateStyling() {
-    const css = this.generateCss()
+    const css = this.generateCss();
     for (const docref of this.documents) {
-      const doc = docref.deref()
-      if (doc === undefined) continue
+      const doc = docref.deref();
+      if (doc === undefined) continue;
       let styleEl = doc.getElementById(STYLE_ELEMENT_ID);
       if (styleEl === null) {
         styleEl = doc.createElement("style");
@@ -217,64 +212,69 @@ export class Config {
 
   async updateVersion() {
     if (this.storage.version !== defaultOptions.version) {
-      await this.set("version", defaultOptions.version)
+      await this.set("version", defaultOptions.version);
     }
   }
 
   store<K extends ConfigKey>(key: K): WritableConfig<Configuration[K]> {
-    const existing = this.stores.get(key) as WritableConfig<Configuration[K]>
+    const existing = this.stores.get(key) as WritableConfig<Configuration[K]>;
     if (existing !== undefined) {
-      return existing
+      return existing;
     }
 
-    const store = this.createStore(key)
-    this.stores.set(key, store)
-    return store
+    const store = this.createStore(key);
+    this.stores.set(key, store);
+    return store;
   }
 
-  private createStore<K extends keyof Configuration>(key: K): WritableConfig<Configuration[K]> {
-    let stored = this.get(key)
-    const { subscribe, set } = writable<Configuration[K]>(stored)
+  private createStore<K extends keyof Configuration>(
+    key: K,
+  ): WritableConfig<Configuration[K]> {
+    let stored = this.get(key);
+    const { subscribe, set } = writable<Configuration[K]>(stored);
 
     const setValue = (val: Configuration[K]) => {
-      stored = val
-      void this.set(key, stored)
-      set(stored)
-    }
+      stored = val;
+      void this.set(key, stored);
+      set(stored);
+    };
     const changeHandler = () => {
-      const val = this.get(key)
-      setValue(val)
-    }
+      const val = this.get(key);
+      setValue(val);
+    };
 
-    this.subscribe(changeHandler)
+    this.subscribe(changeHandler);
 
     return {
       subscribe: (run, invalidate) => {
-        const unsubscribe = subscribe(run, invalidate)
+        const unsubscribe = subscribe(run, invalidate);
         return () => {
-          this.removeSubscriber(changeHandler)
-          unsubscribe()
-        }
+          this.removeSubscriber(changeHandler);
+          unsubscribe();
+        };
       },
       set: setValue,
       update: (updater) => {
-        setValue(updater(stored))
+        setValue(updater(stored));
       },
       delete: () => {
         void this.set(key, undefined);
-        stored = this.get(key)
-        set(stored)
-      }
-    }
+        stored = this.get(key);
+        set(stored);
+      },
+    };
   }
 }
 
-export async function migrateIfNeeded(platform: Platform, configObject: StoredCompatConfiguration): Promise<StoredConfiguration> {
+export async function migrateIfNeeded(
+  platform: Platform,
+  configObject: StoredCompatConfiguration,
+): Promise<StoredConfiguration> {
   if (configObject.config_version === CONFIG_VERSION) {
-    return configObject as StoredConfiguration
+    return configObject as StoredConfiguration;
   }
 
-  return await platform.migrateConfig()
+  return await platform.migrateConfig();
 }
 
-export default Config
+export default Config;

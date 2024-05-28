@@ -2,21 +2,19 @@ import { hasOwnProperty } from "lib/utils";
 
 interface GoogleTranslateApiResult {
   sentences: {
-    trans: string,
-    orig: string,
-    backend: number
-  }[],
-  src: string,
-  confidence: number,
-  spell: unknown,
+    trans: string;
+    orig: string;
+    backend: number;
+  }[];
+  src: string;
+  confidence: number;
+  spell: unknown;
   ld_result: {
-    srclangs: string[],
-    srclangs_confidences: number[],
-    extended_srclangs: string[]
-  }
+    srclangs: string[];
+    srclangs_confidences: number[];
+    extended_srclangs: string[];
+  };
 }
-
-
 
 export interface TranslateResult {
   translated: string;

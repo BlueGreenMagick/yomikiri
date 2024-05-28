@@ -4,7 +4,11 @@ import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
 import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "platform/common";
-import Utils, { handleMessageResponse, hasOwnProperty, type MessageResponse } from "lib/utils";
+import Utils, {
+  handleMessageResponse,
+  hasOwnProperty,
+  type MessageResponse,
+} from "lib/utils";
 
 /**
  * Type map for messages between extension processes
@@ -38,7 +42,7 @@ export type MessageSender = chrome.runtime.MessageSender;
 
 export type RequestHandler<K extends keyof MessageMap> = (
   request: Request<K>,
-  sender: MessageSender
+  sender: MessageSender,
 ) => Response<K> | Promise<Response<K>>;
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
@@ -62,8 +66,8 @@ type ConnectionKey = "dictionaryCheckInstall";
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
 export class BrowserApi {
-  readonly context: ExecutionContext
-  private tabId: number | undefined
+  readonly context: ExecutionContext;
+  private tabId: number | undefined;
 
   private _requestHandlers: {
     [K in keyof MessageMap]?: RequestHandler<K>;
@@ -73,7 +77,6 @@ export class BrowserApi {
     [K in ConnectionKey]?: ConnectionHandler[];
   } = {};
 
-
   /** Must be initialized in initial synchronous run */
   constructor(options: ApiInitializeOptions) {
     const opts: ApiInitializeOptions = {
@@ -81,7 +84,7 @@ export class BrowserApi {
       handleStorageChange: true,
       ...options,
     };
-    this.context = opts.context
+    this.context = opts.context;
 
     if (opts.handleRequests) {
       this.attachRequestHandler();
@@ -100,10 +103,10 @@ export class BrowserApi {
         message: Message<keyof MessageMap>,
         sender: MessageSender,
         sendResponse: (
-          response?: MessageResponse<Response<keyof MessageMap>>
-        ) => void
+          response?: MessageResponse<Response<keyof MessageMap>>,
+        ) => void,
       ): boolean => {
-        console.debug(message.key, message)
+        console.debug(message.key, message);
         const handler = this._requestHandlers[message.key];
         if (handler) {
           void (async () => {
@@ -126,7 +129,7 @@ export class BrowserApi {
         } else {
           return false;
         }
-      }
+      },
     );
   }
 
@@ -153,10 +156,9 @@ export class BrowserApi {
     });
   }
 
-
   /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
   action(): typeof chrome.action | typeof chrome.browserAction {
-    return chrome.action ?? chrome.browserAction
+    return chrome.action ?? chrome.browserAction;
   }
 
   storage(): chrome.storage.StorageArea {
@@ -170,7 +172,7 @@ export class BrowserApi {
   /** It is assumed that request does return a response. */
   private createRequestResponseHandler<K extends keyof MessageMap>(
     resolve: Utils.PromiseResolver<Response<K>>,
-    reject: (reason: Error) => void
+    reject: (reason: Error) => void,
   ): (resp: MessageResponse<Response<K>>) => void {
     return (resp: MessageResponse<Response<K>>) => {
       try {
@@ -178,9 +180,9 @@ export class BrowserApi {
         resolve(response);
       } catch (error: unknown) {
         if (error instanceof Error) {
-          reject(error)
+          reject(error);
         } else {
-          reject(new Error(Utils.getErrorMessage(error)))
+          reject(new Error(Utils.getErrorMessage(error)));
         }
       }
     };
@@ -194,7 +196,7 @@ export class BrowserApi {
    */
   async request<K extends keyof MessageMap>(
     key: K,
-    request: Request<K>
+    request: Request<K>,
   ): Promise<Response<K>> {
     const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
     const message = {
@@ -210,7 +212,7 @@ export class BrowserApi {
   async requestToTab<K extends keyof MessageMap>(
     tabId: number,
     key: K,
-    request: Request<K>
+    request: Request<K>,
   ): Promise<Response<K>> {
     const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
     const message = {
@@ -220,7 +222,7 @@ export class BrowserApi {
     chrome.tabs.sendMessage(
       tabId,
       message,
-      this.createRequestResponseHandler(resolve, reject)
+      this.createRequestResponseHandler(resolve, reject),
     );
     return promise;
   }
@@ -228,7 +230,7 @@ export class BrowserApi {
   /** Responses may contain undefined if a tab did not handle request */
   async requestToAllTabs<K extends keyof MessageMap>(
     key: K,
-    request: Request<K>
+    request: Request<K>,
   ): Promise<(Response<K> | undefined)[]> {
     const [outerPromise, outerResolve, outerReject] =
       Utils.createPromise<(Response<K> | undefined)[]>();
@@ -247,7 +249,7 @@ export class BrowserApi {
             if (
               resp === undefined ||
               chrome.runtime.lastError?.message?.includes(
-                "Could not establish connection. Receiving end does not exist."
+                "Could not establish connection. Receiving end does not exist.",
               )
             ) {
               resolve(resp); // eslint-disable-line
@@ -269,9 +271,9 @@ export class BrowserApi {
   /// If there is an existing handler for `key`, replaces it.
   handleRequest<K extends keyof MessageMap>(
     key: K,
-    handler: (typeof this._requestHandlers)[K]
+    handler: (typeof this._requestHandlers)[K],
   ) {
-    this._requestHandlers[key] = handler
+    this._requestHandlers[key] = handler;
   }
 
   /** Must be called from within a tab, and not in a content script */
@@ -310,7 +312,7 @@ export class BrowserApi {
       if (result[0] !== undefined) {
         resolve(result[0]);
       } else {
-        reject(new Error('No tabs are active'))
+        reject(new Error("No tabs are active"));
       }
     });
     return promise;
@@ -342,7 +344,7 @@ export class BrowserApi {
 
   async updateTab(
     tabId: number,
-    properties: chrome.tabs.UpdateProperties
+    properties: chrome.tabs.UpdateProperties,
   ): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
     chrome.tabs.update(tabId, properties, () => {
@@ -360,7 +362,7 @@ export class BrowserApi {
     let req: string | Record<string, T> = key;
     if (or !== undefined) {
       req = {
-        [key]: or
+        [key]: or,
       };
     }
     this.storage().get(req, (obj) => {
@@ -384,11 +386,8 @@ export class BrowserApi {
     return promise;
   }
 
-  handleStorageChange(
-    key: string,
-    handler: StorageHandler
-  ) {
-    const storageHandlers = this._storageHandlers[key]
+  handleStorageChange(key: string, handler: StorageHandler) {
+    const storageHandlers = this._storageHandlers[key];
     if (storageHandlers !== undefined) {
       storageHandlers.push(handler);
     } else {
@@ -400,10 +399,7 @@ export class BrowserApi {
     return chrome.runtime.connect({ name });
   }
 
-  handleConnection(
-    name: ConnectionKey,
-    handler: ConnectionHandler
-  ) {
+  handleConnection(name: ConnectionKey, handler: ConnectionHandler) {
     const handlers = this._connectionHandlers[name];
     if (handlers === undefined) {
       this._connectionHandlers[name] = [handler];
@@ -412,18 +408,17 @@ export class BrowserApi {
     }
   }
 
-
   /** set text to "" to remove badge */
   async setBadge(text: string | number, color: string) {
     const iAction = this.action();
     if (typeof text === "number") {
-      text = text.toString()
+      text = text.toString();
     }
     await iAction.setBadgeText({
-      text
-    })
+      text,
+    });
     await iAction.setBadgeBackgroundColor({
-      color
+      color,
     });
   }
 
@@ -431,29 +426,33 @@ export class BrowserApi {
     const [promise, resolve] = Utils.createPromise<chrome.tts.TtsVoice[]>();
     chrome.tts.getVoices(resolve);
     const voices = await promise;
-    const ttsVoices: TTSVoice[] = []
+    const ttsVoices: TTSVoice[] = [];
     for (const voice of voices) {
-      if (voice.lang != 'ja-JP') continue
-      const name = voice.voiceName
-      if (name === undefined) continue
-      const quality = voice.remote ? 100 : 200
+      if (voice.lang != "ja-JP") continue;
+      const name = voice.voiceName;
+      if (name === undefined) continue;
+      const quality = voice.remote ? 100 : 200;
       const ttsVoice: TTSVoice = {
         id: name,
         name: name,
-        quality
-      }
-      ttsVoices.push(ttsVoice)
+        quality,
+      };
+      ttsVoices.push(ttsVoice);
     }
-    return ttsVoices
+    return ttsVoices;
   }
 
   async speakJapanese(text: string, voice: TTSVoice | null): Promise<void> {
     const [promise, resolve] = Utils.createPromise<void>();
-    let options: chrome.tts.SpeakOptions = { "lang": "ja-jp" }
+    let options: chrome.tts.SpeakOptions = { lang: "ja-jp" };
     if (voice !== null) {
-      const voices = await this.japaneseTtsVoices()
-      if (voices.find((value) => { value.name === voice.name }) !== undefined) {
-        options = { "voiceName": voice.name }
+      const voices = await this.japaneseTtsVoices();
+      if (
+        voices.find((value) => {
+          value.name === voice.name;
+        }) !== undefined
+      ) {
+        options = { voiceName: voice.name };
       }
     }
     chrome.tts.speak(text, options, resolve);
@@ -461,16 +460,16 @@ export class BrowserApi {
   }
 
   handleActionClicked(handler: (tab: chrome.tabs.Tab) => void) {
-    chrome.action.onClicked.addListener(handler)
+    chrome.action.onClicked.addListener(handler);
   }
 
   async setActionIcon(iconPath: string) {
     await chrome.action.setIcon({
-      path: iconPath
-    })
+      path: iconPath,
+    });
   }
 
   handleBrowserLoad(handler: () => void) {
-    chrome.runtime.onStartup.addListener(handler)
+    chrome.runtime.onStartup.addListener(handler);
   }
 }

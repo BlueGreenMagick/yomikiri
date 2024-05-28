@@ -1,4 +1,9 @@
-import { iosAnkiMobileURL, type AnkiInfo, type IAnkiAddNotes, type IAnkiOptions } from "../common/anki";
+import {
+  iosAnkiMobileURL,
+  type AnkiInfo,
+  type IAnkiAddNotes,
+  type IAnkiOptions,
+} from "../common/anki";
 import Utils from "lib/utils";
 import type { IosAppPlatform } from ".";
 import type { AnkiNote } from "lib/anki";
@@ -20,18 +25,19 @@ interface RawAnkiInfo {
 }
 
 export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
-  platform: IosAppPlatform
-  ankiInfoP: Promise<AnkiInfo>
-  ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>
-  ankiInfoReject: Utils.PromiseRejector
+  platform: IosAppPlatform;
+  ankiInfoP: Promise<AnkiInfo>;
+  ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>;
+  ankiInfoReject: Utils.PromiseRejector;
 
   constructor(platform: IosAppPlatform) {
-    this.platform = platform
+    this.platform = platform;
 
-    const [ankiInfoP, ankiInfoResolve, ankiInfoReject] = Utils.createPromise<AnkiInfo>();
-    this.ankiInfoP = ankiInfoP
-    this.ankiInfoResolve = ankiInfoResolve
-    this.ankiInfoReject = ankiInfoReject
+    const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
+      Utils.createPromise<AnkiInfo>();
+    this.ankiInfoP = ankiInfoP;
+    this.ankiInfoResolve = ankiInfoResolve;
+    this.ankiInfoReject = ankiInfoReject;
   }
 
   setAnkiInfo(ankiInfoJson: string): void {
@@ -55,9 +61,7 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   async requestAnkiInfo(): Promise<void> {
     const installed = await this.platform.messageWebview("ankiInfo", null);
     if (!installed) {
-      throw new Error(
-        `AnkiMobile app is not installed.`
-      );
+      throw new Error(`AnkiMobile app is not installed.`);
     }
   }
 
@@ -66,19 +70,20 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   }
 
   async checkConnection(): Promise<void> {
-    const installed = await this.platform.messageWebview("ankiIsInstalled", null);
+    const installed = await this.platform.messageWebview(
+      "ankiIsInstalled",
+      null,
+    );
     if (!installed) {
-      throw new Error(
-        `AnkiMobile app is not installed.`
-      );
+      throw new Error(`AnkiMobile app is not installed.`);
     }
   }
 
   async addNote(note: AnkiNote): Promise<void> {
-    const url = iosAnkiMobileURL(note)
+    const url = iosAnkiMobileURL(note);
     await this.platform.messageWebview("openLink", url);
   }
 }
 
-export const AnkiApi = IosAppAnkiApi
-export type AnkiApi = IosAppAnkiApi
+export const AnkiApi = IosAppAnkiApi;
+export type AnkiApi = IosAppAnkiApi;

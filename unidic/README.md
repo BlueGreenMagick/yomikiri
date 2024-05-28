@@ -3,6 +3,7 @@
 ## Lex Data
 
 ### Fields
+
 source: https://github.com/polm/unidic-py
 
 0.  surface
@@ -21,9 +22,8 @@ source: https://github.com/polm/unidic-py
 13. pron (発音形出現形)
 14. orthBase (書字形基本形)
 15. pronBase (発音形基本形)
-...
-21. kana (読みがな) katakana representation of word. Without 'ー'
-22. kanaBase (仮名形基本形) katakana representation of lemma
-23. form (語形出現形)
-24. formBase (語形基本形) uninflected form of word
-
+    ...
+16. kana (読みがな) katakana representation of word. Without 'ー'
+17. kanaBase (仮名形基本形) katakana representation of lemma
+18. form (語形出現形)
+19. formBase (語形基本形) uninflected form of word

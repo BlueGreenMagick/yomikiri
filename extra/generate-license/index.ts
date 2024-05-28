@@ -9,13 +9,16 @@ import { getProjectLicenses } from "generate-license-file";
 
 type LicensesMap = Map<string, string[]>;
 
-
-function addLicenses(licensesMap: LicensesMap, names: string[], content: string) {
+function addLicenses(
+  licensesMap: LicensesMap,
+  names: string[],
+  content: string,
+) {
   const dependencies = licensesMap.get(content);
   if (dependencies !== undefined) {
     dependencies.push(...names);
   } else {
-    licensesMap.set(content, [...names])
+    licensesMap.set(content, [...names]);
   }
 }
 
@@ -37,7 +40,7 @@ function getShell(): string {
 }
 
 async function runRustCommand() {
-  const cargoPath = (await which("cargo"));
+  const cargoPath = await which("cargo");
   const { stdout } = await child_process.spawn(cargoPath, ["run"], {
     shell: getShell(),
     cwd: "./rust",
@@ -48,29 +51,28 @@ async function runRustCommand() {
   return stdout as string;
 }
 
-
 interface RustBundle {
-  root_name: string,
-  third_party_libraries: RustFinalizedLicense[]
+  root_name: string;
+  third_party_libraries: RustFinalizedLicense[];
 }
 
 interface RustFinalizedLicense {
-  package_name: string
-  package_version: string
-  license: string
-  licenses: RustLicenseAndText[]
+  package_name: string;
+  package_version: string;
+  license: string;
+  licenses: RustLicenseAndText[];
 }
 
 interface RustLicenseAndText {
-  license: string
-  text: string
+  license: string;
+  text: string;
 }
 
 function getRustLicenses(licensesMap: LicensesMap, licensesJSON: string) {
   const licenses = JSON.parse(licensesJSON) as RustBundle;
   for (const pack of licenses.third_party_libraries) {
-    const name = `${pack.package_name}@${pack.package_version}`
-    addLicenses(licensesMap, [name], pack.licenses[0].text)
+    const name = `${pack.package_name}@${pack.package_version}`;
+    addLicenses(licensesMap, [name], pack.licenses[0].text);
   }
 }
 
@@ -81,7 +83,6 @@ async function getPnpmLicenses(licensesMap: LicensesMap) {
     addLicenses(licensesMap, license.dependencies, license.content);
   }
 }
-
 
 interface TOMLResource {
   name: string;
@@ -114,24 +115,26 @@ function getManualLicenses(licensesMap: LicensesMap) {
   }
 
   for (const res of resources.res) {
-    const name = `${res.name}${res.version ? '@' + res.version : ''}`
+    const name = `${res.name}${res.version ? "@" + res.version : ""}`;
     addLicenses(licensesMap, [name], res.text);
   }
 }
 
 function generateLicensesText(licensesMap: LicensesMap): string {
-  const lines: string[] = []
+  const lines: string[] = [];
   for (const [licenseText, names] of licensesMap) {
-    lines.push(`Yomikiri uses following software${names.length > 1 ? 's' : ''}: ${names.join(", ")}`)
-    lines.push('')
-    lines.push('They contain following license notice:')
-    lines.push('')
-    lines.push(licenseText)
-    lines.push('')
-    lines.push('==================================================')
-    lines.push('')
+    lines.push(
+      `Yomikiri uses following software${names.length > 1 ? "s" : ""}: ${names.join(", ")}`,
+    );
+    lines.push("");
+    lines.push("They contain following license notice:");
+    lines.push("");
+    lines.push(licenseText);
+    lines.push("");
+    lines.push("==================================================");
+    lines.push("");
   }
-  return lines.join('\n')
+  return lines.join("\n");
 }
 
 async function main() {

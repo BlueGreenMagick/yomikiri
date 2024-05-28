@@ -2,15 +2,15 @@ import { BrowserApi } from "extension/browserApi";
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
-import type { Platform as IosPlatform } from "./"
+import type { Platform as IosPlatform } from "./";
 
 export class IosAnkiApi implements IAnkiAddNotes {
-  browserApi: BrowserApi
-  config: Config
+  browserApi: BrowserApi;
+  config: Config;
 
   constructor(platform: IosPlatform, config: Config) {
-    this.browserApi = platform.browserApi
-    this.config = config
+    this.browserApi = platform.browserApi;
+    this.config = config;
   }
 
   /**
@@ -26,7 +26,7 @@ export class IosAnkiApi implements IAnkiAddNotes {
   async _addNote(note: AnkiNote): Promise<void> {
     const currentTab = await this.browserApi.currentTab();
 
-    const willAutoRedirect = this.config.get("anki.ios_auto_redirect")
+    const willAutoRedirect = this.config.get("anki.ios_auto_redirect");
     if (willAutoRedirect) {
       if (currentTab.id === undefined) {
         throw new Error("Current tab does not have an id");
@@ -35,7 +35,10 @@ export class IosAnkiApi implements IAnkiAddNotes {
       await this.browserApi.setStorage("x-callback.tabUrl", location.href);
     }
 
-    const ankiLink = iosAnkiMobileURL(note, willAutoRedirect ? "http://yomikiri-redirect.yoonchae.com" : undefined)
+    const ankiLink = iosAnkiMobileURL(
+      note,
+      willAutoRedirect ? "http://yomikiri-redirect.yoonchae.com" : undefined,
+    );
     if (currentTab.id !== undefined) {
       await this.browserApi.updateTab(currentTab.id, { url: ankiLink });
     } else {
@@ -44,5 +47,5 @@ export class IosAnkiApi implements IAnkiAddNotes {
   }
 }
 
-export const AnkiApi = IosAnkiApi
-export type AnkiApi = IosAnkiApi
+export const AnkiApi = IosAnkiApi;
+export type AnkiApi = IosAnkiApi;

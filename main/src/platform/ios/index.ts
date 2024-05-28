@@ -1,12 +1,22 @@
 import Config, { type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleMessageResponse } from "lib/utils";
 import { BrowserApi } from "extension/browserApi";
-import type { IPlatform, TTSVoice, TranslateResult, VersionInfo, IPlatformStatic, TTSRequest } from "../common";
+import type {
+  IPlatform,
+  TTSVoice,
+  TranslateResult,
+  VersionInfo,
+  IPlatformStatic,
+  TTSRequest,
+} from "../common";
 import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { Backend as IosBackend } from "./backend";
 import { AnkiApi as IosAnkiApi } from "./anki";
-import { migrateConfigObject, type StoredCompatConfiguration } from "lib/compat";
+import {
+  migrateConfigObject,
+  type StoredCompatConfiguration,
+} from "lib/compat";
 
 export * from "../common";
 
@@ -23,20 +33,19 @@ export interface AppMessageMap {
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
 export type AppResponse<K extends keyof AppMessageMap> = AppMessageMap[K][1];
 
-
 export class IosPlatform implements IPlatform {
   static IS_DESKTOP = false;
   static IS_IOS = true;
   static IS_IOSAPP = false;
 
-  browserApi: BrowserApi
+  browserApi: BrowserApi;
   // config migration is done only once even if requested multiple times
   configMigration = new LazyAsync<StoredConfiguration>(async () => {
-    return await this.migrateConfigInner()
-  })
+    return await this.migrateConfigInner();
+  });
 
   constructor(browserApi: BrowserApi) {
-    this.browserApi = browserApi
+    this.browserApi = browserApi;
     if (browserApi.context === "background") {
       browserApi.handleRequest("loadConfig", async () => {
         const config = await this.updateConfig();
@@ -49,17 +58,17 @@ export class IosPlatform implements IPlatform {
   }
 
   newBackend(): IosBackend {
-    return new IosBackend(this, this.browserApi)
+    return new IosBackend(this, this.browserApi);
   }
 
   newAnkiApi(config: Config): IosAnkiApi {
-    return new IosAnkiApi(this, config)
+    return new IosAnkiApi(this, config);
   }
 
   /** Only works in background & page */
   async requestToApp<K extends keyof AppMessageMap>(
     key: K,
-    request: AppRequest<K>
+    request: AppRequest<K>,
   ): Promise<AppResponse<K>> {
     // eslint-disable-next-line
     const resp = await browser.runtime.sendNativeMessage("_", {
@@ -79,19 +88,22 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  /** 
-   * Listens to web config changes, 
+  /**
+   * Listens to web config changes,
    * which may occur when a new script loads and app config is fetched
    */
   subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     this.browserApi.handleStorageChange("config", (change) => {
-      subscriber(change.newValue as StoredConfiguration)
-    })
+      subscriber(change.newValue as StoredConfiguration);
+    });
   }
 
   // App config is the source of truth
   private async updateConfig(): Promise<StoredConfiguration> {
-    const webConfigP = this.browserApi.getStorage<StoredCompatConfiguration>("config", {});
+    const webConfigP = this.browserApi.getStorage<StoredCompatConfiguration>(
+      "config",
+      {},
+    );
     const appConfigP = this.requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
@@ -126,52 +138,50 @@ export class IosPlatform implements IPlatform {
   versionInfo(): VersionInfo {
     const manifest = this.browserApi.manifest();
     return {
-      version: manifest.version
-    }
+      version: manifest.version,
+    };
   }
 
   async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await this.requestToApp("ttsVoices", null)
+    return await this.requestToApp("ttsVoices", null);
   }
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     if (this.browserApi.context !== "contentScript") {
-      await this.requestToApp("tts", { voice, text })
+      await this.requestToApp("tts", { voice, text });
     } else {
-      await this.browserApi.request("tts", { voice, text })
+      await this.browserApi.request("tts", { voice, text });
     }
   }
 
   async translate(text: string): Promise<TranslateResult> {
     if (this.browserApi.context !== "contentScript") {
-      return getTranslation(text)
+      return getTranslation(text);
     } else {
       return this.browserApi.request("translate", text);
     }
   }
 
   openExternalLink(url: string): void {
-    window
-      .open(url, "_blank")
-      ?.focus();
+    window.open(url, "_blank")?.focus();
   }
 
   async migrateConfig(): Promise<StoredConfiguration> {
     if (this.browserApi.context === "contentScript") {
       return await this.browserApi.request("migrateConfig", null);
     } else {
-      return await this.configMigration.get()
+      return await this.configMigration.get();
     }
   }
 
   private async migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await this.getConfig()
-    const migrated = migrateConfigObject(configObject)
-    await this.saveConfig(migrated)
-    return migrated
+    const configObject = await this.getConfig();
+    const migrated = migrateConfigObject(configObject);
+    await this.saveConfig(migrated);
+    return migrated;
   }
 }
 
-IosPlatform satisfies IPlatformStatic
-export const Platform = IosPlatform
-export type Platform = IosPlatform
+IosPlatform satisfies IPlatformStatic;
+export const Platform = IosPlatform;
+export type Platform = IosPlatform;

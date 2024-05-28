@@ -1,31 +1,39 @@
 {
-    "compilerOptions": {
-      "target": "es2017",
-      "module": "esnext",
-      "moduleResolution": "bundler",
-      "rootDir": ".",
-      "baseUrl": "src",
-      "outDir": "dist",
-      "lib": ["es2015", "es2016", "es2017", "DOM", "DOM.Iterable", "ES2020.Promise", "ES2021.WeakRef"],
-      "sourceMap": true,
-      "declaration": true,
-      "esModuleInterop": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-      // https://esbuild.github.io/content-types/#typescript-caveats
-      "isolatedModules": true,
-      "noImplicitReturns": true,
-      "noImplicitThis": true,
-      "noImplicitAny": true,
-      "exactOptionalPropertyTypes": true,
-      "resolveJsonModule": true,
-      "paths": {
-        "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
-        "@platform": ["platform/common/index"],
-        "@platform/*": ["platform/common/*"],
-        "@test/*": ["../test/*"]
-      },
-      "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "rootDir": ".",
+    "baseUrl": "src",
+    "outDir": "dist",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "DOM",
+      "DOM.Iterable",
+      "ES2020.Promise",
+      "ES2021.WeakRef"
+    ],
+    "sourceMap": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    // https://esbuild.github.io/content-types/#typescript-caveats
+    "isolatedModules": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@icons/*": ["../node_modules/ionicons/dist/svg/*"],
+      "@platform": ["platform/common/index"],
+      "@platform/*": ["platform/common/*"],
+      "@test/*": ["../test/*"]
     },
-    "include": ["src/**/*", "test/**/*", "esbuild.config.ts", "vitest.config.ts"]
-  }
+    "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]
+  },
+  "include": ["src/**/*", "test/**/*", "esbuild.config.ts", "vitest.config.ts"]
+}

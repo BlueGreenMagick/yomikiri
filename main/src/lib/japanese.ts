@@ -93,7 +93,7 @@ export namespace RubyString {
       for (let i = 1; i < splitted.length; i++) {
         rubyString.push({
           base: splitted[i],
-          ...((i % 2 === 0) && { ruby: matches[i / 2 + first] }),
+          ...(i % 2 === 0 && { ruby: matches[i / 2 + first] }),
         });
       }
     }
@@ -142,9 +142,9 @@ export namespace RubyString {
 
 /**
  * Split text into kanji segments and non-kanji segments.
- * 
+ *
  * Returns an array of [kanji, non-kanji, kanji, ...].
- * 
+ *
  * If text starts with non-kanji, first element is "".
  */
 function splitKanjiSegment(text: string): string[] {
@@ -208,7 +208,7 @@ export function toHiragana(text: string): string {
 /**
  * Convert all hiragana in text to katakana.
  * `text` should be NFC normalized.
- * 
+ *
  */
 export function toKatakana(text: string): string {
   let katakana = "";

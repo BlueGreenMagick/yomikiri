@@ -1,15 +1,13 @@
-import type {
-  RawTokenizeResult,
-} from "@yomikiri/yomikiri-rs";
+import type { RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 import { Entry, type EntryObject } from "lib/dicEntry";
 import { toHiragana } from "lib/japanese";
-import type { DesktopBackend } from "../desktop/backend"
-import type { IosBackend } from "../ios/backend"
-import type { IosAppBackend } from "../iosapp/backend"
+import type { DesktopBackend } from "../desktop/backend";
+import type { IosBackend } from "../ios/backend";
+import type { IosAppBackend } from "../iosapp/backend";
 
-export type { DesktopBackend } from "../desktop/backend"
-export type { IosBackend } from "../ios/backend"
-export type { IosAppBackend } from "../iosapp/backend"
+export type { DesktopBackend } from "../desktop/backend";
+export type { IosBackend } from "../ios/backend";
+export type { IosAppBackend } from "../iosapp/backend";
 
 export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
 
@@ -62,5 +60,8 @@ export interface IBackend {
   search(term: string): Promise<Entry[]>;
 }
 
-export declare const Backend: typeof DesktopBackend | typeof IosBackend | typeof IosAppBackend
-export type Backend = DesktopBackend | IosBackend | IosAppBackend
+export declare const Backend:
+  | typeof DesktopBackend
+  | typeof IosBackend
+  | typeof IosAppBackend;
+export type Backend = DesktopBackend | IosBackend | IosAppBackend;

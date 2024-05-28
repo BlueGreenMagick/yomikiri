@@ -6,22 +6,24 @@ import { updateTTSAvailability } from "common";
 import type { IosAppBackend } from "platform/iosapp/backend";
 import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
-const platform = new Platform()
-const lazyConfig = new LazyAsync(() => Config.initialize(platform))
-const backend = platform.newBackend()
-const ankiApi = platform.newAnkiApi()
+const platform = new Platform();
+const lazyConfig = new LazyAsync(() => Config.initialize(platform));
+const backend = platform.newBackend();
+const ankiApi = platform.newAnkiApi();
 
 const initialized = initialize();
 
 createSvelte(initialized);
 
 async function initialize(): Promise<[Config, IosAppBackend, IosAppAnkiApi]> {
-  const config = await lazyConfig.get()
+  const config = await lazyConfig.get();
   config.setStyle(document);
 
   // queue task to run later
-  setTimeout(() => { void deferredInitialize(config) }, 0);
-  return [config, backend, ankiApi]
+  setTimeout(() => {
+    void deferredInitialize(config);
+  }, 0);
+  return [config, backend, ankiApi];
 }
 
 /** Non-essential code to run at startup but not immediately */
@@ -29,7 +31,9 @@ async function deferredInitialize(config: Config): Promise<void> {
   await updateTTSAvailability(platform, config);
 }
 
-function createSvelte(initialized: Promise<[Config, IosAppBackend, IosAppAnkiApi]>): DictionaryPage {
+function createSvelte(
+  initialized: Promise<[Config, IosAppBackend, IosAppAnkiApi]>,
+): DictionaryPage {
   const params = new URLSearchParams(window.location.search);
   const context = params.get("context") as "app" | "action";
   const searchText = params.get("search") ?? "";
@@ -44,8 +48,8 @@ exposeGlobals({
   Utils,
   config() {
     void lazyConfig.get();
-    return lazyConfig.getIfInitialized()
+    return lazyConfig.getIfInitialized();
   },
   backend,
-  ankiApi
-})
+  ankiApi,
+});

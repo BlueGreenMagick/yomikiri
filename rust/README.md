@@ -13,7 +13,7 @@ For development, it is recommended to set `.vscode/settings.json` to the followi
     "aarch64-apple-ios",
     "-p",
     "yomikiri-rs",
-    "--message-format=json"
-  ]
+    "--message-format=json",
+  ],
 }
 ```

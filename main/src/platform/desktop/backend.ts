@@ -1,7 +1,4 @@
-import {
-  type IBackend,
-  TokenizeResult,
-} from "../common/backend";
+import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { Entry, type EntryObject } from "lib/dicEntry";
 import { BrowserApi } from "extension/browserApi";
@@ -11,33 +8,32 @@ import { loadDictionary, loadWasm } from "./fetch";
 
 export * from "../common/backend";
 
-
 export class DesktopBackend implements IBackend {
-  wasm?: BackendWasm
-  browserApi: BrowserApi
+  wasm?: BackendWasm;
+  browserApi: BrowserApi;
 
   static async initialize(browserApi: BrowserApi): Promise<DesktopBackend> {
-    const backend = new DesktopBackend(browserApi)
+    const backend = new DesktopBackend(browserApi);
     if (browserApi.context === "background") {
-      await backend._initialize()
+      await backend._initialize();
     }
-    return backend
+    return backend;
   }
 
   private constructor(browserApi: BrowserApi) {
-    this.browserApi = browserApi
+    this.browserApi = browserApi;
   }
 
   async _initialize(): Promise<void> {
-    Utils.bench("start")
+    Utils.bench("start");
     const BackendWasmConstructorP = loadWasm();
     const dictionaryP = loadDictionary();
-    const [BackendWasmConstructor, [indexBytes, entriesBytes]] = await Promise.all([BackendWasmConstructorP, dictionaryP]);
-    Utils.bench("loaded")
+    const [BackendWasmConstructor, [indexBytes, entriesBytes]] =
+      await Promise.all([BackendWasmConstructorP, dictionaryP]);
+    Utils.bench("loaded");
     this.wasm = new BackendWasmConstructor(indexBytes, entriesBytes);
-    Utils.bench("backend created")
+    Utils.bench("backend created");
   }
-
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
@@ -81,6 +77,5 @@ export class DesktopBackend implements IBackend {
   }
 }
 
-
-export const Backend = DesktopBackend
-export type Backend = DesktopBackend
+export const Backend = DesktopBackend;
+export type Backend = DesktopBackend;

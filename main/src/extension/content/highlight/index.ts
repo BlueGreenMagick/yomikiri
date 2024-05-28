@@ -1,8 +1,7 @@
 import type { Rect } from "lib/utils";
 import { SelectionHighlighter } from "./selectionHighlighter";
 import { WrapHighlighter } from "./wrapHighlighter";
-import { Platform } from "@platform"
-
+import { Platform } from "@platform";
 
 export interface IHighlighter {
   type: "selection" | "wrap";
@@ -17,8 +16,9 @@ export interface IHighlighter {
   highlightedRects: () => Rect[];
 }
 
-
-function getHighlighter(): typeof SelectionHighlighter | typeof WrapHighlighter {
+function getHighlighter():
+  | typeof SelectionHighlighter
+  | typeof WrapHighlighter {
   if (Platform.IS_DESKTOP) {
     return SelectionHighlighter;
   } else {
@@ -27,4 +27,4 @@ function getHighlighter(): typeof SelectionHighlighter | typeof WrapHighlighter 
 }
 
 export const Highlighter = getHighlighter();
-export type Highlighter = SelectionHighlighter | WrapHighlighter
+export type Highlighter = SelectionHighlighter | WrapHighlighter;

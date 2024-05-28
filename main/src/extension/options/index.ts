@@ -9,16 +9,20 @@ import Config from "lib/config";
 import type { DesktopDictionary } from "platform/common/dictionary";
 
 const browserApi = new BrowserApi({ context: "page" });
-const platform = new Platform(browserApi)
-const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
-const lazyAnkiApi = new Utils.LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
-const dictionary = platform.newDictionary()
+const platform = new Platform(browserApi);
+const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform));
+const lazyAnkiApi = new Utils.LazyAsync(async () =>
+  platform.newAnkiApi(await lazyConfig.get()),
+);
+const dictionary = platform.newDictionary();
 
-async function initialize(): Promise<[Config, DesktopAnkiApi, DesktopDictionary]> {
+async function initialize(): Promise<
+  [Config, DesktopAnkiApi, DesktopDictionary]
+> {
   const config = await lazyConfig.get();
   config.setStyle(document);
   const ankiApi = await lazyAnkiApi.get();
-  return [config, ankiApi, dictionary]
+  return [config, ankiApi, dictionary];
 }
 
 const initialized = initialize();
@@ -33,13 +37,13 @@ exposeGlobals({
   browserApi,
   Utils,
   ankiApi: () => {
-    void lazyAnkiApi.get()
-    return lazyAnkiApi.getIfInitialized()
+    void lazyAnkiApi.get();
+    return lazyAnkiApi.getIfInitialized();
   },
   config: () => {
-    void lazyConfig.get()
-    return lazyConfig.getIfInitialized()
+    void lazyConfig.get();
+    return lazyConfig.getIfInitialized();
   },
   dictionary,
-  page
-})
+  page,
+});

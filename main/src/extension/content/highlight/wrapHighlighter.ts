@@ -14,7 +14,6 @@ ${TAG_NAME}.unknown {
 }
 `;
 
-
 export class WrapHighlighter {
   readonly type = "wrap";
 

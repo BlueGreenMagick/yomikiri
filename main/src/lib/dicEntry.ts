@@ -28,10 +28,11 @@ export interface MinifiedEntry {
   p?: number;
 }
 
-interface PartialEntryObject extends Omit<Partial<Entry>, 'forms' | 'readings' | 'senses'> {
-  forms?: Form[] | FormObject[]
-  readings?: Reading[] | ReadingObject[]
-  senses?: Sense[] | SenseObject[]
+interface PartialEntryObject
+  extends Omit<Partial<Entry>, "forms" | "readings" | "senses"> {
+  forms?: Form[] | FormObject[];
+  readings?: Reading[] | ReadingObject[];
+  senses?: Sense[] | SenseObject[];
 }
 
 export type EntryObject = PartialEntryObject & MinifiedEntry;
@@ -127,7 +128,7 @@ export namespace Entry {
   export function readingForForm(
     entry: Entry,
     form: string,
-    nokanji = true
+    nokanji = true,
   ): Reading {
     for (const reading of entry.readings) {
       if (nokanji && reading.nokanji) continue;
@@ -136,7 +137,7 @@ export namespace Entry {
       }
     }
     console.error(
-      `Entry ${Entry.mainForm(entry)} has no reading for form: ${form}`
+      `Entry ${Entry.mainForm(entry)} has no reading for form: ${form}`,
     );
     return entry.readings[0];
   }
@@ -148,20 +149,15 @@ export namespace Entry {
   /** Put in return value of .entityName() */
   export function entityInfo(name: string): string | null {
     if (hasOwnProperty(ENTITIES, name)) {
-      return ENTITIES[name]
+      return ENTITIES[name];
     } else {
-      return null
+      return null;
     }
   }
 
   /** Returns entity name if s is an entity, else return null. */
   export function entityName(s: string): string | null {
-    if (
-      s.length > 2 &&
-      s.startsWith("=") &&
-      s.endsWith("=") &&
-      s[1] !== "="
-    ) {
+    if (s.length > 2 && s.startsWith("=") && s.endsWith("=") && s[1] !== "=") {
       return s.substring(1, s.length - 1);
     }
     return null;
@@ -214,7 +210,7 @@ export namespace Entry {
   // but unidic considers 辞める as variant of 止める.
   export function validEntriesForSurface(
     entries: Entry[],
-    surface: string
+    surface: string,
   ): Entry[] {
     const kanjis = extractKanjis(surface);
     if (kanjis === "") {
@@ -330,7 +326,7 @@ export interface MinifiedForm {
   i?: string[];
 }
 
-export type FormObject = Partial<Form> & MinifiedForm
+export type FormObject = Partial<Form> & MinifiedForm;
 
 export namespace Form {
   export function fromObject(obj: FormObject): Form {

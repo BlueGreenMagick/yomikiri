@@ -31,7 +31,7 @@ describe("sentenceAtCharLocation", () => {
 
   test("multiple sentences", () => {
     const container = prepareHTML(
-      `<p>これは文章1。これは文章2。そして最後の文章。</p>`
+      `<p>これは文章1。これは文章2。そして最後の文章。</p>`,
     );
     const textNode = selectTextNode(container, "p");
 
@@ -51,7 +51,7 @@ describe("sentenceAtCharLocation", () => {
   test("across inline elements", () => {
     const sentence = "読書は楽しい活動である。";
     const container = prepareHTML(
-      `<p><b>読書</b>は<i><b>楽しい</b>活動</i>である。</p>`
+      `<p><b>読書</b>は<i><b>楽しい</b>活動</i>である。</p>`,
     );
     const textNode = selectTextNode(container, "i b");
     const result = sentenceAtCharLocation(textNode, 1);
@@ -62,7 +62,7 @@ describe("sentenceAtCharLocation", () => {
   test("Ignore ruby", () => {
     const sentence = "読書は楽しい活動である。";
     const container = prepareHTML(
-      `<p><ruby>読書<rt>どくしょ</rt></ruby>は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい<ruby>活動<rt>かつどう</rt></ruby>である。</p>`
+      `<p><ruby>読書<rt>どくしょ</rt></ruby>は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい<ruby>活動<rt>かつどう</rt></ruby>である。</p>`,
     );
     const textNode = selectTextNode(container, "ruby:nth-of-type(1)");
     const result = sentenceAtCharLocation(textNode, 1);
@@ -78,7 +78,7 @@ describe("sentenceAtCharLocation", () => {
   test("<br> separated sentences", () => {
     const sentence = "これは文章2";
     const container = prepareHTML(
-      `<div>これは文章1<br>これは文章2<br>これは文章3</div>`
+      `<div>これは文章1<br>これは文章2<br>これは文章3</div>`,
     );
     const textNode = selectTextNode(container, "div", 2);
     const result = sentenceAtCharLocation(textNode, 1);
@@ -99,7 +99,7 @@ describe("nodesOfToken", () => {
   test("across inline elements", () => {
     // "読書は[(楽)しい]活動である。"
     const container = prepareHTML(
-      `<p>読書は<i><b>楽</b><u>し</u></i>い活動である。</p>`
+      `<p>読書は<i><b>楽</b><u>し</u></i>い活動である。</p>`,
     );
     const textNode = selectTextNode(container, "i b");
     const nodes = nodesOfToken(textNode, 0, "楽しい".length, 0);
@@ -109,7 +109,7 @@ describe("nodesOfToken", () => {
   test("ignore ruby", () => {
     // 読書は[(楽)しい]活動である。
     const container = prepareHTML(
-      `<p>読書は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい活動である。</p>`
+      `<p>読書は<ruby>楽<rp>(</rp><rt>たの</rt><rp>)</rp></ruby>しい活動である。</p>`,
     );
     const textNode = selectTextNode(container, "ruby");
     const nodes = nodesOfToken(textNode, 0, "楽しい".length, 0);
@@ -130,11 +130,7 @@ function prepareHTML(html: string): HTMLElement {
 }
 
 /** select the idx's (first by default) child node of selector element as Text. */
-function selectTextNode(
-  element: Element,
-  selector: string,
-  idx = 0
-): Text {
+function selectTextNode(element: Element, selector: string, idx = 0): Text {
   const elem = element.querySelector(selector)!;
   const node = elem.childNodes[idx];
   if (node.nodeType !== Node.TEXT_NODE) {

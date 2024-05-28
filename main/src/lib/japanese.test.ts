@@ -28,16 +28,16 @@ describe("RubyString", () => {
 
   test("generate complex", () => {
     // escape regex
-    expect(
-      RubyString.generate("日本語[の]言語", "にほんご[の]げんご")
-    ).toEqual([
-      { base: "日本語", ruby: "にほんご" },
-      { base: "[の]" },
-      { base: "言語", ruby: "げんご" },
-    ]);
+    expect(RubyString.generate("日本語[の]言語", "にほんご[の]げんご")).toEqual(
+      [
+        { base: "日本語", ruby: "にほんご" },
+        { base: "[の]" },
+        { base: "言語", ruby: "げんご" },
+      ],
+    );
 
     expect(
-      RubyString.generate("配信の否認不能", "はいしんのひにんふのう")
+      RubyString.generate("配信の否認不能", "はいしんのひにんふのう"),
     ).toEqual([
       { base: "配信", ruby: "はいしん" },
       { base: "の" },
@@ -89,7 +89,7 @@ describe("RubyString", () => {
       { base: "話", ruby: "<" },
     ];
     expect(RubyString.toHtml(rubies)).toEqual(
-      "<ruby>本<rt>ほん</rt></ruby>&lt;<ruby>話<rt>&lt;</rt></ruby>"
+      "<ruby>本<rt>ほん</rt></ruby>&lt;<ruby>話<rt>&lt;</rt></ruby>",
     );
   });
 });

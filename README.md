@@ -34,6 +34,7 @@ Please note that we do not support building the project on Windows. You may want
 [NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust & cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
 Run the following commands
+
 ```sh
 # Downloads and builds JMDict and UniDic dictionary files,
 # so it will take a long time to run.
@@ -44,7 +45,7 @@ pnpm install
 pnpm generate-licenses
 ```
 
-To build for ios as well, add ios target to rust: 
+To build for ios as well, add ios target to rust:
 `rustup target add aarch64-apple-ios`, `rustup target add aarch64-apple-ios-sim`,
 and run `pnpm run construct:all`.
 
@@ -58,7 +59,7 @@ In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpa
 
 Run `pnpm dev:firefox`.
 
-In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab. 
+In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab.
 Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.
 
 ## Ios

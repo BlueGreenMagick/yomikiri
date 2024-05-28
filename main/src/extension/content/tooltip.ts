@@ -9,34 +9,39 @@ import type { AnkiApi } from "@platform/anki";
 const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
 
 export class Tooltip {
-  platform: ExtensionPlatform
-  config: Config
-  ankiApi: AnkiApi
-  highlighter: Highlighter
+  platform: ExtensionPlatform;
+  config: Config;
+  ankiApi: AnkiApi;
+  highlighter: Highlighter;
 
   private _tooltipPageSvelte: TooltipPage | null = null;
   private _shown = false;
   private _resizeObserverAttached = false;
   private _repositionRequested = false;
 
-  constructor(platform: ExtensionPlatform, config: Config, ankiApi: AnkiApi, highlighter: Highlighter) {
-    this.platform = platform
-    this.config = config
-    this.ankiApi = ankiApi
-    this.highlighter = highlighter
+  constructor(
+    platform: ExtensionPlatform,
+    config: Config,
+    ankiApi: AnkiApi,
+    highlighter: Highlighter,
+  ) {
+    this.platform = platform;
+    this.config = config;
+    this.ankiApi = ankiApi;
+    this.highlighter = highlighter;
   }
 
   async show(
     tokenizeResult: TokenizeResult,
     highlightedRects: Rect[],
     mouseX: number,
-    mouseY: number
+    mouseY: number,
   ) {
     let tooltip = this.getTooltipEl();
-    let tooltipPage = this._tooltipPageSvelte
+    let tooltipPage = this._tooltipPageSvelte;
     if (tooltip === null || tooltipPage === null) {
       [tooltip, tooltipPage] = await this.createTooltipIframe();
-      this._tooltipPageSvelte = tooltipPage
+      this._tooltipPageSvelte = tooltipPage;
     }
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
@@ -58,7 +63,9 @@ export class Tooltip {
     this._shown = false;
   }
 
-  private async createTooltipIframe(): Promise<[HTMLIFrameElement, TooltipPage]> {
+  private async createTooltipIframe(): Promise<
+    [HTMLIFrameElement, TooltipPage]
+  > {
     const iframe = document.createElement("iframe");
     iframe.id = TOOLTIP_IFRAME_ID;
     iframe.style.position = "absolute";
@@ -83,7 +90,8 @@ export class Tooltip {
       const tooltipPage = this.setupEntriesPage(iframe);
       return [iframe, tooltipPage];
     } else {
-      const [promise, resolve] = Utils.createPromise<[HTMLIFrameElement, TooltipPage]>();
+      const [promise, resolve] =
+        Utils.createPromise<[HTMLIFrameElement, TooltipPage]>();
       iframe.addEventListener("load", () => {
         const tooltipPage = this.setupEntriesPage(iframe);
         resolve([iframe, tooltipPage]);
@@ -91,7 +99,6 @@ export class Tooltip {
       return promise;
     }
   }
-
 
   /** add ResizeObserver to document and change position on document resize */
   private attachResizeObserver() {
@@ -112,15 +119,11 @@ export class Tooltip {
 
   private getTooltipEl(): HTMLIFrameElement | null {
     return document.getElementById(
-      TOOLTIP_IFRAME_ID
+      TOOLTIP_IFRAME_ID,
     ) as HTMLIFrameElement | null;
   }
 
-  private findRectOfMouse(
-    rects: Rect[],
-    mouseX: number,
-    mouseY: number
-  ): Rect {
+  private findRectOfMouse(rects: Rect[], mouseX: number, mouseY: number): Rect {
     for (const rect of rects) {
       if (Utils.rectContainsPoint(rect, mouseX, mouseY)) {
         return rect;
@@ -167,8 +170,8 @@ export class Tooltip {
     const spaceBottom = window.innerHeight - rect.bottom;
     const requiredVerticalSpace = MAX_HEIGHT + VERTICAL_SPACE + MARGIN;
 
-    const left = Math.min(rectLeft, rootRect.width - MARGIN - WIDTH)
-    tooltip.style.left = `${left}px`
+    const left = Math.min(rectLeft, rootRect.width - MARGIN - WIDTH);
+    tooltip.style.left = `${left}px`;
 
     // default to below text, but above text if space is too small
     let atBottom = true;
@@ -204,16 +207,11 @@ export class Tooltip {
   }
 
   /** update tooltip height to match content height */
-  private updateTooltipHeight(
-    tooltip: HTMLIFrameElement,
-    max = false
-  ) {
+  private updateTooltipHeight(tooltip: HTMLIFrameElement, max = false) {
     let height = 300; // MAX_HEIGHT
 
     if (!max) {
-      const content = tooltip.contentDocument?.getElementById(
-        "main"
-      );
+      const content = tooltip.contentDocument?.getElementById("main");
       if (content) {
         // getBoundingClientRect().height returns floating-precision number
         const rect = content.getBoundingClientRect();
@@ -233,7 +231,14 @@ export class Tooltip {
 
     const tooltipPage = new TooltipPage({
       target: doc.body,
-      props: { platform: this.platform, config: this.config, ankiApi: this.ankiApi, onClose: () => { this.hide() } },
+      props: {
+        platform: this.platform,
+        config: this.config,
+        ankiApi: this.ankiApi,
+        onClose: () => {
+          this.hide();
+        },
+      },
     });
 
     tooltipPage.$on("updateHeight", (_: CustomEvent<void>) => {
@@ -242,6 +247,6 @@ export class Tooltip {
         this.updateTooltipHeight(tooltip);
       }
     });
-    return tooltipPage
+    return tooltipPage;
   }
 }

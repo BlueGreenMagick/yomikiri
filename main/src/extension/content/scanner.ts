@@ -60,7 +60,7 @@ export function charLocationAtPos(x: number, y: number): CharLocation | null {
   */
 export function sentenceAtCharLocation(
   node: Text,
-  charAt: number
+  charAt: number,
 ): CharAtString {
   const text = node.data;
 
@@ -110,7 +110,7 @@ export function nodesOfToken(
   currNode: Text,
   charIdxInCurrNode: number,
   tokenLength: number,
-  tokenCharIdx: number
+  tokenCharIdx: number,
 ): Text[] {
   const nextNodes: Text[] = [];
   let node = currNode;

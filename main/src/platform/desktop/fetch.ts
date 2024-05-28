@@ -4,12 +4,12 @@
   These functions are separated into its own module
   in order to replace(mock) them during tests.
 */
-import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm"
+import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import ENYomikiridict from "@yomikiri/dictionary/res/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary/res/english.yomikiriindex";
 import initWasm from "@yomikiri/yomikiri-rs";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { Dictionary } from "./dictionary"
+import { Dictionary } from "./dictionary";
 
 export async function loadWasm(): Promise<typeof BackendWasm> {
   const resp = await fetch(wasm);
@@ -19,7 +19,7 @@ export async function loadWasm(): Promise<typeof BackendWasm> {
 }
 
 export async function loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
-  const dictionary = new Dictionary()
+  const dictionary = new Dictionary();
   const saved = await dictionary.loadSavedDictionary();
   if (saved !== null) {
     return saved;

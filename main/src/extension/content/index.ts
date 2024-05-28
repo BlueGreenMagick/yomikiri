@@ -11,22 +11,37 @@ import Config from "lib/config";
 import { Platform, type ExtensionPlatform } from "@platform";
 import { containsJapaneseContent } from "lib/japanese";
 
-
 const browserApi = new BrowserApi({ context: "contentScript" });
-const platform = new Platform(browserApi) as ExtensionPlatform
-const lazyBackend = new Utils.Lazy(async () => await platform.newBackend())
-const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform))
-const lazyAnkiApi = new LazyAsync(async () => platform.newAnkiApi(await lazyConfig.get()))
-const highlighter = new Highlighter(() => { lazyTooltip.getIfInitialized()?.hide() })
-const lazyTooltip = new Utils.LazyAsync(async () => new Tooltip(platform, await lazyConfig.get(), await lazyAnkiApi.get(), highlighter))
+const platform = new Platform(browserApi) as ExtensionPlatform;
+const lazyBackend = new Utils.Lazy(async () => await platform.newBackend());
+const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform));
+const lazyAnkiApi = new LazyAsync(async () =>
+  platform.newAnkiApi(await lazyConfig.get()),
+);
+const highlighter = new Highlighter(() => {
+  lazyTooltip.getIfInitialized()?.hide();
+});
+const lazyTooltip = new Utils.LazyAsync(
+  async () =>
+    new Tooltip(
+      platform,
+      await lazyConfig.get(),
+      await lazyAnkiApi.get(),
+      highlighter,
+    ),
+);
 
-const _initialized = initialize()
+const _initialized = initialize();
 
 async function initialize() {
   const config = await lazyConfig.get();
-  handleStateEnabledChange(config)
-  document.addEventListener("mousemove", (ev) => { onMouseMove(ev, config) })
-  document.addEventListener("click", (ev) => { onClick(ev, config) })
+  handleStateEnabledChange(config);
+  document.addEventListener("mousemove", (ev) => {
+    onMouseMove(ev, config);
+  });
+  document.addEventListener("click", (ev) => {
+    onClick(ev, config);
+  });
 }
 
 /** Return false if not triggered on Japanese text */
@@ -66,7 +81,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     charLoc.node,
     charLoc.charAt,
     currToken.text.length,
-    scannedSentence.charAt - currToken.start
+    scannedSentence.charAt - currToken.start,
   );
   if (result.entries.length === 0) {
     lazyTooltip.getIfInitialized()?.hide();
@@ -92,10 +107,9 @@ function onMouseMove(ev: MouseEvent, config: Config) {
   }
 
   if (ev.shiftKey) {
-    trigger(ev.clientX, ev.clientY)
-      .catch((err: unknown) => {
-        throw err
-      })
+    trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
+      throw err;
+    });
   }
 }
 
@@ -116,18 +130,20 @@ function onClick(ev: MouseEvent, config: Config) {
           highlighter.unhighlight();
         }
       })
-      .catch((err: unknown) => { throw err })
+      .catch((err: unknown) => {
+        throw err;
+      });
   }
 }
 
 function handleStateEnabledChange(config: Config) {
-  const enabledState = config.store("state.enabled")
+  const enabledState = config.store("state.enabled");
   enabledState.subscribe((enabled) => {
     if (!enabled) {
       lazyTooltip.getIfInitialized()?.hide();
       highlighter.unhighlight();
     }
-  })
+  });
 }
 
 exposeGlobals({
@@ -135,15 +151,15 @@ exposeGlobals({
   browserApi,
   Utils,
   backend: () => {
-    return lazyBackend.get()
+    return lazyBackend.get();
   },
   config: () => {
-    void lazyConfig.get()
-    return lazyConfig.getIfInitialized()
+    void lazyConfig.get();
+    return lazyConfig.getIfInitialized();
   },
   highlighter,
   tooltip: () => {
-    void lazyTooltip.get()
-    return lazyTooltip.getIfInitialized()
-  }
-})
+    void lazyTooltip.get();
+    return lazyTooltip.getIfInitialized();
+  },
+});

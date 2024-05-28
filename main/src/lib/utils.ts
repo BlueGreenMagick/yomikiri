@@ -1,6 +1,5 @@
 import { writable, type Writable } from "svelte/store";
 
-
 export interface Rect {
   top: number;
   bottom: number;
@@ -9,34 +8,37 @@ export interface Rect {
 }
 
 export interface Thennable {
-  then: () => void
+  then: () => void;
 }
 
 // Limit the value `T` can take so below situation is avoided.
 //
 // const a : Promise<{}> | {} = Promise.resolve(5)
-export type PromiseOrValue<T> = Promise<unknown> extends T ? never : Promise<T> | Exclude<T, Thennable>
+export type PromiseOrValue<T> =
+  Promise<unknown> extends T ? never : Promise<T> | Exclude<T, Thennable>;
 
 export type First<T extends unknown[]> = T extends [infer FIRST, ...unknown[]]
   ? FIRST
   : never;
-export type Second<T extends unknown[]> = T extends [unknown, infer SECOND, ...unknown[]]
+export type Second<T extends unknown[]> = T extends [
+  unknown,
+  infer SECOND,
+  ...unknown[],
+]
   ? SECOND
   : never;
 export type PromiseResolver<K> = (value: K | PromiseLike<K>) => void;
 export type PromiseRejector = (reason?: unknown) => void;
 
 /* eslint-disable-next-line -- {} is any object except undefined or null */
-export type NonUndefined = {} | null
-
+export type NonUndefined = {} | null;
 
 export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
-
 
 export function createPromise<V>(): [
   Promise<V>,
   PromiseResolver<V>,
-  (reason?: unknown) => void
+  (reason?: unknown) => void,
 ] {
   let resolve: PromiseResolver<V>, reject: (reason?: unknown) => void;
   const promise = new Promise<V>((rs: PromiseResolver<V>, rj) => {
@@ -52,7 +54,7 @@ export class PromiseWithProgress<V, P> extends Promise<V> {
 
   constructor(
     executor: (resolve: PromiseResolver<V>, reject: PromiseRejector) => void,
-    initialProgress?: P
+    initialProgress?: P,
   ) {
     super(executor);
 
@@ -65,7 +67,7 @@ export class PromiseWithProgress<V, P> extends Promise<V> {
 
   static fromPromise<V, P>(
     promise: Promise<V>,
-    initialProgress?: P
+    initialProgress?: P,
   ): PromiseWithProgress<V, P> {
     return new PromiseWithProgress((res, rej) => {
       promise.then(res, rej);
@@ -78,46 +80,46 @@ export class PromiseWithProgress<V, P> extends Promise<V> {
 }
 
 export class Lazy<T extends NonUndefined> {
-  initializer: () => T
-  inner?: T = undefined
+  initializer: () => T;
+  inner?: T = undefined;
 
   constructor(initializer: () => T) {
-    this.initializer = initializer
+    this.initializer = initializer;
   }
 
   get(): T {
     if (this.inner === undefined) {
-      this.inner = this.initializer()
+      this.inner = this.initializer();
     }
-    return this.inner
+    return this.inner;
   }
 }
 
 export class LazyAsync<T extends NonUndefined> {
-  private initializer: () => PromiseOrValue<T>
-  private inner?: PromiseOrValue<T> = undefined
-  private innerValue?: T = undefined
-  initialized = false
+  private initializer: () => PromiseOrValue<T>;
+  private inner?: PromiseOrValue<T> = undefined;
+  private innerValue?: T = undefined;
+  initialized = false;
 
   constructor(initializer: () => PromiseOrValue<T>) {
-    this.initializer = initializer
+    this.initializer = initializer;
   }
 
   async get(): Promise<T> {
     if (this.inner === undefined) {
-      this.inner = this.initializer()
-      this.innerValue = await this.inner
-      this.initialized = true
-      return this.innerValue
+      this.inner = this.initializer();
+      this.innerValue = await this.inner;
+      this.initialized = true;
+      return this.innerValue;
     }
-    return await this.inner
+    return await this.inner;
   }
 
   getIfInitialized(): T | undefined {
     if (this.innerValue !== undefined) {
-      return this.innerValue
+      return this.innerValue;
     }
-    return
+    return;
   }
 }
 
@@ -130,15 +132,13 @@ export function listIsIdentical(l1: unknown[], l2: unknown[]) {
 }
 
 export function rectContainsPoint(rect: Rect, x: number, y: number): boolean {
-  return (
-    x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-  );
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
 export function containsPoint(
   obj: { getClientRects: () => DOMRectList },
   x: number,
-  y: number
+  y: number,
 ): boolean {
   const rects = obj.getClientRects();
   for (const rect of rects) {
@@ -177,13 +177,14 @@ export function toCodePointIndex(text: string, codeUnitIdx: number): number {
  * Not suitable for HTML attributes, which also needs quotes escaped.
  */
 export function escapeHTML(input: string): string {
-  return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 export function escapeRegex(text: string): string {
-  return text
-    .replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
-    .replace(/-/g, '\\x2d');
+  return text.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
 }
 
 /** "http://url?" + generateUrlParams({key: value}) */
@@ -191,14 +192,14 @@ export function generateUrlParams(params: Record<string, string>): string {
   return Object.entries(params)
     .map(
       ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
     )
     .join("&");
 }
 
 export function getErrorMessage(
   err: unknown,
-  other = "Unknown error: check the browser console for details"
+  other = "Unknown error: check the browser console for details",
 ): string {
   if (err instanceof Error) {
     return err.message;
@@ -222,7 +223,7 @@ interface QueueItem<I extends unknown[], R> {
  * In such case, the second call resolves earlier than the first call.
  */
 export function SingleQueued<I extends unknown[], R>(
-  fn: (...inp: I) => Promise<R>
+  fn: (...inp: I) => Promise<R>,
 ): (...inp: I) => Promise<R | null> {
   let queue: QueueItem<I, R | null> | null = null;
   let running = false;
@@ -237,14 +238,16 @@ export function SingleQueued<I extends unknown[], R>(
     const reject = queue.reject;
     running = true;
     queue = null;
-    fn(...inp).then((result) => {
-      running = false;
-      resolve(result);
-      run()
-    }).catch((e: unknown) => {
-      running = false;
-      reject(e);
-    })
+    fn(...inp)
+      .then((result) => {
+        running = false;
+        resolve(result);
+        run();
+      })
+      .catch((e: unknown) => {
+        running = false;
+        reject(e);
+      });
   };
 
   return (...inp: I) => {
@@ -295,7 +298,7 @@ export function awaitTime(ms: number): Promise<void> {
 const _logs: unknown[] = [];
 
 export function log(...args: unknown[]): void {
-  _logs.push(args)
+  _logs.push(args);
 }
 
 export function logs(): unknown[] {
@@ -305,28 +308,32 @@ export function logs(): unknown[] {
 export async function nextDocumentPaint(): Promise<void> {
   const [promise, resolve] = createPromise<void>();
   // macro tasks are run after paint action
-  requestAnimationFrame(() => { setTimeout(resolve) })
-  return promise
+  requestAnimationFrame(() => {
+    setTimeout(resolve);
+  });
+  return promise;
 }
 
 /**
  * expose objects to global context.
- * 
+ *
  * When a function `() => any` is provided, it is used as a getter for the property.
  */
-export function exposeGlobals(objects: Record<string, object | (() => unknown)>) {
+export function exposeGlobals(
+  objects: Record<string, object | (() => unknown)>,
+) {
   for (const prop in objects) {
-    const obj = objects[prop]
-    if (typeof obj === 'function') {
+    const obj = objects[prop];
+    if (typeof obj === "function") {
       Object.defineProperty(self, prop, {
         get() {
-          return obj() // eslint-disable-line
-        }
-      })
+          return obj(); // eslint-disable-line
+        },
+      });
     } else {
       Object.defineProperty(self, prop, {
-        value: obj
-      })
+        value: obj,
+      });
     }
   }
 }
@@ -341,7 +348,9 @@ export interface FailedMessageResponse {
   error: string; // error json
 }
 
-export type MessageResponse<R> = SuccessfulMessageResponse<R> | FailedMessageResponse;
+export type MessageResponse<R> =
+  | SuccessfulMessageResponse<R>
+  | FailedMessageResponse;
 
 export function handleMessageResponse<R>(resp: MessageResponse<R>): R {
   if (resp.success) {
@@ -363,13 +372,18 @@ export function handleMessageResponse<R>(resp: MessageResponse<R>): R {
   }
 }
 
-export function hasOwnProperty<O extends object, K extends string>(obj: O, key: K): key is keyof O & K {
-  return Object.prototype.hasOwnProperty.call(obj, key)
+export function hasOwnProperty<O extends object, K extends string>(
+  obj: O,
+  key: K,
+): key is keyof O & K {
+  return Object.prototype.hasOwnProperty.call(obj, key);
 }
 
-export function keyInObject<O extends object, K extends string>(obj: O, key: K): key is keyof O & K {
-  return key in obj
+export function keyInObject<O extends object, K extends string>(
+  obj: O,
+  key: K,
+): key is keyof O & K {
+  return key in obj;
 }
 
-
-export * as default from "./utils"
+export * as default from "./utils";

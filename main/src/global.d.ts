@@ -19,7 +19,7 @@ declare module "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm" {
 }
 
 declare module "*.svg" {
-  export { SvelteComponent as default } from 'svelte';
+  export { SvelteComponent as default } from "svelte";
 }
 
 declare module "*.png" {
@@ -37,5 +37,10 @@ declare module "*.chunk" {
   export default content;
 }
 
-declare const __APP_VERSION__: string
-declare const __APP_PLATFORM__: "chrome" | "firefox" | "safari_desktop" | "ios" | "iosapp"
+declare const __APP_VERSION__: string;
+declare const __APP_PLATFORM__:
+  | "chrome"
+  | "firefox"
+  | "safari_desktop"
+  | "ios"
+  | "iosapp";

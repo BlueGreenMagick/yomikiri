@@ -9,7 +9,6 @@ import postCssImport from "postcss-import";
 import Package from "./package.json" assert { type: "json" };
 import AdmZip from "adm-zip";
 
-
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const DEVELOPMENT = !PRODUCTION;
 
@@ -20,7 +19,7 @@ if (
   !["chrome", "firefox", "safari_desktop", "ios", "iosapp"].includes(TARGET)
 ) {
   throw new Error(
-    `TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios/iosapp, but is set to: ${TARGET}`
+    `TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios/iosapp, but is set to: ${TARGET}`,
   );
 }
 const FOR_CHROME = TARGET === "chrome";
@@ -60,7 +59,7 @@ const platformAliasPlugin: Plugin = {
       } else {
         replacement = "platform/desktop$1";
       }
-      const replaced = args.path.replace(/^@platform($|\/)/, replacement)
+      const replaced = args.path.replace(/^@platform($|\/)/, replacement);
       if (args.path === replaced) {
         return;
       }
@@ -109,7 +108,7 @@ const buildManifestPlugin: Plugin = {
           watchFiles: ["./src/manifest.json.ejs"],
         };
       }
-      return
+      return;
     });
   },
 };
@@ -129,7 +128,7 @@ const watchPlugin: Plugin = {
           watchFiles: ["./src/global.css", "./options/styles.css"],
         };
       }
-      return null
+      return null;
     });
   },
 };
@@ -149,7 +148,7 @@ const svelteConfiguredPlugin: Plugin = sveltePlugin({
     ];
     return !ignore.includes(warning.code);
   },
-  include: /\.(?:svelte|svg)$/
+  include: /\.(?:svelte|svg)$/,
 });
 
 function generateBuildOptions(): BuildOptions {
@@ -174,9 +173,9 @@ function generateBuildOptions(): BuildOptions {
     // relative path is incorrect from background pages
     publicPath: "/",
     define: {
-      '__APP_VERSION__': `"${VERSION}"`,
-      '__APP_PLATFORM__': `"${TARGET!}"`,
-      'import.meta.vitest': 'undefined'
+      __APP_VERSION__: `"${VERSION}"`,
+      __APP_PLATFORM__: `"${TARGET!}"`,
+      "import.meta.vitest": "undefined",
     },
     loader: {
       ".wasm": "file",
@@ -211,27 +210,30 @@ function generateBuildOptions(): BuildOptions {
       copy({
         assets: [
           // html
-          { from: ["src/extension/popup/index.html"], to: ["./res/popup.html"] },
+          {
+            from: ["src/extension/popup/index.html"],
+            to: ["./res/popup.html"],
+          },
           ...(FOR_IOS
             ? [
-              {
-                from: ["src/extension/x-callback/index.html"],
-                to: ["./res/x-callback.html"],
-              },
-            ]
+                {
+                  from: ["src/extension/x-callback/index.html"],
+                  to: ["./res/x-callback.html"],
+                },
+              ]
             : [
-              {
-                from: ["src/extension/options/index.html"],
-                to: ["./res/options.html"],
-              },
-            ]),
+                {
+                  from: ["src/extension/options/index.html"],
+                  to: ["./res/options.html"],
+                },
+              ]),
           ...(DEVELOPMENT
             ? [
-              {
-                from: ["src/iosapp/dictionary.html"],
-                to: ["./res/dictionary.html"],
-              },
-            ]
+                {
+                  from: ["src/iosapp/dictionary.html"],
+                  to: ["./res/dictionary.html"],
+                },
+              ]
             : []),
           // static assets
           { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
@@ -289,17 +291,18 @@ function cleanDirectory(dir: string) {
   }
 }
 
-
 async function compressDirectoryTo(dir: string, outfile: string) {
   const zip = new AdmZip();
-  await zip.addLocalFolderPromise(dir, { filter: (path) => !path.startsWith(".") });
+  await zip.addLocalFolderPromise(dir, {
+    filter: (path) => !path.startsWith("."),
+  });
   await zip.writeZipPromise(outfile, { overwrite: true });
 }
 
 async function main() {
   const buildOptions = generateBuildOptions();
   if (buildOptions.outdir === undefined) {
-    throw new Error("esbuild outdir must be set!")
+    throw new Error("esbuild outdir must be set!");
   }
 
   cleanDirectory(buildOptions.outdir);
@@ -310,10 +313,13 @@ async function main() {
   if (!WATCH) {
     await ctx.dispose();
     if (PRODUCTION && (FOR_CHROME || FOR_FIREFOX)) {
-
-      const compressedFile = path.join(buildOptions.outdir, "..", `yomikiri_${TARGET}_v${VERSION}.zip`);
-      console.log("Compressing file to: " + compressedFile)
-      await compressDirectoryTo(buildOptions.outdir, compressedFile)
+      const compressedFile = path.join(
+        buildOptions.outdir,
+        "..",
+        `yomikiri_${TARGET}_v${VERSION}.zip`,
+      );
+      console.log("Compressing file to: " + compressedFile);
+      await compressDirectoryTo(buildOptions.outdir, compressedFile);
     }
   } else {
     console.info("esbuild: Watching for changes to code..");
