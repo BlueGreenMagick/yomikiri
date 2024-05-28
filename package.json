@@ -26,15 +26,18 @@
     "dev": "pnpm run dev:chrome",
     "check": "pnpm run -r check",
     "lint": "pnpm run -r lint",
-    "test": "pnpm run -r test"
+    "test": "pnpm run -r test",
+    "format": "pnpm prettier --write --list-different ."
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
     "@typescript-eslint/parser": "^7.7.0",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-regexp": "^2.5.0",
     "eslint-plugin-svelte": "2.36.0-next.13",
     "globals": "^15.0.0",
+    "prettier": "^3.2.5",
     "svelte-eslint-parser": "0.34.0-next.12",
     "typescript-eslint": "^7.7.0"
   }

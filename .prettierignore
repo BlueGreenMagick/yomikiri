@@ -1,0 +1,18 @@
+# Generated files
+main/build
+jmdict/resources
+dictionary/pkg
+dictionary/res
+unidic/transformed
+unidic/output
+rust/pkg
+pnpm-lock.yaml
+
+# Downloaded files
+unidic/original
+
+# Artifacts
+.mypy_cache
+
+# IOS
+safari/**/*.json
