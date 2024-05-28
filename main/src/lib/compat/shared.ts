@@ -11,9 +11,8 @@ export interface DeprecatedConfiguration {
 /* Ensure that no keys overlap between Configuration and Deprecated Configuration */
 type OverlappingKeys<A, B> = keyof A & keyof B;
 type NoOverlappingKeys<A, B> =
-  OverlappingKeys<A, B> extends never
-    ? object
-    : { overlap: OverlappingKeys<A, B> };
+  OverlappingKeys<A, B> extends never ? object
+  : { overlap: OverlappingKeys<A, B> };
 const _checkOverlap: NoOverlappingKeys<Configuration, DeprecatedConfiguration> =
   {};
 

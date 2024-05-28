@@ -66,11 +66,9 @@ export namespace RubyString {
     // Should written kana be converted to hiragana/katakana based on reading?
     for (let i = 1; i < splitted.length; i++) {
       regexp +=
-        i % 2 === 0
-          ? "(.+?)"
-          : inKatakana
-            ? Utils.escapeRegex(toKatakana(splitted[i]))
-            : Utils.escapeRegex(toHiragana(splitted[i]));
+        i % 2 === 0 ? "(.+?)"
+        : inKatakana ? Utils.escapeRegex(toKatakana(splitted[i]))
+        : Utils.escapeRegex(toHiragana(splitted[i]));
     }
     const r = new RegExp("^" + regexp + "$", "u");
     const matches = reading.match(r);

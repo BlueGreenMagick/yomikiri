@@ -50,11 +50,9 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     const options: AnkiTemplateFieldWordOptions = {
       form: "as-is",
       style:
-        type === "word-furigana"
-          ? "furigana-anki"
-          : type === "word-kana"
-            ? "kana-only"
-            : "basic",
+        type === "word-furigana" ? "furigana-anki"
+        : type === "word-kana" ? "kana-only"
+        : "basic",
     };
     return {
       name,
@@ -69,11 +67,9 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     const options: AnkiTemplateFieldWordOptions = {
       form: "dict-form",
       style:
-        type === "dict-furigana"
-          ? "furigana-anki"
-          : type === "dict-kana"
-            ? "kana-only"
-            : "basic",
+        type === "dict-furigana" ? "furigana-anki"
+        : type === "dict-kana" ? "kana-only"
+        : "basic",
     };
     return { name, content: "word", ...options };
   } else if (
@@ -84,11 +80,9 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     const options: AnkiTemplateFieldWordOptions = {
       form: "main-dict-form",
       style:
-        type === "main-dict-furigana"
-          ? "furigana-anki"
-          : type === "main-dict-kana"
-            ? "kana-only"
-            : "basic",
+        type === "main-dict-furigana" ? "furigana-anki"
+        : type === "main-dict-kana" ? "kana-only"
+        : "basic",
     };
     return {
       name,
@@ -106,11 +100,10 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
       type === "sentence-cloze" || type === "sentence-cloze-furigana";
     const options: AnkiTemplateFieldSentenceOptions = {
       style:
-        type === "sentence-furigana" || type === "sentence-cloze-furigana"
-          ? "furigana-anki"
-          : type === "sentence-kana"
-            ? "kana-only"
-            : "basic",
+        type === "sentence-furigana" || type === "sentence-cloze-furigana" ?
+          "furigana-anki"
+        : type === "sentence-kana" ? "kana-only"
+        : "basic",
       word: isCloze ? "cloze" : "bold",
     };
     return {

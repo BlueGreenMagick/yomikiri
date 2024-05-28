@@ -1,2 +1,4 @@
 /** @type {import('prettier').Config} */
-export default {};
+export default {
+  experimentalTernaries: true,
+};

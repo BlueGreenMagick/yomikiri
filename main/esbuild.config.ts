@@ -195,12 +195,12 @@ function generateBuildOptions(): BuildOptions {
       { in: "src/extension/content/index.ts", out: "res/content" },
       { in: "src/extension/background/index.ts", out: "res/background" },
       { in: "src/extension/popup/index.ts", out: "res/popup" },
-      ...(FOR_IOS
-        ? [{ in: "src/extension/x-callback/index.ts", out: "res/x-callback" }]
-        : [{ in: "src/extension/options/index.ts", out: "res/options" }]),
-      ...(DEVELOPMENT
-        ? [{ in: "src/iosapp/dictionary.ts", out: "res/dictionary" }]
-        : []),
+      ...(FOR_IOS ?
+        [{ in: "src/extension/x-callback/index.ts", out: "res/x-callback" }]
+      : [{ in: "src/extension/options/index.ts", out: "res/options" }]),
+      ...(DEVELOPMENT ?
+        [{ in: "src/iosapp/dictionary.ts", out: "res/dictionary" }]
+      : []),
     ],
     plugins: [
       logRebuildPlugin,
@@ -214,27 +214,27 @@ function generateBuildOptions(): BuildOptions {
             from: ["src/extension/popup/index.html"],
             to: ["./res/popup.html"],
           },
-          ...(FOR_IOS
-            ? [
-                {
-                  from: ["src/extension/x-callback/index.html"],
-                  to: ["./res/x-callback.html"],
-                },
-              ]
-            : [
-                {
-                  from: ["src/extension/options/index.html"],
-                  to: ["./res/options.html"],
-                },
-              ]),
-          ...(DEVELOPMENT
-            ? [
-                {
-                  from: ["src/iosapp/dictionary.html"],
-                  to: ["./res/dictionary.html"],
-                },
-              ]
-            : []),
+          ...(FOR_IOS ?
+            [
+              {
+                from: ["src/extension/x-callback/index.html"],
+                to: ["./res/x-callback.html"],
+              },
+            ]
+          : [
+              {
+                from: ["src/extension/options/index.html"],
+                to: ["./res/options.html"],
+              },
+            ]),
+          ...(DEVELOPMENT ?
+            [
+              {
+                from: ["src/iosapp/dictionary.html"],
+                to: ["./res/dictionary.html"],
+              },
+            ]
+          : []),
           // static assets
           { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
         ],
