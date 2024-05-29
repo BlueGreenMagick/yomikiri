@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Platform } from "@platform";
+  import { Platform, type DesktopPlatform } from "@platform";
   import { type AnkiOptionsApi } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
@@ -19,6 +19,7 @@
   const ankiConnectPortConfig = config.store("anki.connect_port");
   const ankiEnabledConfig = config.store("anki.enabled");
   const ankiIosAutoRedirectConfig = config.store("anki.ios_auto_redirect");
+  const ankiDeferNotesConfig = config.store("anki.defer_notes");
 
   let useAnkiDescription: "off" | "loading" | "success" | "error" = "off";
   let useAnkiError = "";
@@ -62,6 +63,30 @@
       useAnkiDescription = "off";
     }
   });
+
+  /** Do action if there are existing deferred anki notes. */
+  function onToggleAnkiDeferNotes(): boolean {
+    if (!$ankiDeferNotesConfig) {
+      return true;
+    }
+    const browserApi = (platform as DesktopPlatform).browserApi;
+    const deferredNoteCount = config.get("state.anki.deferred_note_count");
+    if (deferredNoteCount <= 0) {
+      void config.set("state.anki.deferred_note_error", false);
+      void browserApi.setStorage("deferred-anki-note-errors", []);
+      return true;
+    }
+    const response = confirm(
+      `This will discard ${deferredNoteCount} Anki notes that are waiting to be added. Proceed?`,
+    );
+    if (response) {
+      void config.set("state.anki.deferred_note_count", 0);
+      void config.set("state.anki.deferred_note_error", false);
+      void browserApi.setStorage("deferred-anki-note", []);
+      void browserApi.setStorage("deferred-anki-note-errors", []);
+    }
+    return response;
+  }
 
   $: void checkAnkiConnection($ankiEnabledConfig);
 </script>
@@ -110,6 +135,17 @@
       {ankiTemplateDescription}
     </span>
   </OptionClick>
+
+  {#if Platform.IS_DESKTOP}
+    <OptionToggle
+      bind:value={$ankiDeferNotesConfig}
+      title="Delay Adding Note"
+      onToggle={onToggleAnkiDeferNotes}
+    >
+      If Anki is not connected, delay adding notes. Notes will be added later in
+      the background when Anki is connected.
+    </OptionToggle>
+  {/if}
 
   {#if Platform.IS_IOSAPP}
     <OptionToggle

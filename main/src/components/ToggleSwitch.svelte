@@ -1,6 +1,8 @@
 <script lang="ts">
   export let active: boolean;
   export let height: number;
+  /** If this returns false, the switch is not toggled. */
+  export let onToggle: () => boolean = () => true;
 </script>
 
 <button
@@ -10,9 +12,10 @@
   type="button"
   aria-pressed={active ? "true" : "false"}
   on:click={() => {
-    active = !active;
+    if (onToggle()) {
+      active = !active;
+    }
   }}
-  on:click
 >
   <div class="front" />
 </button>

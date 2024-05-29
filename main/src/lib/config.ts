@@ -21,6 +21,8 @@ export interface Configuration {
   "anki.connect_url": string;
   "anki.anki_template": AnkiTemplate | null;
   "anki.enabled": boolean;
+  /** Defer adding notes if Anki cannot be connected. */
+  "anki.defer_notes": boolean;
   /** On ios, if auto redirect back to safari */
   "anki.ios_auto_redirect": boolean;
   /** set to null if voice is not available */
@@ -40,6 +42,7 @@ export const defaultOptions: Configuration = {
   "anki.connect_url": "http://127.0.0.1",
   "anki.anki_template": null,
   "anki.enabled": false,
+  "anki.defer_notes": true,
   "anki.ios_auto_redirect": true,
   "tts.voice": null,
   version: VERSION,
