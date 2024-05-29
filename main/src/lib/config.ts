@@ -11,6 +11,10 @@ export const CONFIG_VERSION = 3;
 /** Must not be undefined */
 export interface Configuration {
   "state.enabled": boolean;
+  /** Only for desktop */
+  "state.anki.deferred_note_count": number;
+  /** Only for desktop */
+  "state.anki.deferred_note_error": boolean;
   "general.font_size": number;
   "general.font": string;
   "anki.connect_port": number;
@@ -28,6 +32,8 @@ export interface Configuration {
 
 export const defaultOptions: Configuration = {
   "state.enabled": true,
+  "state.anki.deferred_note_count": 0,
+  "state.anki.deferred_note_error": false,
   "general.font_size": 14,
   "general.font": "Meiryo",
   "anki.connect_port": 8765,
@@ -93,8 +99,8 @@ export class Config {
 
   get<K extends keyof Configuration>(key: K): Configuration[K] {
     const value = this.storage[key];
-    return value !== undefined ?
-        (value as Configuration[K])
+    return value !== undefined
+      ? (value as Configuration[K])
       : defaultOptions[key];
   }
 

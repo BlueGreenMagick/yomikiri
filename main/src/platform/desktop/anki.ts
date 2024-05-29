@@ -8,9 +8,17 @@ import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
 import { BrowserApi } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
-import type { First, Second } from "lib/utils";
+import {
+  PromiseWithProgress,
+  createPromise,
+  getErrorMessage,
+  type First,
+  type Second,
+} from "lib/utils";
 
 const ANKI_CONNECT_VER = 6;
+const DEFER_NOTES_STORAGE_KEY = "deferred-anki-note";
+const DEFER_ERRORS_STORAGE_KEY = "deferred-anki-note-errors";
 
 interface AnkiConnectSuccess<T> {
   result: T;
@@ -205,6 +213,73 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     } else {
       throw new Error("AnkiConnect did not allow this app to use its api.");
     }
+  }
+
+  private async deferNote(note: AnkiNote) {
+    const existingNotes: AnkiNote[] = await this.browserApi.getStorage(
+      DEFER_NOTES_STORAGE_KEY,
+      [],
+    );
+    existingNotes.push(note);
+    await this.setDeferredNotes(existingNotes);
+  }
+
+  /**
+   * Add deferred notes to Anki.
+   *
+   * If failed to add a note, save the error message to config
+   * and continue to next note
+   *
+   */
+  private addDeferredNotes(): PromiseWithProgress<void, number> {
+    const noteCount = this.config.get("state.anki.deferred_note_count");
+
+    const [innerPromise, resolve, reject] = createPromise<void>();
+    const promise = PromiseWithProgress.fromPromise<void, number>(
+      innerPromise,
+      noteCount,
+    );
+
+    (async () => {
+      const deferredNotes = await this.browserApi.getStorage<AnkiNote[]>(
+        DEFER_NOTES_STORAGE_KEY,
+        [],
+      );
+      const errorMessages: string[] = [];
+
+      // don't remove notes that failed to be added to Anki.
+      let i = 0;
+      while (i < deferredNotes.length) {
+        const note = deferredNotes[i];
+        try {
+          await this.addNote(note);
+          deferredNotes.splice(i, 1);
+          await this.setDeferredNotes(deferredNotes);
+        } catch (err: unknown) {
+          errorMessages.push(getErrorMessage(err));
+          await this.browserApi.setStorage(
+            DEFER_ERRORS_STORAGE_KEY,
+            errorMessages,
+          );
+          await this.config.set("state.anki.deferred_note_error", true);
+          i += 1;
+        } finally {
+          promise.setProgress(deferredNotes.length - i);
+        }
+      }
+    })()
+      .then(() => {
+        resolve();
+      })
+      .catch((err: unknown) => {
+        reject(err);
+      });
+    return promise;
+  }
+
+  private async setDeferredNotes(notes: AnkiNote[]) {
+    await this.browserApi.setStorage(DEFER_NOTES_STORAGE_KEY, notes);
+    await this.config.set("state.anki.deferred_note_count", notes.length);
   }
 }
 
