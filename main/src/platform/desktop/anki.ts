@@ -212,23 +212,38 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   async addNote(note: AnkiNote): Promise<void> {
     if (this.browserApi.context === "contentScript") {
       return this.browserApi.request("addAnkiNote", note);
+    } else {
+      return this._addNote(note);
     }
+  }
 
+  private async _addNote(note: AnkiNote): Promise<void> {
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
     }
-    await this.request("addNote", {
-      note: {
-        deckName: note.deck,
-        modelName: note.notetype,
-        fields: fields,
-        tags: note.tags.split(" "),
-        options: {
-          allowDuplicate: true,
+    try {
+      await this.request("addNote", {
+        note: {
+          deckName: note.deck,
+          modelName: note.notetype,
+          fields: fields,
+          tags: note.tags.split(" "),
+          options: {
+            allowDuplicate: true,
+          },
         },
-      },
-    });
+      });
+    } catch (err: unknown) {
+      if (
+        err instanceof AnkiConnectionError &&
+        this.config.get("anki.defer_notes")
+      ) {
+        await this.deferNote(note);
+      } else {
+        throw err;
+      }
+    }
   }
 
   /** Throws an error if not successfully connected. */
