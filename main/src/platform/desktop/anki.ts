@@ -25,12 +25,12 @@ interface AnkiConnectSuccess<T> {
   error: null;
 }
 
-interface AnkiConnectError {
+interface AnkiConnectFail {
   result: null;
   error: string;
 }
 
-type AnkiConnectResponse<T> = AnkiConnectSuccess<T> | AnkiConnectError;
+type AnkiConnectResponse<T> = AnkiConnectSuccess<T> | AnkiConnectFail;
 
 interface AnkiConnectPermission {
   permission: "granted" | "denied";
@@ -79,6 +79,28 @@ export interface AnkiConnectRequestMap {
   requestPermission: [never, AnkiConnectPermission];
 }
 
+export class AnkiError extends Error {}
+
+export class AnkiConnectionError extends AnkiError {
+  constructor() {
+    super(
+      "Failed to connect to Anki. Please check that Anki is running and AnkiConnect add-on is configured correctly.",
+    );
+  }
+}
+
+export class AnkiConnectPermissionError extends AnkiError {
+  constructor() {
+    super("AnkiConnect did not allow this app to use its api.");
+  }
+}
+
+/** Anki-connect response format is not supported */
+export class InvalidAnkiResponseFormatError extends AnkiError {}
+
+/** Anki-connect response was an error */
+export class AnkiConnectError extends AnkiError {}
+
 /**
  * Uses Anki-Connect on desktop.
  * Should not be used in content script
@@ -122,9 +144,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       });
     } catch (e) {
       console.error(e);
-      throw new Error(
-        "Failed to connect to Anki. Please check that Anki is running and AnkiConnect add-on is configured correctly.",
-      );
+      throw new AnkiConnectionError();
     }
 
     const data = (await response.json()) as AnkiConnectResponse<
@@ -132,16 +152,22 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     >;
 
     if (Object.getOwnPropertyNames(data).length != 2) {
-      throw new Error("response has an unexpected number of fields");
+      throw new InvalidAnkiResponseFormatError(
+        "response has an unexpected number of fields",
+      );
     }
     if (!Object.prototype.hasOwnProperty.call(data, "error")) {
-      throw new Error("response is missing required error field");
+      throw new InvalidAnkiResponseFormatError(
+        "response is missing required error field",
+      );
     }
     if (!Object.prototype.hasOwnProperty.call(data, "result")) {
-      throw new Error("response is missing required result field");
+      throw new InvalidAnkiResponseFormatError(
+        "response is missing required result field",
+      );
     }
     if (data.error !== null) {
-      throw new Error(data.error);
+      throw new AnkiConnectError(data.error);
     } else {
       return data.result;
     }
@@ -211,7 +237,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     if (resp.permission === "granted") {
       return;
     } else {
-      throw new Error("AnkiConnect did not allow this app to use its api.");
+      throw new AnkiConnectPermissionError();
     }
   }
 
