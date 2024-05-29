@@ -11,9 +11,13 @@ export interface Thennable {
   then: () => void;
 }
 
-// Limit the value `T` can take so below situation is avoided.
-//
-// const a : Promise<{}> | {} = Promise.resolve(5)
+export type Satisfies<T extends U, U> = T;
+
+/**
+ * Limit the value `T` can take so below situation is avoided.
+ *
+ * const a : Promise<{}> | {} = Promise.resolve(5)
+ */
 export type PromiseOrValue<T> =
   Promise<unknown> extends T ? never : Promise<T> | Exclude<T, Thennable>;
 

@@ -8,6 +8,8 @@ import Utils, {
   handleMessageResponse,
   hasOwnProperty,
   type MessageResponse,
+  type Satisfies,
+  type Thennable,
 } from "lib/utils";
 
 /**
@@ -29,6 +31,16 @@ export interface MessageMap {
   saveConfig: [StoredConfiguration, void];
   setActionIcon: [null, void];
 }
+
+type _EnsureNoPromiseInMessageMap = Satisfies<
+  MessageMap,
+  {
+    [key in keyof MessageMap]: [
+      Exclude<MessageMap[key][0], Thennable>,
+      Exclude<MessageMap[key][1], Thennable>,
+    ];
+  }
+>;
 
 export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
 export type Response<K extends keyof MessageMap> = Utils.Second<MessageMap[K]>;
