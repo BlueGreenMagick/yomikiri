@@ -102,8 +102,8 @@ export class Config {
 
   get<K extends keyof Configuration>(key: K): Configuration[K] {
     const value = this.storage[key];
-    return value !== undefined
-      ? (value as Configuration[K])
+    return value !== undefined ?
+        (value as Configuration[K])
       : defaultOptions[key];
   }
 
