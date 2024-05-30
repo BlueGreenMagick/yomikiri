@@ -54,9 +54,9 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
   return await backend.tokenize(req.text, req.charAt);
 }
 
-async function addAnkiNote(note: AnkiNote): Promise<void> {
+async function addAnkiNote(note: AnkiNote): Promise<boolean> {
   const ankiApi = await lazyAnkiApi.get();
-  await ankiApi.addNote(note);
+  return await ankiApi.addNote(note);
 }
 
 function tabId(_req: null, sender: MessageSender): number | undefined {

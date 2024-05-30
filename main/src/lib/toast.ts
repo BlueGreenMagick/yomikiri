@@ -1,3 +1,4 @@
+import DelayedToastIcon from "components/DelayedToastIcon.svelte";
 import toast, { Toaster } from "svelte-french-toast";
 
 const optsLoading = {
@@ -5,7 +6,7 @@ const optsLoading = {
 };
 
 const optsSuccess = {
-  duration: 1000,
+  duration: 1500,
 };
 
 const optsError = {
@@ -52,6 +53,15 @@ export class Toast {
   static success(msg: string): Toast {
     Toast.maybeSetupToaster();
     const id = toast.success(msg, optsSuccess);
+    return new Toast(id);
+  }
+
+  static delayed(msg: string): Toast {
+    Toast.maybeSetupToaster();
+    const id = toast.success(msg, {
+      duration: 3000,
+      icon: DelayedToastIcon,
+    });
     return new Toast(id);
   }
 

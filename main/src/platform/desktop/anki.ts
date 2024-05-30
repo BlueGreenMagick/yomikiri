@@ -209,7 +209,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     return await this.request("getTags");
   }
 
-  async addNote(note: AnkiNote): Promise<void> {
+  async addNote(note: AnkiNote): Promise<boolean> {
     if (this.browserApi.context === "contentScript") {
       return this.browserApi.request("addAnkiNote", note);
     } else {
@@ -217,7 +217,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
   }
 
-  private async _addNote(note: AnkiNote): Promise<void> {
+  private async _addNote(note: AnkiNote): Promise<boolean> {
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
@@ -234,13 +234,16 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
           },
         },
       });
+      return true;
     } catch (err: unknown) {
       if (
         err instanceof AnkiConnectionError &&
         this.config.get("anki.defer_notes")
       ) {
         await this.deferNote(note);
+        return false;
       } else {
+        console.error(err);
         throw err;
       }
     }

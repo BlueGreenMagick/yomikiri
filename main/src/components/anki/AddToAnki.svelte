@@ -43,15 +43,20 @@
   async function onAdd() {
     let ankiNote = await resolveAnkiNote(noteData);
     try {
-      await ankiApi.addNote(ankiNote);
+      const added = await ankiApi.addNote(ankiNote);
+      if (added) {
+        Toast.success("Note added to Anki");
+      } else {
+        Toast.delayed("Note will be added when Anki is connected");
+        Toast.success("Note added to Anki");
+      }
 
-      Toast.success("Note added to Anki");
       noteAdded();
     } catch (err) {
       console.error(err);
       const msg = getErrorMessage(
         err,
-        "An unknown error occured... Check the browser console for more info."
+        "An unknown error occured... Check the browser console for more info.",
       );
       Toast.error(msg);
     }

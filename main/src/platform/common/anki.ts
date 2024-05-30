@@ -31,7 +31,8 @@ export interface IAnkiOptions {
 }
 
 export interface IAnkiAddNotes {
-  addNote: (note: AnkiNote, tabId?: number) => Promise<void>;
+  /** Returns false if note is deferred */
+  addNote: (note: AnkiNote, tabId?: number) => Promise<boolean>;
 }
 
 export function iosAnkiMobileURL(note: AnkiNote, successUrl?: string): string {

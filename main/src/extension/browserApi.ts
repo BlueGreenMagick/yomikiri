@@ -21,7 +21,7 @@ import Utils, {
 export interface MessageMap {
   searchTerm: [string, Entry[]];
   tokenize: [TokenizeRequest, TokenizeResult];
-  addAnkiNote: [AnkiNote, void];
+  addAnkiNote: [AnkiNote, boolean];
   tabId: [null, number | undefined];
   translate: [string, TranslateResult];
   tts: [TTSRequest, void];

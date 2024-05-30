@@ -79,9 +79,10 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
     }
   }
 
-  async addNote(note: AnkiNote): Promise<void> {
+  async addNote(note: AnkiNote): Promise<boolean> {
     const url = iosAnkiMobileURL(note);
     await this.platform.messageWebview("openLink", url);
+    return true;
   }
 }
 

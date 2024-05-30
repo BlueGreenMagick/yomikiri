@@ -16,14 +16,14 @@ export class IosAnkiApi implements IAnkiAddNotes {
   /**
    * Does not wait for note to actually be added to Anki.
    */
-  async addNote(note: AnkiNote): Promise<void> {
+  async addNote(note: AnkiNote): Promise<boolean> {
     if (this.browserApi.context === "contentScript") {
       return this.browserApi.request("addAnkiNote", note);
     }
     return this._addNote(note);
   }
 
-  async _addNote(note: AnkiNote): Promise<void> {
+  async _addNote(note: AnkiNote): Promise<boolean> {
     const currentTab = await this.browserApi.currentTab();
 
     const willAutoRedirect = this.config.get("anki.ios_auto_redirect");
@@ -44,6 +44,8 @@ export class IosAnkiApi implements IAnkiAddNotes {
     } else {
       location.href = ankiLink;
     }
+
+    return true;
   }
 }
 
