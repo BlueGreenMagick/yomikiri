@@ -11,11 +11,12 @@
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import type { Platform } from "@platform";
+  import type { ExtensionPlatform } from "@platform";
   import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
+  import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
 
-  export let platform: Platform;
+  export let platform: ExtensionPlatform;
   export let config: Config;
   export let backend: Backend;
   export let ankiApi: AnkiApi;
@@ -25,7 +26,7 @@
 
   function onShowAnkiPreview(
     selectedEntry: SelectedEntryForAnki,
-    tokenizeResult: TokenizeResult
+    tokenizeResult: TokenizeResult,
   ) {
     const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
@@ -60,6 +61,7 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {onShowAnkiPreview} {platform} {config} {backend}>
       <ActionButtons {platform} {config} />
+      <DeferredNoteInfo {config} {platform} />
     </Tokenize>
   </div>
   {#if previewIsVisible}

@@ -63,6 +63,7 @@
 
   .action-buttons {
     margin-top: 48px;
+    margin-bottom: 48px;
     width: 100%;
 
     display: flex;

@@ -3,6 +3,7 @@
   export let size = "2rem";
   export let padding = "0.3rem";
   export let color = "var(--button-light)";
+  export let colorHover = "var(--text)";
 
   /* States */
   export let hidden = false;
@@ -15,7 +16,7 @@
   class:highlight
   class:active
   class:hidden
-  style="--size: {size}; --color: {color}; --padding: {padding};"
+  style="--size: {size}; --color: {color}; --padding: {padding}; --color-hover: {colorHover}"
   on:click
   on:mousedown|preventDefault|stopPropagation={() => null}
 >
@@ -46,15 +47,15 @@
   button.active,
   :global(html.desktop) button.active:hover,
   button.active:active {
-    color: var(--text);
-    fill: var(--text);
+    color: var(--color-hover);
+    fill: var(--color-hover);
     background-color: rgba(0, 0, 0, 0.12);
   }
 
   :global(html.desktop) button:hover,
   button:active {
-    color: var(--text);
-    fill: var(--text);
+    color: var(--color-hover);
+    fill: var(--color-hover);
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.07);
   }
@@ -72,7 +73,7 @@
   }
 
   /** Centers icon vertically */
-  button > :global(svg) {
+  button :global(svg) {
     display: block;
   }
 </style>

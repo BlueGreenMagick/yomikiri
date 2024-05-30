@@ -272,7 +272,9 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
    * Add deferred notes to Anki.
    *
    * If failed to add a note, save the error message to config
-   * and continue to next note
+   * and continue to next note.
+   *
+   * Resets stored error messages
    *
    */
   private addDeferredNotes(): PromiseWithProgress<void, number> {
@@ -285,6 +287,9 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     );
 
     (async () => {
+      await this.browserApi.setStorage(DEFER_ERRORS_STORAGE_KEY, []);
+      await this.config.set("state.anki.deferred_note_error", false);
+
       const deferredNotes = await this.browserApi.getStorage<AnkiNote[]>(
         DEFER_NOTES_STORAGE_KEY,
         [],
