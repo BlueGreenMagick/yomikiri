@@ -24,6 +24,7 @@ import Config, { type StoredConfiguration } from "lib/config";
 import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png";
 import GreyIcon from "assets/static/images/icon128-semigray.png";
+import { derived } from "svelte/store";
 
 const browserApi = new BrowserApi({ context: "background" });
 const platform = new Platform(browserApi) as ExtensionPlatform;
@@ -40,6 +41,7 @@ const _initialized: Promise<void> = initialize();
 async function initialize(): Promise<void> {
   const config = await lazyConfig.get();
   updateStateEnabledIcon(config);
+  updateDeferredNoteCountBadge(config);
 
   await updateTTSAvailability(platform, config);
 }
@@ -72,6 +74,15 @@ function updateStateEnabledIcon(config: Config) {
   enabledStore.subscribe((enabled) => {
     const icon = enabled ? DefaultIcon : GreyIcon;
     void browserApi.setActionIcon(icon);
+  });
+}
+
+function updateDeferredNoteCountBadge(config: Config) {
+  const deferredNotes = config.store("state.anki.deferred_note_count");
+  const deferErrored = config.store("state.anki.deferred_note_error");
+  const notesAndErrors = derived([deferredNotes, deferErrored], (a) => a);
+  notesAndErrors.subscribe(([cnt, errored]) => {
+    void browserApi.setBadge(cnt, errored ? "red" : "#cccccc");
   });
 }
 
