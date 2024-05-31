@@ -79,7 +79,11 @@
   $: if ($confDeferredNoteError) void getErrorMessages();
 </script>
 
-<div class="deferred-note-info" class:hidden={$confDeferredNoteCount === 0}>
+<div
+  class="deferred-note-info"
+  class:hidden={$confDeferredNoteCount === 0}
+  class:error={$confDeferredNoteError}
+>
   <div class="text">
     <div class="text-info">
       <b>{$confDeferredNoteCount} Anki notes</b> are waiting to be added.
@@ -125,8 +129,19 @@
     display: none;
   }
 
+  .deferred-note-info.error {
+    background-color: #ffe4e4;
+  }
+
   .text {
     flex: 1 1 0;
+    align-items: center;
+  }
+
+  .text-error {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.3rem;
   }
 
   .icons {
