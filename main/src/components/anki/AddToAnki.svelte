@@ -14,6 +14,7 @@
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import { getErrorMessage, SingleQueued } from "lib/utils";
+  import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -47,7 +48,10 @@
       if (added) {
         Toast.success("Note added to Anki");
       } else {
-        Toast.delayed("Note will be added when Anki is connected");
+        Toast.success("Note will be added when Anki is connected", {
+          icon: HourglassToastIcon,
+          duration: 3000,
+        });
         Toast.success("Note added to Anki");
       }
 

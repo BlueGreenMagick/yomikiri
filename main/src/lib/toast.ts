@@ -1,5 +1,5 @@
-import DelayedToastIcon from "components/DelayedToastIcon.svelte";
-import toast, { Toaster } from "svelte-french-toast";
+import DelayedToastIcon from "components/toast/ToastIcon.svelte";
+import toast, { Toaster, type ToastOptions } from "svelte-french-toast";
 
 const optsLoading = {
   duration: 8000,
@@ -50,18 +50,13 @@ export class Toast {
   }
 
   /** Toast is deleted after delay */
-  static success(msg: string): Toast {
+  static success(msg: string, opts?: ToastOptions): Toast {
     Toast.maybeSetupToaster();
-    const id = toast.success(msg, optsSuccess);
-    return new Toast(id);
-  }
-
-  static delayed(msg: string): Toast {
-    Toast.maybeSetupToaster();
-    const id = toast.success(msg, {
-      duration: 3000,
-      icon: DelayedToastIcon,
-    });
+    const builtOpts = {
+      ...optsSuccess,
+      ...(opts ?? {}),
+    };
+    const id = toast.success(msg, builtOpts);
     return new Toast(id);
   }
 

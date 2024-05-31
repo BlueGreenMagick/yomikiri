@@ -6,6 +6,7 @@
   import type { ExtensionPlatform } from "@platform";
   import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
+  import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
 
   export let config: Config;
   export let platform: ExtensionPlatform;
@@ -40,7 +41,10 @@
   }
 
   function discardDeferredNotes() {
-    // Toast.success("Deleted");
+    Toast.success("Deleted", {
+      icon: TrashToastIcon,
+      duration: 5000,
+    });
     throw new Error("Unimplemented!");
   }
 
