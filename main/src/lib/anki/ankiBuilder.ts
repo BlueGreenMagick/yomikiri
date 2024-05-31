@@ -297,7 +297,7 @@ addBuilder("meaning", (opts, data) => {
     }
 
     if (format === "line") {
-      return lines.join("");
+      return lines.join("; ");
     } else {
       return lines.join("\n");
     }

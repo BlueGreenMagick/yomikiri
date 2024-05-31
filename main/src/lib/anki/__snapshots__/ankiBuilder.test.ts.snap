@@ -107,13 +107,13 @@ exports[`$なかなかに強いです > 'meaning (item <= 2)' 1`] = `
 </ol>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (line) (item <= 2)' 1`] = `"very, considerablyby no means, not readilymiddle, half-way point; excellent, wonderful"`;
+exports[`$なかなかに強いです > 'meaning (line) (item <= 2)' 1`] = `"very, considerably; by no means, not readily; middle, half-way point; excellent, wonderful"`;
 
-exports[`$なかなかに強いです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(adverb, na-adjective)very, considerably(adverb)by no means, not readily(noun)middle, half-way point; excellent, wonderful"`;
+exports[`$なかなかに強いです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(adverb, na-adjective); very, considerably; (adverb); by no means, not readily; (noun); middle, half-way point; excellent, wonderful"`;
 
-exports[`$なかなかに強いです > 'meaning (line) (pos)' 1`] = `"(adverb, na-adjective)very, considerably, easily, readily, fairly, quite, highly, rather(adverb)by no means, not readily(noun)middle, half-way point; excellent, wonderful, very good"`;
+exports[`$なかなかに強いです > 'meaning (line) (pos)' 1`] = `"(adverb, na-adjective); very, considerably, easily, readily, fairly, quite, highly, rather; (adverb); by no means, not readily; (noun); middle, half-way point; excellent, wonderful, very good"`;
 
-exports[`$なかなかに強いです > 'meaning (line)' 1`] = `"very, considerably, easily, readily, fairly, quite, highly, ratherby no means, not readilymiddle, half-way point; excellent, wonderful, very good"`;
+exports[`$なかなかに強いです > 'meaning (line)' 1`] = `"very, considerably, easily, readily, fairly, quite, highly, rather; by no means, not readily; middle, half-way point; excellent, wonderful, very good"`;
 
 exports[`$なかなかに強いです > 'meaning (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(adverb, na-adjective)</div>
@@ -805,9 +805,9 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (item <
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (item <= 2)' 1`] = `"books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun)books"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun); books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos)' 1`] = `"(noun)books"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos)' 1`] = `"(noun); books"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line)' 1`] = `"books"`;
 
@@ -1194,13 +1194,13 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (item <= 2)' 
 </ol>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (item <= 2)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)but, however; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (item <= 2)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but, however; regardless of, whether (or not)"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos) (item <= 2)' 1`] = `"(particle)indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)(conjunction)but, however; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos) (item <= 2)' 1`] = `"(particle); indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); (conjunction); but, however; regardless of, whether (or not)"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos)' 1`] = `"(particle)indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)(conjunction)but, however, still, and; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos)' 1`] = `"(particle); indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); (conjunction); but, however, still, and; regardless of, whether (or not)"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions)but, however, still, and; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but, however, still, and; regardless of, whether (or not)"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos) (item <= 2)' 1`] = `
 "<div class="yomi-pos">(particle)</div>
@@ -2012,9 +2012,9 @@ exports[`春の茶が飲＄みたいです > 'meaning (item <= 2)' 1`] = `
 
 exports[`春の茶が飲＄みたいです > 'meaning (line) (item <= 2)' 1`] = `"dollar; money, cash"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun)dollar; money, cash"`;
+exports[`春の茶が飲＄みたいです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun); dollar; money, cash"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (line) (pos)' 1`] = `"(noun)dollar; money, cash"`;
+exports[`春の茶が飲＄みたいです > 'meaning (line) (pos)' 1`] = `"(noun); dollar; money, cash"`;
 
 exports[`春の茶が飲＄みたいです > 'meaning (line)' 1`] = `"dollar; money, cash"`;
 
@@ -2510,9 +2510,9 @@ exports[`＄読みたい > 'meaning (item <= 2)' 1`] = `
 
 exports[`＄読みたい > 'meaning (line) (item <= 2)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
-exports[`＄読みたい > 'meaning (line) (pos) (item <= 2)' 1`] = `"(verb)to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+exports[`＄読みたい > 'meaning (line) (pos) (item <= 2)' 1`] = `"(verb); to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
-exports[`＄読みたい > 'meaning (line) (pos)' 1`] = `"(verb)to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+exports[`＄読みたい > 'meaning (line) (pos)' 1`] = `"(verb); to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
 exports[`＄読みたい > 'meaning (line)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
