@@ -318,13 +318,13 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
           deferredNotes.splice(i, 1);
           await this.setDeferredNotes(deferredNotes);
         } catch (err: unknown) {
-          errorMessages.push(getErrorMessage(err));
-          await this.browserApi.setStorage(
-            DEFER_ERRORS_STORAGE_KEY,
-            errorMessages,
-          );
-          await this.config.set("state.anki.deferred_note_error", true);
           if (err instanceof AnkiConnectError) {
+            errorMessages.push(getErrorMessage(err));
+            await this.browserApi.setStorage(
+              DEFER_ERRORS_STORAGE_KEY,
+              errorMessages,
+            );
+            await this.config.set("state.anki.deferred_note_error", true);
             i += 1;
           } else {
             break;
