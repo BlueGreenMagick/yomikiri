@@ -52,7 +52,6 @@
           icon: HourglassToastIcon,
           duration: 3000,
         });
-        Toast.success("Note added to Anki");
       }
 
       noteAdded();
