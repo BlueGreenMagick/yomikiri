@@ -61,7 +61,7 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {onShowAnkiPreview} {platform} {config} {backend}>
       <ActionButtons {platform} {config} />
-      <DeferredNoteInfo {config} {platform} />
+      <DeferredNoteInfo {config} {platform} {ankiApi} />
     </Tokenize>
   </div>
   {#if previewIsVisible}

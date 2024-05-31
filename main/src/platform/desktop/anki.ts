@@ -10,6 +10,7 @@ import { BrowserApi } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
 import {
   PromiseWithProgress,
+  SingleQueued,
   createPromise,
   getErrorMessage,
   type First,
@@ -217,7 +218,10 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
   }
 
-  private async _addNote(note: AnkiNote): Promise<boolean> {
+  private async _addNote(
+    note: AnkiNote,
+    deferrable: boolean = true,
+  ): Promise<boolean> {
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
       fields[field.name] = field.value;
@@ -237,6 +241,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       return true;
     } catch (err: unknown) {
       if (
+        deferrable &&
         err instanceof AnkiConnectionError &&
         this.config.get("anki.defer_notes")
       ) {
@@ -274,10 +279,13 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
    * If failed to add a note, save the error message to config
    * and continue to next note.
    *
-   * Resets stored error messages
+   * Resets stored error messages.
    *
+   * Returns null if deferred notes are currently being added, and another request is queued.
    */
-  private addDeferredNotes(): PromiseWithProgress<void, number> {
+  addDeferredNotes = SingleQueued(() => this.processDeferredNotes());
+
+  private processDeferredNotes(): PromiseWithProgress<void, number> {
     const noteCount = this.config.get("state.anki.deferred_note_count");
 
     const [innerPromise, resolve, reject] = createPromise<void>();
@@ -285,6 +293,11 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       innerPromise,
       noteCount,
     );
+
+    if (noteCount === 0) {
+      resolve();
+      return promise;
+    }
 
     (async () => {
       await this.browserApi.setStorage(DEFER_ERRORS_STORAGE_KEY, []);
@@ -301,7 +314,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       while (i < deferredNotes.length) {
         const note = deferredNotes[i];
         try {
-          await this.addNote(note);
+          await this._addNote(note, false);
           deferredNotes.splice(i, 1);
           await this.setDeferredNotes(deferredNotes);
         } catch (err: unknown) {
@@ -311,7 +324,11 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
             errorMessages,
           );
           await this.config.set("state.anki.deferred_note_error", true);
-          i += 1;
+          if (err instanceof AnkiConnectError) {
+            i += 1;
+          } else {
+            break;
+          }
         } finally {
           promise.setProgress(deferredNotes.length - i);
         }

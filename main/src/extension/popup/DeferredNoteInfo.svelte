@@ -4,9 +4,14 @@
   import IconRefreshOutline from "@icons/refresh-outline.svg";
   import IconTrash from "@icons/trash.svg";
   import type { ExtensionPlatform } from "@platform";
+  import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
+  import { Toast } from "lib/toast";
 
   export let config: Config;
   export let platform: ExtensionPlatform;
+  export let ankiApi: AnkiApi;
+
+  let addingNotes = false;
 
   const browserApi = platform.browserApi;
   const confDeferredNoteCount = config.store("state.anki.deferred_note_count");
@@ -21,10 +26,28 @@
     errorMessage = errors[0];
   }
 
+  async function addDeferredNotes() {
+    if (addingNotes) {
+      return;
+    }
+
+    try {
+      addingNotes = true;
+      await (ankiApi as DesktopAnkiApi).addDeferredNotes();
+    } finally {
+      addingNotes = false;
+    }
+  }
+
+  function discardDeferredNotes() {
+    // Toast.success("Deleted");
+    throw new Error("Unimplemented!");
+  }
+
   $: if (confDeferredNoteError) void getErrorMessages();
 </script>
 
-<div class="deferred-note-info">
+<div class="deferred-note-info" class:hidden={$confDeferredNoteCount === 0}>
   <div class="text">
     <div class="text-info">
       <b>{$confDeferredNoteCount} Anki notes</b> are waiting to be added.
@@ -37,10 +60,20 @@
     {/if}
   </div>
   <div class="icons">
-    <IconedButton>
+    <IconedButton
+      on:click={() => {
+        void addDeferredNotes();
+      }}
+    >
       <IconRefreshOutline />
     </IconedButton>
-    <IconedButton color="#f55151" colorHover="var(--text-warn)">
+    <IconedButton
+      color="#f55151"
+      colorHover="var(--text-warn)"
+      on:click={() => {
+        void discardDeferredNotes();
+      }}
+    >
       <IconTrash />
     </IconedButton>
   </div>
@@ -54,6 +87,10 @@
     border-radius: 6px;
     background-color: var(--background-alt);
     align-items: center;
+  }
+
+  .deferred-note-info.hidden {
+    display: none;
   }
 
   .text {
