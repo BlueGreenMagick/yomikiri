@@ -76,7 +76,7 @@
     weakToast = new WeakRef(toast);
   }
 
-  $: if (confDeferredNoteError) void getErrorMessages();
+  $: if ($confDeferredNoteError) void getErrorMessages();
 </script>
 
 <div class="deferred-note-info" class:hidden={$confDeferredNoteCount === 0}>
