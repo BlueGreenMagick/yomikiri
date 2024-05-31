@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Platform, type DesktopPlatform } from "@platform";
-  import { type AnkiOptionsApi } from "@platform/anki";
+  import { DesktopAnkiApi, type AnkiOptionsApi } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
@@ -51,6 +51,9 @@
       useAnkiDescription = "loading";
       try {
         await ankiApi.checkConnection();
+        if (Platform.IS_DESKTOP) {
+          void (ankiApi as DesktopAnkiApi).addDeferredNotes();
+        }
         useAnkiDescription = "success";
       } catch (err) {
         useAnkiError = Utils.getErrorMessage(err);
