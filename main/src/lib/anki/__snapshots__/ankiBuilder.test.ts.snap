@@ -1,5 +1,756 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`$なかなかに強いです > '-' 1`] = `""`;
+
+exports[`$なかなかに強いです > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
+
+exports[`$なかなかに強いです > 'meaning (div) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">very, considerably</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">by no means, not readily</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">middle, half-way point</div>
+      <div class="yomi-meaning">excellent, wonderful</div>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (div) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-entry">
+  <div class="yomi-group">
+    <div class="yomi-pos">(adverb, na-adjective)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">very, considerably</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(adverb)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">by no means, not readily</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(noun)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">middle, half-way point</div>
+      <div class="yomi-meaning">excellent, wonderful</div>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (div) (pos)' 1`] = `
+"<div class="yomi-entry">
+  <div class="yomi-group">
+    <div class="yomi-pos">(adverb, na-adjective)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">very, considerably, easily, readily, fairly, quite, highly, rather</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(adverb)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">by no means, not readily</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-pos">(noun)</div>
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">middle, half-way point</div>
+      <div class="yomi-meaning">excellent, wonderful, very good</div>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (div)' 1`] = `
+"<div class="yomi-entry">
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">very, considerably, easily, readily, fairly, quite, highly, rather</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">by no means, not readily</div>
+    </div>
+  </div>
+  <div class="yomi-group">
+    <div class="yomi-meanings">
+      <div class="yomi-meaning">middle, half-way point</div>
+      <div class="yomi-meaning">excellent, wonderful, very good</div>
+    </div>
+  </div>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (item <= 2)' 1`] = `
+"<ol>
+  <li>very, considerably</li>
+</ol>
+<ol>
+  <li>by no means, not readily</li>
+</ol>
+<ol>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful</li>
+</ol>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (line) (item <= 2)' 1`] = `"very, considerablyby no means, not readilymiddle, half-way point; excellent, wonderful"`;
+
+exports[`$なかなかに強いです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(adverb, na-adjective)very, considerably(adverb)by no means, not readily(noun)middle, half-way point; excellent, wonderful"`;
+
+exports[`$なかなかに強いです > 'meaning (line) (pos)' 1`] = `"(adverb, na-adjective)very, considerably, easily, readily, fairly, quite, highly, rather(adverb)by no means, not readily(noun)middle, half-way point; excellent, wonderful, very good"`;
+
+exports[`$なかなかに強いです > 'meaning (line)' 1`] = `"very, considerably, easily, readily, fairly, quite, highly, ratherby no means, not readilymiddle, half-way point; excellent, wonderful, very good"`;
+
+exports[`$なかなかに強いです > 'meaning (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(adverb, na-adjective)</div>
+<ol>
+  <li>very, considerably</li>
+</ol>
+<div class="yomi-pos">(adverb)</div>
+<ol>
+  <li>by no means, not readily</li>
+</ol>
+<div class="yomi-pos">(noun)</div>
+<ol>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful</li>
+</ol>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (pos)' 1`] = `
+"<div class="yomi-pos">(adverb, na-adjective)</div>
+<ol>
+  <li>very, considerably, easily, readily, fairly, quite, highly, rather</li>
+</ol>
+<div class="yomi-pos">(adverb)</div>
+<ol>
+  <li>by no means, not readily</li>
+</ol>
+<div class="yomi-pos">(noun)</div>
+<ol>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful, very good</li>
+</ol>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (unnumbered) (item <= 2)' 1`] = `
+"<ul>
+  <li>very, considerably</li>
+</ul>
+<ul>
+  <li>by no means, not readily</li>
+</ul>
+<ul>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful</li>
+</ul>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+"<div class="yomi-pos">(adverb, na-adjective)</div>
+<ul>
+  <li>very, considerably</li>
+</ul>
+<div class="yomi-pos">(adverb)</div>
+<ul>
+  <li>by no means, not readily</li>
+</ul>
+<div class="yomi-pos">(noun)</div>
+<ul>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful</li>
+</ul>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (unnumbered) (pos)' 1`] = `
+"<div class="yomi-pos">(adverb, na-adjective)</div>
+<ul>
+  <li>very, considerably, easily, readily, fairly, quite, highly, rather</li>
+</ul>
+<div class="yomi-pos">(adverb)</div>
+<ul>
+  <li>by no means, not readily</li>
+</ul>
+<div class="yomi-pos">(noun)</div>
+<ul>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful, very good</li>
+</ul>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (unnumbered)' 1`] = `
+"<ul>
+  <li>very, considerably, easily, readily, fairly, quite, highly, rather</li>
+</ul>
+<ul>
+  <li>by no means, not readily</li>
+</ul>
+<ul>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful, very good</li>
+</ul>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (yomichan) (item <= 2)' 1`] = `
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>very</li>
+        <li>considerably</li>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>by no means</li>
+        <li>not readily</li>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>middle</li>
+        <li>half-way point</li>
+        <li>excellent</li>
+        <li>wonderful</li>
+      </ul>
+    </li>
+  </ol>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(adverb, na-adjective)</i>
+      <ul>
+        <li>very</li>
+        <li>considerably</li>
+      </ul>
+    </li>
+    <li>
+      <i>(adverb)</i>
+      <ul>
+        <li>by no means</li>
+        <li>not readily</li>
+      </ul>
+    </li>
+    <li>
+      <i>(noun)</i>
+      <ul>
+        <li>middle</li>
+        <li>half-way point</li>
+        <li>excellent</li>
+        <li>wonderful</li>
+      </ul>
+    </li>
+  </ol>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (yomichan) (pos)' 1`] = `
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <i>(adverb, na-adjective)</i>
+      <ul>
+        <li>very</li>
+        <li>considerably</li>
+        <li>easily</li>
+        <li>readily</li>
+        <li>fairly</li>
+        <li>quite</li>
+        <li>highly</li>
+        <li>rather</li>
+      </ul>
+    </li>
+    <li>
+      <i>(adverb)</i>
+      <ul>
+        <li>by no means</li>
+        <li>not readily</li>
+      </ul>
+    </li>
+    <li>
+      <i>(noun)</i>
+      <ul>
+        <li>middle</li>
+        <li>half-way point</li>
+        <li>excellent</li>
+        <li>wonderful</li>
+        <li>very good</li>
+      </ul>
+    </li>
+  </ol>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning (yomichan)' 1`] = `
+"<div style="text-align: left;">
+  <ol>
+    <li>
+      <ul>
+        <li>very</li>
+        <li>considerably</li>
+        <li>easily</li>
+        <li>readily</li>
+        <li>fairly</li>
+        <li>quite</li>
+        <li>highly</li>
+        <li>rather</li>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>by no means</li>
+        <li>not readily</li>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>middle</li>
+        <li>half-way point</li>
+        <li>excellent</li>
+        <li>wonderful</li>
+        <li>very good</li>
+      </ul>
+    </li>
+  </ol>
+</div>"
+`;
+
+exports[`$なかなかに強いです > 'meaning' 1`] = `
+"<ol>
+  <li>very, considerably, easily, readily, fairly, quite, highly, rather</li>
+</ol>
+<ol>
+  <li>by no means, not readily</li>
+</ol>
+<ol>
+  <li>middle, half-way point</li>
+  <li>excellent, wonderful, very good</li>
+</ol>"
+`;
+
+exports[`$なかなかに強いです > 'sentence (bold) (furigana-anki)' 1`] = `"<b>なかなか</b>に 強[つよ]いです"`;
+
+exports[`$なかなかに強いです > 'sentence (bold) (furigana-html)' 1`] = `"<b>なかなか</b>に&lt;ruby&gt;強&lt;rt&gt;つよ&lt;/rt&gt;&lt;/ruby&gt;いです"`;
+
+exports[`$なかなかに強いです > 'sentence (bold) (kana)' 1`] = `"<b>なかなか</b>につよいです"`;
+
+exports[`$なかなかに強いです > 'sentence (bold)' 1`] = `"<b>なかなか</b>に強いです"`;
+
+exports[`$なかなかに強いです > 'sentence (cloze) (furigana-anki)' 1`] = `"{{c1::なかなか}}に 強[つよ]いです"`;
+
+exports[`$なかなかに強いです > 'sentence (cloze) (furigana-html)' 1`] = `"{{c1::なかなか}}に&lt;ruby&gt;強&lt;rt&gt;つよ&lt;/rt&gt;&lt;/ruby&gt;いです"`;
+
+exports[`$なかなかに強いです > 'sentence (cloze) (kana)' 1`] = `"{{c1::なかなか}}につよいです"`;
+
+exports[`$なかなかに強いです > 'sentence (cloze)' 1`] = `"{{c1::なかなか}}に強いです"`;
+
+exports[`$なかなかに強いです > 'sentence (furigana-anki)' 1`] = `"なかなかに 強[つよ]いです"`;
+
+exports[`$なかなかに強いです > 'sentence (furigana-html)' 1`] = `"なかなかに&lt;ruby&gt;強&lt;rt&gt;つよ&lt;/rt&gt;&lt;/ruby&gt;いです"`;
+
+exports[`$なかなかに強いです > 'sentence (kana)' 1`] = `"なかなかにつよいです"`;
+
+exports[`$なかなかに強いです > 'sentence (span) (furigana-anki)' 1`] = `"<span class="yomi-word">なかなか</span>に 強[つよ]いです"`;
+
+exports[`$なかなかに強いです > 'sentence (span) (furigana-html)' 1`] = `"<span class="yomi-word">なかなか</span>に&lt;ruby&gt;強&lt;rt&gt;つよ&lt;/rt&gt;&lt;/ruby&gt;いです"`;
+
+exports[`$なかなかに強いです > 'sentence (span) (kana)' 1`] = `"<span class="yomi-word">なかなか</span>につよいです"`;
+
+exports[`$なかなかに強いです > 'sentence (span)' 1`] = `"<span class="yomi-word">なかなか</span>に強いです"`;
+
+exports[`$なかなかに強いです > 'sentence' 1`] = `"なかなかに強いです"`;
+
+exports[`$なかなかに強いです > 'translated-sentence' 1`] = `"It's quite strong"`;
+
+exports[`$なかなかに強いです > 'url' 1`] = `"https://yomikiri.test/"`;
+
+exports[`$なかなかに強いです > 'word (dict) (furigana-anki)' 1`] = `"中々[なかなか]"`;
+
+exports[`$なかなかに強いです > 'word (dict) (furigana-html)' 1`] = `"<ruby>中々<rt>なかなか</rt></ruby>"`;
+
+exports[`$なかなかに強いです > 'word (dict) (kana)' 1`] = `"なかなか"`;
+
+exports[`$なかなかに強いです > 'word (dict)' 1`] = `"中々"`;
+
+exports[`$なかなかに強いです > 'word (furigana-anki)' 1`] = `"なかなか"`;
+
+exports[`$なかなかに強いです > 'word (furigana-html)' 1`] = `"なかなか"`;
+
+exports[`$なかなかに強いです > 'word (kana)' 1`] = `"なかなか"`;
+
+exports[`$なかなかに強いです > 'word (main dict) (furigana-anki)' 1`] = `"中々[なかなか]"`;
+
+exports[`$なかなかに強いです > 'word (main dict) (furigana-html)' 1`] = `"<ruby>中々<rt>なかなか</rt></ruby>"`;
+
+exports[`$なかなかに強いです > 'word (main dict) (kana)' 1`] = `"なかなか"`;
+
+exports[`$なかなかに強いです > 'word (main dict)' 1`] = `"中々"`;
+
+exports[`$なかなかに強いです > 'word' 1`] = `"なかなか"`;
+
+exports[`$なかなかに強いです > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(adverb, na-adjective) very, considerably"`;
+
+exports[`$なかなかに強いです > (single) 'meaning (pos)' 1`] = `"(adverb, na-adjective) very, considerably, easily, readily, fairly, quite, highly, rather"`;
+
+exports[`$なかなかに強いです > (single) 'meaning (single-item <= 2)' 1`] = `"very, considerably"`;
+
+exports[`$なかなかに強いです > (single) 'meaning' 1`] = `"very, considerably, easily, readily, fairly, quite, highly, rather"`;
+
+exports[`$なかなかに強いです > Check that tokenization result has not changed 1`] = `
+{
+  "entry": {
+    "forms": [
+      {
+        "form": "中々",
+        "info": [],
+        "uncommon": false,
+      },
+      {
+        "form": "中中",
+        "info": [],
+        "uncommon": false,
+      },
+      {
+        "form": "仲々",
+        "info": [
+          "=rK=",
+        ],
+        "uncommon": true,
+      },
+      {
+        "form": "仲仲",
+        "info": [
+          "=rK=",
+        ],
+        "uncommon": true,
+      },
+      {
+        "form": "却々",
+        "info": [
+          "=rK=",
+        ],
+        "uncommon": true,
+      },
+      {
+        "form": "却却",
+        "info": [
+          "=rK=",
+        ],
+        "uncommon": true,
+      },
+    ],
+    "priority": 125,
+    "readings": [
+      {
+        "info": [],
+        "nokanji": false,
+        "reading": "なかなか",
+        "toForm": [],
+        "uncommon": false,
+      },
+    ],
+    "senses": [
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "very",
+          "considerably",
+          "easily",
+          "readily",
+          "fairly",
+          "quite",
+          "highly",
+          "rather",
+        ],
+        "misc": [
+          "=uk=",
+        ],
+        "pos": [
+          "adverb",
+          "na-adjective",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [
+          "with a verb in the negative",
+        ],
+        "meaning": [
+          "by no means",
+          "not readily",
+        ],
+        "misc": [
+          "=uk=",
+        ],
+        "pos": [
+          "adverb",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "middle",
+          "half-way point",
+        ],
+        "misc": [],
+        "pos": [
+          "noun",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+      {
+        "dialect": [],
+        "info": [],
+        "meaning": [
+          "excellent",
+          "wonderful",
+          "very good",
+        ],
+        "misc": [
+          "=uk=",
+        ],
+        "pos": [
+          "noun",
+        ],
+        "toForm": [],
+        "toReading": [],
+      },
+    ],
+    "terms": [
+      "中々",
+      "中中",
+      "仲々",
+      "仲仲",
+      "却々",
+      "却却",
+      "なかなか",
+    ],
+  },
+  "pageTitle": "Yomikiri Tests",
+  "sentence": "なかなかに強いです",
+  "tokenized": {
+    "entries": [
+      {
+        "forms": [
+          {
+            "form": "中々",
+            "info": [],
+            "uncommon": false,
+          },
+          {
+            "form": "中中",
+            "info": [],
+            "uncommon": false,
+          },
+          {
+            "form": "仲々",
+            "info": [
+              "=rK=",
+            ],
+            "uncommon": true,
+          },
+          {
+            "form": "仲仲",
+            "info": [
+              "=rK=",
+            ],
+            "uncommon": true,
+          },
+          {
+            "form": "却々",
+            "info": [
+              "=rK=",
+            ],
+            "uncommon": true,
+          },
+          {
+            "form": "却却",
+            "info": [
+              "=rK=",
+            ],
+            "uncommon": true,
+          },
+        ],
+        "priority": 125,
+        "readings": [
+          {
+            "info": [],
+            "nokanji": false,
+            "reading": "なかなか",
+            "toForm": [],
+            "uncommon": false,
+          },
+        ],
+        "senses": [
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "very",
+              "considerably",
+              "easily",
+              "readily",
+              "fairly",
+              "quite",
+              "highly",
+              "rather",
+            ],
+            "misc": [
+              "=uk=",
+            ],
+            "pos": [
+              "adverb",
+              "na-adjective",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [
+              "with a verb in the negative",
+            ],
+            "meaning": [
+              "by no means",
+              "not readily",
+            ],
+            "misc": [
+              "=uk=",
+            ],
+            "pos": [
+              "adverb",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "middle",
+              "half-way point",
+            ],
+            "misc": [],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+          {
+            "dialect": [],
+            "info": [],
+            "meaning": [
+              "excellent",
+              "wonderful",
+              "very good",
+            ],
+            "misc": [
+              "=uk=",
+            ],
+            "pos": [
+              "noun",
+            ],
+            "toForm": [],
+            "toReading": [],
+          },
+        ],
+        "terms": [
+          "中々",
+          "中中",
+          "仲々",
+          "仲仲",
+          "却々",
+          "却却",
+          "なかなか",
+        ],
+      },
+    ],
+    "grammars": [],
+    "tokenIdx": 0,
+    "tokens": [
+      {
+        "base": "中々",
+        "children": [],
+        "conj_form": "*",
+        "pos": "副詞",
+        "pos2": "*",
+        "reading": "なかなか",
+        "start": 0,
+        "text": "なかなか",
+      },
+      {
+        "base": "に",
+        "children": [],
+        "conj_form": "*",
+        "pos": "助詞",
+        "pos2": "格助詞",
+        "reading": "に",
+        "start": 4,
+        "text": "に",
+      },
+      {
+        "base": "強い",
+        "children": [
+          {
+            "base": "強い",
+            "children": [],
+            "conj_form": "終止形-一般",
+            "pos": "形容詞",
+            "pos2": "一般",
+            "reading": "ツヨイ",
+            "start": 5,
+            "text": "強い",
+          },
+          {
+            "base": "です",
+            "children": [],
+            "conj_form": "終止形-一般",
+            "pos": "助動詞",
+            "pos2": "*",
+            "reading": "デス",
+            "start": 7,
+            "text": "です",
+          },
+        ],
+        "conj_form": "*",
+        "pos": "形容詞",
+        "pos2": "*",
+        "reading": "つよいです",
+        "start": 5,
+        "text": "強いです",
+      },
+    ],
+  },
+  "url": "https://yomikiri.test/",
+}
+`;
+
 exports[`Test that special character is escaped: 図＄書<-> > '-' 1`] = `""`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;

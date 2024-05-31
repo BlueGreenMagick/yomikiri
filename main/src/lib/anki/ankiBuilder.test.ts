@@ -42,6 +42,10 @@ describe("春の茶が飲＄みたいです", async () => {
   await testSentence("春の茶が飲＄みたいです", 5);
 });
 
+describe("$なかなかに強いです", async () => {
+  await testSentence("なかなかに強いです", 0);
+});
+
 describe("Test that special character is escaped: 図＄書<->", async () => {
   await testSentence("図書<->", 1);
 });
