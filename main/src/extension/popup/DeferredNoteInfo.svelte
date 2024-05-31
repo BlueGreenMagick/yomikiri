@@ -97,6 +97,7 @@
   </div>
   <div class="icons">
     <IconedButton
+      disabled={addingNotes}
       on:click={() => {
         void addDeferredNotes();
       }}
@@ -106,6 +107,7 @@
     <IconedButton
       color="#f55151"
       colorHover="var(--text-warn)"
+      disabled={addingNotes}
       on:click={() => {
         void discardDeferredNotes();
       }}

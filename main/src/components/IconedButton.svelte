@@ -9,6 +9,7 @@
   export let hidden = false;
   export let highlight = false;
   export let active = false;
+  export let disabled = false;
 </script>
 
 <button
@@ -16,6 +17,8 @@
   class:highlight
   class:active
   class:hidden
+  class:disabled
+  {disabled}
   style="--size: {size}; --color: {color}; --padding: {padding}; --color-hover: {colorHover}"
   on:click
   on:mousedown|preventDefault|stopPropagation={() => null}
@@ -44,7 +47,7 @@
     filter: saturate(0.9);
   }
 
-  button.active,
+  button:not(.disabled).active,
   :global(html.desktop) button.active:hover,
   button.active:active {
     color: var(--color-hover);
@@ -52,16 +55,16 @@
     background-color: rgba(0, 0, 0, 0.12);
   }
 
-  :global(html.desktop) button:hover,
-  button:active {
+  :global(html.desktop) button:not(.disabled):hover,
+  button:active :not(.disabled) {
     color: var(--color-hover);
     fill: var(--color-hover);
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.07);
   }
 
-  :global(html.desktop) button.highlight:hover,
-  button.highlight:active {
+  :global(html.desktop) button.highlight:not(.disabled):hover,
+  button.highlight:not(.disabled):active {
     color: var(--accent);
     fill: var(--accent);
     filter: saturate(1.2);
@@ -70,6 +73,10 @@
   :global(html.ios) button:focus-visible,
   :global(html.iosapp) button:focus-visible {
     outline: none;
+  }
+
+  button.disabled {
+    filter: opacity(0.6);
   }
 
   /** Centers icon vertically */
