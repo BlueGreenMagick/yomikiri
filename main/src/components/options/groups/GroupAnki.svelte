@@ -42,12 +42,12 @@
   }
 
   // Checks if anki can be connected. On fail, tries again every 3 seconds.
-  const checkAnkiConnection = SingleQueued(async (sAnkiEnabled) => {
+  const checkAnkiConnection = SingleQueued(async () => {
     if (retryConnectTimeout !== null) {
       clearTimeout(retryConnectTimeout);
       retryConnectTimeout = null;
     }
-    if (sAnkiEnabled) {
+    if ($ankiEnabledConfig) {
       useAnkiDescription = "loading";
       try {
         await ankiApi.checkConnection();
@@ -56,7 +56,7 @@
         useAnkiError = Utils.getErrorMessage(err);
         useAnkiDescription = "error";
         retryConnectTimeout = window.setTimeout(() => {
-          void checkAnkiConnection(sAnkiEnabled);
+          void checkAnkiConnection();
         }, 3000);
       }
     } else {
@@ -88,7 +88,7 @@
     return response;
   }
 
-  $: void checkAnkiConnection($ankiEnabledConfig);
+  $: $ankiEnabledConfig, $ankiConnectPortConfig, void checkAnkiConnection();
 </script>
 
 <GroupedOptions title="Anki">
