@@ -3,4 +3,4 @@
   import IconTrash from "@icons/trash.svg";
 </script>
 
-<ToastIcon icon={IconTrash} />
+<ToastIcon icon={IconTrash} color="red" />

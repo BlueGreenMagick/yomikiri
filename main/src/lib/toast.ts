@@ -1,5 +1,8 @@
-import DelayedToastIcon from "components/toast/ToastIcon.svelte";
-import toast, { Toaster, type ToastOptions } from "svelte-french-toast";
+import toast, {
+  Toaster,
+  type Renderable,
+  type ToastOptions,
+} from "svelte-french-toast";
 
 const optsLoading = {
   duration: 8000,
@@ -50,7 +53,7 @@ export class Toast {
   }
 
   /** Toast is deleted after delay */
-  static success(msg: string, opts?: ToastOptions): Toast {
+  static success(msg: Renderable, opts?: ToastOptions): Toast {
     Toast.maybeSetupToaster();
     const builtOpts = {
       ...optsSuccess,

@@ -7,6 +7,8 @@
   import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
+  import type { AnkiNote } from "lib/anki";
+  import CancelDeferredNoteDeletion from "./CancelDeferredNoteDeletion.svelte";
 
   export let config: Config;
   export let platform: ExtensionPlatform;
@@ -40,12 +42,38 @@
     }
   }
 
-  function discardDeferredNotes() {
-    Toast.success("Deleted", {
+  async function discardDeferredNotes() {
+    const notes = await browserApi.getStorage<AnkiNote[]>(
+      "deferred-anki-note",
+      [],
+    );
+    const errors = await browserApi.getStorage<string[]>(
+      "deferred-anki-note-errors",
+      [],
+    );
+    await config.set("state.anki.deferred_note_count", 0);
+    await config.set("state.anki.deferred_note_error", false);
+    await browserApi.removeStorage("deferred-anki-note");
+    await browserApi.removeStorage("deferred-anki-note-errors");
+
+    let weakToast: WeakRef<Toast>;
+    const toast = Toast.success(CancelDeferredNoteDeletion, {
+      duration: 4000,
       icon: TrashToastIcon,
-      duration: 5000,
+      props: {
+        count: notes.length,
+        onCancel: async () => {
+          await browserApi.setStorage("deferred-anki-note", notes);
+          if (errors.length > 0) {
+            await browserApi.setStorage("deferred-anki-note-errors", errors);
+          }
+          await config.set("state.anki.deferred_note_count", notes.length);
+          await config.set("state.anki.deferred_note_error", errors.length > 0);
+          weakToast.deref()?.dismiss();
+        },
+      },
     });
-    throw new Error("Unimplemented!");
+    weakToast = new WeakRef(toast);
   }
 
   $: if (confDeferredNoteError) void getErrorMessages();

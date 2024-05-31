@@ -15,5 +15,7 @@
     margin-right: -4px;
     width: 20px;
     height: 20px;
+    fill: var(--color);
+    color: var(--color);
   }
 </style>
