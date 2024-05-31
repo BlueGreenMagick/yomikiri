@@ -274,7 +274,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   /**
-   * Add deferred notes to Anki.
+   * If there are deferred notes, add to Anki.
    *
    * If failed to add a note, save the error message to config
    * and continue to next note.

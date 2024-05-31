@@ -25,6 +25,7 @@ import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png";
 import GreyIcon from "assets/static/images/icon128-semigray.png";
 import { derived } from "svelte/store";
+import type { DesktopAnkiApi } from "@platform/anki";
 
 const browserApi = new BrowserApi({ context: "background" });
 const platform = new Platform(browserApi) as ExtensionPlatform;
@@ -44,6 +45,10 @@ async function initialize(): Promise<void> {
   updateDeferredNoteCountBadge(config);
 
   await updateTTSAvailability(platform, config);
+  if (Platform.IS_DESKTOP) {
+    const ankiApi = (await lazyAnkiApi.get()) as DesktopAnkiApi;
+    runAddDeferredNoteTaskInBackground(ankiApi);
+  }
 }
 
 async function searchTerm(term: string): Promise<Entry[]> {
@@ -82,8 +87,19 @@ function updateDeferredNoteCountBadge(config: Config) {
   const deferErrored = config.store("state.anki.deferred_note_error");
   const notesAndErrors = derived([deferredNotes, deferErrored], (a) => a);
   notesAndErrors.subscribe(([cnt, errored]) => {
-    void browserApi.setBadge(cnt, errored ? "red" : "#cccccc");
+    if (cnt === 0) {
+      void browserApi.setBadge("");
+    } else {
+      void browserApi.setBadge(cnt, errored ? "red" : "#cccccc");
+    }
   });
+}
+
+/** Check and add Anki notes every 30 seconds */
+function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
+  setInterval(() => {
+    void ankiApi.addDeferredNotes();
+  }, 1000 * 30);
 }
 
 async function tts(req: TTSRequest): Promise<void> {

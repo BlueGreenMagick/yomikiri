@@ -421,7 +421,7 @@ export class BrowserApi {
   }
 
   /** set text to "" to remove badge */
-  async setBadge(text: string | number, color: string) {
+  async setBadge(text: string | number, color: string = "white") {
     const iAction = this.action();
     if (typeof text === "number") {
       text = text.toString();
