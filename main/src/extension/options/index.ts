@@ -3,7 +3,7 @@
 import { BrowserApi } from "extension/browserApi";
 import OptionsPage from "../../components/options/OptionsPage.svelte";
 import { Platform } from "platform/desktop";
-import { DesktopAnkiApi } from "@platform/anki";
+import { DesktopAnkiApi } from "platform/desktop/anki";
 import Utils, { exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 import type { DesktopDictionary } from "platform/common/dictionary";

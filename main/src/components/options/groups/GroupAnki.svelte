@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Platform, type DesktopPlatform } from "@platform";
-  import { DesktopAnkiApi, type AnkiOptionsApi } from "@platform/anki";
+  import type { DesktopAnkiApi, AnkiOptionsApi } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
