@@ -149,11 +149,19 @@
 
   .scrollable {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     padding: 4px 8px;
   }
 
+  .fields-container {
+    flex: 1 0 auto;
+  }
+
   .tags {
-    margin-top: 12px;
+    flex: 0 0 auto;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
   }
 </style>
