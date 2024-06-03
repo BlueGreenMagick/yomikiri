@@ -100,7 +100,7 @@
       {/each}
     </div>
     <div class="tags">
-      <div class="field-name"><em>{tagField.name}</em></div>
+      <div class="field-name"><b>{tagField.name}</b></div>
       <NoteFieldEditor field={tagField} />
     </div>
   </div>
