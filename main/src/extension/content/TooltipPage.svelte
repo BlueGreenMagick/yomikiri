@@ -10,6 +10,7 @@
   export let config: Config;
   export let ankiApi: AnkiApi;
   export let onClose: () => void;
+  export let onUpdateHeight: () => void = () => null;
 
   let tokenizeResult = TokenizeResult.empty();
 
@@ -25,7 +26,7 @@
     {config}
     {ankiApi}
     {tokenizeResult}
-    on:updateHeight
+    {onUpdateHeight}
   />
 </div>
 

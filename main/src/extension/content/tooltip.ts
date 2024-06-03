@@ -238,14 +238,13 @@ export class Tooltip {
         onClose: () => {
           this.hide();
         },
+        onUpdateHeight: () => {
+          const tooltip = this.getTooltipEl();
+          if (tooltip !== null) {
+            this.updateTooltipHeight(tooltip);
+          }
+        },
       },
-    });
-
-    tooltipPage.$on("updateHeight", (_: CustomEvent<void>) => {
-      const tooltip = this.getTooltipEl();
-      if (tooltip !== null) {
-        this.updateTooltipHeight(tooltip);
-      }
     });
     return tooltipPage;
   }
