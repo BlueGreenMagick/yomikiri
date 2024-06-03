@@ -80,25 +80,29 @@
 </script>
 
 <div class="tooltip">
-  <div class="dic-entries-container" class:previewIsVisible>
-    <ToolbarWithPane
-      {platform}
-      {onClose}
-      grammars={tokenizeResult.grammars}
-      {sentence}
-      {selectedTool}
-      tooltipMode={true}
-      {changeSelectedTool}
-    />
-    <DicEntriesView
-      {platform}
-      {config}
-      entries={tokenizeResult.entries}
-      onSelectEntryForAnki={selectedEntryForAnki}
-    />
+  <div class="dictionary-view" class:previewIsVisible>
+    <div class="header">
+      <ToolbarWithPane
+        {platform}
+        {onClose}
+        grammars={tokenizeResult.grammars}
+        {sentence}
+        {selectedTool}
+        tooltipMode={true}
+        {changeSelectedTool}
+      />
+    </div>
+    <div class="scrollable">
+      <DicEntriesView
+        {platform}
+        {config}
+        entries={tokenizeResult.entries}
+        onSelectEntryForAnki={selectedEntryForAnki}
+      />
+    </div>
   </div>
   {#if previewIsVisible}
-    <div class="add-to-anki-container">
+    <div class="anki-preview">
       <AddToAnki noteData={previewNoteData} {onBack} {ankiApi} {noteAdded} />
     </div>
   {/if}
@@ -109,16 +113,26 @@
     max-height: 300px;
   }
 
-  .dic-entries-container {
-    overflow-y: auto;
+  .dictionary-view {
+    max-height: inherit;
+    display: flex;
+    flex-direction: column;
   }
 
-  .dic-entries-container.previewIsVisible {
+  .dictionary-view.previewIsVisible {
     display: none;
   }
 
-  .add-to-anki-container {
-    width: 100%;
-    max-height: 300px;
+  .header {
+    flex: 0 0 auto;
+  }
+
+  .scrollable {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
+  .anki-preview {
+    max-height: inherit;
   }
 </style>

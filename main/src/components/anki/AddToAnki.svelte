@@ -120,6 +120,7 @@
     overflow-y: hidden;
     background-color: var(--background-alt);
     min-height: 100%;
+    max-height: inherit;
   }
 
   .title-bar {
