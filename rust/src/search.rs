@@ -32,8 +32,14 @@ impl<R: Read + Seek> SharedBackend<R> {
         let entries = self.dictionary.search(&normalized_term)?;
         if let Some(entry) = entries.get(0) {
             let form = entry.main_form();
-            // TODO: fill pos of details
-            let details = TokenDetails::default_with_surface(&form);
+            // TODO: convert jmdict pos to unidic pos
+            let mut details = TokenDetails::default_with_surface(&form);
+            details.pos = "jmdict".into();
+            details.reading = entry
+                .reading_for_form(&form)
+                .map(|r| r.reading.as_str())
+                .unwrap_or("*")
+                .into();
             let token = Token::new(form, details, 0);
             let json_entries = entries
                 .iter()
