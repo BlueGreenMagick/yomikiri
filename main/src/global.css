@@ -41,6 +41,11 @@ button {
   appearance: none;
 }
 
+/* Use css for furigana so it is not copied into clipboard. */
+rt:before {
+  content: attr(data-rt);
+}
+
 :root {
   --text: black;
   --text-light: #808080;
