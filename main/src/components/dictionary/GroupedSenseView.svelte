@@ -36,11 +36,11 @@
 
 <style>
   .grouped-sense:first-child {
-    margin-top: 0px;
+    margin-top: 0.25rem;
   }
 
   .grouped-sense {
-    margin-top: 4px;
+    margin-top: 0.5rem;
   }
 
   .part-of-speech {
