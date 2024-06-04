@@ -11,13 +11,19 @@
   const entriesData: Entry[] = (
     [
       {
-        terms: ["読む", "讀む", "よむ"],
+        terms: ["読む", "讀む", "訓む", "よむ"],
         forms: [
           {
             form: "読む",
+            uncommon: false,
           },
           {
             form: "讀む",
+            uncommon: true,
+            info: ["=sK="],
+          },
+          {
+            form: "訓む",
             uncommon: true,
             info: ["=sK="],
           },
@@ -25,19 +31,21 @@
         readings: [
           {
             reading: "よむ",
+            nokanji: false,
+            uncommon: false,
           },
         ],
         senses: [
           {
-            pos: ["=v5m=", "=vt="],
+            pos: ["verb"],
             meaning: ["to read"],
           },
           {
-            pos: ["=v5m=", "=vt="],
+            pos: ["verb"],
             meaning: ["to recite (e.g. a sutra)", "to chant"],
           },
           {
-            pos: ["=v5m=", "=vt="],
+            pos: ["verb"],
             meaning: [
               "to predict",
               "to guess",
@@ -48,16 +56,24 @@
             ],
           },
           {
-            pos: ["=v5m=", "=vt="],
-            meaning: ["to decipher"],
+            pos: ["verb"],
+            meaning: ["to pronounce", "to read (e.g. a kanji)"],
           },
           {
-            pos: ["=v5m=", "=vt="],
+            pos: ["verb"],
+            meaning: [
+              "to decipher",
+              "to read (a meter, graph, music, etc.)",
+              "to tell (the time)",
+            ],
+          },
+          {
+            pos: ["verb"],
             info: ["now mostly used in idioms"],
             meaning: ["to count", "to estimate"],
           },
           {
-            pos: ["=v5m=", "=vt="],
+            pos: ["verb"],
             info: ["also written as 訓む"],
             meaning: ["to read (a kanji) with its native Japanese reading"],
           },
