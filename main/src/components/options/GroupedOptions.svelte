@@ -19,7 +19,7 @@
   }
 
   .title {
-    font-size: 1.6em;
+    font-size: 1.6rem;
   }
   .grouped {
     margin-top: 8px;

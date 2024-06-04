@@ -45,13 +45,13 @@
 
   .part-of-speech {
     color: var(--text-light);
-    font-size: 0.9em;
+    font-size: 0.9rem;
     margin-bottom: 2px;
     padding: 0 var(--edge-horizontal-padding);
   }
 
   .meaning {
-    font-size: 1em;
+    font-size: 1rem;
     align-items: center;
     padding: 0 var(--edge-horizontal-padding);
   }

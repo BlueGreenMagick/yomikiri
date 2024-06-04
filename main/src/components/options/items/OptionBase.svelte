@@ -43,10 +43,10 @@
   }
   .title {
     margin: 1px 0px;
-    font-size: 1em;
+    font-size: 1.125rem;
   }
   .description {
     color: var(--text-light);
-    font-size: 0.8em;
+    font-size: 1rem;
   }
 </style>

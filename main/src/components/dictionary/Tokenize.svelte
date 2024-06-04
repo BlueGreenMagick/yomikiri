@@ -19,7 +19,7 @@
   export let showCloseButton = false;
   export let onShowAnkiPreview: (
     selectedEntry: SelectedEntryForAnki,
-    tokenizeResult: TokenizeResult
+    tokenizeResult: TokenizeResult,
   ) => void;
   export let onClose: () => void = () => null;
 
@@ -139,7 +139,7 @@
     border: 0;
     outline: none;
     background-color: var(--input);
-    font-size: 1em;
+    font-size: 1rem;
   }
 
   .icon > :global(svg) {

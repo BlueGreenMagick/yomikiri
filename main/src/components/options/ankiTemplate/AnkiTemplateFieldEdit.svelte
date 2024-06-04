@@ -34,7 +34,7 @@
   let fieldTemplates = new Map<string, AnkiTemplateField>();
 
   function generateFieldOptions(
-    _: unknown
+    _: unknown,
   ): [AnkiTemplateFieldContent, string][] {
     return ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
       const cached =
@@ -124,7 +124,7 @@
   }
 
   .field-name {
-    font-size: 1em;
+    font-size: 1rem;
     font-weight: bold;
     margin-bottom: 4px;
   }
@@ -142,7 +142,7 @@
   .field-row > :global(select) {
     width: 100%;
     height: 1.6em;
-    font-size: 1em;
+    font-size: 1rem;
     padding: 0px 2px;
   }
 

@@ -51,7 +51,7 @@
   /** (`selectedNotetype`) -> `fieldNames`, `fieldTemplates` */
   function loadFields(_: unknown) {
     let notetypeInfo = ankiInfo.notetypes.find(
-      (nt) => nt.name === selectedNotetype
+      (nt) => nt.name === selectedNotetype,
     );
     if (notetypeInfo === undefined) {
       fieldNames = prevTemplate?.fields.map((f) => f.name) ?? [];
@@ -167,7 +167,7 @@
   }
   .item-select {
     grid-column: 2 / 3;
-    font-size: 1em;
+    font-size: 1rem;
   }
   .item-select.invalid {
     color: red;
