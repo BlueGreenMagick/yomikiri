@@ -8,7 +8,11 @@ import type {
   TTSRequest,
 } from "../common";
 import { Config, type StoredConfiguration } from "lib/config";
-import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
+import type {
+  RawTokenizeResult,
+  SearchRequest,
+  TokenizeRequest,
+} from "../common/backend";
 import { getTranslation } from "../common/translate";
 import type { RawDictionaryMetadata } from "./dictionary";
 import { Backend as IosAppBackend } from "./backend";
@@ -49,7 +53,7 @@ export interface MessageWebviewMap {
    */
   migrateConfig: [null, boolean];
   tokenize: [TokenizeRequest, RawTokenizeResult];
-  searchTerm: [string, string[]];
+  searchTerm: [SearchRequest, RawTokenizeResult];
   versionInfo: [null, VersionInfo];
   updateDict: [null, RawDictionaryMetadata];
   dictMetadata: [null, RawDictionaryMetadata];

@@ -34,7 +34,7 @@ pub struct Token {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct TokenDetails {
+pub struct TokenDetails {
     /// defaults to `UNK`
     pub pos: String,
     /// defaults to `*`
@@ -93,7 +93,7 @@ impl RawTokenizeResult {
 }
 
 impl Token {
-    fn new<S: Into<String>>(surface: S, details: TokenDetails, start: u32) -> Self {
+    pub fn new<S: Into<String>>(surface: S, details: TokenDetails, start: u32) -> Self {
         Token {
             text: surface.into(),
             start,
@@ -166,7 +166,7 @@ impl TokenDetails {
         }
     }
 
-    fn default_with_surface(surface: &str) -> Self {
+    pub fn default_with_surface(surface: &str) -> Self {
         TokenDetails {
             base: surface.into(),
             ..TokenDetails::default()

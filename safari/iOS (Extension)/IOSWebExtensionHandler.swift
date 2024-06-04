@@ -32,8 +32,8 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 let result = try backend.tokenize(sentence: req.text, charAt: req.charAt)
                 jsonResponse = try jsonSerialize(obj: result)
             case "search":
-                let term: String = try jsonDeserialize(json: request)
-                let result = try backend.search(term: term)
+                let req: SearchRequest = try jsonDeserialize(json: request)
+                let result = try backend.search(term: req.term, charAt: req.charAt ?? 0)
                 jsonResponse = try jsonSerialize(obj: result)
             case "addNote":
                 break
@@ -68,4 +68,9 @@ private struct TokenizeRequest: Codable {
 private struct TTSRequest: Decodable {
     var text: String
     var voice: TTSVoice?
+}
+
+private struct SearchRequest: Decodable {
+    var term: String
+    var charAt: UInt32?
 }

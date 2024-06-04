@@ -38,7 +38,7 @@ export interface RawTokenizeResult {
 
 interface Backend {
     tokenize(sentence: string, charAt: number): RawTokenizeResult;
-    search(term: string): string[]
+    search(term: string, charAt: number): RawTokenizeResult
 }
 "#;
 
@@ -66,22 +66,16 @@ impl Backend {
     pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> YResult<JsValue> {
         let result = self.inner.tokenize(sentence, char_at)?;
         serde_wasm_bindgen::to_value(&result).map_err(|e| {
-            YomikiriError::ConversionError(format!(
-                "Failed to serialize tokenizer result.\n{}",
-                e
-            ))
+            YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
         })
     }
 
-    /// Search dictionary term and return JSON strings
+    /// dictionary search
     #[wasm_bindgen(skip_typescript)]
-    pub fn search(&mut self, term: &str) -> YResult<JsValue> {
-        let entries_json = self.inner.dictionary.search_json(term)?;
-        serde_wasm_bindgen::to_value(&entries_json).map_err(|e| {
-            YomikiriError::ConversionError(format!(
-                "Failed to serialize dictionary entries.\n{}",
-                e
-            ))
+    pub fn search(&mut self, term: &str, char_at: usize) -> YResult<JsValue> {
+        let result = self.inner.search(term, char_at)?;
+        serde_wasm_bindgen::to_value(&result).map_err(|e| {
+            YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
         })
     }
 }

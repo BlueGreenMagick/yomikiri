@@ -39,7 +39,7 @@ macro_rules! err_from {
                 YomikiriError::from(Box::new(value))
             }
         }
-    }
+    };
 }
 
 #[cfg(uniffi)]

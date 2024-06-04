@@ -9,7 +9,11 @@ import type {
   IPlatformStatic,
   TTSRequest,
 } from "../common";
-import type { RawTokenizeResult, TokenizeRequest } from "../common/backend";
+import type {
+  RawTokenizeResult,
+  SearchRequest,
+  TokenizeRequest,
+} from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { Backend as IosBackend } from "./backend";
 import { AnkiApi as IosAnkiApi } from "./anki";
@@ -25,7 +29,7 @@ export interface AppMessageMap {
   tokenize: [TokenizeRequest, RawTokenizeResult];
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, null];
-  search: [string, string[]];
+  search: [SearchRequest, RawTokenizeResult];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
 }

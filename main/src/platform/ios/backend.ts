@@ -4,8 +4,8 @@ import {
   type IBackend,
   type TokenizeRequest,
   TokenizeResult,
+  type SearchRequest,
 } from "../common/backend";
-import { Entry, type EntryObject } from "lib/dicEntry";
 
 export * from "../common/backend";
 
@@ -41,20 +41,27 @@ export class IosBackend implements IBackend {
     return TokenizeResult.from(rawResult);
   }
 
-  async search(term: string): Promise<Entry[]> {
+  async search(term: string, charAt?: number): Promise<TokenizeResult> {
     if (this.browserApi.context !== "contentScript") {
-      return this._search(term);
+      return this._search(term, charAt);
     } else {
-      return this.browserApi.request("searchTerm", term);
+      return this.browserApi.request("searchTerm", { term, charAt });
     }
   }
 
-  async _search(term: string): Promise<Entry[]> {
-    const entries = (await this.platform.requestToApp("search", term))
-      .map((json) => JSON.parse(json) as EntryObject)
-      .map(Entry.fromObject);
-    Entry.order(entries);
-    return entries;
+  async _search(term: string, charAt?: number): Promise<TokenizeResult> {
+    charAt = charAt ?? 0;
+
+    if (term === "") {
+      return TokenizeResult.empty();
+    }
+    if (charAt < 0 || charAt >= term.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
+    }
+
+    const req: SearchRequest = { term, charAt };
+    const rawResult = await this.platform.requestToApp("search", req);
+    return TokenizeResult.from(rawResult);
   }
 }
 

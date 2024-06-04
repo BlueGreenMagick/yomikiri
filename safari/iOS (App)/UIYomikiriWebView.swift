@@ -156,7 +156,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
                 return nil
             case "migrateConfig":
-                if (configMigrated) {
+                if configMigrated {
                     return "false"
                 } else {
                     configMigrated = true
@@ -167,8 +167,8 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 let resp = try backend.tokenize(sentence: req.text, charAt: req.charAt ?? 0)
                 return try jsonSerialize(obj: resp)
             case "searchTerm":
-                let term: String = try jsonDeserialize(json: request)
-                let resp = try backend.search(term: term)
+                let req: SearchRequest = try jsonDeserialize(json: request)
+                let resp = try backend.search(term: req.term, charAt: req.charAt ?? 0)
                 return try jsonSerialize(obj: resp)
             case "versionInfo":
                 let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
@@ -258,5 +258,10 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
 
 private struct TokenizeRequest: Decodable {
     var text: String
+    var charAt: UInt32?
+}
+
+private struct SearchRequest: Decodable {
+    var term: String
     var charAt: UInt32?
 }

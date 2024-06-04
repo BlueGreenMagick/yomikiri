@@ -23,6 +23,12 @@ export interface TokenizeResult extends Omit<RawTokenizeResult, "entries"> {
   entries: Entry[];
 }
 
+export interface SearchRequest {
+  term: string;
+  /** Defaults to 0 if not specified. */
+  charAt?: number | undefined;
+}
+
 export namespace TokenizeResult {
   export function empty(): TokenizeResult {
     return {
@@ -57,7 +63,7 @@ export namespace TokenizeResult {
 
 export interface IBackend {
   tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
-  search(term: string): Promise<Entry[]>;
+  search(term: string): Promise<TokenizeResult>;
 }
 
 export declare const Backend:

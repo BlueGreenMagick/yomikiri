@@ -29,17 +29,17 @@
   let selectedTool: Tools | null = null;
 
   /** modifies `searchTokens` */
-  const tokenize = Utils.SingleQueued(_tokenize);
-  async function _tokenize(searchText: string, charAt: number) {
+  const search = Utils.SingleQueued(_search);
+  async function _search(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
-    tokenizeResult = await backend.tokenize(searchText, charAt);
+    tokenizeResult = await backend.search(searchText, charAt);
   }
 
   function changeSelectedTool(tool: Tools | null) {
     selectedTool = tool;
   }
 
-  $: void tokenize(searchText, selectedCharAt);
+  $: void search(searchText, selectedCharAt);
 </script>
 
 <div class="search">

@@ -1,6 +1,9 @@
-import type { Entry } from "lib/dicEntry";
 import type { AnkiNote } from "lib/anki";
-import type { TokenizeRequest, TokenizeResult } from "@platform/backend";
+import type {
+  SearchRequest,
+  TokenizeRequest,
+  TokenizeResult,
+} from "@platform/backend";
 import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "platform/common";
@@ -19,7 +22,7 @@ import Utils, {
  * Request type cannot be void, but response can be void
  */
 export interface MessageMap {
-  searchTerm: [string, Entry[]];
+  searchTerm: [SearchRequest, TokenizeResult];
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [AnkiNote, boolean];
   tabId: [null, number | undefined];

@@ -1,6 +1,5 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { Entry, type EntryObject } from "lib/dicEntry";
 import { BrowserApi } from "extension/browserApi";
 
 import Utils from "lib/utils";
@@ -59,21 +58,26 @@ export class DesktopBackend implements IBackend {
     return TokenizeResult.from(rawResult);
   }
 
-  async search(term: string): Promise<Entry[]> {
+  async search(term: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
-      return this.browserApi.request("searchTerm", term);
+      return this.browserApi.request("searchTerm", { term, charAt });
     } else {
-      return this._search(this.wasm, term);
+      return this._search(this.wasm, term, charAt);
     }
   }
 
-  _search(wasm: BackendWasm, term: string): Entry[] {
-    const entries = wasm
-      .search(term)
-      .map((json) => JSON.parse(json) as EntryObject)
-      .map(Entry.fromObject);
-    Entry.order(entries);
-    return entries;
+  _search(wasm: BackendWasm, term: string, charAt?: number): TokenizeResult {
+    charAt = charAt ?? 0;
+    if (term === "") {
+      return TokenizeResult.empty();
+    }
+    if (charAt < 0 || charAt >= term.length) {
+      throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
+    }
+
+    const codePointAt = Utils.toCodePointIndex(term, charAt);
+    const rawResult = wasm.search(term, codePointAt);
+    return TokenizeResult.from(rawResult);
   }
 }
 

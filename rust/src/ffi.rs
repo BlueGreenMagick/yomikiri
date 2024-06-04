@@ -38,9 +38,12 @@ impl Backend {
         backend.tokenize(&sentence, char_at)
     }
 
-    pub fn search(&self, term: String) -> YResult<Vec<String>> {
+    pub fn search(&self, term: String, char_at: u32) -> YResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
-        backend.dictionary.search_json(&term)
+        let char_at = usize::try_from(char_at).map_err(|_| {
+            YomikiriError::ConversionError("Failed to convert char_at to usize".into())
+        })?;
+        backend.search(&term, char_at)
     }
 }
 

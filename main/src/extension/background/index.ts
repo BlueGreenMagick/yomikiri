@@ -4,12 +4,12 @@
  * loaded on desktop / ios
  */
 
-import type { Entry } from "../../lib/dicEntry";
 import {
   type TokenizeResult,
   type TokenizeRequest,
   type DesktopBackend,
   type IosBackend,
+  type SearchRequest,
 } from "@platform/backend";
 import { BrowserApi, type MessageSender } from "extension/browserApi";
 import {
@@ -51,9 +51,9 @@ async function initialize(): Promise<void> {
   }
 }
 
-async function searchTerm(term: string): Promise<Entry[]> {
+async function searchTerm(req: SearchRequest): Promise<TokenizeResult> {
   const backend = await lazyBackend.get();
-  return await backend.search(term);
+  return await backend.search(req.term, req.charAt);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
