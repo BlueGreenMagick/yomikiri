@@ -58,7 +58,7 @@
 
   .modal-header {
     margin: 12px;
-    font-size: 1.5em;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
   }

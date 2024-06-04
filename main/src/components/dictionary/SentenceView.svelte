@@ -58,7 +58,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    font-size: 1.5em;
+    font-size: 1.5rem;
   }
 
   .token {

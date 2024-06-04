@@ -23,7 +23,7 @@
   export let entry: Entry;
   export let model: DicEntriesModel;
   export let onSelectEntryForAnki: (
-    selected: SelectedEntryForAnki
+    selected: SelectedEntryForAnki,
   ) => void = () => null;
 
   let mainForm: string;
@@ -110,7 +110,7 @@
   }
 
   .mainForm {
-    font-size: 1.5em;
+    font-size: 1.5rem;
     font-family: var(--japanese-font-family);
   }
 

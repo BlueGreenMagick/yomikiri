@@ -27,7 +27,7 @@
 
   .badge {
     width: max-content;
-    font-size: 0.6em;
+    font-size: 0.6rem;
     color: #8db38d;
     padding: 1px 4px;
     border: 1px solid #8db38d;

@@ -127,7 +127,7 @@
     flex: 0 0 auto;
     height: 2.4em;
     padding: 0 0.6em;
-    font-size: 1.125em;
+    font-size: 1.125rem;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;

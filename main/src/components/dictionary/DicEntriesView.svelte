@@ -11,7 +11,7 @@
   export let config: Config;
   export let entries: Entry[];
   export let onSelectEntryForAnki: (
-    selected: SelectedEntryForAnki
+    selected: SelectedEntryForAnki,
   ) => void = () => null;
 
   let model: DicEntriesModel = new DicEntriesModel();
@@ -35,7 +35,7 @@
 
 <style>
   div {
-    font-size: 1em;
+    font-size: 1rem;
     padding-bottom: 4px;
   }
 
