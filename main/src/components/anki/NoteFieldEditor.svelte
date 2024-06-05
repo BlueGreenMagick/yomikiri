@@ -12,6 +12,7 @@
   import type { LoadingField } from "lib/anki";
   import {
     PromiseWithProgress,
+    escapeHTML,
     getErrorMessage,
     isAppleDevice,
   } from "lib/utils";
@@ -91,9 +92,9 @@
     if (text === null) return;
 
     element.ownerDocument.execCommand(
-      "inserttext",
+      "inserthtml",
       false,
-      prefix + text + postfix,
+      escapeHTML(prefix) + text + escapeHTML(postfix),
     );
   }
 
