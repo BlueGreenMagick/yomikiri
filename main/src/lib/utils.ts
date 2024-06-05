@@ -390,10 +390,18 @@ export function isAppleDevice(): boolean {
 
 /**
  * `node instanceof Text` may not work in iframes
- * as `Text` function is considered different for each window
+ * as `Text` function is separately defined for each window
  */
 export function isTextNode(node: Node): node is Text {
   return node.nodeType === Node.TEXT_NODE;
+}
+
+/**
+ * `node instanceof Element` may not work in iframes
+ * as `Element` function is separately defined for each window
+ */
+export function isElementNode(node: Node): node is Element {
+  return node.nodeType === Node.ELEMENT_NODE;
 }
 
 export * as default from "./utils";

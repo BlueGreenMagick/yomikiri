@@ -1,4 +1,4 @@
-import Utils from "lib/utils";
+import Utils, { isElementNode, isTextNode } from "lib/utils";
 
 export interface CharAtString {
   text: string;
@@ -175,10 +175,7 @@ function inlineTextNode(curr: Node, PREV: boolean): Text | null {
   }
   // get inline prev(next) sibling
   curr = (PREV ? curr.previousSibling : curr.nextSibling)!;
-  if (
-    !(curr instanceof Element || curr instanceof Text) ||
-    nodeIsOutOfFlow(curr)
-  ) {
+  if (!(isElementNode(curr) || isTextNode(curr)) || nodeIsOutOfFlow(curr)) {
     // skip nodes that are removed from normal flow
     return inlineTextNode(curr, PREV);
   }
@@ -189,15 +186,12 @@ function inlineTextNode(curr: Node, PREV: boolean): Text | null {
   // get inline last(first) leaf node
   while (curr.childNodes.length > 0) {
     curr = curr.childNodes[PREV ? curr.childNodes.length - 1 : 0];
-    if (
-      !(curr instanceof Element || curr instanceof Text) ||
-      nodeIsOutOfFlow(curr)
-    ) {
+    if (!(isElementNode(curr) || isTextNode(curr)) || nodeIsOutOfFlow(curr)) {
       return inlineTextNode(curr, PREV);
     }
     if (!nodeIsInline(curr)) return null;
   }
-  if (!(curr instanceof Text)) {
+  if (!isTextNode(curr)) {
     return inlineTextNode(curr, PREV);
   }
   return curr;
@@ -255,7 +249,7 @@ function sentenceAfterNode(t: Text): string {
 function childTextAt(parent: Element, x: number, y: number): Text | null {
   parent.normalize(); // normalize splitted Text nodes
   for (const child of parent.childNodes) {
-    if (!(child instanceof Text)) {
+    if (!isTextNode(child)) {
       continue;
     }
     const range = new Range();
@@ -278,7 +272,7 @@ function isSentenceEndChar(char: string): boolean {
  * Exception: \<br\> is not inline
  */
 function nodeIsInline(node: Node): boolean {
-  if (!(node instanceof Element)) return true;
+  if (!isElementNode(node)) return true;
 
   if (node.tagName == "BR") return false;
 
@@ -294,7 +288,7 @@ function nodeIsInline(node: Node): boolean {
  * It is not possible for a node to be both isInline and isOutOfFlow
  */
 function nodeIsOutOfFlow(node: Node): boolean {
-  if (!(node instanceof Element)) return false;
+  if (!isElementNode(node)) return false;
   const styles = window.getComputedStyle(node);
   return (
     styles.display === "none" ||
@@ -306,7 +300,7 @@ function nodeIsOutOfFlow(node: Node): boolean {
 
 /** Returns true if node is flex or grid in which its child is assumed not inline */
 function nodeChildIsNotInline(node: Node): boolean {
-  if (!(node instanceof Element)) return false;
+  if (!isElementNode(node)) return false;
   const styles = window.getComputedStyle(node);
   // support multi keyword display
   for (const value of styles.display.split(" ")) {
