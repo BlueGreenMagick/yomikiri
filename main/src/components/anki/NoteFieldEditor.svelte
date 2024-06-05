@@ -97,6 +97,8 @@
     border: 1px solid black;
     background-color: var(--background);
     padding: 2px;
+    white-space: pre-wrap;
+    word-break: break-all;
   }
 
   .field-value.loading {
