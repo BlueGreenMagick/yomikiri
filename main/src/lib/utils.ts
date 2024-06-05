@@ -199,8 +199,8 @@ export function getErrorMessage(
   err: unknown,
   other = "Unknown error: check the browser console for details",
 ): string {
-  if (err instanceof Error) {
-    return err.message;
+  if (!!err && typeof (err as { message: string }).message === "string") {
+    return (err as { message: string }).message;
   } else {
     console.error(err);
     return other;
