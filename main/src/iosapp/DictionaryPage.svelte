@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { IosAppPlatform } from "platform/iosapp";
-  import { platformClass } from "../components/actions";
   import DictionaryView from "./DictionaryView.svelte";
   import type Config from "lib/config";
   import type { IosAppBackend } from "platform/iosapp/backend";
   import type { IosAppAnkiApi } from "platform/iosapp/anki";
+  import Page from "components/Page.svelte";
 
   export let initialized: Promise<[Config, IosAppBackend, IosAppAnkiApi]>;
   export let platform: IosAppPlatform;
@@ -12,22 +12,22 @@
   export let searchText = "";
 </script>
 
-<div id="main" use:platformClass>
-  {#await initialized then [config, backend, ankiApi]}
-    <DictionaryView
-      {context}
-      {platform}
-      {backend}
-      {config}
-      {ankiApi}
-      {searchText}
-    />
-  {/await}
-</div>
+<Page>
+  <div id="main">
+    {#await initialized then [config, backend, ankiApi]}
+      <DictionaryView
+        {context}
+        {platform}
+        {backend}
+        {config}
+        {ankiApi}
+        {searchText}
+      />
+    {/await}
+  </div>
+</Page>
 
 <style global>
-  @import "../global.css";
-
   html,
   html body {
     height: 100%;

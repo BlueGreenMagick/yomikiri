@@ -13,7 +13,7 @@ const optsSuccess = {
 };
 
 const optsError = {
-  duration: 3000,
+  duration: 5000,
 };
 
 export class Toast {

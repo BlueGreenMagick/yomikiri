@@ -1,29 +1,29 @@
 <script lang="ts">
-  import { platformClass } from "components/actions";
   import { Platform, type ExtensionPlatform } from "@platform";
   import { Backend } from "@platform/backend";
   import type Config from "lib/config";
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import type { AnkiApi } from "@platform/anki";
+  import Page from "components/Page.svelte";
 
   export let platform: ExtensionPlatform;
   export let initialized: Promise<[Config, Backend, AnkiApi]>;
 </script>
 
-<div id="main" use:platformClass>
-  {#await initialized then [config, backend, ankiApi]}
-    {#if Platform.IS_IOS}
-      <ActionButtons {platform} {config} />
-    {:else}
-      <PopupView {platform} {backend} {config} {ankiApi} />
-    {/if}
-  {/await}
-</div>
+<Page>
+  <div id="main">
+    {#await initialized then [config, backend, ankiApi]}
+      {#if Platform.IS_IOS}
+        <ActionButtons {platform} {config} />
+      {:else}
+        <PopupView {platform} {backend} {config} {ankiApi} />
+      {/if}
+    {/await}
+  </div>
+</Page>
 
 <style global>
-  @import "../../global.css";
-
   /** 
   in desktop, body height should change according to content height
   in ios, body should fill the entire popup height

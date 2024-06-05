@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { platformClass } from "components/actions";
   import Tooltip from "./Tooltip.svelte";
   import { TokenizeResult } from "@platform/backend";
   import { AnkiApi } from "@platform/anki";
   import type Config from "lib/config";
   import type { Platform } from "@platform";
+  import Page from "components/Page.svelte";
 
   export let platform: Platform;
   export let config: Config;
@@ -19,20 +19,20 @@
   }
 </script>
 
-<div id="main" use:platformClass>
-  <Tooltip
-    {platform}
-    {onClose}
-    {config}
-    {ankiApi}
-    {tokenizeResult}
-    {onUpdateHeight}
-  />
-</div>
+<Page>
+  <div id="main">
+    <Tooltip
+      {platform}
+      {onClose}
+      {config}
+      {ankiApi}
+      {tokenizeResult}
+      {onUpdateHeight}
+    />
+  </div>
+</Page>
 
 <style global>
-  @import "../../global.css";
-
   #main {
     max-height: 300px;
   }
