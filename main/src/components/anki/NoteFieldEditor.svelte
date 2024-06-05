@@ -75,9 +75,7 @@
     field.value = elem.textContent ?? "";
   }
 
-  function wrapSelection(prefix: string, postfix: string) {
-    if (element === null) return;
-
+  function wrapSelection(element: Element, prefix: string, postfix: string) {
     const sel = element.ownerDocument.getSelection();
     if (sel === null) return;
 
@@ -103,21 +101,45 @@
     const lowerKey = ev.key.toLowerCase();
     // use 'cmd' key on mac / ipad
     const ctrlKey = isAppleDevice() ? ev.metaKey : ev.ctrlKey;
+    const element = ev.currentTarget as HTMLDivElement;
 
     // input should display raw html
     if (ctrlKey && lowerKey === "i") {
       ev.preventDefault();
-      wrapSelection("<i>", "</i>");
-    }
-    if (ctrlKey && lowerKey === "b") {
+      wrapSelection(element, "<i>", "</i>");
+    } else if (ctrlKey && lowerKey === "b") {
       console.log("boldening");
       ev.preventDefault();
-      wrapSelection("<b>", "</b>");
-    }
-    if (ctrlKey && lowerKey === "u") {
+      wrapSelection(element, "<b>", "</b>");
+    } else if (ctrlKey && lowerKey === "u") {
       ev.preventDefault();
-      wrapSelection("<u>", "</u>");
+      wrapSelection(element, "<u>", "</u>");
+    } else if (lowerKey === "enter") {
+      ev.preventDefault();
+      console.log("entered");
+      element.ownerDocument.execCommand("inserthtml", false, "\n");
+      scrollSelectionIntoView(element);
     }
+  }
+
+  function scrollSelectionIntoView(element: Element) {
+    const selection = element.ownerDocument.getSelection();
+    if (selection === null) return;
+
+    const range = selection.getRangeAt(0);
+    if (!element.contains(range.startContainer)) return;
+    if (!element.contains(range.endContainer)) return;
+
+    let oldStartContainer = range.startContainer;
+    let oldStartOffset = range.startOffset;
+    range.collapse(false);
+
+    const tempNode = document.createElement("br");
+    range.insertNode(tempNode);
+    tempNode.scrollIntoView({ block: "nearest", inline: "nearest" });
+    tempNode.remove();
+    range.setStart(oldStartContainer, oldStartOffset);
+    element.normalize();
   }
 
   function onContentInitialized() {
