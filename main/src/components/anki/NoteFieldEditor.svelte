@@ -5,29 +5,31 @@
   Field content is edited as HTML escaped content:
   '&' is replaced with '&amp;' during edit,
   which is replaced back to '&' when saving to field.value
+
+  This component should be re-created for new `field` object.
 -->
 <script lang="ts">
   import type { LoadingField } from "lib/anki";
   import { PromiseWithProgress, getErrorMessage } from "lib/utils";
+  import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
 
   export let field: LoadingField;
   export let errored = false;
   export let readonly = false;
 
-  let loading: boolean;
+  let loading = false;
   let initialContent: string | null = null;
   let element: HTMLDivElement | null = null;
-  let prevUnsubscriber: Unsubscriber | null = null;
+  let unsubscriber: Unsubscriber | null = null;
 
-  function onFieldChange(_: unknown) {
+  function initialize() {
     errored = false;
-    unsubscribe();
     const value = field.value;
 
     if (value instanceof PromiseWithProgress) {
       loading = true;
-      prevUnsubscriber = value.progress.subscribe((val) => {
+      unsubscriber = value.progress.subscribe((val) => {
         initialContent = val;
       });
       value
@@ -49,9 +51,9 @@
   }
 
   function unsubscribe() {
-    if (prevUnsubscriber !== null) {
-      prevUnsubscriber();
-      prevUnsubscriber = null;
+    if (unsubscriber !== null) {
+      unsubscriber();
+      unsubscriber = null;
     }
   }
 
@@ -68,14 +70,20 @@
     field.value = elem.textContent ?? "";
   }
 
-  function onContentInitialized(_: unknown) {
+  function onContentInitialized() {
     if (element === null || initialContent === null) return;
 
     element.textContent = initialContent;
   }
 
-  $: onFieldChange(field);
-  $: onContentInitialized([element, initialContent]);
+  onMount(() => {
+    return () => {
+      unsubscribe();
+    };
+  });
+
+  initialize();
+  $: element, initialContent, onContentInitialized();
 </script>
 
 <div

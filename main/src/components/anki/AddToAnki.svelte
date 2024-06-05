@@ -25,6 +25,7 @@
   export let noteAdded: () => void;
   export let onBack: () => void;
 
+  let noteDataChanged = 0;
   let tagField: FieldWatch = {
     name: "Tags",
     _value: noteData.tags,
@@ -66,14 +67,23 @@
   }
 
   /** muatates: `allLoaded` */
-  const loadNote = SingleQueued(async (_noteData: LoadingAnkiNote) => {
+  const loadNote = SingleQueued(async () => {
     allLoaded = false;
     errored = [];
-    await waitForNoteToLoad(_noteData);
+    await waitForNoteToLoad(noteData);
     allLoaded = true;
   });
 
-  $: void loadNote(noteData);
+  let prevNoteData: LoadingAnkiNote | null = null;
+  function checkNoteDataChanged() {
+    if (!Object.is(prevNoteData, noteData)) {
+      noteDataChanged += 1;
+    }
+    prevNoteData = noteData;
+  }
+
+  $: noteData, checkNoteDataChanged();
+  $: noteDataChanged, void loadNote();
   $: anyErrored = errored.includes(true);
 </script>
 
@@ -90,20 +100,22 @@
       />
     </div>
   </div>
-  <div class="scrollable">
-    <div class="fields-container">
-      {#each noteData.fields as field, i}
-        <div class="anki-preview-field">
-          <div class="field-name">{field.name}</div>
-          <NoteFieldEditor {field} bind:errored={errored[i]} />
-        </div>
-      {/each}
+  {#key noteDataChanged}
+    <div class="scrollable">
+      <div class="fields-container">
+        {#each noteData.fields as field, i}
+          <div class="anki-preview-field">
+            <div class="field-name">{field.name}</div>
+            <NoteFieldEditor {field} bind:errored={errored[i]} />
+          </div>
+        {/each}
+      </div>
+      <div class="tags">
+        <div class="field-name"><b>{tagField.name}</b></div>
+        <NoteFieldEditor field={tagField} />
+      </div>
     </div>
-    <div class="tags">
-      <div class="field-name"><b>{tagField.name}</b></div>
-      <NoteFieldEditor field={tagField} />
-    </div>
-  </div>
+  {/key}
 </div>
 
 <style>
