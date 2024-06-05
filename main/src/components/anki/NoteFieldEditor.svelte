@@ -10,7 +10,11 @@
 -->
 <script lang="ts">
   import type { LoadingField } from "lib/anki";
-  import { PromiseWithProgress, getErrorMessage } from "lib/utils";
+  import {
+    PromiseWithProgress,
+    getErrorMessage,
+    isAppleDevice,
+  } from "lib/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
 
@@ -67,7 +71,53 @@
 
   function onInput(ev: Event) {
     const elem = ev.currentTarget as HTMLDivElement;
+    console.log("input", elem.textContent);
     field.value = elem.textContent ?? "";
+  }
+
+  function wrapSelection(prefix: string, postfix: string) {
+    if (element === null) return;
+
+    const sel = element.ownerDocument.getSelection();
+    if (sel === null) return;
+
+    const range = sel.getRangeAt(0);
+    const startNode = range.startContainer;
+    const endNode = range.endContainer;
+
+    if (range.collapsed) return;
+    if (!element.contains(startNode)) return;
+    if (!element.contains(endNode)) return;
+
+    const text = range.cloneContents().textContent;
+    if (text === null) return;
+
+    element.ownerDocument.execCommand(
+      "inserttext",
+      false,
+      prefix + text + postfix,
+    );
+  }
+
+  function onKeyDown(ev: KeyboardEvent) {
+    const lowerKey = ev.key.toLowerCase();
+    // use 'cmd' key on mac / ipad
+    const ctrlKey = isAppleDevice() ? ev.metaKey : ev.ctrlKey;
+
+    // input should display raw html
+    if (ctrlKey && lowerKey === "i") {
+      ev.preventDefault();
+      wrapSelection("<i>", "</i>");
+    }
+    if (ctrlKey && lowerKey === "b") {
+      console.log("boldening");
+      ev.preventDefault();
+      wrapSelection("<b>", "</b>");
+    }
+    if (ctrlKey && lowerKey === "u") {
+      ev.preventDefault();
+      wrapSelection("<u>", "</u>");
+    }
   }
 
   function onContentInitialized() {
@@ -91,6 +141,7 @@
   class:errored
   class:readonly
   class:loading
+  on:keydown={onKeyDown}
   on:input={onInput}
   contenteditable={!readonly && !loading}
   on:focus={onFocus}

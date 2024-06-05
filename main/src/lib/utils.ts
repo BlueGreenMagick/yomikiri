@@ -384,4 +384,16 @@ export function keyInObject<O extends object, K extends string>(
   return key in obj;
 }
 
+export function isAppleDevice(): boolean {
+  return navigator.userAgent.includes("Mac");
+}
+
+/**
+ * `node instanceof Text` may not work in iframes
+ * as `Text` function is considered different for each window
+ */
+export function isTextNode(node: Node): node is Text {
+  return node.nodeType === Node.TEXT_NODE;
+}
+
 export * as default from "./utils";
