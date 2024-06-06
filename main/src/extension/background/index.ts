@@ -23,7 +23,7 @@ import type { AnkiNote } from "lib/anki";
 import Config, { type StoredConfiguration } from "lib/config";
 import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png";
-import GreyIcon from "assets/static/images/icon128-semigray.png";
+import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
 import type { DesktopAnkiApi } from "@platform/anki";
 
@@ -77,7 +77,7 @@ async function handleTranslate(req: string): Promise<TranslateResult> {
 function updateStateEnabledIcon(config: Config) {
   const enabledStore = config.store("state.enabled");
   enabledStore.subscribe((enabled) => {
-    const icon = enabled ? DefaultIcon : GreyIcon;
+    const icon = enabled ? DefaultIcon : DisabledIcon;
     void browserApi.setActionIcon(icon);
   });
 }

@@ -19,7 +19,7 @@ as a separate element in a larger work:
 ================
 
 The icon of this software is *NOT* licensed. You may not use the icon unless given express permission.
-Which refers to 5 petal flower image files, including but not limited to:
+Which refers to files with pink flower in orange background image, including but not limited to:
 `/extra/resources/icon_inkscape.svg`,
 `/extra/resources/github-splash.png`,
-`/build/assets/static/images/icon*`,
+`/main/src/assets/static/images/icon*`,
