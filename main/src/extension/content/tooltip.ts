@@ -237,6 +237,7 @@ export class Tooltip {
         ankiApi: this.ankiApi,
         onClose: () => {
           this.hide();
+          this.highlighter.unhighlight();
         },
         onUpdateHeight: () => {
           const tooltip = this.getTooltipEl();
