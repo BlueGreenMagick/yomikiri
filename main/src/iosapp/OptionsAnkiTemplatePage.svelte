@@ -21,7 +21,6 @@
   @import "../components/options/styles.css";
 
   #main {
-    padding: 16px;
     overflow-x: hidden;
   }
 </style>
