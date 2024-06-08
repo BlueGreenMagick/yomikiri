@@ -116,7 +116,6 @@
   }
 
   h4 {
-    font-size: 1.125rem;
     margin-top: 1rem;
     margin-bottom: 0.25rem;
   }
