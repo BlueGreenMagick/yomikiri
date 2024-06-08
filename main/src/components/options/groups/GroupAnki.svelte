@@ -142,11 +142,11 @@
   {#if Platform.IS_DESKTOP}
     <OptionToggle
       bind:value={$ankiDeferNotesConfig}
-      title="Delay Adding Note"
+      title="Add Notes Later"
       onToggle={onToggleAnkiDeferNotes}
     >
-      If Anki is not connected, delay adding notes. Notes will be added later in
-      the background when Anki is connected.
+      If Anki is not connected, add notes later in the background when Anki is
+      connected.
     </OptionToggle>
   {/if}
 
