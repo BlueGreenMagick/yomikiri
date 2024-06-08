@@ -37,7 +37,12 @@
   {#if template.content === "word" || template.content === "sentence"}
     <OptionSelect
       bind:selected={template.style}
-      options={["basic", "furigana-anki", "furigana-html", "kana-only"]}
+      options={[
+        ["basic", "none"],
+        "furigana-anki",
+        "furigana-html",
+        "kana-only",
+      ]}
       title="Style"
     >
       Whether to use furigana, or convert word to kana.<br />
