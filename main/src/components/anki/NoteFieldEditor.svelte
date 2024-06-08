@@ -112,7 +112,6 @@
       ev.preventDefault();
       wrapSelection(element, "<i>", "</i>");
     } else if (ctrlKey && lowerKey === "b") {
-      console.log("boldening");
       ev.preventDefault();
       wrapSelection(element, "<b>", "</b>");
     } else if (ctrlKey && lowerKey === "u") {
@@ -120,7 +119,6 @@
       wrapSelection(element, "<u>", "</u>");
     } else if (lowerKey === "enter") {
       ev.preventDefault();
-      console.log("entered");
       element.ownerDocument.execCommand("inserthtml", false, "\n");
       scrollSelectionIntoView(element);
     }
