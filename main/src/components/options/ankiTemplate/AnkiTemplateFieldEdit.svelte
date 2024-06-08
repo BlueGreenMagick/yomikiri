@@ -13,7 +13,7 @@
   import Select from "components/Select.svelte";
   import IconEye from "@icons/eye.svg";
   import IconOptions from "@icons/options.svg";
-  import NotePreviewField from "components/anki/NoteFieldEditor.svelte";
+  import NoteFieldEditor from "components/anki/NoteFieldEditor.svelte";
   import type { Platform } from "@platform";
   import type Config from "lib/config";
   import { exampleMarkerData } from "components/options/exampleMarkerData";
@@ -33,9 +33,7 @@
   // so accidentally changing type does not clear all options data
   let fieldTemplates = new Map<string, AnkiTemplateField>();
 
-  function generateFieldOptions(
-    _: unknown,
-  ): [AnkiTemplateFieldContent, string][] {
+  function generateFieldOptions(): [AnkiTemplateFieldContent, string][] {
     return ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
       const cached =
         fieldTemplates.get(type) ??
@@ -45,9 +43,9 @@
     });
   }
 
-  function newPreviewField(_: unknown) {
+  function createPreviewField(): LoadingField | Field {
     const ctx = { platform, config };
-    previewField = buildAnkiField(ctx, exampleMarkerData, fieldTemplate);
+    return buildAnkiField(ctx, exampleMarkerData, fieldTemplate);
   }
 
   function onTypeChange(_ev: unknown) {
@@ -62,11 +60,11 @@
   function onFieldTemplateChange(_: unknown) {
     fieldTemplates.set(content, fieldTemplate);
     content = fieldTemplate.content;
+    selectOptions = generateFieldOptions();
+    previewField = createPreviewField();
   }
 
   $: onFieldTemplateChange(fieldTemplate);
-  $: selectOptions = generateFieldOptions([fieldTemplate]);
-  $: newPreviewField(fieldTemplate);
 </script>
 
 <div class="anki-template-field">
@@ -101,7 +99,7 @@
     </div>
     <div class="section" class:hidden={!previewShown && !optionsShown}>
       <div class="field-preview" class:hidden={!previewShown}>
-        <NotePreviewField readonly field={previewField} />
+        <NoteFieldEditor readonly field={previewField} />
       </div>
       <div class="field-options" class:hidden={!optionsShown}>
         <AnkiTemplateFieldOptionsEdit bind:template={fieldTemplate} />
