@@ -155,7 +155,6 @@ const tokenized: TokenizeResult = {
 export const exampleMarkerData: AnkiBuilderData = {
   tokenized,
   entry: tokenized.entries[0],
-  selectedMeaning: tokenized.entries[0].senses[0],
   sentence: tokenized.tokens.map((tok) => tok.text).join(""),
   url: "https://yomikiri.example/",
   pageTitle: "Yomikiri Examples",

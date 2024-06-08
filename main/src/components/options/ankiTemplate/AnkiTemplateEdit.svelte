@@ -5,7 +5,6 @@
     type AnkiTemplateField,
   } from "lib/anki";
   import type { Config } from "lib/config";
-  // import { exampleMarkerData } from "../../exampleMarkerData";
   import type { AnkiInfo } from "platform/common/anki";
   import type { Platform } from "@platform";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";

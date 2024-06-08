@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { Platform } from "@platform";
+  import IconEye from "@icons/eye.svg";
+  import IconOptions from "@icons/options.svg";
   import {
     type AnkiTemplateFieldContent,
     ANKI_TEMPLATE_FIELD_TYPES,
@@ -9,15 +12,12 @@
     buildAnkiField,
     type AnkiTemplateField,
   } from "lib/anki";
-  import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
-  import Select from "components/Select.svelte";
-  import IconEye from "@icons/eye.svg";
-  import IconOptions from "@icons/options.svg";
-  import NoteFieldEditor from "components/anki/NoteFieldEditor.svelte";
-  import type { Platform } from "@platform";
   import type Config from "lib/config";
-  import { exampleMarkerData } from "components/options/exampleMarkerData";
+  import Select from "components/Select.svelte";
+  import NoteFieldEditor from "components/anki/NoteFieldEditor.svelte";
   import IconedButton from "components/IconedButton.svelte";
+  import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
+  import { exampleMarkerData } from "./exampleMarkerData";
 
   export let platform: Platform;
   export let config: Config;
