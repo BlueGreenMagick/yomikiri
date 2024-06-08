@@ -101,16 +101,16 @@ export function ankiTemplateFieldLabel(field: AnkiTemplateField): string {
       if (field.single_pos) {
         label += " (pos)";
       } else {
-        label += " (full-pos)";
+        label += " (pos-full)";
       }
     } else if (field.single_pos) {
-      label += " (single-pos)";
+      label += " (pos-single)";
     }
     if (field.full_max_item > 0) {
-      label += ` (item <= ${field.full_max_item})`;
+      label += ` (item-full <= ${field.full_max_item})`;
     }
     if (field.single_max_item > 0) {
-      label += ` (single-item <= ${field.single_max_item})`;
+      label += ` (item-single <= ${field.single_max_item})`;
     }
   }
   if (content === "word") {
