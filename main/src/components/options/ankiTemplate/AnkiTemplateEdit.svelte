@@ -25,20 +25,23 @@
   let fieldTemplates: Record<string, AnkiTemplateField> = {};
   let ankiTags: string;
 
-  let prevTemplate: AnkiTemplate | null;
-  let prevDeck: string | null;
-  let prevNotetype: string | null;
+  let prevTemplate: AnkiTemplate | null = null;
+  let prevDeck: string | null = null;
+  let prevNotetype: string | null = null;
 
-  /** `() -> prevTemplate, selectedDeck, selectedNotetype, ankiTags, fieldTemplates `*/
   function initialize() {
+    deckNames = ankiInfo.decks;
+    notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
     let template = config.get("anki.anki_template");
     if (template === null) {
-      prevTemplate = null;
       selectedDeck = deckNames[0];
       selectedNotetype = notetypeNames[0];
       ankiTags = "";
     } else {
       prevTemplate = template;
+      prevDeck = template.deck;
+      prevNotetype = template.notetype;
+
       selectedDeck = template.deck;
       selectedNotetype = template.notetype;
       ankiTags = template.tags;
@@ -79,8 +82,7 @@
     await config.set("anki.anki_template", template);
   }
 
-  initialize();
-
+  $: ankiInfo, initialize();
   $: loadFields(selectedNotetype);
   $: selectedDeck,
     selectedNotetype,
@@ -88,12 +90,8 @@
     ankiTags,
     void saveTemplate();
 
-  $: deckNames = ankiInfo.decks;
-  $: notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
   $: invalidDeck = !deckNames.includes(selectedDeck);
   $: invalidNotetype = !notetypeNames.includes(selectedNotetype);
-  $: prevDeck = prevTemplate?.deck ?? null;
-  $: prevNotetype = prevTemplate?.notetype ?? null;
 </script>
 
 <div class="anki-template-modal">
