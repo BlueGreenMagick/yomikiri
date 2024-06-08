@@ -110,14 +110,6 @@ async function handleMigrateConfig(): Promise<StoredConfiguration> {
   return await platform.migrateConfig();
 }
 
-/** On ios, toggle state.enabled when action item is clicked */
-async function onActionClick() {
-  const config = await lazyConfig.get();
-  const prevEnabled = config.get("state.enabled");
-  const enabled = !prevEnabled;
-  await config.set("state.enabled", enabled);
-}
-
 browserApi.handleRequest("searchTerm", searchTerm);
 browserApi.handleRequest("tokenize", tokenize);
 browserApi.handleRequest("addAnkiNote", addAnkiNote);
@@ -129,12 +121,6 @@ browserApi.handleRequest("migrateConfig", handleMigrateConfig);
 browserApi.handleBrowserLoad(() => {
   void initialize();
 });
-
-if (Platform.IS_IOS) {
-  browserApi.handleActionClicked(() => {
-    void onActionClick();
-  });
-}
 
 exposeGlobals({
   platform,
