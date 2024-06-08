@@ -13,7 +13,7 @@
   import TextButton from "components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
-  import { getErrorMessage, SingleQueued } from "lib/utils";
+  import { getErrorMessage, newChangeTracker, SingleQueued } from "lib/utils";
   import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
 
   interface FieldWatch extends Field {
@@ -25,7 +25,6 @@
   export let noteAdded: () => void;
   export let onBack: () => void;
 
-  let noteDataChanged = 0;
   let tagField: FieldWatch = {
     name: "Tags",
     _value: noteData.tags,
@@ -41,6 +40,8 @@
   let errored: boolean[] = [];
   let anyErrored = false;
   let allLoaded = false;
+  let noteDataChanged: number;
+  let noteDataChangeTracker = newChangeTracker<typeof noteData>();
 
   async function onAdd() {
     let ankiNote = await resolveAnkiNote(noteData);
@@ -74,15 +75,7 @@
     allLoaded = true;
   });
 
-  let prevNoteData: LoadingAnkiNote | null = null;
-  function checkNoteDataChanged() {
-    if (!Object.is(prevNoteData, noteData)) {
-      noteDataChanged += 1;
-    }
-    prevNoteData = noteData;
-  }
-
-  $: noteData, checkNoteDataChanged();
+  $: noteDataChanged = noteDataChangeTracker(noteData);
   $: noteDataChanged, void loadNote();
   $: anyErrored = errored.includes(true);
 </script>
@@ -100,22 +93,20 @@
       />
     </div>
   </div>
-  {#key noteDataChanged}
-    <div class="scrollable">
-      <div class="fields-container">
-        {#each noteData.fields as field, i}
-          <div class="anki-preview-field">
-            <div class="field-name">{field.name}</div>
-            <NoteFieldEditor {field} bind:errored={errored[i]} />
-          </div>
-        {/each}
-      </div>
-      <div class="tags">
-        <div class="field-name"><b>{tagField.name}</b></div>
-        <NoteFieldEditor field={tagField} />
-      </div>
+  <div class="scrollable">
+    <div class="fields-container">
+      {#each noteData.fields as field, i}
+        <div class="anki-preview-field">
+          <div class="field-name">{field.name}</div>
+          <NoteFieldEditor {field} bind:errored={errored[i]} />
+        </div>
+      {/each}
     </div>
-  {/key}
+    <div class="tags">
+      <div class="field-name"><b>{tagField.name}</b></div>
+      <NoteFieldEditor field={tagField} />
+    </div>
+  </div>
 </div>
 
 <style>

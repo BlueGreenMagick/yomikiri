@@ -404,4 +404,27 @@ export function isElementNode(node: Node): node is Element {
   return node.nodeType === Node.ELEMENT_NODE;
 }
 
+/**
+ * Creates a function that takes in a single argument,
+ * returns a tick that tracks if passed argument has changed with `Object.is()`.
+ *
+ * ### Usage in Svelte
+ *
+ * ```svelte
+ * const stateChangeTracker = newChangeTracker();
+ * $: stateChanged = stateChangeTracker(state)
+ * ```
+ */
+export function newChangeTracker<T>(): (obj: T) => number {
+  let prev: T | undefined;
+  let tick = 0;
+
+  return (obj: T) => {
+    if (!Object.is(obj, prev)) {
+      tick += 1;
+    }
+    return tick;
+  };
+}
+
 export * as default from "./utils";

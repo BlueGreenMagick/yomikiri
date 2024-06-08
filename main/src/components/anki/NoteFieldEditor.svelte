@@ -15,6 +15,7 @@
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
+    newChangeTracker,
   } from "lib/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
@@ -27,9 +28,12 @@
   let initialContent: string | null = null;
   let element: HTMLDivElement | null = null;
   let unsubscriber: Unsubscriber | null = null;
+  const fieldChangeTracker = newChangeTracker<typeof field>();
+  let fieldChanged: number = 0;
 
-  function initialize() {
+  function initializeField() {
     errored = false;
+    unsubscribe();
     const value = field.value;
 
     if (value instanceof PromiseWithProgress) {
@@ -72,7 +76,6 @@
 
   function onInput(ev: Event) {
     const elem = ev.currentTarget as HTMLDivElement;
-    console.log("input", elem.textContent);
     field.value = elem.textContent ?? "";
   }
 
@@ -155,7 +158,8 @@
     };
   });
 
-  initialize();
+  $: fieldChanged = fieldChangeTracker(field);
+  $: fieldChanged, initializeField();
   $: element, initialContent, onContentInitialized();
 </script>
 
