@@ -140,7 +140,7 @@ tokenize_tests! {
     // below 「と」 is 接続助詞, not 格助詞
     other2: "早く/起きないと/遅刻する/よ",
 
-
+    abc: " ",
 }
 
 // If string passed to tokenizer is not in NFC normalized form,

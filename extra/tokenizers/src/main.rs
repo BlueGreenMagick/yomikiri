@@ -27,18 +27,13 @@ macro_rules! test {
 }
 
 fn main() -> Result<()> {
-    println!("Preparing Vaporetto...");
-    let vaporetto = prepare_vaporetto()?;
     println!("\nPreparing Lindera...");
     let lindera = prepare_lindera()?;
     println!("\n");
 
     test!(
-        lindera vaporetto;
-        "私は学生です。"
-        "静かな日です。"
-        "日本語（にほんご、にっぽんご[注釈 3]）は、日本国内や、かつての日本領だった国、そして国外移民や移住者を含む日本人同士の間で使用されている言語。"
-        "文は、「主語・修飾語・述語」の語順で構成される。修飾語は被修飾語の前に位置する。また、名詞の格を示すためには、語順や語尾を変化させるのでなく、文法的な機能を示す機能語（助詞）を後ろに付け加える（膠着させる）。これらのことから、言語類型論上は、語順の点ではSOV型の言語に、形態の点では膠着語に分類される（「文法」の節参照）。"
+        lindera;
+        " "
     );
 
     Ok(())

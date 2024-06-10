@@ -138,7 +138,8 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
             let copy_to = transform_dir.join(&file_name);
             let file_name = file_name.to_str().unwrap();
             match file_name {
-                "lex.csv" | "matrix.def" => {}
+                "lex.csv" => {}
+                // "matrix.def" => {}
                 _ => {
                     fs::copy(&copy_from, &copy_to)?;
                 }
@@ -156,14 +157,15 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
         return Err("matrix.def file was not found".into());
     }
 
-    let (lid_map, rid_map) = transform_lex(
+    // let (lid_map, rid_map) =
+    transform_lex(
         &lex_csv_path,
         transform_dir,
         &resource_dir.join("english.yomikiriindex"),
         &resource_dir.join("english.yomikiridict"),
     )?;
 
-    transform_matrix(&matrix_def_path, transform_dir, lid_map, rid_map)?;
+    // transform_matrix(&matrix_def_path, transform_dir, lid_map, rid_map)?;
 
     Ok(())
 }
@@ -176,7 +178,7 @@ fn transform_lex(
     output_dir: &Path,
     index_path: &Path,
     dict_path: &Path,
-) -> TResult<(IdMap, IdMap)> {
+) -> TResult<()> {
     let mut items: Vec<LexItem> = Vec::with_capacity(1500000);
 
     let mut reader = csv::Reader::from_path(lex_path)?;
@@ -221,7 +223,7 @@ fn transform_lex(
         writer.write_record(&item.to_record()?)?;
     }
 
-    let (lid_map, rid_map) = reindex_ids(&mut items);
+    // let (lid_map, rid_map) = reindex_ids(&mut items);
 
     let output_lex_path = output_dir.join("lex.csv");
     let mut writer = csv::Writer::from_path(&output_lex_path)?;
@@ -229,7 +231,8 @@ fn transform_lex(
         writer.write_record(&item.to_record()?)?;
     }
 
-    Ok((lid_map, rid_map))
+    // Ok((lid_map, rid_map))
+    Ok(())
 }
 
 fn transform_matrix(
