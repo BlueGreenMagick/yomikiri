@@ -4,7 +4,7 @@ exports[`$なかなかに強いです > '-' 1`] = `""`;
 
 exports[`$なかなかに強いです > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`$なかなかに強いです > 'meaning (div) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (div) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
@@ -25,7 +25,7 @@ exports[`$なかなかに強いです > 'meaning (div) (item <= 2)' 1`] = `
 </div>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (div) (pos) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (div) (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-pos">(adverb, na-adjective)</div>
@@ -94,7 +94,7 @@ exports[`$なかなかに強いです > 'meaning (div)' 1`] = `
 </div>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (item-full <= 2)' 1`] = `
 "<ol>
   <li>very, considerably</li>
 </ol>
@@ -107,15 +107,15 @@ exports[`$なかなかに強いです > 'meaning (item <= 2)' 1`] = `
 </ol>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (line) (item <= 2)' 1`] = `"very, considerably; by no means, not readily; middle, half-way point; excellent, wonderful"`;
+exports[`$なかなかに強いです > 'meaning (line) (item-full <= 2)' 1`] = `"very, considerably; by no means, not readily; middle, half-way point; excellent, wonderful"`;
 
-exports[`$なかなかに強いです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(adverb, na-adjective); very, considerably; (adverb); by no means, not readily; (noun); middle, half-way point; excellent, wonderful"`;
+exports[`$なかなかに強いです > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(adverb, na-adjective) very, considerably; (adverb) by no means, not readily; (noun) middle, half-way point; excellent, wonderful"`;
 
-exports[`$なかなかに強いです > 'meaning (line) (pos)' 1`] = `"(adverb, na-adjective); very, considerably, easily, readily, fairly, quite, highly, rather; (adverb); by no means, not readily; (noun); middle, half-way point; excellent, wonderful, very good"`;
+exports[`$なかなかに強いです > 'meaning (line) (pos)' 1`] = `"(adverb, na-adjective) very, considerably, easily, readily, fairly, quite, highly, rather; (adverb) by no means, not readily; (noun) middle, half-way point; excellent, wonderful, very good"`;
 
 exports[`$なかなかに強いです > 'meaning (line)' 1`] = `"very, considerably, easily, readily, fairly, quite, highly, rather; by no means, not readily; middle, half-way point; excellent, wonderful, very good"`;
 
-exports[`$なかなかに強いです > 'meaning (pos) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-pos">(adverb, na-adjective)</div>
 <ol>
   <li>very, considerably</li>
@@ -147,7 +147,7 @@ exports[`$なかなかに強いです > 'meaning (pos)' 1`] = `
 </ol>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (unnumbered) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (unnumbered) (item-full <= 2)' 1`] = `
 "<ul>
   <li>very, considerably</li>
 </ul>
@@ -160,7 +160,7 @@ exports[`$なかなかに強いです > 'meaning (unnumbered) (item <= 2)' 1`] =
 </ul>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (unnumbered) (pos) (item-full…' 1`] = `
 "<div class="yomi-pos">(adverb, na-adjective)</div>
 <ul>
   <li>very, considerably</li>
@@ -205,7 +205,7 @@ exports[`$なかなかに強いです > 'meaning (unnumbered)' 1`] = `
 </ul>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (yomichan) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (yomichan) (item-full <= 2)' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -232,7 +232,7 @@ exports[`$なかなかに強いです > 'meaning (yomichan) (item <= 2)' 1`] = `
 </div>"
 `;
 
-exports[`$なかなかに強いです > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+exports[`$なかなかに強いです > 'meaning (yomichan) (pos) (item-full <…' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -406,11 +406,11 @@ exports[`$なかなかに強いです > 'word (main dict)' 1`] = `"中々"`;
 
 exports[`$なかなかに強いです > 'word' 1`] = `"なかなか"`;
 
-exports[`$なかなかに強いです > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(adverb, na-adjective) very, considerably"`;
+exports[`$なかなかに強いです > (single) 'meaning (item-single <= 2)' 1`] = `"very, considerably"`;
+
+exports[`$なかなかに強いです > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(adverb, na-adjective) very, considerably"`;
 
 exports[`$なかなかに強いです > (single) 'meaning (pos)' 1`] = `"(adverb, na-adjective) very, considerably, easily, readily, fairly, quite, highly, rather"`;
-
-exports[`$なかなかに強いです > (single) 'meaning (single-item <= 2)' 1`] = `"very, considerably"`;
 
 exports[`$なかなかに強いです > (single) 'meaning' 1`] = `"very, considerably, easily, readily, fairly, quite, highly, rather"`;
 
@@ -755,7 +755,7 @@ exports[`Test that special character is escaped: 図＄書<-> > '-' 1`] = `""`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
@@ -765,7 +765,7 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (
 </div>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (pos) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div) (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-pos">(noun)</div>
@@ -797,21 +797,21 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (div)' 
 </div>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (item-full <= 2)' 1`] = `
 "<ol>
   <li>books</li>
 </ol>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (item <= 2)' 1`] = `"books"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (item-full <= 2)' 1`] = `"books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun); books"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(noun) books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos)' 1`] = `"(noun); books"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line) (pos)' 1`] = `"(noun) books"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'meaning (line)' 1`] = `"books"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ol>
   <li>books</li>
@@ -825,13 +825,13 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (pos)' 
 </ol>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (item-full <= 2)' 1`] = `
 "<ul>
   <li>books</li>
 </ul>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumbered) (pos) (item-full…' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ul>
   <li>books</li>
@@ -851,7 +851,7 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (unnumb
 </ul>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (item-full <= 2)' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -863,7 +863,7 @@ exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomich
 </div>"
 `;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+exports[`Test that special character is escaped: 図＄書<-> > 'meaning (yomichan) (pos) (item-full <…' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -967,11 +967,11 @@ exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict
 
 exports[`Test that special character is escaped: 図＄書<-> > 'word' 1`] = `"図書"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(noun) books"`;
+exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (item-single <= 2)' 1`] = `"books"`;
+
+exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(noun) books"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (pos)' 1`] = `"(noun) books"`;
-
-exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning (single-item <= 2)' 1`] = `"books"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > (single) 'meaning' 1`] = `"books"`;
 
@@ -1111,7 +1111,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > '-' 1`] = `""`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
@@ -1128,7 +1128,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (item <
 </div>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (pos) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div) (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-pos">(particle)</div>
@@ -1183,7 +1183,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (div)' 1`] = 
 </div>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (item-full <= 2)' 1`] = `
 "<ol>
   <li>indicates sentence subject (occasionally object)</li>
   <li>indicates possessive (esp. in literary expressions)</li>
@@ -1194,15 +1194,15 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (item <= 2)' 
 </ol>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (item <= 2)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but, however; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (item-full <= 2)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but, however; regardless of, whether (or not)"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos) (item <= 2)' 1`] = `"(particle); indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); (conjunction); but, however; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(particle) indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); (conjunction) but, however; regardless of, whether (or not)"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos)' 1`] = `"(particle); indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); (conjunction); but, however, still, and; regardless of, whether (or not)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line) (pos)' 1`] = `"(particle) indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); (conjunction) but, however, still, and; regardless of, whether (or not)"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (line)' 1`] = `"indicates sentence subject (occasionally object); indicates possessive (esp. in literary expressions); but, however, still, and; regardless of, whether (or not)"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-pos">(particle)</div>
 <ol>
   <li>indicates sentence subject (occasionally object)</li>
@@ -1228,7 +1228,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (pos)' 1`] = 
 </ol>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (item-full <= 2)' 1`] = `
 "<ul>
   <li>indicates sentence subject (occasionally object)</li>
   <li>indicates possessive (esp. in literary expressions)</li>
@@ -1239,7 +1239,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) 
 </ul>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered) (pos) (item-full…' 1`] = `
 "<div class="yomi-pos">(particle)</div>
 <ul>
   <li>indicates sentence subject (occasionally object)</li>
@@ -1276,7 +1276,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (unnumbered)'
 </ul>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (item-full <= 2)' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -1297,7 +1297,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (i
 </div>"
 `;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+exports[`Test unicode normalization: 彼か＄゙学生 > 'meaning (yomichan) (pos) (item-full <…' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -1439,11 +1439,11 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict)' 1`]
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'word' 1`] = `"が"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(particle) indicates sentence subject (occasionally object)"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (item-single <= 2)' 1`] = `"indicates sentence subject (occasionally object)"`;
+
+exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(particle) indicates sentence subject (occasionally object)"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (pos)' 1`] = `"(particle) indicates sentence subject (occasionally object)"`;
-
-exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning (single-item <= 2)' 1`] = `"indicates sentence subject (occasionally object)"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > (single) 'meaning' 1`] = `"indicates sentence subject (occasionally object)"`;
 
@@ -1957,7 +1957,7 @@ exports[`春の茶が飲＄みたいです > '-' 1`] = `""`;
 
 exports[`春の茶が飲＄みたいです > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (div) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (div) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
@@ -1968,7 +1968,7 @@ exports[`春の茶が飲＄みたいです > 'meaning (div) (item <= 2)' 1`] = `
 </div>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (div) (pos) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (div) (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-pos">(noun)</div>
@@ -2003,22 +2003,22 @@ exports[`春の茶が飲＄みたいです > 'meaning (div)' 1`] = `
 </div>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (item-full <= 2)' 1`] = `
 "<ol>
   <li>dollar</li>
   <li>money, cash</li>
 </ol>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (line) (item <= 2)' 1`] = `"dollar; money, cash"`;
+exports[`春の茶が飲＄みたいです > 'meaning (line) (item-full <= 2)' 1`] = `"dollar; money, cash"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (line) (pos) (item <= 2)' 1`] = `"(noun); dollar; money, cash"`;
+exports[`春の茶が飲＄みたいです > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(noun) dollar; money, cash"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (line) (pos)' 1`] = `"(noun); dollar; money, cash"`;
+exports[`春の茶が飲＄みたいです > 'meaning (line) (pos)' 1`] = `"(noun) dollar; money, cash"`;
 
 exports[`春の茶が飲＄みたいです > 'meaning (line)' 1`] = `"dollar; money, cash"`;
 
-exports[`春の茶が飲＄みたいです > 'meaning (pos) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ol>
   <li>dollar</li>
@@ -2034,14 +2034,14 @@ exports[`春の茶が飲＄みたいです > 'meaning (pos)' 1`] = `
 </ol>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (item-full <= 2)' 1`] = `
 "<ul>
   <li>dollar</li>
   <li>money, cash</li>
 </ul>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (unnumbered) (pos) (item-full…' 1`] = `
 "<div class="yomi-pos">(noun)</div>
 <ul>
   <li>dollar</li>
@@ -2064,7 +2064,7 @@ exports[`春の茶が飲＄みたいです > 'meaning (unnumbered)' 1`] = `
 </ul>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (item-full <= 2)' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -2078,7 +2078,7 @@ exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (item <= 2)' 1`
 </div>"
 `;
 
-exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+exports[`春の茶が飲＄みたいです > 'meaning (yomichan) (pos) (item-full <…' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -2189,11 +2189,11 @@ exports[`春の茶が飲＄みたいです > 'word (main dict)' 1`] = `"ドル"`
 
 exports[`春の茶が飲＄みたいです > 'word' 1`] = `"＄"`;
 
-exports[`春の茶が飲＄みたいです > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(noun) dollar"`;
+exports[`春の茶が飲＄みたいです > (single) 'meaning (item-single <= 2)' 1`] = `"dollar"`;
+
+exports[`春の茶が飲＄みたいです > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(noun) dollar"`;
 
 exports[`春の茶が飲＄みたいです > (single) 'meaning (pos)' 1`] = `"(noun) dollar"`;
-
-exports[`春の茶が飲＄みたいです > (single) 'meaning (single-item <= 2)' 1`] = `"dollar"`;
 
 exports[`春の茶が飲＄みたいです > (single) 'meaning' 1`] = `"dollar"`;
 
@@ -2430,7 +2430,7 @@ exports[`＄読みたい > '-' 1`] = `""`;
 
 exports[`＄読みたい > 'link' 1`] = `"<a href="https://yomikiri.test/">Yomikiri Tests</a>"`;
 
-exports[`＄読みたい > 'meaning (div) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (div) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
@@ -2446,7 +2446,7 @@ exports[`＄読みたい > 'meaning (div) (item <= 2)' 1`] = `
 </div>"
 `;
 
-exports[`＄読みたい > 'meaning (div) (pos) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (div) (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-pos">(verb)</div>
@@ -2496,7 +2496,7 @@ exports[`＄読みたい > 'meaning (div)' 1`] = `
 </div>"
 `;
 
-exports[`＄読みたい > 'meaning (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (item-full <= 2)' 1`] = `
 "<ol>
   <li>to read</li>
   <li>to recite (e.g. a sutra), to chant</li>
@@ -2508,15 +2508,15 @@ exports[`＄読みたい > 'meaning (item <= 2)' 1`] = `
 </ol>"
 `;
 
-exports[`＄読みたい > 'meaning (line) (item <= 2)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+exports[`＄読みたい > 'meaning (line) (item-full <= 2)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
-exports[`＄読みたい > 'meaning (line) (pos) (item <= 2)' 1`] = `"(verb); to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+exports[`＄読みたい > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(verb) to read; to recite (e.g. a sutra), to chant; to predict, to guess; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
-exports[`＄読みたい > 'meaning (line) (pos)' 1`] = `"(verb); to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
+exports[`＄読みたい > 'meaning (line) (pos)' 1`] = `"(verb) to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
 exports[`＄読みたい > 'meaning (line)' 1`] = `"to read; to recite (e.g. a sutra), to chant; to predict, to guess, to forecast, to read (someone's thoughts), to see (e.g. into someone's heart), to divine; to pronounce, to read (e.g. a kanji); to decipher, to read (a meter, graph, music, etc.), to tell (the time); to count, to estimate; to read (a kanji) with its native Japanese reading"`;
 
-exports[`＄読みたい > 'meaning (pos) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ol>
   <li>to read</li>
@@ -2542,7 +2542,7 @@ exports[`＄読みたい > 'meaning (pos)' 1`] = `
 </ol>"
 `;
 
-exports[`＄読みたい > 'meaning (unnumbered) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (unnumbered) (item-full <= 2)' 1`] = `
 "<ul>
   <li>to read</li>
   <li>to recite (e.g. a sutra), to chant</li>
@@ -2554,7 +2554,7 @@ exports[`＄読みたい > 'meaning (unnumbered) (item <= 2)' 1`] = `
 </ul>"
 `;
 
-exports[`＄読みたい > 'meaning (unnumbered) (pos) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (unnumbered) (pos) (item-full…' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ul>
   <li>to read</li>
@@ -2592,7 +2592,7 @@ exports[`＄読みたい > 'meaning (unnumbered)' 1`] = `
 </ul>"
 `;
 
-exports[`＄読みたい > 'meaning (yomichan) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (yomichan) (item-full <= 2)' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -2615,7 +2615,7 @@ exports[`＄読みたい > 'meaning (yomichan) (item <= 2)' 1`] = `
 </div>"
 `;
 
-exports[`＄読みたい > 'meaning (yomichan) (pos) (item <= 2)' 1`] = `
+exports[`＄読みたい > 'meaning (yomichan) (pos) (item-full <…' 1`] = `
 "<div style="text-align: left;">
   <ol>
     <li>
@@ -2768,11 +2768,11 @@ exports[`＄読みたい > 'word (main dict)' 1`] = `"読む"`;
 
 exports[`＄読みたい > 'word' 1`] = `"読みたい"`;
 
-exports[`＄読みたい > (single) 'meaning (pos) (single-item <= 2)' 1`] = `"(verb) to read"`;
+exports[`＄読みたい > (single) 'meaning (item-single <= 2)' 1`] = `"to read"`;
+
+exports[`＄読みたい > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(verb) to read"`;
 
 exports[`＄読みたい > (single) 'meaning (pos)' 1`] = `"(verb) to read"`;
-
-exports[`＄読みたい > (single) 'meaning (single-item <= 2)' 1`] = `"to read"`;
 
 exports[`＄読みたい > (single) 'meaning' 1`] = `"to read"`;
 

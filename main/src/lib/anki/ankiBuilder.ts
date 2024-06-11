@@ -211,12 +211,15 @@ addBuilder("meaning", (opts, data) => {
         indent += 1;
       }
 
+      // used for 'line' meaning
+      let lineMeaning = "";
+
       if (opts.full_pos) {
         const poss = escapeHTML(group.pos.join(", "));
         if (format === "yomichan") {
           addLine(`<i>(${poss})</i>`);
         } else if (format === "line") {
-          addLine(`(${escapeHTML(poss)})`);
+          lineMeaning += `(${poss}) `;
         } else {
           addLine(`<div class="yomi-pos">(${poss})</div>`);
         }
@@ -258,7 +261,8 @@ addBuilder("meaning", (opts, data) => {
         }
       }
       if (format === "line") {
-        addLine(lineMeanings.join("; "));
+        lineMeaning += lineMeanings.join("; ");
+        addLine(lineMeaning);
       }
 
       if (format === "numbered") {
