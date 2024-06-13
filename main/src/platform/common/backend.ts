@@ -49,8 +49,10 @@ export namespace TokenizeResult {
       .map((json) => JSON.parse(json) as EntryObject)
       .map(Entry.fromObject);
     const selectedToken = raw.tokens[raw.tokenIdx];
-    entries = Entry.validEntriesForSurface(entries, selectedToken.text);
-    Entry.order(entries, selectedToken);
+    if (raw.tokenIdx >= 0) {
+      entries = Entry.validEntriesForSurface(entries, selectedToken.text);
+      Entry.order(entries, selectedToken);
+    }
 
     const result = {
       ...raw,
