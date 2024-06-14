@@ -21,6 +21,7 @@ import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
+import { PLATFORM } from "consts";
 
 export * from "../common";
 
@@ -32,10 +33,17 @@ export interface AppMessageMap {
   search: [SearchRequest, RawTokenizeResult];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
+  iosVersion: [null, IosVersion];
 }
 
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
 export type AppResponse<K extends keyof AppMessageMap> = AppMessageMap[K][1];
+
+interface IosVersion {
+  major: number;
+  minor: number;
+  patch: number;
+}
 
 export class IosPlatform implements IPlatform {
   static IS_DESKTOP = false;
@@ -58,6 +66,8 @@ export class IosPlatform implements IPlatform {
       browserApi.handleRequest("saveConfig", (config) => {
         return this.saveConfig(config);
       });
+
+      void this.setupIosPeriodicReload();
     }
   }
 
@@ -183,6 +193,36 @@ export class IosPlatform implements IPlatform {
     const migrated = migrateConfigObject(configObject);
     await this.saveConfig(migrated);
     return migrated;
+  }
+
+  // workaround to ios 17.5 bug where background script freezes after ~30s of non-stop activity
+  // https://github.com/alexkates/content-script-non-responsive-bug/issues/1
+  private async setupIosPeriodicReload() {
+    if (PLATFORM !== "ios" || this.browserApi.context !== "background") return;
+    console.debug("Set up periodic ios reload");
+
+    let wakeup = Date.now();
+    let last = Date.now();
+
+    function checkReload() {
+      const curr = Date.now();
+      if (curr - last > 4500) {
+        wakeup = curr;
+      }
+      last = curr;
+
+      if (curr - wakeup > 25 * 1000) {
+        console.debug("Reloading extension");
+        chrome.runtime.reload();
+      }
+    }
+
+    const iv = setInterval(checkReload, 1000);
+
+    const ver = await this.requestToApp("iosVersion", null);
+    if (!(ver.major > 18 || (ver.major === 17 && ver.minor >= 5))) {
+      clearInterval(iv);
+    }
   }
 }
 

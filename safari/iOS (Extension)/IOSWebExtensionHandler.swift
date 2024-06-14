@@ -46,6 +46,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             case "tts":
                 let req: TTSRequest = try jsonDeserialize(json: request)
                 try ttsSpeak(voice: req.voice, text: req.text)
+            case "iosVersion":
+                let ver = ProcessInfo.processInfo.operatingSystemVersion
+                let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
+                jsonResponse = try jsonSerialize(obj: iosVersion)
             default:
                 return
             }
@@ -73,4 +77,10 @@ private struct TTSRequest: Decodable {
 private struct SearchRequest: Decodable {
     var term: String
     var charAt: UInt32?
+}
+
+private struct IosVersion: Codable {
+    var major: Int
+    var minor: Int
+    var patch: Int
 }
