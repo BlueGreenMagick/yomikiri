@@ -2,7 +2,6 @@ import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
 import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
 import { Platform } from "platform/iosapp";
-import { updateTTSAvailability } from "common";
 import type { IosAppBackend } from "platform/iosapp/backend";
 import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
@@ -19,16 +18,7 @@ async function initialize(): Promise<[Config, IosAppBackend, IosAppAnkiApi]> {
   const config = await lazyConfig.get();
   config.setStyle(document);
 
-  // queue task to run later
-  setTimeout(() => {
-    void deferredInitialize(config);
-  }, 0);
   return [config, backend, ankiApi];
-}
-
-/** Non-essential code to run at startup but not immediately */
-async function deferredInitialize(config: Config): Promise<void> {
-  await updateTTSAvailability(platform, config);
 }
 
 function createSvelte(

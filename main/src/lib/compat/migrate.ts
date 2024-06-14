@@ -1,5 +1,5 @@
 import { CONFIG_VERSION, type StoredConfiguration } from "lib/config";
-import { VERSION } from "common";
+import { VERSION } from "consts";
 import type { StoredCompatConfiguration } from "./shared";
 import { migrateConfiguration_1 } from "./v1";
 import { migrateConfiguration_2 } from "./v2";

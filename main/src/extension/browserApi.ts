@@ -14,7 +14,7 @@ import Utils, {
   type Satisfies,
   type Thennable,
 } from "lib/utils";
-import { PLATFORM } from "common";
+import { PLATFORM } from "consts";
 
 /**
  * Type map for messages between extension processes
@@ -455,6 +455,10 @@ export class BrowserApi {
   }
 
   async japaneseTtsVoices(): Promise<TTSVoice[]> {
+    if (chrome.tts === undefined) {
+      return [];
+    }
+
     const [promise, resolve] = Utils.createPromise<chrome.tts.TtsVoice[]>();
     chrome.tts.getVoices(resolve);
     const voices = await promise;

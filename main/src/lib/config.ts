@@ -1,9 +1,10 @@
 import { Platform } from "@platform";
-import { VERSION } from "../common";
+import { VERSION } from "consts";
 import type { TTSVoice } from "../platform/common";
 import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
+import { log } from "./utils";
 
 /** Incremented each time Configuration interface is modified */
 export const CONFIG_VERSION = 3;
@@ -90,6 +91,11 @@ export class Config {
 
     this.initialized = true;
     this.runSubscribers();
+
+    /** Non-priority code */
+    setTimeout(() => {
+      void this.setupTTSVoice(this.platform);
+    }, 0);
   }
 
   static async initialize(platform: Platform): Promise<Config> {
@@ -272,6 +278,17 @@ export class Config {
         set(stored);
       },
     };
+  }
+
+  /** If config['tts.voice'] is null, re-check if tts is available and update config */
+  async setupTTSVoice(platform: Platform): Promise<void> {
+    if (this.get("tts.voice") !== null) return;
+    const voices = await platform.japaneseTTSVoices();
+    if (voices.length === 0) return;
+    // reverse order sort
+    voices.sort((a, b) => b.quality - a.quality);
+    log("initialized tts voice");
+    await this.set("tts.voice", voices[0]);
   }
 }
 

@@ -21,7 +21,6 @@ import {
 import Utils, { exposeGlobals } from "../../lib/utils";
 import type { AnkiNote } from "lib/anki";
 import Config, { type StoredConfiguration } from "lib/config";
-import { updateTTSAvailability } from "common";
 import DefaultIcon from "assets/static/images/icon128.png";
 import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
@@ -44,7 +43,6 @@ async function initialize(): Promise<void> {
   updateStateEnabledIcon(config);
   updateDeferredNoteCountBadge(config);
 
-  await updateTTSAvailability(platform, config);
   if (Platform.IS_DESKTOP) {
     const ankiApi = (await lazyAnkiApi.get()) as DesktopAnkiApi;
     runAddDeferredNoteTaskInBackground(ankiApi);
