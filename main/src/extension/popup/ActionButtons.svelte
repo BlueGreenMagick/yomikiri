@@ -7,25 +7,23 @@
   export let platform: Platform;
   export let config: Config;
 
-  let stateEnabled = config.get("state.enabled");
+  let stateEnabledConfig = config.store("state.enabled");
 
   async function openSettings() {
     await platform.openOptionsPage();
   }
 
-  async function toggleEnable() {
-    let prevValue = config.get("state.enabled");
-    stateEnabled = !prevValue;
-    await config.set("state.enabled", stateEnabled);
+  function toggleEnable() {
+    $stateEnabledConfig = !$stateEnabledConfig;
   }
 </script>
 
 <div class="action-buttons">
   <button
     class="icon-action"
-    class:active={stateEnabled}
+    class:active={$stateEnabledConfig}
     on:click={toggleEnable}
-    title={stateEnabled ? "Disable" : "Enable"}
+    title={$stateEnabledConfig ? "Disable" : "Enable"}
   >
     <IconPower />
   </button>

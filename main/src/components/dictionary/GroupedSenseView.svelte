@@ -9,13 +9,14 @@
   export let onSelectSense: (sense: Sense) => void;
 
   const selectedSense = model.selectedSense;
+  const ankiEnabledConfig = config.store("anki.enabled");
 
   let posText: string;
 
   $: posText = group.pos.join(", ");
 </script>
 
-<div class="grouped-sense" class:anki={config.get("anki.enabled")}>
+<div class="grouped-sense" class:anki={$ankiEnabledConfig}>
   <div class="part-of-speech">
     {posText}
   </div>

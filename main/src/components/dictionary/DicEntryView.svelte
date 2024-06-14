@@ -26,12 +26,14 @@
     selected: SelectedEntryForAnki,
   ) => void = () => null;
 
+  const selectedSense = model.selectedSense;
+  const ttsVoiceConfig = config.store("tts.voice");
+  const ankiEnabledConfig = config.store("anki.enabled");
+
   let mainForm: string;
   let readingForForm: string;
   let mainFormRuby: RubyString;
   let groups: GroupedSense[];
-
-  const selectedSense = model.selectedSense;
 
   function selectEntryForAnki() {
     const sense = $selectedSense?.sense ?? undefined;
@@ -61,7 +63,7 @@
       <span class="mainForm"><RubyText text={mainFormRuby} /></span>
     </div>
     <div class="icons">
-      {#if config.get("anki.enabled")}
+      {#if $ankiEnabledConfig}
         <IconedButton
           size="2em"
           highlight={$selectedSense?.entry === entry}
@@ -70,7 +72,7 @@
           <IconAddCircleOutline />
         </IconedButton>
       {/if}
-      {#if config.get("tts.voice") !== null}
+      {#if $ttsVoiceConfig !== null}
         <button
           class="icon"
           on:click={playAudio}
