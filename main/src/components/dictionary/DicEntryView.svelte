@@ -73,13 +73,9 @@
         </IconedButton>
       {/if}
       {#if $ttsVoiceConfig !== null}
-        <button
-          class="icon"
-          on:click={playAudio}
-          on:mousedown|preventDefault|stopPropagation={() => null}
-        >
+        <IconedButton size="2em" on:click={playAudio}>
           <IconVolumeHigh />
-        </button>
+        </IconedButton>
       {/if}
     </div>
   </div>
