@@ -31,18 +31,18 @@ const lazyTooltip = new Utils.LazyAsync(
     ),
 );
 
-const _initialized = initialize();
-
-async function initialize() {
-  const config = await lazyConfig.get();
-  handleStateEnabledChange(config);
-  document.addEventListener("mousemove", (ev) => {
-    onMouseMove(ev, config);
-  });
-  document.addEventListener("click", (ev) => {
-    onClick(ev, config);
-  });
+declare global {
+  interface Window {
+    alreadyExecuted?: true;
+  }
 }
+
+/* Content script may be re-executed when browser.runtime.reload() is called */
+if (!window.alreadyExecuted) {
+  void initialize();
+}
+
+window.alreadyExecuted = true;
 
 /** Return false if not triggered on Japanese text */
 /*
@@ -146,20 +146,31 @@ function handleStateEnabledChange(config: Config) {
   });
 }
 
-exposeGlobals({
-  platform,
-  browserApi,
-  Utils,
-  backend: () => {
-    return lazyBackend.get();
-  },
-  config: () => {
-    void lazyConfig.get();
-    return lazyConfig.getIfInitialized();
-  },
-  highlighter,
-  tooltip: () => {
-    void lazyTooltip.get();
-    return lazyTooltip.getIfInitialized();
-  },
-});
+async function initialize() {
+  const config = await lazyConfig.get();
+  handleStateEnabledChange(config);
+  document.addEventListener("mousemove", (ev) => {
+    onMouseMove(ev, config);
+  });
+  document.addEventListener("click", (ev) => {
+    onClick(ev, config);
+  });
+
+  exposeGlobals({
+    platform,
+    browserApi,
+    Utils,
+    backend: () => {
+      return lazyBackend.get();
+    },
+    config: () => {
+      void lazyConfig.get();
+      return lazyConfig.getIfInitialized();
+    },
+    highlighter,
+    tooltip: () => {
+      void lazyTooltip.get();
+      return lazyTooltip.getIfInitialized();
+    },
+  });
+}

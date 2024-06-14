@@ -322,16 +322,23 @@ export function exposeGlobals(
 ) {
   for (const prop in objects) {
     const obj = objects[prop];
-    if (typeof obj === "function") {
-      Object.defineProperty(self, prop, {
-        get() {
-          return obj(); // eslint-disable-line
-        },
-      });
-    } else {
-      Object.defineProperty(self, prop, {
-        value: obj,
-      });
+
+    // browser.runtime.reload() on ios cause unwritable property to be redefined
+    try {
+      if (typeof obj === "function") {
+        Object.defineProperty(self, prop, {
+          get() {
+            return obj(); // eslint-disable-line
+          },
+        });
+      } else {
+        Object.defineProperty(self, prop, {
+          value: obj,
+          writable: true,
+        });
+      }
+    } catch {
+      // pass
     }
   }
 }

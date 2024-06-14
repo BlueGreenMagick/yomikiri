@@ -14,6 +14,7 @@ import Utils, {
   type Satisfies,
   type Thennable,
 } from "lib/utils";
+import { PLATFORM } from "common";
 
 /**
  * Type map for messages between extension processes
@@ -110,6 +111,8 @@ export class BrowserApi {
     if (opts.handleConnection) {
       this.attachConnectionHandler();
     }
+
+    this.setupIosPeriodicReload();
   }
 
   private attachRequestHandler() {
@@ -219,7 +222,21 @@ export class BrowserApi {
       request,
     };
     const handler = this.createRequestResponseHandler(resolve, reject);
-    chrome.runtime.sendMessage(message, handler);
+    const initialHandler = (
+      resp: MessageResponse<Utils.Second<MessageMap[K]>> | undefined,
+    ) => {
+      // background not set up yet. try request again.
+      if (resp === undefined) {
+        console.debug("Could not connect to backend. Trying again.");
+        setTimeout(() => {
+          chrome.runtime.sendMessage(message, handler);
+        }, 1000);
+      } else {
+        handler(resp);
+      }
+    };
+
+    chrome.runtime.sendMessage(message, initialHandler);
     return promise;
   }
 
@@ -486,5 +503,32 @@ export class BrowserApi {
 
   handleBrowserLoad(handler: () => void) {
     chrome.runtime.onStartup.addListener(handler);
+  }
+
+  // workaround to ios 17.5 bug where background script freezes after ~30s of non-stop activity
+  // https://github.com/alexkates/content-script-non-responsive-bug/issues/1
+  private setupIosPeriodicReload() {
+    if (PLATFORM !== "ios" || this.context !== "background") return;
+    console.debug("Set up periodic ios reload");
+
+    let counter = 0;
+    let last = Date.now();
+
+    function checkReload() {
+      const curr = Date.now();
+      if (curr - last > 4500) {
+        counter = 0;
+      } else {
+        counter += 1;
+      }
+      last = curr;
+
+      if (counter > 25) {
+        console.debug("Reloading extension");
+        chrome.runtime.reload();
+      }
+    }
+
+    setInterval(checkReload, 1000);
   }
 }
