@@ -9,7 +9,6 @@
   import { Entry, Sense, type GroupedSense } from "lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
-  import IconVolumeHigh from "@icons/volume-high.svg";
   import { RubyString } from "lib/japanese";
   import type Config from "lib/config";
   import Badges from "./Badges.svelte";
@@ -27,7 +26,6 @@
   ) => void = () => null;
 
   const selectedSense = model.selectedSense;
-  const ttsVoiceConfig = config.store("tts.voice");
   const ankiEnabledConfig = config.store("anki.enabled");
 
   let mainForm: string;
@@ -42,13 +40,6 @@
 
   function onSelectSense(sense: Sense) {
     model.selectSense(entry, sense);
-  }
-
-  function playAudio() {
-    const text = mainForm.length < 5 ? readingForForm : mainForm;
-    platform.playTTS(text, config.get("tts.voice")).catch((err: unknown) => {
-      throw err;
-    });
   }
 
   $: mainForm = Entry.mainForm(entry);
@@ -70,11 +61,6 @@
           on:click={selectEntryForAnki}
         >
           <IconAddCircleOutline />
-        </IconedButton>
-      {/if}
-      {#if $ttsVoiceConfig !== null}
-        <IconedButton size="2em" on:click={playAudio}>
-          <IconVolumeHigh />
         </IconedButton>
       {/if}
     </div>

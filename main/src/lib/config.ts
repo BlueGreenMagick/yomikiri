@@ -91,11 +91,6 @@ export class Config {
 
     this.initialized = true;
     this.runSubscribers();
-
-    /** Non-priority code */
-    setTimeout(() => {
-      void this.setupTTSVoice(this.platform);
-    }, 0);
   }
 
   static async initialize(platform: Platform): Promise<Config> {
@@ -280,7 +275,11 @@ export class Config {
     };
   }
 
-  /** If config['tts.voice'] is null, re-check if tts is available and update config */
+  /**
+   * If config['tts.voice'] is null, re-check if tts is available and update config
+   *
+   * tts is currently not used.
+   */
   async setupTTSVoice(platform: Platform): Promise<void> {
     if (this.get("tts.voice") !== null) return;
     const voices = await platform.japaneseTTSVoices();
