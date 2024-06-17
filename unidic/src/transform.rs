@@ -288,6 +288,7 @@ fn transform_matrix(
 }
 
 /// Add katakana words in JMDict that is not in Unidic lex
+/// and are not longer than 7 chars
 fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResult<()> {
     let mut item_bases: HashSet<String> = HashSet::with_capacity(items.len() * 2);
     for i in items.iter() {
@@ -304,6 +305,9 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResul
         let new_items = LexItem::items_from_entry(&entry);
         for item in new_items.into_iter() {
             if !item.base.chars().any(|c| c.is_katakana()) {
+                continue;
+            }
+            if item.base.chars().count() > 7 {
                 continue;
             }
             item_bases.insert(item.base.clone());
