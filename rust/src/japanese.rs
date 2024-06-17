@@ -3,6 +3,7 @@ pub trait JapaneseChar {
     fn is_kana(&self) -> bool;
     fn is_hiragana(&self) -> bool;
     fn is_katakana(&self) -> bool;
+    fn to_katakana(&self) -> char;
 }
 
 impl JapaneseChar for char {
@@ -17,15 +18,28 @@ impl JapaneseChar for char {
     fn is_katakana(&self) -> bool {
         matches!(*self, '\u{30a0}'..='\u{30ff}')
     }
+
+    fn to_katakana(&self) -> char {
+        if *self >= '\u{3041}' && *self <= '\u{3096}' {
+            char::from_u32(*self as u32 + 96).unwrap()
+        } else {
+            *self
+        }
+    }
 }
 
 pub trait JapaneseString {
     fn contains_only_kana(&self) -> bool;
+    fn to_katakana(&self) -> String;
 }
 
 impl JapaneseString for str {
     fn contains_only_kana(&self) -> bool {
         self.chars().all(|c| c.is_kana())
+    }
+
+    fn to_katakana(&self) -> String {
+        self.chars().map(|c| c.to_katakana()).collect()
     }
 }
 

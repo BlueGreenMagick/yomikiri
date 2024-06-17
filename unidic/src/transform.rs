@@ -354,7 +354,8 @@ fn identical_base_to_empty_string(items: &mut Vec<LexItem>) {
 /// if item.surface == item.reading (most kana-only words), set reading to "" to save space
 fn identical_reading_to_empty_string(items: &mut Vec<LexItem>) {
     for item in items {
-        if item.surface == item.reading {
+        let katakana_surface: String = item.surface.chars().map(|c| c.to_katakana()).collect();
+        if katakana_surface == item.reading {
             item.reading = "".into()
         }
     }
@@ -492,6 +493,7 @@ pub trait JapaneseChar {
     fn is_kana(&self) -> bool;
     fn is_hiragana(&self) -> bool;
     fn is_katakana(&self) -> bool;
+    fn to_katakana(&self) -> char;
 }
 
 impl JapaneseChar for char {
@@ -505,5 +507,13 @@ impl JapaneseChar for char {
 
     fn is_katakana(&self) -> bool {
         matches!(*self, '\u{30a0}'..='\u{30ff}')
+    }
+
+    fn to_katakana(&self) -> char {
+        if *self >= '\u{3041}' && *self <= '\u{3096}' {
+            char::from_u32(*self as u32 + 96).unwrap()
+        } else {
+            *self
+        }
     }
 }

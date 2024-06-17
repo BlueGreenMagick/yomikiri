@@ -141,7 +141,7 @@ impl TokenDetails {
             .next()
             .map(|r| {
                 if r.is_empty() {
-                    surface.into()
+                    surface.to_katakana()
                 } else {
                     r.to_string()
                 }
