@@ -10,15 +10,21 @@ import SwiftUI
 struct HelpView: View {
     @StateObject var viewModel = ViewModel()
 
+    var tocPickerBinding: Binding<Int> {
+        Binding(
+            get: { viewModel.currentItemId.section },
+            set: { section in
+                viewModel.currentItemId = ItemId(section: section, item: 0)
+            }
+        )
+    }
+
     var body: some View {
         VStack(alignment: .center, spacing: 20) {
-            Picker("Table of Contents", selection: $viewModel.currentItemId.section) {
+            Picker("Table of Contents", selection: tocPickerBinding) {
                 ForEach(0 ..< ViewModel.sections.count, id: \.self) { idx in
                     Text(ViewModel.sections[idx].title).tag(idx)
                 }
-            }
-            .onChange(of: viewModel.currentItemId.section) { _ in
-                viewModel.currentItemId.item = 0
             }
 
             TabView(selection: $viewModel.currentItemId) {
@@ -99,7 +105,8 @@ struct HelpView: View {
                     withAnimation {
                         self.currentItemId = next
                     }
-                })
+                }
+            )
             cachedViewModels[itemId] = viewModel
             return viewModel
         }
