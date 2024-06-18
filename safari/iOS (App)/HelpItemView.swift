@@ -83,7 +83,7 @@ struct HelpItemView: View {
 
         func startImageTimer() {
             timer?.invalidate()
-            timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true, block: { [weak self] tmr in
+            timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { [weak self] tmr in
                 guard let self = self else {
                     tmr.invalidate()
                     return
