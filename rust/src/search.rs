@@ -33,14 +33,14 @@ impl<R: Read + Seek> SharedBackend<R> {
         if let Some(entry) = entries.get(0) {
             let form = entry.main_form();
             // TODO: convert jmdict pos to unidic pos
-            let mut details = TokenDetails::default_with_surface(&form);
+            let mut details = TokenDetails::default_with_base(&form);
             details.pos = "jmdict".into();
             details.reading = entry
                 .reading_for_form(&form)
                 .map(|r| r.reading.as_str())
                 .unwrap_or("*")
                 .into();
-            let token = Token::new(form, details, 0);
+            let token = Token::new(normalized_term, details, 0);
             let json_entries = entries
                 .iter()
                 .map(serde_json::to_string)

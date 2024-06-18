@@ -166,9 +166,9 @@ impl TokenDetails {
         }
     }
 
-    pub fn default_with_surface(surface: &str) -> Self {
+    pub fn default_with_base(base: &str) -> Self {
         TokenDetails {
-            base: surface.into(),
+            base: base.into(),
             ..TokenDetails::default()
         }
     }
@@ -276,7 +276,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             let text = tok.text.to_string();
             let details = match tok.get_details() {
                 Some(d) => TokenDetails::from_details(&d, &text),
-                None => TokenDetails::default_with_surface(&text),
+                None => TokenDetails::default_with_base(&text),
             };
             let token = Token::new(text, details, char_start as u32);
             tokens.push(token);
