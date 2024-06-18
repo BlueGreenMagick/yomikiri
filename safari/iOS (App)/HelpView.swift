@@ -84,28 +84,32 @@ struct HelpView: View {
                 return viewModel
             }
             let item = itemId.value
-            let nextId = itemId.next
-            let prevId = itemId.prev
-
-            let viewModel = HelpItemView.ViewModel(
-                item.description, item.images,
-                hasPrevItem: prevId != nil, hasNextItem: nextId != nil,
-                prevItemClicked: { [weak self] in
-                    guard let self = self, let prev = prevId else {
+            let prevItemClicked = itemId.prev.map { prevId in
+                { [weak self] in
+                    guard let self else {
                         return
                     }
                     withAnimation {
-                        self.currentItemId = prev
-                    }
-
-                }, nextItemClicked: { [weak self] in
-                    guard let self = self, let next = nextId else {
-                        return
-                    }
-                    withAnimation {
-                        self.currentItemId = next
+                        self.currentItemId = prevId
                     }
                 }
+            }
+            let nextItemClicked = itemId.next.map { nextId in
+                { [weak self] in
+                    guard let self else {
+                        return
+                    }
+                    withAnimation {
+                        self.currentItemId = nextId
+                    }
+                }
+            }
+
+            let viewModel = HelpItemView.ViewModel(
+                item.description,
+                item.images,
+                prevItemClicked: prevItemClicked,
+                nextItemClicked: nextItemClicked
             )
             cachedViewModels[itemId] = viewModel
             return viewModel

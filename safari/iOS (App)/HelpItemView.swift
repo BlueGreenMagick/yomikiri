@@ -17,14 +17,12 @@ struct HelpItemView: View {
         VStack {
             HStack {
                 Button(
-                    action: {
-                        viewModel.prevItemClicked()
-                    },
+                    action: viewModel.prevItemClicked ?? {},
                     label: {
                         Image(systemName: "arrowshape.backward.fill")
                     }
                 )
-                .disabled(!self.viewModel.hasPrevItem)
+                .disabled(viewModel.prevItemClicked == nil)
                 .padding(6)
                 Spacer()
                 Image(self.viewModel.imageName)
@@ -36,14 +34,12 @@ struct HelpItemView: View {
                     .transition(.opacity.animation(.easeOut(duration: 0.5)))
                 Spacer()
                 Button(
-                    action: {
-                        viewModel.nextItemClicked()
-                    },
+                    action: viewModel.nextItemClicked ?? {},
                     label: {
                         Image(systemName: "arrowshape.right.fill")
                     }
                 )
-                .disabled(!viewModel.hasNextItem)
+                .disabled(viewModel.nextItemClicked == nil)
                 .padding(6)
             }
             Text(viewModel.description)
@@ -61,10 +57,8 @@ struct HelpItemView: View {
     final class ViewModel: ObservableObject {
         let description: String
         let imageNames: [String]
-        let hasPrevItem: Bool
-        let hasNextItem: Bool
-        let prevItemClicked: () -> Void
-        let nextItemClicked: () -> Void
+        let prevItemClicked: (() -> Void)?
+        let nextItemClicked: (() -> Void)?
         @Published var imageIndex: Int
         var timer: Timer? = nil
 
@@ -72,12 +66,10 @@ struct HelpItemView: View {
             imageNames[imageIndex]
         }
 
-        init(_ description: String, _ imageNames: [String], hasPrevItem: Bool, hasNextItem: Bool, prevItemClicked: @escaping () -> Void, nextItemClicked: @escaping () -> Void) {
+        init(_ description: String, _ imageNames: [String], prevItemClicked: (() -> Void)? = nil, nextItemClicked: (() -> Void)? = nil) {
             self.description = description
             self.imageNames = imageNames
             self.imageIndex = 0
-            self.hasPrevItem = hasPrevItem
-            self.hasNextItem = hasNextItem
             self.prevItemClicked = prevItemClicked
             self.nextItemClicked = nextItemClicked
         }
@@ -111,6 +103,6 @@ struct HelpItemView: View {
 }
 
 #Preview {
-    let viewModel = HelpItemView.ViewModel("Some instruction", ["Help-1-1-1", "Help-1-1-2"], hasPrevItem: true, hasNextItem: false, prevItemClicked: {}, nextItemClicked: {})
+    let viewModel = HelpItemView.ViewModel("Some instruction", ["Help-1-1-1", "Help-1-1-2"], prevItemClicked: nil, nextItemClicked: nil)
     return HelpItemView(viewModel: viewModel)
 }
