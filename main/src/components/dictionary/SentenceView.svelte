@@ -31,7 +31,7 @@
   ]);
 </script>
 
-<div class="sentence-view">
+<div class="sentence-view Japanese">
   {#each tokens as token, idx}
     <div
       class="token"

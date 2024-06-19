@@ -38,7 +38,7 @@ export const defaultOptions: Configuration = {
   "state.anki.deferred_note_count": 0,
   "state.anki.deferred_note_error": false,
   "general.font_size": 14,
-  "general.font": "Meiryo",
+  "general.font": "",
   "anki.connect_port": 8765,
   "anki.connect_url": "http://127.0.0.1",
   "anki.anki_template": null,

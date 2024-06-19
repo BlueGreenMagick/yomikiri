@@ -1,5 +1,25 @@
 @import "normalize.css";
 
+:root {
+  --text: black;
+  --text-light: #808080;
+  --text-success: green;
+  --text-warn: red;
+  --accent: #ff992a;
+  --accent-orange: #ff992a;
+  --accent-pink: #ff6086;
+  --border: #c9c9c9;
+  --background: white;
+  --background-alt-light: #f8f8f8;
+  --background-alt: #f2f2f2;
+  --background-dark: #d3d3d3;
+  --input: white;
+  --selected-blue: #007aff;
+  --button-light: #999999;
+  --button-bg: #cccccc;
+  --edge-horizontal-padding: 8px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -9,11 +29,6 @@ body {
   margin: 0;
   padding: 0;
   border: none;
-}
-
-html {
-  font-size: var(--font-size);
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Prevent Chrome setting body font-size to 75% on extension pages */
@@ -46,25 +61,24 @@ rt:before {
   content: attr(data-rt);
 }
 
-:root {
-  --text: black;
-  --text-light: #808080;
-  --text-success: green;
-  --text-warn: red;
-  --accent: #ff992a;
-  --accent-orange: #ff992a;
-  --accent-pink: #ff6086;
-  --border: #c9c9c9;
-  --background: white;
-  --background-alt-light: #f8f8f8;
-  --background-alt: #f2f2f2;
-  --background-dark: #d3d3d3;
-  --input: white;
-  --selected-blue: #007aff;
-  --button-light: #999999;
-  --button-bg: #cccccc;
-  --japanese-font-family: var(--japanese-font), "メイリオ", "Meiryo",
+html {
+  font-size: var(--font-size);
+  /* 
+    Mixed language font
+    specified twice as fallback for if var(--japanese-font) is invalid
+  */
+  font-family: "Helveutica Neue", Helvetica, Arial, "メイリオ", Meiryo,
     "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP",
     sans-serif;
-  --edge-horizontal-padding: 8px;
+  font-family: "Helveutica Neue", Helvetica, Arial, var(--japanese-font),
+    "メイリオ", Meiryo, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN",
+    "Noto Sans CJK JP", sans-serif;
+}
+
+.Japanese {
+  font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3",
+    "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", sans-serif;
+  font-family: var(--japanese-font), "メイリオ", "Meiryo",
+    "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP",
+    sans-serif;
 }

@@ -10,7 +10,7 @@
   <div class="grammars">
     {#each grammars as grammar}
       <div class="grammar">
-        <div class="name">{grammar.name}:</div>
+        <div class="name Japanese">{grammar.name}:</div>
         <div class="short">{grammar.short}</div>
         <div class="tofugu">
           <a href={grammar.tofugu} target="_blank" rel="noopener">Tofugu</a>
@@ -42,10 +42,6 @@
     margin-top: 6px;
     display: flex;
     gap: 6px;
-  }
-
-  .name {
-    font-family: var(--japanese-font-family);
   }
 
   .short {

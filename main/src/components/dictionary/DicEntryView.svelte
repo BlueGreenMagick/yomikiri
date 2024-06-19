@@ -50,7 +50,7 @@
 
 <div class="entryView">
   <div class="header">
-    <div class="term">
+    <div class="term Japanese">
       <span class="mainForm"><RubyText text={mainFormRuby} /></span>
     </div>
     <div class="icons">
@@ -95,7 +95,6 @@
 
   .mainForm {
     font-size: 1.5rem;
-    font-family: var(--japanese-font-family);
   }
 
   .groups {
