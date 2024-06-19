@@ -48,6 +48,12 @@ impl Entry {
             .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Conjunction))
     }
 
+    pub fn is_verb(&self) -> bool {
+        self.senses
+            .iter()
+            .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Verb))
+    }
+
     pub fn main_form(&self) -> String {
         for form in &self.forms {
             if !form.uncommon {

@@ -301,7 +301,8 @@ impl<R: Read + Seek> SharedBackend<R> {
         self.join_pre_noun(tokens, from)?;
         self.join_conjunction(tokens, from)?;
         self.join_suffix(tokens, from)?;
-        self.join_subsequent_verb(tokens, from)?;
+        self.join_dependent_verb(tokens, from)?;
+        self.join_specific_verb(tokens, from)?;
         self.join_inflections(tokens, from)?;
         Ok(())
     }
@@ -313,6 +314,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///     2. 名詞+ => 'dict' 名詞
     ///     3. 助詞+ => 'dict' 助詞  e.g. 「かも」、「では」
     ///     4. (名詞|代名詞) 助詞+ => 'dict' any  e.g. 「誰か」、「何とも」、「誠に」
+    ///
     ///
     /// Search strategy (ordered):
     ///     1. '(text)+': join text of all tokens
@@ -558,6 +560,34 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
     }
 
+    /// 動詞 動詞／非自立可能 => 'dict' 動詞
+    fn join_dependent_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+        if from + 1 >= tokens.len() {
+            return Ok(false);
+        }
+        let token = &tokens[from];
+        let next = &tokens[from + 1];
+
+        if next.pos2 != "非自立可能" || !token.is_verb() {
+            return Ok(false);
+        }
+
+        let compound = concat_string(&token.text, &next.base);
+        let exists = self.dictionary.search(&compound)?.iter().any(|e| e.is_verb());
+        if !exists {
+            return Ok(false);
+        }
+
+        join_tokens(
+            tokens,
+            from,
+            from + 2,
+            "動詞",
+            BaseJoinStrategy::TextWithLastBase
+        );
+        Ok(true)
+    }
+
     /// ? + 動詞 -> 動詞
     ///
     /// When next token are certain verbs,
@@ -565,7 +595,7 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///
     /// 1. 名詞 + する
     /// 2. 動詞 + なさい「為さる」
-    fn join_subsequent_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_specific_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }

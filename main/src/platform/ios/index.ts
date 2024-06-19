@@ -206,7 +206,7 @@ export class IosPlatform implements IPlatform {
 
     function checkReload() {
       const curr = Date.now();
-      if (curr - last > 4500) {
+      if (curr - last > 4000) {
         wakeup = curr;
       }
       last = curr;
