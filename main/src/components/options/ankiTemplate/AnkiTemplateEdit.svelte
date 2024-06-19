@@ -122,6 +122,14 @@
       {/if}
     </select>
   </div>
+  <div class="example-link">
+    <a
+      target="_blank"
+      title="Get Anki note types designed to work well with Yomikiri"
+      href="https://github.com/BlueGreenMagick/yomikiri/blob/main/Anki_Template.md"
+      >Get Yomikiri Note Types</a
+    >
+  </div>
   <div class="fields group">
     {#each fieldNames as fieldName (fieldName)}
       <AnkiTemplateFieldEdit
@@ -145,19 +153,26 @@
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    padding: 8px 12px;
   }
 
   input {
     width: 100%;
   }
+
+  a {
+    user-select: none;
+  }
+
   .selects {
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: 12px;
     column-gap: 16px;
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 2em;
   }
+
   .item-title {
     grid-column: 1 / 2;
     font-weight: bold;
@@ -170,8 +185,14 @@
     color: red;
   }
 
+  .example-link {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   .fields {
     flex: 1 0 auto;
+    margin-bottom: 8px;
   }
 
   .tags-container {
@@ -186,9 +207,5 @@
   }
   .tags-value {
     flex: 1 1 auto;
-  }
-  .group {
-    padding: 8px 12px;
-    border-radius: 8px;
   }
 </style>
