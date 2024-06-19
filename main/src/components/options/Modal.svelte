@@ -50,8 +50,7 @@
     flex-flow: column nowrap;
     width: 90%;
     height: 90%;
-    max-width: 810px;
-    max-height: 540px;
+    max-width: 900px;
     border-radius: 8px;
     background-color: var(--background-alt);
   }
