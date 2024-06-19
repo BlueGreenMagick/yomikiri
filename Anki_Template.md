@@ -13,10 +13,8 @@ Click the below link to download the Anki note types, and open the file in Anki 
 ## Japanese Word
 
 <img src="./extra/resources/anki/yomikiri_anki_jp_word_back.png" height="320"/>
-<div style="display: inline-block;">
-  <img src="./extra/resources/anki/yomikiri_anki_iphone_jp_word_front.jpeg" height="320"/>
-  <img src="./extra/resources/anki/yomikiri_anki_iphone_jp_word_back.jpeg" height="320"/>
-</div>
+<img src="./extra/resources/anki/yomikiri_anki_iphone_jp_word_front.jpeg" height="320"/>
+<img src="./extra/resources/anki/yomikiri_anki_iphone_jp_word_back.jpeg" height="320"/>
 
 This note type shows you a Japanese word on the front side. Your aim is to recall its meaning and reading. Sentence is also shown on the back side.
 
@@ -32,10 +30,8 @@ You can configure Anki Template in Yomikiri Settings. Click the 'options' button
 ## Japanese Context
 
 <img src="./extra/resources/anki/yomikiri_anki_jp_context_back.png" height="320"/>
-<div style="display: inline-block;">
-  <img src="./extra/resources/anki/yomikiri_anki_iphone_jp_context_front.jpeg" height="320"/>
-  <img src="./extra/resources/anki/yomikiri_anki_iphone_jp_context_back.jpeg" height="320"/>
-</div>
+<img src="./extra/resources/anki/yomikiri_anki_iphone_jp_context_front.jpeg" height="320"/>
+<img src="./extra/resources/anki/yomikiri_anki_iphone_jp_context_back.jpeg" height="320"/>
 
 This note type shows you the word used in context of a real sentence on the front.
 
