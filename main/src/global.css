@@ -68,17 +68,17 @@ html {
     specified twice as fallback for if var(--japanese-font) is invalid
   */
   font-family: "Helveutica Neue", Helvetica, Arial, "メイリオ", Meiryo,
-    "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP",
-    sans-serif;
+    "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo,
+    YuGothic, "Noto Sans CJK JP", sans-serif;
   font-family: "Helveutica Neue", Helvetica, Arial, var(--japanese-font),
-    "メイリオ", Meiryo, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN",
-    "Noto Sans CJK JP", sans-serif;
+    "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo,
+    YuGothic, "Noto Sans CJK JP", sans-serif;
 }
 
 .Japanese {
-  font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ ProN W3",
-    "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", sans-serif;
-  font-family: var(--japanese-font), "メイリオ", "Meiryo",
-    "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP",
+  font-family: "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "メイリオ",
+    Meiryo, YuGothic, "Noto Sans CJK JP", sans-serif;
+  font-family: var(--japanese-font), "Hiragino Kaku Gothic ProN",
+    "ヒラギノ角ゴ ProN W3", "メイリオ", Meiryo, YuGothic, "Noto Sans CJK JP",
     sans-serif;
 }
