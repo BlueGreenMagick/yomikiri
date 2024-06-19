@@ -7,7 +7,7 @@ Night mode is supported.
 
 Click the below link to download the Anki note types, and open the file in Anki or AnkiMobile app.
 
-<a href="./extra/resources/anki/Yomikiri Japanese Notetypes.apkg">Yomikiri Japanese Notetypes.apkg</a>
+<a href="./extra/resources/anki/Yomikiri Japanese Note Types.apkg">Yomikiri Japanese Notetypes.apkg</a>
 
 
 ## Japanese Word
