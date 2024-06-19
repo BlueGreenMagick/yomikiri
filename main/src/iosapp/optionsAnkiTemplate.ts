@@ -12,6 +12,7 @@ const initialized = initialize();
 
 async function initialize(): Promise<[Config, IosAppAnkiApi]> {
   const config = await Config.initialize(platform);
+  config.setStyle(document);
   return [config, ankiApi];
 }
 
