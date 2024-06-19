@@ -117,7 +117,7 @@ export function ankiTemplateFieldLabel(field: AnkiTemplateField): string {
     if (field.form === "dict-form") {
       label += " (dict)";
     } else if (field.form === "main-dict-form") {
-      label += " (main dict)";
+      label += " (main-dict)";
     }
   }
   if (content === "word" || content === "sentence") {
