@@ -25,8 +25,6 @@ export function handleClick(ev: MouseEvent) {
 6. Highlight nodes, unhighlighting previous nodes
 */
 async function _trigger(x: number, y: number): Promise<boolean> {
-  const backend = await lazyBackend.get();
-
   const charLoc = charLocationAtPos(x, y);
   if (charLoc === null) return false;
 
@@ -39,6 +37,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
+  const backend = await lazyBackend.get();
   const result = await backend.tokenize(
     scannedSentence.text,
     scannedSentence.charAt,
