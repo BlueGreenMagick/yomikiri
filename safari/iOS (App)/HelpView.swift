@@ -47,24 +47,27 @@ struct HelpView: View {
     final class ViewModel: ObservableObject {
         static let sections: [Section] = [
             Section(title: "Main App", items: [
-                Item(description: "Type in Japanese text", images: ["Help-1-1-1", "Help-1-1-2"]),
-                Item(description: "Select a word", images: ["Help-1-2-1", "Help-1-2-2"]),
-                Item(description: "You can share text to Yomikiri.", images: ["Help-1-3-1", "Help-1-3-2", "Help-1-3-3"]),
+                Item(description: "Type in Japanese text to look up definition", images: ["Help-1-1-1"]),
+                Item(description: "Click on the word to select", images: ["Help-1-2-1", "Help-1-2-2"]),
             ]),
             Section(title: "Safari Extension", items: [
-                Item(description: "Select aA in address bar", images: ["Help-2-1-1"]),
-                Item(description: "Select 'Manage Extensions'", images: ["Help-2-2-1"]),
-                Item(description: "Enable Yomikiri", images: ["Help-2-3-1", "Help-2-3-2"]),
-                Item(description: "Tap Yomikiri, grant permission", images: ["Help-2-4-1"]),
-                Item(description: "Tap to enable or disable Yomikiri", images: ["Help-2-5-1", "Help-2-5-2"]),
-                Item(description: "Tap on a word to see its meanings", images: ["Help-2-6-1"]),
+                Item(description: "Tap icon in address bar.", images: ["Help-2-1-1"]),
+                Item(description: "Tap 'Manage Extensions'.", images: ["Help-2-2-1"]),
+                Item(description: "Enable Yomikiri.", images: ["Help-2-3-1", "Help-2-3-2"]),
+                Item(description: "Tap Yomikiri, and grant permission to access the website data.\nYou can change it later in 'Settings > Safari > Extensions > Yomikiri > Permissions'.", images: ["Help-2-4-1"]),
+                Item(description: "Tap on a word to see its meanings.", images: ["Help-2-5-1", "Help-2-5-2"]),
+                Item(description: "You can temporarily disable Yomikiri.\nTap on the icon, press the power button.", images: ["Help-2-6-1"]),
+            ]),
+            Section(title: "Share", items: [
+                Item(description: "Share text with Yomikiri.\nYou can look up text on images by using built-in text recognition.", images: ["Help-3-1-1"]),
+                Item(description: "Tap 'Yomikiri Action.", images: ["Help-3-2-1"]),
+                Item(description: "Yomikiri sheet is shown.", images: ["Help-3-3-1"]),
             ]),
             Section(title: "Anki", items: [
-                Item(description: "Enable Anki integration", images: ["Help-3-1-1", "Help-3-1-2"]),
-                Item(description: "Tap to retrieve metadata from AnkiMobile", images: ["Help-3-2-1"]),
-                Item(description: "Configure your Anki template", images: ["Help-3-3-1"]),
-                Item(description: "Add note to AnkiMobile", images: ["Help-3-4-1", "Help-3-4-2"]),
-                Item(description: "Select a specific meaning to add", images: ["Help-3-5-1"]),
+                Item(description: "Enable Anki integration. AnkiMobile app must be installed on your device.", images: ["Help-4-1-1", "Help-4-1-2"]),
+                Item(description: "Configure your Anki template. Tapping will retrieve notetype data from AnkiMobile.", images: ["Help-4-2-1"]),
+                Item(description: "Tap '+' to add note to AnkiMobile.", images: ["Help-4-3-1", "Help-4-3-2"]),
+                Item(description: "You can tap a meaning to add only that meaning to AnkiMobile.", images: ["Help-4-4-1"]),
             ]),
         ]
 
