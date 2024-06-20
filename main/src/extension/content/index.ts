@@ -37,12 +37,21 @@ declare global {
   }
 }
 
-/* Content script may be re-executed when browser.runtime.reload() is called */
-if (!window.alreadyExecuted) {
-  void initialize();
-}
+void maybeInitialize();
 
-window.alreadyExecuted = true;
+async function maybeInitialize(): Promise<void> {
+  // yomikiri tooltip iframe
+  if (document.documentElement.classList.contains("yomikiri")) {
+    return;
+  }
+
+  // Do not re-execute content script
+  // when browser.runtime.reload() is called
+  if (window.alreadyExecuted) return;
+  window.alreadyExecuted = true;
+
+  return initialize();
+}
 
 /** Return false if not triggered on Japanese text */
 /*
@@ -98,10 +107,6 @@ async function _trigger(x: number, y: number): Promise<boolean> {
 const trigger = Utils.SingleQueued(_trigger);
 
 function onMouseMove(ev: MouseEvent, config: Config) {
-  // inside yomikiri tooltip
-  if (document.documentElement.classList.contains("yomikiri")) {
-    return;
-  }
   if (!config.initialized || !config.get("state.enabled")) {
     return;
   }
@@ -114,10 +119,6 @@ function onMouseMove(ev: MouseEvent, config: Config) {
 }
 
 function onClick(ev: MouseEvent, config: Config) {
-  // inside yomikiri tooltip
-  if (document.documentElement.classList.contains("yomikiri")) {
-    return;
-  }
   if (!config.initialized || !config.get("state.enabled")) {
     return;
   }
