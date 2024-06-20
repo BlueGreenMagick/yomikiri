@@ -10,11 +10,18 @@ export interface CharLocation {
   charAt: number;
 }
 
-/** Binary search inside a Text node to find character location of (x,y) */
-export function charLocationAtPos(x: number, y: number): CharLocation | null {
+export function textNodeAtPos(x: number, y: number): Text | null {
   const element = document.elementFromPoint(x, y);
   if (element === null) return null;
   const node = childTextAt(element, x, y);
+  if (node === null) return null;
+
+  return node;
+}
+
+/** Binary search inside a Text node to find character location of (x,y) */
+export function charLocationAtPos(x: number, y: number): CharLocation | null {
+  const node = textNodeAtPos(x, y);
   if (node === null) return null;
 
   const range = new Range();

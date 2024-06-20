@@ -3,6 +3,7 @@ import {
   charLocationAtPos,
   sentenceAtCharLocation,
   nodesOfToken,
+  textNodeAtPos,
 } from "./scanner";
 import { SingleQueued, isTouchScreen } from "lib/utils";
 import { containsJapaneseContent } from "lib/japanese";
@@ -68,10 +69,17 @@ async function _trigger(x: number, y: number): Promise<boolean> {
 const trigger = SingleQueued(_trigger);
 
 async function handleMouseMoveInner(ev: MouseEvent) {
-  const config = await lazyConfig.get();
-  if (!config.get("state.enabled")) return;
+  if (
+    lazyConfig.getIfInitialized() === undefined &&
+    !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
+  ) {
+    return;
+  }
 
   if (ev.shiftKey) {
+    const config = await lazyConfig.get();
+    if (!config.get("state.enabled")) return;
+
     trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
       throw err;
     });
@@ -79,14 +87,29 @@ async function handleMouseMoveInner(ev: MouseEvent) {
 }
 
 async function handleClickInner(ev: MouseEvent) {
-  const config = await lazyConfig.get();
-  if (!config.get("state.enabled")) return;
+  if (
+    lazyConfig.getIfInitialized() === undefined &&
+    !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
+  ) {
+    return;
+  }
 
   if (isTouchScreen) {
+    const config = await lazyConfig.get();
+    if (!config.get("state.enabled")) return;
     const triggered = await trigger(ev.clientX, ev.clientY);
     if (triggered === false) {
       lazyTooltip.getIfInitialized()?.hide();
       highlighter.unhighlight();
     }
   }
+}
+
+/**
+ * Check if tooltip may show.
+ * If `false`, it is guranteed that tooltip won't show.
+ */
+function fastCheckIfTooltipMayShow(x: number, y: number): boolean {
+  const node = textNodeAtPos(x, y);
+  return node !== null;
 }
