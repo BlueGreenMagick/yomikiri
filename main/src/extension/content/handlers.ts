@@ -69,6 +69,8 @@ async function _trigger(x: number, y: number): Promise<boolean> {
 const trigger = SingleQueued(_trigger);
 
 async function handleMouseMoveInner(ev: MouseEvent) {
+  if (!ev.shiftKey) return;
+
   if (
     lazyConfig.getIfInitialized() === undefined &&
     !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
@@ -76,17 +78,17 @@ async function handleMouseMoveInner(ev: MouseEvent) {
     return;
   }
 
-  if (ev.shiftKey) {
-    const config = await lazyConfig.get();
-    if (!config.get("state.enabled")) return;
+  const config = await lazyConfig.get();
+  if (!config.get("state.enabled")) return;
 
-    trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
-      throw err;
-    });
-  }
+  trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
+    throw err;
+  });
 }
 
 async function handleClickInner(ev: MouseEvent) {
+  if (!isTouchScreen) return;
+
   if (
     lazyConfig.getIfInitialized() === undefined &&
     !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
@@ -94,22 +96,29 @@ async function handleClickInner(ev: MouseEvent) {
     return;
   }
 
-  if (isTouchScreen) {
-    const config = await lazyConfig.get();
-    if (!config.get("state.enabled")) return;
-    const triggered = await trigger(ev.clientX, ev.clientY);
-    if (triggered === false) {
-      lazyTooltip.getIfInitialized()?.hide();
-      highlighter.unhighlight();
-    }
+  const config = await lazyConfig.get();
+  if (!config.get("state.enabled")) return;
+
+  const triggered = await trigger(ev.clientX, ev.clientY);
+  if (triggered === false) {
+    lazyTooltip.getIfInitialized()?.hide();
+    highlighter.unhighlight();
   }
 }
 
 /**
- * Check if tooltip may show.
- * If `false`, it is guranteed that tooltip won't show.
+ * Rough check for whether tooltip may show.
+ *
+ * Used to avoid triggering code when:
+ * 1) ad iframes
+ * 2) user event that won't trigger tooltip
+ * 3) non-japanese websites
+ *
+ * It is ok to be slightly inaccurate for first event
+ * when it is not certain that this add-on is relevant
  */
 function fastCheckIfTooltipMayShow(x: number, y: number): boolean {
   const node = textNodeAtPos(x, y);
-  return node !== null;
+  if (node === null) return false;
+  return containsJapaneseContent(node.data);
 }
