@@ -14,7 +14,11 @@ import { containsJapaneseContent } from "lib/japanese";
 const browserApi = new BrowserApi({ context: "contentScript" });
 const platform = new Platform(browserApi) as ExtensionPlatform;
 const lazyBackend = new Utils.Lazy(async () => await platform.newBackend());
-const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform));
+const lazyConfig = new Utils.LazyAsync(async () => {
+  const config = await Config.initialize(platform);
+  handleStateEnabledChange(config);
+  return config;
+});
 const lazyAnkiApi = new LazyAsync(async () =>
   platform.newAnkiApi(await lazyConfig.get()),
 );
@@ -37,9 +41,9 @@ declare global {
   }
 }
 
-void maybeInitialize();
+maybeInitialize();
 
-async function maybeInitialize(): Promise<void> {
+function maybeInitialize() {
   // yomikiri tooltip iframe
   if (document.documentElement.classList.contains("yomikiri")) {
     return;
@@ -50,7 +54,7 @@ async function maybeInitialize(): Promise<void> {
   if (window.alreadyExecuted) return;
   window.alreadyExecuted = true;
 
-  return initialize();
+  initialize();
 }
 
 /** Return false if not triggered on Japanese text */
@@ -106,10 +110,9 @@ async function _trigger(x: number, y: number): Promise<boolean> {
 
 const trigger = Utils.SingleQueued(_trigger);
 
-function onMouseMove(ev: MouseEvent, config: Config) {
-  if (!config.initialized || !config.get("state.enabled")) {
-    return;
-  }
+async function onMouseMoveInner(ev: MouseEvent) {
+  const config = await lazyConfig.get();
+  if (!config.get("state.enabled")) return;
 
   if (ev.shiftKey) {
     trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
@@ -118,23 +121,25 @@ function onMouseMove(ev: MouseEvent, config: Config) {
   }
 }
 
-function onClick(ev: MouseEvent, config: Config) {
-  if (!config.initialized || !config.get("state.enabled")) {
-    return;
-  }
+function onMouseMove(ev: MouseEvent) {
+  void onMouseMoveInner(ev);
+}
+
+async function onClickInner(ev: MouseEvent) {
+  const config = await lazyConfig.get();
+  if (!config.get("state.enabled")) return;
 
   if (Utils.isTouchScreen) {
-    trigger(ev.clientX, ev.clientY)
-      .then((triggered) => {
-        if (triggered === false) {
-          lazyTooltip.getIfInitialized()?.hide();
-          highlighter.unhighlight();
-        }
-      })
-      .catch((err: unknown) => {
-        throw err;
-      });
+    const triggered = await trigger(ev.clientX, ev.clientY);
+    if (triggered === false) {
+      lazyTooltip.getIfInitialized()?.hide();
+      highlighter.unhighlight();
+    }
   }
+}
+
+function onClick(ev: MouseEvent) {
+  void onClickInner(ev);
 }
 
 function handleStateEnabledChange(config: Config) {
@@ -147,15 +152,9 @@ function handleStateEnabledChange(config: Config) {
   });
 }
 
-async function initialize() {
-  const config = await lazyConfig.get();
-  handleStateEnabledChange(config);
-  document.addEventListener("mousemove", (ev) => {
-    onMouseMove(ev, config);
-  });
-  document.addEventListener("click", (ev) => {
-    onClick(ev, config);
-  });
+function initialize() {
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("click", onClick);
 
   exposeGlobals({
     platform,
