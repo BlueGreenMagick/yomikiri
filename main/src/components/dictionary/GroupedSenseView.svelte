@@ -59,7 +59,9 @@
 
   .grouped-sense.anki .meaning.selected {
     border-left: 2px solid var(--accent);
-    padding: 0 calc(var(--edge-horizontal-padding) - 2px);
+    padding: 0;
+    padding-left: calc(var(--edge-horizontal-padding) - 2px);
+    padding-right: var(--edge-horizontal-padding);
     background-color: rgba(0, 0, 0, 0.07);
   }
 
