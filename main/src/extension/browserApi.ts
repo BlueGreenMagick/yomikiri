@@ -493,11 +493,11 @@ export class BrowserApi {
   }
 
   handleActionClicked(handler: (tab: chrome.tabs.Tab) => void) {
-    chrome.action.onClicked.addListener(handler);
+    this.action().onClicked.addListener(handler);
   }
 
   async setActionIcon(iconPath: string) {
-    await chrome.action.setIcon({
+    await this.action().setIcon({
       path: iconPath,
     });
   }
