@@ -1,7 +1,7 @@
 {
   "name": "@yomikiri/main",
-  "version": "0.1.3",
-  "description": "Yomikiri is a Japanese immersion learning tool.",
+  "version": "0.2.0",
+  "description": "Yomikiri is a browser extension for Japanese immersion learning.",
   "author": "BlueGreenMagick",
   "license": "MIT",
   "type": "module",

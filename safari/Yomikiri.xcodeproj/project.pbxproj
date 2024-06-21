@@ -764,7 +764,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yoonchae.Yomikiri.Yomikiri-Action";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -795,7 +795,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yoonchae.Yomikiri.Yomikiri-Action";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -940,7 +940,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/rust",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -981,7 +981,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/rust",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -1024,7 +1024,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -1068,7 +1068,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -1175,7 +1175,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -1210,7 +1210,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.1.3;
+				MARKETING_VERSION = 0.2.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,

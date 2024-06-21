@@ -1,7 +1,7 @@
 {
   "name": "yomikiri",
-  "version": "0.1.3",
-  "description": "Web extension to view definition for Japanese words and add to Anki.",
+  "version": "0.2.0",
+  "description": "Yomikiri is a browser extension for Japanese immersion learning",
   "private": true,
   "author": "BlueGreenMagick",
   "license": "Custom",
