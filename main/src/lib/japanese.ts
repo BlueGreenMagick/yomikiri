@@ -107,12 +107,7 @@ export namespace RubyString {
   }
 
   export function fromToken(token: Token): RubyString {
-    const tokens = token.children.length > 0 ? token.children : [token];
-    const rubied: RubyString = [];
-    for (const t of tokens) {
-      rubied.push(...RubyString.generate(t.text, t.reading));
-    }
-    return rubied;
+    return RubyString.generate(token.text, token.reading);
   }
 
   /** Ruby string in Anki furigana style `漢字[かんじ]`*/
