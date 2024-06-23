@@ -396,13 +396,13 @@ exports[`$なかなかに強いです > 'word (furigana-html)' 1`] = `"なかな
 
 exports[`$なかなかに強いです > 'word (kana)' 1`] = `"なかなか"`;
 
-exports[`$なかなかに強いです > 'word (main dict) (furigana-anki)' 1`] = `"中々[なかなか]"`;
+exports[`$なかなかに強いです > 'word (main-dict) (furigana-anki)' 1`] = `"中々[なかなか]"`;
 
-exports[`$なかなかに強いです > 'word (main dict) (furigana-html)' 1`] = `"<ruby>中々<rt>なかなか</rt></ruby>"`;
+exports[`$なかなかに強いです > 'word (main-dict) (furigana-html)' 1`] = `"<ruby>中々<rt>なかなか</rt></ruby>"`;
 
-exports[`$なかなかに強いです > 'word (main dict) (kana)' 1`] = `"なかなか"`;
+exports[`$なかなかに強いです > 'word (main-dict) (kana)' 1`] = `"なかなか"`;
 
-exports[`$なかなかに強いです > 'word (main dict)' 1`] = `"中々"`;
+exports[`$なかなかに強いです > 'word (main-dict)' 1`] = `"中々"`;
 
 exports[`$なかなかに強いです > 'word' 1`] = `"なかなか"`;
 
@@ -957,13 +957,13 @@ exports[`Test that special character is escaped: 図＄書<-> > 'word (furigana-
 
 exports[`Test that special character is escaped: 図＄書<-> > 'word (kana)' 1`] = `"としょ"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict) (furigana-anki)' 1`] = `"図書[としょ]"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main-dict) (furigana-anki)' 1`] = `"図書[としょ]"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict) (furigana-html)' 1`] = `"<ruby>図書<rt>としょ</rt></ruby>"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main-dict) (furigana-html)' 1`] = `"<ruby>図書<rt>としょ</rt></ruby>"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict) (kana)' 1`] = `"としょ"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main-dict) (kana)' 1`] = `"としょ"`;
 
-exports[`Test that special character is escaped: 図＄書<-> > 'word (main dict)' 1`] = `"図書"`;
+exports[`Test that special character is escaped: 図＄書<-> > 'word (main-dict)' 1`] = `"図書"`;
 
 exports[`Test that special character is escaped: 図＄書<-> > 'word' 1`] = `"図書"`;
 
@@ -1429,13 +1429,13 @@ exports[`Test unicode normalization: 彼か＄゙学生 > 'word (furigana-html)'
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'word (kana)' 1`] = `"が"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (furigana-anki)' 1`] = `"が"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main-dict) (furigana-anki)' 1`] = `"が"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (furigana-html)' 1`] = `"が"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main-dict) (furigana-html)' 1`] = `"が"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict) (kana)' 1`] = `"が"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main-dict) (kana)' 1`] = `"が"`;
 
-exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main dict)' 1`] = `"が"`;
+exports[`Test unicode normalization: 彼か＄゙学生 > 'word (main-dict)' 1`] = `"が"`;
 
 exports[`Test unicode normalization: 彼か＄゙学生 > 'word' 1`] = `"が"`;
 
@@ -2179,13 +2179,13 @@ exports[`春の茶が飲＄みたいです > 'word (furigana-html)' 1`] = `"<rub
 
 exports[`春の茶が飲＄みたいです > 'word (kana)' 1`] = `"どる"`;
 
-exports[`春の茶が飲＄みたいです > 'word (main dict) (furigana-anki)' 1`] = `"ドル"`;
+exports[`春の茶が飲＄みたいです > 'word (main-dict) (furigana-anki)' 1`] = `"ドル"`;
 
-exports[`春の茶が飲＄みたいです > 'word (main dict) (furigana-html)' 1`] = `"ドル"`;
+exports[`春の茶が飲＄みたいです > 'word (main-dict) (furigana-html)' 1`] = `"ドル"`;
 
-exports[`春の茶が飲＄みたいです > 'word (main dict) (kana)' 1`] = `"ドル"`;
+exports[`春の茶が飲＄みたいです > 'word (main-dict) (kana)' 1`] = `"ドル"`;
 
-exports[`春の茶が飲＄みたいです > 'word (main dict)' 1`] = `"ドル"`;
+exports[`春の茶が飲＄みたいです > 'word (main-dict)' 1`] = `"ドル"`;
 
 exports[`春の茶が飲＄みたいです > 'word' 1`] = `"＄"`;
 
@@ -2758,13 +2758,13 @@ exports[`＄読みたい > 'word (furigana-html)' 1`] = `"<ruby>読<rt>よ</rt><
 
 exports[`＄読みたい > 'word (kana)' 1`] = `"よみたい"`;
 
-exports[`＄読みたい > 'word (main dict) (furigana-anki)' 1`] = `"読[よ]む"`;
+exports[`＄読みたい > 'word (main-dict) (furigana-anki)' 1`] = `"読[よ]む"`;
 
-exports[`＄読みたい > 'word (main dict) (furigana-html)' 1`] = `"<ruby>読<rt>よ</rt></ruby>む"`;
+exports[`＄読みたい > 'word (main-dict) (furigana-html)' 1`] = `"<ruby>読<rt>よ</rt></ruby>む"`;
 
-exports[`＄読みたい > 'word (main dict) (kana)' 1`] = `"よむ"`;
+exports[`＄読みたい > 'word (main-dict) (kana)' 1`] = `"よむ"`;
 
-exports[`＄読みたい > 'word (main dict)' 1`] = `"読む"`;
+exports[`＄読みたい > 'word (main-dict)' 1`] = `"読む"`;
 
 exports[`＄読みたい > 'word' 1`] = `"読みたい"`;
 
