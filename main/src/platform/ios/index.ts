@@ -220,9 +220,7 @@ export class IosPlatform implements IPlatform {
     const iv = setInterval(checkReload, 1000);
 
     const ver = await this.requestToApp("iosVersion", null);
-    if (
-      !(ver.major > 18 || (ver.major === 17 && ver.minor >= 5 && ver.minor < 6))
-    ) {
+    if (!(ver.major === 17 && ver.minor === 5)) {
       clearInterval(iv);
     }
   }
