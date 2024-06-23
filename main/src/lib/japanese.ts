@@ -44,6 +44,8 @@ export namespace RubyString {
   // 2. use regex to split reading into parts.
   // e.g. [読,み,切,り] => "よみきり".match(/(.+)み(.+)り/)
   // This might be inaccurate for long test
+  //
+  // FIX: May generate incorrect RubyString for readings that have both hiragana and katakana.
   /**
    * Generate furigana from text and its reading.
    * Assumes `text` and `reading` is normalized
@@ -105,7 +107,12 @@ export namespace RubyString {
   }
 
   export function fromToken(token: Token): RubyString {
-    return RubyString.generate(token.text, token.reading);
+    const tokens = token.children.length > 0 ? token.children : [token];
+    const rubied: RubyString = [];
+    for (const t of tokens) {
+      rubied.push(...RubyString.generate(t.text, t.reading));
+    }
+    return rubied;
   }
 
   /** Ruby string in Anki furigana style `漢字[かんじ]`*/
