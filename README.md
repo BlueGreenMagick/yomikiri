@@ -1,10 +1,6 @@
-<p align="center">
-<img src="./extra/resources/github-splash.png" alt="yomikiri"/>
-</p>
-
 # Yomikiri
 
-Yomikiri is a Japanese immersion learning tool. As you browse the internet and encounter words you don't know, you can look up the word definitions with Yomikiri and add the word to Anki flashcards.
+Yomikiri is a Japanese immersion learning tool. As you read Japanese text and encounter words you don't know, look up the meaning and add the word to Anki flashcards.
 
 Yomikiri is available for Chrome, Firefox, and iOS.
 
@@ -17,15 +13,21 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 
 ## Features
 
-<img src="./extra/resources/screenshot1.png?raw=true" style="max-height: 300px;"/>
+- Hover over a word to view definition. It recognizes word boundaries within sentence.
+<img src="./extra/resources/screenshots/desktop-tooltip.jpg?raw=true" height="240"/>
 
-- View definition for hovered word
-- Recognizes word boundary within sentence
-- Recognizes conjugation forms of verbs or adjectives
-- View translation for sentence.
-- View relevant grammar with a link to Tofugu.
+- Search and view how a sentence is structured.
+<img src="./extra/resources/screenshots/desktop-popup.jpg?raw=true" height="240"/>
+
 - Add word to Anki. You can preview and edit the note before adding.
-- Search and view how a sentence is structured
+If Anki is not running, notes are stored and automatically added later. You don't have to keep Anki running in the background all the time.
+<img src="./extra/resources/screenshots/desktop-tooltip-anki.jpg?raw=true" height="240"/>
+
+- Customizable Anki note template.
+<img src="./extra/resources/screenshots/desktop-anki-configuration.jpg?raw=true" height="240"/>
+
+- View sentence translation.
+- View relevant grammar with a link to Tofugu.
 
 ## Building from source
 
