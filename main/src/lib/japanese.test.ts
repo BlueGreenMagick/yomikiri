@@ -24,6 +24,9 @@ describe("RubyString", () => {
       { base: "お" },
       { base: "客", ruby: "きゃく" },
     ]);
+    expect(RubyString.generate("パッとしない", "パッとしない")).toEqual([
+      { base: "パッとしない" },
+    ]);
   });
 
   test("generate complex", () => {

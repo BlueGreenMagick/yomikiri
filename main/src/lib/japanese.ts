@@ -54,7 +54,12 @@ export namespace RubyString {
     if (text === "") {
       return [];
     }
-    if (reading === undefined || reading === "" || reading === "*") {
+    if (
+      reading === undefined ||
+      reading === "" ||
+      reading === "*" ||
+      text === reading
+    ) {
       return [{ base: text }];
     }
     const inKatakana = isKatakana(reading);
