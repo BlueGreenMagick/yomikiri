@@ -61,6 +61,10 @@
     font-size: 1.5rem;
   }
 
+  :global(.desktop) .sentence-view {
+    font-size: 1.25rem;
+  }
+
   .token {
     display: flex;
     margin: 2px;
