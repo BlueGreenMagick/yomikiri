@@ -44,6 +44,7 @@
       value
         .then((v) => {
           field.value = v;
+          initialContent = v;
         })
         .catch((err: unknown) => {
           errored = true;
