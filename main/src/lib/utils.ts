@@ -428,6 +428,7 @@ export function newChangeTracker<T>(): (obj: T) => number {
 
   return (obj: T) => {
     if (!Object.is(obj, prev)) {
+      prev = obj;
       tick += 1;
     }
     return tick;
