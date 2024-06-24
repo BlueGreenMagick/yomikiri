@@ -28,7 +28,7 @@
 </script>
 
 <div id="yomikiri-entries" on:mousedown={onMouseDown}>
-  {#each entries as entry}
+  {#each entries as entry (entry)}
     <DicEntryView {platform} {config} {entry} {model} {onSelectEntryForAnki} />
   {/each}
 </div>
