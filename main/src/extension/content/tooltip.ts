@@ -5,8 +5,7 @@ import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
 import type { ExtensionPlatform } from "@platform";
 import type { AnkiApi } from "@platform/anki";
-
-const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
+import { TOOLTIP_IFRAME_ID } from "consts";
 
 export class Tooltip {
   platform: ExtensionPlatform;

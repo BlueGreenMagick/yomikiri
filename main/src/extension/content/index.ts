@@ -8,6 +8,7 @@ import {
   lazyTooltip,
   platform,
 } from "./shared";
+import { TOOLTIP_IFRAME_ID } from "consts";
 
 declare global {
   interface Window {
@@ -19,7 +20,7 @@ maybeInitialize();
 
 function maybeInitialize() {
   // yomikiri tooltip iframe
-  if (document.documentElement.classList.contains("yomikiri")) {
+  if (window.frameElement?.id === TOOLTIP_IFRAME_ID) {
     return;
   }
 
