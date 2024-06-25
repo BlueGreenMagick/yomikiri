@@ -38,11 +38,9 @@ Please note that we do not support building the project on Windows. You may want
 Run the following commands
 
 ```sh
-# Downloads and builds JMDict and UniDic dictionary files,
-# so it will take a long time to run.
+# Downloads and builds JMDict and UniDic dictionary files
 pnpm run construct:web
 # install node dependencies
-# Optionally, use --frozen-lockfile to build identical software
 pnpm install
 pnpm generate-licenses
 ```
