@@ -25,18 +25,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ahash"
-version = "0.8.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e89da841a80418a9b391ebaea17f5c112ffaaa96f621d2c285b5174da76b9011"
-dependencies = [
- "cfg-if",
- "once_cell",
- "version_check",
- "zerocopy",
-]
-
-[[package]]
 name = "aho-corasick"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -209,25 +197,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad"
 dependencies = [
  "serde",
-]
-
-[[package]]
-name = "bincode"
-version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f11ea1a0346b94ef188834a65c068a03aec181c94896d481d7a0a40d85b0ce95"
-dependencies = [
- "bincode_derive",
- "serde",
-]
-
-[[package]]
-name = "bincode_derive"
-version = "2.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e30759b3b99a1b802a7a3aa21c85c3ded5c28e1c83170d82d70f08bbf7f3e4c"
-dependencies = [
- "virtue",
 ]
 
 [[package]]
@@ -537,19 +506,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "daachorse"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "63b7ef7a4be509357f4804d0a22e830daddb48f19fd604e4ad32ddce04a94c36"
-
-[[package]]
 name = "dashmap"
 version = "5.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "978747c1d849a7d2ee5e8adc0159961c48fb7e5db2f06af6723b80123bb53856"
 dependencies = [
  "cfg-if",
- "hashbrown 0.14.3",
+ "hashbrown",
  "lock_api",
  "once_cell",
  "parking_lot_core",
@@ -835,15 +798,6 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.13.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43a3c133739dddd0d2990f9a4bdf8eb4b21ef50e4851ca85ab661199821d510e"
-dependencies = [
- "ahash",
-]
-
-[[package]]
-name = "hashbrown"
 version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "290f1a1d9242c78d09ce40a5e87e7554ee637af1351968159f4952f028f75604"
@@ -948,7 +902,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "168fb715dda47215e360912c096649d23d58bf392ac62f73919e831745e40f26"
 dependencies = [
  "equivalent",
- "hashbrown 0.14.3",
+ "hashbrown",
 ]
 
 [[package]]
@@ -1031,7 +985,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "csv",
  "encoding",
@@ -1049,7 +1003,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "encoding_rs",
  "log",
@@ -1075,7 +1029,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "lindera-cc-cedict-builder",
  "lindera-core",
@@ -1092,7 +1046,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "csv",
  "encoding_rs",
@@ -1112,7 +1066,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "csv",
  "encoding_rs",
@@ -1132,7 +1086,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "csv",
  "encoding",
@@ -1149,7 +1103,7 @@ name = "lindera-tokenizer"
 version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
- "bincode 1.3.3",
+ "bincode",
  "lindera-core",
  "lindera-dictionary",
  "once_cell",
@@ -1163,7 +1117,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "csv",
  "encoding",
@@ -1872,19 +1826,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
-name = "tokenizers"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "lindera-core",
- "lindera-dictionary",
- "lindera-tokenizer",
- "log",
- "vaporetto",
- "yomikiri-unidic-types",
-]
-
-[[package]]
 name = "toml"
 version = "0.5.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2054,7 +1995,7 @@ name = "uniffi_macros"
 version = "0.27.1"
 source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#e6512c150410854e1d50b4dadf1350bedcb25cfb"
 dependencies = [
- "bincode 1.3.3",
+ "bincode",
  "camino",
  "fs-err",
  "once_cell",
@@ -2148,17 +2089,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "711b9620af191e0cdc7468a8d14e709c3dcdb115b36f838e601583af800a370a"
 
 [[package]]
-name = "vaporetto"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e19c41effc32127fdfb9dcfa256627e5c4c750e1cb23f94ce8f685711d0fe17"
-dependencies = [
- "bincode 2.0.0-rc.3",
- "daachorse",
- "hashbrown 0.13.2",
-]
-
-[[package]]
 name = "vec_map"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2169,12 +2099,6 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
-
-[[package]]
-name = "virtue"
-version = "0.0.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dcc60c0624df774c82a0ef104151231d37da4962957d691c011c852b2473314"
 
 [[package]]
 name = "walkdir"
@@ -2510,7 +2434,7 @@ checksum = "aed111bd9e48a802518765906cbdadf0b45afb72b9c81ab049a3b86252adffdd"
 name = "yomikiri-dictionary"
 version = "0.1.0"
 dependencies = [
- "bincode 1.3.3",
+ "bincode",
  "byteorder",
  "cfg_aliases 0.1.1",
  "chrono",
@@ -2535,7 +2459,7 @@ name = "yomikiri-jmdict"
 version = "0.1.0"
 dependencies = [
  "RustyXML",
- "bincode 1.3.3",
+ "bincode",
  "regex",
  "thiserror",
 ]
@@ -2544,7 +2468,7 @@ dependencies = [
 name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
- "bincode 1.3.3",
+ "bincode",
  "cfg_aliases 0.2.0",
  "console_error_panic_hook",
  "flate2",
@@ -2590,26 +2514,6 @@ dependencies = [
 [[package]]
 name = "yomikiri-unidic-types"
 version = "0.1.0"
-
-[[package]]
-name = "zerocopy"
-version = "0.7.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74d4d3961e53fa4c9a25a8637fc2bfaf2595b3d3ae34875568a5cf64787716be"
-dependencies = [
- "zerocopy-derive",
-]
-
-[[package]]
-name = "zerocopy-derive"
-version = "0.7.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ce1b18ccd8e73a9321186f97e46f9f04b778851177567b1975109d26a08d2a6"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.60",
-]
 
 [[package]]
 name = "zeroize"
