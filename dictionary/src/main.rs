@@ -24,9 +24,12 @@ fn main() -> Result<()> {
     std::fs::create_dir_all(&resources_dir)?;
     std::fs::create_dir_all(&jmdict_dir)?;
 
+    let mut jmdict_downloaded = false;
+
     if !jmdict_file_path.exists() {
         println!("Downloading JMDict file from the web...");
         download_jmdict(&jmdict_file_path)?;
+        jmdict_downloaded = true;
     }
 
     println!("Parsing downloaded JMDict xml file...",);
@@ -41,22 +44,24 @@ fn main() -> Result<()> {
 
     write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
 
-    println!("Writing metadata.json...");
-    let download_time = Utc::now();
-    let download_time = download_time.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
-    let index_file_size = fs::metadata(&output_index_path)?.len();
-    let entries_file_size = fs::metadata(&output_path)?.len();
-    let file_size = index_file_size + entries_file_size;
+    if (jmdict_downloaded) {
+        println!("Writing metadata.json...");
+        let download_time = Utc::now();
+        let download_time = download_time.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
+        let index_file_size = fs::metadata(&output_index_path)?.len();
+        let entries_file_size = fs::metadata(&output_path)?.len();
+        let file_size = index_file_size + entries_file_size;
 
-    let metadata_json = format!(
-        "{{
-    \"downloadDate\": \"{}\",
-    \"filesSize\": {}
-}}",
-        download_time, file_size
-    );
-    let metadata_json_file = resources_dir.join("dictionary-metadata.json");
-    fs::write(&metadata_json_file, &metadata_json)?;
+        let metadata_json = format!(
+            "{{
+        \"downloadDate\": \"{}\",
+        \"filesSize\": {}
+    }}",
+            download_time, file_size
+        );
+        let metadata_json_file = resources_dir.join("dictionary-metadata.json");
+        fs::write(&metadata_json_file, &metadata_json)?;
+    }
 
     println!("Data writing complete.");
     Ok(())
