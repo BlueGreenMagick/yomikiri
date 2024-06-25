@@ -44,7 +44,7 @@ fn main() -> Result<()> {
 
     write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
 
-    if (jmdict_downloaded) {
+    if jmdict_downloaded {
         println!("Writing metadata.json...");
         let download_time = Utc::now();
         let download_time = download_time.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);

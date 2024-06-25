@@ -3,7 +3,7 @@ name = "yomikiri-dictionary"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-default-run = "yomikiri-dictionary-builder"
+default-run = "yomikiri-dictionary-downloader"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -12,7 +12,6 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = []
-bin = ["dep:ureq", "dep:tempfile", "dep:chrono"]
 
 [dependencies]
 yomikiri-jmdict = { path = "../jmdict" }
@@ -43,8 +42,13 @@ cfg_aliases = "0.1.0"
 
 [[bin]]
 name = "yomikiri-dictionary-builder"
-path = "src/main.rs"
-required-features = ["bin"]
+path = "bin/convert.rs"
+required-features = ["ureq", "tempfile", "chrono"]
+
+[[bin]]
+name = "yomikiri-dictionary-downloader"
+path = "bin/download.rs"
+required-features = ["ureq", "tempfile"]
 
 [lints]
 workspace = true
