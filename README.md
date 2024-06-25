@@ -31,7 +31,7 @@ If Anki is not running, notes are stored and automatically added later. You don'
 
 ## Building from source
 
-Please note that we do not support building the project on Windows. You may want to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to build the project.
+Please note that we do not support building the project on Windows. You may want to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to build the project. The build system has only been tested on MacOS 14 (ARM) however, and may not quite work on Linux.
 
 [NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust & cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
 
@@ -53,13 +53,13 @@ and run `pnpm run construct:all`.
 
 ### Chrome
 
-Run `pnpm dev:chrome`.
+Run `pnpm dev:chrome` or `pnpm build:chrome`.
 
 In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/main/build/chrome`.
 
 ### Firefox
 
-Run `pnpm dev:firefox`.
+Run `pnpm dev:firefox` or `pnpm build:firefox`.
 
 In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab.
 Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.
