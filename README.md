@@ -6,10 +6,9 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 
 <div>
 <a href="https://chromewebstore.google.com/detail/iecicegmfmljmefcaknlkaaniemghefc"><img alt="Available in the Chrome Web Store" src="https://i.imgur.com/Mw6ip7o.png" height="48"/></img></a>  
+<a href="https://addons.mozilla.org/en-US/firefox/addon/yomikiri"><img alt="Get the add-on for Firefox" src="https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg" height="48"></img></a>
 <a href="https://apps.apple.com/us/app/yomikiri/id6479743831"><img alt="Download on the App Store" src="https://i.imgur.com/nRP4dWp.png" height="48"></img></a>
 </div>
-
-(Firefox is coming soon!)
 
 ## Features
 
