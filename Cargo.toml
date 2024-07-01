@@ -1,10 +1,10 @@
 [workspace]
 members = [
-  "rust",
-  "jmdict",
-  "dictionary",
-  "unidic",
-  "unidic-types",
+  "crates/yomikiri-backend",
+  "crates/jmdict",
+  "crates/dictionary",
+  "crates/unidic",
+  "crates/unidic-types",
   "extra/generate-license/rust",
 ]
 resolver = "2"

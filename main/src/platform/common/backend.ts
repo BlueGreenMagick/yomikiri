@@ -1,4 +1,4 @@
-import type { RawTokenizeResult } from "@yomikiri/yomikiri-rs";
+import type { RawTokenizeResult } from "@yomikiri/yomikiri-backend";
 import { Entry, type EntryObject } from "lib/dicEntry";
 import { toHiragana } from "lib/japanese";
 import type { DesktopBackend } from "../desktop/backend";
@@ -9,7 +9,7 @@ export type { DesktopBackend } from "../desktop/backend";
 export type { IosBackend } from "../ios/backend";
 export type { IosAppBackend } from "../iosapp/backend";
 
-export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-rs";
+export type { Token, RawTokenizeResult } from "@yomikiri/yomikiri-backend";
 
 export interface TokenizeRequest {
   text: string;

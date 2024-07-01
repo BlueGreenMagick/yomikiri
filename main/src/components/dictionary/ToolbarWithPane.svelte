@@ -2,7 +2,7 @@
   import Toolbar, { type Tools } from "./Toolbar.svelte";
   import GrammarPane from "./GrammarPane.svelte";
   import TranslatePane from "./TranslatePane.svelte";
-  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
+  import type { GrammarInfo } from "@yomikiri/yomikiri-backend";
   import type { Platform } from "@platform";
 
   export let platform: Platform;
@@ -17,12 +17,12 @@
 
 <div
   class="toolbar-with-pane"
-  style:--toolbar-foreground={tooltipMode
-    ? "var(--background-alt)"
-    : "var(--background-dark)"}
-  style:--toolbar-background={tooltipMode
-    ? "var(--background-dark)"
-    : "var(--background-alt)"}
+  style:--toolbar-foreground={tooltipMode ?
+    "var(--background-alt)"
+  : "var(--background-dark)"}
+  style:--toolbar-background={tooltipMode ?
+    "var(--background-dark)"
+  : "var(--background-alt)"}
 >
   <Toolbar
     {onClose}
