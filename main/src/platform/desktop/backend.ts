@@ -1,5 +1,5 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
-import { Backend as BackendWasm } from "@yomikiri/yomikiri-backend";
+import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { BrowserApi } from "extension/browserApi";
 
 import Utils from "lib/utils";

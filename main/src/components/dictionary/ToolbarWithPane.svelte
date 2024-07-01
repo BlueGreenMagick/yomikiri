@@ -2,7 +2,7 @@
   import Toolbar, { type Tools } from "./Toolbar.svelte";
   import GrammarPane from "./GrammarPane.svelte";
   import TranslatePane from "./TranslatePane.svelte";
-  import type { GrammarInfo } from "@yomikiri/yomikiri-backend";
+  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
   import type { Platform } from "@platform";
 
   export let platform: Platform;

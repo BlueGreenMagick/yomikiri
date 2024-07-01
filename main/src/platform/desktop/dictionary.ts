@@ -1,6 +1,6 @@
 import DICTIONARY_WASM_URL from "@yomikiri/yomikiri-dictionary/yomikiri_dictionary_bg.wasm";
 import initWasm, { create_dictionary } from "@yomikiri/yomikiri-dictionary";
-import BundledDictMetadata from "@yomikiri/dictionary/res/dictionary-metadata.json";
+import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
 import Utils from "lib/utils";
 import type {
   DictionaryMetadata,

@@ -6,11 +6,11 @@
 import "platform/desktop/fetch.ts";
 
 import { vi } from "vitest";
-import initWasm, { Backend as BackendWasm } from "@yomikiri/yomikiri-backend";
+import initWasm, { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import fs from "node:fs/promises";
-import wasm from "@yomikiri/yomikiri-backend/yomikiri_rs_bg.wasm";
-import ENYomikiridict from "@yomikiri/dictionary/res/english.yomikiridict";
-import ENYomikiriIndex from "@yomikiri/dictionary/res/english.yomikiriindex";
+import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
+import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
+import ENYomikiriIndex from "@yomikiri/dictionary-files/english.yomikiriindex";
 import type { StoredConfiguration } from "lib/config";
 import { DesktopPlatform } from "platform/desktop";
 

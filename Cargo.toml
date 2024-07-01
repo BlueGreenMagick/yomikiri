@@ -6,6 +6,7 @@ members = [
   "crates/unidic",
   "crates/unidic-types",
   "extra/generate-license/rust",
+  "crates/yomikiri-generate-dictionary",
 ]
 resolver = "2"
 

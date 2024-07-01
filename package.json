@@ -8,8 +8,8 @@
   "url": "https://github.com/bluegreenmagick/yomikiri",
   "type": "module",
   "scripts": {
-    "update-dictionary": "pnpm run --dir ./crates/dictionary update-dictionary",
-    "construct:dictionary": "pnpm run --dir ./crates/dictionary construct",
+    "update-dictionary": "pnpm run --filter='@yomikiri/generate-dictionary-rs' update-dictionary",
+    "construct:dictionary": "pnpm run --filter='@yomikiri/generate-dictionary-rs' download",
     "construct:unidic": "cd ./crates/unidic; cargo run",
     "construct:backend_wasm": "pnpm run --dir ./crates/yomikiri-backend wasm",
     "construct:backend_ios": "pnpm run --dir ./crates/yomikiri-backend ios",

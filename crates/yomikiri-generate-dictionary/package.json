@@ -1,0 +1,9 @@
+{
+  "name": "@yomikiri/generate-dictionary-rs",
+  "version": "0.0.1",
+  "scripts": {
+    "generate": "cargo run -- generate",
+    "update-dictionary": "cargo run -- generate --update",
+    "download": "cargo run -- download"
+  }
+}

@@ -2455,6 +2455,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "yomikiri-generate-dictionary"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "clap 4.5.4",
+ "flate2",
+ "tempfile",
+ "ureq",
+ "yomikiri-dictionary",
+]
+
+[[package]]
 name = "yomikiri-jmdict"
 version = "0.1.0"
 dependencies = [
