@@ -114,26 +114,6 @@ const buildManifestPlugin: Plugin = {
   },
 };
 
-/** Watch and rebuild for extra files */
-const watchPlugin: Plugin = {
-  name: "watchPlugin",
-  setup(build) {
-    let watching = false;
-    build.onStart(() => {
-      watching = false;
-    });
-    build.onResolve({ filter: /./ }, (_args) => {
-      if (!watching) {
-        watching = true;
-        return {
-          watchFiles: ["./src/global.css", "./options/styles.css"],
-        };
-      }
-      return null;
-    });
-  },
-};
-
 const svelteConfiguredPlugin: Plugin = sveltePlugin({
   preprocess: sveltePreprocess({
     postcss: {
@@ -197,7 +177,6 @@ function generateBuildOptions(): BuildOptions {
       logRebuildPlugin,
       platformAliasPlugin,
       buildManifestPlugin,
-      watchPlugin,
       svelteConfiguredPlugin,
     ],
   };
