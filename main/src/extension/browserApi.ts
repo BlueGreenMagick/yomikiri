@@ -77,7 +77,7 @@ export interface ApiInitializeOptions {
   context: ExecutionContext;
 }
 
-type ConnectionKey = "dictionaryCheckInstall";
+type ConnectionKey = "updateDictionary";
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
 export class BrowserApi {
@@ -97,6 +97,7 @@ export class BrowserApi {
     const opts: ApiInitializeOptions = {
       handleRequests: true,
       handleStorageChange: true,
+      handleConnection: options.context === "background",
       ...options,
     };
     this.context = opts.context;

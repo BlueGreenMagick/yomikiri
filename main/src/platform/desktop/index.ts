@@ -29,17 +29,20 @@ export class DesktopPlatform implements IPlatform {
   configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await this.migrateConfigInner();
   });
+  backend: LazyAsync<DesktopBackend> = new LazyAsync(() => {
+    return DesktopBackend.initialize(this.browserApi);
+  });
 
   constructor(browserApi: BrowserApi) {
     this.browserApi = browserApi;
   }
 
   async newBackend(): Promise<DesktopBackend> {
-    return await DesktopBackend.initialize(this.browserApi);
+    return await this.backend.get();
   }
 
   newDictionary(): DesktopDictionary {
-    return new DesktopDictionary();
+    return new DesktopDictionary(this.browserApi, this.backend);
   }
 
   newAnkiApi(config: Config): DesktopAnkiApi {

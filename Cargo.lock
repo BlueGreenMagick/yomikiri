@@ -333,12 +333,6 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "cfg_aliases"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
-
-[[package]]
-name = "cfg_aliases"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77e53693616d3075149f4ead59bdeecd204ac6b8192d8969757601b74bddf00f"
@@ -2436,21 +2430,12 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "byteorder",
- "cfg_aliases 0.1.1",
- "chrono",
- "console_error_panic_hook",
  "flate2",
  "itertools 0.11.0",
- "js-sys",
  "log",
  "serde",
  "serde_json",
- "tempfile",
  "thiserror",
- "ureq",
- "wasm-bindgen",
- "wasm-logger",
- "web-sys",
  "yomikiri-jmdict",
 ]
 
@@ -2482,7 +2467,7 @@ name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
  "bincode",
- "cfg_aliases 0.2.0",
+ "cfg_aliases",
  "console_error_panic_hook",
  "flate2",
  "js-sys",

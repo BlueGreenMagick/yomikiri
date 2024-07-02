@@ -1,12 +1,13 @@
-import DICTIONARY_WASM_URL from "@yomikiri/yomikiri-dictionary/yomikiri_dictionary_bg.wasm";
-import initWasm, { create_dictionary } from "@yomikiri/yomikiri-dictionary";
-import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
 import Utils from "lib/utils";
 import type {
   DictionaryMetadata,
   IDictionary as IDictionary,
 } from "../common/dictionary";
 import { openDB, type DBSchema } from "idb";
+import type { DesktopBackend } from "./backend";
+import type { Backend } from "@yomikiri/yomikiri-rs";
+import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
+import type { BrowserApi } from "extension/browserApi";
 
 export type { DictionaryMetadata } from "../common/dictionary";
 
@@ -26,18 +27,29 @@ interface DictionaryDBSchema extends DBSchema {
 }
 
 export class DesktopDictionary implements IDictionary {
-  _wasm_initialized = false;
+  wasm: Backend | undefined;
+  browserApi: BrowserApi;
+
+  constructor(browserApi: BrowserApi, backend: DesktopBackend) {
+    this.wasm = backend.wasm;
+    this.browserApi = browserApi;
+  }
 
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    const prom = Utils.PromiseWithProgress.fromPromise(
-      this._updateDictionary(progressFn),
-      "Downloading JMDict file...",
-    );
+    throw new Error("TODO: Currently not supported!");
+    if (this.browserApi.context === "background") {
+      const prom = Utils.PromiseWithProgress.fromPromise(
+        this._updateDictionary(progressFn),
+        "Downloading JMDict file...",
+      );
 
-    function progressFn(msg: string) {
-      prom.setProgress(msg);
+      function progressFn(msg: string) {
+        prom.setProgress(msg);
+      }
+      return prom;
+    } else {
+      const _port = this.browserApi.connect("updateDictionary");
     }
-    return prom;
   }
 
   private async _updateDictionary(
@@ -70,15 +82,13 @@ export class DesktopDictionary implements IDictionary {
   private async _createNewDictionary(
     progressFn: (msg: string) => unknown,
   ): Promise<[Uint8Array, Uint8Array]> {
-    const wasmP = this.loadWasm();
-    const bufferP = fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz").then(
-      (resp) => resp.arrayBuffer(),
-    );
-    const [_wasm, buffer] = await Promise.all([wasmP, bufferP]);
+    const buffer = await fetch(
+      "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz",
+    ).then((resp) => resp.arrayBuffer());
     const typedarray = new Uint8Array(buffer);
     progressFn("Creating dictionary file...");
     await Utils.nextDocumentPaint();
-    return create_dictionary(typedarray);
+    return this.wasm.update_dictionary(typedarray);
   }
 
   async openDictionaryDB() {
@@ -102,14 +112,6 @@ export class DesktopDictionary implements IDictionary {
         downloadDate: new Date(BundledDictMetadata.downloadDate),
       };
     }
-  }
-
-  private async loadWasm(): Promise<void> {
-    if (this._wasm_initialized) return;
-    // @ts-expect-error wasm is string
-    const resp = await fetch(DICTIONARY_WASM_URL);
-    await initWasm(resp);
-    this._wasm_initialized = true;
   }
 
   /** Loads (index, entries) if saved in db. Returns null otherwise. */

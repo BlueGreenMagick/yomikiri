@@ -39,19 +39,19 @@ importers:
         specifier: ^7.7.0
         version: 7.12.0(eslint@8.57.0)(typescript@5.4.5)
 
-  crates/dictionary: {}
-
-  crates/dictionary/pkg: {}
-
   crates/jmdict: {}
 
   crates/yomikiri-backend: {}
 
   crates/yomikiri-backend/pkg: {}
 
-  crates/yomikiri-generate-dictionary: {}
+  crates/yomikiri-dictionary: {}
 
-  crates/yomikiri-generate-dictionary/files: {}
+  crates/yomikiri-dictionary-generator: {}
+
+  crates/yomikiri-dictionary-generator/files: {}
+
+  crates/yomikiri-dictionary/pkg: {}
 
   extra/generate-license:
     devDependencies:
@@ -93,13 +93,13 @@ importers:
     dependencies:
       '@yomikiri/dictionary-files':
         specifier: workspace:*
-        version: link:../crates/yomikiri-generate-dictionary/files
+        version: link:../crates/yomikiri-dictionary-generator/files
       '@yomikiri/generate-license':
         specifier: workspace:*
         version: link:../extra/generate-license
       '@yomikiri/yomikiri-dictionary':
         specifier: workspace:*
-        version: link:../crates/dictionary/pkg
+        version: link:../crates/yomikiri-dictionary/pkg
       '@yomikiri/yomikiri-rs':
         specifier: workspace:*
         version: link:../crates/yomikiri-backend/pkg

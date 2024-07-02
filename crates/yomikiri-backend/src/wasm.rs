@@ -4,10 +4,13 @@ use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 use bincode::Options;
-use js_sys::Uint8Array;
-use std::io::Cursor;
+use js_sys::{Array, Uint8Array};
+use std::io::{Read, Cursor};
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::file::DictTermIndex;
+use log::debug;
+use flate2::bufread::GzDecoder;
+use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"
@@ -39,6 +42,11 @@ export interface RawTokenizeResult {
 interface Backend {
     tokenize(sentence: string, charAt: number): RawTokenizeResult;
     search(term: string, charAt: number): RawTokenizeResult
+    /** 
+     * from jmdict gzipped xml, creates [index, entries] bytes,
+     * and updates dictionary file used in Backend.
+     */
+    update_dictionary(gzip: Uint8Array): [Uint8Array, Uint8Array];
 }
 "#;
 
@@ -77,6 +85,40 @@ impl Backend {
         serde_wasm_bindgen::to_value(&result).map_err(|e| {
             YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
         })
+    }
+
+    /// Generates new yomikiri dictionary files from gzipped jmdict bytes,
+    /// and replaces dictionary used in Backend.
+    /// 
+    /// Returns [.yomikiriindex, .yomikiridict] bytes as [UInt8Array, UInt8Array]
+    pub fn update_dictionary(&mut self, gzipped_jmdict: &Uint8Array) -> YResult<JsValue> {
+        let gzipped = gzipped_jmdict.to_vec();
+        let mut decoder = GzDecoder::new(&gzipped[..]);
+        let mut xml = String::with_capacity(72 * 1024 * 1024);
+        decoder.read_to_string(&mut xml)?;
+        std::mem::drop(decoder);
+        std::mem::drop(gzipped);
+        debug!("unzipped jmdict file");
+    
+        let entries = parse_jmdict_xml(&xml)?;
+        std::mem::drop(xml);
+        debug!("parsed jmdict file");
+    
+        let mut entries_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
+        let term_indexes = write_entries(&mut entries_bytes, &entries)?;
+        let entries_array = Uint8Array::from(&entries_bytes[..]);
+    
+        let mut index_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
+        write_indexes(&mut index_bytes, &term_indexes)?;
+        let index_array = Uint8Array::from(&index_bytes[..]);
+  
+        let tuple = Array::new_with_length(2);
+        tuple.set(0, index_array.into());
+        tuple.set(1, entries_array.into());
+
+        let dict = Dictionary::try_new(&index_bytes, entries_bytes)?;
+        self.inner.dictionary = dict;
+        Ok(tuple.into())
     }
 }
 
