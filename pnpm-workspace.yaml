@@ -6,6 +6,6 @@ packages:
   - "crates/unidic"
   - "crates/yomikiri-backend"
   - "crates/yomikiri-backend/pkg"
-  - "crates/yomikiri-generate-dictionary"
-  - "crates/yomikiri-generate-dictionary/files"
+  - "crates/yomikiri-dictionary-generator"
+  - "crates/yomikiri-dictionary-generator/files"
   - "extra/generate-license"

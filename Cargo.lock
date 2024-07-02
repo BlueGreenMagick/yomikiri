@@ -2455,7 +2455,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "yomikiri-generate-dictionary"
+name = "yomikiri-dictionary-generator"
 version = "0.1.0"
 dependencies = [
  "anyhow",

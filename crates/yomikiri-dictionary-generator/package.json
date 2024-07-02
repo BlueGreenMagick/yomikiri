@@ -1,5 +1,5 @@
 {
-  "name": "@yomikiri/generate-dictionary-rs",
+  "name": "@yomikiri/dictionary-generator-rs",
   "version": "0.0.1",
   "scripts": {
     "generate": "cargo run -- generate",

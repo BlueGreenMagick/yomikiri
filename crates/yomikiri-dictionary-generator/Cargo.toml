@@ -1,5 +1,5 @@
 [package]
-name = "yomikiri-generate-dictionary"
+name = "yomikiri-dictionary-generator"
 version = "0.1.0"
 edition = "2021"
 description = "Generate or download yomikiri dictionary files"
