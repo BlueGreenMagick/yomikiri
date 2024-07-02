@@ -36,18 +36,6 @@ const WATCH = DEVELOPMENT && !FOR_IOS && !FOR_IOSAPP;
 /** Package */
 const VERSION = Package.version;
 
-const logRebuildPlugin: Plugin = {
-  name: "logRebuildPlugin",
-  setup(build) {
-    build.onStart(() => {
-      console.info("\n=====  esbuild: Build start  =====");
-    });
-    build.onEnd(() => {
-      console.info("=====  esbuild: Build end  =====\n");
-    });
-  },
-};
-
 const platformAliasPlugin: Plugin = {
   name: "platformAliasPlugin",
   setup(build) {
@@ -133,7 +121,12 @@ const svelteConfiguredPlugin: Plugin = sveltePlugin({
 });
 
 function generateBuildOptions(): BuildOptions {
-  const baseBuildOptions: BuildOptions = {
+  const plugins = [platformAliasPlugin, svelteConfiguredPlugin];
+  if (!FOR_IOSAPP) {
+    plugins.push(buildManifestPlugin);
+  }
+
+  const buildOptions: BuildOptions = {
     outdir: `build/${TARGET}`,
     target: [
       "es2017",
@@ -169,28 +162,10 @@ function generateBuildOptions(): BuildOptions {
       ".txt": "text",
       ".chunk": "file",
     },
+    plugins,
   };
 
-  const buildOptions: BuildOptions = {
-    ...baseBuildOptions,
-    plugins: [
-      logRebuildPlugin,
-      platformAliasPlugin,
-      buildManifestPlugin,
-      svelteConfiguredPlugin,
-    ],
-  };
-
-  const iosAppBuildOptions: BuildOptions = {
-    ...baseBuildOptions,
-    plugins: [platformAliasPlugin, svelteConfiguredPlugin],
-  };
-
-  if (FOR_IOSAPP) {
-    return iosAppBuildOptions;
-  } else {
-    return buildOptions;
-  }
+  return buildOptions;
 }
 
 function cleanDirectory(dir: string) {
