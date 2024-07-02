@@ -8,6 +8,7 @@ import postCssImport from "postcss-import";
 import Package from "./package.json" assert { type: "json" };
 import AdmZip from "adm-zip";
 import { watch } from "chokidar";
+import type { ExecutionContext } from "extension/browserApi";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const DEVELOPMENT = !PRODUCTION;
@@ -176,6 +177,7 @@ function generateBuildOptions(): BuildOptions {
       __APP_VERSION__: `"${VERSION}"`,
       __APP_PLATFORM__: `"${TARGET!}"`,
       "import.meta.vitest": "undefined",
+      __EXTENSION_CONTEXT__: "<<Modified in fn esbuildContext()>>",
     },
     loader: {
       ".wasm": "file",
@@ -191,17 +193,6 @@ function generateBuildOptions(): BuildOptions {
 
   const buildOptions: BuildOptions = {
     ...baseBuildOptions,
-    entryPoints: [
-      { in: "src/extension/content/index.ts", out: "res/content" },
-      { in: "src/extension/background/index.ts", out: "res/background" },
-      { in: "src/extension/popup/index.ts", out: "res/popup" },
-      ...(FOR_IOS ?
-        [{ in: "src/extension/x-callback/index.ts", out: "res/x-callback" }]
-      : [{ in: "src/extension/options/index.ts", out: "res/options" }]),
-      ...(DEVELOPMENT ?
-        [{ in: "src/iosapp/dictionary.ts", out: "res/dictionary" }]
-      : []),
-    ],
     plugins: [
       logRebuildPlugin,
       platformAliasPlugin,
@@ -213,17 +204,6 @@ function generateBuildOptions(): BuildOptions {
 
   const iosAppBuildOptions: BuildOptions = {
     ...baseBuildOptions,
-    entryPoints: [
-      { in: "src/iosapp/options.ts", out: "res/options" },
-      {
-        in: "src/iosapp/optionsAnkiTemplate.ts",
-        out: "res/optionsAnkiTemplate",
-      },
-      {
-        in: "src/iosapp/dictionary.ts",
-        out: "res/dictionary",
-      },
-    ],
     plugins: [platformAliasPlugin, svelteConfiguredPlugin],
   };
 
@@ -283,17 +263,69 @@ function copyAndWatchFile(
   });
 }
 
-async function main() {
-  const buildOptions = generateBuildOptions();
-  if (buildOptions.outdir === undefined) {
-    throw new Error("esbuild outdir must be set!");
+interface BuildEntry {
+  in: string;
+  out: string;
+  context: ExecutionContext;
+}
+
+function getbuildEntries(): BuildEntry[] {
+  const entries: BuildEntry[] = [];
+
+  if (!FOR_IOSAPP) {
+    const segments: string[] = ["content", "background", "popup"];
+    if (FOR_IOS) {
+      segments.push("x-callback, options");
+    }
+
+    for (const seg of segments) {
+      entries.push({
+        in: `src/extension/${seg}/index.ts`,
+        out: `res/${seg}`,
+        context:
+          seg === "content" ? "contentScript"
+          : seg === "background" ? "background"
+          : seg === "popup" ? "popup"
+          : "page",
+      });
+    }
+    if (DEVELOPMENT) {
+      entries.push({
+        in: "src/iosapp/dictionary.ts",
+        out: "res/dictionary",
+        context: "page",
+      });
+    }
+  } else {
+    const segments = ["options", "optionsAnkiTemplate", "dictionary"];
+    for (const seg of segments) {
+      entries.push({
+        in: `src/iosapp/${seg}.ts`,
+        out: `res/${seg}`,
+        context: "page",
+      });
+    }
   }
 
-  cleanDirectory(buildOptions.outdir);
+  return entries;
+}
 
-  const ctx = await esbuild.context(buildOptions);
-  await ctx.rebuild();
+async function esbuildContext(
+  entry: BuildEntry,
+  buildOptions: esbuild.BuildOptions,
+) {
+  const clonedOptions = {
+    ...buildOptions,
+  };
+  clonedOptions.entryPoints = [{ in: entry.in, out: entry.out }];
+  clonedOptions.define = {
+    ...(clonedOptions.define ?? {}),
+    __EXTENSION_CONTEXT__: `"${entry.context}"`,
+  };
+  return esbuild.context(clonedOptions);
+}
 
+function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
   const filesToCopy: [string, string][] = [];
   if (!FOR_IOSAPP) {
     // html
@@ -324,15 +356,33 @@ async function main() {
   filesToCopy.push(["src/assets/static/", "./res/assets/static"]);
 
   for (const [from, to] of filesToCopy) {
-    const dest = path.resolve(buildOptions.outdir, to);
+    const dest = path.resolve(buildOptions.outdir!, to);
     copyAndWatchFile(from, dest, { watch: WATCH });
   }
   console.log(
     `Copied and watching changes to ${filesToCopy.length} file entries`,
   );
+}
+
+async function main() {
+  const buildOptions = generateBuildOptions();
+  if (buildOptions.outdir === undefined) {
+    throw new Error("esbuild outdir must be set!");
+  }
+
+  cleanDirectory(buildOptions.outdir);
+
+  const entries = getbuildEntries();
+
+  const ctxsP = entries.map((entry) => esbuildContext(entry, buildOptions));
+  const ctxs = await Promise.all(ctxsP);
+
+  await Promise.all(ctxs.map((ctx) => ctx.rebuild()));
+
+  copyAndWatchAdditionalFiles(buildOptions);
 
   if (!WATCH) {
-    await ctx.dispose();
+    await Promise.all(ctxs.map((ctx) => ctx.dispose()));
     if (PRODUCTION && (FOR_CHROME || FOR_FIREFOX)) {
       const compressedFile = path.join(
         buildOptions.outdir,
@@ -344,7 +394,7 @@ async function main() {
     }
   } else {
     console.info("esbuild: Watching for changes to code..");
-    await ctx.watch();
+    await Promise.all(ctxs.map((ctx) => ctx.watch()));
   }
 }
 

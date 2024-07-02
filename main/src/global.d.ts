@@ -44,3 +44,9 @@ declare const __APP_PLATFORM__:
   | "safari_desktop"
   | "ios"
   | "iosapp";
+
+declare const __EXTENSION_CONTEXT__:
+  | "contentScript"
+  | "background"
+  | "page"
+  | "popup";
