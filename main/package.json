@@ -38,10 +38,10 @@
     "@types/pako": "^2.0.3",
     "@types/postcss-import": "^14.0.3",
     "adm-zip": "^0.5.12",
+    "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
     "ejs": "^3.1.10",
     "esbuild": "^0.20.2",
-    "esbuild-plugin-copy": "^2.1.1",
     "esbuild-svelte": "^0.8.0",
     "ionicons": "^7.3.1",
     "jsdom": "^24.0.0",
@@ -58,10 +58,10 @@
     "web-ext": "^7.11.0"
   },
   "dependencies": {
+    "@yomikiri/dictionary-files": "workspace:*",
     "@yomikiri/generate-license": "workspace:*",
     "@yomikiri/yomikiri-dictionary": "workspace:*",
     "@yomikiri/yomikiri-rs": "workspace:*",
-    "@yomikiri/dictionary-files": "workspace:*",
     "idb": "^8.0.0",
     "normalize.css": "^8.0.1",
     "svelte": "^4.2.15",

@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import esbuild, { type BuildOptions, type Plugin } from "esbuild";
-import { copy } from "esbuild-plugin-copy";
 import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "./package.json" assert { type: "json" };
 import AdmZip from "adm-zip";
+import { watch } from "chokidar";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const DEVELOPMENT = !PRODUCTION;
@@ -207,40 +207,6 @@ function generateBuildOptions(): BuildOptions {
       platformAliasPlugin,
       buildManifestPlugin,
       watchPlugin,
-      copy({
-        assets: [
-          // html
-          {
-            from: ["src/extension/popup/index.html"],
-            to: ["./res/popup.html"],
-          },
-          ...(FOR_IOS ?
-            [
-              {
-                from: ["src/extension/x-callback/index.html"],
-                to: ["./res/x-callback.html"],
-              },
-            ]
-          : [
-              {
-                from: ["src/extension/options/index.html"],
-                to: ["./res/options.html"],
-              },
-            ]),
-          ...(DEVELOPMENT ?
-            [
-              {
-                from: ["src/iosapp/dictionary.html"],
-                to: ["./res/dictionary.html"],
-              },
-            ]
-          : []),
-          // static assets
-          { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
-        ],
-        watch: true,
-        // verbose: true,
-      }),
       svelteConfiguredPlugin,
     ],
   };
@@ -258,24 +224,7 @@ function generateBuildOptions(): BuildOptions {
         out: "res/dictionary",
       },
     ],
-    plugins: [
-      copy({
-        assets: [
-          { from: ["src/iosapp/options.html"], to: ["./res/options.html"] },
-          {
-            from: ["src/iosapp/optionsAnkiTemplate.html"],
-            to: ["./res/optionsAnkiTemplate.html"],
-          },
-          {
-            from: ["src/iosapp/dictionary.html"],
-            to: ["./res/dictionary.html"],
-          },
-          { from: ["src/assets/static/**/*"], to: ["./res/assets/static"] },
-        ],
-      }),
-      platformAliasPlugin,
-      svelteConfiguredPlugin,
-    ],
+    plugins: [platformAliasPlugin, svelteConfiguredPlugin],
   };
 
   if (FOR_IOSAPP) {
@@ -299,6 +248,41 @@ async function compressDirectoryTo(dir: string, outfile: string) {
   await zip.writeZipPromise(outfile, { overwrite: true });
 }
 
+function copyAndWatchFile(
+  from: string,
+  to: string,
+  opts: { watch?: boolean } = {},
+) {
+  const isDir = fs.lstatSync(from).isDirectory();
+  const watcher = watch(from, {
+    // ignore dotfiles
+    ignored: /(^|[/\\])\../,
+  });
+  watcher.on("all", (event, p) => {
+    let dest: string;
+    if (isDir) {
+      const rel = path.relative(from, p);
+      dest = path.resolve(to, rel);
+    } else {
+      dest = to;
+    }
+    if (event === "addDir") {
+      fs.mkdirSync(dest, { recursive: true });
+    } else if (event === "unlinkDir") {
+      fs.rmdirSync(dest);
+    } else if (event === "unlink") {
+      fs.rmSync(dest);
+    } else {
+      fs.copyFileSync(p, dest);
+    }
+  });
+  watcher.on("ready", () => {
+    if (!opts.watch) {
+      void watcher.close();
+    }
+  });
+}
+
 async function main() {
   const buildOptions = generateBuildOptions();
   if (buildOptions.outdir === undefined) {
@@ -309,6 +293,43 @@ async function main() {
 
   const ctx = await esbuild.context(buildOptions);
   await ctx.rebuild();
+
+  const filesToCopy: [string, string][] = [];
+  if (!FOR_IOSAPP) {
+    // html
+    filesToCopy.push(["src/extension/popup/index.html", "./res/popup.html"]);
+    if (FOR_IOSAPP) {
+      filesToCopy.push([
+        "src/extension/x-callback/index.html",
+        "./res/x-callback.html",
+      ]);
+    } else {
+      filesToCopy.push([
+        "src/extension/options/index.html",
+        "./res/options.html",
+      ]);
+    }
+    if (DEVELOPMENT) {
+      filesToCopy.push(["src/iosapp/dictionary.html", "./res/dictionary.html"]);
+    }
+  } else {
+    filesToCopy.push(["src/iosapp/options.html", "./res/options.html"]);
+    filesToCopy.push([
+      "src/iosapp/optionsAnkiTemplate.html",
+      "./res/optionsAnkiTemplate.html",
+    ]);
+    filesToCopy.push(["src/iosapp/dictionary.html", "./res/dictionary.html"]);
+  }
+  // static assets
+  filesToCopy.push(["src/assets/static/", "./res/assets/static"]);
+
+  for (const [from, to] of filesToCopy) {
+    const dest = path.resolve(buildOptions.outdir, to);
+    copyAndWatchFile(from, dest, { watch: WATCH });
+  }
+  console.log(
+    `Copied and watching changes to ${filesToCopy.length} file entries`,
+  );
 
   if (!WATCH) {
     await ctx.dispose();

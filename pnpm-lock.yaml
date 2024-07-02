@@ -152,6 +152,9 @@ importers:
       adm-zip:
         specifier: ^0.5.12
         version: 0.5.13
+      chokidar:
+        specifier: ^3.6.0
+        version: 3.6.0
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
