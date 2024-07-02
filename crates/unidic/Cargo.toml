@@ -9,7 +9,7 @@ license = "MIT"
 lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 yomikiri-jmdict = { path = "../jmdict", default-features = false }
-yomikiri-dictionary = { path = "../dictionary" }
+yomikiri-dictionary = { path = "../yomikiri-dictionary" }
 yomikiri-unidic-types = { path = "../unidic-types" }
 csv = "1.2"
 walkdir = "2.3"

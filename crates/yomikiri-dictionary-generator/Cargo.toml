@@ -13,7 +13,7 @@ tempfile = "3.8"
 anyhow = "1"
 flate2 = "1"
 chrono = { version = "0.4", features = ["alloc"] }
-yomikiri-dictionary = { path = "../dictionary" }
+yomikiri-dictionary = { path = "../yomikiri-dictionary" }
 
 [lints]
 workspace = true

@@ -28,7 +28,7 @@ uniffi-bindgen = []
 lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-yomikiri-dictionary = { path = "../dictionary" }
+yomikiri-dictionary = { path = "../yomikiri-dictionary" }
 yomikiri-unidic-types = { path = "../unidic-types" }
 unicode-normalization = "0.1"
 unicode-segmentation = "1.9"

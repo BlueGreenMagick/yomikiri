@@ -2,7 +2,7 @@
 members = [
   "crates/yomikiri-backend",
   "crates/jmdict",
-  "crates/dictionary",
+  "crates/yomikiri-dictionary",
   "crates/unidic",
   "crates/unidic-types",
   "extra/generate-license/rust",

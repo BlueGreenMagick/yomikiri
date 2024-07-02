@@ -1,7 +1,7 @@
 packages:
   - "main"
-  - "crates/dictionary"
-  - "crates/dictionary/pkg"
+  - "crates/yomikiri-dictionary"
+  - "crates/yomikiri-dictionary/pkg"
   - "crates/jmdict"
   - "crates/unidic"
   - "crates/yomikiri-backend"
