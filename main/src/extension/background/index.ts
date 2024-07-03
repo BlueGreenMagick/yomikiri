@@ -19,8 +19,7 @@ import {
   type MessageSender,
 } from "extension/browserApi";
 import {
-  Platform,
-  type ExtensionPlatform,
+  ExtensionPlatform as Platform,
   type TTSRequest,
   type TranslateResult,
 } from "@platform";
@@ -32,13 +31,12 @@ import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
 import type { DesktopAnkiApi } from "@platform/anki";
 
-const platform = new Platform() as ExtensionPlatform;
-const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform));
+const lazyConfig = new Utils.LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new Utils.LazyAsync(async () =>
-  platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await lazyConfig.get()),
 );
 const lazyBackend = new Utils.LazyAsync<DesktopBackend | IosBackend>(() =>
-  platform.newBackend(),
+  Platform.newBackend(),
 );
 
 const _initialized: Promise<void> = initialize();
@@ -74,7 +72,7 @@ function tabId(_req: null, sender: MessageSender): number | undefined {
 }
 
 async function handleTranslate(req: string): Promise<TranslateResult> {
-  return await platform.translate(req);
+  return await Platform.translate(req);
 }
 
 function updateStateEnabledIcon(config: Config) {
@@ -106,11 +104,11 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
 }
 
 async function tts(req: TTSRequest): Promise<void> {
-  await platform.playTTS(req.text, req.voice);
+  await Platform.playTTS(req.text, req.voice);
 }
 
 async function handleMigrateConfig(): Promise<StoredConfiguration> {
-  return await platform.migrateConfig();
+  return await Platform.migrateConfig();
 }
 
 handleMessage("searchTerm", searchTerm);
@@ -126,7 +124,7 @@ handleBrowserLoad(() => {
 });
 
 exposeGlobals({
-  platform,
+  Platform,
   Utils,
   ankiApi: () => {
     void lazyAnkiApi.get();

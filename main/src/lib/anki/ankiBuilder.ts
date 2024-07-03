@@ -32,7 +32,6 @@ export interface LoadingField {
 }
 
 export interface AnkiBuilderContext {
-  platform: Platform;
   config: Config;
 }
 
@@ -387,8 +386,8 @@ addBuilder("sentence", (opts, data) => {
   return sentence.trim();
 });
 
-addBuilder("translated-sentence", (_opts, data, { platform }) => {
-  const translatePromise = platform.translate(data.sentence);
+addBuilder("translated-sentence", (_opts, data) => {
+  const translatePromise = Platform.translate(data.sentence);
   const promise = Utils.PromiseWithProgress.fromPromise(
     translatePromise.then((result) => result.translated.trim()),
     "Translating Sentence...",

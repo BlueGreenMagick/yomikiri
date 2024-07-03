@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { Platform } from "@platform";
   import type { AnkiOptionsApi } from "@platform/anki";
   import type { Dictionary } from "@platform/dictionary";
   import type { Config } from "lib/config";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
+  import { Platform } from "@platform";
 
-  export let platform: Platform;
   export let config: Config;
   export let ankiApi: AnkiOptionsApi;
   export let dictionary: Dictionary;
@@ -14,10 +13,10 @@
 
 <div class="container">
   <div id="main-column">
-    <MainColumn {platform} {config} {ankiApi} {dictionary} />
+    <MainColumn {config} {ankiApi} {dictionary} />
   </div>
   {#if Platform.IS_DESKTOP}
-    <div id="preview-column"><PreviewColumn {platform} {config} /></div>
+    <div id="preview-column"><PreviewColumn {config} /></div>
   {/if}
 </div>
 

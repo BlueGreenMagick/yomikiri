@@ -5,10 +5,9 @@ import { Platform } from "platform/iosapp";
 import type { IosAppBackend } from "platform/iosapp/backend";
 import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
-const platform = new Platform();
-const lazyConfig = new LazyAsync(() => Config.initialize(platform));
-const backend = platform.newBackend();
-const ankiApi = platform.newAnkiApi();
+const lazyConfig = new LazyAsync(() => Config.initialize());
+const backend = Platform.newBackend();
+const ankiApi = Platform.newAnkiApi();
 
 const initialized = initialize();
 
@@ -29,12 +28,11 @@ function createSvelte(
   const searchText = params.get("search") ?? "";
   return new DictionaryPage({
     target: document.body,
-    props: { initialized, platform, context, searchText },
+    props: { initialized, context, searchText },
   });
 }
 
 exposeGlobals({
-  platform,
   Utils,
   config() {
     void lazyConfig.get();

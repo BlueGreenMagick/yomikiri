@@ -13,11 +13,9 @@
   import { Toast } from "lib/toast";
   import Utils from "lib/utils";
   import ToolbarWithPane from "components/dictionary/ToolbarWithPane.svelte";
-  import type { Platform } from "@platform";
   import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
 
-  export let platform: Platform;
   export let config: Config;
   export let ankiApi: AnkiApi;
   export let tokenizeResult: TokenizeResult;
@@ -53,7 +51,7 @@
 
     let note: LoadingAnkiNote;
     try {
-      note = buildAnkiNote({ platform, config }, markerData);
+      note = buildAnkiNote({ config }, markerData);
     } catch (err) {
       Toast.error(Utils.getErrorMessage(err));
       throw err;
@@ -83,7 +81,6 @@
   <div class="dictionary-view" class:previewIsVisible>
     <div class="header">
       <ToolbarWithPane
-        {platform}
         {onClose}
         grammars={tokenizeResult.grammars}
         {sentence}
@@ -94,7 +91,6 @@
     </div>
     <div class="scrollable">
       <DicEntriesView
-        {platform}
         {config}
         entries={tokenizeResult.entries}
         onSelectEntryForAnki={selectedEntryForAnki}

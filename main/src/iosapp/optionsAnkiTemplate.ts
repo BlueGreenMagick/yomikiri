@@ -4,25 +4,24 @@ import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
 
-const platform = new Platform();
-const lazyConfig = new LazyAsync(() => Config.initialize(platform));
-const ankiApi = platform.newAnkiApi();
+const lazyConfig = new LazyAsync(() => Config.initialize());
+const ankiApi = Platform.newAnkiApi();
 
 const initialized = initialize();
 
 async function initialize(): Promise<[Config, IosAppAnkiApi]> {
-  const config = await Config.initialize(platform);
+  const config = await Config.initialize();
   config.setStyle(document);
   return [config, ankiApi];
 }
 
 const page = new OptionsAnkiTemplatePage({
   target: document.body,
-  props: { platform, initialized },
+  props: { initialized },
 });
 
 exposeGlobals({
-  platform,
+  Platform,
   config: () => {
     void lazyConfig.get();
     return lazyConfig.getIfInitialized();

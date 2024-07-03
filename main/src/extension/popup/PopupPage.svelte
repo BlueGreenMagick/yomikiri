@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { Platform, type ExtensionPlatform } from "@platform";
   import { Backend } from "@platform/backend";
   import type Config from "lib/config";
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import type { AnkiApi } from "@platform/anki";
   import Page from "components/Page.svelte";
+  import { Platform } from "@platform";
 
-  export let platform: ExtensionPlatform;
   export let initialized: Promise<[Config, Backend, AnkiApi]>;
 </script>
 
@@ -15,9 +14,9 @@
   <div id="main">
     {#await initialized then [config, backend, ankiApi]}
       {#if Platform.IS_IOS}
-        <ActionButtons {platform} {config} />
+        <ActionButtons {config} />
       {:else}
-        <PopupView {platform} {backend} {config} {ankiApi} />
+        <PopupView {backend} {config} {ankiApi} />
       {/if}
     {/await}
   </div>

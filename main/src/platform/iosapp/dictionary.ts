@@ -1,6 +1,6 @@
 import Utils from "lib/utils";
 import type { DictionaryMetadata, IDictionary } from "../common/dictionary";
-import type { IosAppPlatform } from ".";
+import { IosAppPlatform } from ".";
 
 export type { DictionaryMetadata } from "../common/dictionary";
 
@@ -17,21 +17,15 @@ function parseRawMetadata(raw: RawDictionaryMetadata): DictionaryMetadata {
 }
 
 export class IosAppDictionary implements IDictionary {
-  platform: IosAppPlatform;
-
-  constructor(platform: IosAppPlatform) {
-    this.platform = platform;
-  }
-
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
     return Utils.PromiseWithProgress.fromPromise(
-      this.platform.messageWebview("updateDict", null).then(parseRawMetadata),
+      IosAppPlatform.messageWebview("updateDict", null).then(parseRawMetadata),
       "Updating dictionary... This may take up to a minute.",
     );
   }
 
   async dictionaryMetadata(): Promise<DictionaryMetadata> {
-    const raw = await this.platform.messageWebview("dictMetadata", null);
+    const raw = await IosAppPlatform.messageWebview("dictMetadata", null);
     return parseRawMetadata(raw);
   }
 }

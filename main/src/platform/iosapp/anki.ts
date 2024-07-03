@@ -5,7 +5,7 @@ import {
   type IAnkiOptions,
 } from "../common/anki";
 import Utils from "lib/utils";
-import type { IosAppPlatform } from ".";
+import { Platform } from ".";
 import type { AnkiNote } from "lib/anki";
 
 interface Named {
@@ -25,14 +25,11 @@ interface RawAnkiInfo {
 }
 
 export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
-  platform: IosAppPlatform;
   ankiInfoP: Promise<AnkiInfo>;
   ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>;
   ankiInfoReject: Utils.PromiseRejector;
 
-  constructor(platform: IosAppPlatform) {
-    this.platform = platform;
-
+  constructor() {
     const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
       Utils.createPromise<AnkiInfo>();
     this.ankiInfoP = ankiInfoP;
@@ -59,7 +56,7 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   }
 
   async requestAnkiInfo(): Promise<void> {
-    const installed = await this.platform.messageWebview("ankiInfo", null);
+    const installed = await Platform.messageWebview("ankiInfo", null);
     if (!installed) {
       throw new Error(`AnkiMobile app is not installed.`);
     }
@@ -70,10 +67,7 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   }
 
   async checkConnection(): Promise<void> {
-    const installed = await this.platform.messageWebview(
-      "ankiIsInstalled",
-      null,
-    );
+    const installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (!installed) {
       throw new Error(`AnkiMobile app is not installed.`);
     }
@@ -81,7 +75,7 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
 
   async addNote(note: AnkiNote): Promise<boolean> {
     const url = iosAnkiMobileURL(note);
-    await this.platform.messageWebview("openLink", url);
+    await Platform.messageWebview("openLink", url);
     return true;
   }
 }

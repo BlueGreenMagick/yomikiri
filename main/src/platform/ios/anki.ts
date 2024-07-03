@@ -7,13 +7,12 @@ import {
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
-import type { Platform as IosPlatform } from "./";
 import { EXTENSION_CONTEXT } from "consts";
 
 export class IosAnkiApi implements IAnkiAddNotes {
   config: Config;
 
-  constructor(platform: IosPlatform, config: Config) {
+  constructor(config: Config) {
     this.config = config;
   }
 

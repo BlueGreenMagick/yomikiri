@@ -6,10 +6,8 @@
   } from "lib/anki";
   import type { Config } from "lib/config";
   import type { AnkiInfo } from "platform/common/anki";
-  import type { Platform } from "@platform";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
 
-  export let platform: Platform;
   export let config: Config;
   export let ankiInfo: AnkiInfo;
 
@@ -133,7 +131,6 @@
   <div class="fields group">
     {#each fieldNames as fieldName (fieldName)}
       <AnkiTemplateFieldEdit
-        {platform}
         {config}
         bind:fieldTemplate={fieldTemplates[fieldName]}
       />

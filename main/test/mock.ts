@@ -17,10 +17,10 @@ import { DesktopPlatform } from "platform/desktop";
 /* Mock config */
 let storedConfig: StoredConfiguration | Record<string, never> = {};
 
-DesktopPlatform.prototype.getConfig = () => {
+DesktopPlatform.getConfig = () => {
   return Promise.resolve(storedConfig);
 };
-DesktopPlatform.prototype.saveConfig = (conf) => {
+DesktopPlatform.saveConfig = (conf) => {
   storedConfig = conf;
   return Promise.resolve();
 };

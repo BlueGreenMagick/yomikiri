@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Platform } from "@platform";
   import IconEye from "@icons/eye.svg";
   import IconOptions from "@icons/options.svg";
   import {
@@ -19,7 +18,6 @@
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
 
-  export let platform: Platform;
   export let config: Config;
   export let fieldTemplate: AnkiTemplateField;
 
@@ -44,7 +42,7 @@
   }
 
   function createPreviewField(): LoadingField | Field {
-    const ctx = { platform, config };
+    const ctx = { config };
     return buildAnkiField(ctx, exampleMarkerData, fieldTemplate);
   }
 

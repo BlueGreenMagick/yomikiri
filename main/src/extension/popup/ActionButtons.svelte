@@ -2,15 +2,14 @@
   import IconSettings from "@icons/settings.svg";
   import IconPower from "@icons/power.svg";
   import Config from "lib/config";
-  import type { Platform } from "@platform";
+  import { Platform } from "@platform";
 
-  export let platform: Platform;
   export let config: Config;
 
   let stateEnabledConfig = config.store("state.enabled");
 
   async function openSettings() {
-    await platform.openOptionsPage();
+    await Platform.openOptionsPage();
   }
 
   function toggleEnable() {

@@ -3,9 +3,7 @@
   import GrammarPane from "./GrammarPane.svelte";
   import TranslatePane from "./TranslatePane.svelte";
   import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
-  import type { Platform } from "@platform";
 
-  export let platform: Platform;
   export let onClose: () => void;
   export let selectedTool: Tools | null;
   export let grammars: GrammarInfo[] = [];
@@ -32,7 +30,7 @@
     {changeSelectedTool}
   />
   <div class="tools-pane" class:hidden={selectedTool === null}>
-    <TranslatePane {platform} {sentence} shown={selectedTool === "translate"} />
+    <TranslatePane {sentence} shown={selectedTool === "translate"} />
     <GrammarPane {grammars} shown={selectedTool === "grammar"} />
   </div>
 </div>

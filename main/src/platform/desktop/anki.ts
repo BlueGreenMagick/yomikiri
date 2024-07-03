@@ -7,7 +7,6 @@ import type {
 import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
 import { getStorage, message, setStorage } from "extension/browserApi";
-import type { DesktopPlatform } from ".";
 import {
   PromiseWithProgress,
   SingleQueued,
@@ -109,11 +108,9 @@ export class AnkiConnectError extends AnkiError {}
  * as Anki-connect allows only calls from trusted origins.
  */
 export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
-  platform: DesktopPlatform;
   config: Config;
 
-  constructor(platform: DesktopPlatform, config: Config) {
-    this.platform = platform;
+  constructor(config: Config) {
     this.config = config;
   }
 

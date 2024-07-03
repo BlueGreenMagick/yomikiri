@@ -67,7 +67,6 @@ export interface WritableConfig<T> extends Writable<T> {
 }
 
 export class Config {
-  platform: Platform;
   private storage: StoredConfiguration;
   private stores: Map<ConfigKey, WritableConfig<Configuration[ConfigKey]>>;
 
@@ -75,12 +74,11 @@ export class Config {
   subscribers: (() => void)[] = [];
   documents: WeakRef<Document>[] = [];
 
-  private constructor(platform: Platform, storage: StoredConfiguration) {
-    this.platform = platform;
+  private constructor(storage: StoredConfiguration) {
     this.storage = storage;
     this.stores = new Map();
 
-    platform.subscribeConfig((cfg) => {
+    Platform.subscribeConfig((cfg) => {
       this.storage = cfg;
       this.runSubscribers();
     });
@@ -93,10 +91,10 @@ export class Config {
     this.runSubscribers();
   }
 
-  static async initialize(platform: Platform): Promise<Config> {
-    const stored = await platform.getConfig();
-    const storage = await migrateIfNeeded(platform, stored);
-    const config = new Config(platform, storage);
+  static async initialize(): Promise<Config> {
+    const stored = await Platform.getConfig();
+    const storage = await migrateIfNeeded(stored);
+    const config = new Config(storage);
     await config.updateVersion();
     return config;
   }
@@ -134,7 +132,7 @@ export class Config {
   }
 
   async save(): Promise<void> {
-    await this.platform.saveConfig(this.storage);
+    await Platform.saveConfig(this.storage);
   }
 
   defaultValue<K extends keyof Configuration>(key: K): Configuration[K] {
@@ -280,9 +278,9 @@ export class Config {
    *
    * tts is currently not used.
    */
-  async setupTTSVoice(platform: Platform): Promise<void> {
+  async setupTTSVoice(): Promise<void> {
     if (this.get("tts.voice") !== null) return;
-    const voices = await platform.japaneseTTSVoices();
+    const voices = await Platform.japaneseTTSVoices();
     if (voices.length === 0) return;
     // reverse order sort
     voices.sort((a, b) => b.quality - a.quality);
@@ -292,14 +290,13 @@ export class Config {
 }
 
 export async function migrateIfNeeded(
-  platform: Platform,
   configObject: StoredCompatConfiguration,
 ): Promise<StoredConfiguration> {
   if (configObject.config_version === CONFIG_VERSION) {
     return configObject as StoredConfiguration;
   }
 
-  return await platform.migrateConfig();
+  return await Platform.migrateConfig();
 }
 
 export default Config;

@@ -9,10 +9,8 @@
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
-  import type { Platform } from "@platform";
   import type { Config } from "lib/config";
 
-  export let platform: Platform;
   export let config: Config;
   export let backend: Backend;
   export let searchText = "";
@@ -72,7 +70,6 @@
       <SentenceView tokens={tokenizeResult.tokens} bind:selectedCharAt />
     </div>
     <ToolbarWithPane
-      {platform}
       {onClose}
       {selectedTool}
       grammars={tokenizeResult.grammars}
@@ -82,7 +79,6 @@
     />
     <div class="entries">
       <DicEntriesView
-        {platform}
         {config}
         entries={tokenizeResult.entries}
         onSelectEntryForAnki={(selected) => {

@@ -3,7 +3,6 @@
   import type Config from "lib/config";
   import IconRefreshOutline from "@icons/refresh-outline.svg";
   import IconTrash from "@icons/trash.svg";
-  import type { ExtensionPlatform } from "@platform";
   import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
@@ -12,7 +11,6 @@
   import { getStorage, removeStorage, setStorage } from "extension/browserApi";
 
   export let config: Config;
-  export let platform: ExtensionPlatform;
   export let ankiApi: AnkiApi;
 
   let addingNotes = false;

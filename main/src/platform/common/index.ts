@@ -3,11 +3,10 @@ import type { TranslateResult } from "./translate";
 import type { Platform as DesktopPlatform } from "../desktop";
 import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
-import type { Backend } from "./backend";
-import type { AnkiApi } from "./anki";
-import type Utils from "lib/utils";
 import type { PromiseOrValue } from "lib/utils";
 import type { StoredCompatConfiguration } from "lib/compat";
+import type { AnkiApi } from "./anki";
+import type { Backend } from "./backend";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop";
@@ -15,7 +14,11 @@ export type { Platform as IosPlatform } from "../ios";
 export type { Platform as IosAppPlatform } from "../iosapp";
 
 export interface IPlatform {
-  newBackend(): Utils.PromiseOrValue<Backend>;
+  IS_DESKTOP: boolean;
+  IS_IOS: boolean;
+  IS_IOSAPP: boolean;
+
+  newBackend(): PromiseOrValue<Backend>;
   newAnkiApi(config: Config): AnkiApi;
   getConfig(): Promise<StoredCompatConfiguration>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
@@ -29,12 +32,6 @@ export interface IPlatform {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
-}
-
-export interface IPlatformStatic {
-  IS_DESKTOP: boolean;
-  IS_IOS: boolean;
-  IS_IOSAPP: boolean;
 }
 
 export interface VersionInfo {
@@ -64,10 +61,11 @@ export interface TTSRequest {
   voice: TTSVoice | null;
 }
 
-export type ExtensionPlatform = DesktopPlatform | IosPlatform;
-
-export type Platform = DesktopPlatform | IosPlatform | IosAppPlatform;
 export declare const Platform:
   | typeof DesktopPlatform
   | typeof IosPlatform
   | typeof IosAppPlatform;
+
+export declare const ExtensionPlatform:
+  | typeof DesktopPlatform
+  | typeof IosPlatform;

@@ -1,5 +1,5 @@
 import { message } from "extension/browserApi";
-import { Platform as IosPlatform } from ".";
+import { IosPlatform } from ".";
 import {
   type IBackend,
   type TokenizeRequest,
@@ -11,12 +11,6 @@ import { EXTENSION_CONTEXT } from "consts";
 export * from "../common/backend";
 
 export class IosBackend implements IBackend {
-  platform: IosPlatform;
-
-  constructor(platform: IosPlatform) {
-    this.platform = platform;
-  }
-
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     if (EXTENSION_CONTEXT !== "contentScript") {
       return this._tokenize(text, charAt);
@@ -36,7 +30,7 @@ export class IosBackend implements IBackend {
     }
 
     const req: TokenizeRequest = { text, charAt };
-    const rawResult = await this.platform.requestToApp("tokenize", req);
+    const rawResult = await IosPlatform.requestToApp("tokenize", req);
     return TokenizeResult.from(rawResult);
   }
 
@@ -59,7 +53,7 @@ export class IosBackend implements IBackend {
     }
 
     const req: SearchRequest = { term, charAt };
-    const rawResult = await this.platform.requestToApp("search", req);
+    const rawResult = await IosPlatform.requestToApp("search", req);
     return TokenizeResult.from(rawResult);
   }
 }

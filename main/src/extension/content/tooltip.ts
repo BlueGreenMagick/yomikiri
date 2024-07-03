@@ -3,12 +3,10 @@ import type { TokenizeResult } from "@platform/backend";
 import Config from "lib/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
-import type { ExtensionPlatform } from "@platform";
 import type { AnkiApi } from "@platform/anki";
 import { TOOLTIP_IFRAME_ID } from "consts";
 
 export class Tooltip {
-  platform: ExtensionPlatform;
   config: Config;
   ankiApi: AnkiApi;
   highlighter: Highlighter;
@@ -18,13 +16,7 @@ export class Tooltip {
   private _resizeObserverAttached = false;
   private _repositionRequested = false;
 
-  constructor(
-    platform: ExtensionPlatform,
-    config: Config,
-    ankiApi: AnkiApi,
-    highlighter: Highlighter,
-  ) {
-    this.platform = platform;
+  constructor(config: Config, ankiApi: AnkiApi, highlighter: Highlighter) {
     this.config = config;
     this.ankiApi = ankiApi;
     this.highlighter = highlighter;
@@ -231,7 +223,6 @@ export class Tooltip {
     const tooltipPage = new TooltipPage({
       target: doc.body,
       props: {
-        platform: this.platform,
         config: this.config,
         ankiApi: this.ankiApi,
         onClose: () => {

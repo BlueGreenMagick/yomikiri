@@ -5,12 +5,11 @@ import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 import type { IosAppDictionary } from "platform/common/dictionary";
 
-const platform = new Platform();
-const lazyConfig = new LazyAsync(() => Config.initialize(platform));
+const lazyConfig = new LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new LazyAsync(async () =>
-  platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await lazyConfig.get()),
 );
-const dictionary = platform.newDictionary();
+const dictionary = Platform.newDictionary();
 
 const initialized = initialize();
 
@@ -25,11 +24,11 @@ async function initialize(): Promise<
 
 const page = new OptionsPage({
   target: document.body,
-  props: { initialized, platform },
+  props: { initialized },
 });
 
 exposeGlobals({
-  platform,
+  Platform,
   Utils,
   ankiApi: () => {
     void lazyAnkiApi.get();

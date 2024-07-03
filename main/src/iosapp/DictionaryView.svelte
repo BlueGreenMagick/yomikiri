@@ -2,7 +2,6 @@
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import AddToAnki from "components/anki/AddToAnki.svelte";
-  import { type IosAppPlatform } from "platform/iosapp";
   import type { IosAppAnkiApi } from "platform/iosapp/anki";
   import type { IosAppBackend, TokenizeResult } from "platform/iosapp/backend";
   import {
@@ -13,8 +12,8 @@
   import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import type Config from "lib/config";
+  import { Platform } from "platform/iosapp";
 
-  export let platform: IosAppPlatform;
   export let config: Config;
   export let backend: IosAppBackend;
   export let ankiApi: IosAppAnkiApi;
@@ -26,7 +25,7 @@
 
   function onShowAnkiPreview(
     selectedEntry: SelectedEntryForAnki,
-    tokenizeResult: TokenizeResult
+    tokenizeResult: TokenizeResult,
   ) {
     const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
@@ -39,7 +38,7 @@
 
     let note: LoadingAnkiNote;
     try {
-      note = buildAnkiNote({ platform, config }, markerData);
+      note = buildAnkiNote({ config }, markerData);
     } catch (err) {
       Toast.error(Utils.getErrorMessage(err));
       throw err;
@@ -60,14 +59,13 @@
 <div class="dictionary-view">
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize
-      {platform}
       {config}
       {backend}
       bind:searchText
       showCloseButton={context === "action"}
       {onShowAnkiPreview}
       onClose={async () => {
-        await platform.messageWebview("close", null);
+        await Platform.messageWebview("close", null);
       }}
     >
       <div class="placeholder-container">

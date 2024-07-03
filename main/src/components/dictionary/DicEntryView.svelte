@@ -13,11 +13,9 @@
   import type Config from "lib/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
-  import type { Platform } from "@platform";
   import RubyText from "../RubyText.svelte";
   import IconedButton from "components/IconedButton.svelte";
 
-  export let platform: Platform;
   export let config: Config;
   export let entry: Entry;
   export let model: DicEntriesModel;

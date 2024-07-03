@@ -4,24 +4,22 @@ import type {
   TTSVoice,
   TranslateResult,
   VersionInfo,
-  IPlatformStatic,
   TTSRequest,
 } from "../common";
-import { Config, type StoredConfiguration } from "lib/config";
+import { type Config, type StoredConfiguration } from "lib/config";
 import type {
   RawTokenizeResult,
   SearchRequest,
   TokenizeRequest,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
-import type { RawDictionaryMetadata } from "./dictionary";
-import { Backend as IosAppBackend } from "./backend";
-import { Dictionary as IosAppDictionary } from "./dictionary";
-import { AnkiApi as IosAppAnkiApi } from "./anki";
+import { IosAppDictionary, type RawDictionaryMetadata } from "./dictionary";
+import { IosAppBackend } from "./backend";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
+import { IosAppAnkiApi } from "./anki";
 
 export * from "../common";
 
@@ -70,41 +68,31 @@ export type WebviewRequest<K extends keyof MessageWebviewMap> =
 export type WebviewResponse<K extends keyof MessageWebviewMap> =
   MessageWebviewMap[K][1];
 
-export class IosAppPlatform implements IPlatform {
-  static IS_DESKTOP = false;
-  static IS_IOS = false;
-  static IS_IOSAPP = true;
+const _configSubscribers: ((config: StoredConfiguration) => void)[] = [];
 
-  _configSubscribers: ((config: StoredConfiguration) => void)[] = [];
+export namespace IosAppPlatform {
+  export const IS_DESKTOP = false;
+  export const IS_IOS = false;
+  export const IS_IOSAPP = true;
 
-  configMigration = new LazyAsync<StoredConfiguration>(async () => {
-    return await this.migrateConfigInner();
+  const configMigration = new LazyAsync<StoredConfiguration>(async () => {
+    return await migrateConfigInner();
   });
 
-  constructor() {
-    window.iosConfigUpdated = async () => {
-      const config = (await this.getConfig()) as StoredConfiguration;
-      for (const subscriber of this._configSubscribers) {
-        // TODO: migrate config for iosapp
-        subscriber(config);
-      }
-    };
+  export function newBackend(): IosAppBackend {
+    return new IosAppBackend();
   }
 
-  newBackend(): IosAppBackend {
-    return new IosAppBackend(this);
+  export function newDictionary(): IosAppDictionary {
+    return new IosAppDictionary();
   }
 
-  newDictionary(): IosAppDictionary {
-    return new IosAppDictionary(this);
-  }
-
-  newAnkiApi(_config?: Config): IosAppAnkiApi {
-    return new IosAppAnkiApi(this);
+  export function newAnkiApi(_config?: Config): IosAppAnkiApi {
+    return new IosAppAnkiApi();
   }
 
   /** Message to app inside app's WKWebview */
-  async messageWebview<K extends keyof MessageWebviewMap>(
+  export async function messageWebview<K extends keyof MessageWebviewMap>(
     key: K,
     request: WebviewRequest<K>,
   ): Promise<WebviewResponse<K>> {
@@ -121,8 +109,8 @@ export class IosAppPlatform implements IPlatform {
     }
   }
 
-  async getConfig(): Promise<StoredCompatConfiguration> {
-    const config = await this.messageWebview("loadConfig", null);
+  export async function getConfig(): Promise<StoredCompatConfiguration> {
+    const config = await messageWebview("loadConfig", null);
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
@@ -134,62 +122,74 @@ export class IosAppPlatform implements IPlatform {
   }
 
   /** Does nothiing in iosapp */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    this._configSubscribers.push(subscriber);
+  export function subscribeConfig(
+    subscriber: (config: StoredConfiguration) => void,
+  ): void {
+    _configSubscribers.push(subscriber);
   }
 
-  async saveConfig(config: StoredConfiguration) {
-    await this.messageWebview("saveConfig", config);
+  export async function saveConfig(config: StoredConfiguration) {
+    await messageWebview("saveConfig", config);
 
     // trigger update for this execution context
-    for (const subscriber of this._configSubscribers) {
+    for (const subscriber of _configSubscribers) {
       subscriber(config);
     }
   }
 
-  openOptionsPage(): void {
+  export function openOptionsPage(): void {
     throw new Error("Not implemented for iosapp");
   }
 
-  async versionInfo(): Promise<VersionInfo> {
-    return await this.messageWebview("versionInfo", null);
+  export async function versionInfo(): Promise<VersionInfo> {
+    return await messageWebview("versionInfo", null);
   }
 
-  async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await this.messageWebview("ttsVoices", null);
+  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return await messageWebview("ttsVoices", null);
   }
 
-  async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
+  export async function playTTS(
+    text: string,
+    voice: TTSVoice | null,
+  ): Promise<void> {
     const req: TTSRequest = { text, voice };
-    await this.messageWebview("tts", req);
+    await messageWebview("tts", req);
   }
 
-  async translate(text: string): Promise<TranslateResult> {
+  export async function translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
   }
 
   /** Currently only works in options page */
-  openExternalLink(url: string): void {
-    this.messageWebview("openLink", url).catch((err: unknown) => {
+  export function openExternalLink(url: string): void {
+    messageWebview("openLink", url).catch((err: unknown) => {
       console.error(err);
     });
   }
 
-  async migrateConfig(): Promise<StoredConfiguration> {
-    return await this.configMigration.get();
+  export async function migrateConfig(): Promise<StoredConfiguration> {
+    return await configMigration.get();
   }
 
-  private async migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await this.getConfig();
+  async function migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await getConfig();
     const migrated = migrateConfigObject(configObject);
-    const continueMigration = await this.messageWebview("migrateConfig", null);
+    const continueMigration = await messageWebview("migrateConfig", null);
     if (continueMigration) {
-      await this.saveConfig(migrated);
+      await saveConfig(migrated);
     }
     return migrated;
   }
 }
 
-IosAppPlatform satisfies IPlatformStatic;
+window.iosConfigUpdated = async () => {
+  const config = (await IosAppPlatform.getConfig()) as StoredConfiguration;
+  for (const subscriber of _configSubscribers) {
+    // TODO: migrate config for iosapp
+    subscriber(config);
+  }
+};
+
+IosAppPlatform satisfies IPlatform;
 export const Platform = IosAppPlatform;
-export type Platform = IosAppPlatform;

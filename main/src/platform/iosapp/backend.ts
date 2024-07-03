@@ -1,4 +1,4 @@
-import { Platform as IosAppPlatform } from ".";
+import { IosAppPlatform } from ".";
 import {
   type IBackend,
   type TokenizeRequest,
@@ -9,12 +9,6 @@ import {
 export * from "../common/backend";
 
 export class IosAppBackend implements IBackend {
-  platform: IosAppPlatform;
-
-  constructor(platform: IosAppPlatform) {
-    this.platform = platform;
-  }
-
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
@@ -26,7 +20,7 @@ export class IosAppBackend implements IBackend {
     }
 
     const req: TokenizeRequest = { text, charAt: charAt };
-    const raw = await this.platform.messageWebview("tokenize", req);
+    const raw = await IosAppPlatform.messageWebview("tokenize", req);
     return TokenizeResult.from(raw);
   }
 
@@ -41,7 +35,7 @@ export class IosAppBackend implements IBackend {
     }
 
     const req: SearchRequest = { term, charAt };
-    const raw = await this.platform.messageWebview("searchTerm", req);
+    const raw = await IosAppPlatform.messageWebview("searchTerm", req);
     return TokenizeResult.from(raw);
   }
 }

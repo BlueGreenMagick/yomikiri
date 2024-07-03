@@ -3,10 +3,8 @@
   import { TokenizeResult } from "@platform/backend";
   import { AnkiApi } from "@platform/anki";
   import type Config from "lib/config";
-  import type { Platform } from "@platform";
   import Page from "components/Page.svelte";
 
-  export let platform: Platform;
   export let config: Config;
   export let ankiApi: AnkiApi;
   export let onClose: () => void;
@@ -21,14 +19,7 @@
 
 <Page>
   <div id="main">
-    <Tooltip
-      {platform}
-      {onClose}
-      {config}
-      {ankiApi}
-      {tokenizeResult}
-      {onUpdateHeight}
-    />
+    <Tooltip {onClose} {config} {ankiApi} {tokenizeResult} {onUpdateHeight} />
   </div>
 </Page>
 

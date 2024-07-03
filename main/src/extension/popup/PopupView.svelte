@@ -11,12 +11,10 @@
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import type { ExtensionPlatform } from "@platform";
   import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
 
-  export let platform: ExtensionPlatform;
   export let config: Config;
   export let backend: Backend;
   export let ankiApi: AnkiApi;
@@ -39,7 +37,7 @@
 
     let note: LoadingAnkiNote;
     try {
-      note = buildAnkiNote({ platform, config }, markerData);
+      note = buildAnkiNote({ config }, markerData);
     } catch (err) {
       Toast.error(Utils.getErrorMessage(err));
       throw err;
@@ -59,9 +57,9 @@
 
 <div class="popup">
   <div class="tokenize-container" class:previewIsVisible>
-    <Tokenize {onShowAnkiPreview} {platform} {config} {backend}>
-      <ActionButtons {platform} {config} />
-      <DeferredNoteInfo {config} {platform} {ankiApi} />
+    <Tokenize {onShowAnkiPreview} {config} {backend}>
+      <ActionButtons {config} />
+      <DeferredNoteInfo {config} {ankiApi} />
     </Tokenize>
   </div>
   {#if previewIsVisible}

@@ -7,74 +7,71 @@ import {
   setStorage,
   speakJapanese,
 } from "extension/browserApi";
-import type {
-  IPlatform,
-  IPlatformStatic,
-  TTSVoice,
-  VersionInfo,
-} from "../common";
-import Config, { type StoredConfiguration } from "lib/config";
+import type { IPlatform, TTSVoice, VersionInfo } from "../common";
+import { type Config, type StoredConfiguration } from "lib/config";
 import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
 import { Backend as DesktopBackend } from "./backend";
-import { Dictionary as DesktopDictionary } from "./dictionary";
-import { AnkiApi as DesktopAnkiApi } from "./anki";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
+import { DesktopDictionary } from "./dictionary";
+import { DesktopAnkiApi } from "./anki";
 
 export * from "../common";
 
-export class DesktopPlatform implements IPlatform {
-  static IS_DESKTOP = true;
-  static IS_IOS = false;
-  static IS_IOSAPP = false;
+export namespace DesktopPlatform {
+  export const IS_DESKTOP = true;
+  export const IS_IOS = false;
+  export const IS_IOSAPP = false;
 
   // config migration is done only once even if requested multiple times
-  configMigration = new LazyAsync<StoredConfiguration>(async () => {
-    return await this.migrateConfigInner();
+  const configMigration = new LazyAsync<StoredConfiguration>(async () => {
+    return await migrateConfigInner();
   });
-  backend: LazyAsync<DesktopBackend> = new LazyAsync(() => {
+  export const backend: LazyAsync<DesktopBackend> = new LazyAsync(() => {
     return DesktopBackend.initialize();
   });
 
-  async newBackend(): Promise<DesktopBackend> {
-    return await this.backend.get();
+  export async function newBackend(): Promise<DesktopBackend> {
+    return await backend.get();
   }
 
-  async newDictionary(): Promise<DesktopDictionary> {
-    const backend = await this.backend.get();
-    return new DesktopDictionary(backend);
+  export async function newDictionary(): Promise<DesktopDictionary> {
+    const b = await backend.get();
+    return new DesktopDictionary(b);
   }
 
-  newAnkiApi(config: Config): DesktopAnkiApi {
-    return new DesktopAnkiApi(this, config);
+  export function newAnkiApi(config: Config): DesktopAnkiApi {
+    return new DesktopAnkiApi(config);
   }
 
-  async getConfig(): Promise<StoredCompatConfiguration> {
+  export async function getConfig(): Promise<StoredCompatConfiguration> {
     return await getStorage<StoredCompatConfiguration>("config", {});
   }
 
   /** subscriber is called when config is changed. */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+  export function subscribeConfig(
+    subscriber: (config: StoredConfiguration) => void,
+  ): void {
     handleStorageChange("config", (change) => {
       subscriber(change.newValue as StoredConfiguration);
     });
   }
 
-  saveConfig(config: StoredConfiguration): Promise<void> {
+  export function saveConfig(config: StoredConfiguration): Promise<void> {
     console.debug("config saved");
     return setStorage("config", config);
   }
 
-  openOptionsPage(): Promise<void> {
+  export function openOptionsPage(): Promise<void> {
     return chrome.runtime.openOptionsPage();
   }
 
-  versionInfo(): VersionInfo {
+  export function versionInfo(): VersionInfo {
     const manifest = extensionManifest();
     return {
       version: manifest.version,
@@ -82,11 +79,14 @@ export class DesktopPlatform implements IPlatform {
   }
 
   /** This function is and only should be called in options page */
-  async japaneseTTSVoices(): Promise<TTSVoice[]> {
+  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
     return japaneseTtsVoices();
   }
 
-  async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
+  export async function playTTS(
+    text: string,
+    voice: TTSVoice | null,
+  ): Promise<void> {
     if (EXTENSION_CONTEXT === "contentScript") {
       await message("tts", { voice, text });
     } else {
@@ -94,7 +94,7 @@ export class DesktopPlatform implements IPlatform {
     }
   }
 
-  async translate(text: string): Promise<TranslateResult> {
+  export async function translate(text: string): Promise<TranslateResult> {
     if (EXTENSION_CONTEXT !== "contentScript") {
       return getTranslation(text);
     } else {
@@ -102,27 +102,27 @@ export class DesktopPlatform implements IPlatform {
     }
   }
 
-  openExternalLink(url: string): void {
+  export function openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  async migrateConfig(): Promise<StoredConfiguration> {
+  export async function migrateConfig(): Promise<StoredConfiguration> {
     if (EXTENSION_CONTEXT === "contentScript") {
       return await message("migrateConfig", null);
     } else {
-      return await this.configMigration.get();
+      return await configMigration.get();
     }
   }
 
-  private async migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await this.getConfig();
+  async function migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await getConfig();
     const migrated = migrateConfigObject(configObject);
-    await this.saveConfig(migrated);
+    await saveConfig(migrated);
     return migrated;
   }
 }
 
-DesktopPlatform satisfies IPlatformStatic;
+DesktopPlatform satisfies IPlatform;
 
 export const Platform = DesktopPlatform;
-export type Platform = DesktopPlatform;
+export const ExtensionPlatform = Platform;

@@ -1,4 +1,4 @@
-import { Platform, type ExtensionPlatform } from "@platform";
+import { ExtensionPlatform as Platform } from "@platform";
 import PopupPage from "./PopupPage.svelte";
 import Config from "lib/config";
 import Utils, {
@@ -9,13 +9,12 @@ import Utils, {
 import type { Backend, DesktopBackend, IosBackend } from "@platform/backend";
 import type { AnkiApi } from "@platform/anki";
 
-const platform = new Platform() as ExtensionPlatform;
-const lazyConfig = new LazyAsync(() => Config.initialize(platform));
+const lazyConfig = new LazyAsync(() => Config.initialize());
 const lazyBackend = new LazyAsync(
-  (): PromiseOrValue<DesktopBackend | IosBackend> => platform.newBackend(),
+  (): PromiseOrValue<DesktopBackend | IosBackend> => Platform.newBackend(),
 );
 const lazyAnkiApi = new LazyAsync<AnkiApi>(async () =>
-  platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await lazyConfig.get()),
 );
 
 const initialized = initialize();
@@ -30,11 +29,11 @@ async function initialize(): Promise<[Config, Backend, AnkiApi]> {
 
 const page = new PopupPage({
   target: document.body,
-  props: { platform, initialized },
+  props: { initialized },
 });
 
 exposeGlobals({
-  platform,
+  Platform,
   Utils,
   backend: () => {
     void lazyBackend.get();

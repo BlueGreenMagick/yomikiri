@@ -1,13 +1,8 @@
 import Utils, { exposeGlobals } from "lib/utils";
 import { handleClick, handleMouseMove } from "./handlers";
-import {
-  highlighter,
-  lazyBackend,
-  lazyConfig,
-  lazyTooltip,
-  platform,
-} from "./shared";
+import { highlighter, lazyBackend, lazyConfig, lazyTooltip } from "./shared";
 import { TOOLTIP_IFRAME_ID } from "consts";
+import { Platform } from "@platform";
 
 declare global {
   interface Window {
@@ -36,7 +31,7 @@ function initialize() {
   document.addEventListener("click", handleClick);
 
   exposeGlobals({
-    platform,
+    Platform,
     Utils,
     backend: () => {
       return lazyBackend.get();
