@@ -25,6 +25,7 @@ import {
   type First,
   type Second,
 } from "lib/utils";
+import { EXTENSION_CONTEXT } from "consts";
 
 /**
  * Type map for messages between extension processes
@@ -477,6 +478,52 @@ function createMessageResponseHandler<K extends keyof MessageMap>(
       } else {
         reject(new Error(getErrorMessage(error)));
       }
+    }
+  };
+}
+
+type SimpleMessageHandlers = {
+  [K in keyof MessageMap]: (
+    request: MessageRequest<K>,
+  ) => MessageResponse<K> | Promise<MessageResponse<K>>;
+};
+
+/**
+ * This function is run only in background context.
+ *
+ * In other extension contexts, a message is sent to background to run the function.
+ */
+export function BackgroundFunction<K extends keyof MessageMap>(
+  messageKey: K,
+  fn: SimpleMessageHandlers[K],
+) {
+  handleMessage(messageKey, fn);
+
+  return async function inner(arg: MessageRequest<K>) {
+    if (EXTENSION_CONTEXT !== "background") {
+      return await message(messageKey, arg);
+    } else {
+      return fn(arg);
+    }
+  };
+}
+
+/**
+ * Only in content script, a message is sent to background to run the function.
+ *
+ * Function is run as-is in other contexts.
+ */
+export function NonContentScriptFunction<K extends keyof MessageMap>(
+  messageKey: K,
+  fn: SimpleMessageHandlers[K],
+) {
+  handleMessage(messageKey, fn);
+
+  return async function inner(arg: MessageRequest<K>) {
+    if (EXTENSION_CONTEXT === "contentScript") {
+      return await message(messageKey, arg);
+    } else {
+      return fn(arg);
     }
   };
 }
