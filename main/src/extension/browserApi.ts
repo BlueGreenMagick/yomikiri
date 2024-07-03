@@ -13,12 +13,17 @@ import type {
 import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "platform/common";
-import Utils, {
+import {
+  createPromise,
   handleResponseMessage,
   hasOwnProperty,
+  getErrorMessage,
   type ResponseMessage,
   type Satisfies,
   type Thennable,
+  type PromiseResolver,
+  type First,
+  type Second,
 } from "lib/utils";
 
 /**
@@ -51,12 +56,8 @@ type _EnsureNoPromiseInMessageMap = Satisfies<
   }
 >;
 
-export type MessageRequest<K extends keyof MessageMap> = Utils.First<
-  MessageMap[K]
->;
-export type MessageResponse<K extends keyof MessageMap> = Utils.Second<
-  MessageMap[K]
->;
+export type MessageRequest<K extends keyof MessageMap> = First<MessageMap[K]>;
+export type MessageResponse<K extends keyof MessageMap> = Second<MessageMap[K]>;
 
 interface RequestMessage<K extends keyof MessageMap> {
   key: K;
@@ -158,7 +159,7 @@ export class BrowserApi {
 
   /** Must be called from within a tab, and not in a content script */
   async currentTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
+    const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
     chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
       if (result === undefined) {
         reject(new Error("Could not get current tab"));
@@ -182,7 +183,7 @@ export class BrowserApi {
 
   /** Must not be called from a content script. */
   async activeTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve, reject] = Utils.createPromise<chrome.tabs.Tab>();
+    const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
     const info = {
       active: true,
       currentWindow: true,
@@ -199,7 +200,7 @@ export class BrowserApi {
   }
 
   async tabs(info: chrome.tabs.QueryInfo): Promise<chrome.tabs.Tab[]> {
-    const [promise, resolve] = Utils.createPromise<chrome.tabs.Tab[]>();
+    const [promise, resolve] = createPromise<chrome.tabs.Tab[]>();
     chrome.tabs.query(info, (tabs: chrome.tabs.Tab[]) => {
       resolve(tabs);
     });
@@ -207,7 +208,7 @@ export class BrowserApi {
   }
 
   async goToTab(tabId: number): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
+    const [promise, resolve] = createPromise<void>();
     chrome.tabs.update(tabId, { active: true }, () => {
       resolve();
     });
@@ -215,7 +216,7 @@ export class BrowserApi {
   }
 
   async removeTab(tabId: number): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
+    const [promise, resolve] = createPromise<void>();
     chrome.tabs.remove(tabId, () => {
       resolve();
     });
@@ -226,7 +227,7 @@ export class BrowserApi {
     tabId: number,
     properties: chrome.tabs.UpdateProperties,
   ): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
+    const [promise, resolve] = createPromise<void>();
     chrome.tabs.update(tabId, properties, () => {
       resolve();
     });
@@ -238,7 +239,7 @@ export class BrowserApi {
    * `storage[key]?: T`
    */
   async getStorage<T>(key: string, or?: T): Promise<T> {
-    const [promise, resolve] = Utils.createPromise<T>();
+    const [promise, resolve] = createPromise<T>();
     let req: string | Record<string, T> = key;
     if (or !== undefined) {
       req = {
@@ -253,7 +254,7 @@ export class BrowserApi {
 
   /** value cannot be undefined or null */
   async setStorage(key: string, value: NonNullable<unknown>) {
-    const [promise, resolve] = Utils.createPromise<void>();
+    const [promise, resolve] = createPromise<void>();
     const object: Record<string, unknown> = {};
     object[key] = value;
     this.storage().set(object, resolve);
@@ -261,7 +262,7 @@ export class BrowserApi {
   }
 
   async removeStorage(key: string) {
-    const [promise, resolve] = Utils.createPromise<void>();
+    const [promise, resolve] = createPromise<void>();
     this.storage().remove(key, resolve);
     return promise;
   }
@@ -307,7 +308,7 @@ export class BrowserApi {
       return [];
     }
 
-    const [promise, resolve] = Utils.createPromise<chrome.tts.TtsVoice[]>();
+    const [promise, resolve] = createPromise<chrome.tts.TtsVoice[]>();
     chrome.tts.getVoices(resolve);
     const voices = await promise;
     const ttsVoices: TTSVoice[] = [];
@@ -327,7 +328,7 @@ export class BrowserApi {
   }
 
   async speakJapanese(text: string, voice: TTSVoice | null): Promise<void> {
-    const [promise, resolve] = Utils.createPromise<void>();
+    const [promise, resolve] = createPromise<void>();
     let options: chrome.tts.SpeakOptions = { lang: "ja-jp" };
     if (voice !== null) {
       const voices = await this.japaneseTtsVoices();
@@ -377,14 +378,14 @@ export async function message<K extends keyof MessageMap>(
   key: K,
   request: MessageRequest<K>,
 ): Promise<MessageResponse<K>> {
-  const [promise, resolve, reject] = Utils.createPromise<MessageResponse<K>>();
+  const [promise, resolve, reject] = createPromise<MessageResponse<K>>();
   const message = {
     key,
     request,
   };
   const handler = createMessageResponseHandler(resolve, reject);
   const initialHandler = (
-    resp: ResponseMessage<Utils.Second<MessageMap[K]>> | undefined,
+    resp: ResponseMessage<Second<MessageMap[K]>> | undefined,
   ) => {
     // background not set up yet. try request again.
     if (resp === undefined) {
@@ -407,7 +408,7 @@ export async function messageToTab<K extends keyof MessageMap>(
   key: K,
   request: MessageRequest<K>,
 ): Promise<MessageResponse<K>> {
-  const [promise, resolve, reject] = Utils.createPromise<MessageResponse<K>>();
+  const [promise, resolve, reject] = createPromise<MessageResponse<K>>();
   const message = {
     key,
     request,
@@ -426,7 +427,7 @@ export async function messageToAllTabs<K extends keyof MessageMap>(
   request: MessageRequest<K>,
 ): Promise<(MessageResponse<K> | undefined)[]> {
   const [outerPromise, outerResolve, outerReject] =
-    Utils.createPromise<(MessageResponse<K> | undefined)[]>();
+    createPromise<(MessageResponse<K> | undefined)[]>();
   const message = {
     key,
     request,
@@ -436,8 +437,7 @@ export async function messageToAllTabs<K extends keyof MessageMap>(
     const promises: Promise<MessageResponse<K>>[] = [];
     for (const tab of tabs) {
       if (tab.id !== undefined) {
-        const [promise, resolve, reject] =
-          Utils.createPromise<MessageResponse<K>>();
+        const [promise, resolve, reject] = createPromise<MessageResponse<K>>();
         const handler = createMessageResponseHandler(resolve, reject);
         chrome.tabs.sendMessage(tab.id, message, (resp) => {
           if (
@@ -464,7 +464,7 @@ export async function messageToAllTabs<K extends keyof MessageMap>(
 
 /** It is assumed that request does return a response. */
 function createMessageResponseHandler<K extends keyof MessageMap>(
-  resolve: Utils.PromiseResolver<MessageResponse<K>>,
+  resolve: PromiseResolver<MessageResponse<K>>,
   reject: (reason: Error) => void,
 ): (resp: ResponseMessage<MessageResponse<K>>) => void {
   return (resp: ResponseMessage<MessageResponse<K>>) => {
@@ -475,7 +475,7 @@ function createMessageResponseHandler<K extends keyof MessageMap>(
       if (error instanceof Error) {
         reject(error);
       } else {
-        reject(new Error(Utils.getErrorMessage(error)));
+        reject(new Error(getErrorMessage(error)));
       }
     }
   };
