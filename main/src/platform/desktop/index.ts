@@ -41,8 +41,9 @@ export class DesktopPlatform implements IPlatform {
     return await this.backend.get();
   }
 
-  newDictionary(): DesktopDictionary {
-    return new DesktopDictionary(this.browserApi, this.backend);
+  async newDictionary(): Promise<DesktopDictionary> {
+    const backend = await this.backend.get();
+    return new DesktopDictionary(this.browserApi, backend);
   }
 
   newAnkiApi(config: Config): DesktopAnkiApi {
