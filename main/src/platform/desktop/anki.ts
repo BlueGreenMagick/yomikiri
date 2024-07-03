@@ -212,7 +212,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
 
   async addNote(note: AnkiNote): Promise<boolean> {
     if (this.browserApi.context === "contentScript") {
-      return this.browserApi.request("addAnkiNote", note);
+      return this.browserApi.message("addAnkiNote", note);
     } else {
       return this._addNote(note);
     }

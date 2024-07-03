@@ -87,7 +87,7 @@ export class DesktopPlatform implements IPlatform {
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     if (this.browserApi.context === "contentScript") {
-      await this.browserApi.request("tts", { voice, text });
+      await this.browserApi.message("tts", { voice, text });
     } else {
       await this.browserApi.speakJapanese(text, voice);
     }
@@ -97,7 +97,7 @@ export class DesktopPlatform implements IPlatform {
     if (this.browserApi.context !== "contentScript") {
       return getTranslation(text);
     } else {
-      return this.browserApi.request("translate", text);
+      return this.browserApi.message("translate", text);
     }
   }
 
@@ -107,7 +107,7 @@ export class DesktopPlatform implements IPlatform {
 
   async migrateConfig(): Promise<StoredConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return await this.browserApi.request("migrateConfig", null);
+      return await this.browserApi.message("migrateConfig", null);
     } else {
       return await this.configMigration.get();
     }

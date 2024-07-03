@@ -1,6 +1,6 @@
 import Config, { type StoredConfiguration } from "lib/config";
-import { LazyAsync, handleMessageResponse } from "lib/utils";
-import { BrowserApi, handleRequest } from "extension/browserApi";
+import { LazyAsync, handleResponseMessage } from "lib/utils";
+import { BrowserApi, handleMessage } from "extension/browserApi";
 import type {
   IPlatform,
   TTSVoice,
@@ -59,11 +59,11 @@ export class IosPlatform implements IPlatform {
   constructor(browserApi: BrowserApi) {
     this.browserApi = browserApi;
     if (browserApi.context === "background") {
-      handleRequest("loadConfig", async () => {
+      handleMessage("loadConfig", async () => {
         const config = await this.updateConfig();
         return config;
       });
-      handleRequest("saveConfig", (config) => {
+      handleMessage("saveConfig", (config) => {
         return this.saveConfig(config);
       });
 
@@ -90,13 +90,13 @@ export class IosPlatform implements IPlatform {
       request: JSON.stringify(request),
     });
     // eslint-disable-next-line
-    const jsonResponse = handleMessageResponse<string>(resp);
+    const jsonResponse = handleResponseMessage<string>(resp);
     return JSON.parse(jsonResponse) as AppResponse<K>;
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return this.browserApi.request("loadConfig", null);
+      return this.browserApi.message("loadConfig", null);
     } else {
       return this.updateConfig();
     }
@@ -128,7 +128,7 @@ export class IosPlatform implements IPlatform {
 
   async saveConfig(config: StoredConfiguration): Promise<void> {
     if (this.browserApi.context === "contentScript") {
-      await this.browserApi.request("saveConfig", config);
+      await this.browserApi.message("saveConfig", config);
     } else {
       await this.requestToApp("saveConfig", config);
       await this.browserApi.setStorage("config", config);
@@ -164,7 +164,7 @@ export class IosPlatform implements IPlatform {
     if (this.browserApi.context !== "contentScript") {
       await this.requestToApp("tts", { voice, text });
     } else {
-      await this.browserApi.request("tts", { voice, text });
+      await this.browserApi.message("tts", { voice, text });
     }
   }
 
@@ -172,7 +172,7 @@ export class IosPlatform implements IPlatform {
     if (this.browserApi.context !== "contentScript") {
       return getTranslation(text);
     } else {
-      return this.browserApi.request("translate", text);
+      return this.browserApi.message("translate", text);
     }
   }
 
@@ -182,7 +182,7 @@ export class IosPlatform implements IPlatform {
 
   async migrateConfig(): Promise<StoredConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return await this.browserApi.request("migrateConfig", null);
+      return await this.browserApi.message("migrateConfig", null);
     } else {
       return await this.configMigration.get();
     }

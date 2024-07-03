@@ -36,7 +36,7 @@ export class DesktopBackend implements IBackend {
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
-      return this.browserApi.request("tokenize", { text, charAt });
+      return this.browserApi.message("tokenize", { text, charAt });
     } else {
       return this._tokenize(this.wasm, text, charAt);
     }
@@ -60,7 +60,7 @@ export class DesktopBackend implements IBackend {
 
   async search(term: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
-      return this.browserApi.request("searchTerm", { term, charAt });
+      return this.browserApi.message("searchTerm", { term, charAt });
     } else {
       return this._search(this.wasm, term, charAt);
     }

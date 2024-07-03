@@ -22,7 +22,7 @@ export class IosBackend implements IBackend {
     if (this.browserApi.context !== "contentScript") {
       return this._tokenize(text, charAt);
     } else {
-      return this.browserApi.request("tokenize", { text, charAt });
+      return this.browserApi.message("tokenize", { text, charAt });
     }
   }
 
@@ -45,7 +45,7 @@ export class IosBackend implements IBackend {
     if (this.browserApi.context !== "contentScript") {
       return this._search(term, charAt);
     } else {
-      return this.browserApi.request("searchTerm", { term, charAt });
+      return this.browserApi.message("searchTerm", { term, charAt });
     }
   }
 

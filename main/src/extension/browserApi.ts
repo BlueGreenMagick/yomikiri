@@ -1,3 +1,9 @@
+/*
+Terminology for messaging:
+- MessageRequest: request body of message
+- RequestMessage: message frame containing actual request
+*/
+
 import type { AnkiNote } from "lib/anki";
 import type {
   SearchRequest,
@@ -8,9 +14,9 @@ import type { StoredConfiguration } from "../lib/config";
 import type { TranslateResult } from "../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "platform/common";
 import Utils, {
-  handleMessageResponse,
+  handleResponseMessage,
   hasOwnProperty,
-  type MessageResponse,
+  type ResponseMessage,
   type Satisfies,
   type Thennable,
 } from "lib/utils";
@@ -45,20 +51,24 @@ type _EnsureNoPromiseInMessageMap = Satisfies<
   }
 >;
 
-export type Request<K extends keyof MessageMap> = Utils.First<MessageMap[K]>;
-export type Response<K extends keyof MessageMap> = Utils.Second<MessageMap[K]>;
+export type MessageRequest<K extends keyof MessageMap> = Utils.First<
+  MessageMap[K]
+>;
+export type MessageResponse<K extends keyof MessageMap> = Utils.Second<
+  MessageMap[K]
+>;
 
-interface Message<K extends keyof MessageMap> {
+interface RequestMessage<K extends keyof MessageMap> {
   key: K;
-  request: Request<K>;
+  request: MessageRequest<K>;
 }
 
 export type MessageSender = chrome.runtime.MessageSender;
 
-export type RequestHandler<K extends keyof MessageMap> = (
-  request: Request<K>,
+export type MessageHandler<K extends keyof MessageMap> = (
+  request: MessageRequest<K>,
   sender: MessageSender,
-) => Response<K> | Promise<Response<K>>;
+) => MessageResponse<K> | Promise<MessageResponse<K>>;
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
@@ -80,8 +90,8 @@ export interface ApiInitializeOptions {
 type ConnectionKey = "updateDictionary";
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
-const _requestHandlers: {
-  [K in keyof MessageMap]?: RequestHandler<K>;
+const _messageHandlers: {
+  [K in keyof MessageMap]?: MessageHandler<K>;
 } = {};
 
 export class BrowserApi {
@@ -153,13 +163,13 @@ export class BrowserApi {
   }
 
   /** It is assumed that request does return a response. */
-  private createRequestResponseHandler<K extends keyof MessageMap>(
-    resolve: Utils.PromiseResolver<Response<K>>,
+  private createMessageResponseHandler<K extends keyof MessageMap>(
+    resolve: Utils.PromiseResolver<MessageResponse<K>>,
     reject: (reason: Error) => void,
-  ): (resp: MessageResponse<Response<K>>) => void {
-    return (resp: MessageResponse<Response<K>>) => {
+  ): (resp: ResponseMessage<MessageResponse<K>>) => void {
+    return (resp: ResponseMessage<MessageResponse<K>>) => {
       try {
-        const response = handleMessageResponse(resp);
+        const response = handleResponseMessage(resp);
         resolve(response);
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -172,23 +182,24 @@ export class BrowserApi {
   }
 
   /**
-   * Send request to all extension pages.
-   * Returns the return value of the request handler.
+   * Send message to all extension pages.
+   * Returns the return value of the message handler.
    *
-   * Request is not sent to content scripts. Use `requestToTab()` instead.
+   * Message is not sent to content scripts. Use `messageToTab()` instead.
    */
-  async request<K extends keyof MessageMap>(
+  async message<K extends keyof MessageMap>(
     key: K,
-    request: Request<K>,
-  ): Promise<Response<K>> {
-    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+    request: MessageRequest<K>,
+  ): Promise<MessageResponse<K>> {
+    const [promise, resolve, reject] =
+      Utils.createPromise<MessageResponse<K>>();
     const message = {
       key,
       request,
     };
-    const handler = this.createRequestResponseHandler(resolve, reject);
+    const handler = this.createMessageResponseHandler(resolve, reject);
     const initialHandler = (
-      resp: MessageResponse<Utils.Second<MessageMap[K]>> | undefined,
+      resp: ResponseMessage<Utils.Second<MessageMap[K]>> | undefined,
     ) => {
       // background not set up yet. try request again.
       if (resp === undefined) {
@@ -205,13 +216,14 @@ export class BrowserApi {
     return promise;
   }
 
-  /** Send request to page and content script in tab. */
-  async requestToTab<K extends keyof MessageMap>(
+  /** Send message to page and content script in tab. */
+  async messageToTab<K extends keyof MessageMap>(
     tabId: number,
     key: K,
-    request: Request<K>,
-  ): Promise<Response<K>> {
-    const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
+    request: MessageRequest<K>,
+  ): Promise<MessageResponse<K>> {
+    const [promise, resolve, reject] =
+      Utils.createPromise<MessageResponse<K>>();
     const message = {
       key,
       request,
@@ -219,29 +231,30 @@ export class BrowserApi {
     chrome.tabs.sendMessage(
       tabId,
       message,
-      this.createRequestResponseHandler(resolve, reject),
+      this.createMessageResponseHandler(resolve, reject),
     );
     return promise;
   }
 
-  /** Responses may contain undefined if a tab did not handle request */
-  async requestToAllTabs<K extends keyof MessageMap>(
+  /** Responses may contain undefined if a tab did not handle message */
+  async messageToAllTabs<K extends keyof MessageMap>(
     key: K,
-    request: Request<K>,
-  ): Promise<(Response<K> | undefined)[]> {
+    request: MessageRequest<K>,
+  ): Promise<(MessageResponse<K> | undefined)[]> {
     const [outerPromise, outerResolve, outerReject] =
-      Utils.createPromise<(Response<K> | undefined)[]>();
+      Utils.createPromise<(MessageResponse<K> | undefined)[]>();
     const message = {
       key,
       request,
     };
 
     chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
-      const promises: Promise<Response<K>>[] = [];
+      const promises: Promise<MessageResponse<K>>[] = [];
       for (const tab of tabs) {
         if (tab.id !== undefined) {
-          const [promise, resolve, reject] = Utils.createPromise<Response<K>>();
-          const handler = this.createRequestResponseHandler(resolve, reject);
+          const [promise, resolve, reject] =
+            Utils.createPromise<MessageResponse<K>>();
+          const handler = this.createMessageResponseHandler(resolve, reject);
           chrome.tabs.sendMessage(tab.id, message, (resp) => {
             if (
               resp === undefined ||
@@ -467,25 +480,25 @@ export class BrowserApi {
   }
 }
 
-/// Handle request by front-end for `key`. Return response in handler.
+/// Handle message by front-end for `key`. Return response in handler.
 /// If there is an existing handler for `key`, replaces it.
-export function handleRequest<K extends keyof MessageMap>(
+export function handleMessage<K extends keyof MessageMap>(
   key: K,
-  handler: (typeof _requestHandlers)[K],
+  handler: (typeof _messageHandlers)[K],
 ) {
-  _requestHandlers[key] = handler;
+  _messageHandlers[key] = handler;
 }
 
 chrome.runtime.onMessage.addListener(
   (
-    message: Message<keyof MessageMap>,
+    message: RequestMessage<keyof MessageMap>,
     sender: MessageSender,
     sendResponse: (
-      response?: MessageResponse<Response<keyof MessageMap>>,
+      response?: ResponseMessage<MessageResponse<keyof MessageMap>>,
     ) => void,
   ): boolean => {
     console.debug(message.key, message);
-    const handler = _requestHandlers[message.key];
+    const handler = _messageHandlers[message.key];
     if (handler) {
       void (async () => {
         try {

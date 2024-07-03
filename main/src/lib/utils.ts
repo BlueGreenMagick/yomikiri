@@ -343,21 +343,22 @@ export function exposeGlobals(
   }
 }
 
-export interface SuccessfulMessageResponse<R> {
+// response format for extension and ios messaging
+export interface SuccessfulResponseMessage<R> {
   success: true;
   resp: R;
 }
 
-export interface FailedMessageResponse {
+export interface FailedResponseMessage {
   success: false;
   error: string; // error json
 }
 
-export type MessageResponse<R> =
-  | SuccessfulMessageResponse<R>
-  | FailedMessageResponse;
+export type ResponseMessage<R> =
+  | SuccessfulResponseMessage<R>
+  | FailedResponseMessage;
 
-export function handleMessageResponse<R>(resp: MessageResponse<R>): R {
+export function handleResponseMessage<R>(resp: ResponseMessage<R>): R {
   if (resp.success) {
     return resp.resp;
   } else {

@@ -13,7 +13,7 @@ import {
 } from "@platform/backend";
 import {
   BrowserApi,
-  handleRequest,
+  handleMessage,
   type MessageSender,
 } from "extension/browserApi";
 import {
@@ -112,13 +112,13 @@ async function handleMigrateConfig(): Promise<StoredConfiguration> {
   return await platform.migrateConfig();
 }
 
-handleRequest("searchTerm", searchTerm);
-handleRequest("tokenize", tokenize);
-handleRequest("addAnkiNote", addAnkiNote);
-handleRequest("tabId", tabId);
-handleRequest("translate", handleTranslate);
-handleRequest("tts", tts);
-handleRequest("migrateConfig", handleMigrateConfig);
+handleMessage("searchTerm", searchTerm);
+handleMessage("tokenize", tokenize);
+handleMessage("addAnkiNote", addAnkiNote);
+handleMessage("tabId", tabId);
+handleMessage("translate", handleTranslate);
+handleMessage("tts", tts);
+handleMessage("migrateConfig", handleMigrateConfig);
 
 browserApi.handleBrowserLoad(() => {
   void initialize();
