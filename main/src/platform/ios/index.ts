@@ -28,7 +28,7 @@ import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
-import { PLATFORM } from "consts";
+import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 
 export * from "../common";
 
@@ -65,7 +65,7 @@ export class IosPlatform implements IPlatform {
 
   constructor(browserApi: BrowserApi) {
     this.browserApi = browserApi;
-    if (browserApi.context === "background") {
+    if (EXTENSION_CONTEXT === "background") {
       handleMessage("loadConfig", async () => {
         const config = await this.updateConfig();
         return config;
@@ -102,7 +102,7 @@ export class IosPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       return message("loadConfig", null);
     } else {
       return this.updateConfig();
@@ -134,7 +134,7 @@ export class IosPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration): Promise<void> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       await message("saveConfig", config);
     } else {
       await this.requestToApp("saveConfig", config);
@@ -144,7 +144,7 @@ export class IosPlatform implements IPlatform {
 
   async openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
-    if (this.browserApi.context !== "popup") {
+    if (EXTENSION_CONTEXT !== "popup") {
       location.href = OPTIONS_URL;
     } else {
       const tab = await currentTab();
@@ -168,7 +168,7 @@ export class IosPlatform implements IPlatform {
   }
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
-    if (this.browserApi.context !== "contentScript") {
+    if (EXTENSION_CONTEXT !== "contentScript") {
       await this.requestToApp("tts", { voice, text });
     } else {
       await message("tts", { voice, text });
@@ -176,7 +176,7 @@ export class IosPlatform implements IPlatform {
   }
 
   async translate(text: string): Promise<TranslateResult> {
-    if (this.browserApi.context !== "contentScript") {
+    if (EXTENSION_CONTEXT !== "contentScript") {
       return getTranslation(text);
     } else {
       return message("translate", text);
@@ -188,7 +188,7 @@ export class IosPlatform implements IPlatform {
   }
 
   async migrateConfig(): Promise<StoredConfiguration> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       return await message("migrateConfig", null);
     } else {
       return await this.configMigration.get();
@@ -205,7 +205,7 @@ export class IosPlatform implements IPlatform {
   // workaround to ios 17.5 bug where background script freezes after ~30s of non-stop activity
   // https://github.com/alexkates/content-script-non-responsive-bug/issues/1
   private async setupIosPeriodicReload() {
-    if (PLATFORM !== "ios" || this.browserApi.context !== "background") return;
+    if (PLATFORM !== "ios" || EXTENSION_CONTEXT !== "background") return;
     console.debug("Set up periodic ios reload");
 
     let wakeup = Date.now();

@@ -97,7 +97,6 @@ const _messageHandlers: {
 } = {};
 
 export class BrowserApi {
-  readonly context: ExecutionContext;
   private tabId: number | undefined;
 
   private _storageHandlers: Record<string, StorageHandler[]> = {};
@@ -112,7 +111,6 @@ export class BrowserApi {
       handleConnection: options.context === "background",
       ...options,
     };
-    this.context = opts.context;
 
     if (opts.handleStorageChange) {
       this.attachStorageChangeHandler();

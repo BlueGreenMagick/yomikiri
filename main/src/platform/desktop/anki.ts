@@ -16,6 +16,7 @@ import {
   type First,
   type Second,
 } from "lib/utils";
+import { EXTENSION_CONTEXT } from "consts";
 
 const ANKI_CONNECT_VER = 6;
 const DEFER_NOTES_STORAGE_KEY = "deferred-anki-note";
@@ -211,7 +212,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   async addNote(note: AnkiNote): Promise<boolean> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       return message("addAnkiNote", note);
     } else {
       return this._addNote(note);

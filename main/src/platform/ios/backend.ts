@@ -6,6 +6,7 @@ import {
   TokenizeResult,
   type SearchRequest,
 } from "../common/backend";
+import { EXTENSION_CONTEXT } from "consts";
 
 export * from "../common/backend";
 
@@ -19,7 +20,7 @@ export class IosBackend implements IBackend {
   }
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
-    if (this.browserApi.context !== "contentScript") {
+    if (EXTENSION_CONTEXT !== "contentScript") {
       return this._tokenize(text, charAt);
     } else {
       return message("tokenize", { text, charAt });
@@ -42,7 +43,7 @@ export class IosBackend implements IBackend {
   }
 
   async search(term: string, charAt?: number): Promise<TokenizeResult> {
-    if (this.browserApi.context !== "contentScript") {
+    if (EXTENSION_CONTEXT !== "contentScript") {
       return this._search(term, charAt);
     } else {
       return message("searchTerm", { term, charAt });

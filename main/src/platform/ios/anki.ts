@@ -8,6 +8,7 @@ import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
 import type { Platform as IosPlatform } from "./";
+import { EXTENSION_CONTEXT } from "consts";
 
 export class IosAnkiApi implements IAnkiAddNotes {
   browserApi: BrowserApi;
@@ -22,7 +23,7 @@ export class IosAnkiApi implements IAnkiAddNotes {
    * Does not wait for note to actually be added to Anki.
    */
   async addNote(note: AnkiNote): Promise<boolean> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       return message("addAnkiNote", note);
     }
     return this._addNote(note);

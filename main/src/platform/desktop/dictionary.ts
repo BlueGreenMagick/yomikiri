@@ -8,6 +8,7 @@ import type { DesktopBackend } from "./backend";
 import type { Backend } from "@yomikiri/yomikiri-rs";
 import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
 import type { BrowserApi } from "extension/browserApi";
+import { EXTENSION_CONTEXT } from "consts";
 
 export type { DictionaryMetadata } from "../common/dictionary";
 
@@ -37,7 +38,7 @@ export class DesktopDictionary implements IDictionary {
 
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
     throw new Error("TODO: Currently not supported!");
-    if (this.browserApi.context === "background") {
+    if (EXTENSION_CONTEXT === "background") {
       const prom = Utils.PromiseWithProgress.fromPromise(
         this._updateDictionary(progressFn),
         "Downloading JMDict file...",

@@ -22,6 +22,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
+import { EXTENSION_CONTEXT } from "consts";
 
 export * from "../common";
 
@@ -92,7 +93,7 @@ export class DesktopPlatform implements IPlatform {
   }
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       await message("tts", { voice, text });
     } else {
       await speakJapanese(text, voice);
@@ -100,7 +101,7 @@ export class DesktopPlatform implements IPlatform {
   }
 
   async translate(text: string): Promise<TranslateResult> {
-    if (this.browserApi.context !== "contentScript") {
+    if (EXTENSION_CONTEXT !== "contentScript") {
       return getTranslation(text);
     } else {
       return message("translate", text);
@@ -112,7 +113,7 @@ export class DesktopPlatform implements IPlatform {
   }
 
   async migrateConfig(): Promise<StoredConfiguration> {
-    if (this.browserApi.context === "contentScript") {
+    if (EXTENSION_CONTEXT === "contentScript") {
       return await message("migrateConfig", null);
     } else {
       return await this.configMigration.get();

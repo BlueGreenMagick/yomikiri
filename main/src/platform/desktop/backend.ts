@@ -4,6 +4,7 @@ import { BrowserApi, message } from "extension/browserApi";
 
 import Utils from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
+import { EXTENSION_CONTEXT } from "consts";
 
 export * from "../common/backend";
 
@@ -13,7 +14,7 @@ export class DesktopBackend implements IBackend {
 
   static async initialize(browserApi: BrowserApi): Promise<DesktopBackend> {
     const backend = new DesktopBackend(browserApi);
-    if (browserApi.context === "background") {
+    if (EXTENSION_CONTEXT === "background") {
       await backend._initialize();
     }
     return backend;
