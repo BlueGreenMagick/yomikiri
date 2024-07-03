@@ -158,81 +158,15 @@ export class BrowserApi {
     return chrome.runtime.getManifest();
   }
 
-  /** Must be called from within a tab, and not in a content script */
-  async currentTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
-    chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
-      if (result === undefined) {
-        reject(new Error("Could not get current tab"));
-      } else {
-        resolve(result);
-      }
-    });
-    return promise;
-  }
-
   async currentTabId(): Promise<number> {
     if (this.tabId === undefined) {
-      const tab = await this.currentTab();
+      const tab = await currentTab();
       if (tab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
       this.tabId = tab.id;
     }
     return this.tabId;
-  }
-
-  /** Must not be called from a content script. */
-  async activeTab(): Promise<chrome.tabs.Tab> {
-    const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
-    const info = {
-      active: true,
-      currentWindow: true,
-    };
-
-    chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
-      if (result[0] !== undefined) {
-        resolve(result[0]);
-      } else {
-        reject(new Error("No tabs are active"));
-      }
-    });
-    return promise;
-  }
-
-  async tabs(info: chrome.tabs.QueryInfo): Promise<chrome.tabs.Tab[]> {
-    const [promise, resolve] = createPromise<chrome.tabs.Tab[]>();
-    chrome.tabs.query(info, (tabs: chrome.tabs.Tab[]) => {
-      resolve(tabs);
-    });
-    return promise;
-  }
-
-  async goToTab(tabId: number): Promise<void> {
-    const [promise, resolve] = createPromise<void>();
-    chrome.tabs.update(tabId, { active: true }, () => {
-      resolve();
-    });
-    return promise;
-  }
-
-  async removeTab(tabId: number): Promise<void> {
-    const [promise, resolve] = createPromise<void>();
-    chrome.tabs.remove(tabId, () => {
-      resolve();
-    });
-    return promise;
-  }
-
-  async updateTab(
-    tabId: number,
-    properties: chrome.tabs.UpdateProperties,
-  ): Promise<void> {
-    const [promise, resolve] = createPromise<void>();
-    chrome.tabs.update(tabId, properties, () => {
-      resolve();
-    });
-    return promise;
   }
 
   /**
@@ -526,6 +460,74 @@ export function NonContentScriptFunction<K extends keyof MessageMap>(
       return fn(arg);
     }
   };
+}
+
+/** Must not be called from a content script. */
+export async function activeTab(): Promise<chrome.tabs.Tab> {
+  const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
+  const info = {
+    active: true,
+    currentWindow: true,
+  };
+
+  chrome.tabs.query(info, (result: chrome.tabs.Tab[]) => {
+    if (result[0] !== undefined) {
+      resolve(result[0]);
+    } else {
+      reject(new Error("No tabs are active"));
+    }
+  });
+  return promise;
+}
+
+export async function getTabs(
+  info: chrome.tabs.QueryInfo,
+): Promise<chrome.tabs.Tab[]> {
+  const [promise, resolve] = createPromise<chrome.tabs.Tab[]>();
+  chrome.tabs.query(info, (tabs: chrome.tabs.Tab[]) => {
+    resolve(tabs);
+  });
+  return promise;
+}
+
+export async function goToTab(tabId: number): Promise<void> {
+  const [promise, resolve] = createPromise<void>();
+  chrome.tabs.update(tabId, { active: true }, () => {
+    resolve();
+  });
+  return promise;
+}
+
+export async function removeTab(tabId: number): Promise<void> {
+  const [promise, resolve] = createPromise<void>();
+  chrome.tabs.remove(tabId, () => {
+    resolve();
+  });
+  return promise;
+}
+
+export async function updateTab(
+  tabId: number,
+  properties: chrome.tabs.UpdateProperties,
+): Promise<void> {
+  const [promise, resolve] = createPromise<void>();
+  chrome.tabs.update(tabId, properties, () => {
+    resolve();
+  });
+  return promise;
+}
+
+/** Must be called from within a tab, and not in a content script */
+export async function currentTab(): Promise<chrome.tabs.Tab> {
+  const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
+  chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
+    if (result === undefined) {
+      reject(new Error("Could not get current tab"));
+    } else {
+      resolve(result);
+    }
+  });
+  return promise;
 }
 
 chrome.runtime.onMessage.addListener(

@@ -1,6 +1,12 @@
 import Config, { type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleResponseMessage } from "lib/utils";
-import { BrowserApi, handleMessage, message } from "extension/browserApi";
+import {
+  BrowserApi,
+  currentTab,
+  handleMessage,
+  message,
+  updateTab,
+} from "extension/browserApi";
 import type {
   IPlatform,
   TTSVoice,
@@ -140,11 +146,11 @@ export class IosPlatform implements IPlatform {
     if (this.browserApi.context !== "popup") {
       location.href = OPTIONS_URL;
     } else {
-      const currentTab = await this.browserApi.currentTab();
-      if (currentTab.id === undefined) {
+      const tab = await currentTab();
+      if (tab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await this.browserApi.updateTab(currentTab.id, { url: OPTIONS_URL });
+      await updateTab(tab.id, { url: OPTIONS_URL });
       window.close();
     }
   }

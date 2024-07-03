@@ -1,4 +1,9 @@
-import { BrowserApi, message } from "extension/browserApi";
+import {
+  BrowserApi,
+  currentTab,
+  message,
+  updateTab,
+} from "extension/browserApi";
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
@@ -24,14 +29,14 @@ export class IosAnkiApi implements IAnkiAddNotes {
   }
 
   async _addNote(note: AnkiNote): Promise<boolean> {
-    const currentTab = await this.browserApi.currentTab();
+    const cTab = await currentTab();
 
     const willAutoRedirect = this.config.get("anki.ios_auto_redirect");
     if (willAutoRedirect) {
-      if (currentTab.id === undefined) {
+      if (cTab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await this.browserApi.setStorage("x-callback.tabId", currentTab.id);
+      await this.browserApi.setStorage("x-callback.tabId", cTab.id);
       await this.browserApi.setStorage("x-callback.tabUrl", location.href);
     }
 
@@ -39,8 +44,8 @@ export class IosAnkiApi implements IAnkiAddNotes {
       note,
       willAutoRedirect ? "http://yomikiri-redirect.yoonchae.com" : undefined,
     );
-    if (currentTab.id !== undefined) {
-      await this.browserApi.updateTab(currentTab.id, { url: ankiLink });
+    if (cTab.id !== undefined) {
+      await updateTab(cTab.id, { url: ankiLink });
     } else {
       location.href = ankiLink;
     }

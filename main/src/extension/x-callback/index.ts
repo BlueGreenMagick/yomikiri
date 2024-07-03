@@ -1,6 +1,12 @@
 /// For IOS
 
-import { BrowserApi } from "extension/browserApi";
+import {
+  BrowserApi,
+  goToTab,
+  removeTab,
+  getTabs,
+  currentTab,
+} from "extension/browserApi";
 
 const browserApi = new BrowserApi({ context: "page" });
 
@@ -27,7 +33,7 @@ async function getLastTabId(): Promise<number | null> {
     return null;
   }
 
-  const tabs = await browserApi.tabs({ url: tabUrl });
+  const tabs = await getTabs({ url: tabUrl });
 
   // if tab exists with correct (tabId, tabUrl), return the tab.
   for (const tab of tabs) {
@@ -50,21 +56,21 @@ async function getLastTabId(): Promise<number | null> {
 }
 
 async function main() {
-  const currentTab = await browserApi.currentTab();
-  if (currentTab.id === undefined) {
+  const cTab = await currentTab();
+  if (cTab.id === undefined) {
     throw new Error("Failed to get current tab id (Unreachable)");
   }
 
   try {
     const lastTabId = await getLastTabId();
     if (lastTabId !== null) {
-      await browserApi.goToTab(lastTabId);
+      await goToTab(lastTabId);
     }
   } catch (e) {
     // empty
   }
 
-  await browserApi.removeTab(currentTab.id);
+  await removeTab(cTab.id);
 }
 
 void main();
