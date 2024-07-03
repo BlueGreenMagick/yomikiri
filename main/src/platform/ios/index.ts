@@ -1,6 +1,6 @@
 import Config, { type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleMessageResponse } from "lib/utils";
-import { BrowserApi } from "extension/browserApi";
+import { BrowserApi, handleRequest } from "extension/browserApi";
 import type {
   IPlatform,
   TTSVoice,
@@ -59,11 +59,11 @@ export class IosPlatform implements IPlatform {
   constructor(browserApi: BrowserApi) {
     this.browserApi = browserApi;
     if (browserApi.context === "background") {
-      browserApi.handleRequest("loadConfig", async () => {
+      handleRequest("loadConfig", async () => {
         const config = await this.updateConfig();
         return config;
       });
-      browserApi.handleRequest("saveConfig", (config) => {
+      handleRequest("saveConfig", (config) => {
         return this.saveConfig(config);
       });
 

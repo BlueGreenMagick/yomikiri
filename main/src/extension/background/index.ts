@@ -11,7 +11,11 @@ import {
   type IosBackend,
   type SearchRequest,
 } from "@platform/backend";
-import { BrowserApi, type MessageSender } from "extension/browserApi";
+import {
+  BrowserApi,
+  handleRequest,
+  type MessageSender,
+} from "extension/browserApi";
 import {
   Platform,
   type ExtensionPlatform,
@@ -108,13 +112,13 @@ async function handleMigrateConfig(): Promise<StoredConfiguration> {
   return await platform.migrateConfig();
 }
 
-browserApi.handleRequest("searchTerm", searchTerm);
-browserApi.handleRequest("tokenize", tokenize);
-browserApi.handleRequest("addAnkiNote", addAnkiNote);
-browserApi.handleRequest("tabId", tabId);
-browserApi.handleRequest("translate", handleTranslate);
-browserApi.handleRequest("tts", tts);
-browserApi.handleRequest("migrateConfig", handleMigrateConfig);
+handleRequest("searchTerm", searchTerm);
+handleRequest("tokenize", tokenize);
+handleRequest("addAnkiNote", addAnkiNote);
+handleRequest("tabId", tabId);
+handleRequest("translate", handleTranslate);
+handleRequest("tts", tts);
+handleRequest("migrateConfig", handleMigrateConfig);
 
 browserApi.handleBrowserLoad(() => {
   void initialize();

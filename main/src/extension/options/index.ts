@@ -14,7 +14,7 @@ const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform));
 const lazyAnkiApi = new Utils.LazyAsync(async () =>
   platform.newAnkiApi(await lazyConfig.get()),
 );
-const dictionary = platform.newDictionary();
+const lazyDictionary = new Utils.LazyAsync(() => platform.newDictionary());
 
 async function initialize(): Promise<
   [Config, DesktopAnkiApi, DesktopDictionary]
@@ -22,7 +22,8 @@ async function initialize(): Promise<
   const config = await lazyConfig.get();
   config.setStyle(document);
   const ankiApi = await lazyAnkiApi.get();
-  return [config, ankiApi, dictionary];
+  const dict = await lazyDictionary.get();
+  return [config, ankiApi, dict];
 }
 
 const initialized = initialize();
@@ -44,6 +45,9 @@ exposeGlobals({
     void lazyConfig.get();
     return lazyConfig.getIfInitialized();
   },
-  dictionary,
+  dictionary: () => {
+    void lazyDictionary.get();
+    return lazyDictionary.getIfInitialized();
+  },
   page,
 });

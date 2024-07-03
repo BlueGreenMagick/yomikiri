@@ -80,13 +80,14 @@ export interface ApiInitializeOptions {
 type ConnectionKey = "updateDictionary";
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
+const _requestHandlers: {
+  [K in keyof MessageMap]?: RequestHandler<K>;
+} = {};
+
 export class BrowserApi {
   readonly context: ExecutionContext;
   private tabId: number | undefined;
 
-  private _requestHandlers: {
-    [K in keyof MessageMap]?: RequestHandler<K>;
-  } = {};
   private _storageHandlers: Record<string, StorageHandler[]> = {};
   private _connectionHandlers: {
     [K in ConnectionKey]?: ConnectionHandler[];
@@ -113,41 +114,7 @@ export class BrowserApi {
     }
   }
 
-  private attachRequestHandler() {
-    chrome.runtime.onMessage.addListener(
-      (
-        message: Message<keyof MessageMap>,
-        sender: MessageSender,
-        sendResponse: (
-          response?: MessageResponse<Response<keyof MessageMap>>,
-        ) => void,
-      ): boolean => {
-        console.debug(message.key, message);
-        const handler = this._requestHandlers[message.key];
-        if (handler) {
-          void (async () => {
-            try {
-              // @ts-expect-error complex types
-              const resp = await handler(message.request, sender);
-              sendResponse({
-                success: true,
-                resp,
-              });
-            } catch (e) {
-              sendResponse({
-                success: false,
-                error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-              });
-              console.error(e);
-            }
-          })();
-          return true;
-        } else {
-          return false;
-        }
-      },
-    );
-  }
+  private attachRequestHandler() {}
 
   private attachStorageChangeHandler() {
     this.storage().onChanged.addListener((changes) => {
@@ -296,14 +263,6 @@ export class BrowserApi {
     });
 
     return outerPromise;
-  }
-  /// Handle request by front-end for `key`. Return response in handler.
-  /// If there is an existing handler for `key`, replaces it.
-  handleRequest<K extends keyof MessageMap>(
-    key: K,
-    handler: (typeof this._requestHandlers)[K],
-  ) {
-    this._requestHandlers[key] = handler;
   }
 
   /** Must be called from within a tab, and not in a content script */
@@ -507,3 +466,46 @@ export class BrowserApi {
     chrome.runtime.onStartup.addListener(handler);
   }
 }
+
+/// Handle request by front-end for `key`. Return response in handler.
+/// If there is an existing handler for `key`, replaces it.
+export function handleRequest<K extends keyof MessageMap>(
+  key: K,
+  handler: (typeof _requestHandlers)[K],
+) {
+  _requestHandlers[key] = handler;
+}
+
+chrome.runtime.onMessage.addListener(
+  (
+    message: Message<keyof MessageMap>,
+    sender: MessageSender,
+    sendResponse: (
+      response?: MessageResponse<Response<keyof MessageMap>>,
+    ) => void,
+  ): boolean => {
+    console.debug(message.key, message);
+    const handler = _requestHandlers[message.key];
+    if (handler) {
+      void (async () => {
+        try {
+          // @ts-expect-error complex types
+          const resp = await handler(message.request, sender);
+          sendResponse({
+            success: true,
+            resp,
+          });
+        } catch (e) {
+          sendResponse({
+            success: false,
+            error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+          });
+          console.error(e);
+        }
+      })();
+      return true;
+    } else {
+      return false;
+    }
+  },
+);
