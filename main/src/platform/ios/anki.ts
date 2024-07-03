@@ -1,4 +1,4 @@
-import { BrowserApi } from "extension/browserApi";
+import { BrowserApi, message } from "extension/browserApi";
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
@@ -18,7 +18,7 @@ export class IosAnkiApi implements IAnkiAddNotes {
    */
   async addNote(note: AnkiNote): Promise<boolean> {
     if (this.browserApi.context === "contentScript") {
-      return this.browserApi.message("addAnkiNote", note);
+      return message("addAnkiNote", note);
     }
     return this._addNote(note);
   }

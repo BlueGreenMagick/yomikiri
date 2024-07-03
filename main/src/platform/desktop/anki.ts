@@ -6,7 +6,7 @@ import type {
 } from "../common/anki";
 import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
-import { BrowserApi } from "extension/browserApi";
+import { BrowserApi, message } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
 import {
   PromiseWithProgress,
@@ -212,7 +212,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
 
   async addNote(note: AnkiNote): Promise<boolean> {
     if (this.browserApi.context === "contentScript") {
-      return this.browserApi.message("addAnkiNote", note);
+      return message("addAnkiNote", note);
     } else {
       return this._addNote(note);
     }

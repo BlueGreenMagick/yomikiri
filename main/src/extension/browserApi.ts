@@ -106,16 +106,12 @@ export class BrowserApi {
   /** Must be initialized in initial synchronous run */
   constructor(options: ApiInitializeOptions) {
     const opts: ApiInitializeOptions = {
-      handleRequests: true,
       handleStorageChange: true,
       handleConnection: options.context === "background",
       ...options,
     };
     this.context = opts.context;
 
-    if (opts.handleRequests) {
-      this.attachRequestHandler();
-    }
     if (opts.handleStorageChange) {
       this.attachStorageChangeHandler();
     }
@@ -123,8 +119,6 @@ export class BrowserApi {
       this.attachConnectionHandler();
     }
   }
-
-  private attachRequestHandler() {}
 
   private attachStorageChangeHandler() {
     this.storage().onChanged.addListener((changes) => {
@@ -160,122 +154,6 @@ export class BrowserApi {
 
   manifest(): chrome.runtime.Manifest {
     return chrome.runtime.getManifest();
-  }
-
-  /** It is assumed that request does return a response. */
-  private createMessageResponseHandler<K extends keyof MessageMap>(
-    resolve: Utils.PromiseResolver<MessageResponse<K>>,
-    reject: (reason: Error) => void,
-  ): (resp: ResponseMessage<MessageResponse<K>>) => void {
-    return (resp: ResponseMessage<MessageResponse<K>>) => {
-      try {
-        const response = handleResponseMessage(resp);
-        resolve(response);
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          reject(error);
-        } else {
-          reject(new Error(Utils.getErrorMessage(error)));
-        }
-      }
-    };
-  }
-
-  /**
-   * Send message to all extension pages.
-   * Returns the return value of the message handler.
-   *
-   * Message is not sent to content scripts. Use `messageToTab()` instead.
-   */
-  async message<K extends keyof MessageMap>(
-    key: K,
-    request: MessageRequest<K>,
-  ): Promise<MessageResponse<K>> {
-    const [promise, resolve, reject] =
-      Utils.createPromise<MessageResponse<K>>();
-    const message = {
-      key,
-      request,
-    };
-    const handler = this.createMessageResponseHandler(resolve, reject);
-    const initialHandler = (
-      resp: ResponseMessage<Utils.Second<MessageMap[K]>> | undefined,
-    ) => {
-      // background not set up yet. try request again.
-      if (resp === undefined) {
-        console.debug("Could not connect to backend. Trying again.");
-        setTimeout(() => {
-          chrome.runtime.sendMessage(message, handler);
-        }, 1000);
-      } else {
-        handler(resp);
-      }
-    };
-
-    chrome.runtime.sendMessage(message, initialHandler);
-    return promise;
-  }
-
-  /** Send message to page and content script in tab. */
-  async messageToTab<K extends keyof MessageMap>(
-    tabId: number,
-    key: K,
-    request: MessageRequest<K>,
-  ): Promise<MessageResponse<K>> {
-    const [promise, resolve, reject] =
-      Utils.createPromise<MessageResponse<K>>();
-    const message = {
-      key,
-      request,
-    };
-    chrome.tabs.sendMessage(
-      tabId,
-      message,
-      this.createMessageResponseHandler(resolve, reject),
-    );
-    return promise;
-  }
-
-  /** Responses may contain undefined if a tab did not handle message */
-  async messageToAllTabs<K extends keyof MessageMap>(
-    key: K,
-    request: MessageRequest<K>,
-  ): Promise<(MessageResponse<K> | undefined)[]> {
-    const [outerPromise, outerResolve, outerReject] =
-      Utils.createPromise<(MessageResponse<K> | undefined)[]>();
-    const message = {
-      key,
-      request,
-    };
-
-    chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
-      const promises: Promise<MessageResponse<K>>[] = [];
-      for (const tab of tabs) {
-        if (tab.id !== undefined) {
-          const [promise, resolve, reject] =
-            Utils.createPromise<MessageResponse<K>>();
-          const handler = this.createMessageResponseHandler(resolve, reject);
-          chrome.tabs.sendMessage(tab.id, message, (resp) => {
-            if (
-              resp === undefined ||
-              chrome.runtime.lastError?.message?.includes(
-                "Could not establish connection. Receiving end does not exist.",
-              )
-            ) {
-              resolve(resp); // eslint-disable-line
-            } else if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError.message);
-            } else {
-              handler(resp); // eslint-disable-line
-            }
-          });
-          promises.push(promise);
-        }
-      }
-      Promise.all(promises).then(outerResolve).catch(outerReject);
-    });
-
-    return outerPromise;
   }
 
   /** Must be called from within a tab, and not in a content script */
@@ -487,6 +365,120 @@ export function handleMessage<K extends keyof MessageMap>(
   handler: (typeof _messageHandlers)[K],
 ) {
   _messageHandlers[key] = handler;
+}
+
+/**
+ * Send message to all extension pages.
+ * Returns the return value of the message handler.
+ *
+ * Message is not sent to content scripts. Use `messageToTab()` instead.
+ */
+export async function message<K extends keyof MessageMap>(
+  key: K,
+  request: MessageRequest<K>,
+): Promise<MessageResponse<K>> {
+  const [promise, resolve, reject] = Utils.createPromise<MessageResponse<K>>();
+  const message = {
+    key,
+    request,
+  };
+  const handler = createMessageResponseHandler(resolve, reject);
+  const initialHandler = (
+    resp: ResponseMessage<Utils.Second<MessageMap[K]>> | undefined,
+  ) => {
+    // background not set up yet. try request again.
+    if (resp === undefined) {
+      console.debug("Could not connect to backend. Trying again.");
+      setTimeout(() => {
+        chrome.runtime.sendMessage(message, handler);
+      }, 1000);
+    } else {
+      handler(resp);
+    }
+  };
+
+  chrome.runtime.sendMessage(message, initialHandler);
+  return promise;
+}
+
+/** Send message to page and content script in tab. */
+export async function messageToTab<K extends keyof MessageMap>(
+  tabId: number,
+  key: K,
+  request: MessageRequest<K>,
+): Promise<MessageResponse<K>> {
+  const [promise, resolve, reject] = Utils.createPromise<MessageResponse<K>>();
+  const message = {
+    key,
+    request,
+  };
+  chrome.tabs.sendMessage(
+    tabId,
+    message,
+    createMessageResponseHandler(resolve, reject),
+  );
+  return promise;
+}
+
+/** Responses may contain undefined if a tab did not handle message */
+export async function messageToAllTabs<K extends keyof MessageMap>(
+  key: K,
+  request: MessageRequest<K>,
+): Promise<(MessageResponse<K> | undefined)[]> {
+  const [outerPromise, outerResolve, outerReject] =
+    Utils.createPromise<(MessageResponse<K> | undefined)[]>();
+  const message = {
+    key,
+    request,
+  };
+
+  chrome.tabs.query({}, (tabs: chrome.tabs.Tab[]) => {
+    const promises: Promise<MessageResponse<K>>[] = [];
+    for (const tab of tabs) {
+      if (tab.id !== undefined) {
+        const [promise, resolve, reject] =
+          Utils.createPromise<MessageResponse<K>>();
+        const handler = createMessageResponseHandler(resolve, reject);
+        chrome.tabs.sendMessage(tab.id, message, (resp) => {
+          if (
+            resp === undefined ||
+            chrome.runtime.lastError?.message?.includes(
+              "Could not establish connection. Receiving end does not exist.",
+            )
+          ) {
+            resolve(resp); // eslint-disable-line
+          } else if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError.message);
+          } else {
+            handler(resp); // eslint-disable-line
+          }
+        });
+        promises.push(promise);
+      }
+    }
+    Promise.all(promises).then(outerResolve).catch(outerReject);
+  });
+
+  return outerPromise;
+}
+
+/** It is assumed that request does return a response. */
+function createMessageResponseHandler<K extends keyof MessageMap>(
+  resolve: Utils.PromiseResolver<MessageResponse<K>>,
+  reject: (reason: Error) => void,
+): (resp: ResponseMessage<MessageResponse<K>>) => void {
+  return (resp: ResponseMessage<MessageResponse<K>>) => {
+    try {
+      const response = handleResponseMessage(resp);
+      resolve(response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        reject(error);
+      } else {
+        reject(new Error(Utils.getErrorMessage(error)));
+      }
+    }
+  };
 }
 
 chrome.runtime.onMessage.addListener(

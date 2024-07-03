@@ -1,6 +1,6 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { BrowserApi } from "extension/browserApi";
+import { BrowserApi, message } from "extension/browserApi";
 
 import Utils from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
@@ -36,7 +36,7 @@ export class DesktopBackend implements IBackend {
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
-      return this.browserApi.message("tokenize", { text, charAt });
+      return message("tokenize", { text, charAt });
     } else {
       return this._tokenize(this.wasm, text, charAt);
     }
@@ -60,7 +60,7 @@ export class DesktopBackend implements IBackend {
 
   async search(term: string, charAt?: number): Promise<TokenizeResult> {
     if (this.wasm === undefined) {
-      return this.browserApi.message("searchTerm", { term, charAt });
+      return message("searchTerm", { term, charAt });
     } else {
       return this._search(this.wasm, term, charAt);
     }

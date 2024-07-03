@@ -1,4 +1,4 @@
-import { BrowserApi } from "extension/browserApi";
+import { BrowserApi, message } from "extension/browserApi";
 import type {
   IPlatform,
   IPlatformStatic,
@@ -87,7 +87,7 @@ export class DesktopPlatform implements IPlatform {
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     if (this.browserApi.context === "contentScript") {
-      await this.browserApi.message("tts", { voice, text });
+      await message("tts", { voice, text });
     } else {
       await this.browserApi.speakJapanese(text, voice);
     }
@@ -97,7 +97,7 @@ export class DesktopPlatform implements IPlatform {
     if (this.browserApi.context !== "contentScript") {
       return getTranslation(text);
     } else {
-      return this.browserApi.message("translate", text);
+      return message("translate", text);
     }
   }
 
@@ -107,7 +107,7 @@ export class DesktopPlatform implements IPlatform {
 
   async migrateConfig(): Promise<StoredConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return await this.browserApi.message("migrateConfig", null);
+      return await message("migrateConfig", null);
     } else {
       return await this.configMigration.get();
     }

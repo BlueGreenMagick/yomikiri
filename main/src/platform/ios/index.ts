@@ -1,6 +1,6 @@
 import Config, { type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleResponseMessage } from "lib/utils";
-import { BrowserApi, handleMessage } from "extension/browserApi";
+import { BrowserApi, handleMessage, message } from "extension/browserApi";
 import type {
   IPlatform,
   TTSVoice,
@@ -96,7 +96,7 @@ export class IosPlatform implements IPlatform {
 
   async getConfig(): Promise<StoredCompatConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return this.browserApi.message("loadConfig", null);
+      return message("loadConfig", null);
     } else {
       return this.updateConfig();
     }
@@ -128,7 +128,7 @@ export class IosPlatform implements IPlatform {
 
   async saveConfig(config: StoredConfiguration): Promise<void> {
     if (this.browserApi.context === "contentScript") {
-      await this.browserApi.message("saveConfig", config);
+      await message("saveConfig", config);
     } else {
       await this.requestToApp("saveConfig", config);
       await this.browserApi.setStorage("config", config);
@@ -164,7 +164,7 @@ export class IosPlatform implements IPlatform {
     if (this.browserApi.context !== "contentScript") {
       await this.requestToApp("tts", { voice, text });
     } else {
-      await this.browserApi.message("tts", { voice, text });
+      await message("tts", { voice, text });
     }
   }
 
@@ -172,7 +172,7 @@ export class IosPlatform implements IPlatform {
     if (this.browserApi.context !== "contentScript") {
       return getTranslation(text);
     } else {
-      return this.browserApi.message("translate", text);
+      return message("translate", text);
     }
   }
 
@@ -182,7 +182,7 @@ export class IosPlatform implements IPlatform {
 
   async migrateConfig(): Promise<StoredConfiguration> {
     if (this.browserApi.context === "contentScript") {
-      return await this.browserApi.message("migrateConfig", null);
+      return await message("migrateConfig", null);
     } else {
       return await this.configMigration.get();
     }
