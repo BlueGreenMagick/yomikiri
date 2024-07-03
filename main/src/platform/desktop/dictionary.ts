@@ -7,7 +7,7 @@ import { openDB, type DBSchema } from "idb";
 import type { DesktopBackend } from "./backend";
 import type { Backend } from "@yomikiri/yomikiri-rs";
 import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
-import type { BrowserApi } from "extension/browserApi";
+import { createConnection } from "extension/browserApi";
 import { EXTENSION_CONTEXT } from "consts";
 
 export type { DictionaryMetadata } from "../common/dictionary";
@@ -29,11 +29,9 @@ interface DictionaryDBSchema extends DBSchema {
 
 export class DesktopDictionary implements IDictionary {
   wasm: Backend | undefined;
-  browserApi: BrowserApi;
 
-  constructor(browserApi: BrowserApi, backend: DesktopBackend) {
+  constructor(backend: DesktopBackend) {
     this.wasm = backend.wasm;
-    this.browserApi = browserApi;
   }
 
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
@@ -49,7 +47,7 @@ export class DesktopDictionary implements IDictionary {
       }
       return prom;
     } else {
-      const _port = this.browserApi.connect("updateDictionary");
+      const _port = createConnection("updateDictionary");
     }
   }
 

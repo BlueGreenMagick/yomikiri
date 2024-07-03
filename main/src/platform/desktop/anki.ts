@@ -6,7 +6,7 @@ import type {
 } from "../common/anki";
 import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
-import { BrowserApi, message } from "extension/browserApi";
+import { getStorage, message, setStorage } from "extension/browserApi";
 import type { DesktopPlatform } from ".";
 import {
   PromiseWithProgress,
@@ -110,12 +110,10 @@ export class AnkiConnectError extends AnkiError {}
  */
 export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   platform: DesktopPlatform;
-  browserApi: BrowserApi;
   config: Config;
 
   constructor(platform: DesktopPlatform, config: Config) {
     this.platform = platform;
-    this.browserApi = platform.browserApi;
     this.config = config;
   }
 
@@ -266,7 +264,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   private async deferNote(note: AnkiNote) {
-    const existingNotes: AnkiNote[] = await this.browserApi.getStorage(
+    const existingNotes: AnkiNote[] = await getStorage(
       DEFER_NOTES_STORAGE_KEY,
       [],
     );
@@ -301,10 +299,10 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
 
     (async () => {
-      await this.browserApi.setStorage(DEFER_ERRORS_STORAGE_KEY, []);
+      await setStorage(DEFER_ERRORS_STORAGE_KEY, []);
       await this.config.set("state.anki.deferred_note_error", false);
 
-      const deferredNotes = await this.browserApi.getStorage<AnkiNote[]>(
+      const deferredNotes = await getStorage<AnkiNote[]>(
         DEFER_NOTES_STORAGE_KEY,
         [],
       );
@@ -321,10 +319,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
         } catch (err: unknown) {
           if (err instanceof AnkiConnectError) {
             errorMessages.push(getErrorMessage(err));
-            await this.browserApi.setStorage(
-              DEFER_ERRORS_STORAGE_KEY,
-              errorMessages,
-            );
+            await setStorage(DEFER_ERRORS_STORAGE_KEY, errorMessages);
             await this.config.set("state.anki.deferred_note_error", true);
             i += 1;
           } else {
@@ -345,7 +340,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   private async setDeferredNotes(notes: AnkiNote[]) {
-    await this.browserApi.setStorage(DEFER_NOTES_STORAGE_KEY, notes);
+    await setStorage(DEFER_NOTES_STORAGE_KEY, notes);
     await this.config.set("state.anki.deferred_note_count", notes.length);
   }
 }

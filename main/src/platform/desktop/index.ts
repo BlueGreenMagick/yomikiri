@@ -1,8 +1,10 @@
 import {
-  BrowserApi,
   extensionManifest,
+  getStorage,
+  handleStorageChange,
   japaneseTtsVoices,
   message,
+  setStorage,
   speakJapanese,
 } from "extension/browserApi";
 import type {
@@ -31,18 +33,13 @@ export class DesktopPlatform implements IPlatform {
   static IS_IOS = false;
   static IS_IOSAPP = false;
 
-  browserApi: BrowserApi;
   // config migration is done only once even if requested multiple times
   configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await this.migrateConfigInner();
   });
   backend: LazyAsync<DesktopBackend> = new LazyAsync(() => {
-    return DesktopBackend.initialize(this.browserApi);
+    return DesktopBackend.initialize();
   });
-
-  constructor(browserApi: BrowserApi) {
-    this.browserApi = browserApi;
-  }
 
   async newBackend(): Promise<DesktopBackend> {
     return await this.backend.get();
@@ -50,7 +47,7 @@ export class DesktopPlatform implements IPlatform {
 
   async newDictionary(): Promise<DesktopDictionary> {
     const backend = await this.backend.get();
-    return new DesktopDictionary(this.browserApi, backend);
+    return new DesktopDictionary(backend);
   }
 
   newAnkiApi(config: Config): DesktopAnkiApi {
@@ -58,22 +55,19 @@ export class DesktopPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
-    return await this.browserApi.getStorage<StoredCompatConfiguration>(
-      "config",
-      {},
-    );
+    return await getStorage<StoredCompatConfiguration>("config", {});
   }
 
   /** subscriber is called when config is changed. */
   subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    this.browserApi.handleStorageChange("config", (change) => {
+    handleStorageChange("config", (change) => {
       subscriber(change.newValue as StoredConfiguration);
     });
   }
 
   saveConfig(config: StoredConfiguration): Promise<void> {
     console.debug("config saved");
-    return this.browserApi.setStorage("config", config);
+    return setStorage("config", config);
   }
 
   openOptionsPage(): Promise<void> {

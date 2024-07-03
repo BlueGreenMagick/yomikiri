@@ -12,7 +12,6 @@ import {
   type SearchRequest,
 } from "@platform/backend";
 import {
-  BrowserApi,
   handleBrowserLoad,
   handleMessage,
   setActionIcon,
@@ -33,8 +32,7 @@ import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
 import type { DesktopAnkiApi } from "@platform/anki";
 
-const browserApi = new BrowserApi({ context: "background" });
-const platform = new Platform(browserApi) as ExtensionPlatform;
+const platform = new Platform() as ExtensionPlatform;
 const lazyConfig = new Utils.LazyAsync(() => Config.initialize(platform));
 const lazyAnkiApi = new Utils.LazyAsync(async () =>
   platform.newAnkiApi(await lazyConfig.get()),
@@ -129,7 +127,6 @@ handleBrowserLoad(() => {
 
 exposeGlobals({
   platform,
-  browserApi,
   Utils,
   ankiApi: () => {
     void lazyAnkiApi.get();

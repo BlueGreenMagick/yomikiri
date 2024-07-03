@@ -9,6 +9,7 @@
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
   import type { AnkiNote } from "lib/anki";
   import CancelDeferredNoteDeletion from "./CancelDeferredNoteDeletion.svelte";
+  import { getStorage, removeStorage, setStorage } from "extension/browserApi";
 
   export let config: Config;
   export let platform: ExtensionPlatform;
@@ -16,16 +17,13 @@
 
   let addingNotes = false;
 
-  const browserApi = platform.browserApi;
   const confDeferredNoteCount = config.store("state.anki.deferred_note_count");
   const confDeferredNoteError = config.store("state.anki.deferred_note_error");
 
   let errorMessage = "Loading error message...";
 
   async function getErrorMessages() {
-    const errors = await browserApi.getStorage<string[]>(
-      "deferred-anki-note-errors",
-    );
+    const errors = await getStorage<string[]>("deferred-anki-note-errors");
     errorMessage = errors[0];
   }
 
@@ -43,18 +41,12 @@
   }
 
   async function discardDeferredNotes() {
-    const notes = await browserApi.getStorage<AnkiNote[]>(
-      "deferred-anki-note",
-      [],
-    );
-    const errors = await browserApi.getStorage<string[]>(
-      "deferred-anki-note-errors",
-      [],
-    );
+    const notes = await getStorage<AnkiNote[]>("deferred-anki-note", []);
+    const errors = await getStorage<string[]>("deferred-anki-note-errors", []);
     await config.set("state.anki.deferred_note_count", 0);
     await config.set("state.anki.deferred_note_error", false);
-    await browserApi.removeStorage("deferred-anki-note");
-    await browserApi.removeStorage("deferred-anki-note-errors");
+    await removeStorage("deferred-anki-note");
+    await removeStorage("deferred-anki-note-errors");
 
     let weakToast: WeakRef<Toast>;
     const toast = Toast.success(CancelDeferredNoteDeletion, {
@@ -63,9 +55,9 @@
       props: {
         count: notes.length,
         onCancel: async () => {
-          await browserApi.setStorage("deferred-anki-note", notes);
+          await setStorage("deferred-anki-note", notes);
           if (errors.length > 0) {
-            await browserApi.setStorage("deferred-anki-note-errors", errors);
+            await setStorage("deferred-anki-note-errors", errors);
           }
           await config.set("state.anki.deferred_note_count", notes.length);
           await config.set("state.anki.deferred_note_error", errors.length > 0);

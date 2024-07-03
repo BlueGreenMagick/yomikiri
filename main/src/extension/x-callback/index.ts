@@ -1,14 +1,12 @@
 /// For IOS
 
 import {
-  BrowserApi,
   goToTab,
   removeTab,
   getTabs,
   currentTab,
+  getStorage,
 } from "extension/browserApi";
-
-const browserApi = new BrowserApi({ context: "page" });
 
 /**
  * Used for x-callback-url as x-success value to return back to current page.
@@ -19,14 +17,8 @@ const browserApi = new BrowserApi({ context: "page" });
  * 3. tabId
  */
 async function getLastTabId(): Promise<number | null> {
-  const tabId = await browserApi.getStorage<number | null>(
-    "x-callback.tabId",
-    null,
-  );
-  const tabUrl = await browserApi.getStorage<string | null>(
-    "x-callback.tabUrl",
-    null,
-  );
+  const tabId = await getStorage<number | null>("x-callback.tabId", null);
+  const tabUrl = await getStorage<string | null>("x-callback.tabUrl", null);
 
   if (tabId === null || tabUrl === null) {
     // if tabId is undefined, just close this tab

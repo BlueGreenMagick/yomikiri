@@ -16,17 +16,10 @@ import {
   type AnkiBuilderData,
 } from "./ankiBuilder";
 import { DesktopPlatform } from "platform/desktop";
-import { BrowserApi } from "extension/browserApi";
 import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
 
-const browserApi = new BrowserApi({
-  context: "background",
-  handleConnection: false,
-  handleRequests: false,
-  handleStorageChange: false,
-});
-const platform = new DesktopPlatform(browserApi);
+const platform = new DesktopPlatform();
 const config = await Config.initialize(platform);
 const backend = await platform.newBackend();
 const ctx: AnkiBuilderContext = {

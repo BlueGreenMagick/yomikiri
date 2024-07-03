@@ -6,12 +6,10 @@ import Utils, {
   exposeGlobals,
   type PromiseOrValue,
 } from "lib/utils";
-import { BrowserApi } from "extension/browserApi";
 import type { Backend, DesktopBackend, IosBackend } from "@platform/backend";
 import type { AnkiApi } from "@platform/anki";
 
-const browserApi = new BrowserApi({ context: "popup" });
-const platform = new Platform(browserApi) as ExtensionPlatform;
+const platform = new Platform() as ExtensionPlatform;
 const lazyConfig = new LazyAsync(() => Config.initialize(platform));
 const lazyBackend = new LazyAsync(
   (): PromiseOrValue<DesktopBackend | IosBackend> => platform.newBackend(),
@@ -37,7 +35,6 @@ const page = new PopupPage({
 
 exposeGlobals({
   platform,
-  browserApi,
   Utils,
   backend: () => {
     void lazyBackend.get();

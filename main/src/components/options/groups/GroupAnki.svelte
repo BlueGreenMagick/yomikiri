@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Platform, type DesktopPlatform } from "@platform";
+  import { Platform } from "@platform";
   import type { DesktopAnkiApi, AnkiOptionsApi } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
@@ -8,6 +8,7 @@
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "lib/utils";
   import type Config from "lib/config";
+  import { setStorage } from "extension/browserApi";
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
@@ -72,11 +73,10 @@
     if (!$ankiDeferNotesConfig) {
       return true;
     }
-    const browserApi = (platform as DesktopPlatform).browserApi;
     const deferredNoteCount = config.get("state.anki.deferred_note_count");
     if (deferredNoteCount <= 0) {
       void config.set("state.anki.deferred_note_error", false);
-      void browserApi.setStorage("deferred-anki-note-errors", []);
+      void setStorage("deferred-anki-note-errors", []);
       return true;
     }
     const response = confirm(
@@ -85,8 +85,8 @@
     if (response) {
       void config.set("state.anki.deferred_note_count", 0);
       void config.set("state.anki.deferred_note_error", false);
-      void browserApi.setStorage("deferred-anki-note", []);
-      void browserApi.setStorage("deferred-anki-note-errors", []);
+      void setStorage("deferred-anki-note", []);
+      void setStorage("deferred-anki-note-errors", []);
     }
     return response;
   }

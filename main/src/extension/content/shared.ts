@@ -1,12 +1,10 @@
-import { BrowserApi } from "extension/browserApi";
 import { Highlighter } from "./highlight";
 import { Tooltip } from "extension/content/tooltip";
 import Utils, { LazyAsync } from "lib/utils";
 import Config from "lib/config";
 import { Platform, type ExtensionPlatform } from "@platform";
 
-export const browserApi = new BrowserApi({ context: "contentScript" });
-export const platform = new Platform(browserApi) as ExtensionPlatform;
+export const platform = new Platform() as ExtensionPlatform;
 
 export const lazyBackend = new Utils.Lazy(
   async () => await platform.newBackend(),

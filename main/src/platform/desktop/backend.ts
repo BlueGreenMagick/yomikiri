@@ -1,6 +1,6 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { BrowserApi, message } from "extension/browserApi";
+import { message } from "extension/browserApi";
 
 import Utils from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
@@ -10,19 +10,16 @@ export * from "../common/backend";
 
 export class DesktopBackend implements IBackend {
   wasm?: BackendWasm;
-  browserApi: BrowserApi;
 
-  static async initialize(browserApi: BrowserApi): Promise<DesktopBackend> {
-    const backend = new DesktopBackend(browserApi);
+  static async initialize(): Promise<DesktopBackend> {
+    const backend = new DesktopBackend();
     if (EXTENSION_CONTEXT === "background") {
       await backend._initialize();
     }
     return backend;
   }
 
-  private constructor(browserApi: BrowserApi) {
-    this.browserApi = browserApi;
-  }
+  private constructor() {}
 
   async _initialize(): Promise<void> {
     Utils.bench("start");

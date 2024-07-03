@@ -1,4 +1,4 @@
-import { BrowserApi, message } from "extension/browserApi";
+import { message } from "extension/browserApi";
 import { Platform as IosPlatform } from ".";
 import {
   type IBackend,
@@ -12,11 +12,9 @@ export * from "../common/backend";
 
 export class IosBackend implements IBackend {
   platform: IosPlatform;
-  browserApi: BrowserApi;
 
-  constructor(platform: IosPlatform, browserApi: BrowserApi) {
+  constructor(platform: IosPlatform) {
     this.platform = platform;
-    this.browserApi = browserApi;
   }
 
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {

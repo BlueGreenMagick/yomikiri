@@ -16,7 +16,6 @@ import type { TTSRequest, TTSVoice } from "platform/common";
 import {
   createPromise,
   handleResponseMessage,
-  hasOwnProperty,
   getErrorMessage,
   type ResponseMessage,
   type Satisfies,
@@ -89,6 +88,7 @@ export interface ApiInitializeOptions {
   context: ExecutionContext;
 }
 
+/** list of keys that is used for connection */
 type ConnectionKey = "updateDictionary";
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
@@ -96,119 +96,9 @@ const _messageHandlers: {
   [K in keyof MessageMap]?: MessageHandler<K>;
 } = {};
 
-export class BrowserApi {
-  private tabId: number | undefined;
+const _storageHandlers: Record<string, StorageHandler[]> = {};
 
-  private _storageHandlers: Record<string, StorageHandler[]> = {};
-  private _connectionHandlers: {
-    [K in ConnectionKey]?: ConnectionHandler[];
-  } = {};
-
-  /** Must be initialized in initial synchronous run */
-  constructor(options: ApiInitializeOptions) {
-    const opts: ApiInitializeOptions = {
-      handleStorageChange: true,
-      handleConnection: options.context === "background",
-      ...options,
-    };
-
-    if (opts.handleStorageChange) {
-      this.attachStorageChangeHandler();
-    }
-    if (opts.handleConnection) {
-      this.attachConnectionHandler();
-    }
-  }
-
-  private attachStorageChangeHandler() {
-    browserStorage().onChanged.addListener((changes) => {
-      for (const key in changes) {
-        const handlers = this._storageHandlers[key];
-        if (handlers === undefined) continue;
-        for (const handler of handlers) {
-          handler(changes[key]);
-        }
-      }
-    });
-  }
-
-  private attachConnectionHandler() {
-    chrome.runtime.onConnect.addListener((port) => {
-      if (!hasOwnProperty(this._connectionHandlers, port.name)) return;
-      const handlers = this._connectionHandlers[port.name];
-      if (handlers === undefined) return;
-      for (const handler of handlers) {
-        handler(port);
-      }
-    });
-  }
-
-  async currentTabId(): Promise<number> {
-    if (this.tabId === undefined) {
-      const tab = await currentTab();
-      if (tab.id === undefined) {
-        throw new Error("Current tab does not have an id");
-      }
-      this.tabId = tab.id;
-    }
-    return this.tabId;
-  }
-
-  /**
-   * Assumption:
-   * `storage[key]?: T`
-   */
-  async getStorage<T>(key: string, or?: T): Promise<T> {
-    const [promise, resolve] = createPromise<T>();
-    let req: string | Record<string, T> = key;
-    if (or !== undefined) {
-      req = {
-        [key]: or,
-      };
-    }
-    browserStorage().get(req, (obj) => {
-      resolve(obj[key] as T);
-    });
-    return promise;
-  }
-
-  /** value cannot be undefined or null */
-  async setStorage(key: string, value: NonNullable<unknown>) {
-    const [promise, resolve] = createPromise<void>();
-    const object: Record<string, unknown> = {};
-    object[key] = value;
-    browserStorage().set(object, resolve);
-    return promise;
-  }
-
-  async removeStorage(key: string) {
-    const [promise, resolve] = createPromise<void>();
-    browserStorage().remove(key, resolve);
-    return promise;
-  }
-
-  handleStorageChange(key: string, handler: StorageHandler) {
-    const storageHandlers = this._storageHandlers[key];
-    if (storageHandlers !== undefined) {
-      storageHandlers.push(handler);
-    } else {
-      this._storageHandlers[key] = [handler];
-    }
-  }
-
-  connect(name: ConnectionKey) {
-    return chrome.runtime.connect({ name });
-  }
-
-  handleConnection(name: ConnectionKey, handler: ConnectionHandler) {
-    const handlers = this._connectionHandlers[name];
-    if (handlers === undefined) {
-      this._connectionHandlers[name] = [handler];
-    } else {
-      handlers.push(handler);
-    }
-  }
-}
+let _tabId: number | undefined;
 
 /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
 export function browserAction():
@@ -295,6 +185,17 @@ export async function speakJapanese(
   }
   chrome.tts.speak(text, options, resolve);
   return promise;
+}
+
+export async function currentTabId(): Promise<number> {
+  if (_tabId === undefined) {
+    const tab = await currentTab();
+    if (tab.id === undefined) {
+      throw new Error("Current tab does not have an id");
+    }
+    _tabId = tab.id;
+  }
+  return _tabId;
 }
 
 /// Handle message by front-end for `key`. Return response in handler.
@@ -533,6 +434,62 @@ export async function currentTab(): Promise<chrome.tabs.Tab> {
   return promise;
 }
 
+/**
+ * Assumption:
+ * `storage[key]?: T`
+ */
+export async function getStorage<T>(key: string, or?: T): Promise<T> {
+  const [promise, resolve] = createPromise<T>();
+  let req: string | Record<string, T> = key;
+  if (or !== undefined) {
+    req = {
+      [key]: or,
+    };
+  }
+  browserStorage().get(req, (obj) => {
+    resolve(obj[key] as T);
+  });
+  return promise;
+}
+
+/** value cannot be undefined or null */
+export async function setStorage(key: string, value: NonNullable<unknown>) {
+  const [promise, resolve] = createPromise<void>();
+  const object: Record<string, unknown> = {};
+  object[key] = value;
+  browserStorage().set(object, resolve);
+  return promise;
+}
+
+export async function removeStorage(key: string) {
+  const [promise, resolve] = createPromise<void>();
+  browserStorage().remove(key, resolve);
+  return promise;
+}
+
+export function handleStorageChange(key: string, handler: StorageHandler) {
+  const storageHandlers = _storageHandlers[key];
+  if (storageHandlers !== undefined) {
+    storageHandlers.push(handler);
+  } else {
+    _storageHandlers[key] = [handler];
+  }
+}
+
+export function createConnection(name: ConnectionKey) {
+  return chrome.runtime.connect({ name });
+}
+
+export function handleConnection(
+  name: ConnectionKey,
+  handler: ConnectionHandler,
+) {
+  chrome.runtime.onConnect.addListener((port) => {
+    if (port.name !== name) return;
+    handler(port);
+  });
+}
+
 chrome.runtime.onMessage.addListener(
   (
     message: RequestMessage<keyof MessageMap>,
@@ -566,3 +523,13 @@ chrome.runtime.onMessage.addListener(
     }
   },
 );
+
+browserStorage().onChanged.addListener((changes) => {
+  for (const key in changes) {
+    const handlers = _storageHandlers[key];
+    if (handlers === undefined) continue;
+    for (const handler of handlers) {
+      handler(changes[key]);
+    }
+  }
+});

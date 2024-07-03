@@ -1,7 +1,6 @@
 import Utils, { exposeGlobals } from "lib/utils";
 import { handleClick, handleMouseMove } from "./handlers";
 import {
-  browserApi,
   highlighter,
   lazyBackend,
   lazyConfig,
@@ -38,7 +37,6 @@ function initialize() {
 
   exposeGlobals({
     platform,
-    browserApi,
     Utils,
     backend: () => {
       return lazyBackend.get();

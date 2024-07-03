@@ -1,11 +1,13 @@
 import Config, { type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleResponseMessage } from "lib/utils";
 import {
-  BrowserApi,
   currentTab,
   extensionManifest,
+  getStorage,
   handleMessage,
+  handleStorageChange,
   message,
+  setStorage,
   updateTab,
 } from "extension/browserApi";
 import type {
@@ -57,14 +59,12 @@ export class IosPlatform implements IPlatform {
   static IS_IOS = true;
   static IS_IOSAPP = false;
 
-  browserApi: BrowserApi;
   // config migration is done only once even if requested multiple times
   configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await this.migrateConfigInner();
   });
 
-  constructor(browserApi: BrowserApi) {
-    this.browserApi = browserApi;
+  constructor() {
     if (EXTENSION_CONTEXT === "background") {
       handleMessage("loadConfig", async () => {
         const config = await this.updateConfig();
@@ -79,7 +79,7 @@ export class IosPlatform implements IPlatform {
   }
 
   newBackend(): IosBackend {
-    return new IosBackend(this, this.browserApi);
+    return new IosBackend(this);
   }
 
   newAnkiApi(config: Config): IosAnkiApi {
@@ -114,21 +114,18 @@ export class IosPlatform implements IPlatform {
    * which may occur when a new script loads and app config is fetched
    */
   subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
-    this.browserApi.handleStorageChange("config", (change) => {
+    handleStorageChange("config", (change) => {
       subscriber(change.newValue as StoredConfiguration);
     });
   }
 
   // App config is the source of truth
   private async updateConfig(): Promise<StoredConfiguration> {
-    const webConfigP = this.browserApi.getStorage<StoredCompatConfiguration>(
-      "config",
-      {},
-    );
+    const webConfigP = getStorage<StoredCompatConfiguration>("config", {});
     const appConfigP = this.requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
-      await this.browserApi.setStorage("config", appConfig);
+      await setStorage("config", appConfig);
     }
     return appConfig;
   }
@@ -138,7 +135,7 @@ export class IosPlatform implements IPlatform {
       await message("saveConfig", config);
     } else {
       await this.requestToApp("saveConfig", config);
-      await this.browserApi.setStorage("config", config);
+      await setStorage("config", config);
     }
   }
 

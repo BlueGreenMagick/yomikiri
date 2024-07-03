@@ -1,7 +1,7 @@
 import {
-  BrowserApi,
   currentTab,
   message,
+  setStorage,
   updateTab,
 } from "extension/browserApi";
 import { iosAnkiMobileURL, type IAnkiAddNotes } from "../common/anki";
@@ -11,11 +11,9 @@ import type { Platform as IosPlatform } from "./";
 import { EXTENSION_CONTEXT } from "consts";
 
 export class IosAnkiApi implements IAnkiAddNotes {
-  browserApi: BrowserApi;
   config: Config;
 
   constructor(platform: IosPlatform, config: Config) {
-    this.browserApi = platform.browserApi;
     this.config = config;
   }
 
@@ -37,8 +35,8 @@ export class IosAnkiApi implements IAnkiAddNotes {
       if (cTab.id === undefined) {
         throw new Error("Current tab does not have an id");
       }
-      await this.browserApi.setStorage("x-callback.tabId", cTab.id);
-      await this.browserApi.setStorage("x-callback.tabUrl", location.href);
+      await setStorage("x-callback.tabId", cTab.id);
+      await setStorage("x-callback.tabUrl", location.href);
     }
 
     const ankiLink = iosAnkiMobileURL(
