@@ -1,4 +1,10 @@
-import { BrowserApi, message } from "extension/browserApi";
+import {
+  BrowserApi,
+  extensionManifest,
+  japaneseTtsVoices,
+  message,
+  speakJapanese,
+} from "extension/browserApi";
 import type {
   IPlatform,
   IPlatformStatic,
@@ -74,7 +80,7 @@ export class DesktopPlatform implements IPlatform {
   }
 
   versionInfo(): VersionInfo {
-    const manifest = this.browserApi.manifest();
+    const manifest = extensionManifest();
     return {
       version: manifest.version,
     };
@@ -82,14 +88,14 @@ export class DesktopPlatform implements IPlatform {
 
   /** This function is and only should be called in options page */
   async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return this.browserApi.japaneseTtsVoices();
+    return japaneseTtsVoices();
   }
 
   async playTTS(text: string, voice: TTSVoice | null): Promise<void> {
     if (this.browserApi.context === "contentScript") {
       await message("tts", { voice, text });
     } else {
-      await this.browserApi.speakJapanese(text, voice);
+      await speakJapanese(text, voice);
     }
   }
 

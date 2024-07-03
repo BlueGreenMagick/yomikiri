@@ -123,7 +123,7 @@ export class BrowserApi {
   }
 
   private attachStorageChangeHandler() {
-    this.storage().onChanged.addListener((changes) => {
+    browserStorage().onChanged.addListener((changes) => {
       for (const key in changes) {
         const handlers = this._storageHandlers[key];
         if (handlers === undefined) continue;
@@ -143,19 +143,6 @@ export class BrowserApi {
         handler(port);
       }
     });
-  }
-
-  /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
-  action(): typeof chrome.action | typeof chrome.browserAction {
-    return chrome.action ?? chrome.browserAction;
-  }
-
-  storage(): chrome.storage.StorageArea {
-    return chrome.storage.local;
-  }
-
-  manifest(): chrome.runtime.Manifest {
-    return chrome.runtime.getManifest();
   }
 
   async currentTabId(): Promise<number> {
@@ -181,7 +168,7 @@ export class BrowserApi {
         [key]: or,
       };
     }
-    this.storage().get(req, (obj) => {
+    browserStorage().get(req, (obj) => {
       resolve(obj[key] as T);
     });
     return promise;
@@ -192,13 +179,13 @@ export class BrowserApi {
     const [promise, resolve] = createPromise<void>();
     const object: Record<string, unknown> = {};
     object[key] = value;
-    this.storage().set(object, resolve);
+    browserStorage().set(object, resolve);
     return promise;
   }
 
   async removeStorage(key: string) {
     const [promise, resolve] = createPromise<void>();
-    this.storage().remove(key, resolve);
+    browserStorage().remove(key, resolve);
     return promise;
   }
 
@@ -223,75 +210,93 @@ export class BrowserApi {
       handlers.push(handler);
     }
   }
+}
 
-  /** set text to "" to remove badge */
-  async setBadge(text: string | number, color: string = "white") {
-    const iAction = this.action();
-    if (typeof text === "number") {
-      text = text.toString();
+/** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
+export function browserAction():
+  | typeof chrome.action
+  | typeof chrome.browserAction {
+  return chrome.action ?? chrome.browserAction;
+}
+
+export function browserStorage(): chrome.storage.StorageArea {
+  return chrome.storage.local;
+}
+
+export function extensionManifest(): chrome.runtime.Manifest {
+  return chrome.runtime.getManifest();
+}
+
+export async function setActionIcon(iconPath: string) {
+  await browserAction().setIcon({
+    path: iconPath,
+  });
+}
+
+export function handleActionClicked(handler: (tab: chrome.tabs.Tab) => void) {
+  browserAction().onClicked.addListener(handler);
+}
+
+export function handleBrowserLoad(handler: () => void) {
+  chrome.runtime.onStartup.addListener(handler);
+}
+
+/** set text to "" to remove badge */
+export async function setBadge(text: string | number, color: string = "white") {
+  const iAction = browserAction();
+  if (typeof text === "number") {
+    text = text.toString();
+  }
+  await iAction.setBadgeText({
+    text,
+  });
+  await iAction.setBadgeBackgroundColor({
+    color,
+  });
+}
+
+export async function japaneseTtsVoices(): Promise<TTSVoice[]> {
+  if (chrome.tts === undefined) {
+    return [];
+  }
+
+  const [promise, resolve] = createPromise<chrome.tts.TtsVoice[]>();
+  chrome.tts.getVoices(resolve);
+  const voices = await promise;
+  const ttsVoices: TTSVoice[] = [];
+  for (const voice of voices) {
+    if (voice.lang != "ja-JP") continue;
+    const name = voice.voiceName;
+    if (name === undefined) continue;
+    const quality = voice.remote ? 100 : 200;
+    const ttsVoice: TTSVoice = {
+      id: name,
+      name: name,
+      quality,
+    };
+    ttsVoices.push(ttsVoice);
+  }
+  return ttsVoices;
+}
+
+export async function speakJapanese(
+  text: string,
+  voice: TTSVoice | null,
+): Promise<void> {
+  const [promise, resolve] = createPromise<void>();
+  let options: chrome.tts.SpeakOptions = { lang: "ja-jp" };
+  if (voice !== null) {
+    const voices = await japaneseTtsVoices();
+    if (
+      voices.find((value) => {
+        value.name === voice.name;
+      }) !== undefined
+    ) {
+      options = { voiceName: voice.name };
     }
-    await iAction.setBadgeText({
-      text,
-    });
-    await iAction.setBadgeBackgroundColor({
-      color,
-    });
   }
-
-  async japaneseTtsVoices(): Promise<TTSVoice[]> {
-    if (chrome.tts === undefined) {
-      return [];
-    }
-
-    const [promise, resolve] = createPromise<chrome.tts.TtsVoice[]>();
-    chrome.tts.getVoices(resolve);
-    const voices = await promise;
-    const ttsVoices: TTSVoice[] = [];
-    for (const voice of voices) {
-      if (voice.lang != "ja-JP") continue;
-      const name = voice.voiceName;
-      if (name === undefined) continue;
-      const quality = voice.remote ? 100 : 200;
-      const ttsVoice: TTSVoice = {
-        id: name,
-        name: name,
-        quality,
-      };
-      ttsVoices.push(ttsVoice);
-    }
-    return ttsVoices;
-  }
-
-  async speakJapanese(text: string, voice: TTSVoice | null): Promise<void> {
-    const [promise, resolve] = createPromise<void>();
-    let options: chrome.tts.SpeakOptions = { lang: "ja-jp" };
-    if (voice !== null) {
-      const voices = await this.japaneseTtsVoices();
-      if (
-        voices.find((value) => {
-          value.name === voice.name;
-        }) !== undefined
-      ) {
-        options = { voiceName: voice.name };
-      }
-    }
-    chrome.tts.speak(text, options, resolve);
-    return promise;
-  }
-
-  handleActionClicked(handler: (tab: chrome.tabs.Tab) => void) {
-    this.action().onClicked.addListener(handler);
-  }
-
-  async setActionIcon(iconPath: string) {
-    await this.action().setIcon({
-      path: iconPath,
-    });
-  }
-
-  handleBrowserLoad(handler: () => void) {
-    chrome.runtime.onStartup.addListener(handler);
-  }
+  chrome.tts.speak(text, options, resolve);
+  return promise;
 }
 
 /// Handle message by front-end for `key`. Return response in handler.

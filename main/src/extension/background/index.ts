@@ -13,7 +13,10 @@ import {
 } from "@platform/backend";
 import {
   BrowserApi,
+  handleBrowserLoad,
   handleMessage,
+  setActionIcon,
+  setBadge,
   type MessageSender,
 } from "extension/browserApi";
 import {
@@ -80,7 +83,7 @@ function updateStateEnabledIcon(config: Config) {
   const enabledStore = config.store("state.enabled");
   enabledStore.subscribe((enabled) => {
     const icon = enabled ? DefaultIcon : DisabledIcon;
-    void browserApi.setActionIcon(icon);
+    void setActionIcon(icon);
   });
 }
 
@@ -90,9 +93,9 @@ function updateDeferredNoteCountBadge(config: Config) {
   const notesAndErrors = derived([deferredNotes, deferErrored], (a) => a);
   notesAndErrors.subscribe(([cnt, errored]) => {
     if (cnt === 0) {
-      void browserApi.setBadge("");
+      void setBadge("");
     } else {
-      void browserApi.setBadge(cnt, errored ? "red" : "#cccccc");
+      void setBadge(cnt, errored ? "red" : "#cccccc");
     }
   });
 }
@@ -120,7 +123,7 @@ handleMessage("translate", handleTranslate);
 handleMessage("tts", tts);
 handleMessage("migrateConfig", handleMigrateConfig);
 
-browserApi.handleBrowserLoad(() => {
+handleBrowserLoad(() => {
   void initialize();
 });
 

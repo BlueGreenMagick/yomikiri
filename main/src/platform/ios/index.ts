@@ -3,6 +3,7 @@ import { LazyAsync, handleResponseMessage } from "lib/utils";
 import {
   BrowserApi,
   currentTab,
+  extensionManifest,
   handleMessage,
   message,
   updateTab,
@@ -156,7 +157,7 @@ export class IosPlatform implements IPlatform {
   }
 
   versionInfo(): VersionInfo {
-    const manifest = this.browserApi.manifest();
+    const manifest = extensionManifest();
     return {
       version: manifest.version,
     };
