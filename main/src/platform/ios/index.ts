@@ -88,7 +88,7 @@ export namespace IosPlatform {
 
   export async function getConfig(): Promise<StoredCompatConfiguration> {
     if (EXTENSION_CONTEXT === "contentScript") {
-      return message("loadConfig", null);
+      return message("loadConfig", undefined);
     } else {
       return updateConfig();
     }
@@ -176,7 +176,7 @@ export namespace IosPlatform {
 
   export async function migrateConfig(): Promise<StoredConfiguration> {
     if (EXTENSION_CONTEXT === "contentScript") {
-      return await message("migrateConfig", null);
+      return await message("migrateConfig", undefined);
     } else {
       return await configMigration.get();
     }

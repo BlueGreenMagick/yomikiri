@@ -108,7 +108,7 @@ export namespace DesktopPlatform {
 
   export async function migrateConfig(): Promise<StoredConfiguration> {
     if (EXTENSION_CONTEXT === "contentScript") {
-      return await message("migrateConfig", null);
+      return await message("migrateConfig", undefined);
     } else {
       return await configMigration.get();
     }

@@ -67,7 +67,7 @@ async function addAnkiNote(note: AnkiNote): Promise<boolean> {
   return await ankiApi.addNote(note);
 }
 
-function tabId(_req: null, sender: MessageSender): number | undefined {
+function tabId(_req: void, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
 

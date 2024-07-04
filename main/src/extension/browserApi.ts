@@ -30,20 +30,19 @@ import { EXTENSION_CONTEXT } from "consts";
  * Type map for messages between extension processes
  * Format: `{ key: [request, response] }`
  * Response type must not have Promise
- * Request type cannot be void, but response can be void
  */
 export interface MessageMap {
   searchTerm: [SearchRequest, TokenizeResult];
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [AnkiNote, boolean];
-  tabId: [null, number | undefined];
+  tabId: [void, number | undefined];
   translate: [string, TranslateResult];
   tts: [TTSRequest, void];
-  migrateConfig: [null, StoredConfiguration];
+  migrateConfig: [void, StoredConfiguration];
   // ios
-  loadConfig: [null, StoredConfiguration];
+  loadConfig: [void, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
-  setActionIcon: [null, void];
+  setActionIcon: [void, void];
 }
 
 type _EnsureNoPromiseInMessageMap = Satisfies<
