@@ -33,10 +33,7 @@ function createSvelte(
 
 exposeGlobals({
   Utils,
-  config() {
-    void Config.instance.get();
-    return Config.instance.getIfInitialized();
-  },
+  config: Config.instance,
   backend,
   ankiApi,
 });

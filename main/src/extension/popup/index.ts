@@ -27,13 +27,7 @@ const page = new PopupPage({
 exposeGlobals({
   Platform,
   Utils,
-  backend: () => {
-    void Backend.instance.get();
-    return Backend.instance.getIfInitialized();
-  },
-  config: () => {
-    void Config.instance.get();
-    return Config.instance.getIfInitialized();
-  },
+  backend: Backend.instance,
+  config: Config.instance,
   page,
 });

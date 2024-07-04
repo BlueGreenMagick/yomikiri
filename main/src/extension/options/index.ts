@@ -32,17 +32,8 @@ const page = new OptionsPage({
 exposeGlobals({
   Platform,
   Utils,
-  ankiApi: () => {
-    void lazyAnkiApi.get();
-    return lazyAnkiApi.getIfInitialized();
-  },
-  config: () => {
-    void Config.instance.get();
-    return Config.instance.getIfInitialized();
-  },
-  dictionary: () => {
-    void lazyDictionary.get();
-    return lazyDictionary.getIfInitialized();
-  },
+  ankiApi: lazyAnkiApi,
+  config: Config.instance,
+  dictionary: lazyDictionary,
   page,
 });

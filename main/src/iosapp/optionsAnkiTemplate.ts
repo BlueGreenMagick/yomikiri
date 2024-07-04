@@ -21,10 +21,7 @@ const page = new OptionsAnkiTemplatePage({
 
 exposeGlobals({
   Platform,
-  config: () => {
-    void Config.instance.get();
-    return Config.instance.getIfInitialized();
-  },
+  config: Config.instance,
   page,
   ankiApi,
   Utils,

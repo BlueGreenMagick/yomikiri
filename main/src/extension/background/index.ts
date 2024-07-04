@@ -102,16 +102,7 @@ handleBrowserLoad(() => {
 exposeGlobals({
   Platform,
   Utils,
-  ankiApi: () => {
-    void lazyAnkiApi.get();
-    return lazyAnkiApi.getIfInitialized();
-  },
-  backend: () => {
-    void Backend.instance.get();
-    return Backend.instance.getIfInitialized();
-  },
-  config: () => {
-    void Config.instance.get();
-    return Config.instance.getIfInitialized();
-  },
+  ankiApi: lazyAnkiApi,
+  backend: Backend.instance,
+  config: Config.instance,
 });

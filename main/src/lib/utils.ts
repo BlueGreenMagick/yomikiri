@@ -357,7 +357,14 @@ export function exposeGlobals(
 
     // browser.runtime.reload() on ios cause unwritable property to be redefined
     try {
-      if (typeof obj === "function") {
+      if (obj instanceof LazyAsync) {
+        Object.defineProperty(self, prop, {
+          get() {
+            void obj.get();
+            return obj.getIfInitialized(); // eslint-disable-line
+          },
+        });
+      } else if (typeof obj === "function") {
         Object.defineProperty(self, prop, {
           get() {
             return obj(); // eslint-disable-line
