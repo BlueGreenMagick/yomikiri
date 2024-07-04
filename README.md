@@ -12,7 +12,7 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 
 ## Features
 
-- Hover over a word to view definition. It recognizes word boundaries within sentence.
+- Shift + Hover over a word to view definition. It recognizes word boundaries within sentence.
 <img src="./extra/resources/screenshots/desktop-tooltip.jpg?raw=true" height="240"/>
 
 - Search words and sentences in popup.
