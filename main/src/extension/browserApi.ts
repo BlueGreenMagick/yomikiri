@@ -42,7 +42,6 @@ export interface MessageMap {
   // ios
   loadConfig: [void, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
-  setActionIcon: [void, void];
 }
 
 type _EnsureNoPromiseInMessageMap = Satisfies<
