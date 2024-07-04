@@ -1,12 +1,11 @@
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
 import Utils, { exposeGlobals } from "lib/utils";
-import { Platform } from "platform/iosapp";
 import { IosAppBackend } from "platform/iosapp/backend";
-import type { IosAppAnkiApi } from "platform/iosapp/anki";
+import { IosAppAnkiApi } from "platform/iosapp/anki";
 
 const backend = IosAppBackend.instance.get();
-const ankiApi = Platform.newAnkiApi();
+const ankiApi = IosAppAnkiApi.instance.get();
 
 const initialized = initialize();
 

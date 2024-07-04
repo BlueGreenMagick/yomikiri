@@ -1,4 +1,4 @@
-import { type Config, type StoredConfiguration } from "lib/config";
+import { type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleResponseMessage } from "lib/utils";
 import {
   NonContentScriptFunction,
@@ -16,7 +16,6 @@ import {
   type TokenizeRequest,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
-import { IosAnkiApi } from "./anki";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
@@ -54,10 +53,6 @@ export namespace IosPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
-
-  export function newAnkiApi(config: Config): IosAnkiApi {
-    return new IosAnkiApi(config);
-  }
 
   /** Only works in background & page */
   export async function requestToApp<K extends keyof AppMessageMap>(

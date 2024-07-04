@@ -24,11 +24,7 @@ import { Config } from "lib/config";
 import DefaultIcon from "assets/static/images/icon128.png";
 import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
-import type { DesktopAnkiApi } from "@platform/anki";
-
-const lazyAnkiApi = new Utils.LazyAsync(async () =>
-  Platform.newAnkiApi(await Config.instance.get()),
-);
+import { AnkiApi, type DesktopAnkiApi } from "@platform/anki";
 
 const _initialized: Promise<void> = initialize();
 
@@ -38,7 +34,7 @@ async function initialize(): Promise<void> {
   updateDeferredNoteCountBadge(config);
 
   if (Platform.IS_DESKTOP) {
-    const ankiApi = (await lazyAnkiApi.get()) as DesktopAnkiApi;
+    const ankiApi = (await AnkiApi.instance.get()) as DesktopAnkiApi;
     runAddDeferredNoteTaskInBackground(ankiApi);
   }
 }
@@ -54,7 +50,7 @@ async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
 }
 
 async function addAnkiNote(note: AnkiNote): Promise<boolean> {
-  const ankiApi = await lazyAnkiApi.get();
+  const ankiApi = await AnkiApi.instance.get();
   return await ankiApi.addNote(note);
 }
 
@@ -102,7 +98,7 @@ handleBrowserLoad(() => {
 exposeGlobals({
   Platform,
   Utils,
-  ankiApi: lazyAnkiApi,
+  ankiApi: AnkiApi.instance,
   backend: Backend.instance,
   config: Config.instance,
 });

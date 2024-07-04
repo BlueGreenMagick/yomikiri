@@ -7,9 +7,6 @@ import Utils, { exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 import type { DesktopDictionary } from "platform/common/dictionary";
 
-const lazyAnkiApi = new Utils.LazyAsync(async () =>
-  Platform.newAnkiApi(await Config.instance.get()),
-);
 const lazyDictionary = new Utils.LazyAsync(() => Platform.newDictionary());
 
 async function initialize(): Promise<
@@ -17,7 +14,7 @@ async function initialize(): Promise<
 > {
   const config = await Config.instance.get();
   config.setStyle(document);
-  const ankiApi = await lazyAnkiApi.get();
+  const ankiApi = await DesktopAnkiApi.instance.get();
   const dict = await lazyDictionary.get();
   return [config, ankiApi, dict];
 }
@@ -32,7 +29,7 @@ const page = new OptionsPage({
 exposeGlobals({
   Platform,
   Utils,
-  ankiApi: lazyAnkiApi,
+  ankiApi: DesktopAnkiApi.instance,
   config: Config.instance,
   dictionary: lazyDictionary,
   page,

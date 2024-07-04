@@ -1,14 +1,11 @@
 import { Highlighter } from "./highlight";
 import { Tooltip } from "extension/content/tooltip";
-import Utils, { LazyAsync } from "lib/utils";
+import Utils from "lib/utils";
 import { Config } from "lib/config";
-import { ExtensionPlatform as Platform } from "@platform";
+import { AnkiApi } from "@platform/anki";
 
 Config.instance.onInitialize(handleStateEnabledChange);
 
-export const lazyAnkiApi = new LazyAsync(async () =>
-  Platform.newAnkiApi(await Config.instance.get()),
-);
 export const highlighter = new Highlighter(() => {
   lazyTooltip.getIfInitialized()?.hide();
 });
@@ -16,7 +13,7 @@ export const lazyTooltip = new Utils.LazyAsync(
   async () =>
     new Tooltip(
       await Config.instance.get(),
-      await lazyAnkiApi.get(),
+      await AnkiApi.instance.get(),
       highlighter,
     ),
 );

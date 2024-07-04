@@ -8,7 +8,7 @@ import {
   speakJapanese,
 } from "extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../common";
-import { type Config, type StoredConfiguration } from "lib/config";
+import { type StoredConfiguration } from "lib/config";
 import { getTranslation } from "../common/translate";
 import { Backend as DesktopBackend } from "./backend";
 import {
@@ -17,7 +17,6 @@ import {
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
 import { DesktopDictionary } from "./dictionary";
-import { DesktopAnkiApi } from "./anki";
 
 export * from "../common";
 
@@ -34,10 +33,6 @@ export namespace DesktopPlatform {
   export async function newDictionary(): Promise<DesktopDictionary> {
     const backend = await DesktopBackend.instance.get();
     return new DesktopDictionary(backend);
-  }
-
-  export function newAnkiApi(config: Config): DesktopAnkiApi {
-    return new DesktopAnkiApi(config);
   }
 
   export async function getConfig(): Promise<StoredCompatConfiguration> {

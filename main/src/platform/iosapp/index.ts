@@ -6,7 +6,7 @@ import type {
   VersionInfo,
   TTSRequest,
 } from "../common";
-import { type Config, type StoredConfiguration } from "lib/config";
+import { type StoredConfiguration } from "lib/config";
 import type {
   RawTokenizeResult,
   SearchRequest,
@@ -18,7 +18,6 @@ import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
-import { IosAppAnkiApi } from "./anki";
 
 export * from "../common";
 
@@ -80,10 +79,6 @@ export namespace IosAppPlatform {
 
   export function newDictionary(): IosAppDictionary {
     return new IosAppDictionary();
-  }
-
-  export function newAnkiApi(_config?: Config): IosAppAnkiApi {
-    return new IosAppAnkiApi();
   }
 
   /** Message to app inside app's WKWebview */

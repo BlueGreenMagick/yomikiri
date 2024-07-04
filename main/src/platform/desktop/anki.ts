@@ -8,6 +8,7 @@ import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
 import { getStorage, message, setStorage } from "extension/browserApi";
 import {
+  LazyAsync,
   PromiseWithProgress,
   SingleQueued,
   createPromise,
@@ -108,9 +109,13 @@ export class AnkiConnectError extends AnkiError {}
  * as Anki-connect allows only calls from trusted origins.
  */
 export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+  static instance = new LazyAsync(
+    async () => new DesktopAnkiApi(await Config.instance.get()),
+  );
+
   config: Config;
 
-  constructor(config: Config) {
+  private constructor(config: Config) {
     this.config = config;
   }
 

@@ -4,7 +4,7 @@ import {
   type IAnkiAddNotes,
   type IAnkiOptions,
 } from "../common/anki";
-import Utils from "lib/utils";
+import Utils, { Lazy } from "lib/utils";
 import { Platform } from ".";
 import type { AnkiNote } from "lib/anki";
 
@@ -25,11 +25,13 @@ interface RawAnkiInfo {
 }
 
 export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
+  static instance = new Lazy(() => new IosAppAnkiApi());
+
   ankiInfoP: Promise<AnkiInfo>;
   ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>;
   ankiInfoReject: Utils.PromiseRejector;
 
-  constructor() {
+  private constructor() {
     const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
       Utils.createPromise<AnkiInfo>();
     this.ankiInfoP = ankiInfoP;
