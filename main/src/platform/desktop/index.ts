@@ -30,17 +30,10 @@ export namespace DesktopPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
-  export const backend: LazyAsync<DesktopBackend> = new LazyAsync(() => {
-    return DesktopBackend.initialize();
-  });
-
-  export async function newBackend(): Promise<DesktopBackend> {
-    return await backend.get();
-  }
 
   export async function newDictionary(): Promise<DesktopDictionary> {
-    const b = await backend.get();
-    return new DesktopDictionary(b);
+    const backend = await DesktopBackend.instance.get();
+    return new DesktopDictionary(backend);
   }
 
   export function newAnkiApi(config: Config): DesktopAnkiApi {

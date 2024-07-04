@@ -7,9 +7,8 @@
 import {
   type TokenizeResult,
   type TokenizeRequest,
-  type DesktopBackend,
-  type IosBackend,
   type SearchRequest,
+  Backend,
 } from "@platform/backend";
 import {
   handleBrowserLoad,
@@ -31,9 +30,6 @@ const lazyConfig = new Utils.LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new Utils.LazyAsync(async () =>
   Platform.newAnkiApi(await lazyConfig.get()),
 );
-const lazyBackend = new Utils.LazyAsync<DesktopBackend | IosBackend>(() =>
-  Platform.newBackend(),
-);
 
 const _initialized: Promise<void> = initialize();
 
@@ -49,12 +45,12 @@ async function initialize(): Promise<void> {
 }
 
 async function searchTerm(req: SearchRequest): Promise<TokenizeResult> {
-  const backend = await lazyBackend.get();
+  const backend = await Backend.instance.get();
   return await backend.search(req.term, req.charAt);
 }
 
 async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-  const backend = await lazyBackend.get();
+  const backend = await Backend.instance.get();
   return await backend.tokenize(req.text, req.charAt);
 }
 
@@ -112,8 +108,8 @@ exposeGlobals({
     return lazyAnkiApi.getIfInitialized();
   },
   backend: () => {
-    void lazyBackend.get();
-    return lazyBackend.getIfInitialized();
+    void Backend.instance.get();
+    return Backend.instance.getIfInitialized();
   },
   config: () => {
     void lazyConfig.get();

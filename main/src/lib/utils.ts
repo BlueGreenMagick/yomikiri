@@ -91,6 +91,10 @@ export class Lazy<T extends NonUndefined> {
     }
     return this.inner;
   }
+
+  getIfInitialized(): T | undefined {
+    return this.inner;
+  }
 }
 
 export class LazyAsync<T extends NonUndefined> {

@@ -16,7 +16,6 @@ import {
   type TokenizeRequest,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
-import { IosBackend } from "./backend";
 import { IosAnkiApi } from "./anki";
 import {
   migrateConfigObject,
@@ -55,10 +54,6 @@ export namespace IosPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
-
-  export function newBackend(): IosBackend {
-    return new IosBackend();
-  }
 
   export function newAnkiApi(config: Config): IosAnkiApi {
     return new IosAnkiApi(config);

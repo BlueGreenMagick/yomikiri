@@ -1,8 +1,9 @@
 import Utils, { exposeGlobals } from "lib/utils";
 import { handleClick, handleMouseMove } from "./handlers";
-import { highlighter, lazyBackend, lazyConfig, lazyTooltip } from "./shared";
+import { highlighter, lazyConfig, lazyTooltip } from "./shared";
 import { TOOLTIP_IFRAME_ID } from "consts";
 import { Platform } from "@platform";
+import { Backend } from "@platform/backend";
 
 declare global {
   interface Window {
@@ -34,7 +35,8 @@ function initialize() {
     Platform,
     Utils,
     backend: () => {
-      return lazyBackend.get();
+      void Backend.instance.get();
+      return Backend.instance.getIfInitialized();
     },
     config: () => {
       void lazyConfig.get();

@@ -4,9 +4,6 @@ import Utils, { LazyAsync } from "lib/utils";
 import { Config } from "lib/config";
 import { ExtensionPlatform as Platform } from "@platform";
 
-export const lazyBackend = new Utils.Lazy(
-  async () => await Platform.newBackend(),
-);
 export const lazyConfig = new Utils.LazyAsync(createConfig);
 export const lazyAnkiApi = new LazyAsync(async () =>
   Platform.newAnkiApi(await lazyConfig.get()),

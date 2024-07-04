@@ -6,7 +6,6 @@ import type { Platform as IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "lib/utils";
 import type { StoredCompatConfiguration } from "lib/compat";
 import type { AnkiApi } from "./anki";
-import type { Backend } from "./backend";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop";
@@ -18,7 +17,6 @@ export interface IPlatform {
   IS_IOS: boolean;
   IS_IOSAPP: boolean;
 
-  newBackend(): PromiseOrValue<Backend>;
   newAnkiApi(config: Config): AnkiApi;
   getConfig(): Promise<StoredCompatConfiguration>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */

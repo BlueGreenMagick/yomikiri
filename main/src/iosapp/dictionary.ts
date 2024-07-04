@@ -2,11 +2,11 @@ import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
 import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
 import { Platform } from "platform/iosapp";
-import type { IosAppBackend } from "platform/iosapp/backend";
+import { IosAppBackend } from "platform/iosapp/backend";
 import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
 const lazyConfig = new LazyAsync(() => Config.initialize());
-const backend = Platform.newBackend();
+const backend = IosAppBackend.instance.get();
 const ankiApi = Platform.newAnkiApi();
 
 const initialized = initialize();

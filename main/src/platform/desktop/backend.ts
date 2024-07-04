@@ -2,7 +2,7 @@ import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import { message } from "extension/browserApi";
 
-import Utils from "lib/utils";
+import Utils, { LazyAsync } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
 
@@ -11,7 +11,11 @@ export * from "../common/backend";
 export class DesktopBackend implements IBackend {
   wasm?: BackendWasm;
 
-  static async initialize(): Promise<DesktopBackend> {
+  static instance: LazyAsync<DesktopBackend> = new LazyAsync(() => {
+    return DesktopBackend.initialize();
+  });
+
+  private static async initialize(): Promise<DesktopBackend> {
     const backend = new DesktopBackend();
     if (EXTENSION_CONTEXT === "background") {
       await backend._initialize();

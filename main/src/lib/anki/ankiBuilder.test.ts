@@ -15,12 +15,12 @@ import {
   type AnkiBuilderContext,
   type AnkiBuilderData,
 } from "./ankiBuilder";
-import { DesktopPlatform as Platform } from "platform/desktop";
 import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
+import { DesktopBackend } from "platform/desktop/backend";
 
 const config = await Config.initialize();
-const backend = await Platform.newBackend();
+const backend = await DesktopBackend.instance.get();
 const ctx: AnkiBuilderContext = {
   config,
 };

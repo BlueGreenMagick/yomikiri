@@ -1,3 +1,4 @@
+import { Lazy } from "lib/utils";
 import { IosAppPlatform } from ".";
 import {
   type IBackend,
@@ -9,6 +10,12 @@ import {
 export * from "../common/backend";
 
 export class IosAppBackend implements IBackend {
+  static instance: Lazy<IosAppBackend> = new Lazy(() => {
+    return new IosAppBackend();
+  });
+
+  private constructor() {}
+
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 

@@ -1,4 +1,4 @@
-import { highlighter, lazyBackend, lazyConfig, lazyTooltip } from "./shared";
+import { highlighter, lazyConfig, lazyTooltip } from "./shared";
 import {
   charLocationAtPos,
   sentenceAtCharLocation,
@@ -7,6 +7,7 @@ import {
 } from "./scanner";
 import { SingleQueued, isTouchScreen } from "lib/utils";
 import { containsJapaneseContent } from "lib/japanese";
+import { Backend } from "@platform/backend";
 
 export function handleMouseMove(ev: MouseEvent) {
   void handleMouseMoveInner(ev);
@@ -38,7 +39,7 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
-  const backend = await lazyBackend.get();
+  const backend = await Backend.instance.get();
   const result = await backend.tokenize(
     scannedSentence.text,
     scannedSentence.charAt,

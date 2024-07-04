@@ -7,10 +7,17 @@ import {
   type SearchRequest,
 } from "../common/backend";
 import { EXTENSION_CONTEXT } from "consts";
+import { Lazy } from "lib/utils";
 
 export * from "../common/backend";
 
 export class IosBackend implements IBackend {
+  static instance: Lazy<IosBackend> = new Lazy(() => {
+    return new IosBackend();
+  });
+
+  private constructor() {}
+
   async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
     if (EXTENSION_CONTEXT !== "contentScript") {
       return this._tokenize(text, charAt);

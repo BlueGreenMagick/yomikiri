@@ -14,7 +14,6 @@ import type {
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { IosAppDictionary, type RawDictionaryMetadata } from "./dictionary";
-import { IosAppBackend } from "./backend";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
@@ -78,10 +77,6 @@ export namespace IosAppPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
-
-  export function newBackend(): IosAppBackend {
-    return new IosAppBackend();
-  }
 
   export function newDictionary(): IosAppDictionary {
     return new IosAppDictionary();
