@@ -5,15 +5,14 @@ import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
 import { Backend } from "@platform/backend";
 import type { AnkiApi } from "@platform/anki";
 
-const lazyConfig = new LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new LazyAsync<AnkiApi>(async () =>
-  Platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await Config.instance.get()),
 );
 
 const initialized = initialize();
 
 async function initialize(): Promise<[Config, Backend, AnkiApi]> {
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   config.setStyle(document);
   const backend = await Backend.instance.get();
   const ankiApi = await lazyAnkiApi.get();
@@ -33,8 +32,8 @@ exposeGlobals({
     return Backend.instance.getIfInitialized();
   },
   config: () => {
-    void lazyConfig.get();
-    return lazyConfig.getIfInitialized();
+    void Config.instance.get();
+    return Config.instance.getIfInitialized();
   },
   page,
 });

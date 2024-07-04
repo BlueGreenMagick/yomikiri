@@ -4,7 +4,7 @@ import type { TTSVoice } from "../platform/common";
 import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
-import { log } from "./utils";
+import { LazyAsync, log } from "./utils";
 
 /** Incremented each time Configuration interface is modified */
 export const CONFIG_VERSION = 3;
@@ -74,6 +74,8 @@ export class Config {
   subscribers: (() => void)[] = [];
   documents: WeakRef<Document>[] = [];
 
+  static instance: LazyAsync<Config> = new LazyAsync(() => Config.initialize());
+
   private constructor(storage: StoredConfiguration) {
     this.storage = storage;
     this.stores = new Map();
@@ -91,7 +93,7 @@ export class Config {
     this.runSubscribers();
   }
 
-  static async initialize(): Promise<Config> {
+  private static async initialize(): Promise<Config> {
     const stored = await Platform.getConfig();
     const storage = await migrateIfNeeded(stored);
     const config = new Config(storage);

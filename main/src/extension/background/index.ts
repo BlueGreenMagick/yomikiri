@@ -26,15 +26,14 @@ import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
 import type { DesktopAnkiApi } from "@platform/anki";
 
-const lazyConfig = new Utils.LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new Utils.LazyAsync(async () =>
-  Platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await Config.instance.get()),
 );
 
 const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   updateStateEnabledIcon(config);
   updateDeferredNoteCountBadge(config);
 
@@ -112,7 +111,7 @@ exposeGlobals({
     return Backend.instance.getIfInitialized();
   },
   config: () => {
-    void lazyConfig.get();
-    return lazyConfig.getIfInitialized();
+    void Config.instance.get();
+    return Config.instance.getIfInitialized();
   },
 });

@@ -78,8 +78,9 @@ export class PromiseWithProgress<V, P> extends Promise<V> {
 }
 
 export class Lazy<T extends NonUndefined> {
-  initializer: () => T;
-  inner?: T = undefined;
+  private initializer: () => T;
+  private inner?: T = undefined;
+  private initializeHandler: (obj: T) => void = () => {};
 
   constructor(initializer: () => T) {
     this.initializer = initializer;
@@ -88,6 +89,7 @@ export class Lazy<T extends NonUndefined> {
   get(): T {
     if (this.inner === undefined) {
       this.inner = this.initializer();
+      this.initializeHandler(this.inner);
     }
     return this.inner;
   }
@@ -95,13 +97,26 @@ export class Lazy<T extends NonUndefined> {
   getIfInitialized(): T | undefined {
     return this.inner;
   }
+
+  get initialized() {
+    return this.inner !== undefined;
+  }
+
+  /** Runs immediately if already initialized */
+  onInitialize(handler: (obj: T) => void) {
+    if (this.inner !== undefined) {
+      handler(this.inner);
+    } else {
+      this.initializeHandler = handler;
+    }
+  }
 }
 
 export class LazyAsync<T extends NonUndefined> {
   private initializer: () => PromiseOrValue<T>;
   private inner?: PromiseOrValue<T> = undefined;
   private innerValue?: T = undefined;
-  initialized = false;
+  private initializeHandler: (obj: T) => void = () => {};
 
   constructor(initializer: () => PromiseOrValue<T>) {
     this.initializer = initializer;
@@ -111,7 +126,7 @@ export class LazyAsync<T extends NonUndefined> {
     if (this.inner === undefined) {
       this.inner = this.initializer();
       this.innerValue = await this.inner;
-      this.initialized = true;
+      this.initializeHandler(this.innerValue);
       return this.innerValue;
     }
     return await this.inner;
@@ -122,6 +137,19 @@ export class LazyAsync<T extends NonUndefined> {
       return this.innerValue;
     }
     return;
+  }
+
+  get initialized() {
+    return this.innerValue !== undefined;
+  }
+
+  /** Runs immediately if already initialized */
+  onInitialize(handler: (obj: T) => void) {
+    if (this.innerValue !== undefined) {
+      handler(this.innerValue);
+    } else {
+      this.initializeHandler = handler;
+    }
   }
 }
 

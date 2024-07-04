@@ -5,9 +5,8 @@ import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 import type { IosAppDictionary } from "platform/common/dictionary";
 
-const lazyConfig = new LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new LazyAsync(async () =>
-  Platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await Config.instance.get()),
 );
 const dictionary = Platform.newDictionary();
 
@@ -16,7 +15,7 @@ const initialized = initialize();
 async function initialize(): Promise<
   [Config, IosAppAnkiApi, IosAppDictionary]
 > {
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   config.setStyle(document);
   const ankiApi = await lazyAnkiApi.get();
   return [config, ankiApi, dictionary];
@@ -35,8 +34,8 @@ exposeGlobals({
     return lazyAnkiApi.getIfInitialized();
   },
   config: () => {
-    void lazyConfig.get();
-    return lazyConfig.getIfInitialized();
+    void Config.instance.get();
+    return Config.instance.getIfInitialized();
   },
   page,
 });

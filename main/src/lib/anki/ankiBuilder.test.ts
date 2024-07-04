@@ -19,7 +19,7 @@ import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
 import { DesktopBackend } from "platform/desktop/backend";
 
-const config = await Config.initialize();
+const config = await Config.instance.get();
 const backend = await DesktopBackend.instance.get();
 const ctx: AnkiBuilderContext = {
   config,

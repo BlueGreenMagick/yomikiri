@@ -7,16 +7,15 @@ import Utils, { exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 import type { DesktopDictionary } from "platform/common/dictionary";
 
-const lazyConfig = new Utils.LazyAsync(() => Config.initialize());
 const lazyAnkiApi = new Utils.LazyAsync(async () =>
-  Platform.newAnkiApi(await lazyConfig.get()),
+  Platform.newAnkiApi(await Config.instance.get()),
 );
 const lazyDictionary = new Utils.LazyAsync(() => Platform.newDictionary());
 
 async function initialize(): Promise<
   [Config, DesktopAnkiApi, DesktopDictionary]
 > {
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   config.setStyle(document);
   const ankiApi = await lazyAnkiApi.get();
   const dict = await lazyDictionary.get();
@@ -38,8 +37,8 @@ exposeGlobals({
     return lazyAnkiApi.getIfInitialized();
   },
   config: () => {
-    void lazyConfig.get();
-    return lazyConfig.getIfInitialized();
+    void Config.instance.get();
+    return Config.instance.getIfInitialized();
   },
   dictionary: () => {
     void lazyDictionary.get();

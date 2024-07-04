@@ -1,4 +1,4 @@
-import { highlighter, lazyConfig, lazyTooltip } from "./shared";
+import { highlighter, lazyTooltip } from "./shared";
 import {
   charLocationAtPos,
   sentenceAtCharLocation,
@@ -8,6 +8,7 @@ import {
 import { SingleQueued, isTouchScreen } from "lib/utils";
 import { containsJapaneseContent } from "lib/japanese";
 import { Backend } from "@platform/backend";
+import Config from "lib/config";
 
 export function handleMouseMove(ev: MouseEvent) {
   void handleMouseMoveInner(ev);
@@ -73,13 +74,13 @@ async function handleMouseMoveInner(ev: MouseEvent) {
   if (!ev.shiftKey) return;
 
   if (
-    lazyConfig.getIfInitialized() === undefined &&
+    !Config.instance.initialized &&
     !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
   ) {
     return;
   }
 
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   if (!config.get("state.enabled")) return;
 
   trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
@@ -91,13 +92,13 @@ async function handleClickInner(ev: MouseEvent) {
   if (!isTouchScreen) return;
 
   if (
-    lazyConfig.getIfInitialized() === undefined &&
+    !Config.instance.initialized &&
     !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
   ) {
     return;
   }
 
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   if (!config.get("state.enabled")) return;
 
   const triggered = await trigger(ev.clientX, ev.clientY);

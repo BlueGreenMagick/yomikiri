@@ -1,9 +1,10 @@
 import Utils, { exposeGlobals } from "lib/utils";
 import { handleClick, handleMouseMove } from "./handlers";
-import { highlighter, lazyConfig, lazyTooltip } from "./shared";
+import { highlighter, lazyTooltip } from "./shared";
 import { TOOLTIP_IFRAME_ID } from "consts";
 import { Platform } from "@platform";
 import { Backend } from "@platform/backend";
+import { Config } from "lib/config";
 
 declare global {
   interface Window {
@@ -39,8 +40,8 @@ function initialize() {
       return Backend.instance.getIfInitialized();
     },
     config: () => {
-      void lazyConfig.get();
-      return lazyConfig.getIfInitialized();
+      void Config.instance.get();
+      return Config.instance.getIfInitialized();
     },
     highlighter,
     tooltip: () => {

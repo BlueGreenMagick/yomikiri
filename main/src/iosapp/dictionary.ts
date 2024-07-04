@@ -1,11 +1,10 @@
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
-import Utils, { LazyAsync, exposeGlobals } from "lib/utils";
+import Utils, { exposeGlobals } from "lib/utils";
 import { Platform } from "platform/iosapp";
 import { IosAppBackend } from "platform/iosapp/backend";
 import type { IosAppAnkiApi } from "platform/iosapp/anki";
 
-const lazyConfig = new LazyAsync(() => Config.initialize());
 const backend = IosAppBackend.instance.get();
 const ankiApi = Platform.newAnkiApi();
 
@@ -14,7 +13,7 @@ const initialized = initialize();
 createSvelte(initialized);
 
 async function initialize(): Promise<[Config, IosAppBackend, IosAppAnkiApi]> {
-  const config = await lazyConfig.get();
+  const config = await Config.instance.get();
   config.setStyle(document);
 
   return [config, backend, ankiApi];
@@ -35,8 +34,8 @@ function createSvelte(
 exposeGlobals({
   Utils,
   config() {
-    void lazyConfig.get();
-    return lazyConfig.getIfInitialized();
+    void Config.instance.get();
+    return Config.instance.getIfInitialized();
   },
   backend,
   ankiApi,
