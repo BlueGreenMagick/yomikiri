@@ -1,22 +1,15 @@
 import { type Config, type StoredConfiguration } from "lib/config";
 import { LazyAsync, handleResponseMessage } from "lib/utils";
 import {
+  NonContentScriptFunction,
   currentTab,
   extensionManifest,
   getStorage,
-  handleMessage,
   handleStorageChange,
-  message,
   setStorage,
   updateTab,
 } from "extension/browserApi";
-import type {
-  IPlatform,
-  TTSVoice,
-  TranslateResult,
-  VersionInfo,
-  TTSRequest,
-} from "../common";
+import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
 import {
   type RawTokenizeResult,
   type SearchRequest,
@@ -86,13 +79,9 @@ export namespace IosPlatform {
     return JSON.parse(jsonResponse) as AppResponse<K>;
   }
 
-  export async function getConfig(): Promise<StoredCompatConfiguration> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      return message("loadConfig", undefined);
-    } else {
-      return updateConfig();
-    }
-  }
+  export const getConfig = NonContentScriptFunction("loadConfig", () => {
+    return updateConfig();
+  });
 
   /**
    * Listens to web config changes,
@@ -117,14 +106,13 @@ export namespace IosPlatform {
     return appConfig;
   }
 
-  export async function saveConfig(config: StoredConfiguration): Promise<void> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      await message("saveConfig", config);
-    } else {
+  export const saveConfig = NonContentScriptFunction(
+    "saveConfig",
+    async (config) => {
       await requestToApp("saveConfig", config);
       await setStorage("config", config);
-    }
-  }
+    },
+  );
 
   export async function openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
@@ -151,36 +139,25 @@ export namespace IosPlatform {
     return await requestToApp("ttsVoices", null);
   }
 
-  export async function playTTS(
-    text: string,
-    voice: TTSVoice | null,
-  ): Promise<void> {
-    if (EXTENSION_CONTEXT !== "contentScript") {
-      await requestToApp("tts", { voice, text });
-    } else {
-      await message("tts", { voice, text });
-    }
-  }
+  export const playTTS = NonContentScriptFunction("tts", async (req) => {
+    await requestToApp("tts", req);
+  });
 
-  export async function translate(text: string): Promise<TranslateResult> {
-    if (EXTENSION_CONTEXT !== "contentScript") {
-      return getTranslation(text);
-    } else {
-      return message("translate", text);
-    }
-  }
+  export const translate = NonContentScriptFunction(
+    "translate",
+    getTranslation,
+  );
 
   export function openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  export async function migrateConfig(): Promise<StoredConfiguration> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      return await message("migrateConfig", undefined);
-    } else {
+  export const migrateConfig = NonContentScriptFunction(
+    "migrateConfig",
+    async () => {
       return await configMigration.get();
-    }
-  }
+    },
+  );
 
   async function migrateConfigInner(): Promise<StoredConfiguration> {
     const configObject = await getConfig();
@@ -220,14 +197,6 @@ export namespace IosPlatform {
   }
 
   if (EXTENSION_CONTEXT === "background") {
-    handleMessage("loadConfig", async () => {
-      const config = await updateConfig();
-      return config;
-    });
-    handleMessage("saveConfig", (config) => {
-      return saveConfig(config);
-    });
-
     void setupIosPeriodicReload();
   }
 }

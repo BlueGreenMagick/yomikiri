@@ -1,15 +1,14 @@
 import {
+  NonContentScriptFunction,
   extensionManifest,
   getStorage,
   handleStorageChange,
   japaneseTtsVoices,
-  message,
   setStorage,
   speakJapanese,
 } from "extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../common";
 import { type Config, type StoredConfiguration } from "lib/config";
-import type { TranslateResult } from "../common/translate";
 import { getTranslation } from "../common/translate";
 import { Backend as DesktopBackend } from "./backend";
 import {
@@ -17,7 +16,6 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
-import { EXTENSION_CONTEXT } from "consts";
 import { DesktopDictionary } from "./dictionary";
 import { DesktopAnkiApi } from "./anki";
 
@@ -83,36 +81,28 @@ export namespace DesktopPlatform {
     return japaneseTtsVoices();
   }
 
-  export async function playTTS(
-    text: string,
-    voice: TTSVoice | null,
-  ): Promise<void> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      await message("tts", { voice, text });
-    } else {
+  export const playTTS = NonContentScriptFunction(
+    "tts",
+    async ({ text, voice }) => {
       await speakJapanese(text, voice);
-    }
-  }
+    },
+  );
 
-  export async function translate(text: string): Promise<TranslateResult> {
-    if (EXTENSION_CONTEXT !== "contentScript") {
-      return getTranslation(text);
-    } else {
-      return message("translate", text);
-    }
-  }
+  export const translate = NonContentScriptFunction(
+    "translate",
+    getTranslation,
+  );
 
   export function openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  export async function migrateConfig(): Promise<StoredConfiguration> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      return await message("migrateConfig", undefined);
-    } else {
+  export const migrateConfig = NonContentScriptFunction(
+    "migrateConfig",
+    async () => {
       return await configMigration.get();
-    }
-  }
+    },
+  );
 
   async function migrateConfigInner(): Promise<StoredConfiguration> {
     const configObject = await getConfig();

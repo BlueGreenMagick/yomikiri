@@ -27,7 +27,7 @@ export interface IPlatform {
   openOptionsPage: () => PromiseOrValue<void>;
   versionInfo: () => PromiseOrValue<VersionInfo>;
   japaneseTTSVoices(): Promise<TTSVoice[]>;
-  playTTS(text: string, voice: TTSVoice | null): Promise<void>;
+  playTTS(req: TTSRequest): Promise<void>;
   translate: (text: string) => Promise<TranslateResult>;
   /** Opens url in new tab */
   openExternalLink(url: string): void;

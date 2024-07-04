@@ -18,14 +18,10 @@ import {
   setBadge,
   type MessageSender,
 } from "extension/browserApi";
-import {
-  ExtensionPlatform as Platform,
-  type TTSRequest,
-  type TranslateResult,
-} from "@platform";
+import { ExtensionPlatform as Platform } from "@platform";
 import Utils, { exposeGlobals } from "../../lib/utils";
 import type { AnkiNote } from "lib/anki";
-import Config, { type StoredConfiguration } from "lib/config";
+import { Config } from "lib/config";
 import DefaultIcon from "assets/static/images/icon128.png";
 import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
@@ -71,10 +67,6 @@ function tabId(_req: void, sender: MessageSender): number | undefined {
   return sender.tab?.id;
 }
 
-async function handleTranslate(req: string): Promise<TranslateResult> {
-  return await Platform.translate(req);
-}
-
 function updateStateEnabledIcon(config: Config) {
   const enabledStore = config.store("state.enabled");
   enabledStore.subscribe((enabled) => {
@@ -103,21 +95,10 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
   }, 1000 * 30);
 }
 
-async function tts(req: TTSRequest): Promise<void> {
-  await Platform.playTTS(req.text, req.voice);
-}
-
-async function handleMigrateConfig(): Promise<StoredConfiguration> {
-  return await Platform.migrateConfig();
-}
-
 handleMessage("searchTerm", searchTerm);
 handleMessage("tokenize", tokenize);
 handleMessage("addAnkiNote", addAnkiNote);
 handleMessage("tabId", tabId);
-handleMessage("translate", handleTranslate);
-handleMessage("tts", tts);
-handleMessage("migrateConfig", handleMigrateConfig);
 
 handleBrowserLoad(() => {
   void initialize();

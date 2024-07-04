@@ -149,10 +149,7 @@ export namespace IosAppPlatform {
     return await messageWebview("ttsVoices", null);
   }
 
-  export async function playTTS(
-    text: string,
-    voice: TTSVoice | null,
-  ): Promise<void> {
+  export async function playTTS({ text, voice }: TTSRequest): Promise<void> {
     const req: TTSRequest = { text, voice };
     await messageWebview("tts", req);
   }
