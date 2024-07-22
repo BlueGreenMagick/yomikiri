@@ -325,9 +325,11 @@ type SimpleMessageHandlers = {
 };
 
 /**
- * This function is run only in background context.
+ * Returns a function that:
+ * - If in background context: runs `fn`
+ * - Else: Sends a message to background to run `fn`.
  *
- * In other extension contexts, a message is sent to background to run the function.
+ * If in background, it attaches a message handler that executes `fn`.
  */
 export function BackgroundFunction<K extends keyof MessageMap>(
   messageKey: K,
@@ -345,9 +347,11 @@ export function BackgroundFunction<K extends keyof MessageMap>(
 }
 
 /**
- * Only in content script, a message is sent to background to run the function.
+ * Returns a function that:
+ * - If in content script: sends a message to background to run `fn`
+ * - Else: runs `fn` as-is.
  *
- * Function is run as-is in other contexts.
+ * If in background, it attaches a message handler that executes `fn`.
  */
 export function NonContentScriptFunction<K extends keyof MessageMap>(
   messageKey: K,
