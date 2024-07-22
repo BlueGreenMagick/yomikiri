@@ -106,18 +106,32 @@ async function _updateDictionary(
   wasm: BackendWasm,
   progressFn: (msg: string) => unknown,
 ): Promise<DictionaryMetadata> {
-  const [index_bytes, entries_bytes] = await createNewDictionary(
-    wasm,
-    progressFn,
-  );
+  await nextDocumentPaint();
+  const jmdict_bytes = await fetchDictionary();
+  progressFn("Creating dictionary file...");
+  await nextDocumentPaint();
+  const [index_bytes, entries_bytes] = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
+  await Utils.nextDocumentPaint();
+  const metadata = await saveDictionaryFile(index_bytes, entries_bytes);
+  return metadata;
+}
+
+async function fetchDictionary(): Promise<Uint8Array> {
+  const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz");
+  const buffer = await resp.arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
+async function saveDictionaryFile(
+  index_bytes: Uint8Array,
+  entries_bytes: Uint8Array,
+): Promise<DictionaryMetadata> {
   const downloadDate = new Date();
   const metadata: DictionaryMetadata = {
     downloadDate,
     filesSize: index_bytes.byteLength + entries_bytes.byteLength,
   };
-  await Utils.nextDocumentPaint();
-
   const db = await openDictionaryDB();
   const tx = db.transaction(
     ["metadata", "yomikiri-index", "yomikiri-entries"],
@@ -130,19 +144,6 @@ async function _updateDictionary(
   ]);
   await tx.done;
   return metadata;
-}
-
-export async function createNewDictionary(
-  wasm: BackendWasm,
-  progressFn: (msg: string) => unknown,
-): Promise<[Uint8Array, Uint8Array]> {
-  const buffer = await fetch(
-    "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz",
-  ).then((resp) => resp.arrayBuffer());
-  const typedarray = new Uint8Array(buffer);
-  progressFn("Creating dictionary file...");
-  await nextDocumentPaint();
-  return wasm.update_dictionary(typedarray);
 }
 
 export const Backend = DesktopBackend;
