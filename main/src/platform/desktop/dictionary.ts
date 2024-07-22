@@ -89,19 +89,6 @@ export class DesktopDictionary implements IDictionary {
     await Utils.nextDocumentPaint();
     return this.wasm.update_dictionary(typedarray);
   }
-
-  async dictionaryMetadata(): Promise<DictionaryMetadata> {
-    const db = await openDictionaryDB();
-    const installedMetadata = await db.get("metadata", "value");
-    if (installedMetadata !== undefined) {
-      return installedMetadata;
-    } else {
-      return {
-        ...BundledDictMetadata,
-        downloadDate: new Date(BundledDictMetadata.downloadDate),
-      };
-    }
-  }
 }
 
 /** Loads (index, entries) if saved in db. Returns null otherwise. */
@@ -130,6 +117,19 @@ async function openDictionaryDB() {
       db.createObjectStore("yomikiri-entries");
     },
   });
+}
+
+export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
+  const db = await openDictionaryDB();
+  const installedMetadata = await db.get("metadata", "value");
+  if (installedMetadata !== undefined) {
+    return installedMetadata;
+  } else {
+    return {
+      ...BundledDictMetadata,
+      downloadDate: new Date(BundledDictMetadata.downloadDate),
+    };
+  }
 }
 
 export const Dictionary = DesktopDictionary;

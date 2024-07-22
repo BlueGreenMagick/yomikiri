@@ -28,6 +28,7 @@ export interface IPlatform {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
+  getDictionaryMetadata?(): Promise<DictionaryMetadata>;
 }
 
 export interface VersionInfo {
@@ -57,6 +58,12 @@ export interface TTSRequest {
   voice: TTSVoice | null;
 }
 
+export interface DictionaryMetadata {
+  downloadDate: Date;
+  // bytes len
+  filesSize: number;
+}
+
 export declare const Platform:
   | typeof DesktopPlatform
   | typeof IosPlatform
@@ -65,3 +72,8 @@ export declare const Platform:
 export declare const ExtensionPlatform:
   | typeof DesktopPlatform
   | typeof IosPlatform;
+
+/** Platform accessed from options page */
+export declare const PagePlatform:
+  | typeof DesktopPlatform
+  | typeof IosAppPlatform;

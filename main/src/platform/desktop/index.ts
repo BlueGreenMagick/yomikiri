@@ -16,7 +16,11 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
-import { DesktopDictionary } from "./dictionary";
+import {
+  DesktopDictionary,
+  dictionaryMetadata,
+  type DictionaryMetadata,
+} from "./dictionary";
 
 export * from "../common";
 
@@ -98,9 +102,14 @@ export namespace DesktopPlatform {
     await saveConfig(migrated);
     return migrated;
   }
+
+  export async function getDictionaryMetadata(): Promise<DictionaryMetadata> {
+    return dictionaryMetadata();
+  }
 }
 
 DesktopPlatform satisfies IPlatform;
 
 export const Platform = DesktopPlatform;
 export const ExtensionPlatform = Platform;
+export const PagePlatform = Platform;

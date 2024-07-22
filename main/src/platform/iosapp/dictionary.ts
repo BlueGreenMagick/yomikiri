@@ -9,7 +9,9 @@ export interface RawDictionaryMetadata {
   filesSize: number;
 }
 
-function parseRawMetadata(raw: RawDictionaryMetadata): DictionaryMetadata {
+export function parseRawMetadata(
+  raw: RawDictionaryMetadata,
+): DictionaryMetadata {
   return {
     downloadDate: new Date(raw.downloadDate),
     filesSize: raw.filesSize,
@@ -22,11 +24,6 @@ export class IosAppDictionary implements IDictionary {
       IosAppPlatform.messageWebview("updateDict", null).then(parseRawMetadata),
       "Updating dictionary... This may take up to a minute.",
     );
-  }
-
-  async dictionaryMetadata(): Promise<DictionaryMetadata> {
-    const raw = await IosAppPlatform.messageWebview("dictMetadata", null);
-    return parseRawMetadata(raw);
   }
 }
 

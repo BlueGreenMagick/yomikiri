@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { PagePlatform } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
   import type { Dictionary, DictionaryMetadata } from "@platform/dictionary";
@@ -16,7 +17,7 @@
   }
 
   async function initialize() {
-    const dictionaryMetadata = await dictionary.dictionaryMetadata();
+    const dictionaryMetadata = await PagePlatform.getDictionaryMetadata();
     update_description(dictionaryMetadata);
   }
 

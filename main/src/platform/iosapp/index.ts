@@ -5,6 +5,7 @@ import type {
   TranslateResult,
   VersionInfo,
   TTSRequest,
+  DictionaryMetadata,
 } from "../common";
 import { type StoredConfiguration } from "lib/config";
 import type {
@@ -13,7 +14,11 @@ import type {
   TokenizeRequest,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
-import { IosAppDictionary, type RawDictionaryMetadata } from "./dictionary";
+import {
+  IosAppDictionary,
+  parseRawMetadata,
+  type RawDictionaryMetadata,
+} from "./dictionary";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
@@ -168,6 +173,11 @@ export namespace IosAppPlatform {
     }
     return migrated;
   }
+
+  export async function getDictionaryMetadata(): Promise<DictionaryMetadata> {
+    const raw = await messageWebview("dictMetadata", null);
+    return parseRawMetadata(raw);
+  }
 }
 
 window.iosConfigUpdated = async () => {
@@ -180,3 +190,4 @@ window.iosConfigUpdated = async () => {
 
 IosAppPlatform satisfies IPlatform;
 export const Platform = IosAppPlatform;
+export const PagePlatform = Platform;
