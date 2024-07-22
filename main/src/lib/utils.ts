@@ -335,12 +335,19 @@ export function logs(): unknown[] {
   return _logs;
 }
 
+/** Cannot be called in background */
 export async function nextDocumentPaint(): Promise<void> {
   const [promise, resolve] = createPromise<void>();
   // macro tasks are run after paint action
   requestAnimationFrame(() => {
     setTimeout(resolve);
   });
+  return promise;
+}
+
+export async function nextTask(): Promise<void> {
+  const [promise, resolve] = createPromise<void>();
+  setTimeout(resolve, 0);
   return promise;
 }
 

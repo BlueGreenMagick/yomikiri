@@ -10,7 +10,8 @@ import Utils, {
   LazyAsync,
   PromiseWithProgress,
   createPromise,
-  nextDocumentPaint,
+  getErrorMessage,
+  nextTask,
 } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
@@ -174,13 +175,11 @@ async function _updateDictionary(
   wasm: BackendWasm,
   progressFn: (msg: string) => unknown,
 ): Promise<DictionaryMetadata> {
-  await nextDocumentPaint();
   const jmdict_bytes = await fetchDictionary();
   progressFn("Creating dictionary file...");
-  await nextDocumentPaint();
+  await nextTask();
   const [index_bytes, entries_bytes] = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
-  await Utils.nextDocumentPaint();
   const metadata = await saveDictionaryFile(index_bytes, entries_bytes);
   return metadata;
 }
