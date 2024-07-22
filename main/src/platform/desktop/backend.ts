@@ -142,12 +142,28 @@ if (EXTENSION_CONTEXT === "background") {
     const backend = await DesktopBackend.instance.get();
     const progress = backend.updateDictionary();
     progress.progress.subscribe((prg) => {
-      const message: ConnectionMessage<DictionaryMetadata> = {
+      const message: ConnectionMessageProgress = {
         status: "progress",
         message: prg,
       };
       port.postMessage(message);
     });
+
+    progress
+      .then((metadata) => {
+        const message: ConnectionMessageSuccess<DictionaryMetadata> = {
+          status: "success",
+          message: metadata,
+        };
+        port.postMessage(message);
+      })
+      .catch((error: unknown) => {
+        const message: ConnectionMessageError = {
+          status: "error",
+          message: getErrorMessage(error),
+        };
+        port.postMessage(message);
+      });
   });
 }
 
