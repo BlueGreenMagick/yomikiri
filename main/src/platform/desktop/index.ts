@@ -7,20 +7,20 @@ import {
   setStorage,
   speakJapanese,
 } from "extension/browserApi";
-import type { IPlatform, TTSVoice, VersionInfo } from "../common";
+import type {
+  IPlatform,
+  TTSVoice,
+  VersionInfo,
+  DictionaryMetadata,
+} from "../common";
 import { type StoredConfiguration } from "lib/config";
 import { getTranslation } from "../common/translate";
-import { Backend as DesktopBackend } from "./backend";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
-import {
-  DesktopDictionary,
-  dictionaryMetadata,
-  type DictionaryMetadata,
-} from "./dictionary";
+import { dictionaryMetadata } from "./dictionary";
 
 export * from "../common";
 
@@ -33,11 +33,6 @@ export namespace DesktopPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
-
-  export async function newDictionary(): Promise<DesktopDictionary> {
-    const backend = await DesktopBackend.instance.get();
-    return new DesktopDictionary(backend);
-  }
 
   export async function getConfig(): Promise<StoredCompatConfiguration> {
     return await getStorage<StoredCompatConfiguration>("config", {});

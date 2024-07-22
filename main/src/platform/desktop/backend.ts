@@ -1,10 +1,12 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { message } from "extension/browserApi";
+import { createConnection, message } from "extension/browserApi";
 
-import Utils, { LazyAsync } from "lib/utils";
+import Utils, { LazyAsync, nextDocumentPaint } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
+import type { DictionaryMetadata } from ".";
+import { openDictionaryDB } from "./dictionary";
 
 export * from "../common/backend";
 
@@ -81,6 +83,66 @@ export class DesktopBackend implements IBackend {
     const rawResult = wasm.search(term, codePointAt);
     return TokenizeResult.from(rawResult);
   }
+
+  updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
+    throw new Error("TODO: Currently not supported!");
+    if (EXTENSION_CONTEXT === "background") {
+      const prom = Utils.PromiseWithProgress.fromPromise(
+        _updateDictionary(this.wasm!, progressFn),
+        "Downloading JMDict file...",
+      );
+
+      function progressFn(msg: string) {
+        prom.setProgress(msg);
+      }
+      return prom;
+    } else {
+      const _port = createConnection("updateDictionary");
+    }
+  }
+}
+
+async function _updateDictionary(
+  wasm: BackendWasm,
+  progressFn: (msg: string) => unknown,
+): Promise<DictionaryMetadata> {
+  const [index_bytes, entries_bytes] = await createNewDictionary(
+    wasm,
+    progressFn,
+  );
+  progressFn("Saving dictionary file...");
+  const downloadDate = new Date();
+  const metadata: DictionaryMetadata = {
+    downloadDate,
+    filesSize: index_bytes.byteLength + entries_bytes.byteLength,
+  };
+  await Utils.nextDocumentPaint();
+
+  const db = await openDictionaryDB();
+  const tx = db.transaction(
+    ["metadata", "yomikiri-index", "yomikiri-entries"],
+    "readwrite",
+  );
+  await Promise.all([
+    tx.objectStore("metadata").put(metadata, "value"),
+    tx.objectStore("yomikiri-index").put(index_bytes, "value"),
+    tx.objectStore("yomikiri-entries").put(entries_bytes, "value"),
+  ]);
+  await tx.done;
+  return metadata;
+}
+
+export async function createNewDictionary(
+  wasm: BackendWasm,
+  progressFn: (msg: string) => unknown,
+): Promise<[Uint8Array, Uint8Array]> {
+  const buffer = await fetch(
+    "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz",
+  ).then((resp) => resp.arrayBuffer());
+  const typedarray = new Uint8Array(buffer);
+  progressFn("Creating dictionary file...");
+  await nextDocumentPaint();
+  return wasm.update_dictionary(typedarray);
 }
 
 export const Backend = DesktopBackend;

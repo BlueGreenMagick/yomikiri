@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { PagePlatform } from "@platform";
+  import { PagePlatform, type DictionaryMetadata } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import type { Dictionary, DictionaryMetadata } from "@platform/dictionary";
   import Utils from "lib/utils";
-
-  export let dictionary: Dictionary;
+  import {
+    Backend,
+    type DesktopBackend,
+    type IosAppBackend,
+  } from "@platform/backend";
 
   let dictDescription = "Loading...";
   let disabled = false;
@@ -24,7 +26,10 @@
   async function onClicked() {
     try {
       disabled = true;
-      const updating = dictionary.updateDictionary();
+      const backend = (await Backend.instance.get()) as
+        | DesktopBackend
+        | IosAppBackend;
+      const updating = backend.updateDictionary();
       updating.progress.subscribe((value) => {
         dictDescription = value;
       });

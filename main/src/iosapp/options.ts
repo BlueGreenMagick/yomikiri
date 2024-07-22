@@ -3,19 +3,15 @@ import { Platform } from "platform/iosapp";
 import { IosAppAnkiApi } from "platform/iosapp/anki";
 import Utils, { exposeGlobals } from "lib/utils";
 import Config from "lib/config";
-import type { IosAppDictionary } from "platform/common/dictionary";
 
-const dictionary = Platform.newDictionary();
 const ankiApi = IosAppAnkiApi.instance.get();
 
 const initialized = initialize();
 
-async function initialize(): Promise<
-  [Config, IosAppAnkiApi, IosAppDictionary]
-> {
+async function initialize(): Promise<[Config, IosAppAnkiApi]> {
   const config = await Config.instance.get();
   config.setStyle(document);
-  return [config, ankiApi, dictionary];
+  return [config, ankiApi];
 }
 
 const page = new OptionsPage({

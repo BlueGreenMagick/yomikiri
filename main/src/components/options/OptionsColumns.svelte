@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { AnkiOptionsApi } from "@platform/anki";
-  import type { Dictionary } from "@platform/dictionary";
   import type { Config } from "lib/config";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
@@ -8,12 +7,11 @@
 
   export let config: Config;
   export let ankiApi: AnkiOptionsApi;
-  export let dictionary: Dictionary;
 </script>
 
 <div class="container">
   <div id="main-column">
-    <MainColumn {config} {ankiApi} {dictionary} />
+    <MainColumn {config} {ankiApi} />
   </div>
   {#if Platform.IS_DESKTOP}
     <div id="preview-column"><PreviewColumn {config} /></div>

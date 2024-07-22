@@ -1,11 +1,12 @@
-import { Lazy } from "lib/utils";
-import { IosAppPlatform } from ".";
+import { Lazy, PromiseWithProgress } from "lib/utils";
+import { IosAppPlatform, type DictionaryMetadata } from ".";
 import {
   type IBackend,
   type TokenizeRequest,
   TokenizeResult,
   type SearchRequest,
 } from "../common/backend";
+import { parseRawMetadata } from "platform/shared/utils";
 
 export * from "../common/backend";
 
@@ -44,6 +45,13 @@ export class IosAppBackend implements IBackend {
     const req: SearchRequest = { term, charAt };
     const raw = await IosAppPlatform.messageWebview("searchTerm", req);
     return TokenizeResult.from(raw);
+  }
+
+  updateDictionary(): PromiseWithProgress<DictionaryMetadata, string> {
+    return PromiseWithProgress.fromPromise(
+      IosAppPlatform.messageWebview("updateDict", null).then(parseRawMetadata),
+      "Updating dictionary... This may take up to a minute.",
+    );
   }
 }
 

@@ -64,6 +64,11 @@ export interface DictionaryMetadata {
   filesSize: number;
 }
 
+export interface RawDictionaryMetadata {
+  downloadDate: string;
+  filesSize: number;
+}
+
 export declare const Platform:
   | typeof DesktopPlatform
   | typeof IosPlatform

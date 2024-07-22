@@ -6,6 +6,7 @@ import type {
   VersionInfo,
   TTSRequest,
   DictionaryMetadata,
+  RawDictionaryMetadata,
 } from "../common";
 import { type StoredConfiguration } from "lib/config";
 import type {
@@ -15,14 +16,10 @@ import type {
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import {
-  IosAppDictionary,
-  parseRawMetadata,
-  type RawDictionaryMetadata,
-} from "./dictionary";
-import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
+import { parseRawMetadata } from "platform/shared/utils";
 
 export * from "../common";
 
@@ -81,10 +78,6 @@ export namespace IosAppPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
-
-  export function newDictionary(): IosAppDictionary {
-    return new IosAppDictionary();
-  }
 
   /** Message to app inside app's WKWebview */
   export async function messageWebview<K extends keyof MessageWebviewMap>(

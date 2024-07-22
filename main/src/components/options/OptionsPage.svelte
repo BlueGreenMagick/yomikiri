@@ -1,16 +1,15 @@
 <script lang="ts">
   import type { AnkiOptionsApi } from "@platform/anki";
-  import type { Dictionary } from "@platform/dictionary";
   import type { Config } from "lib/config";
   import OptionsColumns from "./OptionsColumns.svelte";
   import Page from "components/Page.svelte";
 
-  export let initialized: Promise<[Config, AnkiOptionsApi, Dictionary]>;
+  export let initialized: Promise<[Config, AnkiOptionsApi]>;
 </script>
 
 <Page>
-  {#await initialized then [config, ankiApi, dictionary]}
-    <OptionsColumns {config} {ankiApi} {dictionary} />
+  {#await initialized then [config, ankiApi]}
+    <OptionsColumns {config} {ankiApi} />
   {/await}
 </Page>
 
