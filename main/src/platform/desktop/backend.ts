@@ -1,8 +1,17 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
-import { createConnection, message } from "extension/browserApi";
+import {
+  createConnection,
+  handleConnection,
+  message,
+} from "extension/browserApi";
 
-import Utils, { LazyAsync, nextDocumentPaint } from "lib/utils";
+import Utils, {
+  LazyAsync,
+  PromiseWithProgress,
+  createPromise,
+  nextDocumentPaint,
+} from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
 import type { DictionaryMetadata } from ".";
@@ -85,9 +94,8 @@ export class DesktopBackend implements IBackend {
   }
 
   updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
-    throw new Error("TODO: Currently not supported!");
     if (EXTENSION_CONTEXT === "background") {
-      const prom = Utils.PromiseWithProgress.fromPromise(
+      const prom = PromiseWithProgress.fromPromise(
         _updateDictionary(this.wasm!, progressFn),
         "Downloading JMDict file...",
       );
@@ -98,8 +106,68 @@ export class DesktopBackend implements IBackend {
       return prom;
     } else {
       const _port = createConnection("updateDictionary");
+      const [prom, resolve, reject] = createPromise<DictionaryMetadata>();
+      const promWithProgress = PromiseWithProgress.fromPromise<
+        DictionaryMetadata,
+        string
+      >(prom);
+      let completed = false;
+      _port.onMessage.addListener(
+        (msg: ConnectionMessage<DictionaryMetadata>) => {
+          if (msg.status === "progress") {
+            promWithProgress.setProgress(msg.message);
+          } else if (msg.status === "success") {
+            completed = true;
+            resolve(msg.message);
+          } else {
+            completed = true;
+            reject(new Error(msg.message));
+          }
+        },
+      );
+      _port.onDisconnect.addListener(() => {
+        if (!completed) {
+          completed = true;
+          reject(new Error("Unexpectedly disconnected from background script"));
+        }
+      });
+      return promWithProgress;
     }
   }
+}
+
+if (EXTENSION_CONTEXT === "background") {
+  handleConnection("updateDictionary", async (port) => {
+    const backend = await DesktopBackend.instance.get();
+    const progress = backend.updateDictionary();
+    progress.progress.subscribe((prg) => {
+      const message: ConnectionMessage<DictionaryMetadata> = {
+        status: "progress",
+        message: prg,
+      };
+      port.postMessage(message);
+    });
+  });
+}
+
+type ConnectionMessage<T> =
+  | ConnectionMessageProgress
+  | ConnectionMessageSuccess<T>
+  | ConnectionMessageError;
+
+interface ConnectionMessageProgress {
+  status: "progress";
+  message: string;
+}
+
+interface ConnectionMessageSuccess<T> {
+  status: "success";
+  message: T;
+}
+
+interface ConnectionMessageError {
+  status: "error";
+  message: string;
 }
 
 async function _updateDictionary(
