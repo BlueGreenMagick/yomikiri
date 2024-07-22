@@ -227,7 +227,7 @@ function getbuildEntries(): BuildEntry[] {
   const entries: BuildEntry[] = [];
 
   if (!FOR_IOSAPP) {
-    const segments: string[] = ["content", "background", "popup"];
+    const segments: string[] = ["content", "background", "popup", "options"];
     if (FOR_IOS) {
       segments.push("x-callback, options");
     }
