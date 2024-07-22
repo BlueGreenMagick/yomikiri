@@ -145,7 +145,6 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
         }),
       });
     } catch (e) {
-      console.error(e);
       throw new AnkiConnectionError();
     }
 
