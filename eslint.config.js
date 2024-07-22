@@ -82,6 +82,14 @@ export default tseslint.config(
       "no-inner-declarations": "off",
       "svelte/no-inner-declarations": "off",
       "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          checksVoidReturn: {
+            arguments: false,
+          },
+        },
+      ],
     },
   },
   {
