@@ -8,7 +8,7 @@ use yomikiri_rs::SharedBackend;
 pub fn setup_backend() -> SharedBackend<File> {
     let tokenizer = create_tokenizer();
     let mut base_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    base_dir.push("../dictionary/res");
+    base_dir.push("../yomikiri-dictionary-generator/files");
     let index_path = base_dir.join("english.yomikiriindex");
     let entries_path = base_dir.join("english.yomikiridict");
     let dictionary =
