@@ -1,5 +1,5 @@
+use anyhow::{anyhow, Result};
 use std::collections::HashSet;
-use std::error::Error;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Cursor, Write};
 use std::path::Path;
@@ -8,8 +8,6 @@ use std::{cmp, fs};
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
 use yomikiri_dictionary::file::{read_entries, read_indexes, DictEntryIndex};
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
-
-type TResult<T> = core::result::Result<T, Box<dyn Error>>;
 
 struct LexItem {
     surface: String,
@@ -108,7 +106,7 @@ impl LexItem {
         items
     }
 
-    fn to_record(&self) -> TResult<[String; 8]> {
+    fn to_record(&self) -> Result<[String; 8]> {
         let pos = UnidicPos::from_unidic(&self.pos, &self.pos2)?;
         let pos_short = String::from_utf8(vec![pos.to_short()])?;
         let conj_form = UnidicConjugationForm::from_unidic(&self.conj_form)?;
@@ -129,7 +127,7 @@ impl LexItem {
 /// Transforms files in `input_dir` and put it into `transform_dir`.
 ///
 /// yomikiridict files are required in `resource_dir`
-pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) -> TResult<()> {
+pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) -> Result<()> {
     let entries = fs::read_dir(input_dir)?;
     for entry in entries {
         let entry = entry?;
@@ -151,10 +149,10 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
     let matrix_def_path = input_dir.join("matrix.def");
 
     if !lex_csv_path.exists() {
-        return Err("lex.csv file was not found".into());
+        return Err(anyhow!("lex.csv file was not found"));
     }
     if !matrix_def_path.exists() {
-        return Err("matrix.def file was not found".into());
+        return Err(anyhow!("matrix.def file was not found"));
     }
 
     // let (lid_map, rid_map) =
@@ -178,7 +176,7 @@ fn transform_lex(
     output_dir: &Path,
     index_path: &Path,
     dict_path: &Path,
-) -> TResult<()> {
+) -> Result<()> {
     let mut items: Vec<LexItem> = Vec::with_capacity(1500000);
 
     let mut reader = csv::Reader::from_path(lex_path)?;
@@ -240,7 +238,7 @@ fn transform_matrix(
     output_dir: &Path,
     lid_map: IdMap,
     rid_map: IdMap,
-) -> TResult<()> {
+) -> Result<()> {
     let prev_matrix_contents = fs::read_to_string(matrix_path)?;
     let mut lines = Vec::with_capacity(4 * 1000 * 1000);
     for string_line in prev_matrix_contents.lines() {
@@ -289,7 +287,7 @@ fn transform_matrix(
 
 /// Add katakana words in JMDict that is not in Unidic lex
 /// and are not longer than 7 chars
-fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResult<()> {
+fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> Result<()> {
     let mut item_bases: HashSet<String> = HashSet::with_capacity(items.len() * 2);
     for i in items.iter() {
         item_bases.insert(i.base.clone());
@@ -322,7 +320,7 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> TResul
 fn remove_word_not_in_jmdict(
     items: &mut Vec<LexItem>,
     entries: &Vec<Entry>,
-) -> TResult<Vec<LexItem>> {
+) -> Result<Vec<LexItem>> {
     let mut terms: HashSet<&str> = HashSet::with_capacity(entries.len() * 4);
     for entry in entries {
         for term in entry.terms() {
@@ -379,7 +377,7 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
     pos.to_unidic().to_unidic().0
 }
 
-pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> TResult<Vec<Entry>> {
+pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> Result<Vec<Entry>> {
     let file = File::open(index_path)?;
     let mut reader = BufReader::new(file);
     let term_indexes = read_indexes(&mut reader)?;

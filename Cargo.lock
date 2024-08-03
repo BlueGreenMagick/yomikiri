@@ -2497,6 +2497,7 @@ dependencies = [
 name = "yomikiri-unidic-dictionary"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "csv",
  "filetime",
  "lindera-core",

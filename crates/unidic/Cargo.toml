@@ -17,6 +17,7 @@ filetime = "0.2"
 ureq = "2.7"
 tempfile = "3.8"
 zip = "0.6"
+anyhow = "1"
 
 [lints]
 workspace = true
