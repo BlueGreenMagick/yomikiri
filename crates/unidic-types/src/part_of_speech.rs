@@ -200,4 +200,6 @@ unidic_pos!(
     Prefix 接頭辞 'J'
     PrenounAdjectival 連体詞 'K'
     Adverb 副詞 'L'
+    Expression exp 'M'
+    Unknown unk 'O'
 );

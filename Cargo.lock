@@ -2437,6 +2437,7 @@ dependencies = [
  "serde_json",
  "thiserror",
  "yomikiri-jmdict",
+ "yomikiri-unidic-types",
 ]
 
 [[package]]

@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use std::io::{Read, Seek};
 
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
+use yomikiri_dictionary::PartOfSpeech;
 
 use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{RawTokenizeResult, Token, TokenDetails};
@@ -34,7 +35,16 @@ impl<R: Read + Seek> SharedBackend<R> {
             let form = entry.main_form();
             // TODO: convert jmdict pos to unidic pos
             let mut details = TokenDetails::default_with_base(&form);
-            details.pos = "jmdict".into();
+            details.pos = entry
+                .senses
+                .first()
+                .map(|s| s.pos.first())
+                .flatten()
+                .unwrap_or(&PartOfSpeech::Unclassified)
+                .to_unidic()
+                .to_unidic()
+                .0
+                .to_string();
             details.reading = entry
                 .reading_for_form(&form)
                 .map(|r| r.reading.as_str())

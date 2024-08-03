@@ -376,24 +376,7 @@ fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool
 }
 
 fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
-    match pos {
-        PartOfSpeech::Noun => "名詞",
-        PartOfSpeech::Verb => "動詞",
-        PartOfSpeech::Adjective => "形容詞",
-        PartOfSpeech::NaAdjective => "形状詞",
-        PartOfSpeech::Particle => "助詞",
-        PartOfSpeech::Adverb => "副詞",
-        PartOfSpeech::Interjection => "感動詞",
-        PartOfSpeech::Suffix => "接尾辞",
-        PartOfSpeech::AuxiliaryVerb => "助動詞",
-        PartOfSpeech::Pronoun => "代名詞",
-        PartOfSpeech::Conjunction => "接続詞",
-        PartOfSpeech::Prefix => "接頭辞",
-        PartOfSpeech::Adnomial => "連体詞",
-        PartOfSpeech::Expression => "=exp=",
-        // unclassified pos are never included into unidic
-        PartOfSpeech::Unclassified => "",
-    }
+    pos.to_unidic().to_unidic().0
 }
 
 pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> TResult<Vec<Entry>> {

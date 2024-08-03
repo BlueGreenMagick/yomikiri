@@ -1,4 +1,8 @@
 use serde::{Deserialize, Serialize};
+use yomikiri_unidic_types::{
+    UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
+    UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
+};
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Entry {
@@ -179,4 +183,26 @@ fn is_false(a: &bool) -> bool {
 
 fn is_zero(a: &u16) -> bool {
     *a == 0
+}
+
+impl PartOfSpeech {
+    pub fn to_unidic(&self) -> UnidicPos {
+        match &self {
+            PartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
+            PartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
+            PartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
+            PartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
+            PartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
+            PartOfSpeech::Adverb => UnidicPos::Adverb,
+            PartOfSpeech::Interjection => UnidicPos::Interjection(UnidicInterjectionPos2::Unknown),
+            PartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
+            PartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
+            PartOfSpeech::Pronoun => UnidicPos::Pronoun,
+            PartOfSpeech::Conjunction => UnidicPos::Conjunction,
+            PartOfSpeech::Prefix => UnidicPos::Prefix,
+            PartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
+            PartOfSpeech::Expression => UnidicPos::Expression,
+            PartOfSpeech::Unclassified => UnidicPos::Unknown,
+        }
+    }
 }
