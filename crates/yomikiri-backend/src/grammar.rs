@@ -326,7 +326,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "ー(よ)う",
         short: "volition",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-volitional-form-you/",
-        detect: |token, _| token.conj_form == "意志推量形",
+        detect: |token, _| token.conjugation == "意志推量形",
     },
     // it is impossible to accurately figure out passive and potential forms
     // skipping godan potential　ーえる as it is impossible to figure out
@@ -353,7 +353,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "ーえ／ーろ",
         short: "command form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
-        detect: |token, _| token.conj_form == "命令形",
+        detect: |token, _| token.conjugation == "命令形",
     },
     // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
     GrammarRule {
@@ -362,7 +362,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
         detect: |token, _| {
             token.is_verb()
-                && (token.conj_form == "連体形-一般" || token.conj_form == "終止形-一般")
+                && (token.conjugation == "連体形-一般" || token.conjugation == "終止形-一般")
         },
     },
     // # Particles
@@ -578,11 +578,11 @@ pub static GRAMMARS: &[GrammarRule] = &[
             (token.text == "な"
                 && data.next().is_none()
                 && !data.global_next_is(|next| !next.is_unknown_pos())
-                && data.global_prev_is(|prev| prev.conj_form.starts_with("終止形") || prev.conj_form == "連体形-撥音便"))
+                && data.global_prev_is(|prev| prev.conjugation.starts_with("終止形") || prev.conjugation == "連体形-撥音便"))
                 || (token.text == "んな"
                     && data.next().is_none()
                     && !data.global_next_is(|next| !next.is_unknown_pos())
-                    && data.global_prev_is(|prev| prev.conj_form.starts_with("連用形")))
+                    && data.global_prev_is(|prev| prev.conjugation.starts_with("連用形")))
         },
     },
     GrammarRule {

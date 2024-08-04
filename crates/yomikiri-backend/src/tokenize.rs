@@ -11,7 +11,10 @@ use std::borrow::Cow;
 use std::io::{Read, Seek};
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_unidic_types::{UnidicAdjectivePos2, UnidicConjugationForm, UnidicNaAdjectivePos2, UnidicNounPos2, UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2};
+use yomikiri_unidic_types::{
+    UnidicAdjectivePos2, UnidicConjugationForm, UnidicNaAdjectivePos2, UnidicNounPos2,
+    UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
+};
 
 #[cfg(wasm)]
 use serde::Serialize;
@@ -30,7 +33,7 @@ pub struct Token {
     pub pos2: String,
     pub base: String,
     pub reading: String,
-    pub conj_form: String,
+    pub conjugation: String,
 }
 
 #[derive(Debug, Clone)]
@@ -44,7 +47,7 @@ pub(crate) struct InnerToken {
     pub pos: UnidicPos,
     pub base: String,
     pub reading: String,
-    pub conj_form: String,
+    pub conjugation: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -58,7 +61,7 @@ pub struct TokenDetails {
     /// conjugation form
     ///
     /// defaults to `*`
-    pub conj_form: String,
+    pub conjugation: String,
 }
 
 #[cfg_attr(wasm, derive(Serialize))]
@@ -109,13 +112,13 @@ impl From<InnerToken> for Token {
         let (pos, pos2) = token.pos.to_unidic();
         Token {
             text: token.text,
-            start: token.start, 
+            start: token.start,
             children: token.children.into_iter().map(Token::from).collect(),
             pos: pos.to_string(),
             pos2: pos2.to_string(),
             base: token.base,
             reading: token.reading,
-            conj_form: token.conj_form
+            conjugation: token.conjugation,
         }
     }
 }
@@ -129,7 +132,7 @@ impl InnerToken {
             pos: details.pos,
             base: details.base,
             reading: details.reading,
-            conj_form: details.conj_form,
+            conjugation: details.conjugation,
         }
     }
 }
@@ -140,7 +143,7 @@ impl Default for TokenDetails {
             pos: UnidicPos::Unknown,
             base: "".into(),
             reading: "*".into(),
-            conj_form: "*".into(),
+            conjugation: "*".into(),
         }
     }
 }
@@ -153,7 +156,7 @@ impl TokenDetails {
             .and_then(|p| p.as_bytes().first())
             .and_then(|short| UnidicPos::from_short(*short).ok())
             .unwrap_or(UnidicPos::Unknown);
-        let conj_form = details
+        let conjugation = details
             .next()
             .and_then(|p| p.as_bytes().first())
             .and_then(|short| UnidicConjugationForm::from_short(*short).ok())
@@ -182,7 +185,7 @@ impl TokenDetails {
 
         TokenDetails {
             pos,
-            conj_form,
+            conjugation,
             base,
             reading,
         }
@@ -443,7 +446,13 @@ impl<R: Read + Seek> SharedBackend<R> {
             at += 1;
         }
 
-        join_tokens(tokens, from, last_found_to, last_found_pos, last_found_join_strategy);
+        join_tokens(
+            tokens,
+            from,
+            last_found_to,
+            last_found_pos,
+            last_found_join_strategy,
+        );
         Ok(last_found_to - from > 1)
     }
 
@@ -528,7 +537,13 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        join_tokens(tokens, from, from + 2, UnidicPos::Conjunction, BaseJoinStrategy::TextAll);
+        join_tokens(
+            tokens,
+            from,
+            from + 2,
+            UnidicPos::Conjunction,
+            BaseJoinStrategy::TextAll,
+        );
         Ok(true)
     }
 
@@ -543,17 +558,21 @@ impl<R: Read + Seek> SharedBackend<R> {
         }
         let token = &tokens[from];
         let next_token = &tokens[from + 1];
-        
+
         let new_pos = if let UnidicPos::Suffix(suffix_pos) = next_token.pos {
             match suffix_pos {
                 UnidicSuffixPos2::名詞的 => UnidicPos::Noun(UnidicNounPos2::Unknown),
-                UnidicSuffixPos2::形容詞的 => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
+                UnidicSuffixPos2::形容詞的 => {
+                    UnidicPos::Adjective(UnidicAdjectivePos2::Unknown)
+                }
                 UnidicSuffixPos2::動詞的 => UnidicPos::Verb(UnidicVerbPos2::Unknown),
-                UnidicSuffixPos2::形状詞的 => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
-                _ => UnidicPos::Unknown
+                UnidicSuffixPos2::形状詞的 => {
+                    UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown)
+                }
+                _ => UnidicPos::Unknown,
             }
         } else {
-            return Ok(false)
+            return Ok(false);
         };
 
         let compound = concat_string(&token.text, &next_token.base);
@@ -587,11 +606,15 @@ impl<R: Read + Seek> SharedBackend<R> {
         let next = &tokens[from + 1];
 
         if !token.is_verb() || next.pos != UnidicPos::Verb(UnidicVerbPos2::非自立可能) {
-            return Ok(false)
+            return Ok(false);
         }
-        
+
         let compound = concat_string(&token.text, &next.base);
-        let exists = self.dictionary.search(&compound)?.iter().any(|e| e.is_verb());
+        let exists = self
+            .dictionary
+            .search(&compound)?
+            .iter()
+            .any(|e| e.is_verb());
         if !exists {
             return Ok(false);
         }
@@ -601,7 +624,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             from,
             from + 2,
             UnidicPos::Verb(UnidicVerbPos2::Unknown),
-            BaseJoinStrategy::TextWithLastBase
+            BaseJoinStrategy::TextWithLastBase,
         );
         Ok(true)
     }
@@ -620,8 +643,17 @@ impl<R: Read + Seek> SharedBackend<R> {
         let token = &tokens[from];
         let next = &tokens[from + 1];
 
-        if next.base == "為る" && next.pos == UnidicPos::Verb(UnidicVerbPos2::非自立可能) && token.is_noun() {
-            join_tokens(tokens, from, from + 2, UnidicPos::Verb(UnidicVerbPos2::Unknown), BaseJoinStrategy::FirstBase);
+        if next.base == "為る"
+            && next.pos == UnidicPos::Verb(UnidicVerbPos2::非自立可能)
+            && token.is_noun()
+        {
+            join_tokens(
+                tokens,
+                from,
+                from + 2,
+                UnidicPos::Verb(UnidicVerbPos2::Unknown),
+                BaseJoinStrategy::FirstBase,
+            );
             return Ok(true);
         };
 
@@ -630,7 +662,13 @@ impl<R: Read + Seek> SharedBackend<R> {
             && next.pos == UnidicPos::Verb(UnidicVerbPos2::非自立可能)
             && token.is_verb()
         {
-            join_tokens(tokens, from, from + 2, UnidicPos::Verb(UnidicVerbPos2::Unknown), BaseJoinStrategy::FirstBase);
+            join_tokens(
+                tokens,
+                from,
+                from + 2,
+                UnidicPos::Verb(UnidicVerbPos2::Unknown),
+                BaseJoinStrategy::FirstBase,
+            );
             return Ok(true);
         };
 
@@ -641,8 +679,16 @@ impl<R: Read + Seek> SharedBackend<R> {
     fn join_inflections(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
-        if !matches!(token.pos, UnidicPos::Verb(_) | UnidicPos::Adjective(_) | UnidicPos::NaAdjective(_) |  UnidicPos::Adverb  | UnidicPos::AuxVerb | UnidicPos::Expression) {
-            return Ok(false)
+        if !matches!(
+            token.pos,
+            UnidicPos::Verb(_)
+                | UnidicPos::Adjective(_)
+                | UnidicPos::NaAdjective(_)
+                | UnidicPos::Adverb
+                | UnidicPos::AuxVerb
+                | UnidicPos::Expression
+        ) {
+            return Ok(false);
         }
 
         let mut joined_text = String::with_capacity(3 * 12);
@@ -678,13 +724,15 @@ impl<R: Read + Seek> SharedBackend<R> {
                 && token.text == "と"
                 && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞)
                 && i > 0
-                && tokens[i - 1].conj_form.starts_with("終止形")
+                && tokens[i - 1].conjugation.starts_with("終止形")
             {
                 tokens[i].pos = UnidicPos::Particle(UnidicParticlePos2::接続助詞)
             }
             // 助詞 'ーたり' used for listing should be joined with previous 用言
             // and other sources list 「ーたり」 as 接続助詞
-            else if token.base == "たり" && token.pos == UnidicPos::Particle(UnidicParticlePos2::副助詞) {
+            else if token.base == "たり"
+                && token.pos == UnidicPos::Particle(UnidicParticlePos2::副助詞)
+            {
                 tokens[i].pos = UnidicPos::Particle(UnidicParticlePos2::接続助詞)
             }
             // は/よそう「止す」 rather than は／よそう「装う」
@@ -696,7 +744,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             {
                 tokens[i].base = "止す".into();
                 tokens[i].pos = UnidicPos::Verb(UnidicVerbPos2::一般);
-                tokens[i].conj_form = "意志推量形".into();
+                tokens[i].conjugation = "意志推量形".into();
             }
         }
     }
@@ -772,7 +820,7 @@ fn join_tokens(
         children,
         reading,
         base,
-        conj_form: String::from("*"),
+        conjugation: String::from("*"),
         start: tokens[from].start,
     };
     tokens.splice(from..to, [joined]);
@@ -784,8 +832,6 @@ fn concat_string(s1: &str, s2: &str) -> String {
     joined.push_str(s2);
     joined
 }
-
-
 
 impl InnerToken {
     pub fn is_aux(&self) -> bool {

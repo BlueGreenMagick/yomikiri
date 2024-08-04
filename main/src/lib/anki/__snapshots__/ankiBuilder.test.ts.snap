@@ -697,7 +697,7 @@ exports[`$なかなかに強いです > Check that tokenization result has not c
       {
         "base": "中々",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "副詞",
         "pos2": "*",
         "reading": "なかなか",
@@ -707,7 +707,7 @@ exports[`$なかなかに強いです > Check that tokenization result has not c
       {
         "base": "に",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "助詞",
         "pos2": "格助詞",
         "reading": "に",
@@ -720,7 +720,7 @@ exports[`$なかなかに強いです > Check that tokenization result has not c
           {
             "base": "強い",
             "children": [],
-            "conj_form": "終止形-一般",
+            "conjugation": "終止形-一般",
             "pos": "形容詞",
             "pos2": "一般",
             "reading": "ツヨイ",
@@ -730,7 +730,7 @@ exports[`$なかなかに強いです > Check that tokenization result has not c
           {
             "base": "です",
             "children": [],
-            "conj_form": "終止形-一般",
+            "conjugation": "終止形-一般",
             "pos": "助動詞",
             "pos2": "*",
             "reading": "デス",
@@ -738,7 +738,7 @@ exports[`$なかなかに強いです > Check that tokenization result has not c
             "text": "です",
           },
         ],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "形容詞",
         "pos2": "*",
         "reading": "つよいです",
@@ -1084,7 +1084,7 @@ exports[`Test that special character is escaped: 図＄書<-> > Check that token
       {
         "base": "図書",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "名詞",
         "pos2": "普通名詞",
         "reading": "としょ",
@@ -1094,7 +1094,7 @@ exports[`Test that special character is escaped: 図＄書<-> > Check that token
       {
         "base": "<->",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "UNK",
         "pos2": "*",
         "reading": "<->",
@@ -1920,7 +1920,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > Check that tokenizatio
       {
         "base": "彼",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "代名詞",
         "pos2": "*",
         "reading": "かれ",
@@ -1930,7 +1930,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > Check that tokenizatio
       {
         "base": "が",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "助詞",
         "pos2": "格助詞",
         "reading": "が",
@@ -1940,7 +1940,7 @@ exports[`Test unicode normalization: 彼か＄゙学生 > Check that tokenizatio
       {
         "base": "学生",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "名詞",
         "pos2": "普通名詞",
         "reading": "がくせい",
@@ -2332,7 +2332,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
       {
         "base": "春",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "名詞",
         "pos2": "普通名詞",
         "reading": "はる",
@@ -2342,7 +2342,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
       {
         "base": "の",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "助詞",
         "pos2": "格助詞",
         "reading": "の",
@@ -2352,7 +2352,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
       {
         "base": "茶",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "名詞",
         "pos2": "普通名詞",
         "reading": "ちゃ",
@@ -2362,7 +2362,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
       {
         "base": "が",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "助詞",
         "pos2": "格助詞",
         "reading": "が",
@@ -2372,7 +2372,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
       {
         "base": "飲",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "名詞",
         "pos2": "普通名詞",
         "reading": "いん",
@@ -2382,7 +2382,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
       {
         "base": "ドル",
         "children": [],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "名詞",
         "pos2": "普通名詞",
         "reading": "どる",
@@ -2395,7 +2395,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
           {
             "base": "みたい",
             "children": [],
-            "conj_form": "*",
+            "conjugation": "*",
             "pos": "形状詞",
             "pos2": "助動詞語幹",
             "reading": "ミタイ",
@@ -2405,7 +2405,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
           {
             "base": "です",
             "children": [],
-            "conj_form": "終止形-一般",
+            "conjugation": "終止形-一般",
             "pos": "助動詞",
             "pos2": "*",
             "reading": "デス",
@@ -2413,7 +2413,7 @@ exports[`春の茶が飲＄みたいです > Check that tokenization result has 
             "text": "です",
           },
         ],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "=exp=",
         "pos2": "*",
         "reading": "みたいです",
@@ -3090,7 +3090,7 @@ exports[`＄読みたい > Check that tokenization result has not changed 1`] = 
           {
             "base": "読む",
             "children": [],
-            "conj_form": "連用形-一般",
+            "conjugation": "連用形-一般",
             "pos": "動詞",
             "pos2": "一般",
             "reading": "ヨミ",
@@ -3100,7 +3100,7 @@ exports[`＄読みたい > Check that tokenization result has not changed 1`] = 
           {
             "base": "たい",
             "children": [],
-            "conj_form": "終止形-一般",
+            "conjugation": "終止形-一般",
             "pos": "助動詞",
             "pos2": "*",
             "reading": "タイ",
@@ -3108,7 +3108,7 @@ exports[`＄読みたい > Check that tokenization result has not changed 1`] = 
             "text": "たい",
           },
         ],
-        "conj_form": "*",
+        "conjugation": "*",
         "pos": "動詞",
         "pos2": "*",
         "reading": "よみたい",

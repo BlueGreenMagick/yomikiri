@@ -18,7 +18,7 @@ struct LexItem {
     reading: String,
     pos: String,
     pos2: String,
-    conj_form: String,
+    conjugation: String,
 }
 
 impl LexItem {
@@ -65,7 +65,7 @@ impl LexItem {
                         reading: reading.reading.clone(),
                         pos: part_of_speech_to_unidic(pos).into(),
                         pos2: "*".into(),
-                        conj_form: "*".into(),
+                        conjugation: "*".into(),
                     };
                     items.push(item);
                 }
@@ -97,7 +97,7 @@ impl LexItem {
                         reading: reading.reading.clone(),
                         pos: part_of_speech_to_unidic(pos).into(),
                         pos2: "*".into(),
-                        conj_form: "*".into(),
+                        conjugation: "*".into(),
                     };
                     items.push(item);
                 }
@@ -109,15 +109,15 @@ impl LexItem {
     fn to_record(&self) -> Result<[String; 8]> {
         let pos = UnidicPos::from_unidic(&self.pos, &self.pos2)?;
         let pos_short = String::from_utf8(vec![pos.to_short()])?;
-        let conj_form = UnidicConjugationForm::from_unidic(&self.conj_form)?;
-        let conj_form_short = String::from_utf8(vec![conj_form.to_short()])?;
+        let conjugation = UnidicConjugationForm::from_unidic(&self.conjugation)?;
+        let conjugation_short = String::from_utf8(vec![conjugation.to_short()])?;
         Ok([
             self.surface.to_string(),
             self.lid.to_string(),
             self.rid.to_string(),
             self.cost.to_string(),
             pos_short,
-            conj_form_short,
+            conjugation_short,
             self.reading.to_string(),
             self.base.to_string(),
         ])
@@ -196,7 +196,7 @@ fn transform_lex(
             pos2: record.get(5).unwrap().into(),
             reading: record.get(21).unwrap().into(),
             base: record.get(11).unwrap().into(),
-            conj_form: record.get(9).unwrap().into(),
+            conjugation: record.get(9).unwrap().into(),
         };
 
         // remove info in base e.g.　「私-代名詞」　「アイアコス-Aeacus」

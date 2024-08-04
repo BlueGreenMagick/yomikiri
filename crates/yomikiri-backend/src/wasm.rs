@@ -22,7 +22,7 @@ export interface Token {
     pos2: string;
     base: string;
     reading: string;
-    conj_form: string;
+    conjugation: string;
 }
 
 export interface GrammarInfo {
