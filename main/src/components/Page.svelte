@@ -28,11 +28,11 @@
   on:error={handleGlobalError}
   on:unhandledrejection={handleGlobalRejection}
 />
-<svelte:body use:platformClass />
 
 {#await Promise.resolve() then}
   <slot />
 {/await}
+<div use:platformClass style="display: none;" />
 
 <style global>
   @import "../global.css";
