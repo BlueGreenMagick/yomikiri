@@ -6,6 +6,7 @@ use crate::utils::value_else_name;
 
 macro_rules! unidic_pos_enum {
     ($( $pos_name:ident $pos_value:ident $($pos2_enum:ident)? ),+) => {
+        #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
         pub enum UnidicPos {
             $(
                 #[doc = stringify!($pos_value)]
@@ -18,6 +19,7 @@ macro_rules! unidic_pos_enum {
 
 macro_rules! unidic_pos2_enum {
     ($pos2_enum:ident, $pos_value:ident, $($pos2_name:ident),+) => {
+        #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
         #[doc = stringify!($pos_value)]
         pub enum $pos2_enum {
             $(

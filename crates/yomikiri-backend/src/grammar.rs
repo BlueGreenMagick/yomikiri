@@ -1,7 +1,9 @@
 use std::borrow::Cow;
 
+use yomikiri_unidic_types::{UnidicParticlePos2, UnidicPos};
+
 use crate::japanese::{GoDan, GoDanEnding};
-use crate::tokenize::Token;
+use crate::tokenize::InnerToken as Token;
 
 pub struct GrammarRule {
     pub name: &'static str,
@@ -150,90 +152,6 @@ impl<'a> GrammarDetector<'a> {
     }
 }
 
-impl Token {
-    pub fn is_aux(&self) -> bool {
-        self.pos == "助動詞"
-    }
-
-    pub fn is_suf(&self) -> bool {
-        self.pos == "接尾辞"
-    }
-
-    pub fn is_adj(&self) -> bool {
-        self.is_iadj() || self.is_naadj()
-    }
-
-    pub fn is_iadj(&self) -> bool {
-        self.pos == "形容詞"
-    }
-
-    pub fn is_naadj(&self) -> bool {
-        self.pos == "形状詞"
-    }
-
-    pub fn is_noun(&self) -> bool {
-        self.pos == "名詞"
-    }
-
-    pub fn is_verb(&self) -> bool {
-        self.pos == "動詞"
-    }
-
-    pub fn is_particle(&self) -> bool {
-        self.pos == "助詞"
-    }
-
-    pub fn is_conn_particle(&self) -> bool {
-        self.pos2 == "接続助詞"
-    }
-
-    pub fn is_prefix(&self) -> bool {
-        self.pos == "接頭辞"
-    }
-
-    pub fn is_pronoun(&self) -> bool {
-        self.pos == "代名詞"
-    }
-
-    pub fn is_adverb(&self) -> bool {
-        self.pos == "副詞"
-    }
-
-    pub fn is_adnomial(&self) -> bool {
-        self.pos == "連体詞"
-    }
-
-    pub fn is_conjunction(&self) -> bool {
-        self.pos == "接続詞"
-    }
-
-    pub fn is_interjection(&self) -> bool {
-        self.pos == "感動詞"
-    }
-
-    pub fn is_unknown_pos(&self) -> bool {
-        self.pos == "UNK" || self.pos == "*" || self.pos.is_empty()
-    }
-
-    //　用言
-    pub fn is_yougen(&self) -> bool {
-        self.is_verb() || self.is_iadj() || self.is_naadj()
-    }
-    // 体言
-    pub fn is_taigen(&self) -> bool {
-        self.is_noun() || self.is_pronoun()
-    }
-
-    // 自立語. Note that not-independant verbs are also returned as well.
-    pub fn is_independant(&self) -> bool {
-        self.is_yougen()
-            || self.is_taigen()
-            || self.is_adnomial()
-            || self.is_adverb()
-            || self.is_conjunction()
-            || self.is_interjection()
-    }
-}
 
 pub static GRAMMARS: &[GrammarRule] = &[
     // # Adjective Forms
@@ -370,7 +288,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         short: "polite command",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-imperative-form-nasai/",
         detect: |token, _| {
-            token.text == "なさい" && token.base == "為さる" && token.pos2 == "非自立可能"
+            token.text == "なさい" && token.base == "為さる" && token.pos == UnidicPos::Verb(yomikiri_unidic_types::UnidicVerbPos2::非自立可能)
         },
     },
     GrammarRule {
@@ -456,7 +374,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
             token.base == "だ"
                 && token.text == "で"
                 && token.is_aux()
-                && data.prev_is(|prev| prev.base == "の" && prev.pos2 == "準体助詞")
+                && data.prev_is(|prev| prev.base == "の" && prev.is_phrasal_particle())
         },
     },
     GrammarRule {
@@ -467,7 +385,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
             token.base == "に"
                 && token.text == "に"
                 && token.is_particle()
-                && data.prev_is(|prev| prev.base == "の" && prev.pos2 == "準体助詞")
+                && data.prev_is(|prev| prev.base == "の" && prev.is_phrasal_particle())
         },
     },
     GrammarRule {
@@ -508,7 +426,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "が",
         short: "subject",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-ga/",
-        detect: |token, _| token.base == "が" && token.pos2 == "格助詞",
+        detect: |token, _| token.base == "が" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞),
     },
     GrammarRule {
         name: "で",
@@ -529,13 +447,13 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "と",
         short: "together; quote",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-to/",
-        detect: |token, _| token.base == "と" && token.pos2 == "格助詞",
+        detect: |token, _| token.base == "と" && token.pos ==  UnidicPos::Particle(UnidicParticlePos2::格助詞),
     },
     GrammarRule {
         name: "と",
         short: "causal relationship",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-to/",
-        detect: |token, _| token.base == "と" && token.text == "と" && token.pos2 == "接続助詞",
+        detect: |token, _| token.base == "と" && token.text == "と" && token.is_phrasal_particle(),
     },
     GrammarRule {
         name: "に",
@@ -544,7 +462,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         detect: |token, data| {
             (token.base == "に"
                 && token.is_particle()
-                && !data.prev_is(|prev| prev.base == "の" && prev.pos2 == "準体助詞"))
+                && !data.prev_is(|prev| prev.base == "の" && prev.is_phrasal_particle()))
                 || (token.text == "に" && token.base == "だ" && token.is_aux())
         },
     },
@@ -559,14 +477,15 @@ pub static GRAMMARS: &[GrammarRule] = &[
         short: "noun form; explanatory",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-no-nominalizer/",
         detect: |token, _| {
-            token.base == "の" && (token.pos2 == "準体助詞" || token.pos2 == "終助詞")
+            token.base == "の" &&
+                matches!(token.pos, UnidicPos::Particle(UnidicParticlePos2::準体助詞 | UnidicParticlePos2::終助詞))
         },
     },
     GrammarRule {
         name: "の",
         short: "possessive; apposition",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-no-nominalizer/",
-        detect: |token, _| token.base == "の" && token.pos2 == "格助詞",
+        detect: |token, _| token.base == "の" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞),
     },
     GrammarRule {
         name: "は",
@@ -654,7 +573,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         short: "don't...!",
         tofugu: "https://www.tofugu.com/japanese-grammar/na/",
         detect: |token, data| {
-            (token.base == "な" && token.pos2 == "終助詞") ||
+            (token.base == "な" && token.pos == UnidicPos::Particle(UnidicParticlePos2::終助詞)) ||
             // な is not usually tokenized correctly
             (token.text == "な"
                 && data.next().is_none()

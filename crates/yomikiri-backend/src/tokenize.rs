@@ -11,7 +11,7 @@ use std::borrow::Cow;
 use std::io::{Read, Seek};
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
+use yomikiri_unidic_types::{UnidicAdjectivePos2, UnidicConjugationForm, UnidicNaAdjectivePos2, UnidicNounPos2, UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2};
 
 #[cfg(wasm)]
 use serde::Serialize;
@@ -33,12 +33,24 @@ pub struct Token {
     pub conj_form: String,
 }
 
+#[derive(Debug, Clone)]
+pub(crate) struct InnerToken {
+    /// NFC normalized
+    pub text: String,
+    /// first code point index of token in pre-normalized sentence
+    pub start: u32,
+    pub children: Vec<InnerToken>,
+    // fields from TokenDetails
+    pub pos: UnidicPos,
+    pub base: String,
+    pub reading: String,
+    pub conj_form: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TokenDetails {
-    /// defaults to `UNK`
-    pub pos: String,
-    /// defaults to `*`
-    pub pos2: String,
+    /// defaults to Unknown
+    pub pos: UnidicPos,
     /// defaults to token surface or ``
     pub base: String,
     /// defaults to `*`
@@ -92,14 +104,29 @@ impl RawTokenizeResult {
     }
 }
 
-impl Token {
-    pub fn new<S: Into<String>>(surface: S, details: TokenDetails, start: u32) -> Self {
+impl From<InnerToken> for Token {
+    fn from(token: InnerToken) -> Self {
+        let (pos, pos2) = token.pos.to_unidic();
         Token {
+            text: token.text,
+            start: token.start, 
+            children: token.children.into_iter().map(Token::from).collect(),
+            pos: pos.to_string(),
+            pos2: pos2.to_string(),
+            base: token.base,
+            reading: token.reading,
+            conj_form: token.conj_form
+        }
+    }
+}
+
+impl InnerToken {
+    pub fn new<S: Into<String>>(surface: S, details: TokenDetails, start: u32) -> Self {
+        InnerToken {
             text: surface.into(),
             start,
             children: vec![],
             pos: details.pos,
-            pos2: details.pos2,
             base: details.base,
             reading: details.reading,
             conj_form: details.conj_form,
@@ -110,8 +137,7 @@ impl Token {
 impl Default for TokenDetails {
     fn default() -> Self {
         TokenDetails {
-            pos: "UNK".into(),
-            pos2: "*".into(),
+            pos: UnidicPos::Unknown,
             base: "".into(),
             reading: "*".into(),
             conj_form: "*".into(),
@@ -122,14 +148,11 @@ impl Default for TokenDetails {
 impl TokenDetails {
     fn from_details(details: &[&str], surface: &str) -> Self {
         let mut details = details.iter();
-        let (pos, pos2) = details
+        let pos = details
             .next()
             .and_then(|p| p.as_bytes().first())
             .and_then(|short| UnidicPos::from_short(*short).ok())
-            .map(|pos| pos.to_unidic())
-            .unwrap_or(("UNK", "*"));
-        let pos = pos.to_string();
-        let pos2 = pos2.to_string();
+            .unwrap_or(UnidicPos::Unknown);
         let conj_form = details
             .next()
             .and_then(|p| p.as_bytes().first())
@@ -159,7 +182,6 @@ impl TokenDetails {
 
         TokenDetails {
             pos,
-            pos2,
             conj_form,
             base,
             reading,
@@ -215,7 +237,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             .collect();
 
         Ok(RawTokenizeResult {
-            tokens,
+            tokens: tokens.into_iter().map(Token::from).collect(),
             tokenIdx: token_idx.try_into().map_err(|_| {
                 YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
             })?,
@@ -224,11 +246,11 @@ impl<R: Read + Seek> SharedBackend<R> {
         })
     }
 
-    /// `sentence` is tokenized and its output Vec<LinderaToken> is converted into Vec<Token>.
+    /// `sentence` is tokenized and its output Vec<LinderaToken> is converted into Vec<InnerToken>.
     ///
     /// if `sentence` is not in NFC normalized form, it is normalized before fed to lindera,
     /// and `token.start` is calculated as code point position in pre-normalized sentence.
-    fn tokenize_inner(&self, sentence: &'_ str) -> YResult<Vec<Token>> {
+    fn tokenize_inner(&self, sentence: &'_ str) -> YResult<Vec<InnerToken>> {
         let is_normalized = is_nfc(sentence);
         let normalized_sentence = if is_normalized {
             Cow::Borrowed(sentence)
@@ -278,7 +300,7 @@ impl<R: Read + Seek> SharedBackend<R> {
                 Some(d) => TokenDetails::from_details(&d, &text),
                 None => TokenDetails::default_with_base(&text),
             };
-            let token = Token::new(text, details, char_start as u32);
+            let token = InnerToken::new(text, details, char_start as u32);
             tokens.push(token);
         }
         Ok(tokens)
@@ -286,7 +308,7 @@ impl<R: Read + Seek> SharedBackend<R> {
 
     /// Join tokens in-place if longer token exist in dictionary
     /// /// e.g. [込ん,で,いる] => 込んでいる
-    fn join_all_tokens(&mut self, tokens: &mut Vec<Token>) -> YResult<()> {
+    fn join_all_tokens(&mut self, tokens: &mut Vec<InnerToken>) -> YResult<()> {
         let mut i = 0;
         while i < tokens.len() {
             self.join_tokens_from(tokens, i)?;
@@ -295,7 +317,7 @@ impl<R: Read + Seek> SharedBackend<R> {
         Ok(())
     }
 
-    fn join_tokens_from(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<()> {
+    fn join_tokens_from(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<()> {
         self.join_compounds_multi(tokens, from)?;
         self.join_prefix(tokens, from)?;
         self.join_pre_noun(tokens, from)?;
@@ -323,11 +345,11 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///         used for cases 1-2
     ///     3. '(base)+': join base of all tokens
     ///         used for case 3 e.g. んに「のに」
-    fn join_compounds_multi(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_compounds_multi(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         let token = &tokens[from];
-        let mut all_noun = token.pos == "名詞";
-        let mut all_particle = token.pos == "助詞";
-        let mut noun_particle = token.pos == "名詞" || token.pos == "代名詞";
+        let mut all_noun = token.is_noun();
+        let mut all_particle = token.is_particle();
+        let mut noun_particle = token.is_noun() || token.is_pronoun();
 
         let mut at = from + 1;
         let mut joined_text_prev = token.text.clone();
@@ -338,13 +360,13 @@ impl<R: Read + Seek> SharedBackend<R> {
 
         let mut last_found_to = at;
         let mut last_found_join_strategy = BaseJoinStrategy::TextAll;
-        let mut last_found_pos: &str = &token.pos;
+        let mut last_found_pos: UnidicPos = token.pos;
 
         while at < tokens.len() {
             let token = &tokens[at];
-            all_noun = all_noun && token.pos == "名詞";
-            all_particle = all_particle && token.pos == "助詞";
-            noun_particle = noun_particle && token.pos == "助詞";
+            all_noun = all_noun && token.is_noun();
+            all_particle = all_particle && token.is_particle();
+            noun_particle = noun_particle && token.is_particle();
 
             if !all_particle {
                 searching_base_join = false;
@@ -356,13 +378,13 @@ impl<R: Read + Seek> SharedBackend<R> {
                 let mut found_pos = None;
                 for e in self.dictionary.search(&text_all)?.iter() {
                     if all_noun && e.is_noun() {
-                        found_pos = Some("名詞");
+                        found_pos = Some(UnidicPos::Noun(UnidicNounPos2::Unknown));
                         break;
                     } else if all_particle && e.is_particle() {
-                        found_pos = Some("助詞");
+                        found_pos = Some(UnidicPos::Particle(UnidicParticlePos2::Unknown));
                         break;
                     } else if noun_particle || e.is_expression() {
-                        found_pos = Some("=exp=")
+                        found_pos = Some(UnidicPos::Expression)
                     }
                 }
 
@@ -375,10 +397,10 @@ impl<R: Read + Seek> SharedBackend<R> {
                     let mut found_pos = None;
                     for e in self.dictionary.search(&text_then_base)?.iter() {
                         if all_noun && e.is_noun() {
-                            found_pos = Some("名詞");
+                            found_pos = Some(UnidicPos::Noun(UnidicNounPos2::Unknown));
                             break;
                         } else if noun_particle || e.is_expression() {
-                            found_pos = Some("=exp=")
+                            found_pos = Some(UnidicPos::Expression)
                         }
                     }
 
@@ -398,14 +420,14 @@ impl<R: Read + Seek> SharedBackend<R> {
                 let base_all = concat_string(&joined_base_prev, &token.base);
                 // text_all and text_then_base did not find an entry this iteration
                 if last_found_to != at + 1 {
-                    let found = self
+                    let found_particle = self
                         .dictionary
                         .search(&base_all)?
                         .iter()
                         .any(|e| e.is_particle());
-                    if found {
+                    if found_particle {
                         last_found_to = at + 1;
-                        last_found_pos = "助詞";
+                        last_found_pos = UnidicPos::Particle(UnidicParticlePos2::Unknown);
                         last_found_join_strategy = BaseJoinStrategy::BaseAll;
                     }
                 }
@@ -421,18 +443,17 @@ impl<R: Read + Seek> SharedBackend<R> {
             at += 1;
         }
 
-        let pos = String::from(last_found_pos);
-        join_tokens(tokens, from, last_found_to, pos, last_found_join_strategy);
+        join_tokens(tokens, from, last_found_to, last_found_pos, last_found_join_strategy);
         Ok(last_found_to - from > 1)
     }
 
     /// (接頭詞) (any) => 'dict' (any)
-    fn join_prefix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_prefix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
         let token = &tokens[from];
-        if token.pos != "接頭辞" {
+        if !token.is_prefix() {
             return Ok(false);
         }
 
@@ -443,29 +464,27 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        let pos = String::from(&next_token.pos);
         join_tokens(
             tokens,
             from,
             from + 2,
-            pos,
+            next_token.pos,
             BaseJoinStrategy::TextWithLastBase,
         );
         Ok(true)
     }
 
     /// (連体詞) (名詞 | 代名詞 | 接頭辞) => 'dict' (any)
-    fn join_pre_noun(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_pre_noun(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
         let token = &tokens[from];
-        if token.pos != "連体詞" {
+        if !token.is_adnomial() {
             return Ok(false);
         }
         let next_token = &tokens[from + 1];
-        let next_pos = &next_token.pos;
-        if next_pos != "名詞" && next_pos != "代名詞" && next_pos != "接頭辞" {
+        if !next_token.is_noun() && !next_token.is_pronoun() && !next_token.is_prefix() {
             return Ok(false);
         }
 
@@ -475,12 +494,11 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        let pos = String::from(next_pos);
         join_tokens(
             tokens,
             from,
             from + 2,
-            pos,
+            next_token.pos,
             BaseJoinStrategy::TextWithLastBase,
         );
         Ok(true)
@@ -490,12 +508,12 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///
     /// Join any that ends with 助詞 because
     /// unidic is not good at determining if a given 助詞 is 接続助詞
-    fn join_conjunction(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_conjunction(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
         let next_token = &tokens[from + 1];
-        if next_token.pos != "助詞" {
+        if !next_token.is_particle() {
             return Ok(false);
         }
 
@@ -510,7 +528,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             return Ok(false);
         }
 
-        join_tokens(tokens, from, from + 2, "接続詞", BaseJoinStrategy::TextAll);
+        join_tokens(tokens, from, from + 2, UnidicPos::Conjunction, BaseJoinStrategy::TextAll);
         Ok(true)
     }
 
@@ -519,25 +537,25 @@ impl<R: Read + Seek> SharedBackend<R> {
     /// ーがる is joined even if it does not exist in dictionary
     ///
     /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
-    fn join_suffix(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_suffix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
-        let next_token = &tokens[from + 1];
-        if next_token.pos != "接尾辞" {
-            return Ok(false);
-        }
-
         let token = &tokens[from];
-        let new_pos = match next_token.pos2.as_str() {
-            "名詞的" => "名詞",
-            "形容詞的" => "形容詞",
-            "動詞的" => "動詞",
-            "形状詞的" => "形状詞",
-            // unreachable
-            _ => &token.pos,
-        }
-        .to_string();
+        let next_token = &tokens[from + 1];
+        
+        let new_pos = if let UnidicPos::Suffix(suffix_pos) = next_token.pos {
+            match suffix_pos {
+                UnidicSuffixPos2::名詞的 => UnidicPos::Noun(UnidicNounPos2::Unknown),
+                UnidicSuffixPos2::形容詞的 => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
+                UnidicSuffixPos2::動詞的 => UnidicPos::Verb(UnidicVerbPos2::Unknown),
+                UnidicSuffixPos2::形状詞的 => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
+                _ => UnidicPos::Unknown
+            }
+        } else {
+            return Ok(false)
+        };
+
         let compound = concat_string(&token.text, &next_token.base);
         let exists = self.dictionary.contains(&compound);
 
@@ -561,17 +579,17 @@ impl<R: Read + Seek> SharedBackend<R> {
     }
 
     /// 動詞 動詞／非自立可能 => 'dict' 動詞
-    fn join_dependent_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_dependent_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
         let token = &tokens[from];
         let next = &tokens[from + 1];
 
-        if next.pos2 != "非自立可能" || !token.is_verb() {
-            return Ok(false);
+        if !token.is_verb() || next.pos != UnidicPos::Verb(UnidicVerbPos2::非自立可能) {
+            return Ok(false)
         }
-
+        
         let compound = concat_string(&token.text, &next.base);
         let exists = self.dictionary.search(&compound)?.iter().any(|e| e.is_verb());
         if !exists {
@@ -582,7 +600,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             tokens,
             from,
             from + 2,
-            "動詞",
+            UnidicPos::Verb(UnidicVerbPos2::Unknown),
             BaseJoinStrategy::TextWithLastBase
         );
         Ok(true)
@@ -595,24 +613,24 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///
     /// 1. 名詞 + する
     /// 2. 動詞 + なさい「為さる」
-    fn join_specific_verb(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_specific_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
         let token = &tokens[from];
         let next = &tokens[from + 1];
 
-        if next.base == "為る" && next.pos2 == "非自立可能" && token.is_noun() {
-            join_tokens(tokens, from, from + 2, "動詞", BaseJoinStrategy::FirstBase);
+        if next.base == "為る" && next.pos == UnidicPos::Verb(UnidicVerbPos2::非自立可能) && token.is_noun() {
+            join_tokens(tokens, from, from + 2, UnidicPos::Verb(UnidicVerbPos2::Unknown), BaseJoinStrategy::FirstBase);
             return Ok(true);
         };
 
         if next.text == "なさい"
             && next.base == "為さる"
-            && next.pos2 == "非自立可能"
+            && next.pos == UnidicPos::Verb(UnidicVerbPos2::非自立可能)
             && token.is_verb()
         {
-            join_tokens(tokens, from, from + 2, "動詞", BaseJoinStrategy::FirstBase);
+            join_tokens(tokens, from, from + 2, UnidicPos::Verb(UnidicVerbPos2::Unknown), BaseJoinStrategy::FirstBase);
             return Ok(true);
         };
 
@@ -620,12 +638,11 @@ impl<R: Read + Seek> SharedBackend<R> {
     }
 
     /// (動詞 | 形容詞 | 形状詞 | 副詞 | 助動詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | 形状詞/助動詞語幹)+ => $1
-    fn join_inflections(&mut self, tokens: &mut Vec<Token>, from: usize) -> YResult<bool> {
+    fn join_inflections(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
-        if !(["動詞", "形容詞", "形状詞", "副詞", "助動詞", "=exp="].contains(&token.pos.as_str()))
-        {
-            return Ok(false);
+        if !matches!(token.pos, UnidicPos::Verb(_) | UnidicPos::Adjective(_) | UnidicPos::NaAdjective(_) |  UnidicPos::Adverb  | UnidicPos::AuxVerb | UnidicPos::Expression) {
+            return Ok(false)
         }
 
         let mut joined_text = String::with_capacity(3 * 12);
@@ -633,21 +650,20 @@ impl<R: Read + Seek> SharedBackend<R> {
         joined_text += &token.text;
         joined_reading += &token.reading;
         while to < tokens.len()
-            && (tokens[to].pos == "助動詞"
-                || tokens[to].pos2 == "接続助詞"
-                || (tokens[to].pos2 == "助動詞語幹" && tokens[to].pos == "形状詞"))
+            && (tokens[to].is_aux()
+                || tokens[to].pos == UnidicPos::Particle(UnidicParticlePos2::接続助詞)
+                || tokens[to].pos == UnidicPos::NaAdjective(UnidicNaAdjectivePos2::助動詞語幹))
             && tokens[to].text.contains_only_kana()
         {
             to += 1;
         }
 
-        let pos = token.pos.clone();
-        join_tokens(tokens, from, to, &pos, BaseJoinStrategy::FirstBase);
+        join_tokens(tokens, from, to, token.pos, BaseJoinStrategy::FirstBase);
         Ok(to - from > 1)
     }
 
     #[allow(clippy::if_same_then_else)]
-    fn manual_patches(&mut self, tokens: &mut [Token]) {
+    fn manual_patches(&mut self, tokens: &mut [InnerToken]) {
         for i in 0..tokens.len() {
             let token = &tokens[i];
 
@@ -660,16 +676,16 @@ impl<R: Read + Seek> SharedBackend<R> {
             // fixes tokenization and grammar
             else if token.base == "と"
                 && token.text == "と"
-                && token.pos2 == "格助詞"
+                && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞)
                 && i > 0
                 && tokens[i - 1].conj_form.starts_with("終止形")
             {
-                tokens[i].pos2 = "接続助詞".into()
+                tokens[i].pos = UnidicPos::Particle(UnidicParticlePos2::接続助詞)
             }
             // 助詞 'ーたり' used for listing should be joined with previous 用言
             // and other sources list 「ーたり」 as 接続助詞
-            else if token.base == "たり" && token.pos2 == "副助詞" {
-                tokens[i].pos2 = "接続助詞".into()
+            else if token.base == "たり" && token.pos == UnidicPos::Particle(UnidicParticlePos2::副助詞) {
+                tokens[i].pos = UnidicPos::Particle(UnidicParticlePos2::接続助詞)
             }
             // は/よそう「止す」 rather than は／よそう「装う」
             // 「装う」 still turns up in the dictionary after patch
@@ -679,7 +695,7 @@ impl<R: Read + Seek> SharedBackend<R> {
                 && tokens[i - 1].base == "は"
             {
                 tokens[i].base = "止す".into();
-                tokens[i].pos2 = "一般".into();
+                tokens[i].pos = UnidicPos::Verb(UnidicVerbPos2::一般);
                 tokens[i].conj_form = "意志推量形".into();
             }
         }
@@ -708,11 +724,11 @@ enum BaseJoinStrategy {
 ///
 /// `base` is the joined `text` values.
 /// if `last_as_base`, joined token's `base` uses `base` for last token
-fn join_tokens<S: Into<String>>(
-    tokens: &mut Vec<Token>,
+fn join_tokens(
+    tokens: &mut Vec<InnerToken>,
     from: usize,
     to: usize,
-    pos: S,
+    pos: UnidicPos,
     base_strategy: BaseJoinStrategy,
 ) {
     let size = to - from;
@@ -741,7 +757,7 @@ fn join_tokens<S: Into<String>>(
     text.push_str(&tokens[to - 1].text);
     reading.push_str(&tokens[to - 1].reading);
 
-    let mut children: Vec<Token> = Vec::with_capacity(2 * (to - from));
+    let mut children: Vec<InnerToken> = Vec::with_capacity(2 * (to - from));
     for token in &mut tokens[from..to] {
         if token.children.is_empty() {
             children.push(token.clone());
@@ -750,13 +766,12 @@ fn join_tokens<S: Into<String>>(
         }
     }
 
-    let joined = Token {
+    let joined = InnerToken {
         text,
-        pos: pos.into(),
+        pos,
         children,
         reading,
         base,
-        pos2: String::from("*"),
         conj_form: String::from("*"),
         start: tokens[from].start,
     };
@@ -768,4 +783,98 @@ fn concat_string(s1: &str, s2: &str) -> String {
     joined.push_str(s1);
     joined.push_str(s2);
     joined
+}
+
+
+
+impl InnerToken {
+    pub fn is_aux(&self) -> bool {
+        self.pos == UnidicPos::AuxVerb
+    }
+
+    pub fn is_suf(&self) -> bool {
+        matches!(self.pos, UnidicPos::Suffix(_))
+    }
+
+    pub fn is_adj(&self) -> bool {
+        self.is_iadj() || self.is_naadj()
+    }
+
+    pub fn is_iadj(&self) -> bool {
+        matches!(self.pos, UnidicPos::Adjective(_))
+    }
+
+    pub fn is_naadj(&self) -> bool {
+        matches!(self.pos, UnidicPos::NaAdjective(_))
+    }
+
+    pub fn is_noun(&self) -> bool {
+        matches!(self.pos, UnidicPos::Noun(_))
+    }
+
+    pub fn is_verb(&self) -> bool {
+        matches!(self.pos, UnidicPos::Verb(_))
+    }
+
+    pub fn is_particle(&self) -> bool {
+        matches!(self.pos, UnidicPos::Particle(_))
+    }
+
+    /// 接続助詞
+    pub fn is_conn_particle(&self) -> bool {
+        self.pos == UnidicPos::Particle(UnidicParticlePos2::接続助詞)
+    }
+
+    /// 準体助詞
+    pub fn is_phrasal_particle(&self) -> bool {
+        self.pos == UnidicPos::Particle(UnidicParticlePos2::準体助詞)
+    }
+
+    pub fn is_prefix(&self) -> bool {
+        self.pos == UnidicPos::Prefix
+    }
+
+    pub fn is_pronoun(&self) -> bool {
+        self.pos == UnidicPos::Pronoun
+    }
+
+    pub fn is_adverb(&self) -> bool {
+        self.pos == UnidicPos::Adverb
+    }
+
+    /// PrenounAdjectival 連体詞
+    pub fn is_adnomial(&self) -> bool {
+        self.pos == UnidicPos::PrenounAdjectival
+    }
+
+    pub fn is_conjunction(&self) -> bool {
+        self.pos == UnidicPos::Conjunction
+    }
+
+    pub fn is_interjection(&self) -> bool {
+        matches!(self.pos, UnidicPos::Interjection(_))
+    }
+
+    pub fn is_unknown_pos(&self) -> bool {
+        self.pos == UnidicPos::Unknown
+    }
+
+    //　用言
+    pub fn is_yougen(&self) -> bool {
+        self.is_verb() || self.is_iadj() || self.is_naadj()
+    }
+    // 体言
+    pub fn is_taigen(&self) -> bool {
+        self.is_noun() || self.is_pronoun()
+    }
+
+    // 自立語. Note that not-independant verbs are also returned as well.
+    pub fn is_independant(&self) -> bool {
+        self.is_yougen()
+            || self.is_taigen()
+            || self.is_adnomial()
+            || self.is_adverb()
+            || self.is_conjunction()
+            || self.is_interjection()
+    }
 }

@@ -5,7 +5,7 @@ use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::error::{YResult, YomikiriError};
-use crate::tokenize::{RawTokenizeResult, Token, TokenDetails};
+use crate::tokenize::{InnerToken, RawTokenizeResult, Token, TokenDetails};
 use crate::SharedBackend;
 
 impl<R: Read + Seek> SharedBackend<R> {
@@ -41,16 +41,14 @@ impl<R: Read + Seek> SharedBackend<R> {
                 .map(|s| s.pos.first())
                 .flatten()
                 .unwrap_or(&PartOfSpeech::Unclassified)
-                .to_unidic()
-                .to_unidic()
-                .0
-                .to_string();
+                .to_unidic();
             details.reading = entry
                 .reading_for_form(&form)
                 .map(|r| r.reading.as_str())
                 .unwrap_or("*")
                 .into();
-            let token = Token::new(normalized_term, details, 0);
+            let inner_token = InnerToken::new(normalized_term, details, 0);
+            let token = Token::from(inner_token);
             let json_entries = entries
                 .iter()
                 .map(serde_json::to_string)
