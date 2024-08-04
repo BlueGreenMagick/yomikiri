@@ -5,9 +5,10 @@ use crate::error::{Result, UnknownValueError};
 use crate::utils::value_else_name;
 
 macro_rules! unidic_pos_enum {
-    ($( $pos_name:ident $($pos2_enum:ident)? ),+) => {
+    ($( $pos_name:ident $pos_value:ident $($pos2_enum:ident)? ),+) => {
         pub enum UnidicPos {
             $(
+                #[doc = stringify!($pos_value)]
                 $pos_name $( ($pos2_enum) )?,
             )+
 
@@ -16,7 +17,8 @@ macro_rules! unidic_pos_enum {
 }
 
 macro_rules! unidic_pos2_enum {
-    ($pos2_enum:ident, $($pos2_name:ident),+) => {
+    ($pos2_enum:ident, $pos_value:ident, $($pos2_name:ident),+) => {
+        #[doc = stringify!($pos_value)]
         pub enum $pos2_enum {
             $(
                 $pos2_name,
@@ -58,11 +60,11 @@ macro_rules! unidic_pos {
             )?
         )+
     ) => {
-        unidic_pos_enum!($( $pos_name $($pos2_enum)? ),+);
+        unidic_pos_enum!($( $pos_name $pos_value $($pos2_enum)? ),+);
 
         $(
             $(
-                unidic_pos2_enum!($pos2_enum, $($pos2_name),+);
+                unidic_pos2_enum!($pos2_enum, $pos_value, $($pos2_name),+);
                 unidic_pos2_from_unidic!($pos2_enum, $($pos2_name $(= $pos2_value)?),+);
             )?
         )+
