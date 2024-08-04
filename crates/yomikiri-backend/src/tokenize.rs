@@ -47,7 +47,7 @@ pub(crate) struct InnerToken {
     pub pos: UnidicPos,
     pub base: String,
     pub reading: String,
-    pub conjugation: String,
+    pub conjugation: UnidicConjugationForm,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -61,7 +61,7 @@ pub struct TokenDetails {
     /// conjugation form
     ///
     /// defaults to `*`
-    pub conjugation: String,
+    pub conjugation: UnidicConjugationForm,
 }
 
 #[cfg_attr(wasm, derive(Serialize))]
@@ -118,7 +118,7 @@ impl From<InnerToken> for Token {
             pos2: pos2.to_string(),
             base: token.base,
             reading: token.reading,
-            conjugation: token.conjugation,
+            conjugation: token.conjugation.to_unidic().to_string(),
         }
     }
 }
@@ -143,7 +143,7 @@ impl Default for TokenDetails {
             pos: UnidicPos::Unknown,
             base: "".into(),
             reading: "*".into(),
-            conjugation: "*".into(),
+            conjugation: UnidicConjugationForm::None,
         }
     }
 }
@@ -160,9 +160,7 @@ impl TokenDetails {
             .next()
             .and_then(|p| p.as_bytes().first())
             .and_then(|short| UnidicConjugationForm::from_short(*short).ok())
-            .map(|conj| conj.to_unidic())
-            .unwrap_or("*")
-            .to_string();
+            .unwrap_or(UnidicConjugationForm::None);
         let reading = details
             .next()
             .map(|r| {
@@ -724,7 +722,7 @@ impl<R: Read + Seek> SharedBackend<R> {
                 && token.text == "と"
                 && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞)
                 && i > 0
-                && tokens[i - 1].conjugation.starts_with("終止形")
+                && tokens[i - 1].conjugation.is_predicative()
             {
                 tokens[i].pos = UnidicPos::Particle(UnidicParticlePos2::接続助詞)
             }
@@ -744,7 +742,7 @@ impl<R: Read + Seek> SharedBackend<R> {
             {
                 tokens[i].base = "止す".into();
                 tokens[i].pos = UnidicPos::Verb(UnidicVerbPos2::一般);
-                tokens[i].conjugation = "意志推量形".into();
+                tokens[i].conjugation = UnidicConjugationForm::意志推量形;
             }
         }
     }
@@ -820,7 +818,7 @@ fn join_tokens(
         children,
         reading,
         base,
-        conjugation: String::from("*"),
+        conjugation: UnidicConjugationForm::None,
         start: tokens[from].start,
     };
     tokens.splice(from..to, [joined]);

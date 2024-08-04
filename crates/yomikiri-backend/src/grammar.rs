@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use yomikiri_unidic_types::{UnidicParticlePos2, UnidicPos};
+use yomikiri_unidic_types::{UnidicConjugationForm, UnidicParticlePos2, UnidicPos};
 
 use crate::japanese::{GoDan, GoDanEnding};
 use crate::tokenize::InnerToken as Token;
@@ -26,7 +26,7 @@ pub struct GrammarDetector<'a> {
 }
 
 impl<'a> GrammarDetector<'a> {
-    pub fn new(tokens: &'a [Token], idx: usize) -> Self {
+    pub(crate) fn new(tokens: &'a [Token], idx: usize) -> Self {
         let curr = &tokens[idx];
         let group = if curr.children.is_empty() {
             Cow::Owned(vec![curr.clone()])
@@ -326,7 +326,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "ー(よ)う",
         short: "volition",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-volitional-form-you/",
-        detect: |token, _| token.conjugation == "意志推量形",
+        detect: |token, _| token.conjugation == UnidicConjugationForm::意志推量形,
     },
     // it is impossible to accurately figure out passive and potential forms
     // skipping godan potential　ーえる as it is impossible to figure out
@@ -353,7 +353,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "ーえ／ーろ",
         short: "command form",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-command-form-ro/",
-        detect: |token, _| token.conjugation == "命令形",
+        detect: |token, _| token.conjugation == UnidicConjugationForm::命令形,
     },
     // 連体形 and 終止形 are the same for verbs. (And for others except 形状詞)
     GrammarRule {
@@ -362,7 +362,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
         detect: |token, _| {
             token.is_verb()
-                && (token.conjugation == "連体形-一般" || token.conjugation == "終止形-一般")
+                && (token.conjugation == UnidicConjugationForm::連体形_一般 || token.conjugation == UnidicConjugationForm::終止形_一般)
         },
     },
     // # Particles
@@ -578,11 +578,11 @@ pub static GRAMMARS: &[GrammarRule] = &[
             (token.text == "な"
                 && data.next().is_none()
                 && !data.global_next_is(|next| !next.is_unknown_pos())
-                && data.global_prev_is(|prev| prev.conjugation.starts_with("終止形") || prev.conjugation == "連体形-撥音便"))
+                && data.global_prev_is(|prev| prev.conjugation.is_predicative() || prev.conjugation == UnidicConjugationForm::連体形_撥音便))
                 || (token.text == "んな"
                     && data.next().is_none()
                     && !data.global_next_is(|next| !next.is_unknown_pos())
-                    && data.global_prev_is(|prev| prev.conjugation.starts_with("連用形")))
+                    && data.global_prev_is(|prev| prev.conjugation.is_continuative()))
         },
     },
     GrammarRule {

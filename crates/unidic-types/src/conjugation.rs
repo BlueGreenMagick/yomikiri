@@ -12,6 +12,7 @@ macro_rules! unidic_conjugation_form {
       $(,)*
     ) => {
 
+        #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
         pub enum UnidicConjugationForm {
             $(
                 $name,
@@ -54,6 +55,40 @@ macro_rules! unidic_conjugation_form {
             }
         }
     };
+}
+
+impl UnidicConjugationForm {
+    /// 終止形
+    pub fn is_predicative(&self) -> bool {
+        matches!(
+            &self,
+            UnidicConjugationForm::終止形_ウ音便
+                | UnidicConjugationForm::終止形_一般
+                | UnidicConjugationForm::終止形_促音便
+                | UnidicConjugationForm::終止形_撥音便
+                | UnidicConjugationForm::終止形_融合
+                | UnidicConjugationForm::終止形_補助
+        )
+    }
+
+    /// 連用形
+    pub fn is_continuative(&self) -> bool {
+        matches!(
+            &self,
+            UnidicConjugationForm::連用形_イ音便
+            | UnidicConjugationForm::連用形_イ音便_送り仮名省略
+            | UnidicConjugationForm::連用形_ウ音便
+            | UnidicConjugationForm::連用形_キ接続
+            | UnidicConjugationForm::連用形_ト
+            | UnidicConjugationForm::連用形_ニ
+            | UnidicConjugationForm::連用形_一般
+            | UnidicConjugationForm::連用形_一般_送り仮名省略
+            | UnidicConjugationForm::連用形_促音便
+            | UnidicConjugationForm::連用形_撥音便
+            | UnidicConjugationForm::連用形_省略
+            | UnidicConjugationForm::連用形_融合
+        )
+    }
 }
 
 unidic_conjugation_form!(
