@@ -35,6 +35,7 @@ export default defineConfig({
   define: {
     __APP_VERSION__: `"${Package.version}"`,
     __APP_PLATFORM__: '"chrome"',
+    __EXTENSION_CONTEXT__: '"page"',
   },
   assetsInclude: [
     "**/*.wasm",
