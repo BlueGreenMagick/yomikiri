@@ -205,5 +205,5 @@ unidic_pos!(
     PrenounAdjectival 連体詞 'K'
     Adverb 副詞 'L'
     Expression exp 'M'
-    Unknown unk 'O'
+    Unknown UNK 'O'
 );

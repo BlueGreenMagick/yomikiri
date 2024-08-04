@@ -177,7 +177,7 @@ export namespace Entry {
     接続詞: "conjunction",
     接頭辞: "prefix",
     連体詞: "adnomial",
-    "=exp=": "expression",
+    exp: "expression",
     記号: "noun",
     UNK: "",
   };
