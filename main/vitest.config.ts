@@ -56,5 +56,6 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     watch: false,
+    setupFiles: [path.resolve(import.meta.dirname, "test", "setup", "index")],
   },
 });

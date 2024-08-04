@@ -6,8 +6,6 @@
   Go to previously fine commit and update the snapshot.
 
 */
-// mocks should be put at top of file
-import "@test/mock";
 
 import { test, expect, describe } from "vitest";
 import {

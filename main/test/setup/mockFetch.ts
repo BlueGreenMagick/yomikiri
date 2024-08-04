@@ -11,31 +11,10 @@ import fs from "node:fs/promises";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
 import ENYomikiriIndex from "@yomikiri/dictionary-files/english.yomikiriindex";
-import type { StoredConfiguration } from "lib/config";
-import { DesktopPlatform } from "platform/desktop";
-
-/* Mock config */
-let storedConfig: StoredConfiguration | Record<string, never> = {};
-
-DesktopPlatform.getConfig = () => {
-  return Promise.resolve(storedConfig);
-};
-DesktopPlatform.saveConfig = (conf) => {
-  storedConfig = conf;
-  return Promise.resolve();
-};
-
-export function setStoredConfig(
-  conf: StoredConfiguration | Record<string, never>,
-) {
-  storedConfig = conf;
-}
 
 /* Mock load process of backend wasm */
 
 vi.mock("platform/desktop/fetch.ts", async (importOriginal) => {
-  console.log("Mocked desktop backend fetch");
-
   const module: typeof import("platform/desktop/fetch.ts") =
     await importOriginal();
   return {
