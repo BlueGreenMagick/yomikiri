@@ -346,6 +346,12 @@ impl<R: Read + Seek> SharedBackend<R> {
     ///         used for cases 1-2
     ///     3. '(base)+': join base of all tokens
     ///         used for case 3 e.g. んに「のに」
+    //
+    // TOOD: pos2 can be inferred from child token's pos2
+    //   名詞+ => 名詞:
+    //     if any 固有名詞 => 固有名詞
+    //     elif all 数詞 => 数詞
+    //     else: 普通名詞
     fn join_compounds_multi(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
         let token = &tokens[from];
         let mut all_noun = token.is_noun();
