@@ -10,11 +10,6 @@
     "res/*"
   ],
   "scripts": {
-    "wasm": "rm -rf ./pkg && wasm-pack build --scope yomikiri --target web",
-    "update-dictionary": "rm -rf ./jmdict && pnpm run rebuild",
-    "rebuild": "cargo run --all-features --bin yomikiri-dictionary-builder",
-    "download": "cargo run --all-features",
-    "construct": "pnpm run download && pnpm run wasm",
     "format": "cargo fmt",
     "check": "cargo check --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown",
     "lint": "cargo clippy --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown -- -D warnings",
