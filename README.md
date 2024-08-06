@@ -13,17 +13,17 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 ## Features
 
 - Shift + Hover over a word to view definition. It recognizes word boundaries within sentence.
-<img src="./extra/resources/screenshots/desktop-tooltip.jpg?raw=true" height="240"/>
+  <img src="./extra/resources/screenshots/desktop-tooltip.jpg?raw=true" height="240"/>
 
 - Search words and sentences in popup.
-<img src="./extra/resources/screenshots/desktop-popup.jpg?raw=true" height="240"/>
+  <img src="./extra/resources/screenshots/desktop-popup.jpg?raw=true" height="240"/>
 
 - Add word to Anki. You can preview and edit the note before adding.\
-If Anki is not running, notes are stored and automatically added later. You don't have to keep Anki running in the background all the time.
-<img src="./extra/resources/screenshots/desktop-tooltip-anki.jpg?raw=true" height="240"/>
+  If Anki is not running, notes are stored and automatically added later. You don't have to keep Anki running in the background all the time.
+  <img src="./extra/resources/screenshots/desktop-tooltip-anki.jpg?raw=true" height="240"/>
 
 - Customizable Anki note template.
-<img src="./extra/resources/screenshots/desktop-anki-configuration.jpg?raw=true" height="240"/>
+  <img src="./extra/resources/screenshots/desktop-anki-configuration.jpg?raw=true" height="240"/>
 
 - View sentence translation.
 - View relevant grammar with a link to Tofugu.

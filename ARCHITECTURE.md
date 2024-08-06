@@ -6,8 +6,8 @@
 - `/main/src/platform`: Platform-specific code.
 - `/main/src/assets/static`: Assets that have to be manually copied into bundle (with esbuild plugin). Assets not in `static` directories are automatically bundled by esbuild if they are imported into the code.
 
-
 `/crates`: Rust crates
+
 - `yomikiri-backend`: Main backend binary. Compiled into wasm for web, static library for ios.
 - `jmdict`: A library that parses JMDict XML.
 - `unidic`: Binary that downloads, transforms, and builds unidic tokenizer dictionary files.

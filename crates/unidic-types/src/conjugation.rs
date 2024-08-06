@@ -76,17 +76,17 @@ impl UnidicConjugationForm {
         matches!(
             &self,
             UnidicConjugationForm::連用形_イ音便
-            | UnidicConjugationForm::連用形_イ音便_送り仮名省略
-            | UnidicConjugationForm::連用形_ウ音便
-            | UnidicConjugationForm::連用形_キ接続
-            | UnidicConjugationForm::連用形_ト
-            | UnidicConjugationForm::連用形_ニ
-            | UnidicConjugationForm::連用形_一般
-            | UnidicConjugationForm::連用形_一般_送り仮名省略
-            | UnidicConjugationForm::連用形_促音便
-            | UnidicConjugationForm::連用形_撥音便
-            | UnidicConjugationForm::連用形_省略
-            | UnidicConjugationForm::連用形_融合
+                | UnidicConjugationForm::連用形_イ音便_送り仮名省略
+                | UnidicConjugationForm::連用形_ウ音便
+                | UnidicConjugationForm::連用形_キ接続
+                | UnidicConjugationForm::連用形_ト
+                | UnidicConjugationForm::連用形_ニ
+                | UnidicConjugationForm::連用形_一般
+                | UnidicConjugationForm::連用形_一般_送り仮名省略
+                | UnidicConjugationForm::連用形_促音便
+                | UnidicConjugationForm::連用形_撥音便
+                | UnidicConjugationForm::連用形_省略
+                | UnidicConjugationForm::連用形_融合
         )
     }
 }

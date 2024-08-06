@@ -51,7 +51,6 @@ impl DictTermIndex {
     }
 }
 
-
 pub fn write_yomikiri_dictionary<I: Write, D: Write>(
     index_writer: &mut I,
     dict_writer: &mut D,
@@ -205,11 +204,14 @@ pub fn write_indexes<W: Write>(writer: &mut W, terms: &[DictTermIndex]) -> Resul
             for index in &term.entry_indexes {
                 let entry_index = DictEntryIndex {
                     chunk_index: index.chunk_index,
-                    inner_index: index.inner_index
+                    inner_index: index.inner_index,
                 };
                 term_ids.push(entry_index);
             }
-            builder.insert(&term.term, 1_u64 << 63 | (pointers.len() as u64 & ((1_u64 << 32) - 1)))?;
+            builder.insert(
+                &term.term,
+                1_u64 << 63 | (pointers.len() as u64 & ((1_u64 << 32) - 1)),
+            )?;
             pointers.push(term_ids);
         }
     }

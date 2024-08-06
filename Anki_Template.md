@@ -1,14 +1,12 @@
 ## About
 
-These are Anki note types designed to work well with Yomikiri. 
-The note type can be used on desktop, iPad, iPhone. 
+These are Anki note types designed to work well with Yomikiri.
+The note type can be used on desktop, iPad, iPhone.
 Night mode is supported.
-
 
 Click the below link to download the Anki note types, and open the file in Anki or AnkiMobile app.
 
 <a href="https://raw.githubusercontent.com/bluegreenmagick/yomikiri/main/extra/resources/anki/Yomikiri%20Japanese%20Notetypes.apkg">Yomikiri Japanese Notetypes.apkg</a>
-
 
 ## Japanese Word
 
@@ -19,7 +17,6 @@ Click the below link to download the Anki note types, and open the file in Anki 
 </p>
 
 This note type shows you a Japanese word on the front side. Your aim is to recall its meaning and reading. Sentence is also shown on the back side.
-
 
 ### Yomikiri Configuration
 

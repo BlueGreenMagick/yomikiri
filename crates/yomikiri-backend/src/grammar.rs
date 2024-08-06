@@ -152,7 +152,6 @@ impl<'a> GrammarDetector<'a> {
     }
 }
 
-
 pub static GRAMMARS: &[GrammarRule] = &[
     // # Adjective Forms
     GrammarRule {
@@ -288,7 +287,9 @@ pub static GRAMMARS: &[GrammarRule] = &[
         short: "polite command",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-imperative-form-nasai/",
         detect: |token, _| {
-            token.text == "なさい" && token.base == "為さる" && token.pos == UnidicPos::Verb(yomikiri_unidic_types::UnidicVerbPos2::非自立可能)
+            token.text == "なさい"
+                && token.base == "為さる"
+                && token.pos == UnidicPos::Verb(yomikiri_unidic_types::UnidicVerbPos2::非自立可能)
         },
     },
     GrammarRule {
@@ -362,7 +363,8 @@ pub static GRAMMARS: &[GrammarRule] = &[
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-plain-present-form/",
         detect: |token, _| {
             token.is_verb()
-                && (token.conjugation == UnidicConjugationForm::連体形_一般 || token.conjugation == UnidicConjugationForm::終止形_一般)
+                && (token.conjugation == UnidicConjugationForm::連体形_一般
+                    || token.conjugation == UnidicConjugationForm::終止形_一般)
         },
     },
     // # Particles
@@ -426,7 +428,9 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "が",
         short: "subject",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-ga/",
-        detect: |token, _| token.base == "が" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞),
+        detect: |token, _| {
+            token.base == "が" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞)
+        },
     },
     GrammarRule {
         name: "で",
@@ -447,7 +451,9 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "と",
         short: "together; quote",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-to/",
-        detect: |token, _| token.base == "と" && token.pos ==  UnidicPos::Particle(UnidicParticlePos2::格助詞),
+        detect: |token, _| {
+            token.base == "と" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞)
+        },
     },
     GrammarRule {
         name: "と",
@@ -477,15 +483,20 @@ pub static GRAMMARS: &[GrammarRule] = &[
         short: "noun form; explanatory",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-no-nominalizer/",
         detect: |token, _| {
-            token.base == "の" &&
-                matches!(token.pos, UnidicPos::Particle(UnidicParticlePos2::準体助詞 | UnidicParticlePos2::終助詞))
+            token.base == "の"
+                && matches!(
+                    token.pos,
+                    UnidicPos::Particle(UnidicParticlePos2::準体助詞 | UnidicParticlePos2::終助詞)
+                )
         },
     },
     GrammarRule {
         name: "の",
         short: "possessive; apposition",
         tofugu: "https://www.tofugu.com/japanese-grammar/particle-no-nominalizer/",
-        detect: |token, _| token.base == "の" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞),
+        detect: |token, _| {
+            token.base == "の" && token.pos == UnidicPos::Particle(UnidicParticlePos2::格助詞)
+        },
     },
     GrammarRule {
         name: "は",

@@ -4,14 +4,13 @@ use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 
-
 use flate2::bufread::GzDecoder;
 use js_sys::{Array, Uint8Array};
 use log::debug;
 use std::io::{Cursor, Read};
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::index::DictIndex;
 use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
+use yomikiri_dictionary::index::DictIndex;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"

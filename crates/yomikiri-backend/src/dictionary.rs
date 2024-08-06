@@ -1,10 +1,10 @@
 use crate::error::{YResult, YomikiriError};
 use fst::{IntoStreamer, Streamer};
-use yomikiri_dictionary::index::DictIndex;
 use std::fs::{self, File};
 use std::io::{Read, Seek};
 use yomikiri_dictionary::entry::Entry;
 use yomikiri_dictionary::file::{read_entries_with_buffers, BUFFER_SIZE};
+use yomikiri_dictionary::index::DictIndex;
 
 pub struct Dictionary<D: AsRef<[u8]> + 'static, R: Seek + Read> {
     index: DictIndex<D>,
@@ -51,7 +51,7 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
         // assumes there is at least 1 entry.
         // needed in order to create a bytestring that is 1 greater than prefix below
         if prefix.len() == 0 {
-            return true
+            return true;
         }
 
         let mut next_prefix_bytes = prefix.as_bytes().to_vec();
@@ -59,7 +59,14 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
         next_prefix_bytes[len - 1] += 1;
 
         let terms = &self.index.borrow_view().terms;
-        if let Some(_) = terms.map.range().gt(prefix).lt(&next_prefix_bytes).into_stream().next() {
+        if let Some(_) = terms
+            .map
+            .range()
+            .gt(prefix)
+            .lt(&next_prefix_bytes)
+            .into_stream()
+            .next()
+        {
             true
         } else {
             false

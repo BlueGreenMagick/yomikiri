@@ -36,7 +36,7 @@ impl<'a> DictIndexMap<'a> {
             let inner_index = (value & ((1_u64 << 16) - 1)) as u16;
             let entry_index = DictEntryIndex {
                 chunk_index,
-                inner_index
+                inner_index,
             };
             Ok(vec![entry_index])
         }
@@ -65,7 +65,7 @@ pub struct DictIndexPointers<'a> {
 impl<'a> DictIndexPointers<'a> {
     pub fn get(&self, index: usize) -> Result<Vec<DictEntryIndex>> {
         if index >= self.len {
-            return Err(Error::OutOfRange)
+            return Err(Error::OutOfRange);
         }
 
         let (pointer_vec_start, pointer_vec_end) = self.vec_pointer_position(index)?;
@@ -73,7 +73,7 @@ impl<'a> DictIndexPointers<'a> {
         debug_assert!((pointer_vec_end - pointer_vec_start) % 6 == 0);
         let len = (pointer_vec_end - pointer_vec_start) / 6;
         let mut pointers: Vec<DictEntryIndex> = Vec::with_capacity(len);
-        
+
         let mut at = pointer_vec_start;
         while at < pointer_vec_end {
             let mut bytes = &self.data[at..at + 4];
@@ -82,7 +82,7 @@ impl<'a> DictIndexPointers<'a> {
             let inner_index = bytes.read_u16::<LittleEndian>()?;
             let index = DictEntryIndex {
                 chunk_index,
-                inner_index
+                inner_index,
             };
             pointers.push(index);
             at += 6;
@@ -93,11 +93,15 @@ impl<'a> DictIndexPointers<'a> {
 
     pub fn try_new(data: &'a [u8]) -> Result<Self> {
         let len = (&data[0..8]).read_u64::<LittleEndian>()? as usize;
-        Ok(Self { data: &data[8..], len })
+        Ok(Self {
+            data: &data[8..],
+            len,
+        })
     }
 
     pub fn create_bytes(pointer_vecs: &[Vec<DictEntryIndex>]) -> Result<Vec<u8>> {
-        let capacity = pointer_vecs.iter().map(|v| v.len() * 6).sum::<usize>() + pointer_vecs.len() * 4 + 12;
+        let capacity =
+            pointer_vecs.iter().map(|v| v.len() * 6).sum::<usize>() + pointer_vecs.len() * 4 + 12;
         let mut data: Vec<u8> = Vec::with_capacity(capacity);
 
         // len of parent vector
@@ -122,11 +126,10 @@ impl<'a> DictIndexPointers<'a> {
         Ok(data)
     }
 
-
     fn vec_pointer_position(&self, index: usize) -> Result<(usize, usize)> {
-        let mut bytes = &self.data[index * 4..index*4 + 4];
+        let mut bytes = &self.data[index * 4..index * 4 + 4];
         let start = bytes.read_u32::<LittleEndian>()? as usize * 2;
-        let mut bytes = &self.data[index*4 + 4..index*4 + 8];
+        let mut bytes = &self.data[index * 4 + 4..index * 4 + 8];
         let end = bytes.read_u32::<LittleEndian>()? as usize * 2;
 
         let base = self.pointer_start();
