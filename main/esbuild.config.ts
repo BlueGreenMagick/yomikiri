@@ -227,9 +227,9 @@ function getbuildEntries(): BuildEntry[] {
   const entries: BuildEntry[] = [];
 
   if (!FOR_IOSAPP) {
-    const segments: string[] = ["content", "background", "popup", "options"];
+    const segments: string[] = ["content", "background", "popup"];
     if (FOR_IOS) {
-      segments.push("x-callback, options");
+      segments.push("x-callback");
     }
 
     for (const seg of segments) {
@@ -284,7 +284,7 @@ function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
   if (!FOR_IOSAPP) {
     // html
     filesToCopy.push(["src/extension/popup/index.html", "./res/popup.html"]);
-    if (FOR_IOSAPP) {
+    if (FOR_IOS) {
       filesToCopy.push([
         "src/extension/x-callback/index.html",
         "./res/x-callback.html",
