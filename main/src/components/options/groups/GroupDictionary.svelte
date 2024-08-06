@@ -8,25 +8,29 @@
     type DesktopBackend,
     type IosAppBackend,
   } from "@platform/backend";
-  import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
+  type DictState =
+    | "loading"
+    | "loaded"
+    | "downloading"
+    | "downloaded"
+    | "error";
+
+  let state: DictState = "loading";
   let dictDescription = "Loading...";
-  let disabled = false;
-  let dictDescClass = "";
-
-  function update_description(metadata: DictMetadata) {
-    const downloadDate = new Date(metadata.download_date);
-    dictDescription = `Last updated: ${downloadDate.toLocaleDateString()}`;
-  }
 
   async function initialize() {
-    const dictionaryMetadata = await PagePlatform.getDictionaryMetadata();
-    update_description(dictionaryMetadata);
+    const metadata = await PagePlatform.getDictionaryMetadata();
+    const downloadDate = new Date(metadata.download_date);
+    dictDescription = `Last updated: ${downloadDate.toLocaleDateString()}`;
+    state = "loaded";
   }
 
   async function onClicked() {
+    if (state !== "loaded") return;
+
     try {
-      disabled = true;
+      state = "downloading";
       const backend = (await Backend.instance.get()) as
         | DesktopBackend
         | IosAppBackend;
@@ -36,8 +40,9 @@
       });
       const _dictionaryMetadata = await updating;
       dictDescription = "Successfully updated dictionary!";
-      dictDescClass = "success";
+      state = "downloaded";
     } catch (e) {
+      state = "error";
       dictDescription = "Error: " + Utils.getErrorMessage(e);
       console.error(e);
     }
@@ -50,10 +55,10 @@
   <OptionButton
     title="Dictionary file"
     buttonText="Update"
-    {disabled}
+    disabled={state !== "loaded"}
     {onClicked}
   >
-    <span class={dictDescClass}>
+    <span class:success={state === "downloaded"}>
       {dictDescription}
     </span>
   </OptionButton>
