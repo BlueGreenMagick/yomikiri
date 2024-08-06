@@ -6,7 +6,7 @@ use std::path::Path;
 use std::str::FromStr;
 use std::{cmp, fs};
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
-use yomikiri_dictionary::file::{read_entries, DictEntryIndex};
+use yomikiri_dictionary::file::{read_entries, DictEntryPointer};
 use yomikiri_dictionary::index::DictIndex;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
@@ -384,19 +384,19 @@ pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> Result<V
 
     let terms_index = &index.borrow_view().terms;
 
-    let mut entry_indexes: HashSet<DictEntryIndex> = HashSet::new();
+    let mut entry_indexes: HashSet<DictEntryPointer> = HashSet::new();
     let terms_map_values = terms_index.map.stream().into_values();
     for value in terms_map_values {
         let parsed = terms_index.parse_value(value)?;
         entry_indexes.extend(parsed);
     }
 
-    let mut entry_indexes: Vec<DictEntryIndex> = entry_indexes.into_iter().collect();
-    entry_indexes.sort();
+    let mut entry_pointers: Vec<DictEntryPointer> = entry_indexes.into_iter().collect();
+    entry_pointers.sort();
 
     let dict_bytes: Vec<u8> = fs::read(dict_path)?;
     let mut reader = Cursor::new(dict_bytes);
-    let entries = read_entries(&mut reader, &entry_indexes)?;
+    let entries = read_entries(&mut reader, &entry_pointers)?;
     Ok(entries)
 }
 

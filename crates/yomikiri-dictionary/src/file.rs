@@ -18,16 +18,16 @@ pub const BUFFER_SIZE: usize = CHUNK_CUTOFF_SIZE + 8 * 1024;
 
 /// Location of a single jmdict entry in .yomikiridict
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize, Hash)]
-pub struct DictEntryIndex {
+pub struct DictEntryPointer {
     /// chunk starting byte index
     pub chunk_index: u32,
     /// entry starting byte index in uncompressed chunk
     pub inner_index: u16,
 }
 
-impl DictEntryIndex {
+impl DictEntryPointer {
     pub fn new(chunk_index: u32, inner_index: u16) -> Self {
-        DictEntryIndex {
+        DictEntryPointer {
             chunk_index,
             inner_index,
         }
@@ -39,11 +39,11 @@ impl DictEntryIndex {
 pub struct DictTermIndex {
     pub term: String,
     /// Sorted
-    pub entry_indexes: Vec<DictEntryIndex>,
+    pub entry_indexes: Vec<DictEntryPointer>,
 }
 
 impl DictTermIndex {
-    pub fn new<S: Into<String>>(term: S, entry_indexes: Vec<DictEntryIndex>) -> Self {
+    pub fn new<S: Into<String>>(term: S, entry_indexes: Vec<DictEntryPointer>) -> Self {
         DictTermIndex {
             term: term.into(),
             entry_indexes,
@@ -71,7 +71,7 @@ pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
 /// entry_indexes should be sorted for better performance
 pub fn read_entries<R: Read + Seek>(
     reader: &mut R,
-    entry_indexes: &[DictEntryIndex],
+    entry_pointers: &[DictEntryPointer],
 ) -> Result<Vec<Entry>> {
     let mut chunk_buffer: Vec<u8> = vec![0; BUFFER_SIZE];
     let mut extraction_buffer: Vec<u8> = Vec::with_capacity(BUFFER_SIZE);
@@ -79,23 +79,23 @@ pub fn read_entries<R: Read + Seek>(
         &mut chunk_buffer,
         &mut extraction_buffer,
         reader,
-        entry_indexes,
+        entry_pointers,
     )
 }
 
-/// - entry_indexes should be sorted for better performance
+/// - entry_pointers should be sorted for better performance
 /// - buffer size must be bigger than `CHUNK_CUTOFF_SIZE + ENTRY_BUFFER_SIZE``
 pub fn read_entries_with_buffers<R: Read + Seek>(
     chunk_buffer: &mut Vec<u8>,
     extraction_buffer: &mut Vec<u8>,
     reader: &mut R,
-    entry_indexes: &[DictEntryIndex],
+    entry_pointers: &[DictEntryPointer],
 ) -> Result<Vec<Entry>> {
-    let mut entries: Vec<Entry> = Vec::with_capacity(3 * entry_indexes.len());
+    let mut entries: Vec<Entry> = Vec::with_capacity(3 * entry_pointers.len());
     let mut prev_chunk_index: u32 = u32::MAX;
     let mut chunk_size: usize = 0;
 
-    for index in entry_indexes {
+    for index in entry_pointers {
         // last chunk read is cached
         if index.chunk_index != prev_chunk_index || chunk_size == 0 {
             extraction_buffer.clear();
@@ -122,7 +122,7 @@ pub fn read_entries_with_buffers<R: Read + Seek>(
 /// Returns sorted Vec<DictTermIndex>
 pub fn write_entries<W: Write>(writer: &mut W, entries: &[Entry]) -> Result<Vec<DictTermIndex>> {
     let mut chunk_buffer: Vec<u8> = Vec::with_capacity(BUFFER_SIZE);
-    let mut outer_indexes: HashMap<&str, Vec<DictEntryIndex>> = HashMap::with_capacity(64);
+    let mut outer_indexes: HashMap<&str, Vec<DictEntryPointer>> = HashMap::with_capacity(64);
     let mut inner_indexes: HashMap<&str, Vec<u16>> = HashMap::with_capacity(64);
     let mut outer_pos: u32 = 0;
     let mut inner_pos: u16 = 0;
@@ -150,7 +150,7 @@ pub fn write_entries<W: Write>(writer: &mut W, entries: &[Entry]) -> Result<Vec<
         for (term, inner_index) in inner_indexes.iter() {
             let iter = inner_index
                 .iter()
-                .map(|&inner| DictEntryIndex::new(outer_pos, inner));
+                .map(|&inner| DictEntryPointer::new(outer_pos, inner));
             outer_indexes.entry(term).or_default().extend(iter);
         }
 
@@ -192,7 +192,7 @@ fn ungzip_bytes_into<W: Write>(writer: &mut W, bytes: &[u8]) -> Result<()> {
 pub fn write_indexes<W: Write>(writer: &mut W, terms: &[DictTermIndex]) -> Result<()> {
     let mut fst_bytes: Vec<u8> = Vec::with_capacity(1024 * 1024);
     let mut builder = MapBuilder::new(&mut fst_bytes)?;
-    let mut pointers: Vec<Vec<DictEntryIndex>> = vec![];
+    let mut pointers: Vec<Vec<DictEntryPointer>> = vec![];
 
     for term in terms {
         if term.entry_indexes.len() == 1 {
@@ -200,13 +200,13 @@ pub fn write_indexes<W: Write>(writer: &mut W, terms: &[DictTermIndex]) -> Resul
             let value: u64 = (index.chunk_index as u64) << 16 | index.inner_index as u64;
             builder.insert(&term.term, value)?;
         } else {
-            let mut term_ids: Vec<DictEntryIndex> = vec![];
+            let mut term_ids: Vec<DictEntryPointer> = vec![];
             for index in &term.entry_indexes {
-                let entry_index = DictEntryIndex {
+                let entry_pointer = DictEntryPointer {
                     chunk_index: index.chunk_index,
                     inner_index: index.inner_index,
                 };
-                term_ids.push(entry_index);
+                term_ids.push(entry_pointer);
             }
             builder.insert(
                 &term.term,

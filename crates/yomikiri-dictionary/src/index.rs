@@ -3,7 +3,7 @@ use fst::Map;
 use ouroboros::self_referencing;
 
 use crate::error::Result;
-use crate::file::DictEntryIndex;
+use crate::file::DictEntryPointer;
 use crate::Error;
 
 #[self_referencing]
@@ -27,14 +27,14 @@ pub struct DictIndexMap<'a> {
 }
 
 impl<'a> DictIndexMap<'a> {
-    pub fn parse_value(&self, value: u64) -> Result<Vec<DictEntryIndex>> {
+    pub fn parse_value(&self, value: u64) -> Result<Vec<DictEntryPointer>> {
         if value >= 1_u64 << 63 {
             let idx = (value & ((1_u64 << 32) - 1)) as usize;
             self.pointers.get(idx)
         } else {
             let chunk_index = (value >> 16) as u32;
             let inner_index = (value & ((1_u64 << 16) - 1)) as u16;
-            let entry_index = DictEntryIndex {
+            let entry_index = DictEntryPointer {
                 chunk_index,
                 inner_index,
             };
@@ -43,7 +43,7 @@ impl<'a> DictIndexMap<'a> {
     }
 }
 
-/// Vec<Vec<DictEntryIndex>> that reads from byte slice without copy
+/// Vec<Vec<DictEntryPointer>> that reads from byte slice without copy
 /// Inner vec can hold up to 2^32 items, and 2^33 items in total.
 ///
 /// Structure (bytes):
@@ -63,7 +63,7 @@ pub struct DictIndexPointers<'a> {
 }
 
 impl<'a> DictIndexPointers<'a> {
-    pub fn get(&self, index: usize) -> Result<Vec<DictEntryIndex>> {
+    pub fn get(&self, index: usize) -> Result<Vec<DictEntryPointer>> {
         if index >= self.len {
             return Err(Error::OutOfRange);
         }
@@ -72,7 +72,7 @@ impl<'a> DictIndexPointers<'a> {
 
         debug_assert!((pointer_vec_end - pointer_vec_start) % 6 == 0);
         let len = (pointer_vec_end - pointer_vec_start) / 6;
-        let mut pointers: Vec<DictEntryIndex> = Vec::with_capacity(len);
+        let mut pointers: Vec<DictEntryPointer> = Vec::with_capacity(len);
 
         let mut at = pointer_vec_start;
         while at < pointer_vec_end {
@@ -80,7 +80,7 @@ impl<'a> DictIndexPointers<'a> {
             let chunk_index = bytes.read_u32::<LittleEndian>()?;
             let mut bytes = &self.data[at + 4..at + 6];
             let inner_index = bytes.read_u16::<LittleEndian>()?;
-            let index = DictEntryIndex {
+            let index = DictEntryPointer {
                 chunk_index,
                 inner_index,
             };
@@ -99,7 +99,7 @@ impl<'a> DictIndexPointers<'a> {
         })
     }
 
-    pub fn create_bytes(pointer_vecs: &[Vec<DictEntryIndex>]) -> Result<Vec<u8>> {
+    pub fn create_bytes(pointer_vecs: &[Vec<DictEntryPointer>]) -> Result<Vec<u8>> {
         let capacity =
             pointer_vecs.iter().map(|v| v.len() * 6).sum::<usize>() + pointer_vecs.len() * 4 + 12;
         let mut data: Vec<u8> = Vec::with_capacity(capacity);
