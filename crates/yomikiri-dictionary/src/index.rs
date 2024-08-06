@@ -23,7 +23,7 @@ pub struct DictIndexView<'a> {
 /// | literal '1' | '0' * 31 | pointers array index (32) |
 pub struct DictIndexMap<'a> {
     pub map: Map<&'a [u8]>,
-    pub pointers: DictIndexPointers<'a>,
+    pub pointers: DictIndexPointerArray<'a>,
 }
 
 impl<'a> DictIndexMap<'a> {
@@ -57,12 +57,12 @@ impl<'a> DictIndexMap<'a> {
 ///         repeated 'len' times:
 ///             - chunk index (4)
 ///             - inner index (2)
-pub struct DictIndexPointers<'a> {
+pub struct DictIndexPointerArray<'a> {
     data: &'a [u8],
     len: usize,
 }
 
-impl<'a> DictIndexPointers<'a> {
+impl<'a> DictIndexPointerArray<'a> {
     pub fn get(&self, index: usize) -> Result<Vec<DictEntryPointer>> {
         if index >= self.len {
             return Err(Error::OutOfRange);
@@ -153,7 +153,7 @@ impl<'a> DictIndexView<'a> {
 
         let len = (&bytes[at..at + 4]).read_u32::<LittleEndian>()? as usize;
         at += 4;
-        let term_pointers = DictIndexPointers::try_new(&bytes[at..at + len])?;
+        let term_pointers = DictIndexPointerArray::try_new(&bytes[at..at + len])?;
         // at += len;
 
         let terms = DictIndexMap {

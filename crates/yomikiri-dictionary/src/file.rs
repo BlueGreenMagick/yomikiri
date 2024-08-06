@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::entry::Entry;
 use crate::error::Result;
-use crate::index::DictIndexPointers;
+use crate::index::DictIndexPointerArray;
 
 /// Separate chunk when it gets bigger than this size
 pub const CHUNK_CUTOFF_SIZE: usize = 16 * 1024;
@@ -220,7 +220,7 @@ pub fn write_indexes<W: Write>(writer: &mut W, terms: &[DictTermIndex]) -> Resul
     writer.write_u32::<LittleEndian>(fst_bytes.len() as u32)?;
     writer.write(&fst_bytes)?;
 
-    let pointers_bytes = DictIndexPointers::create_bytes(&pointers)?;
+    let pointers_bytes = DictIndexPointerArray::create_bytes(&pointers)?;
 
     writer.write_u32::<LittleEndian>(pointers_bytes.len() as u32)?;
     writer.write(&pointers_bytes)?;
