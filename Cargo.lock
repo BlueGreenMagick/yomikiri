@@ -2493,9 +2493,9 @@ name = "yomikiri-dictionary-generator"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "chrono",
  "clap 4.5.4",
  "flate2",
+ "serde_json",
  "tempfile",
  "ureq",
  "yomikiri-dictionary",

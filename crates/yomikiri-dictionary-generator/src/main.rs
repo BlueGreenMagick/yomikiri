@@ -4,11 +4,11 @@ use std::path::{Path, PathBuf};
 use std::{env, fs};
 
 use anyhow::{Context, Result};
-use chrono::Utc;
 use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{parse_jmdict_xml, write_yomikiri_dictionary};
+use yomikiri_dictionary::metadata::DictMetadata;
 
 const URL: &'static str =
     "https://github.com/BlueGreenMagick/yomikiri/releases/download/jmdict-jun-25/";
@@ -158,21 +158,15 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
 
     if jmdict_downloaded {
         println!("Writing metadata.json...");
-        let download_time = Utc::now();
-        let download_time = download_time.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
         let index_file_size = fs::metadata(&output_index_path)?.len();
         let entries_file_size = fs::metadata(&output_path)?.len();
-        let file_size = index_file_size + entries_file_size;
+        let files_size = index_file_size + entries_file_size;
 
-        let metadata_json = format!(
-            "{{
-        \"downloadDate\": \"{}\",
-        \"filesSize\": {}
-    }}",
-            download_time, file_size
-        );
-        let metadata_json_file = resources_dir.join("dictionary-metadata.json");
-        fs::write(&metadata_json_file, &metadata_json)?;
+        let metadata = DictMetadata::new(files_size);
+        let metadata_json_path = resources_dir.join("dictionary-metadata.json");
+        let metadata_json_file = File::create(metadata_json_path)?;
+        let mut metadata_writer = BufWriter::new(metadata_json_file);
+        serde_json::to_writer(&mut metadata_writer, &metadata)?;
     }
 
     println!("Data writing complete.");
