@@ -15,6 +15,7 @@ mod wasm;
 use crate::dictionary::Dictionary;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
+use yomikiri_dictionary::metadata::DictMetadata;
 
 pub struct SharedBackend<D: AsRef<[u8]> + 'static, R: Read + Seek> {
     pub tokenizer: Tokenizer,

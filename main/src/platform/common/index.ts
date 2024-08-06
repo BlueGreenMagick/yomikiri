@@ -5,6 +5,7 @@ import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "lib/utils";
 import type { StoredCompatConfiguration } from "lib/compat";
+import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop";
@@ -28,7 +29,7 @@ export interface IPlatform {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
-  getDictionaryMetadata?(): Promise<DictionaryMetadata>;
+  getDictionaryMetadata?(): Promise<DictMetadata>;
 }
 
 export interface VersionInfo {
@@ -56,17 +57,6 @@ export interface TTSVoice {
 export interface TTSRequest {
   text: string;
   voice: TTSVoice | null;
-}
-
-export interface DictionaryMetadata {
-  downloadDate: Date;
-  // bytes len
-  filesSize: number;
-}
-
-export interface RawDictionaryMetadata {
-  downloadDate: string;
-  filesSize: number;
 }
 
 export declare const Platform:

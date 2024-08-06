@@ -1,5 +1,8 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
-import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
+import {
+  Backend as BackendWasm,
+  type DictMetadata,
+} from "@yomikiri/yomikiri-rs";
 import {
   createConnection,
   handleConnection,
@@ -15,7 +18,6 @@ import Utils, {
 } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
-import type { DictionaryMetadata } from ".";
 import { openDictionaryDB } from "./dictionary";
 
 export * from "../common/backend";
@@ -94,7 +96,7 @@ export class DesktopBackend implements IBackend {
     return TokenizeResult.from(rawResult);
   }
 
-  updateDictionary(): Utils.PromiseWithProgress<DictionaryMetadata, string> {
+  updateDictionary(): Utils.PromiseWithProgress<DictMetadata, string> {
     if (EXTENSION_CONTEXT === "background") {
       const prom = PromiseWithProgress.fromPromise(
         _updateDictionary(this.wasm!, progressFn),
@@ -107,25 +109,23 @@ export class DesktopBackend implements IBackend {
       return prom;
     } else {
       const _port = createConnection("updateDictionary");
-      const [prom, resolve, reject] = createPromise<DictionaryMetadata>();
+      const [prom, resolve, reject] = createPromise<DictMetadata>();
       const promWithProgress = PromiseWithProgress.fromPromise<
-        DictionaryMetadata,
+        DictMetadata,
         string
       >(prom);
       let completed = false;
-      _port.onMessage.addListener(
-        (msg: ConnectionMessage<DictionaryMetadata>) => {
-          if (msg.status === "progress") {
-            promWithProgress.setProgress(msg.message);
-          } else if (msg.status === "success") {
-            completed = true;
-            resolve(msg.message);
-          } else {
-            completed = true;
-            reject(new Error(msg.message));
-          }
-        },
-      );
+      _port.onMessage.addListener((msg: ConnectionMessage<DictMetadata>) => {
+        if (msg.status === "progress") {
+          promWithProgress.setProgress(msg.message);
+        } else if (msg.status === "success") {
+          completed = true;
+          resolve(msg.message);
+        } else {
+          completed = true;
+          reject(new Error(msg.message));
+        }
+      });
       _port.onDisconnect.addListener(() => {
         if (!completed) {
           completed = true;
@@ -151,7 +151,7 @@ if (EXTENSION_CONTEXT === "background") {
 
     progress
       .then((metadata) => {
-        const message: ConnectionMessageSuccess<DictionaryMetadata> = {
+        const message: ConnectionMessageSuccess<DictMetadata> = {
           status: "success",
           message: metadata,
         };
@@ -190,13 +190,14 @@ interface ConnectionMessageError {
 async function _updateDictionary(
   wasm: BackendWasm,
   progressFn: (msg: string) => unknown,
-): Promise<DictionaryMetadata> {
+): Promise<DictMetadata> {
   const jmdict_bytes = await fetchDictionary();
   progressFn("Creating dictionary file...");
   await nextTask();
-  const [index_bytes, entries_bytes] = wasm.update_dictionary(jmdict_bytes);
+  const { index_bytes, entry_bytes, metadata } =
+    wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
-  const metadata = await saveDictionaryFile(index_bytes, entries_bytes);
+  await saveDictionaryFile(index_bytes, entry_bytes, metadata);
   return metadata;
 }
 
@@ -209,12 +210,8 @@ async function fetchDictionary(): Promise<Uint8Array> {
 async function saveDictionaryFile(
   index_bytes: Uint8Array,
   entries_bytes: Uint8Array,
-): Promise<DictionaryMetadata> {
-  const downloadDate = new Date();
-  const metadata: DictionaryMetadata = {
-    downloadDate,
-    filesSize: index_bytes.byteLength + entries_bytes.byteLength,
-  };
+  metadata: DictMetadata,
+): Promise<void> {
   const db = await openDictionaryDB();
   const tx = db.transaction(
     ["metadata", "yomikiri-index", "yomikiri-entries"],
@@ -226,7 +223,6 @@ async function saveDictionaryFile(
     tx.objectStore("yomikiri-entries").put(entries_bytes, "value"),
   ]);
   await tx.done;
-  return metadata;
 }
 
 export const Backend = DesktopBackend;

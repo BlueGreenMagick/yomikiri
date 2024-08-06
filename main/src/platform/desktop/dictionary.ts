@@ -1,11 +1,11 @@
-import type { DictionaryMetadata } from "../common";
 import { openDB, type DBSchema } from "idb";
 import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
+import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 interface DictionaryDBSchema extends DBSchema {
   metadata: {
     key: string;
-    value: DictionaryMetadata;
+    value: DictMetadata;
   };
   "yomikiri-index": {
     key: "value";
@@ -45,16 +45,13 @@ export async function openDictionaryDB() {
   });
 }
 
-export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
+export async function dictionaryMetadata(): Promise<DictMetadata> {
   const db = await openDictionaryDB();
   const installedMetadata = await db.get("metadata", "value");
   if (installedMetadata !== undefined) {
     return installedMetadata;
   } else {
-    return {
-      ...BundledDictMetadata,
-      downloadDate: new Date(BundledDictMetadata.downloadDate),
-    };
+    return BundledDictMetadata;
   }
 }
 

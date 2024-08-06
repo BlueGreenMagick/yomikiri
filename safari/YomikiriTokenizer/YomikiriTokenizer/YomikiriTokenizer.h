@@ -16,3 +16,4 @@ FOUNDATION_EXPORT const unsigned char YomikiriTokenizerVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <YomikiriTokenizer/PublicHeader.h>
 
 #include <YomikiriTokenizer/uniffi_yomikiriFFI.h>
+#include <YomikiriTokenizer/yomikiri_dictionaryFFI.h>

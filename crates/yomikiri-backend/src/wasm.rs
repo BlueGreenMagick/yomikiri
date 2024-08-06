@@ -5,12 +5,14 @@ use crate::utils;
 use crate::SharedBackend;
 
 use flate2::bufread::GzDecoder;
-use js_sys::{Array, Uint8Array};
+use js_sys::Uint8Array;
 use log::debug;
+use serde::Serialize;
 use std::io::{Cursor, Read};
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
 use yomikiri_dictionary::index::DictIndex;
+use yomikiri_dictionary::metadata::DictMetadata;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"
@@ -39,16 +41,36 @@ export interface RawTokenizeResult {
     grammars: GrammarInfo[];
 }
 
+export interface DictUpdateResult {
+    entry_bytes: Uint8Array;
+    index_bytes: Uint8Array;
+    metadata: DictMetadata;
+}
+
+export interface DictMetadata {
+    download_date: string,
+    files_size: number,
+}
+
 interface Backend {
     tokenize(sentence: string, charAt: number): RawTokenizeResult;
-    search(term: string, charAt: number): RawTokenizeResult
+    search(term: string, charAt: number): RawTokenizeResult;
     /** 
-     * from jmdict gzipped xml, creates [index, entries] bytes,
+     * from jmdict gzipped xml, creates dictionary file bytearray,
      * and updates dictionary file used in Backend.
      */
-    update_dictionary(gzip: Uint8Array): [Uint8Array, Uint8Array];
+    update_dictionary(gzip: Uint8Array): DictUpdateResult;
 }
 "#;
+
+#[derive(Serialize)]
+struct DictUpdateResult {
+    #[serde(with = "serde_wasm_bindgen::preserve")]
+    entry_bytes: Uint8Array,
+    #[serde(with = "serde_wasm_bindgen::preserve")]
+    index_bytes: Uint8Array,
+    metadata: DictMetadata,
+}
 
 #[wasm_bindgen]
 pub struct Backend {
@@ -113,13 +135,21 @@ impl Backend {
         write_indexes(&mut index_bytes, &term_indexes)?;
         let index_array = Uint8Array::from(&index_bytes[..]);
 
-        let tuple = Array::new_with_length(2);
-        tuple.set(0, index_array.into());
-        tuple.set(1, entries_array.into());
+        let files_size = entries_bytes.len() + index_bytes.len();
+
+        let metadata = DictMetadata::new(files_size as u64);
+
+        let result = DictUpdateResult {
+            entry_bytes: entries_array,
+            index_bytes: index_array,
+            metadata,
+        };
 
         let dict = Dictionary::try_new(index_bytes, entries_bytes)?;
         self.inner.dictionary = dict;
-        Ok(tuple.into())
+        serde_wasm_bindgen::to_value(&result).map_err(|e| {
+            YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
+        })
     }
 }
 

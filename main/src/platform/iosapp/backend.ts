@@ -1,12 +1,12 @@
 import { Lazy, PromiseWithProgress } from "lib/utils";
-import { IosAppPlatform, type DictionaryMetadata } from ".";
+import { IosAppPlatform } from ".";
 import {
   type IBackend,
   type TokenizeRequest,
   TokenizeResult,
   type SearchRequest,
 } from "../common/backend";
-import { parseRawMetadata } from "platform/shared/utils";
+import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export * from "../common/backend";
 
@@ -47,9 +47,9 @@ export class IosAppBackend implements IBackend {
     return TokenizeResult.from(raw);
   }
 
-  updateDictionary(): PromiseWithProgress<DictionaryMetadata, string> {
+  updateDictionary(): PromiseWithProgress<DictMetadata, string> {
     return PromiseWithProgress.fromPromise(
-      IosAppPlatform.messageWebview("updateDict", null).then(parseRawMetadata),
+      IosAppPlatform.messageWebview("updateDict", null),
       "Updating dictionary... This may take up to a minute.",
     );
   }

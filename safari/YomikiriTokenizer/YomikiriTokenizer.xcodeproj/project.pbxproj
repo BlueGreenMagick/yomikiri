@@ -9,27 +9,32 @@
 /* Begin PBXBuildFile section */
 		6946AA2D2BA1848000668ACB /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2C2BA1848000668ACB /* Dictionary.swift */; };
 		6946AA2F2BA1879100668ACB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2E2BA1879100668ACB /* Error.swift */; };
-		6946AA322BA191B400668ACB /* res in Resources */ = {isa = PBXBuildFile; fileRef = 6946AA312BA191B400668ACB /* res */; };
+		6946AA322BA191B400668ACB /* files in Resources */ = {isa = PBXBuildFile; fileRef = 6946AA312BA191B400668ACB /* files */; };
 		697EFFB32BA2D2E00035360C /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697EFFB22BA2D2E00035360C /* SharedStorage.swift */; };
 		699B7D6A2A519ADB00E506F2 /* YomikiriTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		699B7D842A519B9100E506F2 /* libyomikiri_rs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D802A519B9100E506F2 /* libyomikiri_rs.a */; };
-		699B7D852A519B9100E506F2 /* uniffi_yomikiri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7D822A519B9100E506F2 /* uniffi_yomikiri.swift */; };
-		699B7D862A519B9100E506F2 /* uniffi_yomikiriFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 699B7D832A519B9100E506F2 /* uniffi_yomikiriFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69ADFB4A2C621AA2004D7FAF /* uniffi_yomikiriFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 69ADFB442C621AA2004D7FAF /* uniffi_yomikiriFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69ADFB4D2C621AA2004D7FAF /* uniffi_yomikiri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ADFB492C621AA2004D7FAF /* uniffi_yomikiri.swift */; };
+		69ADFB4F2C6223EF004D7FAF /* yomikiri_dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ADFB462C621AA2004D7FAF /* yomikiri_dictionary.swift */; };
+		69ADFB502C62241B004D7FAF /* yomikiri_dictionaryFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 69ADFB472C621AA2004D7FAF /* yomikiri_dictionaryFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69ADFB532C625310004D7FAF /* libyomikiri_rs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69ADFB522C625310004D7FAF /* libyomikiri_rs.a */; };
 		69D436F32A5C292E0019E35B /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D436F22A5C292E0019E35B /* Backend.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		6946AA2C2BA1848000668ACB /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		6946AA2E2BA1879100668ACB /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		6946AA312BA191B400668ACB /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = res; path = ../../crates/yomikiri-dictionary-generator/res; sourceTree = "<group>"; };
+		6946AA312BA191B400668ACB /* files */ = {isa = PBXFileReference; lastKnownFileType = folder; name = files; path = "../../crates/yomikiri-dictionary-generator/files"; sourceTree = "<group>"; };
 		697EFFB22BA2D2E00035360C /* SharedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStorage.swift; sourceTree = "<group>"; };
 		699B7D662A519ADB00E506F2 /* YomikiriTokenizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YomikiriTokenizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YomikiriTokenizer.h; sourceTree = "<group>"; };
-		699B7D802A519B9100E506F2 /* libyomikiri_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs.a; sourceTree = "<group>"; };
-		699B7D812A519B9100E506F2 /* uniffi_yomikiriFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = uniffi_yomikiriFFI.modulemap; sourceTree = "<group>"; };
-		699B7D822A519B9100E506F2 /* uniffi_yomikiri.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = uniffi_yomikiri.swift; sourceTree = "<group>"; };
-		699B7D832A519B9100E506F2 /* uniffi_yomikiriFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_yomikiriFFI.h; sourceTree = "<group>"; };
 		699B7D882A519C3400E506F2 /* build_uniffi.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_uniffi.sh; sourceTree = "<group>"; };
+		69ADFB442C621AA2004D7FAF /* uniffi_yomikiriFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniffi_yomikiriFFI.h; sourceTree = "<group>"; };
+		69ADFB452C621AA2004D7FAF /* uniffi_yomikiriFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = uniffi_yomikiriFFI.modulemap; sourceTree = "<group>"; };
+		69ADFB462C621AA2004D7FAF /* yomikiri_dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = yomikiri_dictionary.swift; sourceTree = "<group>"; };
+		69ADFB472C621AA2004D7FAF /* yomikiri_dictionaryFFI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yomikiri_dictionaryFFI.h; sourceTree = "<group>"; };
+		69ADFB482C621AA2004D7FAF /* yomikiri_dictionaryFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = yomikiri_dictionaryFFI.modulemap; sourceTree = "<group>"; };
+		69ADFB492C621AA2004D7FAF /* uniffi_yomikiri.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = uniffi_yomikiri.swift; sourceTree = "<group>"; };
+		69ADFB522C625310004D7FAF /* libyomikiri_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs.a; sourceTree = "<group>"; };
 		69D436F22A5C292E0019E35B /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -38,7 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				699B7D842A519B9100E506F2 /* libyomikiri_rs.a in Frameworks */,
+				69ADFB532C625310004D7FAF /* libyomikiri_rs.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,7 +53,7 @@
 		699B7D5C2A519ADB00E506F2 = {
 			isa = PBXGroup;
 			children = (
-				6946AA312BA191B400668ACB /* res */,
+				6946AA312BA191B400668ACB /* files */,
 				699B7D872A519C3400E506F2 /* scripts */,
 				699B7D7F2A519B9100E506F2 /* rust */,
 				699B7D682A519ADB00E506F2 /* YomikiriTokenizer */,
@@ -79,10 +84,13 @@
 		699B7D7F2A519B9100E506F2 /* rust */ = {
 			isa = PBXGroup;
 			children = (
-				699B7D802A519B9100E506F2 /* libyomikiri_rs.a */,
-				699B7D812A519B9100E506F2 /* uniffi_yomikiriFFI.modulemap */,
-				699B7D822A519B9100E506F2 /* uniffi_yomikiri.swift */,
-				699B7D832A519B9100E506F2 /* uniffi_yomikiriFFI.h */,
+				69ADFB522C625310004D7FAF /* libyomikiri_rs.a */,
+				69ADFB492C621AA2004D7FAF /* uniffi_yomikiri.swift */,
+				69ADFB442C621AA2004D7FAF /* uniffi_yomikiriFFI.h */,
+				69ADFB452C621AA2004D7FAF /* uniffi_yomikiriFFI.modulemap */,
+				69ADFB462C621AA2004D7FAF /* yomikiri_dictionary.swift */,
+				69ADFB472C621AA2004D7FAF /* yomikiri_dictionaryFFI.h */,
+				69ADFB482C621AA2004D7FAF /* yomikiri_dictionaryFFI.modulemap */,
 			);
 			path = rust;
 			sourceTree = "<group>";
@@ -102,8 +110,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				699B7D862A519B9100E506F2 /* uniffi_yomikiriFFI.h in Headers */,
 				699B7D6A2A519ADB00E506F2 /* YomikiriTokenizer.h in Headers */,
+				69ADFB4A2C621AA2004D7FAF /* uniffi_yomikiriFFI.h in Headers */,
+				69ADFB502C62241B004D7FAF /* yomikiri_dictionaryFFI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,7 +175,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6946AA322BA191B400668ACB /* res in Resources */,
+				6946AA322BA191B400668ACB /* files in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,11 +207,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69ADFB4F2C6223EF004D7FAF /* yomikiri_dictionary.swift in Sources */,
 				697EFFB32BA2D2E00035360C /* SharedStorage.swift in Sources */,
 				6946AA2F2BA1879100668ACB /* Error.swift in Sources */,
 				69D436F32A5C292E0019E35B /* Backend.swift in Sources */,
-				699B7D852A519B9100E506F2 /* uniffi_yomikiri.swift in Sources */,
 				6946AA2D2BA1848000668ACB /* Dictionary.swift in Sources */,
+				69ADFB4D2C621AA2004D7FAF /* uniffi_yomikiri.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

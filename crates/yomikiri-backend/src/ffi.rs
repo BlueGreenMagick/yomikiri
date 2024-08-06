@@ -1,11 +1,12 @@
 use flate2::read::GzDecoder;
 use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
+use yomikiri_dictionary::metadata::DictMetadata;
 
 use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::sync::{Arc, Mutex};
 
@@ -50,7 +51,7 @@ impl Backend {
 /// Downloads and writes new dictionary files into specified path.
 /// The files are written in-place.
 #[uniffi::export]
-pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResult<()> {
+pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResult<DictMetadata> {
     let entries = {
         // JMDict is currently 58MB.
         let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
@@ -63,7 +64,13 @@ pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResu
     let term_indexes = write_entries(&mut entries_file, &entries)?;
     let mut index_file = File::create(&index_path)?;
     write_indexes(&mut index_file, &term_indexes)?;
-    Ok(())
+
+    let index_file_size = fs::metadata(&index_path)?.len();
+    let entries_file_size = fs::metadata(&entries_path)?.len();
+    let files_size = index_file_size + entries_file_size;
+    let metadata = DictMetadata::new(files_size);
+
+    Ok(metadata)
 }
 
 fn download_dictionary<W: Write>(writer: &mut W) -> YResult<()> {

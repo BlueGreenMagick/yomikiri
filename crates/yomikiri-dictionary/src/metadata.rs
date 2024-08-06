@@ -1,7 +1,10 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
+use crate::Result;
+
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct DictMetadata {
     download_date: String,
     files_size: u64,
@@ -15,5 +18,10 @@ impl DictMetadata {
             download_date,
             files_size,
         }
+    }
+
+    pub fn to_json(&self) -> Result<String> {
+        let json = serde_json::to_string(&self)?;
+        Ok(json)
     }
 }

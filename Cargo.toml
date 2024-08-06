@@ -16,3 +16,6 @@ opt-level = "z"
 
 [workspace.lints.clippy]
 needless_borrows_for_generic_args = "allow"
+
+[workspace.dependencies]
+uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom" }

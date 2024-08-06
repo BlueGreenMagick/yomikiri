@@ -7,12 +7,7 @@ import {
   setStorage,
   speakJapanese,
 } from "extension/browserApi";
-import type {
-  IPlatform,
-  TTSVoice,
-  VersionInfo,
-  DictionaryMetadata,
-} from "../common";
+import type { IPlatform, TTSVoice, VersionInfo } from "../common";
 import { type StoredConfiguration } from "lib/config";
 import { getTranslation } from "../common/translate";
 import {
@@ -21,6 +16,7 @@ import {
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
 import { deleteSavedDictionary, dictionaryMetadata } from "./dictionary";
+import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export * from "../common";
 
@@ -98,7 +94,7 @@ export namespace DesktopPlatform {
     return migrated;
   }
 
-  export async function getDictionaryMetadata(): Promise<DictionaryMetadata> {
+  export async function getDictionaryMetadata(): Promise<DictMetadata> {
     return dictionaryMetadata();
   }
 

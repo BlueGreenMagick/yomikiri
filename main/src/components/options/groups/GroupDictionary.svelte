@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PagePlatform, type DictionaryMetadata } from "@platform";
+  import { PagePlatform } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
   import Utils from "lib/utils";
@@ -8,14 +8,15 @@
     type DesktopBackend,
     type IosAppBackend,
   } from "@platform/backend";
+  import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
   let dictDescription = "Loading...";
   let disabled = false;
   let dictDescClass = "";
 
-  function update_description(metadata: DictionaryMetadata) {
-    const downloadDate = metadata.downloadDate.toDateString();
-    dictDescription = `Last updated: ${downloadDate}`;
+  function update_description(metadata: DictMetadata) {
+    const downloadDate = new Date(metadata.download_date);
+    dictDescription = `Last updated: ${downloadDate.toLocaleDateString()}`;
   }
 
   async function initialize() {

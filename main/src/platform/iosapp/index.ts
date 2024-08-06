@@ -5,8 +5,6 @@ import type {
   TranslateResult,
   VersionInfo,
   TTSRequest,
-  DictionaryMetadata,
-  RawDictionaryMetadata,
 } from "../common";
 import { type StoredConfiguration } from "lib/config";
 import type {
@@ -19,7 +17,7 @@ import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
-import { parseRawMetadata } from "platform/shared/utils";
+import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export * from "../common";
 
@@ -53,8 +51,8 @@ export interface MessageWebviewMap {
   tokenize: [TokenizeRequest, RawTokenizeResult];
   searchTerm: [SearchRequest, RawTokenizeResult];
   versionInfo: [null, VersionInfo];
-  updateDict: [null, RawDictionaryMetadata];
-  dictMetadata: [null, RawDictionaryMetadata];
+  updateDict: [null, DictMetadata];
+  dictMetadata: [null, DictMetadata];
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
   tts: [TTSRequest, null];
@@ -167,9 +165,8 @@ export namespace IosAppPlatform {
     return migrated;
   }
 
-  export async function getDictionaryMetadata(): Promise<DictionaryMetadata> {
-    const raw = await messageWebview("dictMetadata", null);
-    return parseRawMetadata(raw);
+  export async function getDictionaryMetadata(): Promise<DictMetadata> {
+    return await messageWebview("dictMetadata", null);
   }
 }
 

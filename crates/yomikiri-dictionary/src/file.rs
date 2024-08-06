@@ -51,7 +51,7 @@ impl DictTermIndex {
     }
 }
 
-pub fn write_yomikiri_dictionary<I: Write, D: Write>(
+pub fn write_yomikiri_dictionary<I: Write + Seek, D: Write + Seek>(
     index_writer: &mut I,
     dict_writer: &mut D,
     entries: &[Entry],
