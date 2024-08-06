@@ -1,12 +1,13 @@
 use anyhow::{anyhow, Result};
 use std::collections::HashSet;
 use std::fs::File;
-use std::io::{BufReader, BufWriter, Cursor, Write};
+use std::io::{BufWriter, Cursor, Write};
 use std::path::Path;
 use std::str::FromStr;
 use std::{cmp, fs};
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
-use yomikiri_dictionary::file::{read_entries, read_indexes, DictEntryIndex};
+use yomikiri_dictionary::file::{read_entries, DictEntryIndex};
+use yomikiri_dictionary::index::DictIndex;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
 struct LexItem {
@@ -378,15 +379,16 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
 }
 
 pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> Result<Vec<Entry>> {
-    let file = File::open(index_path)?;
-    let mut reader = BufReader::new(file);
-    let term_indexes = read_indexes(&mut reader)?;
+    let index_bytes = fs::read(index_path)?;
+    let index = DictIndex::try_from_source(index_bytes)?;
+
+    let terms_index = &index.borrow_view().terms;
 
     let mut entry_indexes: HashSet<DictEntryIndex> = HashSet::new();
-    for term_index in term_indexes {
-        for entry_index in term_index.entry_indexes {
-            entry_indexes.insert(entry_index);
-        }
+    let terms_map_values = terms_index.map.stream().into_values();
+    for value in terms_map_values {
+        let parsed = terms_index.parse_value(value)?;
+        entry_indexes.extend(parsed);
     }
 
     let mut entry_indexes: Vec<DictEntryIndex> = entry_indexes.into_iter().collect();

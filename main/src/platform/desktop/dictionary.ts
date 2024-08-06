@@ -57,3 +57,10 @@ export async function dictionaryMetadata(): Promise<DictionaryMetadata> {
     };
   }
 }
+
+export async function deleteSavedDictionary() {
+  const db = await openDictionaryDB();
+  await db.clear("metadata");
+  await db.clear("yomikiri-index");
+  await db.clear("yomikiri-entries");
+}

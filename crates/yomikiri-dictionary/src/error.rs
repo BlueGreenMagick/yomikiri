@@ -17,4 +17,8 @@ pub enum Error {
     Bincode(#[from] bincode::Error),
     #[error("JMDict parse error {0}")]
     JMDict(#[from] yomikiri_jmdict::Error),
+    #[error("FST error: {0}")]
+    Fst(#[from] fst::Error),
+    #[error("Out of range")]
+    OutOfRange,
 }

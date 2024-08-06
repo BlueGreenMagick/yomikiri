@@ -20,7 +20,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
-import { dictionaryMetadata } from "./dictionary";
+import { deleteSavedDictionary, dictionaryMetadata } from "./dictionary";
 
 export * from "../common";
 
@@ -100,6 +100,10 @@ export namespace DesktopPlatform {
 
   export async function getDictionaryMetadata(): Promise<DictionaryMetadata> {
     return dictionaryMetadata();
+  }
+
+  export async function deleteDictionary() {
+    return deleteSavedDictionary();
   }
 }
 

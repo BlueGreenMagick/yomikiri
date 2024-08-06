@@ -147,7 +147,6 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
 
     println!("Writing yomikiridict and yomikiriindex...");
     // ignore error from directory not existing
-    let _ = fs::remove_dir_all(&resources_dir);
     fs::create_dir_all(&resources_dir)
         .with_context(|| format!("Could not create directory: {:?}", &resources_dir))?;
     let output_index_file = File::create(&output_index_path)?;

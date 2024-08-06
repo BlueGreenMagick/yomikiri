@@ -16,9 +16,9 @@ use crate::dictionary::Dictionary;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use std::io::{Read, Seek};
 
-pub struct SharedBackend<R: Read + Seek> {
+pub struct SharedBackend<D: AsRef<[u8]> + 'static, R: Read + Seek> {
     pub tokenizer: Tokenizer,
-    pub dictionary: Dictionary<R>,
+    pub dictionary: Dictionary<D, R>,
 }
 
 #[cfg(uniffi)]

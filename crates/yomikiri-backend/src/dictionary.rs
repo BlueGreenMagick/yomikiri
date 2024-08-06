@@ -1,19 +1,20 @@
 use crate::error::{YResult, YomikiriError};
-use bincode::Options;
-use std::fs::File;
-use std::io::{BufReader, Read, Seek};
+use fst::{IntoStreamer, Streamer};
+use yomikiri_dictionary::index::DictIndex;
+use std::fs::{self, File};
+use std::io::{Read, Seek};
 use yomikiri_dictionary::entry::Entry;
-use yomikiri_dictionary::file::{read_entries_with_buffers, DictTermIndex, BUFFER_SIZE};
+use yomikiri_dictionary::file::{read_entries_with_buffers, BUFFER_SIZE};
 
-pub struct Dictionary<R: Seek + Read> {
-    index: Vec<DictTermIndex>,
+pub struct Dictionary<D: AsRef<[u8]> + 'static, R: Seek + Read> {
+    index: DictIndex<D>,
     entries_reader: R,
     extraction_buffer: Vec<u8>,
     chunk_buffer: Vec<u8>,
 }
 
-impl<R: Seek + Read> Dictionary<R> {
-    pub fn new(index: Vec<DictTermIndex>, entries_reader: R) -> Dictionary<R> {
+impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
+    pub fn new(index: DictIndex<D>, entries_reader: R) -> Dictionary<D, R> {
         Dictionary {
             index,
             entries_reader,
@@ -23,13 +24,14 @@ impl<R: Seek + Read> Dictionary<R> {
     }
 
     pub fn search(&mut self, term: &str) -> YResult<Vec<Entry>> {
-        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.term) {
-            let item = &self.index[idx];
+        let terms = &self.index.borrow_view().terms;
+        if let Some(value) = terms.map.get(term) {
+            let entry_indexes = terms.parse_value(value)?;
             let entries = read_entries_with_buffers(
                 &mut self.chunk_buffer,
                 &mut self.extraction_buffer,
                 &mut self.entries_reader,
-                &item.entry_indexes,
+                &entry_indexes,
             )
             .map_err(|e| {
                 YomikiriError::InvalidDictionaryFile(format!(
@@ -46,32 +48,38 @@ impl<R: Seek + Read> Dictionary<R> {
     /// Returns true only if there is a dictionary term
     /// that starts with `prefix` and is not `prefix`
     pub fn has_starts_with_excluding(&mut self, prefix: &str) -> bool {
-        let next_idx = match self.index.binary_search_by_key(&prefix, |item| &item.term) {
-            Ok(idx) => idx + 1,
-            Err(idx) => idx,
-        };
-        if next_idx == self.index.len() {
-            false
+        // assumes there is at least 1 entry.
+        // needed in order to create a bytestring that is 1 greater than prefix below
+        if prefix.len() == 0 {
+            return true
+        }
+
+        let mut next_prefix_bytes = prefix.as_bytes().to_vec();
+        let len = next_prefix_bytes.len();
+        next_prefix_bytes[len - 1] += 1;
+
+        let terms = &self.index.borrow_view().terms;
+        if let Some(_) = terms.map.range().gt(prefix).lt(&next_prefix_bytes).into_stream().next() {
+            true
         } else {
-            self.index[next_idx].term.starts_with(prefix)
+            false
         }
     }
 
     pub fn contains(&self, term: &str) -> bool {
-        self.index
-            .binary_search_by_key(&term, |item| &item.term)
-            .is_ok()
+        self.index.borrow_view().terms.map.contains_key(term)
     }
 
     /// Returns json text of entries
     pub fn search_json(&mut self, term: &str) -> YResult<Vec<String>> {
-        if let Ok(idx) = self.index.binary_search_by_key(&term, |item| &item.term) {
-            let item = &self.index[idx];
+        let terms = &self.index.borrow_view().terms;
+        if let Some(value) = terms.map.get(term) {
+            let entry_indexes = terms.parse_value(value)?;
             let entries = read_entries_with_buffers(
                 &mut self.chunk_buffer,
                 &mut self.extraction_buffer,
                 &mut self.entries_reader,
-                &item.entry_indexes,
+                &entry_indexes,
             )
             .map_err(|e| {
                 YomikiriError::InvalidDictionaryFile(format!(
@@ -96,17 +104,11 @@ impl<R: Seek + Read> Dictionary<R> {
     }
 }
 
-impl Dictionary<File> {
-    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<File>> {
-        let index_file = File::open(index_path)?;
-        let reader = BufReader::new(index_file);
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictTermIndex> = options.deserialize_from(reader).map_err(|e| {
-            YomikiriError::InvalidDictionaryFile(format!(
-                "Failed to parse dictionary index file. {}",
-                e
-            ))
-        })?;
+// TODO: switch to Memmap
+impl Dictionary<Vec<u8>, File> {
+    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<Vec<u8>, File>> {
+        let index_bytes = fs::read(index_path)?;
+        let index = DictIndex::try_from_source(index_bytes)?;
         let entries_file = File::open(entries_path)?;
         Ok(Dictionary::new(index, entries_file))
     }

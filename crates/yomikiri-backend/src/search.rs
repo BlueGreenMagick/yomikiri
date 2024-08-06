@@ -8,7 +8,7 @@ use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{InnerToken, RawTokenizeResult, Token, TokenDetails};
 use crate::SharedBackend;
 
-impl<R: Read + Seek> SharedBackend<R> {
+impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     pub fn search(&mut self, term: &str, char_idx: usize) -> YResult<RawTokenizeResult> {
         let result = self.tokenize(term, char_idx)?;
 

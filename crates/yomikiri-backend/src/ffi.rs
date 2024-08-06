@@ -11,7 +11,7 @@ use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
 pub struct Backend {
-    inner: Mutex<SharedBackend<File>>,
+    inner: Mutex<SharedBackend<Vec<u8>, File>>,
 }
 
 #[uniffi::export]

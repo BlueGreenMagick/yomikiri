@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 use std::io::{Read, Seek, SeekFrom, Write};
 
-use bincode::Options;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
 use flate2::write::{GzDecoder, GzEncoder};
 use flate2::Compression;
+use fst::MapBuilder;
 use serde::{Deserialize, Serialize};
 
 use crate::entry::Entry;
 use crate::error::Result;
+use crate::index::DictIndexPointers;
 
 /// Separate chunk when it gets bigger than this size
 pub const CHUNK_CUTOFF_SIZE: usize = 16 * 1024;
@@ -50,6 +51,7 @@ impl DictTermIndex {
     }
 }
 
+
 pub fn write_yomikiri_dictionary<I: Write, D: Write>(
     index_writer: &mut I,
     dict_writer: &mut D,
@@ -65,12 +67,6 @@ pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
     let jm_entries = yomikiri_jmdict::parse_jmdict_xml(xml)?;
     let entries = jm_entries.into_iter().map(Entry::from).collect();
     Ok(entries)
-}
-
-pub fn read_indexes<R: Read>(reader: &mut R) -> Result<Vec<DictTermIndex>> {
-    let options = bincode::DefaultOptions::new();
-    let term_indexes = options.deserialize_from(reader)?;
-    Ok(term_indexes)
 }
 
 /// entry_indexes should be sorted for better performance
@@ -180,12 +176,6 @@ pub fn write_entries<W: Write>(writer: &mut W, entries: &[Entry]) -> Result<Vec<
     Ok(dict_indexes)
 }
 
-pub fn write_indexes<W: Write>(writer: &mut W, term_indexes: &[DictTermIndex]) -> Result<()> {
-    let options = bincode::DefaultOptions::new();
-    options.serialize_into(writer, term_indexes)?;
-    Ok(())
-}
-
 fn gzip_bytes(bytes: &[u8]) -> Result<Vec<u8>> {
     let mut encoder = GzEncoder::new(Vec::new(), Compression::new(9));
     encoder.write_all(bytes)?;
@@ -196,6 +186,42 @@ fn ungzip_bytes_into<W: Write>(writer: &mut W, bytes: &[u8]) -> Result<()> {
     let mut decoder = GzDecoder::new(writer);
     decoder.write_all(bytes)?;
     decoder.finish()?;
+    Ok(())
+}
+
+/// terms must be in lexicographic order.
+pub fn write_indexes<W: Write>(writer: &mut W, terms: &[DictTermIndex]) -> Result<()> {
+    let mut fst_bytes: Vec<u8> = Vec::with_capacity(1024 * 1024);
+    let mut builder = MapBuilder::new(&mut fst_bytes)?;
+    let mut pointers: Vec<Vec<DictEntryIndex>> = vec![];
+
+    for term in terms {
+        if term.entry_indexes.len() == 1 {
+            let index = &term.entry_indexes[0];
+            let value: u64 = (index.chunk_index as u64) << 16 | index.inner_index as u64;
+            builder.insert(&term.term, value)?;
+        } else {
+            let mut term_ids: Vec<DictEntryIndex> = vec![];
+            for index in &term.entry_indexes {
+                let entry_index = DictEntryIndex {
+                    chunk_index: index.chunk_index,
+                    inner_index: index.inner_index
+                };
+                term_ids.push(entry_index);
+            }
+            builder.insert(&term.term, 1_u64 << 63 | (pointers.len() as u64 & ((1_u64 << 32) - 1)))?;
+            pointers.push(term_ids);
+        }
+    }
+    builder.finish()?;
+
+    writer.write_u32::<LittleEndian>(fst_bytes.len() as u32)?;
+    writer.write(&fst_bytes)?;
+
+    let pointers_bytes = DictIndexPointers::create_bytes(&pointers)?;
+
+    writer.write_u32::<LittleEndian>(pointers_bytes.len() as u32)?;
+    writer.write(&pointers_bytes)?;
     Ok(())
 }
 

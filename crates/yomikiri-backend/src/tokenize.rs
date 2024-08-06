@@ -197,7 +197,7 @@ impl TokenDetails {
     }
 }
 
-impl<R: Read + Seek> SharedBackend<R> {
+impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
     /// char_idx: code point index of selected character in sentence

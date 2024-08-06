@@ -3,13 +3,14 @@ use crate::error::{YResult, YomikiriError};
 use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
-use bincode::Options;
+
+
 use flate2::bufread::GzDecoder;
 use js_sys::{Array, Uint8Array};
 use log::debug;
 use std::io::{Cursor, Read};
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::file::DictTermIndex;
+use yomikiri_dictionary::index::DictIndex;
 use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -52,7 +53,7 @@ interface Backend {
 
 #[wasm_bindgen]
 pub struct Backend {
-    inner: SharedBackend<Cursor<Vec<u8>>>,
+    inner: SharedBackend<Vec<u8>, Cursor<Vec<u8>>>,
 }
 
 #[wasm_bindgen]
@@ -62,7 +63,7 @@ impl Backend {
         utils::set_panic_hook();
         utils::setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::try_new(&index_bytes.to_vec(), entries_bytes.to_vec())?;
+        let dictionary = Dictionary::try_new(index_bytes.to_vec(), entries_bytes.to_vec())?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
@@ -117,25 +118,19 @@ impl Backend {
         tuple.set(0, index_array.into());
         tuple.set(1, entries_array.into());
 
-        let dict = Dictionary::try_new(&index_bytes, entries_bytes)?;
+        let dict = Dictionary::try_new(index_bytes, entries_bytes)?;
         self.inner.dictionary = dict;
         Ok(tuple.into())
     }
 }
 
-impl Dictionary<Cursor<&[u8]>> {
+impl Dictionary<Vec<u8>, Cursor<&[u8]>> {
     // UInt8Array are copied in when passed from js
     pub fn try_new(
-        index_bytes: &[u8],
+        index_bytes: Vec<u8>,
         entries_bytes: Vec<u8>,
-    ) -> YResult<Dictionary<Cursor<Vec<u8>>>> {
-        let options = bincode::DefaultOptions::new();
-        let index: Vec<DictTermIndex> = options.deserialize_from(index_bytes).map_err(|e| {
-            YomikiriError::InvalidDictionaryFile(format!(
-                "Failed to parse dictionary index file. {}",
-                e
-            ))
-        })?;
+    ) -> YResult<Dictionary<Vec<u8>, Cursor<Vec<u8>>>> {
+        let index = DictIndex::try_from_source(index_bytes)?;
         let cursor = Cursor::new(entries_bytes);
         Ok(Dictionary::new(index, cursor))
     }
