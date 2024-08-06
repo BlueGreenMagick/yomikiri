@@ -13,7 +13,7 @@
 - `unidic`: Binary that downloads, transforms, and builds unidic tokenizer dictionary files.
 - `unidic-types`: Used to parse and serialize unidic entries in a more compact form.
 - `yomikiri-dictionary`: Reads and writes yomikiri dictionary format.
-- `yomikiri-dictionary-generator`: Binary that downlaods JMDict xml and builds yomikiri dictionary files.
+- `yomikiri-dictionary-generator`: Binary that downloads JMDict xml and builds yomikiri dictionary files.
 
 `/safari`: Code for iOS, iPadOS (and maybe macOS)
 `/extra/generate-license`: Collects license details from the project's pnpm and cargo dependencies.
