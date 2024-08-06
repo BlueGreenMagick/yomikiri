@@ -4,6 +4,7 @@ packages:
   - "crates/yomikiri-dictionary/pkg"
   - "crates/jmdict"
   - "crates/unidic"
+  - "crates/unidic-types"
   - "crates/yomikiri-backend"
   - "crates/yomikiri-backend/pkg"
   - "crates/yomikiri-dictionary-generator"

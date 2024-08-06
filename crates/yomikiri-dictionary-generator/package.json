@@ -2,6 +2,10 @@
   "name": "@yomikiri/dictionary-generator-rs",
   "version": "0.0.1",
   "scripts": {
+    "format": "cargo fmt",
+    "check": "cargo check",
+    "lint": "cargo clippy -- -D warnings",
+    "test": "cargo test",
     "generate": "cargo run -- generate",
     "update-dictionary": "cargo run -- generate --update",
     "download": "cargo run -- download"

@@ -41,6 +41,10 @@ importers:
 
   crates/jmdict: {}
 
+  crates/unidic: {}
+
+  crates/unidic-types: {}
+
   crates/yomikiri-backend: {}
 
   crates/yomikiri-backend/pkg: {}

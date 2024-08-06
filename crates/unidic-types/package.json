@@ -1,9 +1,9 @@
 {
-  "name": "@yomikiri/jmdict-rs",
+  "name": "@yomikiri/unidic-types-rs",
   "collaborators": [
     "BlueGreenMagick <bluegreenmagick@gmail.com>"
   ],
-  "description": "generated JMDict format usable in Yomikiri",
+  "description": "",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {

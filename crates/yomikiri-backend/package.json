@@ -18,6 +18,7 @@
     "chunk_wasm": "cargo run --bin chunk-wasm",
     "ios": "pnpm run _clean_swift && pnpm run _build_release_lib && pnpm run _ios_uniffi && pnpm run _build_ios && pnpm run _build_ios_sim",
     "wasm": "pnpm run _clean_pkg && wasm-pack build --scope yomikiri --target web",
+    "format": "cargo fmt",
     "check": "cargo check --target wasm32-unknown-unknown --target aarch64-apple-ios",
     "lint": "cargo clippy --target wasm32-unknown-unknown --target aarch64-apple-ios -- -D warnings",
     "test": "cargo test"
