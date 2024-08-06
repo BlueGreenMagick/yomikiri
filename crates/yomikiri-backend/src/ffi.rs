@@ -68,7 +68,7 @@ pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResu
     let index_file_size = fs::metadata(&index_path)?.len();
     let entries_file_size = fs::metadata(&entries_path)?.len();
     let files_size = index_file_size + entries_file_size;
-    let metadata = DictMetadata::new(files_size);
+    let metadata = DictMetadata::new(files_size, true);
 
     Ok(metadata)
 }

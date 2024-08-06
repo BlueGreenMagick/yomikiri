@@ -48,8 +48,9 @@ export interface DictUpdateResult {
 }
 
 export interface DictMetadata {
-    download_date: string,
-    files_size: number,
+    download_date: string;
+    files_size: number;
+    user_download: boolean;
 }
 
 interface Backend {
@@ -137,7 +138,7 @@ impl Backend {
 
         let files_size = entries_bytes.len() + index_bytes.len();
 
-        let metadata = DictMetadata::new(files_size as u64);
+        let metadata = DictMetadata::new(files_size as u64, true);
 
         let result = DictUpdateResult {
             entry_bytes: entries_array,

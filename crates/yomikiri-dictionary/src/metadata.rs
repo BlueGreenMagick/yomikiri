@@ -8,15 +8,17 @@ use crate::Result;
 pub struct DictMetadata {
     download_date: String,
     files_size: u64,
+    user_download: bool,
 }
 
 impl DictMetadata {
-    pub fn new(files_size: u64) -> Self {
+    pub fn new(files_size: u64, user_download: bool) -> Self {
         let now = Utc::now();
         let download_date = now.to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
         Self {
             download_date,
             files_size,
+            user_download,
         }
     }
 

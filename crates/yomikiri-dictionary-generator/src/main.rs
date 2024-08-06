@@ -162,7 +162,7 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
         let entries_file_size = fs::metadata(&output_path)?.len();
         let files_size = index_file_size + entries_file_size;
 
-        let metadata = DictMetadata::new(files_size);
+        let metadata = DictMetadata::new(files_size, false);
         let metadata_json_path = resources_dir.join("dictionary-metadata.json");
         let metadata_json_file = File::create(metadata_json_path)?;
         let mut metadata_writer = BufWriter::new(metadata_json_file);
