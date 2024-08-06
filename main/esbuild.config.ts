@@ -230,6 +230,8 @@ function getbuildEntries(): BuildEntry[] {
     const segments: string[] = ["content", "background", "popup"];
     if (FOR_IOS) {
       segments.push("x-callback");
+    } else {
+      segments.push("options");
     }
 
     for (const seg of segments) {
