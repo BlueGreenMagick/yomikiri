@@ -21,7 +21,7 @@
 
   async function initialize() {
     const metadata = await PagePlatform.getDictionaryMetadata();
-    const downloadDate = new Date(metadata.download_date);
+    const downloadDate = new Date(metadata.downloadDate);
     dictDescription = `Last updated: ${downloadDate.toLocaleDateString()}`;
     state = "loaded";
   }

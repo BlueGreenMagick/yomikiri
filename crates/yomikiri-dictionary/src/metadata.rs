@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{Result, SCHEMA_VER};
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 pub struct DictMetadata {
     download_date: String,

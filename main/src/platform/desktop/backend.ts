@@ -179,10 +179,10 @@ if (EXTENSION_CONTEXT === "background") {
   handleInstall(async () => {
     const userDictMetadata = await getUserDictMetadata();
     if (userDictMetadata === null) return;
-    const userDownloadDate = new Date(userDictMetadata.download_date);
+    const userDownloadDate = new Date(userDictMetadata.downloadDate);
 
     const bundledMetadata = bundledDictMetadata;
-    const bundledDownloadDate = new Date(bundledMetadata.download_date);
+    const bundledDownloadDate = new Date(bundledMetadata.downloadDate);
 
     if (userDownloadDate.getTime() <= bundledDownloadDate.getTime()) {
       await deleteSavedDictionary();

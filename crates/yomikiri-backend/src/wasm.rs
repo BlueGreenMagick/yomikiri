@@ -48,10 +48,10 @@ export interface DictUpdateResult {
 }
 
 export interface DictMetadata {
-    download_date: string;
-    files_size: number;
-    user_download: boolean;
-    schema_ver: number;
+    downloadDate: string;
+    filesSize: number;
+    userDownload: boolean;
+    schemaVer: number;
 }
 
 interface Backend {
