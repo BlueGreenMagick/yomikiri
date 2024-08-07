@@ -30,3 +30,7 @@ extension Result {
         }
     }
 }
+
+func unimplemented<T>(message: String = "", file: StaticString = #file, line: UInt = #line) -> T {
+    fatalError("unimplemented: \(message)", file: file, line: line)
+}
