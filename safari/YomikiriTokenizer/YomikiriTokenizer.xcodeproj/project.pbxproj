@@ -17,6 +17,7 @@
 		69ADFB4F2C6223EF004D7FAF /* yomikiri_dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ADFB462C621AA2004D7FAF /* yomikiri_dictionary.swift */; };
 		69ADFB502C62241B004D7FAF /* yomikiri_dictionaryFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 69ADFB472C621AA2004D7FAF /* yomikiri_dictionaryFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69ADFB532C625310004D7FAF /* libyomikiri_rs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69ADFB522C625310004D7FAF /* libyomikiri_rs.a */; };
+		69ADFB552C634DA6004D7FAF /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ADFB542C634DA6004D7FAF /* Globals.swift */; };
 		69D436F32A5C292E0019E35B /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D436F22A5C292E0019E35B /* Backend.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		69ADFB482C621AA2004D7FAF /* yomikiri_dictionaryFFI.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = yomikiri_dictionaryFFI.modulemap; sourceTree = "<group>"; };
 		69ADFB492C621AA2004D7FAF /* uniffi_yomikiri.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = uniffi_yomikiri.swift; sourceTree = "<group>"; };
 		69ADFB522C625310004D7FAF /* libyomikiri_rs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libyomikiri_rs.a; sourceTree = "<group>"; };
+		69ADFB542C634DA6004D7FAF /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		69D436F22A5C292E0019E35B /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,6 +79,7 @@
 				69D436F22A5C292E0019E35B /* Backend.swift */,
 				6946AA2C2BA1848000668ACB /* Dictionary.swift */,
 				6946AA2E2BA1879100668ACB /* Error.swift */,
+				69ADFB542C634DA6004D7FAF /* Globals.swift */,
 			);
 			path = YomikiriTokenizer;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				69ADFB4F2C6223EF004D7FAF /* yomikiri_dictionary.swift in Sources */,
 				697EFFB32BA2D2E00035360C /* SharedStorage.swift in Sources */,
 				6946AA2F2BA1879100668ACB /* Error.swift in Sources */,
+				69ADFB552C634DA6004D7FAF /* Globals.swift in Sources */,
 				69D436F32A5C292E0019E35B /* Backend.swift in Sources */,
 				6946AA2D2BA1848000668ACB /* Dictionary.swift in Sources */,
 				69ADFB4D2C621AA2004D7FAF /* uniffi_yomikiri.swift in Sources */,
