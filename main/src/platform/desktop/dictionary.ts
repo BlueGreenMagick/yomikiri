@@ -1,6 +1,8 @@
 import { openDB, type DBSchema } from "idb";
-import BundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
+import bundledDictMetadata from "@yomikiri/dictionary-files/dictionary-metadata.json";
 import type { DictMetadata } from "@yomikiri/yomikiri-rs";
+
+export { default as bundledDictMetadata } from "@yomikiri/dictionary-files/dictionary-metadata.json";
 
 interface DictionaryDBSchema extends DBSchema {
   metadata: {
@@ -51,13 +53,20 @@ export async function dictionaryMetadata(): Promise<DictMetadata> {
   if (installedMetadata !== undefined) {
     return installedMetadata;
   } else {
-    return BundledDictMetadata;
+    return bundledDictMetadata;
   }
+}
+
+export async function getUserDictMetadata(): Promise<DictMetadata | null> {
+  const db = await openDictionaryDB();
+  return (await db.get("metadata", "value")) ?? null;
 }
 
 export async function deleteSavedDictionary() {
   const db = await openDictionaryDB();
+  console.info("Will delete user-installed dictionary");
   await db.clear("metadata");
   await db.clear("yomikiri-index");
   await db.clear("yomikiri-entries");
+  console.info("Deleted user-installed dictionary");
 }

@@ -6,6 +6,7 @@ import {
 import {
   createConnection,
   handleConnection,
+  handleInstall,
   message,
 } from "extension/browserApi";
 
@@ -18,7 +19,12 @@ import Utils, {
 } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
-import { openDictionaryDB } from "./dictionary";
+import {
+  bundledDictMetadata,
+  openDictionaryDB,
+  getUserDictMetadata,
+  deleteSavedDictionary,
+} from "./dictionary";
 
 export * from "../common/backend";
 
@@ -164,6 +170,23 @@ if (EXTENSION_CONTEXT === "background") {
         };
         port.postMessage(message);
       });
+  });
+}
+
+// Delete user-installed dictionary on install
+// if new bundled dict is newer than user-dict
+if (EXTENSION_CONTEXT === "background") {
+  handleInstall(async () => {
+    const userDictMetadata = await getUserDictMetadata();
+    if (userDictMetadata === null) return;
+    const userDownloadDate = new Date(userDictMetadata.download_date);
+
+    const bundledMetadata = bundledDictMetadata;
+    const bundledDownloadDate = new Date(bundledMetadata.download_date);
+
+    if (userDownloadDate.getTime() <= bundledDownloadDate.getTime()) {
+      await deleteSavedDictionary();
+    }
   });
 }
 

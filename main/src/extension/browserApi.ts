@@ -492,6 +492,12 @@ export function handleConnection(
   });
 }
 
+export function handleInstall(
+  handler: (details: chrome.runtime.InstalledDetails) => void,
+) {
+  chrome.runtime.onInstalled.addListener(handler);
+}
+
 chrome.runtime.onMessage.addListener(
   (
     message: RequestMessage<keyof MessageMap>,
