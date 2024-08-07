@@ -171,7 +171,7 @@ private func getBundledDictDir() throws -> URL {
     guard let resourceDir = bundle.resourceURL else {
         throw YomikiriTokenizerError.BaseResourceNotFound
     }
-    return resourceDir.appendingPathComponent("res")
+    return resourceDir.appendingPathComponent("files")
 }
 
 private func parseDateString(_ dateString: String) -> Date? {
