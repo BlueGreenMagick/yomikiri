@@ -6,7 +6,12 @@ import type {
 } from "../common/anki";
 import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
-import { getStorage, message, setStorage } from "extension/browserApi";
+import {
+  getStorage,
+  message,
+  removeStorage,
+  setStorage,
+} from "extension/browserApi";
 import {
   LazyAsync,
   PromiseWithProgress,
@@ -285,6 +290,18 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
    */
   addDeferredNotes = SingleQueued(() => this.processDeferredNotes());
 
+  /**
+   * Deletes all deferred notes and error messages from storage.
+   * Returns a job object that you can undo.
+   */
+  async clearDeferredNotes(): Promise<ClearDeferredNotesJob> {
+    return ClearDeferredNotesJob.run(this.config);
+  }
+
+  async getDeferredNotesErrorMessages(): Promise<string[]> {
+    return await getStorage<string[]>(DEFER_ERRORS_STORAGE_KEY);
+  }
+
   private processDeferredNotes(): PromiseWithProgress<void, number> {
     const noteCount = this.config.get("state.anki.deferred_note_count");
 
@@ -343,6 +360,42 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   private async setDeferredNotes(notes: AnkiNote[]) {
     await setStorage(DEFER_NOTES_STORAGE_KEY, notes);
     await this.config.set("state.anki.deferred_note_count", notes.length);
+  }
+}
+
+/**
+ * This job clears saved deferred notes. It can be undone by calling `.undo()`.
+ */
+export class ClearDeferredNotesJob {
+  notes: AnkiNote[];
+  errors: string[];
+  config: Config;
+
+  private constructor(config: Config, notes: AnkiNote[], errors: string[]) {
+    this.config = config;
+    this.notes = notes;
+    this.errors = errors;
+  }
+
+  static async run(config: Config): Promise<ClearDeferredNotesJob> {
+    const notes = await getStorage<AnkiNote[]>(DEFER_NOTES_STORAGE_KEY);
+    const errors = await getStorage<string[]>(DEFER_ERRORS_STORAGE_KEY);
+
+    await config.set("state.anki.deferred_note_count", 0);
+    await config.set("state.anki.deferred_note_error", false);
+    await removeStorage(DEFER_ERRORS_STORAGE_KEY);
+    await removeStorage(DEFER_NOTES_STORAGE_KEY);
+    return new ClearDeferredNotesJob(config, notes, errors);
+  }
+
+  async undo() {
+    await setStorage(DEFER_NOTES_STORAGE_KEY, this.notes);
+    await setStorage(DEFER_ERRORS_STORAGE_KEY, this.errors);
+    await this.config.set("state.anki.deferred_note_count", this.notes.length);
+    await this.config.set(
+      "state.anki.deferred_note_error",
+      this.errors.length > 0,
+    );
   }
 }
 

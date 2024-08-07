@@ -6,9 +6,7 @@
   import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
-  import type { AnkiNote } from "lib/anki";
   import CancelDeferredNoteDeletion from "./CancelDeferredNoteDeletion.svelte";
-  import { getStorage, removeStorage, setStorage } from "extension/browserApi";
 
   export let config: Config;
   export let ankiApi: AnkiApi;
@@ -21,7 +19,9 @@
   let errorMessage = "Loading error message...";
 
   async function getErrorMessages() {
-    const errors = await getStorage<string[]>("deferred-anki-note-errors");
+    const errors = await (
+      ankiApi as DesktopAnkiApi
+    ).getDeferredNotesErrorMessages();
     errorMessage = errors[0];
   }
 
@@ -39,26 +39,16 @@
   }
 
   async function discardDeferredNotes() {
-    const notes = await getStorage<AnkiNote[]>("deferred-anki-note", []);
-    const errors = await getStorage<string[]>("deferred-anki-note-errors", []);
-    await config.set("state.anki.deferred_note_count", 0);
-    await config.set("state.anki.deferred_note_error", false);
-    await removeStorage("deferred-anki-note");
-    await removeStorage("deferred-anki-note-errors");
+    const clearJob = await (ankiApi as DesktopAnkiApi).clearDeferredNotes();
 
     let weakToast: WeakRef<Toast>;
     const toast = Toast.success(CancelDeferredNoteDeletion, {
       duration: 4000,
       icon: TrashToastIcon,
       props: {
-        count: notes.length,
+        count: clearJob.notes.length,
         onCancel: async () => {
-          await setStorage("deferred-anki-note", notes);
-          if (errors.length > 0) {
-            await setStorage("deferred-anki-note-errors", errors);
-          }
-          await config.set("state.anki.deferred_note_count", notes.length);
-          await config.set("state.anki.deferred_note_error", errors.length > 0);
+          await clearJob.undo();
           weakToast.deref()?.dismiss();
         },
       },

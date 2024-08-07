@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DesktopAnkiApi, AnkiOptionsApi } from "@platform/anki";
+  import { type DesktopAnkiApi, type AnkiOptionsApi } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
@@ -7,7 +7,6 @@
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "lib/utils";
   import type Config from "lib/config";
-  import { setStorage } from "extension/browserApi";
   import { Platform } from "@platform";
 
   const ANKIMOBILE_URL =
@@ -74,18 +73,16 @@
     }
     const deferredNoteCount = config.get("state.anki.deferred_note_count");
     if (deferredNoteCount <= 0) {
-      void config.set("state.anki.deferred_note_error", false);
-      void setStorage("deferred-anki-note-errors", []);
+      void (ankiApi as DesktopAnkiApi).clearDeferredNotes();
       return true;
     }
     const response = confirm(
       `This will discard ${deferredNoteCount} Anki notes that are waiting to be added. Proceed?`,
     );
     if (response) {
-      void config.set("state.anki.deferred_note_count", 0);
-      void config.set("state.anki.deferred_note_error", false);
-      void setStorage("deferred-anki-note", []);
-      void setStorage("deferred-anki-note-errors", []);
+      if (Platform.IS_DESKTOP) {
+        void (ankiApi as DesktopAnkiApi).clearDeferredNotes();
+      }
     }
     return response;
   }
