@@ -13,6 +13,9 @@ struct DictUrls {
             metadata: dir.appendingPathComponent("dictionary-metadata.json")
         )
     }
+
+    static var user = Result { try DictUrls.fromDirectory(getUserDictDir()) }
+    static var bundled = Result { try DictUrls.fromDirectory(getBundledDictDir()) }
 }
 
 public func updateDictionary() throws -> DictMetadata {
@@ -29,8 +32,7 @@ public func updateDictionary() throws -> DictMetadata {
     let metadataJson = try jsonSerialize(metadata)
     try metadataJson.write(to: tmpUrls.metadata, atomically: true, encoding: String.Encoding.utf8)
 
-    let userDictDir = try getUserDictDir()
-    let userDictUrls = DictUrls.fromDirectory(userDictDir)
+    let userDictUrls = try DictUrls.user.get()
 
     for url in [userDictUrls.index, userDictUrls.entries, userDictUrls.metadata] {
         if FileManager.default.fileExists(atPath: url.path) {
@@ -63,8 +65,7 @@ func getDictionaryUrls() throws -> DictUrls {
         return dictUrls
     } else {
         os_log(.debug, "Using bundled JMDict")
-        let bundledDictDir = try getBundledDictDir()
-        let bundledDictUrls = DictUrls.fromDirectory(bundledDictDir)
+        let bundledDictUrls = try DictUrls.bundled.get()
 
         for url in [bundledDictUrls.index, bundledDictUrls.entries, bundledDictUrls.metadata] {
             if !FileManager.default.fileExists(atPath: url.path) {
@@ -76,10 +77,9 @@ func getDictionaryUrls() throws -> DictUrls {
 }
 
 private func validateAndGetUserDictUrls() -> DictUrls? {
-    guard let userDictDir = try? getUserDictDir() else {
+    guard let dictUrls = DictUrls.user.ok() else {
         return nil
     }
-    let dictUrls = DictUrls.fromDirectory(userDictDir)
 
     for url in [dictUrls.index, dictUrls.entries, dictUrls.metadata] {
         if !FileManager.default.fileExists(atPath: url.path) {

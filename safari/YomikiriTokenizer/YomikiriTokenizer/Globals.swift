@@ -19,3 +19,14 @@ func jsonDeserialize<T: Decodable>(_ json: String) throws -> T {
     let decoder = JSONDecoder()
     return try decoder.decode(T.self, from: json.data(using: .utf8)!)
 }
+
+extension Result {
+    func ok() -> Success? {
+        switch self {
+        case .success(let value):
+            return value
+        case .failure(let _err):
+            return nil
+        }
+    }
+}
