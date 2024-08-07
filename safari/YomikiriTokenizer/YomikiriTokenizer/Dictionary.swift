@@ -1,12 +1,11 @@
-//
-//  Dictionary.swift
-//  YomikiriTokenizer
-//
-//  Created by Yoonchae Lee on 3/13/24.
-//
-
 import Foundation
 import os.log
+
+struct DictUrls {
+    var index: URL
+    var entries: URL
+    var metadata: URL
+}
 
 let bundle = Bundle(for: Backend.self)
 
@@ -27,63 +26,70 @@ public func updateDictionary() throws -> DictMetadata {
     try metadataJson.write(to: tmpMetadataUrl, atomically: true, encoding: String.Encoding.utf8)
 
     let dictionaryDirUrl = try getDictionaryDirUrl()
-    let (destIndexUrl, destEntriesUrl, destMetadataUrl) = try installedDictionaryUrl()
+    let userDictUrls = try installedDictionaryUrl()
 
-    for url in [destIndexUrl, destEntriesUrl, destMetadataUrl] {
+    for url in [userDictUrls.index, userDictUrls.entries, userDictUrls.metadata] {
         if FileManager.default.fileExists(atPath: url.path) {
             try FileManager.default.removeItem(at: url)
         }
     }
-    try FileManager.default.copyItem(at: tmpIndexUrl, to: destIndexUrl)
-    try FileManager.default.copyItem(at: tmpEntriesUrl, to: destEntriesUrl)
-    try FileManager.default.copyItem(at: tmpMetadataUrl, to: destMetadataUrl)
+    try FileManager.default.copyItem(at: tmpIndexUrl, to: userDictUrls.index)
+    try FileManager.default.copyItem(at: tmpEntriesUrl, to: userDictUrls.entries)
+    try FileManager.default.copyItem(at: tmpMetadataUrl, to: userDictUrls.metadata)
 
     return try getDictionaryMetadata()
 }
 
-func getDictionaryPath() throws -> (index: String, entries: String) {
-    if let (index, entries, _) = tryGetInstalledDictionaryUrl() {
+func getDictionaryPath() throws -> DictUrls {
+    if let dictUrls = tryGetInstalledDictionaryUrl() {
         os_log(.debug, "Using updated JMDict")
-        return (index.path, entries.path)
+        return dictUrls
     } else {
         os_log(.debug, "Using bundled JMDict")
-        guard let indexPath = bundle.path(forResource: "english", ofType: "yomikiriindex", inDirectory: "res") else {
+        guard let indexUrl = bundle.url(forResource: "english", withExtension: "yomikiriindex", subdirectory: "res") else {
             throw YomikiriTokenizerError.BaseResourceNotFound
         }
-        guard let entriesPath = bundle.path(forResource: "english", ofType: "yomikiridict", inDirectory: "res") else {
+        guard let entriesUrl = bundle.url(forResource: "english", withExtension: "yomikiridict", subdirectory: "res") else {
             throw YomikiriTokenizerError.BaseResourceNotFound
         }
-        return (indexPath, entriesPath)
+        guard let metadataUrl = bundle.url(forResource: "dictionary-metadata", withExtension: "json", subdirectory: "res") else {
+            throw YomikiriTokenizerError.BaseResourceNotFound
+        }
+        return DictUrls(
+            index: indexUrl,
+            entries: entriesUrl,
+            metadata: metadataUrl
+        )
     }
 }
 
 // file may not exist at url.
-func installedDictionaryUrl() throws -> (index: URL, entries: URL, metadata: URL) {
+func installedDictionaryUrl() throws -> DictUrls {
     let dictionaryDirUrl = try getDictionaryDirUrl()
-    let dictIndexUrl = dictionaryDirUrl.appendingPathComponent("english.yomikiriindex")
-    let dictEntriesUrl = dictionaryDirUrl.appendingPathComponent("english.yomikiridict")
-    let dictMetadataUrl = dictionaryDirUrl.appendingPathComponent("dictionary-metadata.json")
-
-    return (index: dictIndexUrl, entries: dictEntriesUrl, metadata: dictMetadataUrl)
+    return DictUrls(
+        index: dictionaryDirUrl.appendingPathComponent("english.yomikiriindex"),
+        entries: dictionaryDirUrl.appendingPathComponent("english.yomikiridict"),
+        metadata: dictionaryDirUrl.appendingPathComponent("dictionary-metadata.json")
+    )
 }
 
-func tryGetInstalledDictionaryUrl() -> (index: URL, entries: URL, metadata: URL)? {
-    guard let (indexUrl, entriesUrl, metadataUrl) = try? installedDictionaryUrl() else {
+func tryGetInstalledDictionaryUrl() -> DictUrls? {
+    guard let dictUrls = try? installedDictionaryUrl() else {
         return nil
     }
-    for url in [indexUrl, entriesUrl, metadataUrl] {
+    for url in [dictUrls.index, dictUrls.entries, dictUrls.metadata] {
         if !FileManager.default.fileExists(atPath: url.path) {
             return nil
         }
     }
-    return (index: indexUrl, entries: entriesUrl, metadata: metadataUrl)
+    return dictUrls
 }
 
 public func getDictionaryMetadata() throws -> DictMetadata {
-    guard let (_, _, dictMetadataUrl) = tryGetInstalledDictionaryUrl() else {
+    guard let dictUrls = tryGetInstalledDictionaryUrl() else {
         return try getDefaultDictionaryMetadata()
     }
-    let json = try String(contentsOf: dictMetadataUrl, encoding: .utf8)
+    let json = try String(contentsOf: dictUrls.metadata, encoding: .utf8)
     let decoder = JSONDecoder()
     guard let jsonData = json.data(using: .utf8) else {
         throw YomikiriTokenizerError.IsNotValidUtf8(context: "dictionary-metadata.json")
