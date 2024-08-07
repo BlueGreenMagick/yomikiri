@@ -51,6 +51,7 @@ export interface DictMetadata {
     download_date: string;
     files_size: number;
     user_download: boolean;
+    schema_ver: number;
 }
 
 interface Backend {

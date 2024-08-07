@@ -1,7 +1,7 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
-use crate::Result;
+use crate::{Result, SCHEMA_VER};
 
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
@@ -9,6 +9,7 @@ pub struct DictMetadata {
     download_date: String,
     files_size: u64,
     user_download: bool,
+    schema_ver: u16,
 }
 
 impl DictMetadata {
@@ -19,6 +20,7 @@ impl DictMetadata {
             download_date,
             files_size,
             user_download,
+            schema_ver: SCHEMA_VER,
         }
     }
 
