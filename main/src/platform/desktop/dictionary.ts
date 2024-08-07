@@ -6,7 +6,7 @@ export { default as bundledDictMetadata } from "@yomikiri/dictionary-files/dicti
 
 interface DictionaryDBSchema extends DBSchema {
   metadata: {
-    key: string;
+    key: "value";
     value: DictMetadata;
   };
   "yomikiri-index": {
@@ -19,11 +19,22 @@ interface DictionaryDBSchema extends DBSchema {
   };
 }
 
-/** Loads (index, entries) if saved in db. Returns null otherwise. */
+/**
+ * Loads user dictionary (index, entries) if it exists, valid, and fresh.
+ * Otherwise, return null and delete saved dictionary.
+ */
 export async function loadSavedDictionary(): Promise<
   [Uint8Array, Uint8Array] | null
 > {
   const db = await openDictionaryDB();
+
+  const metadata = await db.get("metadata", "value");
+  if (metadata === undefined) return null;
+  if (!validateUserDictMetadata(metadata)) {
+    void deleteSavedDictionary();
+    return null;
+  }
+
   const yomikiriIndexP = db.get("yomikiri-index", "value");
   const yomikiriEntriesP = db.get("yomikiri-entries", "value");
   const [yomikiriIndexBytes, yomikiriEntriesBytes] = await Promise.all([
@@ -47,26 +58,40 @@ export async function openDictionaryDB() {
   });
 }
 
-export async function dictionaryMetadata(): Promise<DictMetadata> {
+export async function loadDictionaryMetadata(): Promise<DictMetadata> {
   const db = await openDictionaryDB();
-  const installedMetadata = await db.get("metadata", "value");
-  if (installedMetadata !== undefined) {
-    return installedMetadata;
+  const userDictMetadata = await db.get("metadata", "value");
+  if (
+    userDictMetadata !== undefined &&
+    validateUserDictMetadata(userDictMetadata)
+  ) {
+    return userDictMetadata;
   } else {
     return bundledDictMetadata;
   }
 }
 
-export async function getUserDictMetadata(): Promise<DictMetadata | null> {
-  const db = await openDictionaryDB();
-  return (await db.get("metadata", "value")) ?? null;
-}
-
 export async function deleteSavedDictionary() {
   const db = await openDictionaryDB();
   console.info("Will delete user-installed dictionary");
-  await db.clear("metadata");
-  await db.clear("yomikiri-index");
-  await db.clear("yomikiri-entries");
+  await Promise.all([
+    db.clear("yomikiri-index"),
+    db.clear("yomikiri-entries"),
+    db.clear("metadata"),
+  ]);
   console.info("Deleted user-installed dictionary");
+}
+
+/** Return true if user dictionary is has valid schema and is fresh */
+function validateUserDictMetadata(userDict: DictMetadata): boolean {
+  if (userDict.schemaVer !== bundledDictMetadata.schemaVer) {
+    return false;
+  }
+
+  const userDownloadDate = new Date(userDict.downloadDate);
+  const bundledDownloadDate = new Date(bundledDictMetadata.downloadDate);
+  if (userDownloadDate.getTime() <= bundledDownloadDate.getTime()) {
+    return false;
+  }
+  return true;
 }
