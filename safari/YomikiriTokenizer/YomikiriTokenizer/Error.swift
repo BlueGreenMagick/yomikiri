@@ -14,6 +14,7 @@ enum YomikiriTokenizerError: Error {
     case BaseResourceNotFound
     case CouldNotRetrieveUserDefaults
     case IsNotValidUtf8(context: String)
+    case Fatal(_ message: String)
 }
 
 extension YomikiriTokenizerError: LocalizedError {
@@ -31,6 +32,9 @@ extension YomikiriTokenizerError: LocalizedError {
             return "Could not retrieve user defaults"
         case let .IsNotValidUtf8(ctx):
             return "Not a valid utf-8: \(ctx)"
+        /// e.g. Invariant violation
+        case let .Fatal(msg):
+            return "Fatal: \(msg)"
         }
     }
 }

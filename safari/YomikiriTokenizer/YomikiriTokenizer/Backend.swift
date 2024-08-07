@@ -8,6 +8,6 @@
 import Foundation
 
 public func createBackend() throws -> Backend {
-    let dictUrls = try getDictionaryUrls()
+    let dictUrls = try getDict()
     return try Backend(indexPath: dictUrls.index.path, entriesPath: dictUrls.entries.path)
 }

@@ -14,15 +14,22 @@ struct DictUrls {
         )
     }
 
+    func urls() -> [URL] {
+        return [index, entries, metadata]
+    }
+
+    /// Throw error if shared directory could not be retrieved,
+    /// or if user dictionary directory could not be created.
     static var user = Result { try DictUrls.fromDirectory(getUserDictDir()) }
     static var bundled = Result { try DictUrls.fromDirectory(getBundledDictDir()) }
 }
 
+/// Generate dictionary files and save it to filesystem
 public func updateDictionary() throws -> DictMetadata {
     let tmpDir = try getSharedCacheDirectory()
     let tmpUrls = DictUrls.fromDirectory(tmpDir)
 
-    for tmpUrl in [tmpUrls.index, tmpUrls.entries, tmpUrls.metadata] {
+    for tmpUrl in tmpUrls.urls() {
         if FileManager.default.fileExists(atPath: tmpUrl.path) {
             try FileManager.default.removeItem(at: tmpUrl)
         }
@@ -32,74 +39,122 @@ public func updateDictionary() throws -> DictMetadata {
     let metadataJson = try jsonSerialize(metadata)
     try metadataJson.write(to: tmpUrls.metadata, atomically: true, encoding: String.Encoding.utf8)
 
-    let userDictUrls = try DictUrls.user.get()
+    let userDict = try DictUrls.user.get()
 
-    for url in [userDictUrls.index, userDictUrls.entries, userDictUrls.metadata] {
+    for url in userDict.urls() {
         if FileManager.default.fileExists(atPath: url.path) {
             try FileManager.default.removeItem(at: url)
         }
     }
-    try FileManager.default.copyItem(at: tmpUrls.index, to: userDictUrls.index)
-    try FileManager.default.copyItem(at: tmpUrls.entries, to: userDictUrls.entries)
-    try FileManager.default.copyItem(at: tmpUrls.metadata, to: userDictUrls.metadata)
+    try FileManager.default.copyItem(at: tmpUrls.index, to: userDict.index)
+    try FileManager.default.copyItem(at: tmpUrls.entries, to: userDict.entries)
+    try FileManager.default.copyItem(at: tmpUrls.metadata, to: userDict.metadata)
 
-    return try getDictionaryMetadata()
+    return try getMetadata(userDict)
 }
 
 public func getDictionaryMetadata() throws -> DictMetadata {
-    guard let dictUrls = validateAndGetUserDictUrls() else {
-        return try getDefaultDictionaryMetadata()
+    if let userDict = try validateAndGetUserDict() {
+        return try getMetadata(userDict)
+    } else {
+        let bundledDict = try DictUrls.bundled.get()
+        return try getMetadata(bundledDict)
     }
-    let json = try String(contentsOf: dictUrls.metadata, encoding: .utf8)
-    let decoder = JSONDecoder()
-    guard let jsonData = json.data(using: .utf8) else {
-        throw YomikiriTokenizerError.IsNotValidUtf8(context: "dictionary-metadata.json")
-    }
-    let metadata = try decoder.decode(DictMetadata.self, from: jsonData)
-    return metadata
 }
 
-func getDictionaryUrls() throws -> DictUrls {
-    if let dictUrls = validateAndGetUserDictUrls() {
+/// Get dictionary `DictUrls` suitable for use.
+///
+/// Return user dictionary if it exists, is valid, and not stale.
+/// Otherwise, return bundled dictionary.
+func getDict() throws -> DictUrls {
+    if let userDict = try validateAndGetUserDict() {
         os_log(.debug, "Using updated JMDict")
-        return dictUrls
+        return userDict
     } else {
         os_log(.debug, "Using bundled JMDict")
-        let bundledDictUrls = try DictUrls.bundled.get()
+        let bundledDict = try DictUrls.bundled.get()
 
-        for url in [bundledDictUrls.index, bundledDictUrls.entries, bundledDictUrls.metadata] {
+        for url in bundledDict.urls() {
             if !FileManager.default.fileExists(atPath: url.path) {
                 throw YomikiriTokenizerError.BaseResourceNotFound
             }
         }
-        return bundledDictUrls
+        return bundledDict
     }
 }
 
-private func validateAndGetUserDictUrls() -> DictUrls? {
-    guard let dictUrls = DictUrls.user.ok() else {
+/// @return user dictionary `dictUrls` if it exists, is valid, and fresh.
+/// Otherwise, returns `nil`, and deletes user dictionary files if it exists.
+/// Throws if there is a problem with retrieving bundled dictionary.
+///
+/// User dictionary is invalid if its 'schema\_ver' is not equal to bundled's 'schema\_ver'.
+/// It is stale if its 'download\_date' is earlier than bundled's 'download\_date'
+private func validateAndGetUserDict() throws -> DictUrls? {
+    // We try retrieving bundled dict and metadata first,
+    // so if there's a problem that is not related to user dictionary files,
+    // an error is thrown instead of returning false.
+    let bundledDict = try DictUrls.bundled.get()
+    guard let userDict = DictUrls.user.ok() else {
         return nil
     }
 
-    for url in [dictUrls.index, dictUrls.entries, dictUrls.metadata] {
+    let userDictIsValid = try validateUserDict(bundledDict: bundledDict, userDict: userDict)
+    if userDictIsValid {
+        return userDict
+    } else {
+        os_log(.info, "Deleting user dictionary files")
+        for url in userDict.urls() {
+            _ = try? FileManager.default.removeItem(at: url)
+        }
+        return nil
+    }
+}
+
+/// @return `true` if user dictionary exists, is valid, and fresh.
+private func validateUserDict(bundledDict: DictUrls, userDict: DictUrls) throws -> Bool {
+    // Some dictionary file is missing
+    for url in userDict.urls() {
         if !FileManager.default.fileExists(atPath: url.path) {
-            return nil
+            return false
         }
     }
-    return dictUrls
+
+    let bundledMetadata = try getMetadata(bundledDict)
+    guard let userMetadata = try? getMetadata(userDict) else {
+        os_log(.info, "User dictionary json file could not be parsed.")
+        return false
+    }
+
+    // Invalid dictionary schema
+    if bundledMetadata.schemaVer != userMetadata.schemaVer {
+        os_log(.info, "User dictionary has invalid schema version")
+        return false
+    }
+
+    // Check for stale dictionary
+    guard let bundledDownloadDate = parseDateString(bundledMetadata.downloadDate) else {
+        throw YomikiriTokenizerError.Fatal("Could not parse download date of bundled dictionary metadata")
+    }
+    guard let userDownloadDate = parseDateString(userMetadata.downloadDate) else {
+        os_log(.info, "User dictionary has invalid metadata download date format")
+        return false
+    }
+    if bundledDownloadDate >= userDownloadDate {
+        os_log(.info, "User dictionary has become stale")
+        return false
+    }
+
+    return true
 }
 
 private func getDefaultDictionaryMetadata() throws -> DictMetadata {
-    guard let jsonUrl = bundle.url(forResource: "dictionary-metadata", withExtension: "json", subdirectory: "res") else {
-        throw YomikiriTokenizerError.BaseResourceNotFound
-    }
-    let json = try String(contentsOf: jsonUrl, encoding: .utf8)
-    let decoder = JSONDecoder()
-    guard let jsonData = json.data(using: .utf8) else {
-        throw YomikiriTokenizerError.IsNotValidUtf8(context: "dictionary-metadata.json")
-    }
-    let metadata = try decoder.decode(DictMetadata.self, from: jsonData)
-    return metadata
+    let bundledDict = try DictUrls.bundled.get()
+    return try getMetadata(bundledDict)
+}
+
+private func getMetadata(_ dict: DictUrls) throws -> DictMetadata {
+    let json = try String(contentsOf: dict.metadata, encoding: .utf8)
+    return try jsonDeserialize(json)
 }
 
 /// Get user dictionary directory, creating the directory if it does not exist.
@@ -117,4 +172,9 @@ private func getBundledDictDir() throws -> URL {
         throw YomikiriTokenizerError.BaseResourceNotFound
     }
     return resourceDir.appendingPathComponent("res")
+}
+
+private func parseDateString(_ dateString: String) -> Date? {
+    let formatter = ISO8601DateFormatter()
+    return formatter.date(from: dateString)
 }

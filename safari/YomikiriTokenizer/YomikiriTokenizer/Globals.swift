@@ -25,8 +25,17 @@ extension Result {
         switch self {
         case .success(let value):
             return value
-        case .failure(let _err):
+        case .failure:
             return nil
+        }
+    }
+
+    func is_ok() -> Bool {
+        switch self {
+        case .success:
+            return true
+        case .failure:
+            return false
         }
     }
 }
