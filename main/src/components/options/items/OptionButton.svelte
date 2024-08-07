@@ -4,6 +4,8 @@
   export let title: string;
   export let buttonText: string;
   export let disabled = false;
+  /** Disable the button only. Defaults to `disabled` value. */
+  export let buttonDisabled = disabled;
   export let onClicked: () => void;
 </script>
 
@@ -13,7 +15,7 @@
       on:click={() => {
         onClicked();
       }}
-      {disabled}
+      disabled={buttonDisabled}
     >
       {buttonText}
     </button>

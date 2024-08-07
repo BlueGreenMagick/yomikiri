@@ -55,11 +55,21 @@
   <OptionButton
     title="Dictionary file"
     buttonText="Update"
-    disabled={state !== "loaded"}
+    disabled={state === "loading"}
+    buttonDisabled={state !== "loaded" && state !== "error"}
     {onClicked}
   >
-    <span class:success={state === "downloaded"}>
+    <span
+      class:success={state === "downloaded"}
+      class:loading={["loading", "downloading"].includes(state)}
+    >
       {dictDescription}
     </span>
   </OptionButton>
 </GroupedOptions>
+
+<style>
+  .loading {
+    opacity: 0.8;
+  }
+</style>
