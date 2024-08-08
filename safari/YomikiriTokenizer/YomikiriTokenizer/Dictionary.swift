@@ -151,5 +151,6 @@ private func getBundledDictDir() throws -> URL {
 
 private func parseDateString(_ dateString: String) -> Date? {
     let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = ISO8601DateFormatter.Options.withInternetDateTime.union(.withFractionalSeconds)
     return formatter.date(from: dateString)
 }
