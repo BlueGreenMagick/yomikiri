@@ -1,4 +1,5 @@
 use flate2::read::GzDecoder;
+use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
 use yomikiri_dictionary::metadata::DictMetadata;
 
@@ -7,7 +8,7 @@ use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 use std::fs::{self, File};
-use std::io::Write;
+use std::io::{self, Write};
 use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
@@ -49,9 +50,12 @@ impl Backend {
 }
 
 /// Downloads and writes new dictionary files into specified path.
-/// The files are written in-place.
 #[uniffi::export]
-pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResult<DictMetadata> {
+pub fn update_dictionary_file(
+    index_path: String,
+    entries_path: String,
+    metadata_path: String,
+) -> YResult<DictMetadata> {
     let entries = {
         // JMDict is currently 58MB.
         let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
@@ -60,15 +64,28 @@ pub fn update_dictionary_file(index_path: String, entries_path: String) -> YResu
         parse_jmdict_xml(&xml)
     }?;
 
-    let mut entries_file = File::create(&entries_path)?;
-    let term_indexes = write_entries(&mut entries_file, &entries)?;
-    let mut index_file = File::create(&index_path)?;
-    write_indexes(&mut index_file, &term_indexes)?;
+    let mut temp_entries_file = NamedTempFile::new()?;
+    let mut temp_index_file = NamedTempFile::new()?;
+    let term_indexes = write_entries(&mut temp_entries_file, &entries)?;
+    write_indexes(&mut temp_index_file, &term_indexes)?;
 
-    let index_file_size = fs::metadata(&index_path)?.len();
-    let entries_file_size = fs::metadata(&entries_path)?.len();
+    let index_file_size = fs::metadata(temp_entries_file.path())?.len();
+    let entries_file_size = fs::metadata(temp_index_file.path())?.len();
     let files_size = index_file_size + entries_file_size;
     let metadata = DictMetadata::new(files_size, true);
+    let metadata_json = metadata.to_json()?;
+
+    // remove file that may not exist
+    if let Err(e) = fs::remove_file(&metadata_path) {
+        match e.kind() {
+            io::ErrorKind::NotFound => {}
+            _ => return Err(e.into()),
+        }
+    }
+
+    temp_entries_file.persist(&entries_path)?;
+    temp_index_file.persist(&index_path)?;
+    fs::write(&metadata_path, &metadata_json)?;
 
     Ok(metadata)
 }

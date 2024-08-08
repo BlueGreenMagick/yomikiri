@@ -28,6 +28,9 @@ pub enum YomikiriError {
     DictionaryError(#[from] Box<yomikiri_dictionary::Error>),
     #[error("Not a valid UTF-8 string: {0}")]
     FromUTF8Error(#[from] Box<FromUtf8Error>),
+    #[cfg(uniffi)]
+    #[error("Could not persist a temporary file: {0}")]
+    PersistError(#[from] tempfile::PersistError),
     #[error("[Other Error] {0}")]
     OtherError(String),
 }

@@ -26,31 +26,8 @@ struct DictUrls {
 
 /// Generate dictionary files and save it to filesystem
 public func updateDictionary() throws -> DictMetadata {
-    let tmpDir = try getSharedCacheDirectory()
-    let tmpUrls = DictUrls.fromDirectory(tmpDir)
-
-    for tmpUrl in tmpUrls.urls() {
-        if FileManager.default.fileExists(atPath: tmpUrl.path) {
-            try FileManager.default.removeItem(at: tmpUrl)
-        }
-    }
-    let metadata = try updateDictionaryFile(indexPath: tmpUrls.index.path, entriesPath: tmpUrls.entries.path)
-
-    let metadataJson = try jsonSerialize(metadata)
-    try metadataJson.write(to: tmpUrls.metadata, atomically: true, encoding: String.Encoding.utf8)
-
     let userDict = try DictUrls.user.get()
-
-    for url in userDict.urls() {
-        if FileManager.default.fileExists(atPath: url.path) {
-            try FileManager.default.removeItem(at: url)
-        }
-    }
-    try FileManager.default.copyItem(at: tmpUrls.index, to: userDict.index)
-    try FileManager.default.copyItem(at: tmpUrls.entries, to: userDict.entries)
-    try FileManager.default.copyItem(at: tmpUrls.metadata, to: userDict.metadata)
-
-    return try getMetadata(userDict)
+    return try updateDictionaryFile(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
 }
 
 public func getDictionaryMetadata() throws -> DictMetadata {
@@ -90,9 +67,6 @@ func getDict() throws -> DictUrls {
 /// User dictionary is invalid if its 'schema\_ver' is not equal to bundled's 'schema\_ver'.
 /// It is stale if its 'download\_date' is earlier than bundled's 'download\_date'
 private func validateAndGetUserDict() throws -> DictUrls? {
-    // We try retrieving bundled dict and metadata first,
-    // so if there's a problem that is not related to user dictionary files,
-    // an error is thrown instead of returning false.
     let bundledDict = try DictUrls.bundled.get()
     guard let userDict = DictUrls.user.ok() else {
         return nil
@@ -119,6 +93,9 @@ private func validateUserDict(bundledDict: DictUrls, userDict: DictUrls) throws 
         }
     }
 
+    // We try retrieving bundled metadata first,
+    // so if there's a problem that is not related to user dictionary files,
+    // an error is thrown instead of returning false.
     let bundledMetadata = try getMetadata(bundledDict)
     guard let userMetadata = try? getMetadata(userDict) else {
         os_log(.info, "User dictionary json file could not be parsed.")
@@ -147,11 +124,6 @@ private func validateUserDict(bundledDict: DictUrls, userDict: DictUrls) throws 
     return true
 }
 
-private func getDefaultDictionaryMetadata() throws -> DictMetadata {
-    let bundledDict = try DictUrls.bundled.get()
-    return try getMetadata(bundledDict)
-}
-
 private func getMetadata(_ dict: DictUrls) throws -> DictMetadata {
     let json = try String(contentsOf: dict.metadata, encoding: .utf8)
     return try jsonDeserialize(json)
@@ -164,6 +136,9 @@ private func getUserDictDir() throws -> URL {
     if !FileManager.default.fileExists(atPath: dir.path) {
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     }
+    #if targetEnvironment(simulator)
+        os_log(.debug, "User Directory: %{public}s", dir.path)
+    #endif
     return dir
 }
 
