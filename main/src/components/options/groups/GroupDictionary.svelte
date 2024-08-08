@@ -2,7 +2,7 @@
   import { PagePlatform } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import Utils from "lib/utils";
+  import Utils, { formatDateString } from "lib/utils";
   import {
     Backend,
     type DesktopBackend,
@@ -22,7 +22,7 @@
   async function initialize() {
     const metadata = await PagePlatform.getDictionaryMetadata();
     const downloadDate = new Date(metadata.downloadDate);
-    dictDescription = `Last updated: ${downloadDate.toLocaleDateString()}`;
+    dictDescription = `Last updated: ${formatDateString(downloadDate)}`;
     state = "loaded";
   }
 

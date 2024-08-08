@@ -494,4 +494,17 @@ export class Disposable {
   }
 }
 
+/**
+ * Returns datestring in yyyy-mm-dd format.
+ *
+ * Unlike `date.toISOString()` which outputs date in UTC, this outputs date in local timezone.
+ */
+export function formatDateString(date: Date): string {
+  const year = date.getFullYear().toString().padStart(4, "0");
+  // month is 0-based
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export * as default from "./utils";
