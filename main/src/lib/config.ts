@@ -115,16 +115,19 @@ export class Config {
     key: K,
     value: Configuration[K] | undefined,
   ): Promise<void> {
-    this.setInternal(key, value);
+    const changed = this.setInternal(key, value);
+    if (!changed) return;
     this.runSubscribers();
     await this.save();
   }
 
   async setBatch(configs: Partial<Configuration>) {
+    let changed = false;
     for (const key in configs) {
       const k = key as keyof Configuration;
-      this.setInternal(k, configs[k]);
+      changed = changed && this.setInternal(k, configs[k]);
     }
+    if (!changed) return;
     this.runSubscribers();
     await this.save();
   }
@@ -138,7 +141,7 @@ export class Config {
     key: K,
     value: Configuration[K] | undefined,
   ): boolean {
-    if (value === this.storage[key]) false;
+    if (value === this.storage[key]) return false;
 
     if (value === undefined) {
       /* eslint-disable-next-line */
