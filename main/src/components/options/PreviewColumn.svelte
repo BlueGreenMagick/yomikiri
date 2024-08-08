@@ -88,10 +88,10 @@
   }
 
   onMount(() => {
-    config.subscribe(update);
+    const configSubscriber = config.subscribe(update);
 
     return () => {
-      config.removeSubscriber(update);
+      configSubscriber.dispose();
     };
   });
 </script>

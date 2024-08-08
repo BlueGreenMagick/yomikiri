@@ -482,4 +482,16 @@ export function newChangeTracker<T>(): (obj: T) => number {
   };
 }
 
+export class Disposable {
+  private disposeFn: () => void;
+
+  constructor(disposeFn: () => void) {
+    this.disposeFn = disposeFn;
+  }
+
+  dispose(): void {
+    this.disposeFn();
+  }
+}
+
 export * as default from "./utils";

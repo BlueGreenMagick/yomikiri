@@ -4,7 +4,7 @@ import type { TTSVoice } from "../platform/common";
 import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
-import { LazyAsync, log } from "./utils";
+import { Disposable, LazyAsync, log } from "./utils";
 
 /** Incremented each time Configuration interface is modified */
 export const CONFIG_VERSION = 3;
@@ -162,20 +162,17 @@ export class Config {
    *
    * If Config isn't initialized yet, it will run on initialization.
    */
-  subscribe(subscriber: () => void): void {
+  subscribe(subscriber: () => void): Disposable {
     this.subscribers.push(subscriber);
     if (this.initialized) {
       subscriber();
     }
-  }
-
-  removeSubscriber(subscriber: () => void): boolean {
-    const idx = this.subscribers.indexOf(subscriber);
-    if (idx !== -1) {
-      this.subscribers.splice(idx, 1);
-      return true;
-    }
-    return false;
+    return new Disposable(() => {
+      const idx = this.subscribers.indexOf(subscriber);
+      if (idx !== -1) {
+        this.subscribers.splice(idx, 1);
+      }
+    });
   }
 
   private runSubscribers(): void {
@@ -269,13 +266,13 @@ export class Config {
       setValue(val);
     };
 
-    this.subscribe(changeHandler);
+    const changeSubscription = this.subscribe(changeHandler);
 
     return {
       subscribe: (run, invalidate) => {
         const unsubscribe = subscribe(run, invalidate);
         return () => {
-          this.removeSubscriber(changeHandler);
+          changeSubscription.dispose();
           unsubscribe();
         };
       },
