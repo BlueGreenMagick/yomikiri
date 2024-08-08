@@ -381,8 +381,10 @@ export class ClearDeferredNotesJob {
     const notes = await getStorage<AnkiNote[]>(DEFER_NOTES_STORAGE_KEY);
     const errors = await getStorage<string[]>(DEFER_ERRORS_STORAGE_KEY);
 
-    await config.set("state.anki.deferred_note_count", 0);
-    await config.set("state.anki.deferred_note_error", false);
+    await config.setBatch({
+      "state.anki.deferred_note_count": 0,
+      "state.anki.deferred_note_error": false,
+    });
     await removeStorage(DEFER_ERRORS_STORAGE_KEY);
     await removeStorage(DEFER_NOTES_STORAGE_KEY);
     return new ClearDeferredNotesJob(config, notes, errors);
@@ -391,11 +393,10 @@ export class ClearDeferredNotesJob {
   async undo() {
     await setStorage(DEFER_NOTES_STORAGE_KEY, this.notes);
     await setStorage(DEFER_ERRORS_STORAGE_KEY, this.errors);
-    await this.config.set("state.anki.deferred_note_count", this.notes.length);
-    await this.config.set(
-      "state.anki.deferred_note_error",
-      this.errors.length > 0,
-    );
+    await this.config.setBatch({
+      "state.anki.deferred_note_count": this.notes.length,
+      "state.anki.deferred_note_error": this.errors.length > 0,
+    });
   }
 }
 

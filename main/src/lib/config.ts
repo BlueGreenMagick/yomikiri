@@ -110,15 +110,35 @@ export class Config {
 
   /**
    * To remove from storage, set value to `undefined`.
-   *
-   * If `save` is `false`, only updates config values in this context.
    */
   async set<K extends keyof Configuration>(
     key: K,
     value: Configuration[K] | undefined,
-    save = true,
   ): Promise<void> {
-    if (value === this.storage[key]) return;
+    this.setInternal(key, value);
+    this.runSubscribers();
+    await this.save();
+  }
+
+  async setBatch(configs: Partial<Configuration>) {
+    for (const key in configs) {
+      const k = key as keyof Configuration;
+      this.setInternal(k, configs[k]);
+    }
+    this.runSubscribers();
+    await this.save();
+  }
+
+  /**
+   * Set value internally.
+   * This does not save config to storage, or trigger subscribers.
+   * Returns `true` if value was changed.
+   */
+  setInternal<K extends keyof Configuration>(
+    key: K,
+    value: Configuration[K] | undefined,
+  ): boolean {
+    if (value === this.storage[key]) false;
 
     if (value === undefined) {
       /* eslint-disable-next-line */
@@ -126,11 +146,7 @@ export class Config {
     } else {
       this.storage[key] = value;
     }
-
-    this.runSubscribers();
-    if (save) {
-      await this.save();
-    }
+    return true;
   }
 
   async save(): Promise<void> {
