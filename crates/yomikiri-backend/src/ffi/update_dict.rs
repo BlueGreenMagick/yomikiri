@@ -1,5 +1,6 @@
 use super::backend::RustBackend;
 use super::error::FFIResult;
+use anyhow::Result;
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{
@@ -22,17 +23,29 @@ pub struct DictFilesReplaceJob {
 
 #[uniffi::export]
 impl DictFilesReplaceJob {
-    /// Replace user dictionary files.
-    ///
-    /// Returns a new `RustBackend` with replaced files.
-    /// If an error occurs with new files when initializing `RustBackend`,
-    /// it tries to restore the previous user dictionary, then an error is thrown.
     pub fn replace(
         &self,
         index_path: String,
         entries_path: String,
         metadata_path: String,
     ) -> FFIResult<Arc<RustBackend>> {
+        let result = self._replace(index_path, entries_path, metadata_path)?;
+        Ok(result)
+    }
+}
+
+impl DictFilesReplaceJob {
+    /// Replace user dictionary files.
+    ///
+    /// Returns a new `RustBackend` with replaced files.
+    /// If an error occurs with new files when initializing `RustBackend`,
+    /// it tries to restore the previous user dictionary, then an error is thrown.
+    fn _replace(
+        &self,
+        index_path: String,
+        entries_path: String,
+        metadata_path: String,
+    ) -> Result<Arc<RustBackend>> {
         let backup_dir = self.temp_dir.join("prev");
         fs::create_dir(&backup_dir)?;
         let backup_index_path = backup_dir.join(DICT_INDEX_FILENAME);
@@ -66,7 +79,12 @@ impl DictFilesReplaceJob {
 
 /// Downloads and writes new dictionary files into specified path.
 #[uniffi::export]
-pub fn update_dictionary_file(temp_dir: String) -> YResult<DictFilesReplaceJob> {
+pub fn update_dictionary_file(temp_dir: String) -> FFIResult<DictFilesReplaceJob> {
+    let result = _update_dictionary_file(temp_dir)?;
+    Ok(result)
+}
+
+fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
     let entries = {
         // JMDict is currently 58MB.
         let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
