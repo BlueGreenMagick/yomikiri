@@ -11,9 +11,6 @@ import os.log
 import SwiftUI
 import YomikiriTokenizer
 
-// this is computed lazily
-let backend = try! newBackend()
-
 let synthesizer = AVSpeechSynthesizer()
 
 extension URL {
@@ -38,13 +35,6 @@ extension URL {
 
 extension String: LocalizedError {
     public var errorDescription: String? { return self }
-}
-
-private func newBackend() throws -> Backend {
-    os_log(.error, "start creating backend")
-    let result = try Backend.create()
-    os_log(.error, "finish creating backend")
-    return result
 }
 
 func jsonSerialize<T: Encodable>(obj: T?) throws -> String {

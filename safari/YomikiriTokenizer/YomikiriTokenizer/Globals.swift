@@ -7,7 +7,7 @@
 
 import Foundation
 
-let bundle = Bundle(for: Backend.self)
+let bundle = Bundle(for: RustBackend.self)
 
 func jsonSerialize<T: Encodable>(_ obj: T?) throws -> String {
     let encoder = JSONEncoder()

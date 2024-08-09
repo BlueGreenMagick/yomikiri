@@ -6,56 +6,50 @@
 //
 
 import Foundation
+import os.log
 
-public class Backend {
-    /// it is never nil
-    private var rust: RustBackend?
+public enum Backend {
+    private static var rust = Result { try createRustBackend() }
 
-    private init(_ rust: RustBackend) {
-        self.rust = rust
-    }
-
-    public static func create() throws -> Backend {
-        let rust = try createRustBackend()
-        return Backend(rust)
-    }
-
-    public func tokenize(sentence: String, charAt: UInt32) throws -> RawTokenizeResult {
-        return try self.rust!.tokenize(sentence: sentence, charAt: charAt)
-    }
-
-    public func search(term: String, charAt: UInt32) throws -> RawTokenizeResult {
-        return try self.rust!.search(term: term, charAt: charAt)
+    /// Get backend, initializing it when first called.
+    public static func get() throws -> RustBackend {
+        return try Backend.rust.get()
     }
 
     /// Update dictionary files, and update dictionary used within backend.
     ///
-    /// May throw an error
-    public func updateDictionary() throws -> DictMetadata {
+    /// If an error occurs, tries to restore previous dictionary.
+    public static func updateDictionary() async throws -> DictMetadata {
         let tempDir = FileManager.default.temporaryDirectory
         let userDict = try DictUrls.user.get()
+        // update file in background thread
+        let replaceJob = try await Task {
+            try updateDictionaryFile(tempDir: tempDir.path)
+        }.value
+
         // drop backend to close mmap and open file handle
-        self.rust = nil
-        let replaceJob = try updateDictionaryFile(tempDir: tempDir.path)
-        let rust: RustBackend
+        Backend.rust = Result.failure(YomikiriTokenizerError.UpdatingDictionary)
         do {
-            rust = try replaceJob.replace(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
+            let rust = try replaceJob.replace(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
+            Backend.rust = Result.success(rust)
         } catch {
             // using restored user dictionary
-            rust = try createRustBackend()
+            Backend.rust = Result { try createRustBackend() }
         }
-        self.rust = rust
         let metadata = try getDictionaryMetadata()
         return metadata
     }
 }
 
 private func createRustBackend() throws -> RustBackend {
+    os_log(.debug, "start creating backend")
     if let userDict = try? validateAndGetUserDict() {
         if let rust = try? RustBackend(indexPath: userDict.index.path, entriesPath: userDict.entries.path) {
             return rust
         }
     }
     let bundledDict = try DictUrls.bundled.get()
-    return try RustBackend(indexPath: bundledDict.index.path, entriesPath: bundledDict.entries.path)
+    let backend = try RustBackend(indexPath: bundledDict.index.path, entriesPath: bundledDict.entries.path)
+    os_log(.debug, "finish creating backend")
+    return backend
 }

@@ -164,11 +164,11 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 }
             case "tokenize":
                 let req: TokenizeRequest = try jsonDeserialize(json: request)
-                let resp = try backend.tokenize(sentence: req.text, charAt: req.charAt ?? 0)
+                let resp = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt ?? 0)
                 return try jsonSerialize(obj: resp)
             case "searchTerm":
                 let req: SearchRequest = try jsonDeserialize(json: request)
-                let resp = try backend.search(term: req.term, charAt: req.charAt ?? 0)
+                let resp = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
                 return try jsonSerialize(obj: resp)
             case "versionInfo":
                 let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
@@ -177,7 +177,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 ]
                 return try jsonSerialize(obj: versionInfo)
             case "updateDict":
-                let resp = try backend.updateDictionary()
+                let resp = try await Backend.updateDictionary()
                 return try jsonSerialize(obj: resp)
             case "dictMetadata":
                 let resp = try getDictionaryMetadata()

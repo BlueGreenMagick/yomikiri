@@ -22,45 +22,47 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         guard let request = data?["request"] as? String else {
             return
         }
-        let realResponse: [String: Any]
-        var jsonResponse = "null"
-
-        do {
-            switch key {
-            case "tokenize":
-                let req: TokenizeRequest = try jsonDeserialize(json: request)
-                let result = try backend.tokenize(sentence: req.text, charAt: req.charAt)
-                jsonResponse = try jsonSerialize(obj: result)
-            case "search":
-                let req: SearchRequest = try jsonDeserialize(json: request)
-                let result = try backend.search(term: req.term, charAt: req.charAt ?? 0)
-                jsonResponse = try jsonSerialize(obj: result)
-            case "addNote":
-                break
-            case "loadConfig":
-                // already stored in json
-                jsonResponse = try loadSharedConfig()
-            case "saveConfig":
-                let configJson = request
-                try saveSharedConfig(configJson: request)
-            case "tts":
-                let req: TTSRequest = try jsonDeserialize(json: request)
-                try ttsSpeak(voice: req.voice, text: req.text)
-            case "iosVersion":
-                let ver = ProcessInfo.processInfo.operatingSystemVersion
-                let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
-                jsonResponse = try jsonSerialize(obj: iosVersion)
-            default:
-                return
+        let completionHandler = context.completeRequest
+        Task {
+            let realResponse: [String: Any]
+            var jsonResponse = "null"
+            do {
+                switch key {
+                case "tokenize":
+                    let req: TokenizeRequest = try jsonDeserialize(json: request)
+                    let result = try await Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
+                    jsonResponse = try jsonSerialize(obj: result)
+                case "search":
+                    let req: SearchRequest = try jsonDeserialize(json: request)
+                    let result = try await Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
+                    jsonResponse = try jsonSerialize(obj: result)
+                case "addNote":
+                    break
+                case "loadConfig":
+                    // already stored in json
+                    jsonResponse = try loadSharedConfig()
+                case "saveConfig":
+                    let configJson = request
+                    try saveSharedConfig(configJson: request)
+                case "tts":
+                    let req: TTSRequest = try jsonDeserialize(json: request)
+                    try ttsSpeak(voice: req.voice, text: req.text)
+                case "iosVersion":
+                    let ver = ProcessInfo.processInfo.operatingSystemVersion
+                    let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
+                    jsonResponse = try jsonSerialize(obj: iosVersion)
+                default:
+                    return
+                }
+                realResponse = ["success": true, "resp": jsonResponse]
+            } catch {
+                os_log(.error, "Error: %{public}s", String(describing: error))
+                realResponse = ["success": false, "error": ["message": error.localizedDescription]]
             }
-            realResponse = ["success": true, "resp": jsonResponse]
-        } catch {
-            os_log(.error, "Error: %{public}s", String(describing: error))
-            realResponse = ["success": false, "error": ["message": error.localizedDescription]]
+            let resp = NSExtensionItem()
+            resp.userInfo = [SFExtensionMessageKey: realResponse]
+            completionHandler([resp], nil)
         }
-        let resp = NSExtensionItem()
-        resp.userInfo = [SFExtensionMessageKey: realResponse]
-        context.completeRequest(returningItems: [resp], completionHandler: nil)
     }
 }
 
