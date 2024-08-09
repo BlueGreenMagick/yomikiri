@@ -2,8 +2,6 @@ use lindera_core::error::LinderaError;
 use std::io;
 use std::string::FromUtf8Error;
 
-#[cfg(wasm)]
-use wasm_bindgen::JsValue;
 
 pub type YResult<T> = Result<T, YomikiriError>;
 
@@ -51,8 +49,22 @@ err_from!(yomikiri_dictionary::Error);
 err_from!(FromUtf8Error);
 
 #[cfg(wasm)]
-impl From<YomikiriError> for JsValue {
-    fn from(value: YomikiriError) -> Self {
-        JsValue::from_str(&value.to_string())
+mod wasm {
+    use wasm_bindgen::JsValue;
+    use anyhow::Error;
+
+    struct WasmError (Error);
+
+    impl From<Error> for WasmError {
+        fn from(value: Error) -> Self {
+            WasmError(value)
+        }
     }
+    
+    impl From<WasmError> for JsValue {
+        fn from(value: WasmError) -> Self {
+            JsValue::from_str(&value.to_string())
+        }
+    }
+
 }

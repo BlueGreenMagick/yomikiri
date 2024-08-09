@@ -1,4 +1,5 @@
 use std::fmt;
+use std::sync::Arc;
 
 pub type FFIResult<T, E = FFIYomikiriError> = Result<T, E>;
 
@@ -32,5 +33,15 @@ impl From<anyhow::Error> for FFIYomikiriError {
         let message = value.to_string();
         let details: Vec<String> = value.chain().map(|s| s.to_string()).collect();
         Self::Error { message, details }
+    }
+}
+
+trait ToUniFFIResult<T> {
+    fn uniffi(self) -> Result<T, Arc<FFIYomikiriError>>;
+}
+
+impl<T> ToUniFFIResult<T> for Result<T, anyhow::Error> {
+    fn uniffi(self) -> Result<T, Arc<FFIYomikiriError>> {
+        self.map_err(|e| Arc::new(FFIYomikiriError::from(e)))
     }
 }
