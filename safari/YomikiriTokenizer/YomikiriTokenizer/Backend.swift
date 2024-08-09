@@ -44,7 +44,7 @@ public class Backend {
             do {
                 rust = try createRustBackend()
             } catch {
-                fatalError("An error occured while updating dictionary. Tried to fallback to using bundled dictionary, which also failed.")
+                throw YomikiriTokenizerError.Fatal("An error occured while updating dictionary. Tried to fallback to using bundled dictionary, which also failed.")
             }
 
             throw error
