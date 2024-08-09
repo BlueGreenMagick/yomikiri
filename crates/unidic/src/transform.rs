@@ -6,7 +6,9 @@ use std::path::Path;
 use std::str::FromStr;
 use std::{cmp, fs};
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
-use yomikiri_dictionary::file::{read_entries, DictEntryPointer};
+use yomikiri_dictionary::file::{
+    read_entries, DictEntryPointer, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
+};
 use yomikiri_dictionary::index::DictIndex;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
@@ -160,8 +162,8 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
     transform_lex(
         &lex_csv_path,
         transform_dir,
-        &resource_dir.join("english.yomikiriindex"),
-        &resource_dir.join("english.yomikiridict"),
+        &resource_dir.join(DICT_INDEX_FILENAME),
+        &resource_dir.join(DICT_ENTRIES_FILENAME),
     )?;
 
     // transform_matrix(&matrix_def_path, transform_dir, lid_map, rid_map)?;

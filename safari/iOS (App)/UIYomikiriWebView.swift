@@ -177,7 +177,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 ]
                 return try jsonSerialize(obj: versionInfo)
             case "updateDict":
-                let resp = try updateDictionary()
+                let resp = try backend.updateDictionary()
                 return try jsonSerialize(obj: resp)
             case "dictMetadata":
                 let resp = try getDictionaryMetadata()

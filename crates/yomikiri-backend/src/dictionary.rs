@@ -2,6 +2,7 @@ use crate::error::{YResult, YomikiriError};
 use fst::{IntoStreamer, Streamer};
 use std::fs::{self, File};
 use std::io::{Read, Seek};
+use std::path::Path;
 use yomikiri_dictionary::entry::Entry;
 use yomikiri_dictionary::file::{read_entries_with_buffers, BUFFER_SIZE};
 use yomikiri_dictionary::index::DictIndex;
@@ -113,7 +114,10 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
 
 // TODO: switch to Memmap
 impl Dictionary<Vec<u8>, File> {
-    pub fn from_paths(index_path: &str, entries_path: &str) -> YResult<Dictionary<Vec<u8>, File>> {
+    pub fn from_paths<P1: AsRef<Path>, P2: AsRef<Path>>(
+        index_path: P1,
+        entries_path: P2,
+    ) -> YResult<Dictionary<Vec<u8>, File>> {
         let index_bytes = fs::read(index_path)?;
         let index = DictIndex::try_from_source(index_bytes)?;
         let entries_file = File::open(entries_path)?;

@@ -24,39 +24,19 @@ struct DictUrls {
     static var bundled = Result { try DictUrls.fromDirectory(getBundledDictDir()) }
 }
 
-/// Generate dictionary files and save it to filesystem
-public func updateDictionary() throws -> DictMetadata {
-    let userDict = try DictUrls.user.get()
-    return try updateDictionaryFile(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
+func deleteUserDictionary(_ userDict: DictUrls) {
+    os_log(.info, "Deleting user dictionary files")
+    for url in userDict.urls() {
+        _ = try? FileManager.default.removeItem(at: url)
+    }
 }
 
 public func getDictionaryMetadata() throws -> DictMetadata {
-    if let userDict = try validateAndGetUserDict() {
+    if let userDict = try? validateAndGetUserDict() {
         return try getMetadata(userDict)
     } else {
         let bundledDict = try DictUrls.bundled.get()
         return try getMetadata(bundledDict)
-    }
-}
-
-/// Get dictionary `DictUrls` suitable for use.
-///
-/// Return user dictionary if it exists, is valid, and not stale.
-/// Otherwise, return bundled dictionary.
-func getDict() throws -> DictUrls {
-    if let userDict = try validateAndGetUserDict() {
-        os_log(.debug, "Using updated JMDict")
-        return userDict
-    } else {
-        os_log(.debug, "Using bundled JMDict")
-        let bundledDict = try DictUrls.bundled.get()
-
-        for url in bundledDict.urls() {
-            if !FileManager.default.fileExists(atPath: url.path) {
-                throw YomikiriTokenizerError.BaseResourceNotFound
-            }
-        }
-        return bundledDict
     }
 }
 
@@ -66,7 +46,7 @@ func getDict() throws -> DictUrls {
 ///
 /// User dictionary is invalid if its 'schema\_ver' is not equal to bundled's 'schema\_ver'.
 /// It is stale if its 'download\_date' is earlier than bundled's 'download\_date'
-private func validateAndGetUserDict() throws -> DictUrls? {
+func validateAndGetUserDict() throws -> DictUrls? {
     let bundledDict = try DictUrls.bundled.get()
     guard let userDict = DictUrls.user.ok() else {
         return nil
@@ -76,10 +56,7 @@ private func validateAndGetUserDict() throws -> DictUrls? {
     if userDictIsValid {
         return userDict
     } else {
-        os_log(.info, "Deleting user dictionary files")
-        for url in userDict.urls() {
-            _ = try? FileManager.default.removeItem(at: url)
-        }
+        deleteUserDictionary(userDict)
         return nil
     }
 }
