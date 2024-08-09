@@ -12,14 +12,14 @@ use std::io::{self, Write};
 use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
-pub struct Backend {
+pub struct RustBackend {
     inner: Mutex<SharedBackend<Vec<u8>, File>>,
 }
 
 #[uniffi::export]
-impl Backend {
+impl RustBackend {
     #[uniffi::constructor]
-    pub fn new(index_path: String, entries_path: String) -> YResult<Arc<Backend>> {
+    pub fn new(index_path: String, entries_path: String) -> YResult<Arc<RustBackend>> {
         utils::setup_logger();
         let tokenizer = create_tokenizer();
         let dictionary = Dictionary::from_paths(&index_path, &entries_path)?;
@@ -28,7 +28,7 @@ impl Backend {
             dictionary,
         };
         let inner = Mutex::new(inner);
-        let backend = Backend { inner };
+        let backend = RustBackend { inner };
         Ok(Arc::new(backend))
     }
 

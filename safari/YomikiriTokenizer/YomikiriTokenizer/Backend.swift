@@ -7,7 +7,24 @@
 
 import Foundation
 
-public func createBackend() throws -> Backend {
-    let dictUrls = try getDict()
-    return try Backend(indexPath: dictUrls.index.path, entriesPath: dictUrls.entries.path)
+public class Backend {
+    private var rust: RustBackend
+
+    private init(_ rust: RustBackend) {
+        self.rust = rust
+    }
+
+    public static func create() throws -> Backend {
+        let dictUrls = try getDict()
+        let rust = try RustBackend(indexPath: dictUrls.index.path, entriesPath: dictUrls.entries.path)
+        return Backend(rust)
+    }
+
+    public func tokenize(sentence: String, charAt: UInt32) throws -> RawTokenizeResult {
+        return try self.rust.tokenize(sentence: sentence, charAt: charAt)
+    }
+
+    public func search(term: String, charAt: UInt32) throws -> RawTokenizeResult {
+        return try self.rust.search(term: term, charAt: charAt)
+    }
 }

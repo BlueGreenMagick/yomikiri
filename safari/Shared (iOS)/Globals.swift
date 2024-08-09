@@ -42,7 +42,7 @@ extension String: LocalizedError {
 
 private func newBackend() throws -> Backend {
     os_log(.error, "start creating backend")
-    let result = try createBackend()
+    let result = try Backend.create()
     os_log(.error, "finish creating backend")
     return result
 }
