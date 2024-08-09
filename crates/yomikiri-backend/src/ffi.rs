@@ -73,7 +73,7 @@ impl DictFilesReplaceJob {
     ///
     /// Returns a new `RustBackend` with replaced files.
     /// If an error occurs with new files when initializing `RustBackend`,
-    /// it tries to roll back the update and an error is thrown.
+    /// it tries to restore the previous user dictionary, then an error is thrown.
     pub fn replace(
         &self,
         index_path: String,

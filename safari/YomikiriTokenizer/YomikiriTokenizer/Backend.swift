@@ -41,13 +41,8 @@ public class Backend {
         do {
             rust = try replaceJob.replace(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
         } catch {
-            do {
-                rust = try createRustBackend()
-            } catch {
-                throw YomikiriTokenizerError.Fatal("An error occured while updating dictionary. Tried to fallback to using bundled dictionary, which also failed.")
-            }
-
-            throw error
+            // using restored user dictionary
+            rust = try createRustBackend()
         }
         self.rust = rust
         let metadata = try getDictionaryMetadata()
@@ -56,7 +51,11 @@ public class Backend {
 }
 
 private func createRustBackend() throws -> RustBackend {
-    let dictUrls = try getDict()
-    let rust = try RustBackend(indexPath: dictUrls.index.path, entriesPath: dictUrls.entries.path)
-    return rust
+    if let userDict = try? validateAndGetUserDict() {
+        if let rust = try? RustBackend(indexPath: userDict.index.path, entriesPath: userDict.entries.path) {
+            return rust
+        }
+    }
+    let bundledDict = try DictUrls.bundled.get()
+    return try RustBackend(indexPath: bundledDict.index.path, entriesPath: bundledDict.entries.path)
 }
