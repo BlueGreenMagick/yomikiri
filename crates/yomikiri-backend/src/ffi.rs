@@ -1,3 +1,4 @@
+use anyhow::{Context, Error};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{
@@ -10,10 +11,35 @@ use crate::dictionary::Dictionary;
 use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
+use std::fmt;
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+
+pub type FFIResult<T, E = FFIYomikiriError> = Result<T, E>;
+
+#[derive(Debug, uniffi::Error)]
+pub enum FFIYomikiriError {
+    Error {
+        /// Error message to show to the user
+        message: String,
+        /// Stores list of contexts, starting with `.message` and ending with leaf-most error messsage.
+        details: Vec<String>,
+    },
+}
+
+impl std::error::Error for FFIYomikiriError {}
+
+impl fmt::Display for FFIYomikiriError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Error { message, details } => {
+                write!(f, "{}", self)
+            }
+        }
+    }
+}
 
 #[derive(uniffi::Object)]
 pub struct RustBackend {
@@ -41,24 +67,26 @@ impl RustBackend {
 #[uniffi::export]
 impl RustBackend {
     #[uniffi::constructor]
-    pub fn new(index_path: String, entries_path: String) -> YResult<Arc<RustBackend>> {
+    pub fn new(index_path: String, entries_path: String) -> FFIResult<Arc<RustBackend>> {
         Self::try_from_paths(&index_path, &entries_path)
     }
 
-    pub fn tokenize(&self, sentence: String, char_at: u32) -> YResult<RawTokenizeResult> {
+    pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at).map_err(|_| {
             YomikiriError::ConversionError("Failed to convert char_at to usize".into())
         })?;
-        backend.tokenize(&sentence, char_at)
+        let result = backend.tokenize(&sentence, char_at)?;
+        Ok(result)
     }
 
-    pub fn search(&self, term: String, char_at: u32) -> YResult<RawTokenizeResult> {
+    pub fn search(&self, term: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at).map_err(|_| {
             YomikiriError::ConversionError("Failed to convert char_at to usize".into())
         })?;
-        backend.search(&term, char_at)
+        let result = backend.search(&term, char_at)?;
+        Ok(result)
     }
 }
 
@@ -79,7 +107,7 @@ impl DictFilesReplaceJob {
         index_path: String,
         entries_path: String,
         metadata_path: String,
-    ) -> YResult<Arc<RustBackend>> {
+    ) -> FFIResult<Arc<RustBackend>> {
         let backup_dir = self.temp_dir.join("prev");
         fs::create_dir(&backup_dir)?;
         let backup_index_path = backup_dir.join(DICT_INDEX_FILENAME);
@@ -105,7 +133,7 @@ impl DictFilesReplaceJob {
                 fs::rename(&backup_index_path, &index_path)?;
                 fs::rename(&backup_entries_path, &entries_path)?;
                 fs::rename(&backup_metadata_path, &metadata_path)?;
-                Err(e)
+                Err(e).into()
             }
         }
     }
