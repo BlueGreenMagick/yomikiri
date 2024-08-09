@@ -16,6 +16,10 @@ pub const CHUNK_CUTOFF_SIZE: usize = 16 * 1024;
 /// Recommended minimum buffer size
 pub const BUFFER_SIZE: usize = CHUNK_CUTOFF_SIZE + 8 * 1024;
 
+pub const DICT_INDEX_FILENAME: &'static str = "english.yomikiriindex";
+pub const DICT_ENTRIES_FILENAME: &'static str = "english.yomikiridict";
+pub const DICT_METADATA_FILENAME: &'static str = "dictionary-metadata.json";
+
 /// Location of a single jmdict entry in .yomikiridict
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug, Serialize, Deserialize, Hash)]
 pub struct DictEntryPointer {

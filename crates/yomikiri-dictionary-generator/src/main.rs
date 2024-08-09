@@ -7,7 +7,10 @@ use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
-use yomikiri_dictionary::file::{parse_jmdict_xml, write_yomikiri_dictionary};
+use yomikiri_dictionary::file::{
+    parse_jmdict_xml, write_yomikiri_dictionary, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
+    DICT_METADATA_FILENAME,
+};
 use yomikiri_dictionary::metadata::DictMetadata;
 
 const URL: &'static str =
@@ -56,9 +59,9 @@ fn run_download(opts: &DownloadOpts) -> Result<()> {
     fs::create_dir_all(&resources_dir)?;
 
     let filenames = [
-        "english.yomikiridict",
-        "english.yomikiriindex",
-        "dictionary-metadata.json",
+        DICT_INDEX_FILENAME,
+        DICT_ENTRIES_FILENAME,
+        DICT_METADATA_FILENAME,
     ];
     let url_file_path = resources_dir.join("URL");
     let mut url_base = opts.url.clone();
@@ -123,8 +126,8 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let resources_dir = crate_dir.join("files");
     let jmdict_dir = crate_dir.join("jmdict");
     let jmdict_file_path = jmdict_dir.join("JMdict_e");
-    let output_path = resources_dir.join("english.yomikiridict");
-    let output_index_path = resources_dir.join("english.yomikiriindex");
+    let output_path = resources_dir.join(DICT_ENTRIES_FILENAME);
+    let output_index_path = resources_dir.join(DICT_INDEX_FILENAME);
 
     fs::create_dir_all(&jmdict_dir)?;
 
