@@ -60,23 +60,11 @@ impl RustBackend {
         })?;
         backend.search(&term, char_at)
     }
-
-    pub fn replace_dictionary(&mut self, replace_job: &DictFilesReplaceJob) -> YResult<()> {
-        let bck = self.inner.get_mut().unwrap();
-        unsafe {
-            bck.dictionary = 0;
-            bck.dictionary = Dictionary::from_paths("abc", "Def").unwrap();
-        }
-        Ok(())
-    }
 }
 
 #[derive(uniffi::Object)]
 pub struct DictFilesReplaceJob {
     temp_dir: PathBuf,
-    temp_index_file: NamedTempFile,
-    temp_entries_file: NamedTempFile,
-    temp_metadata_file: NamedTempFile,
 }
 
 #[uniffi::export]
@@ -84,33 +72,31 @@ impl DictFilesReplaceJob {
     /// Replace user dictionary files.
     ///
     /// Returns a new `RustBackend` with replaced files.
-    /// TODO: If an error occurs with new files when initializing `RustBackend`,
-    /// the update is rolled back and an error is thrown.
-    ///
-    /// This function consumes the instance.
-    /// When called swift-side, this job must be discarded after calling this method.
-    pub fn replace(self: Arc<Self>, userdict_dir: String) -> YResult<Arc<RustBackend>> {
-        let this = Arc::try_unwrap(self).map_err(|_| {
-            YomikiriError::OtherError(
-                "Expected there to be only one DictFilesReplaceJob reference".into(),
-            )
-        })?;
-        let backup_index_path = this.temp_dir.join(DICT_INDEX_FILENAME);
-        let backup_entries_path = this.temp_dir.join(DICT_ENTRIES_FILENAME);
-        let backup_metadata_path = this.temp_dir.join(DICT_METADATA_FILENAME);
+    /// If an error occurs with new files when initializing `RustBackend`,
+    /// it tries to roll back the update and an error is thrown.
+    pub fn replace(
+        &self,
+        index_path: String,
+        entries_path: String,
+        metadata_path: String,
+    ) -> YResult<Arc<RustBackend>> {
+        let backup_dir = self.temp_dir.join("prev");
+        fs::create_dir(&backup_dir)?;
+        let backup_index_path = backup_dir.join(DICT_INDEX_FILENAME);
+        let backup_entries_path = backup_dir.join(DICT_ENTRIES_FILENAME);
+        let backup_metadata_path = backup_dir.join(DICT_METADATA_FILENAME);
 
-        let dict_dir = Path::new(&userdict_dir);
-        let index_path = dict_dir.join(DICT_INDEX_FILENAME);
-        let entries_path = dict_dir.join(DICT_ENTRIES_FILENAME);
-        let metadata_path = dict_dir.join(DICT_METADATA_FILENAME);
+        let temp_index_path = self.temp_dir.join(DICT_INDEX_FILENAME);
+        let temp_entries_path = self.temp_dir.join(DICT_ENTRIES_FILENAME);
+        let temp_metadata_path = self.temp_dir.join(DICT_METADATA_FILENAME);
 
         fs::rename(&index_path, &backup_index_path)?;
         fs::rename(&entries_path, &backup_entries_path)?;
         fs::rename(&metadata_path, &backup_metadata_path)?;
 
-        this.temp_index_file.persist(&index_path)?;
-        this.temp_entries_file.persist(&entries_path)?;
-        this.temp_metadata_file.persist(&metadata_path)?;
+        fs::rename(&temp_index_path, &index_path)?;
+        fs::rename(&temp_entries_path, &entries_path)?;
+        fs::rename(&temp_metadata_path, &metadata_path)?;
 
         let backend_result = RustBackend::try_from_paths(&index_path, &entries_path);
         match backend_result {
@@ -151,9 +137,6 @@ pub fn update_dictionary_file(temp_dir: String) -> YResult<DictFilesReplaceJob> 
 
     let replace_job = DictFilesReplaceJob {
         temp_dir: temp_dir.to_path_buf(),
-        temp_entries_file,
-        temp_index_file,
-        temp_metadata_file,
     };
 
     Ok(replace_job)

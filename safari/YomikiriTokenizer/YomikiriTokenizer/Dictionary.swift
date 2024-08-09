@@ -24,10 +24,11 @@ struct DictUrls {
     static var bundled = Result { try DictUrls.fromDirectory(getBundledDictDir()) }
 }
 
-/// Generate dictionary files and save it to filesystem
-public func updateDictionary() throws -> DictMetadata {
-    let userDict = try DictUrls.user.get()
-    return try updateDictionaryFile(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
+func deleteUserDictionary(_ userDict: DictUrls) {
+    os_log(.info, "Deleting user dictionary files")
+    for url in userDict.urls() {
+        _ = try? FileManager.default.removeItem(at: url)
+    }
 }
 
 public func getDictionaryMetadata() throws -> DictMetadata {
@@ -76,10 +77,7 @@ private func validateAndGetUserDict() throws -> DictUrls? {
     if userDictIsValid {
         return userDict
     } else {
-        os_log(.info, "Deleting user dictionary files")
-        for url in userDict.urls() {
-            _ = try? FileManager.default.removeItem(at: url)
-        }
+        deleteUserDictionary(userDict)
         return nil
     }
 }
