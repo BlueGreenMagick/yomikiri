@@ -1,5 +1,5 @@
 use super::backend::RustBackend;
-use super::error::FFIResult;
+use crate::error::{FFIResult, ToUniFFIResult};
 use anyhow::Result;
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
@@ -29,8 +29,8 @@ impl DictFilesReplaceJob {
         entries_path: String,
         metadata_path: String,
     ) -> FFIResult<Arc<RustBackend>> {
-        let result = self._replace(index_path, entries_path, metadata_path)?;
-        Ok(result)
+        self._replace(index_path, entries_path, metadata_path)
+            .uniffi()
     }
 }
 
@@ -80,8 +80,7 @@ impl DictFilesReplaceJob {
 /// Downloads and writes new dictionary files into specified path.
 #[uniffi::export]
 pub fn update_dictionary_file(temp_dir: String) -> FFIResult<DictFilesReplaceJob> {
-    let result = _update_dictionary_file(temp_dir)?;
-    Ok(result)
+    _update_dictionary_file(temp_dir).uniffi()
 }
 
 fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
