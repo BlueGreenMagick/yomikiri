@@ -4,7 +4,7 @@ use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 
-use anyhow::{Context, anyhow};
+use anyhow::{anyhow, Context};
 use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
@@ -124,7 +124,9 @@ impl Backend {
         let gzipped = gzipped_jmdict.to_vec();
         let mut decoder = GzDecoder::new(&gzipped[..]);
         let mut xml = String::with_capacity(72 * 1024 * 1024);
-        decoder.read_to_string(&mut xml).context("Failed to decompress gzipped JMDict xml file")?;
+        decoder
+            .read_to_string(&mut xml)
+            .context("Failed to decompress gzipped JMDict xml file")?;
         std::mem::drop(decoder);
         std::mem::drop(gzipped);
         debug!("unzipped jmdict file");
@@ -134,11 +136,13 @@ impl Backend {
         debug!("parsed jmdict file");
 
         let mut entries_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        let term_indexes = write_entries(&mut entries_bytes, &entries).context("Failed to write dictionary entries to file")?;
+        let term_indexes = write_entries(&mut entries_bytes, &entries)
+            .context("Failed to write dictionary entries to file")?;
         let entries_array = Uint8Array::from(&entries_bytes[..]);
 
         let mut index_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        write_indexes(&mut index_bytes, &term_indexes).context("Failed to write dictionary index to file")?;
+        write_indexes(&mut index_bytes, &term_indexes)
+            .context("Failed to write dictionary index to file")?;
         let index_array = Uint8Array::from(&index_bytes[..]);
 
         let files_size = entries_bytes.len() + index_bytes.len();
@@ -163,7 +167,8 @@ impl Dictionary<Vec<u8>, Cursor<&[u8]>> {
         index_bytes: Vec<u8>,
         entries_bytes: Vec<u8>,
     ) -> WasmResult<Dictionary<Vec<u8>, Cursor<Vec<u8>>>> {
-        let index = DictIndex::try_from_source(index_bytes).context("Failed to initialize dictionary index from file")?;
+        let index = DictIndex::try_from_source(index_bytes)
+            .context("Failed to initialize dictionary index from file")?;
         let cursor = Cursor::new(entries_bytes);
         Ok(Dictionary::new(index, cursor))
     }

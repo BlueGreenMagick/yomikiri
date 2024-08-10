@@ -46,8 +46,9 @@ pub mod wasmmod {
 
     impl From<BackendError> for JsValue {
         fn from(value: BackendError) -> Self {
-            serde_wasm_bindgen::to_value(&value)
-                .unwrap_or(JsValue::from_str("Failed to serialize BackendError to JSON"))
+            serde_wasm_bindgen::to_value(&value).unwrap_or(JsValue::from_str(
+                "Failed to serialize BackendError to JSON",
+            ))
         }
     }
 }
