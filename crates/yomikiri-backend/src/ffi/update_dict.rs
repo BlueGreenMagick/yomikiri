@@ -9,8 +9,6 @@ use yomikiri_dictionary::file::{
 };
 use yomikiri_dictionary::metadata::DictMetadata;
 
-use crate::error::YResult;
-
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -112,7 +110,7 @@ fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
     Ok(replace_job)
 }
 
-fn download_dictionary<W: Write>(writer: &mut W) -> YResult<()> {
+fn download_dictionary<W: Write>(writer: &mut W) -> Result<()> {
     let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
     let resp = ureq::get(download_url).call()?;
     let mut decoder = GzDecoder::new(resp.into_reader());

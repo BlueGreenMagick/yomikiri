@@ -1,5 +1,5 @@
 use crate::common::setup_backend;
-use yomikiri_rs::error::YResult;
+use anyhow::Result;
 use yomikiri_rs::tokenize::Token;
 
 fn surface_pos_string(tokens: &[Token]) -> String {
@@ -29,7 +29,7 @@ macro_rules! tokenize_tests {
     ($($name:ident: $expected:expr,)*) => {
         $(
             #[test]
-            fn $name() -> YResult<()> {
+            fn $name() -> Result<()> {
                 let mut backend = setup_backend();
                 let expected = $expected;
                 let text = expected.replace("/", "");
@@ -151,7 +151,7 @@ tokenize_tests! {
 // token text must be in NFC normalized form,
 // but token.start must be starting character position in un-normalized string
 #[test]
-fn decomposed_unicode() -> YResult<()> {
+fn decomposed_unicode() -> Result<()> {
     let mut backend = setup_backend();
     // か\u3099 = が
     let result = backend.tokenize("本か\u{3099}好きだ", 2)?;
@@ -164,7 +164,7 @@ fn decomposed_unicode() -> YResult<()> {
 }
 
 #[test]
-fn empty_string() -> YResult<()> {
+fn empty_string() -> Result<()> {
     let mut backend = setup_backend();
     let result = backend.tokenize("", 0)?;
     assert_eq!(result.tokenIdx, -1);

@@ -1,4 +1,4 @@
-use crate::error::{YResult, YomikiriError};
+use anyhow::{Context, Result};
 use fst::{IntoStreamer, Streamer};
 use std::fs::{self, File};
 use std::io::{Read, Seek};
@@ -24,7 +24,7 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
         }
     }
 
-    pub fn search(&mut self, term: &str) -> YResult<Vec<Entry>> {
+    pub fn search(&mut self, term: &str) -> Result<Vec<Entry>> {
         let terms = &self.index.borrow_view().terms;
         if let Some(value) = terms.map.get(term) {
             let entry_indexes = terms.parse_value(value)?;
@@ -34,12 +34,7 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
                 &mut self.entries_reader,
                 &entry_indexes,
             )
-            .map_err(|e| {
-                YomikiriError::InvalidDictionaryFile(format!(
-                    "Failed to parse dictionary entry JSON. {}",
-                    e
-                ))
-            })?;
+            .context("Failed to parse dictionary entry JSON")?;
             Ok(entries)
         } else {
             Ok(Vec::new())
@@ -79,7 +74,7 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
     }
 
     /// Returns json text of entries
-    pub fn search_json(&mut self, term: &str) -> YResult<Vec<String>> {
+    pub fn search_json(&mut self, term: &str) -> Result<Vec<String>> {
         let terms = &self.index.borrow_view().terms;
         if let Some(value) = terms.map.get(term) {
             let entry_indexes = terms.parse_value(value)?;
@@ -89,22 +84,12 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
                 &mut self.entries_reader,
                 &entry_indexes,
             )
-            .map_err(|e| {
-                YomikiriError::InvalidDictionaryFile(format!(
-                    "Failed to parse dictionary entry JSON. {}",
-                    e
-                ))
-            })?;
+            .context("Failed to parse dictionary entry JSON")?;
             let jsons = entries
                 .iter()
                 .map(serde_json::to_string)
                 .collect::<serde_json::Result<Vec<String>>>()
-                .map_err(|e| {
-                    YomikiriError::InvalidDictionaryFile(format!(
-                        "Failed to parse dictionary entry JSON. {}",
-                        e
-                    ))
-                })?;
+                .context("Failed to serialize dictionary entry into JSON")?;
             Ok(jsons)
         } else {
             Ok(Vec::new())
@@ -117,7 +102,7 @@ impl Dictionary<Vec<u8>, File> {
     pub fn from_paths<P1: AsRef<Path>, P2: AsRef<Path>>(
         index_path: P1,
         entries_path: P2,
-    ) -> YResult<Dictionary<Vec<u8>, File>> {
+    ) -> Result<Dictionary<Vec<u8>, File>> {
         let index_bytes = fs::read(index_path)?;
         let index = DictIndex::try_from_source(index_bytes)?;
         let entries_file = File::open(entries_path)?;

@@ -1,15 +1,15 @@
 use std::borrow::Cow;
 use std::io::{Read, Seek};
 
+use anyhow::{Context, Result};
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
 use yomikiri_dictionary::PartOfSpeech;
 
-use crate::error::{YResult, YomikiriError};
 use crate::tokenize::{InnerToken, RawTokenizeResult, Token, TokenDetails};
 use crate::SharedBackend;
 
 impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
-    pub fn search(&mut self, term: &str, char_idx: usize) -> YResult<RawTokenizeResult> {
+    pub fn search(&mut self, term: &str, char_idx: usize) -> Result<RawTokenizeResult> {
         let result = self.tokenize(term, char_idx)?;
 
         // if tokenize separates the term into multiple tokens,
@@ -22,7 +22,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
         return Ok(result);
     }
 
-    fn search_term_as_is(&mut self, term: &str) -> YResult<Option<RawTokenizeResult>> {
+    fn search_term_as_is(&mut self, term: &str) -> Result<Option<RawTokenizeResult>> {
         let normalized_term = if is_nfc_quick(term.chars()) == IsNormalized::Yes {
             Cow::Borrowed(term)
         } else {
@@ -53,12 +53,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
                 .iter()
                 .map(serde_json::to_string)
                 .collect::<serde_json::Result<Vec<String>>>()
-                .map_err(|e| {
-                    YomikiriError::InvalidDictionaryFile(format!(
-                        "Failed to parse dictionary entry JSON. {}",
-                        e
-                    ))
-                })?;
+                .context("Failed to serialize dictionary entry into JSON")?;
             Ok(Some(RawTokenizeResult {
                 tokens: vec![token],
                 tokenIdx: 0,

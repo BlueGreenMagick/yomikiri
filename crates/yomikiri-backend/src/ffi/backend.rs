@@ -1,10 +1,9 @@
 use crate::dictionary::Dictionary;
-use crate::error::YomikiriError;
 use crate::error::{FFIResult, ToUniFFIResult};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::fs::File;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
@@ -55,18 +54,16 @@ impl RustBackend {
 
     fn _tokenize(&self, sentence: String, char_at: u32) -> Result<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
-        let char_at = usize::try_from(char_at).map_err(|_| {
-            YomikiriError::ConversionError("Failed to convert char_at to usize".into())
-        })?;
+        let char_at = usize::try_from(char_at)
+            .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.tokenize(&sentence, char_at)?;
         Ok(result)
     }
 
     fn _search(&self, term: String, char_at: u32) -> Result<RawTokenizeResult> {
         let mut backend = self.inner.lock().unwrap();
-        let char_at = usize::try_from(char_at).map_err(|_| {
-            YomikiriError::ConversionError("Failed to convert char_at to usize".into())
-        })?;
+        let char_at = usize::try_from(char_at)
+            .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.search(&term, char_at)?;
         Ok(result)
     }
