@@ -1,11 +1,18 @@
 use serde::Serialize;
 use std::fmt;
 
+#[cfg(wasm)]
+use wasm_bindgen::prelude::*;
+
+#[cfg(wasm)]
+pub type WasmResult<T> = Result<T, BackendError>;
+
 #[derive(Debug, Serialize)]
 #[cfg_attr(uniffi, derive(uniffi::Object))]
+#[cfg_attr(wasm, wasm_bindgen(getter_with_clone))]
 pub struct BackendError {
-    message: String,
-    details: Vec<String>,
+    pub message: String,
+    pub details: Vec<String>,
 }
 
 impl From<anyhow::Error> for BackendError {
@@ -33,25 +40,6 @@ impl fmt::Display for BackendError {
 
 impl BackendError {}
 
-#[cfg(wasm)]
-pub use wasmmod::WasmResult;
-
-#[cfg(wasm)]
-pub mod wasmmod {
-    use super::BackendError;
-
-    use wasm_bindgen::JsValue;
-
-    pub type WasmResult<T> = Result<T, BackendError>;
-
-    impl From<BackendError> for JsValue {
-        fn from(value: BackendError) -> Self {
-            serde_wasm_bindgen::to_value(&value).unwrap_or(JsValue::from_str(
-                "Failed to serialize BackendError to JSON",
-            ))
-        }
-    }
-}
 
 #[cfg(uniffi)]
 pub use uniffimod::{FFIResult, ToUniFFIResult};
