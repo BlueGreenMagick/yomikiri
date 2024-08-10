@@ -1,15 +1,32 @@
+
+# Ignore all
+*.*
+# Except certain extensions
+!*.ts
+!*.cts
+!*.mts
+!*.tsx
+!*.js
+!*.cjs
+!*.mjs
+!*.jsx
+!*.html
+!*.css
+!*.json
+!*.md
+!*.toml
+!*.yaml
+
 # Generated files
 main/build
-jmdict/resources
-dictionary/pkg
-dictionary/res
-unidic/transformed
-unidic/output
-rust/pkg
+crates/yomikiri-dictionary/pkg
+crates/yomikiri-backend/pkg
+crates/unidic/transformed
+crates/unidic/output
 pnpm-lock.yaml
 
 # Downloaded files
-unidic/original
+crates/unidic/original
 
 # Artifacts
 .mypy_cache
