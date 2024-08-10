@@ -1,12 +1,10 @@
-use anyhow::Result;
-
-use super::error::FFIResult;
-
 use crate::dictionary::Dictionary;
 use crate::error::YomikiriError;
+use crate::error::{FFIResult, ToUniFFIResult};
 use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 
+use anyhow::Result;
 use std::fs::File;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
@@ -38,18 +36,15 @@ impl RustBackend {
 impl RustBackend {
     #[uniffi::constructor]
     pub fn new(index_path: String, entries_path: String) -> FFIResult<Arc<RustBackend>> {
-        let result = Self::_new(index_path, entries_path)?;
-        Ok(result)
+        Self::_new(index_path, entries_path).uniffi()
     }
 
     pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
-        let result = self._tokenize(sentence, char_at)?;
-        Ok(result)
+        self._tokenize(sentence, char_at).uniffi()
     }
 
     pub fn search(&self, term: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
-        let result = self._search(term, char_at)?;
-        Ok(result)
+        self._search(term, char_at).uniffi()
     }
 }
 
