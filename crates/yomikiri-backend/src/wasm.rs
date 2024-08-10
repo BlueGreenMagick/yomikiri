@@ -1,9 +1,10 @@
 use crate::dictionary::Dictionary;
-use crate::error::{YResult, YomikiriError};
+use crate::error::WasmResult;
 use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 
+use anyhow::{Context, anyhow};
 use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
@@ -82,11 +83,12 @@ pub struct Backend {
 #[wasm_bindgen]
 impl Backend {
     #[wasm_bindgen(constructor)]
-    pub fn new(index_bytes: &Uint8Array, entries_bytes: &Uint8Array) -> YResult<Backend> {
+    pub fn new(index_bytes: &Uint8Array, entries_bytes: &Uint8Array) -> WasmResult<Backend> {
         utils::set_panic_hook();
         utils::setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::try_new(index_bytes.to_vec(), entries_bytes.to_vec())?;
+        let dictionary = Dictionary::try_new(index_bytes.to_vec(), entries_bytes.to_vec())
+            .context("Failed to create dictionary")?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
@@ -95,20 +97,22 @@ impl Backend {
     }
 
     #[wasm_bindgen(skip_typescript)]
-    pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> YResult<JsValue> {
-        let result = self.inner.tokenize(sentence, char_at)?;
-        serde_wasm_bindgen::to_value(&result).map_err(|e| {
-            YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
-        })
+    pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> WasmResult<JsValue> {
+        let result = self
+            .inner
+            .tokenize(sentence, char_at)
+            .context("Error occured while tokenizing sentence")?;
+        serialize_result(&result)
     }
 
     /// dictionary search
     #[wasm_bindgen(skip_typescript)]
-    pub fn search(&mut self, term: &str, char_at: usize) -> YResult<JsValue> {
-        let result = self.inner.search(term, char_at)?;
-        serde_wasm_bindgen::to_value(&result).map_err(|e| {
-            YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
-        })
+    pub fn search(&mut self, term: &str, char_at: usize) -> WasmResult<JsValue> {
+        let result = self
+            .inner
+            .search(term, char_at)
+            .context("Error occured while searching")?;
+        serialize_result(&result)
     }
 
     /// Generates new yomikiri dictionary files from gzipped jmdict bytes,
@@ -116,25 +120,25 @@ impl Backend {
     ///
     /// Returns [.yomikiriindex, .yomikiridict] bytes as [UInt8Array, UInt8Array]
     #[wasm_bindgen(skip_typescript)]
-    pub fn update_dictionary(&mut self, gzipped_jmdict: &Uint8Array) -> YResult<JsValue> {
+    pub fn update_dictionary(&mut self, gzipped_jmdict: &Uint8Array) -> WasmResult<JsValue> {
         let gzipped = gzipped_jmdict.to_vec();
         let mut decoder = GzDecoder::new(&gzipped[..]);
         let mut xml = String::with_capacity(72 * 1024 * 1024);
-        decoder.read_to_string(&mut xml)?;
+        decoder.read_to_string(&mut xml).context("Failed to decompress gzipped JMDict xml file")?;
         std::mem::drop(decoder);
         std::mem::drop(gzipped);
         debug!("unzipped jmdict file");
 
-        let entries = parse_jmdict_xml(&xml)?;
+        let entries = parse_jmdict_xml(&xml).context("Failed to parse JMDict xml file")?;
         std::mem::drop(xml);
         debug!("parsed jmdict file");
 
         let mut entries_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        let term_indexes = write_entries(&mut entries_bytes, &entries)?;
+        let term_indexes = write_entries(&mut entries_bytes, &entries).context("Failed to write dictionary entries to file")?;
         let entries_array = Uint8Array::from(&entries_bytes[..]);
 
         let mut index_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        write_indexes(&mut index_bytes, &term_indexes)?;
+        write_indexes(&mut index_bytes, &term_indexes).context("Failed to write dictionary index to file")?;
         let index_array = Uint8Array::from(&index_bytes[..]);
 
         let files_size = entries_bytes.len() + index_bytes.len();
@@ -149,9 +153,7 @@ impl Backend {
 
         let dict = Dictionary::try_new(index_bytes, entries_bytes)?;
         self.inner.dictionary = dict;
-        serde_wasm_bindgen::to_value(&result).map_err(|e| {
-            YomikiriError::ConversionError(format!("Failed to serialize tokenizer result.\n{}", e))
-        })
+        serialize_result(&result)
     }
 }
 
@@ -160,9 +162,17 @@ impl Dictionary<Vec<u8>, Cursor<&[u8]>> {
     pub fn try_new(
         index_bytes: Vec<u8>,
         entries_bytes: Vec<u8>,
-    ) -> YResult<Dictionary<Vec<u8>, Cursor<Vec<u8>>>> {
-        let index = DictIndex::try_from_source(index_bytes)?;
+    ) -> WasmResult<Dictionary<Vec<u8>, Cursor<Vec<u8>>>> {
+        let index = DictIndex::try_from_source(index_bytes).context("Failed to initialize dictionary index from file")?;
         let cursor = Cursor::new(entries_bytes);
         Ok(Dictionary::new(index, cursor))
+    }
+}
+
+fn serialize_result<T: Serialize>(value: &T) -> WasmResult<JsValue> {
+    let result = serde_wasm_bindgen::to_value(value);
+    match result {
+        Ok(inner) => Ok(inner),
+        Err(_) => Err(anyhow!("Failed to serialize result to JSON").into()),
     }
 }

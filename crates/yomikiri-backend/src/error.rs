@@ -33,6 +33,25 @@ impl fmt::Display for BackendError {
 
 impl BackendError {}
 
+#[cfg(wasm)]
+pub use wasmmod::WasmResult;
+
+#[cfg(wasm)]
+pub mod wasmmod {
+    use super::BackendError;
+
+    use wasm_bindgen::JsValue;
+
+    pub type WasmResult<T> = Result<T, BackendError>;
+
+    impl From<BackendError> for JsValue {
+        fn from(value: BackendError) -> Self {
+            serde_wasm_bindgen::to_value(&value)
+                .unwrap_or(JsValue::from_str("Failed to serialize BackendError to JSON"))
+        }
+    }
+}
+
 #[cfg(uniffi)]
 pub use uniffimod::{FFIResult, ToUniFFIResult};
 
@@ -51,26 +70,6 @@ pub mod uniffimod {
     impl<T> ToUniFFIResult<T> for Result<T, anyhow::Error> {
         fn uniffi(self) -> FFIResult<T> {
             self.map_err(|e| Arc::new(BackendError::from(e)))
-        }
-    }
-}
-
-#[cfg(wasm)]
-pub mod wasm {
-    use anyhow::Error;
-    use wasm_bindgen::JsValue;
-
-    struct WasmError(Error);
-
-    impl From<Error> for WasmError {
-        fn from(value: Error) -> Self {
-            WasmError(value)
-        }
-    }
-
-    impl From<WasmError> for JsValue {
-        fn from(value: WasmError) -> Self {
-            JsValue::from_str(&value.to_string())
         }
     }
 }
