@@ -9,7 +9,8 @@ export class YomikiriError extends Error {
   readonly details: string[];
 
   constructor(message: string, details?: string[]) {
-    super()
+    super();
+    Object.defineProperty(this, "stack", { enumerable: true });
     this.message = message;
     this.details = details ?? [message];
   }
@@ -34,7 +35,7 @@ export class YomikiriError extends Error {
       } else {
         const out = new YomikiriError(err.message);
         if ("stack" in err) {
-          out.stack = err.stack
+          out.stack = err.stack;
         }
       }
     }
@@ -64,8 +65,8 @@ export class YomikiriError extends Error {
     const details = [message, ...this.details];
     const err = new YomikiriError(message, details);
     if ("stack" in this) {
-      err.stack = this.stack
+      err.stack = this.stack;
     }
-    return err
+    return err;
   }
 }
