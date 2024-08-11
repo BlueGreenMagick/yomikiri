@@ -1,4 +1,5 @@
 import { writable, type Writable } from "svelte/store";
+import type { YomikiriError } from "./error";
 
 export interface Rect {
   top: number;
@@ -397,7 +398,7 @@ export interface SuccessfulResponseMessage<R> {
 
 export interface FailedResponseMessage {
   success: false;
-  error: string; // error json
+  error: YomikiriError; // error json
 }
 
 export type ResponseMessage<R> =

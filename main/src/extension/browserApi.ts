@@ -16,7 +16,6 @@ import type { TTSRequest, TTSVoice } from "platform/common";
 import {
   createPromise,
   handleResponseMessage,
-  getErrorMessage,
   type ResponseMessage,
   type Satisfies,
   type Thennable,
@@ -25,6 +24,7 @@ import {
   type Second,
 } from "lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
+import { YomikiriError } from "lib/error";
 
 /**
  * Type map for messages between extension processes
@@ -309,11 +309,7 @@ function createMessageResponseHandler<K extends keyof MessageMap>(
       const response = handleResponseMessage(resp);
       resolve(response);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        reject(error);
-      } else {
-        reject(new Error(getErrorMessage(error)));
-      }
+      reject(YomikiriError.from(error));
     }
   };
 }
@@ -518,9 +514,10 @@ chrome.runtime.onMessage.addListener(
             resp,
           });
         } catch (e) {
+          const err = YomikiriError.from(e);
           sendResponse({
             success: false,
-            error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+            error: err,
           });
           console.error(e);
         }

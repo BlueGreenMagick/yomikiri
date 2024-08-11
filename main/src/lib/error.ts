@@ -33,7 +33,16 @@ export class YomikiriError extends Error {
           (err as Error & { cause: unknown }).cause,
         ).context(err.message);
       } else {
-        const out = new YomikiriError(err.message);
+        let out;
+        // check if it's a JSON-parsed YomikiriError
+        if (
+          "details" in err &&
+          typeof (err.details as { length: unknown }).length === "number"
+        ) {
+          out = new YomikiriError(err.message, err.details as string[]);
+        } else {
+          out = new YomikiriError(err.message);
+        }
         if ("stack" in err) {
           out.stack = err.stack;
         }
