@@ -1,3 +1,4 @@
+import ErrorToast from "components/toast/ErrorToast.svelte";
 import toast, {
   Toaster,
   type Renderable,
@@ -66,7 +67,12 @@ export class Toast {
   /** Toast is deleted after delay */
   static error(msg: string): Toast {
     Toast.maybeSetupToaster();
-    const id = toast.error(msg, optsError);
+
+    const id = toast.error(ErrorToast, {
+      ...optsError,
+      props: { msg },
+      duration: 500000,
+    });
     return new Toast(id);
   }
 
@@ -86,3 +92,5 @@ export class Toast {
     toast.dismiss(this.id);
   }
 }
+
+window.toast = Toast;
