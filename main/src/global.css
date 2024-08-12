@@ -1,6 +1,8 @@
 @import "normalize.css";
 
-:root {
+/* :host is for shadow dom in Toasts.svelte */
+:root,
+:host {
   --text: black;
   --text-light: #808080;
   --text-success: green;
@@ -61,7 +63,8 @@ rt:before {
   content: attr(data-rt);
 }
 
-html {
+:root,
+:host {
   font-size: var(--font-size, 14);
   /* 
     Mixed language font

@@ -8,9 +8,3 @@
   {msg}
   <TextButton label="details"/>
 </div>
-
-<style lang="scss">
-  :global {
-    @import "../../global";  
-  }
-</style>

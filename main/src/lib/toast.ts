@@ -1,9 +1,7 @@
 import ErrorToast from "components/toast/ErrorToast.svelte";
-import toast, {
-  Toaster,
-  type Renderable,
-  type ToastOptions,
-} from "svelte-french-toast";
+import Toasts from "components/toast/Toasts.svelte";
+import toast, { type Renderable, type ToastOptions } from "svelte-french-toast";
+import Config from "./config";
 
 const optsLoading = {
   duration: 8000,
@@ -18,7 +16,7 @@ const optsError = {
 };
 
 export class Toast {
-  static toaster?: Toaster;
+  static toasts?: Toasts;
   id: string;
 
   private constructor(id: string) {
@@ -36,13 +34,15 @@ export class Toast {
     if (root === null) throw Error("Could not access shadow DOM of toaster");
     const innerContainer = document.createElement("div");
     root.appendChild(innerContainer);
-
-    Toast.toaster = new Toaster({ target: innerContainer, props: {} });
+    void Config.instance.get().then((c) => {
+      c.setStyle(root);
+    });
+    Toast.toasts = new Toasts({ target: innerContainer, props: {} });
     document.body.appendChild(container);
   }
 
   private static maybeSetupToaster() {
-    if (Toast.toaster === undefined) {
+    if (Toast.toasts === undefined) {
       Toast.setupToaster();
     }
   }
