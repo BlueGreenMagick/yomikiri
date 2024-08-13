@@ -11,16 +11,13 @@ import SwiftUI
 @main
 struct YomikiriApp: App {
     @StateObject private var viewModel = ViewModel()
-    @StateObject var errorHandler = ErrorHandler()
+    @StateObject var appErrorHandler = errorHandler
 
     var body: some Scene {
         return WindowGroup {
             MainView()
-                .environmentObject(self.errorHandler)
-                .alert("Error", isPresented: self.$errorHandler.showError, presenting: self.errorHandler.errorText) { _ in
-                    Button("OK") {
-                        self.errorHandler.showError = false
-                    }
+                .alert("Error", isPresented: self.$appErrorHandler.showError, presenting: self.appErrorHandler.errorText) { _ in
+                    Button("OK") {}
                 } message: { text in
                     Text(text)
                 }
@@ -44,8 +41,12 @@ class ErrorHandler: ObservableObject {
     @Published var errorText = ""
 
     func handle(_ err: Error) {
-        os_log(.error, "%{public}s", err.localizedDescription)
-        self.showError = true
-        self.errorText = err.localizedDescription
+        DispatchQueue.main.async {
+            os_log(.error, "%{public}s", err.localizedDescription)
+            self.showError = true
+            self.errorText = err.localizedDescription
+        }
     }
 }
+
+@MainActor let errorHandler = ErrorHandler()
