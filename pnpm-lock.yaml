@@ -121,7 +121,7 @@ importers:
         version: 4.2.17
       svelte-french-toast:
         specifier: github:bluegreenmagick/svelte-french-toast#dist
-        version: https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/11ea5b91db86f7955cdbb1878f44117685e57773(svelte@4.2.17)
+        version: https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/012ae43234489c35396a39300108fbc3fc2c682f(svelte@4.2.17)
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.1.0
@@ -3308,8 +3308,8 @@ packages:
       svelte:
         optional: true
 
-  svelte-french-toast@https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/11ea5b91db86f7955cdbb1878f44117685e57773:
-    resolution: {tarball: https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/11ea5b91db86f7955cdbb1878f44117685e57773}
+  svelte-french-toast@https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/012ae43234489c35396a39300108fbc3fc2c682f:
+    resolution: {tarball: https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/012ae43234489c35396a39300108fbc3fc2c682f}
     version: 1.2.0
     peerDependencies:
       svelte: ^3.57.0 || ^4.0.0
@@ -7119,7 +7119,7 @@ snapshots:
     optionalDependencies:
       svelte: 4.2.17
 
-  svelte-french-toast@https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/11ea5b91db86f7955cdbb1878f44117685e57773(svelte@4.2.17):
+  svelte-french-toast@https://codeload.github.com/bluegreenmagick/svelte-french-toast/tar.gz/012ae43234489c35396a39300108fbc3fc2c682f(svelte@4.2.17):
     dependencies:
       svelte: 4.2.17
       svelte-writable-derived: 3.1.1(svelte@4.2.17)
