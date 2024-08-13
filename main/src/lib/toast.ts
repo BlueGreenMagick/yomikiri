@@ -7,7 +7,7 @@ type ToastType = "success" | "error" | "loading";
 
 interface ToastParams {
   type: ToastType;
-  msg: string;
+  message: string;
   details?: string | undefined;
   opts?: Partial<ToastOptions> | undefined;
 }
@@ -16,14 +16,19 @@ export class Toast {
   static toasts?: Toasts;
   id: string;
   type: ToastType;
-  msg: string;
+  message: string;
   details: string;
   opts: Partial<ToastOptions>;
 
-  constructor({ type, msg, details: detailsArg, opts: optsArg }: ToastParams) {
+  constructor({
+    type,
+    message,
+    details: detailsArg,
+    opts: optsArg,
+  }: ToastParams) {
     Toast.maybeSetupToaster();
     this.type = type;
-    this.msg = msg;
+    this.message = message;
     const details = detailsArg ?? "";
     const opts = optsArg ?? {};
     this.details = details;
@@ -32,7 +37,7 @@ export class Toast {
     this.id = createToast(type, {
       ...opts,
       props: {
-        msg,
+        message,
         details,
         ...opts?.props,
       },
@@ -63,21 +68,21 @@ export class Toast {
     }
   }
 
-  static success(msg: string, details?: string): Toast {
-    return new Toast({ type: "success", msg, details });
+  static success(message: string, details?: string): Toast {
+    return new Toast({ type: "success", message, details });
   }
 
-  static error(msg: string, details?: string): Toast {
-    return new Toast({ type: "error", msg, details });
+  static error(message: string, details?: string): Toast {
+    return new Toast({ type: "error", message, details });
   }
 
-  static loading(msg: string, details?: string): Toast {
-    return new Toast({ type: "loading", msg, details });
+  static loading(message: string, details?: string): Toast {
+    return new Toast({ type: "loading", message, details });
   }
 
-  update({ type, msg, details, opts }: Partial<ToastParams>) {
+  update({ type, message, details, opts }: Partial<ToastParams>) {
     this.type = type ?? this.type;
-    this.msg = msg ?? this.msg;
+    this.message = message ?? this.message;
     this.details = details ?? this.details;
     this.opts = opts ?? this.opts;
 
@@ -85,7 +90,7 @@ export class Toast {
       ...opts,
       id: this.id,
       props: {
-        msg: this.msg,
+        message: this.message,
         details: this.details,
         ...opts?.props,
       },
