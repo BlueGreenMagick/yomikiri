@@ -116,6 +116,8 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                     } else {
                         replyHandler(NSNull(), nil)
                     }
+                } catch let error as BackendError {
+                    replyHandler(nil, error.getMessage())
                 } catch {
                     replyHandler(nil, error.localizedDescription)
                 }

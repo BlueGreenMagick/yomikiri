@@ -398,7 +398,7 @@ export interface SuccessfulResponseMessage<R> {
 
 export interface FailedResponseMessage {
   success: false;
-  error: YomikiriError; // error json
+  error: unknown; // yomikiri-error like struct
 }
 
 export type ResponseMessage<R> =
@@ -409,9 +409,9 @@ export function handleResponseMessage<R>(resp: ResponseMessage<R>): R {
   if (resp.success) {
     return resp.resp;
   } else {
-    let obj: object;
+    let obj: unknown;
     if (typeof resp.error === "string") {
-      obj = JSON.parse(resp.error) as object;
+      obj = JSON.parse(resp.error);
     } else {
       obj = resp.error;
     }

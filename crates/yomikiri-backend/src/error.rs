@@ -40,7 +40,6 @@ impl fmt::Display for BackendError {
 
 impl BackendError {}
 
-
 #[cfg(uniffi)]
 pub use uniffimod::{FFIResult, ToUniFFIResult};
 
@@ -59,6 +58,21 @@ pub mod uniffimod {
     impl<T> ToUniFFIResult<T> for Result<T, anyhow::Error> {
         fn uniffi(self) -> FFIResult<T> {
             self.map_err(|e| Arc::new(BackendError::from(e)))
+        }
+    }
+
+    #[uniffi::export]
+    impl BackendError {
+        fn get_message(&self) -> String {
+            self.message.to_string()
+        }
+
+        fn get_details(&self) -> Vec<String> {
+            self.details.to_owned()
+        }
+
+        fn json(&self) -> String {
+            serde_json::to_string(&self).unwrap()
         }
     }
 }
