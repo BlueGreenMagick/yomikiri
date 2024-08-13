@@ -4,14 +4,13 @@
 
   export let message: string;
   export let details: string | undefined;
-  /** toast id is fed after component is initialized */
-  export let toast: Toast | null = null;
+  export let toast: Toast;
 
   let containsDetails: boolean;
   let detailsHidden = true;
 
   function close() {
-    toast?.dismiss()
+    toast.dismiss()
     throw new Error("unimplemented")
   }
 </script>

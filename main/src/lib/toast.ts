@@ -26,6 +26,10 @@ export class Toast<
 
     this.id = createToast(type, message, {
       ...opts,
+      props: {
+        ...opts.props,
+        toast: this,
+      },
     });
   }
 
@@ -53,16 +57,37 @@ export class Toast<
     }
   }
 
-  static success(message: string, details?: string): Toast {
-    return new Toast("success", DetailedToast, { props: { message, details } });
+  static success(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): Toast {
+    return new Toast("success", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
   }
 
-  static error(message: string, details?: string): Toast {
-    return new Toast("error", DetailedToast, { props: { message, details } });
+  static error(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): Toast {
+    return new Toast("error", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
   }
 
-  static loading(message: string, details?: string): Toast {
-    return new Toast("loading", DetailedToast, { props: { message, details } });
+  static loading(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): Toast {
+    return new Toast("error", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
   }
 
   update({

@@ -50,7 +50,7 @@
       if (added) {
         Toast.success("Note added to Anki");
       } else {
-        Toast.success("Note will be added when Anki is connected", {
+        Toast.success("Note will be added when Anki is connected", "", {
           icon: HourglassToastIcon,
           duration: 3000,
         });
