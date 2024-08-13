@@ -16,7 +16,6 @@ import type { TTSRequest, TTSVoice } from "platform/common";
 import {
   createPromise,
   handleResponseMessage,
-  getErrorMessage,
   type ResponseMessage,
   type Satisfies,
   type Thennable,
@@ -25,6 +24,7 @@ import {
   type Second,
 } from "lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
+import { YomikiriError } from "lib/error";
 
 /**
  * Type map for messages between extension processes
@@ -189,7 +189,7 @@ export async function currentTabId(): Promise<number> {
   if (_tabId === undefined) {
     const tab = await currentTab();
     if (tab.id === undefined) {
-      throw new Error("Current tab does not have an id");
+      throw new YomikiriError("Current tab does not have an id");
     }
     _tabId = tab.id;
   }
@@ -309,11 +309,7 @@ function createMessageResponseHandler<K extends keyof MessageMap>(
       const response = handleResponseMessage(resp);
       resolve(response);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        reject(error);
-      } else {
-        reject(new Error(getErrorMessage(error)));
-      }
+      reject(YomikiriError.from(error));
     }
   };
 }
@@ -380,7 +376,7 @@ export async function activeTab(): Promise<chrome.tabs.Tab> {
     if (result[0] !== undefined) {
       resolve(result[0]);
     } else {
-      reject(new Error("No tabs are active"));
+      reject(new YomikiriError("No tabs are active"));
     }
   });
   return promise;
@@ -428,7 +424,7 @@ export async function currentTab(): Promise<chrome.tabs.Tab> {
   const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
   chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
     if (result === undefined) {
-      reject(new Error("Could not get current tab"));
+      reject(new YomikiriError("Could not get current tab"));
     } else {
       resolve(result);
     }
@@ -518,9 +514,10 @@ chrome.runtime.onMessage.addListener(
             resp,
           });
         } catch (e) {
+          const err = YomikiriError.from(e);
           sendResponse({
             success: false,
-            error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+            error: err,
           });
           console.error(e);
         }

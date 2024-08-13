@@ -1,27 +1,38 @@
-import toast, {
-  Toaster,
-  type Renderable,
-  type ToastOptions,
-} from "svelte-french-toast";
+import Toasts from "components/toast/Toasts.svelte";
+import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
+import Config from "./config";
+import DetailedToast from "components/toast/DetailedToast.svelte";
+import { YomikiriError } from "./error";
+import { TOASTER_ZINDEX } from "consts";
 
-const optsLoading = {
-  duration: 8000,
-};
+type ToastType = "success" | "error" | "loading";
 
-const optsSuccess = {
-  duration: 1500,
-};
-
-const optsError = {
-  duration: 5000,
-};
-
-export class Toast {
-  static toaster?: Toaster;
+export class Toast<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  static toasts?: Toasts;
   id: string;
+  type: ToastType;
+  message: Renderable<T>;
+  opts: Partial<ToastOptions>;
 
-  private constructor(id: string) {
-    this.id = id;
+  constructor(
+    type: ToastType,
+    message: Renderable<T>,
+    opts: Partial<ToastOptions> = {},
+  ) {
+    Toast.maybeSetupToaster();
+    this.type = type;
+    this.message = message;
+    this.opts = {
+      ...opts,
+      props: {
+        ...opts.props,
+        toast: this,
+      },
+    };
+
+    this.id = createToast(type, message, this.opts);
   }
 
   /** Setup toaster in shadowDOM so it is not affected by existing document style */
@@ -29,60 +40,114 @@ export class Toast {
     const container = document.createElement("div");
     container.style.cssText =
       "pointerEvents: none !important; background: none !important; border: none !important;";
+    container.style.zIndex = `${TOASTER_ZINDEX}`;
 
     container.attachShadow({ mode: "open" });
     const root = container.shadowRoot;
     if (root === null) throw Error("Could not access shadow DOM of toaster");
     const innerContainer = document.createElement("div");
     root.appendChild(innerContainer);
-
-    Toast.toaster = new Toaster({ target: innerContainer, props: {} });
+    void Config.instance.get().then((c) => {
+      c.setStyle(root);
+    });
+    Toast.toasts = new Toasts({ target: innerContainer, props: {} });
     document.body.appendChild(container);
   }
 
   private static maybeSetupToaster() {
-    if (Toast.toaster === undefined) {
+    if (Toast.toasts === undefined) {
       Toast.setupToaster();
     }
   }
 
-  static loading(msg: string): Toast {
-    Toast.maybeSetupToaster();
-    const id = toast.loading(msg, optsLoading);
-    return new Toast(id);
+  static success(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): Toast {
+    return new Toast("success", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
   }
 
-  /** Toast is deleted after delay */
-  static success(msg: Renderable, opts?: ToastOptions): Toast {
-    Toast.maybeSetupToaster();
-    const builtOpts = {
-      ...optsSuccess,
-      ...(opts ?? {}),
-    };
-    const id = toast.success(msg, builtOpts);
-    return new Toast(id);
+  static error(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): Toast {
+    return new Toast("error", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
   }
 
-  /** Toast is deleted after delay */
-  static error(msg: string): Toast {
-    Toast.maybeSetupToaster();
-    const id = toast.error(msg, optsError);
-    return new Toast(id);
+  static yomikiriError(err: YomikiriError) {
+    return new Toast("error", DetailedToast, {
+      props: { message: err.message, details: err.details.slice(1).join("\n") },
+    });
   }
 
-  update(msg: string) {
-    toast.loading(msg, { ...optsLoading, id: this.id });
+  static loading(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): Toast {
+    return new Toast("error", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
   }
 
-  success(msg: string) {
-    toast.success(msg, { ...optsSuccess, id: this.id });
-  }
+  update({
+    type,
+    message,
+    opts,
+  }: {
+    type?: ToastType;
+    message?: Renderable<T>;
+    opts?: Partial<ToastOptions>;
+  }) {
+    this.type = type ?? this.type;
+    this.message = message ?? this.message;
+    this.opts = { ...this.opts, ...opts };
 
-  error(msg: string) {
-    toast.error(msg, { ...optsError, id: this.id });
+    this.id = createToast(this.type, this.message, {
+      ...this.opts,
+      id: this.id,
+    });
   }
 
   dismiss() {
     toast.dismiss(this.id);
   }
 }
+
+/**
+ * Creates toast, and returns its id.
+ * If 'id' is given in `opts`, updates toast instead.
+ */
+function createToast<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(type: ToastType, message: Renderable<T>, opts: ToastOptions): string {
+  if (type === "success") {
+    return toast.success(message, {
+      duration: 1500,
+      ...opts,
+    });
+  } else if (type === "error") {
+    return toast.error(message, {
+      duration: 5000,
+      ...opts,
+    });
+  } else if (type === "loading") {
+    return toast.error(message, {
+      duration: 8000,
+      ...opts,
+    });
+  } else {
+    throw new YomikiriError(`Invalid toast type: ${type}`);
+  }
+}
+
+window.toast = Toast;

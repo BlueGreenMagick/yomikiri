@@ -2516,6 +2516,7 @@ dependencies = [
 name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bincode",
  "cfg_aliases",
  "console_error_panic_hook",

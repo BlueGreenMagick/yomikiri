@@ -1,4 +1,8 @@
-import Utils, { LazyAsync } from "lib/utils";
+import Utils, {
+  handleResponseMessage,
+  LazyAsync,
+  type ResponseMessage,
+} from "lib/utils";
 import type {
   IPlatform,
   TTSVoice,
@@ -18,6 +22,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import type { DictMetadata } from "@yomikiri/yomikiri-rs";
+import { YomikiriError } from "lib/error";
 
 export * from "../common";
 
@@ -30,7 +35,7 @@ declare global {
           postMessage: (message: {
             key: string;
             request: string;
-          }) => Promise<string | null>;
+          }) => Promise<ResponseMessage<string>>;
         };
       };
     };
@@ -88,11 +93,8 @@ export namespace IosAppPlatform {
     };
     const response =
       await window.webkit.messageHandlers.yomikiri.postMessage(message);
-    if (response === null) {
-      return null;
-    } else {
-      return JSON.parse(response) as WebviewResponse<K>;
-    }
+    const jsonResponse = handleResponseMessage(response);
+    return JSON.parse(jsonResponse) as WebviewResponse<K>;
   }
 
   export async function getConfig(): Promise<StoredCompatConfiguration> {
@@ -124,7 +126,7 @@ export namespace IosAppPlatform {
   }
 
   export function openOptionsPage(): void {
-    throw new Error("Not implemented for iosapp");
+    throw new YomikiriError("Not implemented for iosapp");
   }
 
   export async function versionInfo(): Promise<VersionInfo> {

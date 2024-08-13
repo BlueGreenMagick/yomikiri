@@ -1,6 +1,4 @@
 <script lang="ts">
-  import Utils from "lib/utils";
-  import { Toast } from "lib/toast";
   import type { Backend, TokenizeResult } from "@platform/backend";
   import {
     type LoadingAnkiNote,
@@ -34,14 +32,7 @@
       url: "",
       pageTitle: "",
     };
-
-    let note: LoadingAnkiNote;
-    try {
-      note = buildAnkiNote({ config }, markerData);
-    } catch (err) {
-      Toast.error(Utils.getErrorMessage(err));
-      throw err;
-    }
+    let note = buildAnkiNote({ config }, markerData);
     previewNoteData = note;
     previewIsVisible = true;
   }

@@ -1,27 +1,19 @@
 <script lang="ts">
   import { Toast } from "lib/toast";
   import { platformClass } from "./actions";
-  import { getErrorMessage } from "lib/utils";
+  import { YomikiriError } from "lib/error";
 
   function handleGlobalError(ev: Event) {
-    let error: unknown = (ev as ErrorEvent).error;
-    // Ignore non-JS error
-    if (error === undefined) {
-      console.error("Non-JS Error");
-    }
-
-    console.error("Error: ", error);
-    Toast.error(getErrorMessage(error));
+    const error = YomikiriError.from((ev as ErrorEvent).error);
+    error.logConsole();
+    Toast.yomikiriError(error);
   }
 
-  function handleGlobalRejection(err: PromiseRejectionEvent) {
-    console.error("Error: ", err.reason);
-    Toast.error(getErrorMessage(err.reason));
+  function handleGlobalRejection(ev: PromiseRejectionEvent) {
+    const error = YomikiriError.from(ev.reason);
+    error.logConsole();
+    Toast.yomikiriError(error);
   }
-
-  window.addEventListener("error", () => {
-    console.error("error occured");
-  });
 </script>
 
 <svelte:window

@@ -55,6 +55,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     return
                 }
                 realResponse = ["success": true, "resp": jsonResponse]
+            } catch let error as BackendError {
+                os_log(.error, "Error: %{public}s", String(describing: error))
+                realResponse = ["success": false, "error": error.json()]
             } catch {
                 os_log(.error, "Error: %{public}s", String(describing: error))
                 realResponse = ["success": false, "error": ["message": error.localizedDescription]]

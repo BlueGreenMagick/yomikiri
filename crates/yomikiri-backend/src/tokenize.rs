@@ -1,10 +1,10 @@
 #![allow(non_snake_case)]
 
-use crate::error::{YResult, YomikiriError};
 use crate::grammar::{GrammarDetector, GrammarRule};
 use crate::japanese::JapaneseString;
 use crate::unidic::load_dictionary;
 use crate::SharedBackend;
+use anyhow::{anyhow, Context, Result};
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use std::borrow::Cow;
@@ -201,7 +201,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
     /// char_idx: code point index of selected character in sentence
-    pub fn tokenize(&mut self, sentence: &'_ str, char_idx: usize) -> YResult<RawTokenizeResult> {
+    pub fn tokenize(&mut self, sentence: &'_ str, char_idx: usize) -> Result<RawTokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
         if tokens.is_empty() {
             return Ok(RawTokenizeResult::empty());
@@ -239,9 +239,9 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
 
         Ok(RawTokenizeResult {
             tokens: tokens.into_iter().map(Token::from).collect(),
-            tokenIdx: token_idx.try_into().map_err(|_| {
-                YomikiriError::ConversionError("Failed to convert token_idx as u32.".into())
-            })?,
+            tokenIdx: token_idx
+                .try_into()
+                .with_context(|| format!("Failed to convert token_idx as u32: {}", token_idx))?,
             entries,
             grammars,
         })
@@ -251,7 +251,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     ///
     /// if `sentence` is not in NFC normalized form, it is normalized before fed to lindera,
     /// and `token.start` is calculated as code point position in pre-normalized sentence.
-    fn tokenize_inner(&self, sentence: &'_ str) -> YResult<Vec<InnerToken>> {
+    fn tokenize_inner(&self, sentence: &'_ str) -> Result<Vec<InnerToken>> {
         let is_normalized = is_nfc(sentence);
         let normalized_sentence = if is_normalized {
             Cow::Borrowed(sentence)
@@ -290,11 +290,21 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
                             None
                         }
                     })
-                    .ok_or(YomikiriError::BytePositionError)?
+                    .ok_or_else(|| {
+                        anyhow!(
+                            "No character starts at byte position '{}' in normalized text",
+                            tok.byte_start
+                        )
+                    })?
             };
             let char_start = original_char_indices
                 .find_map(|(i, (a, _))| if a == byte_start { Some(i) } else { None })
-                .ok_or(YomikiriError::BytePositionError)?;
+                .ok_or_else(|| {
+                    anyhow!(
+                        "No character starts at byte position '{}' in text",
+                        byte_start
+                    )
+                })?;
 
             let text = tok.text.to_string();
             let details = match tok.get_details() {
@@ -309,7 +319,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
 
     /// Join tokens in-place if longer token exist in dictionary
     /// /// e.g. [込ん,で,いる] => 込んでいる
-    fn join_all_tokens(&mut self, tokens: &mut Vec<InnerToken>) -> YResult<()> {
+    fn join_all_tokens(&mut self, tokens: &mut Vec<InnerToken>) -> Result<()> {
         let mut i = 0;
         while i < tokens.len() {
             self.join_tokens_from(tokens, i)?;
@@ -318,7 +328,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
         Ok(())
     }
 
-    fn join_tokens_from(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<()> {
+    fn join_tokens_from(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<()> {
         self.join_compounds_multi(tokens, from)?;
         self.join_prefix(tokens, from)?;
         self.join_pre_noun(tokens, from)?;
@@ -352,7 +362,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     //     if any 固有名詞 => 固有名詞
     //     elif all 数詞 => 数詞
     //     else: 普通名詞
-    fn join_compounds_multi(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_compounds_multi(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         let token = &tokens[from];
         let mut all_noun = token.is_noun();
         let mut all_particle = token.is_particle();
@@ -461,7 +471,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     }
 
     /// (接頭詞) (any) => 'dict' (any)
-    fn join_prefix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_prefix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -488,7 +498,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     }
 
     /// (連体詞) (名詞 | 代名詞 | 接頭辞) => 'dict' (any)
-    fn join_pre_noun(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_pre_noun(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -521,7 +531,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     ///
     /// Join any that ends with 助詞 because
     /// unidic is not good at determining if a given 助詞 is 接続助詞
-    fn join_conjunction(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_conjunction(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -556,7 +566,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     /// ーがる is joined even if it does not exist in dictionary
     ///
     /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
-    fn join_suffix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_suffix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -602,7 +612,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     }
 
     /// 動詞 動詞／非自立可能 => 'dict' 動詞
-    fn join_dependent_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_dependent_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -640,7 +650,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     ///
     /// 1. 名詞 + する
     /// 2. 動詞 + なさい「為さる」
-    fn join_specific_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_specific_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -680,7 +690,7 @@ impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
     }
 
     /// (動詞 | 形容詞 | 形状詞 | 副詞 | 助動詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | 形状詞/助動詞語幹)+ => $1
-    fn join_inflections(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> YResult<bool> {
+    fn join_inflections(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
         if !matches!(

@@ -4,3 +4,7 @@ export const PLATFORM = __APP_PLATFORM__;
 export const EXTENSION_CONTEXT = __EXTENSION_CONTEXT__;
 
 export const TOOLTIP_IFRAME_ID = "yomikiri-addon-dictionary-tooltip";
+
+/** z-index */
+export const TOOLTIP_ZINDEX = 1900000000;
+export const TOASTER_ZINDEX = 2000000000;

@@ -9,6 +9,7 @@ import type {
   AnkiTemplateFieldContent,
   AnkiTemplateFieldTypes,
 } from "./template";
+import { YomikiriError } from "lib/error";
 
 export interface LoadingAnkiNote {
   deck: string;
@@ -79,7 +80,7 @@ export function buildAnkiNote(
 ): LoadingAnkiNote {
   const template = ctx.config.get("anki.anki_template");
   if (template === null) {
-    throw new Error(
+    throw new YomikiriError(
       "You need to set up Anki template in the extension settings first.",
     );
   }
@@ -112,7 +113,9 @@ export function buildAnkiField(
 ): LoadingField | Field {
   const builder = fieldBuilders[template.content];
   if (builder === undefined) {
-    throw new Error(`Invalid Anki template field type: '${template.content}'`);
+    throw new YomikiriError(
+      `Invalid Anki template field type: '${template.content}'`,
+    );
   }
   // @ts-expect-error -- template type is correct
   const value = builder(template, data, ctx);
@@ -147,7 +150,7 @@ addBuilder("word", (opts, data) => {
     word = Entry.mainForm(data.entry);
     reading = Entry.readingForForm(data.entry, word, false).reading;
   } else {
-    throw new Error(
+    throw new YomikiriError(
       `Invalid Anki template field option value for 'form': '${opts.form}'`,
     );
   }
@@ -166,7 +169,7 @@ addBuilder("word", (opts, data) => {
   } else if (opts.style === "kana-only") {
     return reading;
   } else {
-    throw new Error(
+    throw new YomikiriError(
       `Invalid Anki template field option value for 'style': '${opts.style}`,
     );
   }
@@ -178,7 +181,7 @@ addBuilder("meaning", (opts, data) => {
     if (
       !["numbered", "unnumbered", "line", "div", "yomichan"].includes(format)
     ) {
-      throw new Error(
+      throw new YomikiriError(
         `Invalid Anki template field option value for 'full_format': '${format}`,
       );
     }
@@ -294,7 +297,7 @@ addBuilder("meaning", (opts, data) => {
     }
 
     if (indent !== 0) {
-      throw new Error(
+      throw new YomikiriError(
         "An unexpected error occured while building Anki field content for meaning. Indentation level is not valid.",
       );
     }
@@ -346,7 +349,7 @@ addBuilder("sentence", (opts, data) => {
   } else if (optStyle === "kana-only") {
     getText = (token) => RubyString.generate(token.reading);
   } else {
-    throw new Error(
+    throw new YomikiriError(
       `Invalid Anki template field option value for 'style': '${optStyle}`,
     );
   }
@@ -361,7 +364,7 @@ addBuilder("sentence", (opts, data) => {
   } else if (optWord === "span") {
     wrapWord = (word) => `<span class="yomi-word">${word}</span>`;
   } else {
-    throw new Error(
+    throw new YomikiriError(
       `Invalid Anki template field option value for 'word': '${optWord}`,
     );
   }

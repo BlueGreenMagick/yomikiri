@@ -12,6 +12,7 @@ import YomikiriTokenizer
 
 struct OptionsView: View {
     @StateObject var viewModel = ViewModel()
+    @EnvironmentObject var errorHandler: ErrorHandler
 
     static let BACKGROUND_COLOR = Color(red: 0.95, green: 0.95, blue: 0.95)
 
@@ -53,7 +54,7 @@ struct OptionsView: View {
                 let ankiInfo = try await getAnkiInfoFromPasteboard()
                 try viewModel.passAnkiInfo(ankiInfo: ankiInfo)
             } catch {
-                os_log(.error, "ERROR %{public}s", error.localizedDescription)
+                self.errorHandler.handle(error)
             }
         }
     }

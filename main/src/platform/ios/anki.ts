@@ -9,6 +9,7 @@ import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
 import { EXTENSION_CONTEXT } from "consts";
 import { LazyAsync } from "lib/utils";
+import { YomikiriError } from "lib/error";
 
 export class IosAnkiApi implements IAnkiAddNotes {
   static instance: LazyAsync<IosAnkiApi> = new LazyAsync(
@@ -37,7 +38,7 @@ export class IosAnkiApi implements IAnkiAddNotes {
     const willAutoRedirect = this.config.get("anki.ios_auto_redirect");
     if (willAutoRedirect) {
       if (cTab.id === undefined) {
-        throw new Error("Current tab does not have an id");
+        throw new YomikiriError("Current tab does not have an id");
       }
       await setStorage("x-callback.tabId", cTab.id);
       await setStorage("x-callback.tabUrl", location.href);

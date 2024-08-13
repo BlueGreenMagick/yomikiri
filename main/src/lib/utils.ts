@@ -1,4 +1,5 @@
 import { writable, type Writable } from "svelte/store";
+import { YomikiriError } from "./error";
 
 export interface Rect {
   top: number;
@@ -182,10 +183,10 @@ export function containsPoint(
 /** Converts index of UTF-16 code units to index of unicode code points*/
 export function toCodePointIndex(text: string, codeUnitIdx: number): number {
   if (codeUnitIdx < 0) {
-    throw new Error("codeUnitIdx may not be smaller than 0.");
+    throw new YomikiriError("codeUnitIdx may not be smaller than 0.");
   }
   if (codeUnitIdx > text.length) {
-    throw new Error("codeUnitIdx may not be greater than text.length.");
+    throw new YomikiriError("codeUnitIdx may not be greater than text.length.");
   }
 
   let codePointIdx = 0;
@@ -397,7 +398,7 @@ export interface SuccessfulResponseMessage<R> {
 
 export interface FailedResponseMessage {
   success: false;
-  error: string; // error json
+  error: unknown; // yomikiri-error like struct
 }
 
 export type ResponseMessage<R> =
@@ -408,18 +409,13 @@ export function handleResponseMessage<R>(resp: ResponseMessage<R>): R {
   if (resp.success) {
     return resp.resp;
   } else {
-    let obj: object;
+    let obj: unknown;
     if (typeof resp.error === "string") {
-      obj = JSON.parse(resp.error) as object;
+      obj = JSON.parse(resp.error);
     } else {
       obj = resp.error;
     }
-    const error = new Error();
-    for (const key of Object.getOwnPropertyNames(obj)) {
-      // @ts-expect-error copy over properties
-      // eslint-disable-next-line
-      error[key] = obj[key];
-    }
+    const error = YomikiriError.from(obj);
     throw error;
   }
 }

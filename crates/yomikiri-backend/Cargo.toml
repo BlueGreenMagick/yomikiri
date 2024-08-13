@@ -39,6 +39,7 @@ bincode = "1"
 thiserror = "1.0"
 flate2 = "1"
 fst = "0.4"
+anyhow = "1"
 
 [target.'cfg(target_family="wasm")'.dependencies]
 serde-wasm-bindgen = { version = "0.6" }

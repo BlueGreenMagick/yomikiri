@@ -21,6 +21,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
+import { YomikiriError } from "lib/error";
 
 export * from "../common";
 
@@ -111,7 +112,7 @@ export namespace IosPlatform {
     } else {
       const tab = await currentTab();
       if (tab.id === undefined) {
-        throw new Error("Current tab does not have an id");
+        throw new YomikiriError("Current tab does not have an id");
       }
       await updateTab(tab.id, { url: OPTIONS_URL });
       window.close();

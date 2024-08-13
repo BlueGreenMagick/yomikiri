@@ -9,8 +9,6 @@
     type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
-  import Utils from "lib/utils";
-  import { Toast } from "lib/toast";
   import type Config from "lib/config";
   import { Platform } from "platform/iosapp";
 
@@ -36,13 +34,8 @@
       pageTitle: "",
     };
 
-    let note: LoadingAnkiNote;
-    try {
-      note = buildAnkiNote({ config }, markerData);
-    } catch (err) {
-      Toast.error(Utils.getErrorMessage(err));
-      throw err;
-    }
+    let note = buildAnkiNote({ config }, markerData);
+
     previewNoteData = note;
     previewIsVisible = true;
   }

@@ -1,5 +1,6 @@
 import { test, expect, describe, beforeAll } from "vitest";
 import { sentenceAtCharLocation, nodesOfToken } from "./scanner";
+import { YomikiriError } from "lib/error";
 
 beforeAll(() => {
   const styles = document.createElement("style");
@@ -134,7 +135,7 @@ function selectTextNode(element: Element, selector: string, idx = 0): Text {
   const elem = element.querySelector(selector)!;
   const node = elem.childNodes[idx];
   if (node.nodeType !== Node.TEXT_NODE) {
-    throw new Error("First child node is not Text");
+    throw new YomikiriError("First child node is not Text");
   }
   return node as Text;
 }

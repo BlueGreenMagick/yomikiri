@@ -4,7 +4,7 @@ import Config from "lib/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
 import type { AnkiApi } from "@platform/anki";
-import { TOOLTIP_IFRAME_ID } from "consts";
+import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
 
 export class Tooltip {
   config: Config;
@@ -65,7 +65,7 @@ export class Tooltip {
     iframe.style.maxHeight = "300px";
     iframe.style.backgroundColor = "white";
     iframe.style.border = "1px solid black";
-    iframe.style.zIndex = "2147483647";
+    iframe.style.zIndex = `${TOOLTIP_ZINDEX}`;
     iframe.style.boxShadow = "0 0 4px rgba(0, 0, 0, 0.4)";
     iframe.style.display = "block";
     iframe.style.boxSizing = "content-box";

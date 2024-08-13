@@ -6,7 +6,7 @@
   import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
-  import CancelDeferredNoteDeletion from "./CancelDeferredNoteDeletion.svelte";
+  import CancelDeferredNoteDeletion from "components/toast/CancelDeferredNoteDeletion.svelte";
 
   export let config: Config;
   export let ankiApi: AnkiApi;
@@ -42,7 +42,7 @@
     const clearJob = await (ankiApi as DesktopAnkiApi).clearDeferredNotes();
 
     let weakToast: WeakRef<Toast>;
-    const toast = Toast.success(CancelDeferredNoteDeletion, {
+    const toast = new Toast("success", CancelDeferredNoteDeletion, {
       duration: 4000,
       icon: TrashToastIcon,
       props: {

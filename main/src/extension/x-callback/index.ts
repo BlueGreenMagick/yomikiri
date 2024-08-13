@@ -7,6 +7,7 @@ import {
   currentTab,
   getStorage,
 } from "extension/browserApi";
+import { YomikiriError } from "lib/error";
 
 /**
  * Used for x-callback-url as x-success value to return back to current page.
@@ -50,7 +51,7 @@ async function getLastTabId(): Promise<number | null> {
 async function main() {
   const cTab = await currentTab();
   if (cTab.id === undefined) {
-    throw new Error("Failed to get current tab id (Unreachable)");
+    throw new YomikiriError("Failed to get current tab id (Unreachable)");
   }
 
   try {

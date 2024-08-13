@@ -1,3 +1,6 @@
+use super::backend::RustBackend;
+use crate::error::{FFIResult, ToUniFFIResult};
+use anyhow::Result;
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{
@@ -6,61 +9,10 @@ use yomikiri_dictionary::file::{
 };
 use yomikiri_dictionary::metadata::DictMetadata;
 
-use crate::dictionary::Dictionary;
-use crate::error::{YResult, YomikiriError};
-use crate::tokenize::{create_tokenizer, RawTokenizeResult};
-use crate::{utils, SharedBackend};
-use std::fs::{self, File};
+use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
-
-#[derive(uniffi::Object)]
-pub struct RustBackend {
-    inner: Mutex<SharedBackend<Vec<u8>, File>>,
-}
-
-impl RustBackend {
-    fn try_from_paths<P1: AsRef<Path>, P2: AsRef<Path>>(
-        index_path: P1,
-        entries_path: P2,
-    ) -> YResult<Arc<RustBackend>> {
-        utils::setup_logger();
-        let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::from_paths(index_path, entries_path)?;
-        let inner = SharedBackend {
-            tokenizer,
-            dictionary,
-        };
-        let inner = Mutex::new(inner);
-        let backend = RustBackend { inner };
-        Ok(Arc::new(backend))
-    }
-}
-
-#[uniffi::export]
-impl RustBackend {
-    #[uniffi::constructor]
-    pub fn new(index_path: String, entries_path: String) -> YResult<Arc<RustBackend>> {
-        Self::try_from_paths(&index_path, &entries_path)
-    }
-
-    pub fn tokenize(&self, sentence: String, char_at: u32) -> YResult<RawTokenizeResult> {
-        let mut backend = self.inner.lock().unwrap();
-        let char_at = usize::try_from(char_at).map_err(|_| {
-            YomikiriError::ConversionError("Failed to convert char_at to usize".into())
-        })?;
-        backend.tokenize(&sentence, char_at)
-    }
-
-    pub fn search(&self, term: String, char_at: u32) -> YResult<RawTokenizeResult> {
-        let mut backend = self.inner.lock().unwrap();
-        let char_at = usize::try_from(char_at).map_err(|_| {
-            YomikiriError::ConversionError("Failed to convert char_at to usize".into())
-        })?;
-        backend.search(&term, char_at)
-    }
-}
+use std::sync::Arc;
 
 #[derive(uniffi::Object)]
 pub struct DictFilesReplaceJob {
@@ -69,17 +21,29 @@ pub struct DictFilesReplaceJob {
 
 #[uniffi::export]
 impl DictFilesReplaceJob {
-    /// Replace user dictionary files.
-    ///
-    /// Returns a new `RustBackend` with replaced files.
-    /// If an error occurs with new files when initializing `RustBackend`,
-    /// it tries to restore the previous user dictionary, then an error is thrown.
     pub fn replace(
         &self,
         index_path: String,
         entries_path: String,
         metadata_path: String,
-    ) -> YResult<Arc<RustBackend>> {
+    ) -> FFIResult<Arc<RustBackend>> {
+        self._replace(index_path, entries_path, metadata_path)
+            .uniffi()
+    }
+}
+
+impl DictFilesReplaceJob {
+    /// Replace user dictionary files.
+    ///
+    /// Returns a new `RustBackend` with replaced files.
+    /// If an error occurs with new files when initializing `RustBackend`,
+    /// it tries to restore the previous user dictionary, then an error is thrown.
+    fn _replace(
+        &self,
+        index_path: String,
+        entries_path: String,
+        metadata_path: String,
+    ) -> Result<Arc<RustBackend>> {
         let backup_dir = self.temp_dir.join("prev");
         fs::create_dir(&backup_dir)?;
         let backup_index_path = backup_dir.join(DICT_INDEX_FILENAME);
@@ -105,7 +69,7 @@ impl DictFilesReplaceJob {
                 fs::rename(&backup_index_path, &index_path)?;
                 fs::rename(&backup_entries_path, &entries_path)?;
                 fs::rename(&backup_metadata_path, &metadata_path)?;
-                Err(e)
+                Err(e).into()
             }
         }
     }
@@ -113,7 +77,11 @@ impl DictFilesReplaceJob {
 
 /// Downloads and writes new dictionary files into specified path.
 #[uniffi::export]
-pub fn update_dictionary_file(temp_dir: String) -> YResult<DictFilesReplaceJob> {
+pub fn update_dictionary_file(temp_dir: String) -> FFIResult<DictFilesReplaceJob> {
+    _update_dictionary_file(temp_dir).uniffi()
+}
+
+fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
     let entries = {
         // JMDict is currently 58MB.
         let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
@@ -142,7 +110,7 @@ pub fn update_dictionary_file(temp_dir: String) -> YResult<DictFilesReplaceJob> 
     Ok(replace_job)
 }
 
-fn download_dictionary<W: Write>(writer: &mut W) -> YResult<()> {
+fn download_dictionary<W: Write>(writer: &mut W) -> Result<()> {
     let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
     let resp = ureq::get(download_url).call()?;
     let mut decoder = GzDecoder::new(resp.into_reader());

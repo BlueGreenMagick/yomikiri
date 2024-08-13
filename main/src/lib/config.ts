@@ -72,7 +72,7 @@ export class Config {
 
   initialized = false;
   subscribers: (() => void)[] = [];
-  documents: WeakRef<Document>[] = [];
+  documents: WeakRef<Document | DocumentFragment>[] = [];
 
   static instance: LazyAsync<Config> = new LazyAsync(() => Config.initialize());
 
@@ -192,7 +192,7 @@ export class Config {
    * Insert or update <style> properties from config,
    * watch for config changes and auto-update <style>
    */
-  setStyle(doc: Document) {
+  setStyle(doc: Document | DocumentFragment) {
     let alreadyExisting = false;
     for (const docRef of this.documents) {
       const derefed = docRef.deref();
@@ -212,9 +212,11 @@ export class Config {
   /** Update <style> for all registered _documents */
   private updateStyling() {
     const css = this.generateCss();
-    for (const docref of this.documents) {
-      const doc = docref.deref();
-      if (doc === undefined) continue;
+    for (const ref of this.documents) {
+      const node = ref.deref();
+      if (node === undefined) continue;
+      const doc = node.ownerDocument ?? node;
+
       let styleEl = doc.getElementById(STYLE_ELEMENT_ID);
       if (styleEl === null) {
         styleEl = doc.createElement("style");
@@ -230,7 +232,7 @@ export class Config {
     const font = this.get("general.font");
     const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
 
-    return `:root {
+    return `:root, :host {
 --font-size: ${fontSize}px;
 --japanese-font: "${escapedFont}";
     }`;
