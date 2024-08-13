@@ -23,9 +23,9 @@
   }
 </script>
 
-<div>
+<div class="detailed-toast">
   <div>
-    <div>{message}</div>
+    <div class="message">{message}</div>
     {#if details}
     <div class="details" class:hidden={detailsHidden}>{details}</div>
     {/if}
@@ -40,5 +40,20 @@
 <style>
   .hidden {
     display: none;
+  }
+
+  .detailed-toast {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn {
+    flex: 0 0 auto;
+  }
+
+  .details {
+    color: var(--text-light);
+    margin-top: 8px;
   }
 </style>
