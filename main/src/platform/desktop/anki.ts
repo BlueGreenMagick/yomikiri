@@ -378,8 +378,10 @@ export class ClearDeferredNotesJob {
   }
 
   static async run(config: Config): Promise<ClearDeferredNotesJob> {
-    const notes = await getStorage<AnkiNote[]>(DEFER_NOTES_STORAGE_KEY);
-    const errors = await getStorage<string[]>(DEFER_ERRORS_STORAGE_KEY);
+    const notes =
+      (await getStorage<AnkiNote[] | undefined>(DEFER_NOTES_STORAGE_KEY)) ?? [];
+    const errors =
+      (await getStorage<string[] | undefined>(DEFER_ERRORS_STORAGE_KEY)) ?? [];
 
     await config.setBatch({
       "state.anki.deferred_note_count": 0,
