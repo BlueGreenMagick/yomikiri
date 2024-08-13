@@ -11,10 +11,10 @@
   import { TokenizeResult } from "@platform/backend";
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import { Toast } from "lib/toast";
-  import Utils from "lib/utils";
   import ToolbarWithPane from "components/dictionary/ToolbarWithPane.svelte";
   import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
+  import { YomikiriError } from "lib/error";
 
   export let config: Config;
   export let ankiApi: AnkiApi;
@@ -53,7 +53,8 @@
     try {
       note = buildAnkiNote({ config }, markerData);
     } catch (err) {
-      Toast.error(Utils.getErrorMessage(err));
+      const error = YomikiriError.from(err);
+      Toast.error(error.message, error.details.join("\n"));
       throw err;
     }
     previewNoteData = note;

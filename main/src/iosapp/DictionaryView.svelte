@@ -9,10 +9,10 @@
     type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
-  import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import type Config from "lib/config";
   import { Platform } from "platform/iosapp";
+  import { YomikiriError } from "lib/error";
 
   export let config: Config;
   export let backend: IosAppBackend;
@@ -40,7 +40,8 @@
     try {
       note = buildAnkiNote({ config }, markerData);
     } catch (err) {
-      Toast.error(Utils.getErrorMessage(err));
+      const error = YomikiriError.from(err);
+      Toast.error(error.message, error.details.join("\n"));
       throw err;
     }
     previewNoteData = note;

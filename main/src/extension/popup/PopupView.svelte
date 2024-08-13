@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Utils from "lib/utils";
   import { Toast } from "lib/toast";
   import type { Backend, TokenizeResult } from "@platform/backend";
   import {
@@ -14,6 +13,7 @@
   import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
+  import { YomikiriError } from "lib/error";
 
   export let config: Config;
   export let backend: Backend;
@@ -39,7 +39,8 @@
     try {
       note = buildAnkiNote({ config }, markerData);
     } catch (err) {
-      Toast.error(Utils.getErrorMessage(err));
+      const error = YomikiriError.from(err);
+      Toast.error(error.message, error.details.join("\n"));
       throw err;
     }
     previewNoteData = note;
