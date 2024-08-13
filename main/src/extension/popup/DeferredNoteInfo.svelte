@@ -42,7 +42,7 @@
     const clearJob = await (ankiApi as DesktopAnkiApi).clearDeferredNotes();
 
     let weakToast: WeakRef<Toast>;
-    const toast = new Toast("success", CancelDeferredNoteDeletion,{
+    const toast = new Toast("success", CancelDeferredNoteDeletion, {
       duration: 4000,
       icon: TrashToastIcon,
       props: {
@@ -52,7 +52,7 @@
           weakToast.deref()?.dismiss();
         },
       },
-    })
+    });
     weakToast = new WeakRef(toast);
   }
 

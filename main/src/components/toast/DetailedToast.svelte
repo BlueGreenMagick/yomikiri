@@ -9,16 +9,16 @@
   let detailsHidden = true;
 
   function close() {
-    toast.dismiss()
+    toast.dismiss();
   }
 
   function btnClicked() {
     if (detailsHidden) {
-      detailsHidden = false
+      detailsHidden = false;
       // make toast stay alive
-      toast.update({opts: {duration: 99999999}})
+      toast.update({ opts: { duration: 99999999 } });
     } else {
-      close()
+      close();
     }
   }
 </script>
@@ -27,13 +27,16 @@
   <div>
     <div class="message">{message}</div>
     {#if details}
-    <div class="details" class:hidden={detailsHidden}>{details}</div>
+      <div class="details" class:hidden={detailsHidden}>{details}</div>
     {/if}
   </div>
   {#if details}
-  <div class="btn">
-    <TextButton label={detailsHidden ? "details" : "close"} onClick={btnClicked}/>
-  </div>
+    <div class="btn">
+      <TextButton
+        label={detailsHidden ? "details" : "close"}
+        onClick={btnClicked}
+      />
+    </div>
   {/if}
 </div>
 
