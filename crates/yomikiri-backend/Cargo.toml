@@ -25,21 +25,21 @@ path = "chunk_wasm.rs"
 uniffi-bindgen = []
 
 [dependencies]
-lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-yomikiri-dictionary = { path = "../yomikiri-dictionary" }
-yomikiri-unidic-types = { path = "../unidic-types" }
-unicode-normalization = "0.1"
-unicode-segmentation = "1.9"
-log = { version = "0.4" }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1"
-bincode = "1"
-thiserror = "1.0"
-flate2 = "1"
-fst = "0.4"
-anyhow = "1"
+lindera-tokenizer = { workspace = true }
+lindera-dictionary = { workspace = true }
+lindera-core = { workspace = true }
+yomikiri-dictionary = { workspace = true }
+yomikiri-unidic-types = { workspace = true }
+unicode-normalization = { workspace = true }
+unicode-segmentation = { workspace = true }
+log = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+thiserror = { workspace = true }
+flate2 = { workspace = true }
+fst = { workspace = true }
+anyhow = { workspace = true }
 
 [target.'cfg(target_family="wasm")'.dependencies]
 serde-wasm-bindgen = { version = "0.6" }
@@ -51,8 +51,8 @@ console_error_panic_hook = { version = "0.1" }
 
 [target.'cfg(not(target_family="wasm"))'.dependencies]
 uniffi = { workspace = true }
-ureq = "2.9"
-tempfile = "3"
+ureq = { workspace = true }
+tempfile = { workspace = true }
 
 [target.'cfg(any(target_os="macos", target_os="ios"))'.dependencies]
 oslog = { version = "0.2" }
@@ -62,12 +62,10 @@ path = "../yomikiri-dictionary"
 features = ["uniffi"]
 
 [build-dependencies]
-cfg_aliases = "0.2"
+cfg_aliases = { workspace = true }
 
 [target.'cfg(not(target_family="wasm"))'.build-dependencies]
-uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom", features = [
-  "build",
-] }
+uniffi = { workspace = true, features = ["build"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"

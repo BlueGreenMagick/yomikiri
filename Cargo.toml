@@ -18,4 +18,37 @@ opt-level = "z"
 needless_borrows_for_generic_args = "allow"
 
 [workspace.dependencies]
+lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
+
+anyhow = "1"
+bincode = "1"
+byteorder = "1"
+cfg_aliases = "0.2"
+chrono = { version = "0.4", features = ["alloc"] }
+clap = { version = "4.5", features = ["derive"] }
+csv = "1.2"
+filetime = "0.2"
+flate2 = "1"
+fst = "0.4"
+itertools = "0.11"
+log = "0.4"
+ouroboros = "0.8"
+tempfile = "3.8"
+thiserror = "1"
+regex = "1"
+rustyxml = { version = "0.3.0", git = "https://github.com/Florob/RustyXML.git", package = "RustyXML" }
+unicode-normalization = "0.1"
+unicode-segmentation = "1.9"
 uniffi = { git = "https://github.com/BlueGreenMagick/uniffi-rs.git", branch = "custom" }
+ureq = "2.9"
+walkdir = "2.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
+zip = "0.6"
+
+yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }
+yomikiri-jmdict = { path = "./crates/jmdict" }
+yomikiri-unidic-types = { path = "./crates/unidic-types" }

@@ -6,18 +6,18 @@ edition = "2021"
 license = "MIT"
 
 [dependencies]
-lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
-yomikiri-jmdict = { path = "../jmdict", default-features = false }
-yomikiri-dictionary = { path = "../yomikiri-dictionary" }
-yomikiri-unidic-types = { path = "../unidic-types" }
-csv = "1.2"
-walkdir = "2.3"
-filetime = "0.2"
-ureq = "2.7"
-tempfile = "3.8"
-zip = "0.6"
-anyhow = "1"
+lindera-unidic-builder = { workspace = true }
+lindera-core = { workspace = true }
+yomikiri-jmdict = { workspace = true, default-features = false }
+yomikiri-dictionary = { workspace = true }
+yomikiri-unidic-types = { workspace = true }
+csv = { workspace = true }
+walkdir = { workspace = true }
+filetime = { workspace = true }
+ureq = { workspace = true }
+tempfile = { workspace = true }
+zip = { workspace = true }
+anyhow = { workspace = true }
 
 [lints]
 workspace = true

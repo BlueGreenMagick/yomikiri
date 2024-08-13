@@ -6,10 +6,10 @@ description = "JMDict XML Types"
 license = "MIT"
 
 [dependencies]
-rustyxml = { version = "0.3.0", git = "https://github.com/Florob/RustyXML.git", package = "RustyXML" }
-regex = "1"
-bincode = "1"
-thiserror = "1"
+rustyxml = { workspace = true }
+regex = { workspace = true }
+bincode = { workspace = true }
+thiserror = { workspace = true }
 
 [lints]
 workspace = true
