@@ -110,17 +110,16 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         func userContentController(_ controller: WKUserContentController, didReceive: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
             let message = didReceive.body
             Task {
+                let response: [String: Any]
                 do {
-                    if let response = try await handleMessage(rawMsg: message) {
-                        replyHandler(response, nil)
-                    } else {
-                        replyHandler(NSNull(), nil)
-                    }
+                    let jsonOutput = try await handleMessage(rawMsg: message) ?? "null"
+                    response = ["success": true, "resp": jsonOutput]
                 } catch let error as BackendError {
-                    replyHandler(nil, error.getMessage())
+                    response = ["success": false, "error": error.json()]
                 } catch {
-                    replyHandler(nil, error.localizedDescription)
+                    response = ["success": false, "error": ["message": error.localizedDescription]]
                 }
+                replyHandler(response, nil)
             }
         }
 

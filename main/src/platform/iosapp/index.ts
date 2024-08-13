@@ -1,4 +1,8 @@
-import Utils, { LazyAsync } from "lib/utils";
+import Utils, {
+  handleResponseMessage,
+  LazyAsync,
+  type ResponseMessage,
+} from "lib/utils";
 import type {
   IPlatform,
   TTSVoice,
@@ -31,7 +35,7 @@ declare global {
           postMessage: (message: {
             key: string;
             request: string;
-          }) => Promise<string | null>;
+          }) => Promise<ResponseMessage<string>>;
         };
       };
     };
@@ -89,11 +93,8 @@ export namespace IosAppPlatform {
     };
     const response =
       await window.webkit.messageHandlers.yomikiri.postMessage(message);
-    if (response === null) {
-      return null;
-    } else {
-      return JSON.parse(response) as WebviewResponse<K>;
-    }
+    const jsonResponse = handleResponseMessage(response);
+    return JSON.parse(jsonResponse) as WebviewResponse<K>;
   }
 
   export async function getConfig(): Promise<StoredCompatConfiguration> {
