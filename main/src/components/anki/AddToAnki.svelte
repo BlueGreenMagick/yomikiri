@@ -13,7 +13,7 @@
   import TextButton from "components/TextButton.svelte";
   import { AnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
-  import { getErrorMessage, newChangeTracker, SingleQueued } from "lib/utils";
+  import { newChangeTracker, SingleQueued } from "lib/utils";
   import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
 
   interface FieldWatch extends Field {
@@ -45,26 +45,17 @@
 
   async function onAdd() {
     let ankiNote = await resolveAnkiNote(noteData);
-    try {
-      const added = await ankiApi.addNote(ankiNote);
-      if (added) {
-        Toast.success("Note added to Anki");
-      } else {
-        Toast.success("Note will be added when Anki is connected", "", {
-          icon: HourglassToastIcon,
-          duration: 3000,
-        });
-      }
-
-      noteAdded();
-    } catch (err) {
-      console.error(err);
-      const msg = getErrorMessage(
-        err,
-        "An unknown error occured... Check the browser console for more info.",
-      );
-      Toast.error(msg);
+    const added = await ankiApi.addNote(ankiNote);
+    if (added) {
+      Toast.success("Note added to Anki");
+    } else {
+      Toast.success("Note will be added when Anki is connected", "", {
+        icon: HourglassToastIcon,
+        duration: 3000,
+      });
     }
+
+    noteAdded();
   }
 
   /** muatates: `allLoaded` */

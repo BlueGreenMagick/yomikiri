@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Toast } from "lib/toast";
   import type { Backend, TokenizeResult } from "@platform/backend";
   import {
     type LoadingAnkiNote,
@@ -13,7 +12,6 @@
   import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
-  import { YomikiriError } from "lib/error";
 
   export let config: Config;
   export let backend: Backend;
@@ -34,15 +32,7 @@
       url: "",
       pageTitle: "",
     };
-
-    let note: LoadingAnkiNote;
-    try {
-      note = buildAnkiNote({ config }, markerData);
-    } catch (err) {
-      const error = YomikiriError.from(err);
-      Toast.error(error.message, error.details.join("\n"));
-      throw err;
-    }
+    let note = buildAnkiNote({ config }, markerData);
     previewNoteData = note;
     previewIsVisible = true;
   }
