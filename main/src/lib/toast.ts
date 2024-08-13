@@ -1,26 +1,42 @@
-import ErrorToast from "components/toast/ErrorToast.svelte";
 import Toasts from "components/toast/Toasts.svelte";
-import toast, { type Renderable, type ToastOptions } from "svelte-french-toast";
+import toast, { type ToastOptions } from "svelte-french-toast";
 import Config from "./config";
+import DetailedToast from "components/toast/DetailedToast.svelte";
 
-const optsLoading = {
-  duration: 8000,
-};
+type ToastType = "success" | "error" | "loading";
 
-const optsSuccess = {
-  duration: 1500,
-};
-
-const optsError = {
-  duration: 5000,
-};
+interface ToastParams {
+  type: ToastType;
+  msg: string;
+  details?: string | undefined;
+  opts?: Partial<ToastOptions> | undefined;
+}
 
 export class Toast {
   static toasts?: Toasts;
   id: string;
+  type: ToastType;
+  msg: string;
+  details: string;
+  opts: Partial<ToastOptions>;
 
-  private constructor(id: string) {
-    this.id = id;
+  constructor({ type, msg, details: detailsArg, opts: optsArg }: ToastParams) {
+    Toast.maybeSetupToaster();
+    this.type = type;
+    this.msg = msg;
+    const details = detailsArg ?? "";
+    const opts = optsArg ?? {};
+    this.details = details;
+    this.opts = opts;
+
+    this.id = createToast(type, {
+      ...opts,
+      props: {
+        msg,
+        details,
+        ...opts?.props,
+      },
+    });
   }
 
   /** Setup toaster in shadowDOM so it is not affected by existing document style */
@@ -47,49 +63,62 @@ export class Toast {
     }
   }
 
-  static loading(msg: string): Toast {
-    Toast.maybeSetupToaster();
-    const id = toast.loading(msg, optsLoading);
-    return new Toast(id);
+  static success(msg: string, details?: string): Toast {
+    return new Toast({ type: "success", msg, details });
   }
 
-  /** Toast is deleted after delay */
-  static success(msg: Renderable, opts?: ToastOptions): Toast {
-    Toast.maybeSetupToaster();
-    const builtOpts = {
-      ...optsSuccess,
-      ...(opts ?? {}),
-    };
-    const id = toast.success(msg, builtOpts);
-    return new Toast(id);
+  static error(msg: string, details?: string): Toast {
+    return new Toast({ type: "error", msg, details });
   }
 
-  /** Toast is deleted after delay */
-  static error(msg: string): Toast {
-    Toast.maybeSetupToaster();
+  static loading(msg: string, details?: string): Toast {
+    return new Toast({ type: "loading", msg, details });
+  }
 
-    const id = toast.error(ErrorToast, {
-      ...optsError,
-      props: { msg },
-      duration: 500000,
+  update({ type, msg, details, opts }: Partial<ToastParams>) {
+    this.type = type ?? this.type;
+    this.msg = msg ?? this.msg;
+    this.details = details ?? this.details;
+    this.opts = opts ?? this.opts;
+
+    createToast(this.type, {
+      ...opts,
+      id: this.id,
+      props: {
+        msg: this.msg,
+        details: this.details,
+        ...opts?.props,
+      },
     });
-    return new Toast(id);
-  }
-
-  update(msg: string) {
-    toast.loading(msg, { ...optsLoading, id: this.id });
-  }
-
-  success(msg: string) {
-    toast.success(msg, { ...optsSuccess, id: this.id });
-  }
-
-  error(msg: string) {
-    toast.error(msg, { ...optsError, id: this.id });
   }
 
   dismiss() {
     toast.dismiss(this.id);
+  }
+}
+
+/**
+ * Creates toast, and returns its id.
+ * If 'id' is given in `opts`, updates toast instead.
+ */
+function createToast(type: ToastType, opts: ToastOptions): string {
+  if (type === "success") {
+    return toast.success(DetailedToast, {
+      duration: 1500,
+      ...opts,
+    });
+  } else if (type === "error") {
+    return toast.error(DetailedToast, {
+      duration: 5000,
+      ...opts,
+    });
+  } else if (type === "loading") {
+    return toast.error(DetailedToast, {
+      duration: 8000,
+      ...opts,
+    });
+  } else {
+    throw new Error(`Invalid toast type: ${type}`);
   }
 }
 
