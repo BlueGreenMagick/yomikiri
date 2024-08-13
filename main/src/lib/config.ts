@@ -125,7 +125,7 @@ export class Config {
     let changed = false;
     for (const key in configs) {
       const k = key as keyof Configuration;
-      changed = changed && this.setInternal(k, configs[k]);
+      changed = changed || this.setInternal(k, configs[k]);
     }
     if (!changed) return;
     this.runSubscribers();
