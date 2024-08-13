@@ -80,6 +80,12 @@ export class Toast<
     });
   }
 
+  static yomikiriError(err: YomikiriError) {
+    return new Toast("error", DetailedToast, {
+      props: { message: err.message, details: err.details.slice(1).join("\n") },
+    });
+  }
+
   static loading(
     message: string,
     details?: string,
