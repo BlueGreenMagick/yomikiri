@@ -22,15 +22,15 @@ export class Toast<
     Toast.maybeSetupToaster();
     this.type = type;
     this.message = message;
-    this.opts = opts;
-
-    this.id = createToast(type, message, {
+    this.opts = {
       ...opts,
       props: {
         ...opts.props,
         toast: this,
       },
-    });
+    };
+
+    this.id = createToast(type, message, this.opts);
   }
 
   /** Setup toaster in shadowDOM so it is not affected by existing document style */
@@ -104,7 +104,7 @@ export class Toast<
     this.opts = { ...this.opts, ...opts };
 
     this.id = createToast(this.type, this.message, {
-      ...opts,
+      ...this.opts,
       id: this.id,
     });
   }

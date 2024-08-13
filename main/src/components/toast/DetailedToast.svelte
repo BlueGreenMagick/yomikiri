@@ -6,31 +6,33 @@
   export let details: string | undefined;
   export let toast: Toast;
 
-  let containsDetails: boolean;
   let detailsHidden = true;
 
   function close() {
     toast.dismiss()
-    throw new Error("unimplemented")
+  }
+
+  function btnClicked() {
+    if (detailsHidden) {
+      detailsHidden = false
+      // make toast stay alive
+      toast.update({opts: {duration: 99999999}})
+    } else {
+      close()
+    }
   }
 </script>
 
 <div>
   <div>
     <div>{message}</div>
-    {#if containsDetails}
+    {#if details}
     <div class="details" class:hidden={detailsHidden}>{details}</div>
     {/if}
   </div>
-  {#if containsDetails}
+  {#if details}
   <div class="btn">
-    <TextButton label={detailsHidden ? "details" : "close"} onClick={() => {
-      if (detailsHidden) {
-        detailsHidden = false;
-      } else {
-        close()
-      }
-    }}/>
+    <TextButton label={detailsHidden ? "details" : "close"} onClick={btnClicked}/>
   </div>
   {/if}
 </div>
