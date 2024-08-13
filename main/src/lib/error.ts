@@ -26,39 +26,44 @@ export class YomikiriError extends Error {
       return new YomikiriError(err.message, err.details);
     }
 
-    if (err instanceof Error) {
-      // create details from chain of causes
-      if ((err as Error & { cause: unknown }).cause !== undefined) {
-        return YomikiriError.from(
-          (err as Error & { cause: unknown }).cause,
-        ).context(err.message);
-      } else {
-        let out;
-        // check if it's a JSON-parsed YomikiriError
-        if (
-          "details" in err &&
-          typeof (err.details as { length: unknown }).length === "number"
-        ) {
-          out = new YomikiriError(err.message, err.details as string[]);
-        } else {
-          out = new YomikiriError(err.message);
-        }
-        if ("stack" in err) {
-          out.stack = err.stack;
-        }
-      }
-    }
-
     if (err === undefined || err === null) {
       const err = new YomikiriError("Undefined error");
       return err;
+    }
+
+    // Parse an error-like object
+    if (
+      typeof err === "object" &&
+      "message" in err &&
+      typeof err.message === "string"
+    ) {
+      if (err instanceof Error && "cause" in err && err.cause !== undefined) {
+        return YomikiriError.from(err.cause).context(err.message);
+      }
+      let out;
+      if (
+        "details" in err &&
+        typeof err.details === "object" &&
+        err.details !== null &&
+        "length" in err.details &&
+        typeof err.details.length === "number"
+      ) {
+        out = new YomikiriError(err.message, err.details as string[]);
+      } else {
+        out = new YomikiriError(err.message);
+      }
+
+      if ("stack" in err && typeof err.stack === "string") {
+        out.stack = err.stack;
+      }
+      return out;
     }
 
     if (typeof err === "string") {
       return new YomikiriError(err);
     }
 
-    console.error(err);
+    console.error("Unparsible error object", err);
     try {
       // eslint-disable-next-line
       const msg = err.toString();
@@ -80,8 +85,10 @@ export class YomikiriError extends Error {
   }
 
   logConsole(): void {
-    console.error(`${this.details.join("\n")}
-Stack Trace:
+    console.error(`ERROR:
+${this.details.join("\n- ")}
+
+===Stack Trace===
 ${this.stack}`);
   }
 }
