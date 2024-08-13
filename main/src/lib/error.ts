@@ -78,4 +78,10 @@ export class YomikiriError extends Error {
     }
     return err;
   }
+
+  logConsole(): void {
+    console.error(`${this.details.join("\n")}
+Stack Trace:
+${this.stack}`);
+  }
 }

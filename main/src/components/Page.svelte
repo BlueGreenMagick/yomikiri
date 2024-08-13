@@ -5,13 +5,13 @@
 
   function handleGlobalError(ev: Event) {
     const error = YomikiriError.from((ev as ErrorEvent).error);
-    console.error(error);
+    error.logConsole();
     Toast.error(error.message, error.details.join("\n"));
   }
 
   function handleGlobalRejection(ev: PromiseRejectionEvent) {
     const error = YomikiriError.from(ev.reason);
-    console.error(error);
+    error.logConsole();
     Toast.error(error.message, error.details.join("\n"));
   }
 </script>
