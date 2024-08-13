@@ -3,6 +3,7 @@ import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
 import Config from "./config";
 import DetailedToast from "components/toast/DetailedToast.svelte";
 import { YomikiriError } from "./error";
+import { TOASTER_ZINDEX } from "consts";
 
 type ToastType = "success" | "error" | "loading";
 
@@ -39,6 +40,7 @@ export class Toast<
     const container = document.createElement("div");
     container.style.cssText =
       "pointerEvents: none !important; background: none !important; border: none !important;";
+    container.style.zIndex = `${TOASTER_ZINDEX}`;
 
     container.attachShadow({ mode: "open" });
     const root = container.shadowRoot;
