@@ -1,46 +1,31 @@
 import Toasts from "components/toast/Toasts.svelte";
-import toast, { type ToastOptions } from "svelte-french-toast";
+import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
 import Config from "./config";
 import DetailedToast from "components/toast/DetailedToast.svelte";
 
 type ToastType = "success" | "error" | "loading";
 
-interface ToastParams {
-  type: ToastType;
-  message: string;
-  details?: string | undefined;
-  opts?: Partial<ToastOptions> | undefined;
-}
-
-export class Toast {
+export class Toast<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
   static toasts?: Toasts;
   id: string;
   type: ToastType;
-  message: string;
-  details: string;
+  message: Renderable<T>;
   opts: Partial<ToastOptions>;
 
-  constructor({
-    type,
-    message,
-    details: detailsArg,
-    opts: optsArg,
-  }: ToastParams) {
+  constructor(
+    type: ToastType,
+    message: Renderable<T>,
+    opts: Partial<ToastOptions> = {},
+  ) {
     Toast.maybeSetupToaster();
     this.type = type;
     this.message = message;
-    const details = detailsArg ?? "";
-    const opts = optsArg ?? {};
-    this.details = details;
     this.opts = opts;
 
-    this.id = createToast(type, {
+    this.id = createToast(type, message, {
       ...opts,
-      props: {
-        message,
-        details,
-        ...opts?.props,
-      },
     });
   }
 
@@ -69,31 +54,33 @@ export class Toast {
   }
 
   static success(message: string, details?: string): Toast {
-    return new Toast({ type: "success", message, details });
+    return new Toast("success", DetailedToast, { props: { message, details } });
   }
 
   static error(message: string, details?: string): Toast {
-    return new Toast({ type: "error", message, details });
+    return new Toast("error", DetailedToast, { props: { message, details } });
   }
 
   static loading(message: string, details?: string): Toast {
-    return new Toast({ type: "loading", message, details });
+    return new Toast("loading", DetailedToast, { props: { message, details } });
   }
 
-  update({ type, message, details, opts }: Partial<ToastParams>) {
+  update({
+    type,
+    message,
+    opts,
+  }: {
+    type?: ToastType;
+    message?: Renderable<T>;
+    opts?: Partial<ToastOptions>;
+  }) {
     this.type = type ?? this.type;
     this.message = message ?? this.message;
-    this.details = details ?? this.details;
-    this.opts = opts ?? this.opts;
+    this.opts = { ...this.opts, ...opts };
 
-    createToast(this.type, {
+    this.id = createToast(this.type, this.message, {
       ...opts,
       id: this.id,
-      props: {
-        message: this.message,
-        details: this.details,
-        ...opts?.props,
-      },
     });
   }
 
@@ -106,19 +93,21 @@ export class Toast {
  * Creates toast, and returns its id.
  * If 'id' is given in `opts`, updates toast instead.
  */
-function createToast(type: ToastType, opts: ToastOptions): string {
+function createToast<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(type: ToastType, message: Renderable<T>, opts: ToastOptions): string {
   if (type === "success") {
-    return toast.success(DetailedToast, {
+    return toast.success(message, {
       duration: 1500,
       ...opts,
     });
   } else if (type === "error") {
-    return toast.error(DetailedToast, {
+    return toast.error(message, {
       duration: 5000,
       ...opts,
     });
   } else if (type === "loading") {
-    return toast.error(DetailedToast, {
+    return toast.error(message, {
       duration: 8000,
       ...opts,
     });
