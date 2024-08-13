@@ -7,6 +7,7 @@ import {
 import Utils, { Lazy } from "lib/utils";
 import { Platform } from ".";
 import type { AnkiNote } from "lib/anki";
+import { YomikiriError } from "lib/error";
 
 interface Named {
   name: string;
@@ -60,7 +61,7 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   async requestAnkiInfo(): Promise<void> {
     const installed = await Platform.messageWebview("ankiInfo", null);
     if (!installed) {
-      throw new Error(`AnkiMobile app is not installed.`);
+      throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
   }
 
@@ -71,7 +72,7 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   async checkConnection(): Promise<void> {
     const installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (!installed) {
-      throw new Error(`AnkiMobile app is not installed.`);
+      throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
   }
 

@@ -18,6 +18,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import type { DictMetadata } from "@yomikiri/yomikiri-rs";
+import { YomikiriError } from "lib/error";
 
 export * from "../common";
 
@@ -124,7 +125,7 @@ export namespace IosAppPlatform {
   }
 
   export function openOptionsPage(): void {
-    throw new Error("Not implemented for iosapp");
+    throw new YomikiriError("Not implemented for iosapp");
   }
 
   export async function versionInfo(): Promise<VersionInfo> {

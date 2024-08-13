@@ -189,7 +189,7 @@ export async function currentTabId(): Promise<number> {
   if (_tabId === undefined) {
     const tab = await currentTab();
     if (tab.id === undefined) {
-      throw new Error("Current tab does not have an id");
+      throw new YomikiriError("Current tab does not have an id");
     }
     _tabId = tab.id;
   }
@@ -376,7 +376,7 @@ export async function activeTab(): Promise<chrome.tabs.Tab> {
     if (result[0] !== undefined) {
       resolve(result[0]);
     } else {
-      reject(new Error("No tabs are active"));
+      reject(new YomikiriError("No tabs are active"));
     }
   });
   return promise;
@@ -424,7 +424,7 @@ export async function currentTab(): Promise<chrome.tabs.Tab> {
   const [promise, resolve, reject] = createPromise<chrome.tabs.Tab>();
   chrome.tabs.getCurrent((result: chrome.tabs.Tab | undefined) => {
     if (result === undefined) {
-      reject(new Error("Could not get current tab"));
+      reject(new YomikiriError("Could not get current tab"));
     } else {
       resolve(result);
     }

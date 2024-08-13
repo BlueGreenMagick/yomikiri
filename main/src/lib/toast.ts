@@ -2,6 +2,7 @@ import Toasts from "components/toast/Toasts.svelte";
 import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
 import Config from "./config";
 import DetailedToast from "components/toast/DetailedToast.svelte";
+import { YomikiriError } from "./error";
 
 type ToastType = "success" | "error" | "loading";
 
@@ -137,7 +138,7 @@ function createToast<
       ...opts,
     });
   } else {
-    throw new Error(`Invalid toast type: ${type}`);
+    throw new YomikiriError(`Invalid toast type: ${type}`);
   }
 }
 

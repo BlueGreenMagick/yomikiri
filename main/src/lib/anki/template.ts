@@ -1,3 +1,5 @@
+import { YomikiriError } from "lib/error";
+
 export interface AnkiTemplate {
   deck: string;
   notetype: string;
@@ -175,6 +177,6 @@ export function newAnkiTemplateField(
       single_max_item: 0,
     };
   } else {
-    throw new Error(`Invalid Anki template field type '${content}'`);
+    throw new YomikiriError(`Invalid Anki template field type '${content}'`);
   }
 }

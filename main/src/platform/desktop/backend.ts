@@ -19,6 +19,7 @@ import Utils, {
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
 import { openDictionaryDB } from "./dictionary";
+import { YomikiriError } from "lib/error";
 
 export * from "../common/backend";
 
@@ -123,13 +124,17 @@ export class DesktopBackend implements IBackend {
           resolve(msg.message);
         } else {
           completed = true;
-          reject(new Error(msg.message));
+          reject(YomikiriError.from(msg.message));
         }
       });
       _port.onDisconnect.addListener(() => {
         if (!completed) {
           completed = true;
-          reject(new Error("Unexpectedly disconnected from background script"));
+          reject(
+            new YomikiriError(
+              "Unexpectedly disconnected from background script",
+            ),
+          );
         }
       });
       return promWithProgress;
@@ -160,7 +165,7 @@ if (EXTENSION_CONTEXT === "background") {
       .catch((error: unknown) => {
         const message: ConnectionMessageError = {
           status: "error",
-          message: getErrorMessage(error),
+          message: YomikiriError.from(error),
         };
         port.postMessage(message);
       });
@@ -184,7 +189,7 @@ interface ConnectionMessageSuccess<T> {
 
 interface ConnectionMessageError {
   status: "error";
-  message: string;
+  message: YomikiriError;
 }
 
 async function _updateDictionary(

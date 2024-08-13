@@ -1,5 +1,5 @@
 import { writable, type Writable } from "svelte/store";
-import type { YomikiriError } from "./error";
+import { YomikiriError } from "./error";
 
 export interface Rect {
   top: number;
@@ -183,10 +183,10 @@ export function containsPoint(
 /** Converts index of UTF-16 code units to index of unicode code points*/
 export function toCodePointIndex(text: string, codeUnitIdx: number): number {
   if (codeUnitIdx < 0) {
-    throw new Error("codeUnitIdx may not be smaller than 0.");
+    throw new YomikiriError("codeUnitIdx may not be smaller than 0.");
   }
   if (codeUnitIdx > text.length) {
-    throw new Error("codeUnitIdx may not be greater than text.length.");
+    throw new YomikiriError("codeUnitIdx may not be greater than text.length.");
   }
 
   let codePointIdx = 0;
@@ -415,12 +415,7 @@ export function handleResponseMessage<R>(resp: ResponseMessage<R>): R {
     } else {
       obj = resp.error;
     }
-    const error = new Error();
-    for (const key of Object.getOwnPropertyNames(obj)) {
-      // @ts-expect-error copy over properties
-      // eslint-disable-next-line
-      error[key] = obj[key];
-    }
+    const error = YomikiriError.from(obj);
     throw error;
   }
 }
