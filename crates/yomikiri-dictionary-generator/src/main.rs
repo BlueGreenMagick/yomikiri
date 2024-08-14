@@ -202,7 +202,7 @@ fn download_jmdict(output_path: &Path) -> Result<()> {
 }
 
 fn write_bincode_yomikiri_entries(output_path: &Path, entries: &Vec<Entry<'static>>) -> Result<()> {
-    let file = File::open(output_path)?;
+    let file = File::create(output_path)?;
     let mut writer = BufWriter::new(file);
     write_bincode_entries(&mut writer, entries)?;
     Ok(())
