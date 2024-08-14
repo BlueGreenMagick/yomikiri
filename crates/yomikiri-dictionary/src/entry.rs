@@ -1,7 +1,6 @@
 use std::borrow::Cow;
 
-use serde::ser::SerializeSeq;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
@@ -143,8 +142,8 @@ pub struct Sense<'a> {
     #[cfg_attr(
         feature = "smaz",
         serde(
-            serialize_with = "serialize_meaning",
-            deserialize_with = "deserialize_meaning"
+            serialize_with = "smaz_serialize::serialize_meaning",
+            deserialize_with = "smaz_serialize::deserialize_meaning"
         )
     )]
     #[serde(rename = "m", default, skip_serializing_if = "Vec::is_empty")]
@@ -152,31 +151,34 @@ pub struct Sense<'a> {
 }
 
 #[cfg(feature = "smaz")]
-fn deserialize_meaning<'a, 'de, D>(
-    deserializer: D,
-) -> std::result::Result<Vec<Cow<'a, str>>, D::Error>
-where
-    D: Deserializer<'de>,
-    'a: 'de,
-{
-    let result = <Vec<Vec<u8>>>::deserialize(deserializer)?;
-    Ok(result
-        .into_iter()
-        .map(|s| Cow::Owned(String::from_utf8(smaz::decompress(&s).unwrap()).unwrap()))
-        .collect())
-}
+mod smaz_serialize {
+    use serde::{Deserializer, Serializer};
 
-#[cfg(feature = "smaz")]
-fn serialize_meaning<'a, S>(value: &Vec<Cow<'a, str>>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let mut seq = serializer.serialize_seq(Some(value.len()))?;
-    for val in value {
-        let compressed = smaz::compress(val.as_bytes());
-        seq.serialize_element(&compressed)?;
+    fn deserialize_meaning<'a, 'de, D>(
+        deserializer: D,
+    ) -> std::result::Result<Vec<Cow<'a, str>>, D::Error>
+    where
+        D: Deserializer<'de>,
+        'a: 'de,
+    {
+        let result = <Vec<Vec<u8>>>::deserialize(deserializer)?;
+        Ok(result
+            .into_iter()
+            .map(|s| Cow::Owned(String::from_utf8(smaz::decompress(&s).unwrap()).unwrap()))
+            .collect())
     }
-    seq.end()
+
+    fn serialize_meaning<'a, S>(value: &Vec<Cow<'a, str>>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(value.len()))?;
+        for val in value {
+            let compressed = smaz::compress(val.as_bytes());
+            seq.serialize_element(&compressed)?;
+        }
+        seq.end()
+    }
 }
 
 /// Unidic based pos tagging
