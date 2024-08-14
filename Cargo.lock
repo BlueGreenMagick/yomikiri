@@ -210,6 +210,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "bincode"
+version = "2.0.0-rc.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f11ea1a0346b94ef188834a65c068a03aec181c94896d481d7a0a40d85b0ce95"
+dependencies = [
+ "bincode_derive",
+ "serde",
+]
+
+[[package]]
+name = "bincode_derive"
+version = "2.0.0-rc.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e30759b3b99a1b802a7a3aa21c85c3ded5c28e1c83170d82d70f08bbf7f3e4c"
+dependencies = [
+ "virtue",
+]
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -995,7 +1014,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "csv",
  "encoding",
@@ -1013,7 +1032,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "encoding_rs",
  "log",
@@ -1039,7 +1058,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "lindera-cc-cedict-builder",
  "lindera-core",
@@ -1056,7 +1075,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "csv",
  "encoding_rs",
@@ -1076,7 +1095,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "csv",
  "encoding_rs",
@@ -1096,7 +1115,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "csv",
  "encoding",
@@ -1113,7 +1132,7 @@ name = "lindera-tokenizer"
 version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
- "bincode",
+ "bincode 1.3.3",
  "lindera-core",
  "lindera-dictionary",
  "once_cell",
@@ -1127,7 +1146,7 @@ version = "0.28.0"
 source = "git+https://github.com/BlueGreenMagick/lindera.git?branch=yomikiri#aae9574ba437c5e0b3997444861673a8363ac9e7"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 1.3.3",
  "byteorder",
  "csv",
  "encoding",
@@ -2034,7 +2053,7 @@ name = "uniffi_macros"
 version = "0.27.1"
 source = "git+https://github.com/BlueGreenMagick/uniffi-rs.git?branch=custom#e6512c150410854e1d50b4dadf1350bedcb25cfb"
 dependencies = [
- "bincode",
+ "bincode 1.3.3",
  "camino",
  "fs-err",
  "once_cell",
@@ -2138,6 +2157,12 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "virtue"
+version = "0.0.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dcc60c0624df774c82a0ef104151231d37da4962957d691c011c852b2473314"
 
 [[package]]
 name = "walkdir"
@@ -2473,7 +2498,7 @@ checksum = "aed111bd9e48a802518765906cbdadf0b45afb72b9c81ab049a3b86252adffdd"
 name = "yomikiri-dictionary"
 version = "0.1.0"
 dependencies = [
- "bincode",
+ "bincode 2.0.0-rc.3",
  "byteorder",
  "chrono",
  "flate2",
@@ -2507,7 +2532,7 @@ name = "yomikiri-jmdict"
 version = "0.1.0"
 dependencies = [
  "RustyXML",
- "bincode",
+ "bincode 2.0.0-rc.3",
  "regex",
  "thiserror",
 ]
@@ -2517,7 +2542,7 @@ name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "bincode",
+ "bincode 2.0.0-rc.3",
  "cfg_aliases",
  "console_error_panic_hook",
  "flate2",

@@ -14,7 +14,7 @@ pub enum Error {
     #[error("TryFromInt {0}")]
     TryFromInt(#[from] TryFromIntError),
     #[error("Bincode {0}")]
-    Bincode(#[from] bincode::Error),
+    Bincode(#[from] bincode::error::DecodeError),
     #[error("JMDict parse error {0}")]
     JMDict(#[from] yomikiri_jmdict::Error),
     #[error("FST error: {0}")]

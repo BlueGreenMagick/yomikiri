@@ -1,22 +1,25 @@
+use std::borrow::Cow;
+
+use bincode::BorrowDecode;
 use serde::{Deserialize, Serialize};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
-pub struct Entry {
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+pub struct Entry<'a> {
     #[serde(rename = "f", default, skip_serializing_if = "Vec::is_empty")]
-    pub forms: Vec<Form>,
+    pub forms: Vec<Form<'a>>,
     #[serde(rename = "r")]
-    pub readings: Vec<Reading>,
+    pub readings: Vec<Reading<'a>>,
     #[serde(rename = "s")]
-    pub senses: Vec<Sense>,
+    pub senses: Vec<Sense<'a>>,
     #[serde(rename = "p", default, skip_serializing_if = "is_zero")]
     pub priority: u16,
 }
 
-impl Entry {
+impl<'a> Entry<'a> {
     pub fn terms(&self) -> Vec<&str> {
         let mut terms: Vec<&str> = vec![];
         for form in &self.forms {
@@ -61,19 +64,19 @@ impl Entry {
     pub fn main_form(&self) -> String {
         for form in &self.forms {
             if !form.uncommon {
-                return form.form.clone();
+                return form.form.clone().into_owned();
             }
         }
         for reading in &self.readings {
             if !reading.uncommon {
-                return reading.reading.clone();
+                return reading.reading.clone().into_owned();
             }
         }
         if !self.forms.is_empty() {
-            return self.forms[0].form.clone();
+            return self.forms[0].form.clone().into_owned();
         }
         if !self.readings.is_empty() {
-            return self.readings[0].reading.clone();
+            return self.readings[0].reading.clone().into_owned();
         }
 
         "".into()
@@ -87,50 +90,50 @@ impl Entry {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
-pub struct Form {
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+pub struct Form<'a> {
     #[serde(rename = "f")]
-    pub form: String,
+    pub form: Cow<'a, str>,
     #[serde(rename = "i", default, skip_serializing_if = "Vec::is_empty")]
-    pub info: Vec<String>,
+    pub info: Vec<Cow<'a, str>>,
     #[serde(rename = "u", default, skip_serializing_if = "is_false")]
     pub uncommon: bool,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
-pub struct Reading {
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+pub struct Reading<'a> {
     #[serde(rename = "r")]
-    pub reading: String,
+    pub reading: Cow<'a, str>,
     #[serde(rename = "nk", default, skip_serializing_if = "is_false")]
     pub nokanji: bool,
     #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
-    pub to_form: Vec<String>,
+    pub to_form: Vec<Cow<'a, str>>,
     #[serde(rename = "i", default, skip_serializing_if = "Vec::is_empty")]
-    pub info: Vec<String>,
+    pub info: Vec<Cow<'a, str>>,
     #[serde(rename = "u", default, skip_serializing_if = "is_false")]
     pub uncommon: bool,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
-pub struct Sense {
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+pub struct Sense<'a> {
     #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
-    pub to_form: Vec<String>,
+    pub to_form: Vec<Cow<'a, str>>,
     #[serde(rename = "tr", default, skip_serializing_if = "Vec::is_empty")]
-    pub to_reading: Vec<String>,
+    pub to_reading: Vec<Cow<'a, str>>,
     #[serde(rename = "p", default, skip_serializing_if = "Vec::is_empty")]
     pub pos: Vec<PartOfSpeech>,
     #[serde(rename = "mc", default, skip_serializing_if = "Vec::is_empty")]
-    pub misc: Vec<String>,
+    pub misc: Vec<Cow<'a, str>>,
     #[serde(rename = "i", default, skip_serializing_if = "Vec::is_empty")]
-    pub info: Vec<String>,
+    pub info: Vec<Cow<'a, str>>,
     #[serde(rename = "d", default, skip_serializing_if = "Vec::is_empty")]
-    pub dialect: Vec<String>,
+    pub dialect: Vec<Cow<'a, str>>,
     #[serde(rename = "m", default, skip_serializing_if = "Vec::is_empty")]
-    pub meaning: Vec<String>,
+    pub meaning: Vec<Cow<'a, str>>,
 }
 
 /// Unidic based pos tagging
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, BorrowDecode)]
 pub enum PartOfSpeech {
     /// 名詞
     #[serde(rename = "n")]
