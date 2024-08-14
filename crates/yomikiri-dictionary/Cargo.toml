@@ -21,6 +21,7 @@ fst = { workspace = true }
 ouroboros = { workspace = true }
 chrono = { version = "0.4", features = ["alloc"] }
 uniffi = { workspace = true, optional = true }
+smaz = { version = "0.1", optional = true }
 
 [target.'cfg(target_family="wasm")'.dependencies.chrono]
 version = "0.4"
