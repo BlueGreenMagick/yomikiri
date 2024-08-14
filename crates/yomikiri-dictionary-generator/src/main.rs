@@ -8,8 +8,8 @@ use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{
-    parse_jmdict_xml, write_bincode_entries, write_yomikiri_dictionary, DICT_ENTRIES_FILENAME,
-    DICT_INDEX_FILENAME, DICT_METADATA_FILENAME,
+    parse_jmdict_xml, write_bincode_entries, write_json_entries, write_yomikiri_dictionary,
+    DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME, DICT_METADATA_FILENAME,
 };
 use yomikiri_dictionary::metadata::DictMetadata;
 use yomikiri_dictionary::Entry;
@@ -131,6 +131,7 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let output_index_path = resources_dir.join(DICT_INDEX_FILENAME);
 
     let bincode_entries_path = resources_dir.join("english-bincode.yomikiridict");
+    let json_entries_path = resources_dir.join("english-json.yomikiridict");
 
     fs::create_dir_all(&jmdict_dir)?;
 
@@ -163,7 +164,12 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
 
     println!("Writing bincode yomikiri entries");
-    write_bincode_yomikiri_entries(&bincode_entries_path, &entries)?;
+    let mut bincode_writer = buf_writer_at(&bincode_entries_path)?;
+    write_bincode_entries(&mut bincode_writer, &entries)?;
+
+    println!("Writing json yomikiri entries");
+    let mut json_entries_writer = buf_writer_at(&json_entries_path)?;
+    write_json_entries(&mut json_entries_writer, &entries)?;
 
     if jmdict_downloaded {
         println!("Writing metadata.json...");
@@ -201,9 +207,7 @@ fn download_jmdict(output_path: &Path) -> Result<()> {
     Ok(())
 }
 
-fn write_bincode_yomikiri_entries(output_path: &Path, entries: &Vec<Entry<'static>>) -> Result<()> {
-    let file = File::create(output_path)?;
-    let mut writer = BufWriter::new(file);
-    write_bincode_entries(&mut writer, entries)?;
-    Ok(())
+fn buf_writer_at(path: &Path) -> Result<BufWriter<File>> {
+    let file = File::create(path)?;
+    Ok(BufWriter::new(file))
 }

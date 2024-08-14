@@ -190,6 +190,11 @@ pub fn write_bincode_entries<W: Write>(writer: &mut W, entries: &[Entry<'static>
     Ok(())
 }
 
+pub fn write_json_entries<W: Write>(writer: &mut W, entries: &[Entry<'static>]) -> Result<()> {
+    serde_json::to_writer(writer, entries)?;
+    Ok(())
+}
+
 fn gzip_bytes(bytes: &[u8]) -> Result<Vec<u8>> {
     let mut encoder = GzEncoder::new(Vec::new(), Compression::new(9));
     encoder.write_all(bytes)?;
