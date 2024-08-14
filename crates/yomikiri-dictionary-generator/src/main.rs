@@ -8,10 +8,11 @@ use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{
-    parse_jmdict_xml, write_yomikiri_dictionary, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
-    DICT_METADATA_FILENAME,
+    parse_jmdict_xml, write_bincode_entries, write_yomikiri_dictionary, DICT_ENTRIES_FILENAME,
+    DICT_INDEX_FILENAME, DICT_METADATA_FILENAME,
 };
 use yomikiri_dictionary::metadata::DictMetadata;
+use yomikiri_dictionary::Entry;
 
 const URL: &'static str =
     "https://github.com/BlueGreenMagick/yomikiri/releases/download/jmdict-jun-25/";
@@ -129,6 +130,8 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let output_path = resources_dir.join(DICT_ENTRIES_FILENAME);
     let output_index_path = resources_dir.join(DICT_INDEX_FILENAME);
 
+    let bincode_entries_path = resources_dir.join("english-bincode.yomikiridict");
+
     fs::create_dir_all(&jmdict_dir)?;
 
     let mut jmdict_downloaded = false;
@@ -146,7 +149,7 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
 
     println!("Parsing downloaded JMDict xml file...",);
     let jmdict_xml = fs::read_to_string(&jmdict_file_path)?;
-    let entries = parse_jmdict_xml(&jmdict_xml)?;
+    let entries: Vec<Entry<'static>> = parse_jmdict_xml(&jmdict_xml)?;
 
     println!("Writing yomikiridict and yomikiriindex...");
     // ignore error from directory not existing
@@ -158,6 +161,9 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let mut output_writer = BufWriter::new(output_file);
 
     write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
+
+    println!("Writing bincode yomikiri entries");
+    write_bincode_yomikiri_entries(&bincode_entries_path, &entries)?;
 
     if jmdict_downloaded {
         println!("Writing metadata.json...");
@@ -192,5 +198,12 @@ fn download_jmdict(output_path: &Path) -> Result<()> {
     let mut tmpfile = NamedTempFile::new_in(output_dir)?;
     std::io::copy(&mut decoder, &mut tmpfile)?;
     tmpfile.persist(output_path)?;
+    Ok(())
+}
+
+fn write_bincode_yomikiri_entries(output_path: &Path, entries: &Vec<Entry<'static>>) -> Result<()> {
+    let file = File::open(output_path)?;
+    let mut writer = BufWriter::new(file);
+    write_bincode_entries(&mut writer, entries)?;
     Ok(())
 }

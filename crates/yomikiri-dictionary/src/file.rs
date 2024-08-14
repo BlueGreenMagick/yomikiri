@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::io::{Read, Seek, SeekFrom, Write};
 
+use bincode::enc::write::Writer;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
 use flate2::write::{GzDecoder, GzEncoder};
 use flate2::Compression;
@@ -66,7 +67,7 @@ pub fn write_yomikiri_dictionary<I: Write + Seek, D: Write + Seek>(
     Ok(())
 }
 
-pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
+pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry<'static>>> {
     let jm_entries = yomikiri_jmdict::parse_jmdict_xml(xml)?;
     let entries = jm_entries.into_iter().map(Entry::from).collect();
     Ok(entries)
@@ -182,6 +183,11 @@ pub fn write_entries<W: Write>(writer: &mut W, entries: &[Entry]) -> Result<Vec<
         .collect();
     dict_indexes.sort_by(|a, b| a.term.cmp(&b.term));
     Ok(dict_indexes)
+}
+
+pub fn write_bincode_entries<W: Write>(writer: &mut W, entries: &[Entry<'static>]) -> Result<()> {
+    bincode::encode_into_std_write(entries, writer, bincode::config::standard())?;
+    Ok(())
 }
 
 fn gzip_bytes(bytes: &[u8]) -> Result<Vec<u8>> {
