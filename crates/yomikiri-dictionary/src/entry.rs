@@ -1,13 +1,13 @@
 use std::borrow::Cow;
 
-use bincode::BorrowDecode;
+use bincode::Decode;
 use serde::{Deserialize, Serialize};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
 pub struct Entry<'a> {
     #[serde(rename = "f", default, skip_serializing_if = "Vec::is_empty")]
     pub forms: Vec<Form<'a>>,
@@ -90,7 +90,7 @@ impl<'a> Entry<'a> {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
 pub struct Form<'a> {
     #[serde(rename = "f")]
     pub form: Cow<'a, str>,
@@ -100,7 +100,7 @@ pub struct Form<'a> {
     pub uncommon: bool,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
 pub struct Reading<'a> {
     #[serde(rename = "r")]
     pub reading: Cow<'a, str>,
@@ -114,7 +114,7 @@ pub struct Reading<'a> {
     pub uncommon: bool,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, BorrowDecode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
 pub struct Sense<'a> {
     #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<Cow<'a, str>>,
@@ -133,7 +133,7 @@ pub struct Sense<'a> {
 }
 
 /// Unidic based pos tagging
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, BorrowDecode)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, Decode)]
 pub enum PartOfSpeech {
     /// 名詞
     #[serde(rename = "n")]

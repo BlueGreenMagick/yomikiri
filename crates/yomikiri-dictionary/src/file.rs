@@ -72,11 +72,16 @@ pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
     Ok(entries)
 }
 
+pub fn read_entries_from_slice<'a>(data: &'a [u8]) -> Result<Vec<Entry<'a>>> {
+    let res = bincode::borrow_decode_from_slice(data, bincode::config::standard())?;
+    Ok(res.0)
+}
+
 /// entry_indexes should be sorted for better performance
 pub fn read_entries<R: Read + Seek>(
     reader: &mut R,
     entry_pointers: &[DictEntryPointer],
-) -> Result<Vec<Entry>> {
+) -> Result<Vec<Entry<'static>>> {
     let mut chunk_buffer: Vec<u8> = vec![0; BUFFER_SIZE];
     let mut extraction_buffer: Vec<u8> = Vec::with_capacity(BUFFER_SIZE);
     read_entries_with_buffers(
@@ -94,7 +99,7 @@ pub fn read_entries_with_buffers<R: Read + Seek>(
     extraction_buffer: &mut Vec<u8>,
     reader: &mut R,
     entry_pointers: &[DictEntryPointer],
-) -> Result<Vec<Entry>> {
+) -> Result<Vec<Entry<'static>>> {
     let mut entries: Vec<Entry> = Vec::with_capacity(3 * entry_pointers.len());
     let mut prev_chunk_index: u32 = u32::MAX;
     let mut chunk_size: usize = 0;
