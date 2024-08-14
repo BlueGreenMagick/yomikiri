@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::io::{Read, Seek, SeekFrom, Write};
 
-use bincode::enc::write::Writer;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
 use flate2::write::{GzDecoder, GzEncoder};
 use flate2::Compression;
@@ -74,8 +73,8 @@ pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry<'static>>> {
 }
 
 pub fn read_entries_from_slice<'a>(data: &'a [u8]) -> Result<Vec<Entry<'a>>> {
-    let res = bincode::borrow_decode_from_slice(data, bincode::config::standard())?;
-    Ok(res.0)
+    let res = bincode::serde::decode_borrowed_from_slice(data, bincode::config::standard())?;
+    Ok(res)
 }
 
 /// entry_indexes should be sorted for better performance
@@ -186,7 +185,7 @@ pub fn write_entries<W: Write>(writer: &mut W, entries: &[Entry]) -> Result<Vec<
 }
 
 pub fn write_bincode_entries<W: Write>(writer: &mut W, entries: &[Entry<'static>]) -> Result<()> {
-    bincode::encode_into_std_write(entries, writer, bincode::config::standard())?;
+    bincode::serde::encode_into_std_write(entries, writer, bincode::config::standard())?;
     Ok(())
 }
 

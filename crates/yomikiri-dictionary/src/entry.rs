@@ -1,13 +1,12 @@
 use std::borrow::Cow;
 
-use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Entry<'a> {
     #[serde(rename = "f", default, skip_serializing_if = "Vec::is_empty")]
     pub forms: Vec<Form<'a>>,
@@ -17,19 +16,6 @@ pub struct Entry<'a> {
     pub senses: Vec<Sense<'a>>,
     #[serde(rename = "p", default, skip_serializing_if = "is_zero")]
     pub priority: u16,
-}
-
-impl ::bincode::Encode for Entry<'static> {
-    fn encode<__E: ::bincode::enc::Encoder>(
-        &self,
-        encoder: &mut __E,
-    ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-        ::bincode::Encode::encode(&self.forms, encoder)?;
-        ::bincode::Encode::encode(&self.readings, encoder)?;
-        ::bincode::Encode::encode(&self.senses, encoder)?;
-        ::bincode::Encode::encode(&self.priority, encoder)?;
-        Ok(())
-    }
 }
 
 impl<'a> Entry<'a> {
@@ -103,7 +89,7 @@ impl<'a> Entry<'a> {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Form<'a> {
     #[serde(rename = "f")]
     pub form: Cow<'a, str>,
@@ -125,7 +111,7 @@ impl ::bincode::Encode for Form<'static> {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Reading<'a> {
     #[serde(rename = "r")]
     pub reading: Cow<'a, str>,
@@ -139,21 +125,7 @@ pub struct Reading<'a> {
     pub uncommon: bool,
 }
 
-impl ::bincode::Encode for Reading<'static> {
-    fn encode<__E: ::bincode::enc::Encoder>(
-        &self,
-        encoder: &mut __E,
-    ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-        ::bincode::Encode::encode(&self.reading, encoder)?;
-        ::bincode::Encode::encode(&self.nokanji, encoder)?;
-        ::bincode::Encode::encode(&self.to_form, encoder)?;
-        ::bincode::Encode::encode(&self.info, encoder)?;
-        ::bincode::Encode::encode(&self.uncommon, encoder)?;
-        Ok(())
-    }
-}
-
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct Sense<'a> {
     #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<Cow<'a, str>>,
@@ -171,24 +143,8 @@ pub struct Sense<'a> {
     pub meaning: Vec<Cow<'a, str>>,
 }
 
-impl<'a> ::bincode::Encode for Sense<'static> {
-    fn encode<__E: ::bincode::enc::Encoder>(
-        &self,
-        encoder: &mut __E,
-    ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-        ::bincode::Encode::encode(&self.to_form, encoder)?;
-        ::bincode::Encode::encode(&self.to_reading, encoder)?;
-        ::bincode::Encode::encode(&self.pos, encoder)?;
-        ::bincode::Encode::encode(&self.misc, encoder)?;
-        ::bincode::Encode::encode(&self.info, encoder)?;
-        ::bincode::Encode::encode(&self.dialect, encoder)?;
-        ::bincode::Encode::encode(&self.meaning, encoder)?;
-        Ok(())
-    }
-}
-
 /// Unidic based pos tagging
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, Decode, Encode)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash)]
 pub enum PartOfSpeech {
     /// 名詞
     #[serde(rename = "n")]
