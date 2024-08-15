@@ -99,7 +99,7 @@ pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictIn
             indexes
                 .entry(term)
                 .and_modify(|v| v.push(i))
-                .or_insert_with(|| vec![]);
+                .or_insert_with(|| vec![i]);
         }
     }
 

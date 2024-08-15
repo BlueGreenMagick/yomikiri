@@ -95,6 +95,10 @@ mod tests {
         let view = dict.borrow_view();
         assert_eq!(view.entries.len(), 1);
         assert_eq!(view.entries.get(0)?, entry);
+
+        let value = view.term_index.map.get("よみきり").unwrap();
+        let idxes = view.term_index.parse_value(value)?;
+        assert_eq!(idxes, vec![0]);
         Ok(())
     }
 }
