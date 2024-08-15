@@ -36,7 +36,7 @@ impl<'a> DictIndexMap<'a> {
         let term_map = Map::new(&bytes[at..at + len])?;
         at += len;
 
-        let (term_pointers, _len) = JaggedArray::decode_from_bytes(&bytes[at..])?;
+        let (term_pointers, _len) = JaggedArray::try_decode(&bytes[at..])?;
         at += len;
 
         let terms = DictIndexMap {

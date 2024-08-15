@@ -40,7 +40,7 @@ impl<'a, T> JaggedArray<'a, T>
 where
     T: Deserialize<'a> + Serialize,
 {
-    pub fn decode_from_bytes(source: &'a [u8]) -> Result<(Self, usize)> {
+    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
         let cnt = (&source[4..8]).read_u32::<LittleEndian>()? as usize;
         let data = &source[8..4 + bytes_len];
@@ -125,7 +125,7 @@ mod tests {
         let vec = vec![1, 4, -5];
         let mut bytes: Vec<u8> = Vec::with_capacity(128);
         JaggedArray::build_and_encode_to(&vec, &mut bytes)?;
-        let (arr, _len) = JaggedArray::<i32>::decode_from_bytes(&bytes)?;
+        let (arr, _len) = JaggedArray::<i32>::try_decode(&bytes)?;
         assert_eq!(arr.len(), vec.len());
         assert_eq!(arr.get(0)?, vec[0]);
         assert_eq!(arr.get(1)?, vec[0]);
