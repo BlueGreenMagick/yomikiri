@@ -226,9 +226,7 @@ pub fn write_indexes<W: Write>(writer: &mut W, terms: &[DictTermIndex]) -> Resul
 
     let mut pointers_bytes_buffer = Vec::with_capacity(1000);
     let pointers_bytes = JaggedArray::from_vec_with_buffer(&pointers, &mut pointers_bytes_buffer)?;
-
-    writer.write_u32::<LittleEndian>(pointers_bytes.len() as u32)?;
-    writer.write(pointers_bytes.data)?;
+    pointers_bytes.write_to(writer)?;
     Ok(())
 }
 

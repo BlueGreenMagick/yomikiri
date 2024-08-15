@@ -31,7 +31,7 @@ where
     T: Deserialize<'a> + Serialize,
 {
     len: usize,
-    pub(crate) data: &'a [u8],
+    data: &'a [u8],
     _typ: PhantomData<T>,
 }
 
@@ -110,5 +110,11 @@ where
             data: buffer,
             _typ: PhantomData,
         })
+    }
+
+    pub fn write_to<W: Write>(&self, writer: &mut W) -> Result<()> {
+        writer.write_u64::<LittleEndian>(self.len() as u64)?;
+        writer.write(self.data)?;
+        Ok(())
     }
 }
