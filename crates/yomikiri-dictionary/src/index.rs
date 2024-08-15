@@ -10,10 +10,10 @@ use crate::error::Result;
 use crate::jagged_array::JaggedArray;
 use crate::Entry;
 
-/// Locations of multiple jmdict entries for a single term in .yomikiridict
+/// Multiple jmdict entry indexes that corresponds to a key
 #[derive(Debug, Serialize, Deserialize)]
-pub(crate) struct DictTermIndex {
-    pub term: String,
+pub(crate) struct DictIndexItem {
+    pub key: String,
     /// Sorted
     pub entry_indexes: Vec<usize>,
 }
@@ -57,7 +57,7 @@ impl<'a> DictIndexMap<'a> {
     }
 
     pub(crate) fn build_and_encode_to<W: Write>(
-        items: &[DictTermIndex],
+        items: &[DictIndexItem],
         writer: &mut W,
     ) -> Result<()> {
         let mut builder = MapBuilder::new(writer)?;
@@ -66,14 +66,14 @@ impl<'a> DictIndexMap<'a> {
         for item in items {
             if item.entry_indexes.len() == 1 {
                 let index = item.entry_indexes[0] as u64;
-                builder.insert(&item.term, index)?;
+                builder.insert(&item.key, index)?;
             } else {
                 let mut term_ids: Vec<usize> = vec![];
                 for index in &item.entry_indexes {
                     term_ids.push(*index);
                 }
                 builder.insert(
-                    &item.term,
+                    &item.key,
                     1_u64 << 63 | (pointers.len() as u64 & ((1_u64 << 32) - 1)),
                 )?;
                 pointers.push(term_ids);
@@ -84,7 +84,7 @@ impl<'a> DictIndexMap<'a> {
     }
 }
 
-pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictTermIndex>> {
+pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictIndexItem>> {
     // some entries have multiple terms
     let mut indexes: HashMap<&str, Vec<usize>> = HashMap::with_capacity(entries.len() * 4);
 
@@ -97,13 +97,13 @@ pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictTe
         }
     }
 
-    let indexes: Vec<DictTermIndex> = indexes
+    let indexes: Vec<DictIndexItem> = indexes
         .into_iter()
-        .map(|(term, indexes)| DictTermIndex {
-            term: term.to_string(),
+        .map(|(term, indexes)| DictIndexItem {
+            key: term.to_string(),
             entry_indexes: indexes,
         })
-        .sorted_by(|a, b| a.term.cmp(&b.term))
+        .sorted_by(|a, b| a.key.cmp(&b.key))
         .collect();
 
     Ok(indexes)
