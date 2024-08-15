@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use byteorder::{LittleEndian, ReadBytesExt};
 use fst::Map;
 use itertools::Itertools;
-use ouroboros::self_referencing;
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
