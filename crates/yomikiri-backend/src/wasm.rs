@@ -11,8 +11,8 @@ use log::debug;
 use serde::Serialize;
 use std::io::{Cursor, Read};
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::file::{parse_jmdict_xml, write_yomikiri_dictionary};
-use yomikiri_dictionary::index::DictIndex;
+use yomikiri_dictionary::dictionary::DictionaryView;
+use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -69,26 +69,24 @@ interface Backend {
 #[derive(Serialize)]
 struct DictUpdateResult {
     #[serde(with = "serde_wasm_bindgen::preserve")]
-    entry_bytes: Uint8Array,
-    #[serde(with = "serde_wasm_bindgen::preserve")]
-    index_bytes: Uint8Array,
+    dict_bytes: Uint8Array,
     metadata: DictMetadata,
 }
 
 #[wasm_bindgen]
 pub struct Backend {
-    inner: SharedBackend<Vec<u8>, Cursor<Vec<u8>>>,
+    inner: SharedBackend<Vec<u8>>,
 }
 
 #[wasm_bindgen]
 impl Backend {
     #[wasm_bindgen(constructor)]
-    pub fn new(index_bytes: &Uint8Array, entries_bytes: &Uint8Array) -> WasmResult<Backend> {
+    pub fn new(dict_bytes: &Uint8Array) -> WasmResult<Backend> {
         utils::set_panic_hook();
         utils::setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::try_new(index_bytes.to_vec(), entries_bytes.to_vec())
-            .context("Failed to create dictionary")?;
+        let dictionary =
+            Dictionary::try_new(dict_bytes.to_vec()).context("Failed to create dictionary")?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
@@ -135,39 +133,20 @@ impl Backend {
         std::mem::drop(xml);
         debug!("parsed jmdict file");
 
-        let mut index_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        let mut entries_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        write_yomikiri_dictionary(&mut index_bytes, &mut entries_bytes, &entries)
+        let mut dict_bytes: Vec<u8> = Vec::with_capacity(30 * 1024 * 1024);
+        DictionaryView::build_and_encode_to(&entries, &mut dict_bytes)
             .context("Failed to write dictionary file")?;
-        let files_size = entries_bytes.len() + index_bytes.len();
-
-        let entries_array = Uint8Array::from(&entries_bytes[..]);
-        let index_array = Uint8Array::from(&index_bytes[..]);
-
+        let files_size = dict_bytes.len();
+        let dict_array = Uint8Array::from(&dict_bytes[..]);
         let metadata = DictMetadata::new(files_size as u64, true);
-
         let result = DictUpdateResult {
-            entry_bytes: entries_array,
-            index_bytes: index_array,
+            dict_bytes: dict_array,
             metadata,
         };
 
-        let dict = Dictionary::try_new(index_bytes, entries_bytes)?;
+        let dict = Dictionary::try_new(dict_bytes)?;
         self.inner.dictionary = dict;
         serialize_result(&result)
-    }
-}
-
-impl Dictionary<Vec<u8>, Cursor<&[u8]>> {
-    // UInt8Array are copied in when passed from js
-    pub fn try_new(
-        index_bytes: Vec<u8>,
-        entries_bytes: Vec<u8>,
-    ) -> WasmResult<Dictionary<Vec<u8>, Cursor<Vec<u8>>>> {
-        let index = DictIndex::try_from_source(index_bytes)
-            .context("Failed to initialize dictionary index from file")?;
-        let cursor = Cursor::new(entries_bytes);
-        Ok(Dictionary::new(index, cursor))
     }
 }
 
