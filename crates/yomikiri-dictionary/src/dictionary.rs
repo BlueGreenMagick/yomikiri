@@ -1,6 +1,8 @@
+use std::io::Write;
+
 use ouroboros::self_referencing;
 
-use crate::index::DictIndexMap;
+use crate::index::{create_sorted_term_indexes, DictIndexMap};
 use crate::jagged_array::JaggedArray;
 use crate::{Entry, Result};
 
@@ -41,5 +43,12 @@ impl<'a> DictionaryView<'a> {
             entries,
         };
         Ok((s, at))
+    }
+
+    pub fn build_and_encode_to<W: Write>(entries: &'a [Entry], writer: &mut W) -> Result<()> {
+        JaggedArray::build_and_encode_to(entries, writer)?;
+        let term_index_items = create_sorted_term_indexes(entries)?;
+        DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
+        Ok(())
     }
 }

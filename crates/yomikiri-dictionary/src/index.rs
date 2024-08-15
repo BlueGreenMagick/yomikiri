@@ -1,7 +1,8 @@
 use std::collections::HashMap;
+use std::io::Write;
 
 use byteorder::{LittleEndian, ReadBytesExt};
-use fst::Map;
+use fst::{Map, MapBuilder};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 
@@ -53,6 +54,30 @@ impl<'a> DictIndexMap<'a> {
         } else {
             Ok(vec![idx])
         }
+    }
+
+    pub fn build_and_encode_to<W: Write>(items: &[DictTermIndex], writer: W) -> Result<()> {
+        let mut builder = MapBuilder::new(writer)?;
+        let mut pointers: Vec<Vec<usize>> = vec![];
+
+        for item in items {
+            if item.entry_indexes.len() == 1 {
+                let index = item.entry_indexes[0] as u64;
+                builder.insert(&item.term, index)?;
+            } else {
+                let mut term_ids: Vec<usize> = vec![];
+                for index in &item.entry_indexes {
+                    term_ids.push(*index);
+                }
+                builder.insert(
+                    &item.term,
+                    1_u64 << 63 | (pointers.len() as u64 & ((1_u64 << 32) - 1)),
+                )?;
+                pointers.push(term_ids);
+            }
+        }
+        builder.finish()?;
+        Ok(())
     }
 }
 

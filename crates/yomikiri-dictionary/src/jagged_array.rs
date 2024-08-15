@@ -95,37 +95,22 @@ where
         self.cnt * 4 + 4
     }
 
-    /// Create JaggedArray from Vec<T>
-    pub fn from_vec_with_buffer(items: &[T], buffer: &'a mut Vec<u8>) -> Result<Self> {
+    pub fn build_and_encode_to<W: Write>(items: &[T], writer: &mut W) -> Result<()> {
+        let mut index_bytes: Vec<u8> = Vec::with_capacity(4 * items.len());
         let mut item_bytes: Vec<u8> = Vec::with_capacity(8 * items.len());
         for item in items {
-            buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+            index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
             bincode::serde::encode_into_std_write(
                 item,
                 &mut item_bytes,
                 bincode::config::legacy(),
             )?;
         }
-        buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-
-        if item_bytes.len() > buffer.capacity() {
-            buffer.try_reserve_exact(item_bytes.len() - buffer.capacity())?;
-        }
-        buffer.write_all(&item_bytes)?;
-
-        Ok(Self {
-            cnt: items.len(),
-            data: buffer,
-            _typ: PhantomData,
-        })
-    }
-
-    pub fn encode_to<W: Write>(&self, writer: &mut W) -> Result<()> {
-        let bytes_len = 4 + self.data.len();
-        let bytes_len: u32 = bytes_len.try_into()?;
-        writer.write_u32::<LittleEndian>(bytes_len)?;
-        writer.write_u32::<LittleEndian>(self.len().try_into()?)?;
-        writer.write(self.data)?;
+        let bytes_len = 4 + index_bytes.len() + item_bytes.len();
+        writer.write_u32::<LittleEndian>(bytes_len.try_into()?)?;
+        writer.write_u32::<LittleEndian>(items.len().try_into()?)?;
+        writer.write_all(&index_bytes)?;
+        writer.write_all(&item_bytes)?;
         Ok(())
     }
 }
