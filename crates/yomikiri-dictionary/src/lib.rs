@@ -3,7 +3,7 @@ pub mod entry;
 pub mod error;
 pub mod index;
 pub mod jagged_array;
-mod jmdict;
+pub mod jmdict;
 pub mod metadata;
 
 pub use entry::{Entry, Form, PartOfSpeech, Reading, Sense};

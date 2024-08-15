@@ -8,7 +8,7 @@ use yomikiri_dictionary::PartOfSpeech;
 use crate::tokenize::{InnerToken, RawTokenizeResult, Token, TokenDetails};
 use crate::SharedBackend;
 
-impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
+impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     pub fn search(&mut self, term: &str, char_idx: usize) -> Result<RawTokenizeResult> {
         let result = self.tokenize(term, char_idx)?;
 
