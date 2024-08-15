@@ -66,7 +66,7 @@ where
         let (item_start, item_end) = self.item_position(index)?;
         let item_bytes = &self.data[item_start..item_end];
         let item =
-            bincode::serde::decode_borrowed_from_slice(item_bytes, bincode::config::legacy())?;
+            bincode::serde::decode_borrowed_from_slice(item_bytes, bincode::config::standard())?;
 
         Ok(item)
     }
@@ -103,7 +103,7 @@ where
             bincode::serde::encode_into_std_write(
                 item,
                 &mut item_bytes,
-                bincode::config::legacy(),
+                bincode::config::standard(),
             )?;
         }
         let bytes_len = 4 + index_bytes.len() + item_bytes.len();
