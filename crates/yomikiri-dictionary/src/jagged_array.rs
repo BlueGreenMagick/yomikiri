@@ -1,6 +1,7 @@
 use std::io::Write;
 use std::marker::PhantomData;
 
+use bincode::{BorrowDecode, Encode};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use serde::{Deserialize, Serialize};
 
@@ -29,7 +30,7 @@ use crate::{Error, Result};
 #[derive(Serialize, Deserialize)]
 pub struct JaggedArray<'a, T>
 where
-    T: Deserialize<'a> + Serialize,
+    T: BorrowDecode<'a> + Encode,
 {
     cnt: usize,
     data: &'a [u8],
@@ -38,9 +39,9 @@ where
 
 impl<'a, T> JaggedArray<'a, T>
 where
-    T: Deserialize<'a> + Serialize,
+    T: BorrowDecode<'a> + Encode,
 {
-    pub fn decode_from_bytes(source: &'a [u8]) -> Result<(Self, usize)> {
+    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
         let cnt = (&source[4..8]).read_u32::<LittleEndian>()? as usize;
         let data = &source[8..4 + bytes_len];
@@ -65,8 +66,8 @@ where
 
         let (item_start, item_end) = self.item_position(index)?;
         let item_bytes = &self.data[item_start..item_end];
-        let item =
-            bincode::serde::decode_borrowed_from_slice(item_bytes, bincode::config::legacy())?;
+        let (item, _l) =
+            bincode::borrow_decode_from_slice(item_bytes, bincode::config::standard())?;
 
         Ok(item)
     }
@@ -81,13 +82,6 @@ where
         let end = bytes.read_u32::<LittleEndian>()? as usize;
         let base = self.items_start();
 
-        let bar = String::from("bar");
-        let mut foo: &str = &bar;
-        println!("{}", foo);
-        foo = "abc";
-        std::mem::drop(bar);
-        println!("{}", foo);
-
         Ok((base + start, base + end))
     }
 
@@ -95,37 +89,20 @@ where
         self.cnt * 4 + 4
     }
 
-    /// Create JaggedArray from Vec<T>
-    pub fn from_vec_with_buffer(items: &[T], buffer: &'a mut Vec<u8>) -> Result<Self> {
+    pub fn build_and_encode_to<W: Write>(items: &[T], writer: &mut W) -> Result<()> {
+        let mut index_bytes: Vec<u8> = Vec::with_capacity(4 * items.len());
         let mut item_bytes: Vec<u8> = Vec::with_capacity(8 * items.len());
         for item in items {
-            buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-            bincode::serde::encode_into_std_write(
-                item,
-                &mut item_bytes,
-                bincode::config::legacy(),
-            )?;
+            index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+            bincode::encode_into_std_write(item, &mut item_bytes, bincode::config::standard())?;
         }
-        buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+        index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
 
-        if item_bytes.len() > buffer.capacity() {
-            buffer.try_reserve_exact(item_bytes.len() - buffer.capacity())?;
-        }
-        buffer.write_all(&item_bytes)?;
-
-        Ok(Self {
-            cnt: items.len(),
-            data: buffer,
-            _typ: PhantomData,
-        })
-    }
-
-    pub fn encode_to<W: Write>(&self, writer: &mut W) -> Result<()> {
-        let bytes_len = 4 + self.data.len();
-        let bytes_len: u32 = bytes_len.try_into()?;
-        writer.write_u32::<LittleEndian>(bytes_len)?;
-        writer.write_u32::<LittleEndian>(self.len().try_into()?)?;
-        writer.write(self.data)?;
+        let bytes_len = 4 + index_bytes.len() + item_bytes.len();
+        writer.write_u32::<LittleEndian>(bytes_len.try_into()?)?;
+        writer.write_u32::<LittleEndian>(items.len().try_into()?)?;
+        writer.write_all(&index_bytes)?;
+        writer.write_all(&item_bytes)?;
         Ok(())
     }
 }
@@ -133,16 +110,19 @@ where
 #[cfg(test)]
 mod tests {
     use super::JaggedArray;
+    use super::Result;
 
     #[test]
-    fn check_encode_then_decode_is_identical() {
-        let vec = vec![1, 4, 6, 7, 8];
-        let mut buffer: Vec<u8> = Vec::with_capacity(128);
-        let arr = JaggedArray::from_vec_with_buffer(&vec, &mut buffer).unwrap();
+    fn check_encode_then_decode_is_identical() -> Result<()> {
+        let vec = vec![1, 4, -5];
         let mut bytes: Vec<u8> = Vec::with_capacity(128);
-        arr.encode_to(&mut bytes).unwrap();
-        let (arr2, _len) = JaggedArray::<i32>::decode_from_bytes(&bytes).unwrap();
-        assert_eq!(arr.len(), arr2.len());
-        assert_eq!(arr.data, arr2.data);
+        JaggedArray::build_and_encode_to(&vec, &mut bytes)?;
+        let (arr, _len) = JaggedArray::<i32>::try_decode(&bytes)?;
+        assert_eq!(arr.len(), vec.len());
+        assert_eq!(arr.get(0)?, vec[0]);
+        assert_eq!(arr.get(1)?, vec[1]);
+        assert_eq!(arr.get(2)?, vec[2]);
+
+        Ok(())
     }
 }

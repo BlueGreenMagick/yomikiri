@@ -1,40 +1,30 @@
 use anyhow::{Context, Result};
 use fst::{IntoStreamer, Streamer};
-use std::fs::{self, File};
-use std::io::{Read, Seek};
 use std::path::Path;
+use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
 use yomikiri_dictionary::entry::Entry;
-use yomikiri_dictionary::file::{read_entries_with_buffers, BUFFER_SIZE};
-use yomikiri_dictionary::index::DictIndex;
 
-pub struct Dictionary<D: AsRef<[u8]> + 'static, R: Seek + Read> {
-    index: DictIndex<D>,
-    entries_reader: R,
-    extraction_buffer: Vec<u8>,
-    chunk_buffer: Vec<u8>,
+pub struct Dictionary<D: AsRef<[u8]> + 'static> {
+    inner: InnerDictionary<D>,
 }
 
-impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
-    pub fn new(index: DictIndex<D>, entries_reader: R) -> Dictionary<D, R> {
-        Dictionary {
-            index,
-            entries_reader,
-            extraction_buffer: vec![0; BUFFER_SIZE],
-            chunk_buffer: vec![0; BUFFER_SIZE],
-        }
+impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
+    pub fn try_new(source: D) -> Result<Dictionary<D>> {
+        let inner =
+            InnerDictionary::try_decode(source).context("Could not read dictionary file.")?;
+        Ok(Self { inner })
     }
 
     pub fn search(&mut self, term: &str) -> Result<Vec<Entry>> {
-        let terms = &self.index.borrow_view().terms;
+        let view = self.inner.borrow_view();
+        let terms = &view.term_index;
         if let Some(value) = terms.map.get(term) {
             let entry_indexes = terms.parse_value(value)?;
-            let entries = read_entries_with_buffers(
-                &mut self.chunk_buffer,
-                &mut self.extraction_buffer,
-                &mut self.entries_reader,
-                &entry_indexes,
-            )
-            .context("Failed to parse dictionary entry JSON")?;
+            let entries: Vec<Entry> = entry_indexes
+                .iter()
+                .map(|idx| view.entries.get(*idx))
+                .collect::<yomikiri_dictionary::error::Result<Vec<Entry>>>(
+            )?;
             Ok(entries)
         } else {
             Ok(Vec::new())
@@ -54,7 +44,7 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
         let len = next_prefix_bytes.len();
         next_prefix_bytes[len - 1] += 1;
 
-        let terms = &self.index.borrow_view().terms;
+        let terms = &self.inner.borrow_view().term_index;
         if let Some(_) = terms
             .map
             .range()
@@ -70,21 +60,20 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
     }
 
     pub fn contains(&self, term: &str) -> bool {
-        self.index.borrow_view().terms.map.contains_key(term)
+        self.inner.borrow_view().term_index.map.contains_key(term)
     }
 
     /// Returns json text of entries
-    pub fn search_json(&mut self, term: &str) -> Result<Vec<String>> {
-        let terms = &self.index.borrow_view().terms;
+    pub fn search_json(&self, term: &str) -> Result<Vec<String>> {
+        let view = &self.inner.borrow_view();
+        let terms = &self.inner.borrow_view().term_index;
         if let Some(value) = terms.map.get(term) {
             let entry_indexes = terms.parse_value(value)?;
-            let entries = read_entries_with_buffers(
-                &mut self.chunk_buffer,
-                &mut self.extraction_buffer,
-                &mut self.entries_reader,
-                &entry_indexes,
-            )
-            .context("Failed to parse dictionary entry JSON")?;
+            let entries: Vec<Entry> = entry_indexes
+                .iter()
+                .map(|idx| view.entries.get(*idx))
+                .collect::<yomikiri_dictionary::error::Result<Vec<Entry>>>(
+            )?;
             let jsons = entries
                 .iter()
                 .map(serde_json::to_string)
@@ -98,14 +87,9 @@ impl<D: AsRef<[u8]>, R: Seek + Read> Dictionary<D, R> {
 }
 
 // TODO: switch to Memmap
-impl Dictionary<Vec<u8>, File> {
-    pub fn from_paths<P1: AsRef<Path>, P2: AsRef<Path>>(
-        index_path: P1,
-        entries_path: P2,
-    ) -> Result<Dictionary<Vec<u8>, File>> {
-        let index_bytes = fs::read(index_path)?;
-        let index = DictIndex::try_from_source(index_bytes)?;
-        let entries_file = File::open(entries_path)?;
-        Ok(Dictionary::new(index, entries_file))
+impl Dictionary<Vec<u8>> {
+    pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Vec<u8>>> {
+        let bytes = std::fs::read(dict_path.as_ref())?;
+        Ok(Dictionary::try_new(bytes)?)
     }
 }

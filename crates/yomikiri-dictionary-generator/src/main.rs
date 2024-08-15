@@ -7,11 +7,10 @@ use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
-use yomikiri_dictionary::file::{
-    parse_jmdict_xml, write_yomikiri_dictionary, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
-    DICT_METADATA_FILENAME,
-};
+use yomikiri_dictionary::dictionary::DictionaryView;
+use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
+use yomikiri_dictionary::{DICT_FILENAME, DICT_METADATA_FILENAME};
 
 const URL: &'static str =
     "https://github.com/BlueGreenMagick/yomikiri/releases/download/jmdict-jun-25/";
@@ -58,11 +57,7 @@ fn run_download(opts: &DownloadOpts) -> Result<()> {
     let resources_dir = crate_dir.join("files");
     fs::create_dir_all(&resources_dir)?;
 
-    let filenames = [
-        DICT_INDEX_FILENAME,
-        DICT_ENTRIES_FILENAME,
-        DICT_METADATA_FILENAME,
-    ];
+    let filenames = [DICT_FILENAME, DICT_METADATA_FILENAME];
     let url_file_path = resources_dir.join("URL");
     let mut url_base = opts.url.clone();
     if !url_base.ends_with('/') {
@@ -126,8 +121,7 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let resources_dir = crate_dir.join("files");
     let jmdict_dir = crate_dir.join("jmdict");
     let jmdict_file_path = jmdict_dir.join("JMdict_e");
-    let output_path = resources_dir.join(DICT_ENTRIES_FILENAME);
-    let output_index_path = resources_dir.join(DICT_INDEX_FILENAME);
+    let output_path = resources_dir.join(DICT_FILENAME);
 
     fs::create_dir_all(&jmdict_dir)?;
 
@@ -152,20 +146,15 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     // ignore error from directory not existing
     fs::create_dir_all(&resources_dir)
         .with_context(|| format!("Could not create directory: {:?}", &resources_dir))?;
-    let output_index_file = File::create(&output_index_path)?;
-    let mut output_index_writer = BufWriter::new(output_index_file);
     let output_file = File::create(&output_path)?;
     let mut output_writer = BufWriter::new(output_file);
-
-    write_yomikiri_dictionary(&mut output_index_writer, &mut output_writer, &entries)?;
+    DictionaryView::build_and_encode_to(&entries, &mut output_writer)?;
 
     if jmdict_downloaded {
         println!("Writing metadata.json...");
-        let index_file_size = fs::metadata(&output_index_path)?.len();
-        let entries_file_size = fs::metadata(&output_path)?.len();
-        let files_size = index_file_size + entries_file_size;
+        let file_size = fs::metadata(&output_path)?.len();
 
-        let metadata = DictMetadata::new(files_size, false);
+        let metadata = DictMetadata::new(file_size, false);
         let metadata_json_path = resources_dir.join("dictionary-metadata.json");
         let metadata_json_file = File::create(metadata_json_path)?;
         let mut metadata_writer = BufWriter::new(metadata_json_file);

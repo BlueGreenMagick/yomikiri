@@ -1,10 +1,11 @@
+use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Entry {
     #[serde(rename = "f", default, skip_serializing_if = "Vec::is_empty")]
     pub forms: Vec<Form>,
@@ -87,7 +88,7 @@ impl Entry {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Form {
     #[serde(rename = "f")]
     pub form: String,
@@ -97,7 +98,7 @@ pub struct Form {
     pub uncommon: bool,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Reading {
     #[serde(rename = "r")]
     pub reading: String,
@@ -111,7 +112,7 @@ pub struct Reading {
     pub uncommon: bool,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Sense {
     #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<String>,
@@ -130,7 +131,7 @@ pub struct Sense {
 }
 
 /// Unidic based pos tagging
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, Decode, Encode)]
 pub enum PartOfSpeech {
     /// 名詞
     #[serde(rename = "n")]

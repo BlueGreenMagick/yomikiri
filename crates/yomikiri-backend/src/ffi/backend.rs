@@ -4,23 +4,19 @@ use crate::tokenize::{create_tokenizer, RawTokenizeResult};
 use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
-use std::fs::File;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
 pub struct RustBackend {
-    inner: Mutex<SharedBackend<Vec<u8>, File>>,
+    inner: Mutex<SharedBackend<Vec<u8>>>,
 }
 
 impl RustBackend {
-    pub(crate) fn try_from_paths<P1: AsRef<Path>, P2: AsRef<Path>>(
-        index_path: P1,
-        entries_path: P2,
-    ) -> Result<Arc<RustBackend>> {
+    pub(crate) fn try_from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Arc<RustBackend>> {
         utils::setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::from_paths(index_path, entries_path)?;
+        let dictionary = Dictionary::from_paths(dict_path)?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
@@ -34,8 +30,8 @@ impl RustBackend {
 #[uniffi::export]
 impl RustBackend {
     #[uniffi::constructor]
-    pub fn new(index_path: String, entries_path: String) -> FFIResult<Arc<RustBackend>> {
-        Self::_new(index_path, entries_path).uniffi()
+    pub fn new(dict_path: String) -> FFIResult<Arc<RustBackend>> {
+        Self::_new(dict_path).uniffi()
     }
 
     pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
@@ -48,8 +44,8 @@ impl RustBackend {
 }
 
 impl RustBackend {
-    fn _new(index_path: String, entries_path: String) -> Result<Arc<RustBackend>> {
-        Self::try_from_paths(&index_path, &entries_path)
+    fn _new(dict_path: String) -> Result<Arc<RustBackend>> {
+        Self::try_from_paths(&dict_path)
     }
 
     fn _tokenize(&self, sentence: String, char_at: u32) -> Result<RawTokenizeResult> {

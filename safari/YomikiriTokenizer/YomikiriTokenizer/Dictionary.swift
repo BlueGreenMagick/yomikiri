@@ -2,20 +2,18 @@ import Foundation
 import os.log
 
 struct DictUrls {
-    var index: URL
-    var entries: URL
+    var dict: URL
     var metadata: URL
 
     static func fromDirectory(_ dir: URL) -> DictUrls {
         DictUrls(
-            index: dir.appendingPathComponent("english.yomikiriindex"),
-            entries: dir.appendingPathComponent("english.yomikiridict"),
+            dict: dir.appendingPathComponent("english.yomikiridict"),
             metadata: dir.appendingPathComponent("dictionary-metadata.json")
         )
     }
 
     func urls() -> [URL] {
-        return [index, entries, metadata]
+        return [dict, metadata]
     }
 
     /// Throw error if shared directory could not be retrieved,

@@ -30,7 +30,7 @@ public enum Backend {
         // drop backend to close mmap and open file handle
         Backend.rust = Result.failure(YomikiriTokenizerError.UpdatingDictionary)
         do {
-            let rust = try replaceJob.replace(indexPath: userDict.index.path, entriesPath: userDict.entries.path, metadataPath: userDict.metadata.path)
+            let rust = try replaceJob.replace(dictPath: userDict.dict.path, metadataPath: userDict.metadata.path)
             Backend.rust = Result.success(rust)
         } catch {
             // using restored user dictionary
@@ -44,12 +44,12 @@ public enum Backend {
 private func createRustBackend() throws -> RustBackend {
     os_log(.debug, "start creating backend")
     if let userDict = try? validateAndGetUserDict() {
-        if let rust = try? RustBackend(indexPath: userDict.index.path, entriesPath: userDict.entries.path) {
+        if let rust = try? RustBackend(dictPath: userDict.dict.path) {
             return rust
         }
     }
     let bundledDict = try DictUrls.bundled.get()
-    let backend = try RustBackend(indexPath: bundledDict.index.path, entriesPath: bundledDict.entries.path)
+    let backend = try RustBackend(dictPath: bundledDict.dict.path)
     os_log(.debug, "finish creating backend")
     return backend
 }

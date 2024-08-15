@@ -1,15 +1,13 @@
 use anyhow::{anyhow, Result};
 use std::collections::HashSet;
 use std::fs::File;
-use std::io::{BufWriter, Cursor, Write};
+use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::str::FromStr;
 use std::{cmp, fs};
+use yomikiri_dictionary::dictionary::Dictionary;
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
-use yomikiri_dictionary::file::{
-    read_entries, DictEntryPointer, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
-};
-use yomikiri_dictionary::index::DictIndex;
+use yomikiri_dictionary::DICT_FILENAME;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
 struct LexItem {
@@ -162,8 +160,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
     transform_lex(
         &lex_csv_path,
         transform_dir,
-        &resource_dir.join(DICT_INDEX_FILENAME),
-        &resource_dir.join(DICT_ENTRIES_FILENAME),
+        &resource_dir.join(DICT_FILENAME),
     )?;
 
     // transform_matrix(&matrix_def_path, transform_dir, lid_map, rid_map)?;
@@ -174,12 +171,7 @@ pub fn transform(input_dir: &Path, transform_dir: &Path, resource_dir: &Path) ->
 /// 1. remove fields that are not used.
 /// 2. remove entries for emojis and alphabetic, special characters
 /// 3. Add entries from JMDict that is not in unidic
-fn transform_lex(
-    lex_path: &Path,
-    output_dir: &Path,
-    index_path: &Path,
-    dict_path: &Path,
-) -> Result<()> {
+fn transform_lex(lex_path: &Path, output_dir: &Path, dict_path: &Path) -> Result<()> {
     let mut items: Vec<LexItem> = Vec::with_capacity(1500000);
 
     let mut reader = csv::Reader::from_path(lex_path)?;
@@ -209,7 +201,7 @@ fn transform_lex(
         items.push(item);
     }
 
-    let jmdict_entries = read_yomikiri_dictionary(index_path, dict_path)?;
+    let jmdict_entries = read_yomikiri_dictionary(dict_path)?;
     add_words_in_jmdict(&mut items, &jmdict_entries)?;
     let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 
@@ -380,25 +372,18 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
     pos.to_unidic().to_unidic().0
 }
 
-pub fn read_yomikiri_dictionary(index_path: &Path, dict_path: &Path) -> Result<Vec<Entry>> {
-    let index_bytes = fs::read(index_path)?;
-    let index = DictIndex::try_from_source(index_bytes)?;
+pub fn read_yomikiri_dictionary(dict_path: &Path) -> Result<Vec<Entry>> {
+    let mut entries = vec![];
 
-    let terms_index = &index.borrow_view().terms;
-
-    let mut entry_indexes: HashSet<DictEntryPointer> = HashSet::new();
-    let terms_map_values = terms_index.map.stream().into_values();
-    for value in terms_map_values {
-        let parsed = terms_index.parse_value(value)?;
-        entry_indexes.extend(parsed);
+    let dict_bytes = fs::read(dict_path)?;
+    let dict = Dictionary::try_decode(dict_bytes)?;
+    let entry_array = &dict.borrow_view().entries;
+    let entries_len = entry_array.len();
+    for i in 0..entries_len {
+        let entry = entry_array.get(i)?;
+        entries.push(entry);
     }
 
-    let mut entry_pointers: Vec<DictEntryPointer> = entry_indexes.into_iter().collect();
-    entry_pointers.sort();
-
-    let dict_bytes: Vec<u8> = fs::read(dict_path)?;
-    let mut reader = Cursor::new(dict_bytes);
-    let entries = read_entries(&mut reader, &entry_pointers)?;
     Ok(entries)
 }
 

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fs::File;
 
 use yomikiri_rs::grammar::GRAMMARS;
 use yomikiri_rs::SharedBackend;
@@ -34,7 +33,7 @@ fn test_rule_exists(rules: &[(&str, &str)]) {
 }
 
 fn test_grammar(
-    backend: &mut SharedBackend<Vec<u8>, File>,
+    backend: &mut SharedBackend<Vec<u8>>,
     sentence_inp: &'static str,
     includes: &[(&str, &str)],
     excludes: &[(&str, &str)],

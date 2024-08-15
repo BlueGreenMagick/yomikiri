@@ -13,7 +13,6 @@ import Utils, {
   LazyAsync,
   PromiseWithProgress,
   createPromise,
-  getErrorMessage,
   nextTask,
 } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
@@ -44,10 +43,12 @@ export class DesktopBackend implements IBackend {
     Utils.bench("start");
     const BackendWasmConstructorP = loadWasm();
     const dictionaryP = loadDictionary();
-    const [BackendWasmConstructor, [indexBytes, entriesBytes]] =
-      await Promise.all([BackendWasmConstructorP, dictionaryP]);
+    const [BackendWasmConstructor, dictBytes] = await Promise.all([
+      BackendWasmConstructorP,
+      dictionaryP,
+    ]);
     Utils.bench("loaded");
-    this.wasm = new BackendWasmConstructor(indexBytes, entriesBytes);
+    this.wasm = new BackendWasmConstructor(dictBytes);
     Utils.bench("backend created");
   }
 
@@ -199,10 +200,9 @@ async function _updateDictionary(
   const jmdict_bytes = await fetchDictionary();
   progressFn("Creating dictionary file...");
   await nextTask();
-  const { index_bytes, entry_bytes, metadata } =
-    wasm.update_dictionary(jmdict_bytes);
+  const { dict_bytes, metadata } = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
-  await saveDictionaryFile(index_bytes, entry_bytes, metadata);
+  await saveDictionaryFile(dict_bytes, metadata);
   return metadata;
 }
 
@@ -213,19 +213,14 @@ async function fetchDictionary(): Promise<Uint8Array> {
 }
 
 async function saveDictionaryFile(
-  index_bytes: Uint8Array,
-  entries_bytes: Uint8Array,
+  dict_bytes: Uint8Array,
   metadata: DictMetadata,
 ): Promise<void> {
   const db = await openDictionaryDB();
-  const tx = db.transaction(
-    ["metadata", "yomikiri-index", "yomikiri-entries"],
-    "readwrite",
-  );
+  const tx = db.transaction(["metadata", "yomikiri-dictionary"], "readwrite");
   await Promise.all([
     tx.objectStore("metadata").put(metadata, "value"),
-    tx.objectStore("yomikiri-index").put(index_bytes, "value"),
-    tx.objectStore("yomikiri-entries").put(entries_bytes, "value"),
+    tx.objectStore("yomikiri-dictionary").put(dict_bytes, "value"),
   ]);
   await tx.done;
 }

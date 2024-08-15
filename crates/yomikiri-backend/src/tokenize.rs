@@ -8,7 +8,6 @@ use anyhow::{anyhow, Context, Result};
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use std::borrow::Cow;
-use std::io::{Read, Seek};
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
 use yomikiri_unidic_types::{
@@ -197,7 +196,7 @@ impl TokenDetails {
     }
 }
 
-impl<D: AsRef<[u8]> + 'static, R: Read + Seek> SharedBackend<D, R> {
+impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
     /// char_idx: code point index of selected character in sentence
