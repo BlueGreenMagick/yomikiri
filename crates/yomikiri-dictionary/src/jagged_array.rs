@@ -81,13 +81,6 @@ where
         let end = bytes.read_u32::<LittleEndian>()? as usize;
         let base = self.items_start();
 
-        let bar = String::from("bar");
-        let mut foo: &str = &bar;
-        println!("{}", foo);
-        foo = "abc";
-        std::mem::drop(bar);
-        println!("{}", foo);
-
         Ok((base + start, base + end))
     }
 
@@ -106,6 +99,8 @@ where
                 bincode::config::standard(),
             )?;
         }
+        index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+
         let bytes_len = 4 + index_bytes.len() + item_bytes.len();
         writer.write_u32::<LittleEndian>(bytes_len.try_into()?)?;
         writer.write_u32::<LittleEndian>(items.len().try_into()?)?;
@@ -128,8 +123,8 @@ mod tests {
         let (arr, _len) = JaggedArray::<i32>::try_decode(&bytes)?;
         assert_eq!(arr.len(), vec.len());
         assert_eq!(arr.get(0)?, vec[0]);
-        assert_eq!(arr.get(1)?, vec[0]);
-        assert_eq!(arr.get(2)?, vec[0]);
+        assert_eq!(arr.get(1)?, vec[1]);
+        assert_eq!(arr.get(2)?, vec[2]);
 
         Ok(())
     }

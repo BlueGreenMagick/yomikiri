@@ -40,7 +40,7 @@ impl<'a> DictionaryView<'a> {
         let mut at = 0;
         let (term_index, len) = DictIndexMap::try_decode(&source[at..])?;
         at += len;
-        let (entries, _len) = JaggedArray::try_decode(&source[at..])?;
+        let (entries, len) = JaggedArray::try_decode(&source[at..])?;
         at += len;
         let s = Self {
             term_index,

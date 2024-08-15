@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::io::Write;
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use fst::{Map, MapBuilder};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
@@ -36,7 +36,7 @@ impl<'a> DictIndexMap<'a> {
         let term_map = Map::new(&bytes[at..at + len])?;
         at += len;
 
-        let (term_pointers, _len) = JaggedArray::try_decode(&bytes[at..])?;
+        let (term_pointers, len) = JaggedArray::try_decode(&bytes[at..])?;
         at += len;
 
         let terms = DictIndexMap {
@@ -60,7 +60,8 @@ impl<'a> DictIndexMap<'a> {
         items: &[DictIndexItem],
         writer: &mut W,
     ) -> Result<()> {
-        let mut builder = MapBuilder::new(writer)?;
+        let mut buffer = Vec::with_capacity(16 * items.len());
+        let mut builder = MapBuilder::new(&mut buffer)?;
         let mut pointers: Vec<Vec<usize>> = vec![];
 
         for item in items {
@@ -80,6 +81,11 @@ impl<'a> DictIndexMap<'a> {
             }
         }
         builder.finish()?;
+
+        writer.write_u32::<LittleEndian>(buffer.len().try_into()?)?;
+        writer.write_all(&mut buffer)?;
+
+        JaggedArray::build_and_encode_to(&pointers, writer)?;
         Ok(())
     }
 }
