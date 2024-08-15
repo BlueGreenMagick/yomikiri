@@ -1,10 +1,14 @@
+use std::collections::HashMap;
+
 use byteorder::{LittleEndian, ReadBytesExt};
 use fst::Map;
+use itertools::Itertools;
 use ouroboros::self_referencing;
+use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
-use crate::file::DictEntryPointer;
 use crate::jagged_array::JaggedArray;
+use crate::Entry;
 
 #[self_referencing]
 pub struct DictIndex<K: AsRef<[u8]> + 'static> {
@@ -18,27 +22,29 @@ pub struct DictIndexView<'a> {
     pub terms: DictIndexMap<'a>,
 }
 
+/// Locations of multiple jmdict entries for a single term in .yomikiridict
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct DictTermIndex {
+    pub term: String,
+    /// Sorted
+    pub entry_indexes: Vec<usize>,
+}
+
 /// map values are u64 with structure:
-/// | literal '0' | '0' * 15 | chunk index (32) | inner index (16) |
+/// | literal '0' | entry idx (63) |
 /// | literal '1' | '0' * 31 | pointers array index (32) |
 pub struct DictIndexMap<'a> {
     pub map: Map<&'a [u8]>,
-    pub pointers: JaggedArray<'a, Vec<DictEntryPointer>>,
+    pub pointers: JaggedArray<'a, Vec<usize>>,
 }
 
 impl<'a> DictIndexMap<'a> {
-    pub fn parse_value(&self, value: u64) -> Result<Vec<DictEntryPointer>> {
+    pub fn parse_value(&self, value: u64) -> Result<Vec<usize>> {
+        let idx = (value & ((1_u64 << 63) - 1)) as usize;
         if value >= 1_u64 << 63 {
-            let idx = (value & ((1_u64 << 32) - 1)) as usize;
             self.pointers.get(idx)
         } else {
-            let chunk_index = (value >> 16) as u32;
-            let inner_index = (value & ((1_u64 << 16) - 1)) as u16;
-            let entry_index = DictEntryPointer {
-                chunk_index,
-                inner_index,
-            };
-            Ok(vec![entry_index])
+            Ok(vec![idx])
         }
     }
 }
@@ -73,4 +79,29 @@ impl<K: AsRef<[u8]>> DictIndex<K> {
         };
         builder.try_build()
     }
+}
+
+pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictTermIndex>> {
+    // some entries have multiple terms
+    let mut indexes: HashMap<&str, Vec<usize>> = HashMap::with_capacity(entries.len() * 4);
+
+    for (i, entry) in entries.iter().enumerate() {
+        for term in entry.terms() {
+            indexes
+                .entry(term)
+                .and_modify(|v| v.push(i))
+                .or_insert_with(|| vec![]);
+        }
+    }
+
+    let indexes: Vec<DictTermIndex> = indexes
+        .into_iter()
+        .map(|(term, indexes)| DictTermIndex {
+            term: term.to_string(),
+            entry_indexes: indexes,
+        })
+        .sorted_by(|a, b| a.term.cmp(&b.term))
+        .collect();
+
+    Ok(indexes)
 }

@@ -4,7 +4,7 @@ use anyhow::Result;
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::file::{
-    parse_jmdict_xml, write_entries, write_indexes, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
+    parse_jmdict_xml, write_yomikiri_dictionary, DICT_ENTRIES_FILENAME, DICT_INDEX_FILENAME,
     DICT_METADATA_FILENAME,
 };
 use yomikiri_dictionary::metadata::DictMetadata;
@@ -92,8 +92,7 @@ fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
     let temp_dir = Path::new(&temp_dir);
     let mut temp_entries_file = NamedTempFile::new_in(&temp_dir)?;
     let mut temp_index_file = NamedTempFile::new_in(&temp_dir)?;
-    let term_indexes = write_entries(&mut temp_entries_file, &entries)?;
-    write_indexes(&mut temp_index_file, &term_indexes)?;
+    write_yomikiri_dictionary(&mut temp_index_file, &mut temp_entries_file, &entries)?;
 
     let index_file_size = fs::metadata(temp_entries_file.path())?.len();
     let entries_file_size = fs::metadata(temp_index_file.path())?.len();

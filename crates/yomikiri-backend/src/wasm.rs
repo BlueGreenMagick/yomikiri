@@ -11,7 +11,7 @@ use log::debug;
 use serde::Serialize;
 use std::io::{Cursor, Read};
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::file::{parse_jmdict_xml, write_entries, write_indexes};
+use yomikiri_dictionary::file::{parse_jmdict_xml, write_yomikiri_dictionary};
 use yomikiri_dictionary::index::DictIndex;
 use yomikiri_dictionary::metadata::DictMetadata;
 
@@ -135,17 +135,14 @@ impl Backend {
         std::mem::drop(xml);
         debug!("parsed jmdict file");
 
-        let mut entries_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        let term_indexes = write_entries(&mut entries_bytes, &entries)
-            .context("Failed to write dictionary entries to file")?;
-        let entries_array = Uint8Array::from(&entries_bytes[..]);
-
         let mut index_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
-        write_indexes(&mut index_bytes, &term_indexes)
-            .context("Failed to write dictionary index to file")?;
-        let index_array = Uint8Array::from(&index_bytes[..]);
-
+        let mut entries_bytes: Vec<u8> = Vec::with_capacity(15 * 1024 * 1024);
+        write_yomikiri_dictionary(&mut index_bytes, &mut entries_bytes, &entries)
+            .context("Failed to write dictionary file")?;
         let files_size = entries_bytes.len() + index_bytes.len();
+
+        let entries_array = Uint8Array::from(&entries_bytes[..]);
+        let index_array = Uint8Array::from(&index_bytes[..]);
 
         let metadata = DictMetadata::new(files_size as u64, true);
 
