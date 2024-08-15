@@ -9,7 +9,7 @@ pub enum Error {
     #[error("IO {0}")]
     Io(#[from] io::Error),
     #[error("Bincode {0}")]
-    Bincode(#[from] bincode::Error),
+    BincodeDecode(#[from] bincode::error::DecodeError),
     #[error("Xml parse error: {0}")]
     RustyXml(#[from] rustyxml::ParserError),
     #[error("Expected {expected}, encountered {actual}")]
