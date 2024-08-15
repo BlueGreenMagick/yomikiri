@@ -23,4 +23,6 @@ pub enum Error {
     Fst(#[from] fst::Error),
     #[error("Out of range")]
     OutOfRange,
+    #[error("Could not reserve space for vector")]
+    CouldNotReserve(#[from] std::collections::TryReserveError),
 }

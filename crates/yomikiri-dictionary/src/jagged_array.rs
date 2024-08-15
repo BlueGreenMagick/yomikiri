@@ -1,6 +1,7 @@
+use std::io::Write;
 use std::marker::PhantomData;
 
-use byteorder::{LittleEndian, ReadBytesExt};
+use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use serde::{Deserialize, Serialize};
 
 use crate::{Error, Result};
@@ -90,10 +91,22 @@ where
     }
 
     /// Create JaggedArray from Vec<T>
-    pub fn from_vec_with_buffer(value: &[T], buffer: &'a mut Vec<u8>) -> Result<Self> {
-        bincode::serde::encode_into_std_write(value, buffer, bincode::config::legacy())?;
+    pub fn from_vec_with_buffer(items: &[T], buffer: &'a mut Vec<u8>) -> Result<Self> {
+        let mut item_bytes: Vec<u8> = Vec::with_capacity(8 * items.len());
+        for item in items {
+            buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+            bincode::serde::encode_into_std_write(
+                item,
+                &mut item_bytes,
+                bincode::config::legacy(),
+            )?;
+        }
+        buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+        buffer.try_reserve_exact(item_bytes.len() - buffer.capacity())?;
+        buffer.write_all(&item_bytes)?;
+
         Ok(Self {
-            len: value.len(),
+            len: items.len(),
             data: buffer,
             _typ: PhantomData,
         })
