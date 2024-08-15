@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use byteorder::{LittleEndian, ReadBytesExt};
 use serde::{Deserialize, Serialize};
 
@@ -23,17 +25,21 @@ use crate::{Error, Result};
       bytes of items (n)
 */
 #[derive(Serialize, Deserialize)]
-pub struct JaggedArray<'a> {
+pub struct JaggedArray<'a, T>
+where
+    T: Deserialize<'a> + Serialize,
+{
     len: usize,
     data: &'a [u8],
+    _typ: PhantomData<T>,
 }
 
-impl<'a> JaggedArray<'a> {
+impl<'a, T> JaggedArray<'a, T>
+where
+    T: Deserialize<'a> + Serialize,
+{
     /// Get object at index
-    pub fn get<T>(&'a self, index: usize) -> Result<T>
-    where
-        T: Deserialize<'a>,
-    {
+    pub fn get(&'a self, index: usize) -> Result<T> {
         if index >= self.len {
             return Err(Error::OutOfRange);
         }
@@ -71,14 +77,12 @@ impl<'a> JaggedArray<'a> {
     }
 
     /// Create JaggedArray from Vec<T>
-    pub fn from_vec_with_buffer<T>(value: &[T], buffer: &'a mut Vec<u8>) -> Result<Self>
-    where
-        T: Serialize,
-    {
+    pub fn from_vec_with_buffer(value: &[T], buffer: &'a mut Vec<u8>) -> Result<Self> {
         bincode::serde::encode_into_std_write(value, buffer, bincode::config::legacy())?;
         Ok(Self {
             len: value.len(),
             data: buffer,
+            _typ: PhantomData,
         })
     }
 }
