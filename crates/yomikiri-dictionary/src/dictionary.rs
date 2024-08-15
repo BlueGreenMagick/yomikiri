@@ -9,27 +9,27 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     source: Box<D>,
     #[borrows(source)]
     #[covariant]
-    inner: InnerDictionary<'this>,
+    view: DictionaryView<'this>,
 }
 
-struct InnerDictionary<'a> {
-    term_index: DictIndexMap<'a>,
-    entries: JaggedArray<'a, Entry>,
+pub struct DictionaryView<'a> {
+    pub term_index: DictIndexMap<'a>,
+    pub entries: JaggedArray<'a, Entry>,
 }
 
 impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
     pub fn try_decode(source: D) -> Result<Self> {
         let builder = DictionaryTryBuilder {
             source: Box::new(source),
-            inner_builder: |source| {
-                InnerDictionary::try_decode(source.as_ref()).map(|(inner, _len)| inner)
+            view_builder: |source| {
+                DictionaryView::try_decode(source.as_ref()).map(|(inner, _len)| inner)
             },
         };
         builder.try_build()
     }
 }
 
-impl<'a> InnerDictionary<'a> {
+impl<'a> DictionaryView<'a> {
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let mut at = 0;
         let (term_index, len) = DictIndexMap::try_decode(&source[at..])?;
