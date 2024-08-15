@@ -56,7 +56,10 @@ impl<'a> DictIndexMap<'a> {
         }
     }
 
-    pub fn build_and_encode_to<W: Write>(items: &[DictTermIndex], writer: W) -> Result<()> {
+    pub(crate) fn build_and_encode_to<W: Write>(
+        items: &[DictTermIndex],
+        writer: &mut W,
+    ) -> Result<()> {
         let mut builder = MapBuilder::new(writer)?;
         let mut pointers: Vec<Vec<usize>> = vec![];
 
