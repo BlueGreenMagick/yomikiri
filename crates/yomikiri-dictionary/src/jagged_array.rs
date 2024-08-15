@@ -1,6 +1,7 @@
 use std::io::Write;
 use std::marker::PhantomData;
 
+use bincode::{BorrowDecode, Encode};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use serde::{Deserialize, Serialize};
 
@@ -29,7 +30,7 @@ use crate::{Error, Result};
 #[derive(Serialize, Deserialize)]
 pub struct JaggedArray<'a, T>
 where
-    T: Deserialize<'a> + Serialize,
+    T: BorrowDecode<'a> + Encode,
 {
     cnt: usize,
     data: &'a [u8],
@@ -38,7 +39,7 @@ where
 
 impl<'a, T> JaggedArray<'a, T>
 where
-    T: Deserialize<'a> + Serialize,
+    T: BorrowDecode<'a> + Encode,
 {
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
@@ -65,8 +66,8 @@ where
 
         let (item_start, item_end) = self.item_position(index)?;
         let item_bytes = &self.data[item_start..item_end];
-        let item =
-            bincode::serde::decode_borrowed_from_slice(item_bytes, bincode::config::standard())?;
+        let (item, _l) =
+            bincode::borrow_decode_from_slice(item_bytes, bincode::config::standard())?;
 
         Ok(item)
     }
@@ -93,11 +94,7 @@ where
         let mut item_bytes: Vec<u8> = Vec::with_capacity(8 * items.len());
         for item in items {
             index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-            bincode::serde::encode_into_std_write(
-                item,
-                &mut item_bytes,
-                bincode::config::standard(),
-            )?;
+            bincode::encode_into_std_write(item, &mut item_bytes, bincode::config::standard())?;
         }
         index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
 
