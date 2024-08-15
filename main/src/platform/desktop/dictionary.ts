@@ -9,11 +9,7 @@ interface DictionaryDBSchema extends DBSchema {
     key: "value";
     value: DictMetadata;
   };
-  "yomikiri-index": {
-    key: "value";
-    value: Uint8Array;
-  };
-  "yomikiri-entries": {
+  "yomikiri-dictionary": {
     key: "value";
     value: Uint8Array;
   };
@@ -23,9 +19,7 @@ interface DictionaryDBSchema extends DBSchema {
  * Loads user dictionary (index, entries) if it exists, valid, and fresh.
  * Otherwise, return null and delete saved dictionary.
  */
-export async function loadSavedDictionary(): Promise<
-  [Uint8Array, Uint8Array] | null
-> {
+export async function loadSavedDictionary(): Promise<Uint8Array | null> {
   const db = await openDictionaryDB();
 
   const metadata = await db.get("metadata", "value");
@@ -35,25 +29,24 @@ export async function loadSavedDictionary(): Promise<
     return null;
   }
 
-  const yomikiriIndexP = db.get("yomikiri-index", "value");
-  const yomikiriEntriesP = db.get("yomikiri-entries", "value");
-  const [yomikiriIndexBytes, yomikiriEntriesBytes] = await Promise.all([
-    yomikiriIndexP,
-    yomikiriEntriesP,
-  ]);
-  if (yomikiriIndexBytes !== undefined && yomikiriEntriesBytes !== undefined) {
-    return [yomikiriIndexBytes, yomikiriEntriesBytes];
-  } else {
-    return null;
-  }
+  return (await db.get("yomikiri-dictionary", "value")) ?? null;
 }
 
 export async function openDictionaryDB() {
-  return await openDB<DictionaryDBSchema>("jmdict", 1, {
-    upgrade(db, _oldVersion, _newVersion, _transaction, _event) {
+  return await openDB<DictionaryDBSchema>("jmdict", 2, {
+    upgrade(db, oldVersion, _newVersion, _transaction, _event) {
+      if (oldVersion === 1) {
+        const storeNames = ["yomikiri-index", "yomikiri-entries", "metadata"];
+        for (const name of storeNames) {
+          // @ts-expect-error previous version object store names
+          if (db.objectStoreNames.contains(name)) {
+            // @ts-expect-error previous version object store names
+            db.deleteObjectStore(name);
+          }
+        }
+      }
       db.createObjectStore("metadata");
-      db.createObjectStore("yomikiri-index");
-      db.createObjectStore("yomikiri-entries");
+      db.createObjectStore("yomikiri-dictionary");
     },
   });
 }
@@ -74,11 +67,7 @@ export async function loadDictionaryMetadata(): Promise<DictMetadata> {
 export async function deleteSavedDictionary() {
   const db = await openDictionaryDB();
   console.info("Will delete user-installed dictionary");
-  await Promise.all([
-    db.clear("yomikiri-index"),
-    db.clear("yomikiri-entries"),
-    db.clear("metadata"),
-  ]);
+  await Promise.all([db.clear("yomikiri-dictionary"), db.clear("metadata")]);
   console.info("Deleted user-installed dictionary");
 }
 

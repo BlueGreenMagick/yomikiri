@@ -43,8 +43,7 @@ export interface RawTokenizeResult {
 }
 
 export interface DictUpdateResult {
-    entry_bytes: Uint8Array;
-    index_bytes: Uint8Array;
+    dict_bytes: Uint8Array;
     metadata: DictMetadata;
 }
 
