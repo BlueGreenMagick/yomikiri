@@ -42,7 +42,7 @@ where
     pub fn try_new(data: &'a [u8]) -> Result<Self> {
         let len = (&data[0..8]).read_u64::<LittleEndian>()? as usize;
         Ok(Self {
-            data,
+            data: &data[8..8 + len],
             len,
             _typ: PhantomData,
         })
@@ -116,5 +116,9 @@ where
         writer.write_u64::<LittleEndian>(self.len() as u64)?;
         writer.write(self.data)?;
         Ok(())
+    }
+
+    pub fn data_bytes_cnt(&self) -> usize {
+        self.data.len()
     }
 }
