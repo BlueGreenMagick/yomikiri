@@ -4,7 +4,7 @@ use std::fs::{self, File};
 use std::io::{Read, Seek};
 use std::path::Path;
 use yomikiri_dictionary::entry::Entry;
-use yomikiri_dictionary::file::{read_entries_with_buffers, BUFFER_SIZE};
+use yomikiri_dictionary::file::BUFFER_SIZE;
 use yomikiri_dictionary::index::DictIndex;
 
 pub struct Dictionary<D: AsRef<[u8]> + 'static, R: Seek + Read> {

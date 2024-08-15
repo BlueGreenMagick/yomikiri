@@ -10,18 +10,6 @@ use crate::error::Result;
 use crate::jagged_array::JaggedArray;
 use crate::Entry;
 
-#[self_referencing]
-pub struct DictIndex<K: AsRef<[u8]> + 'static> {
-    source: Box<K>,
-    #[borrows(source)]
-    #[covariant]
-    pub view: DictIndexView<'this>,
-}
-
-pub struct DictIndexView<'a> {
-    pub terms: DictIndexMap<'a>,
-}
-
 /// Locations of multiple jmdict entries for a single term in .yomikiridict
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct DictTermIndex {
@@ -39,18 +27,7 @@ pub struct DictIndexMap<'a> {
 }
 
 impl<'a> DictIndexMap<'a> {
-    pub fn parse_value(&self, value: u64) -> Result<Vec<usize>> {
-        let idx = (value & ((1_u64 << 63) - 1)) as usize;
-        if value >= 1_u64 << 63 {
-            self.pointers.get(idx)
-        } else {
-            Ok(vec![idx])
-        }
-    }
-}
-
-impl<'a> DictIndexView<'a> {
-    pub fn try_new(source: &'a [u8]) -> Result<Self> {
+    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let bytes = source.as_ref();
         let mut at = 0;
 
@@ -60,24 +37,23 @@ impl<'a> DictIndexView<'a> {
         at += len;
 
         let (term_pointers, _len) = JaggedArray::decode_from_bytes(&bytes[at..])?;
-        // at += len;
+        at += len;
 
         let terms = DictIndexMap {
             map: term_map,
             pointers: term_pointers,
         };
 
-        Ok(Self { terms })
+        Ok((terms, at))
     }
-}
 
-impl<K: AsRef<[u8]>> DictIndex<K> {
-    pub fn try_from_source(source: K) -> Result<Self> {
-        let builder = DictIndexTryBuilder {
-            source: Box::new(source),
-            view_builder: |source| DictIndexView::try_new(source.as_ref()),
-        };
-        builder.try_build()
+    pub fn parse_value(&self, value: u64) -> Result<Vec<usize>> {
+        let idx = (value & ((1_u64 << 63) - 1)) as usize;
+        if value >= 1_u64 << 63 {
+            self.pointers.get(idx)
+        } else {
+            Ok(vec![idx])
+        }
     }
 }
 
