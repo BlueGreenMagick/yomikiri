@@ -30,7 +30,7 @@ where
     T: Deserialize<'a> + Serialize,
 {
     len: usize,
-    data: &'a [u8],
+    pub(crate) data: &'a [u8],
     _typ: PhantomData<T>,
 }
 
@@ -38,6 +38,19 @@ impl<'a, T> JaggedArray<'a, T>
 where
     T: Deserialize<'a> + Serialize,
 {
+    pub fn try_new(data: &'a [u8]) -> Result<Self> {
+        let len = (&data[0..8]).read_u64::<LittleEndian>()? as usize;
+        Ok(Self {
+            data,
+            len,
+            _typ: PhantomData,
+        })
+    }
+
+    pub fn len(&self) -> usize {
+        self.len
+    }
+
     /// Get object at index
     pub fn get(&'a self, index: usize) -> Result<T> {
         if index >= self.len {
