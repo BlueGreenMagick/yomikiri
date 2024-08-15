@@ -107,7 +107,10 @@ where
             )?;
         }
         buffer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-        buffer.try_reserve_exact(item_bytes.len() - buffer.capacity())?;
+
+        if item_bytes.len() > buffer.capacity() {
+            buffer.try_reserve_exact(item_bytes.len() - buffer.capacity())?;
+        }
         buffer.write_all(&item_bytes)?;
 
         Ok(Self {
@@ -124,5 +127,22 @@ where
         writer.write_u32::<LittleEndian>(self.len().try_into()?)?;
         writer.write(self.data)?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::JaggedArray;
+
+    #[test]
+    fn check_encode_then_decode_is_identical() {
+        let vec = vec![1, 4, 6, 7, 8];
+        let mut buffer: Vec<u8> = Vec::with_capacity(128);
+        let arr = JaggedArray::from_vec_with_buffer(&vec, &mut buffer).unwrap();
+        let mut bytes: Vec<u8> = Vec::with_capacity(128);
+        arr.encode_to(&mut bytes).unwrap();
+        let (arr2, _len) = JaggedArray::<i32>::decode_from_bytes(&bytes).unwrap();
+        assert_eq!(arr.len(), arr2.len());
+        assert_eq!(arr.data, arr2.data);
     }
 }
