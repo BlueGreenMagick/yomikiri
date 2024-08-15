@@ -118,16 +118,19 @@ where
 #[cfg(test)]
 mod tests {
     use super::JaggedArray;
+    use super::Result;
 
     #[test]
-    fn check_encode_then_decode_is_identical() {
-        let vec = vec![1, 4, 6, 7, 8];
-        let mut buffer: Vec<u8> = Vec::with_capacity(128);
-        let arr = JaggedArray::from_vec_with_buffer(&vec, &mut buffer).unwrap();
+    fn check_encode_then_decode_is_identical() -> Result<()> {
+        let vec = vec![1, 4, -5];
         let mut bytes: Vec<u8> = Vec::with_capacity(128);
-        arr.encode_to(&mut bytes).unwrap();
-        let (arr2, _len) = JaggedArray::<i32>::decode_from_bytes(&bytes).unwrap();
-        assert_eq!(arr.len(), arr2.len());
-        assert_eq!(arr.data, arr2.data);
+        JaggedArray::build_and_encode_to(&vec, &mut bytes)?;
+        let (arr, _len) = JaggedArray::<i32>::decode_from_bytes(&bytes)?;
+        assert_eq!(arr.len(), vec.len());
+        assert_eq!(arr.get(0)?, vec[0]);
+        assert_eq!(arr.get(1)?, vec[0]);
+        assert_eq!(arr.get(2)?, vec[0]);
+
+        Ok(())
     }
 }
