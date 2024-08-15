@@ -29,6 +29,10 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         };
         builder.try_build()
     }
+
+    pub fn build_and_encode_to<W: Write>(entries: &[Entry], writer: &mut W) -> Result<()> {
+        DictionaryView::build_and_encode_to(entries, writer)
+    }
 }
 
 impl<'a> DictionaryView<'a> {
@@ -45,7 +49,7 @@ impl<'a> DictionaryView<'a> {
         Ok((s, at))
     }
 
-    pub fn build_and_encode_to<W: Write>(entries: &'a [Entry], writer: &mut W) -> Result<()> {
+    pub fn build_and_encode_to<W: Write>(entries: &[Entry], writer: &mut W) -> Result<()> {
         JaggedArray::build_and_encode_to(entries, writer)?;
         let term_index_items = create_sorted_term_indexes(entries)?;
         DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
