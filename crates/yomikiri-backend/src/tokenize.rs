@@ -8,7 +8,6 @@ use anyhow::{anyhow, Context, Result};
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use std::borrow::Cow;
-use std::io::{Read, Seek};
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
 use yomikiri_unidic_types::{

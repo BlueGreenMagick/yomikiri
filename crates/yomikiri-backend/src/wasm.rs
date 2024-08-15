@@ -9,7 +9,7 @@ use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
 use serde::Serialize;
-use std::io::{Cursor, Read};
+use std::io::Read;
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;

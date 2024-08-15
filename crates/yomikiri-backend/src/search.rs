@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-use std::io::{Read, Seek};
 
 use anyhow::{Context, Result};
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
