@@ -53,9 +53,7 @@ impl<'a> DictIndexView<'a> {
         let term_map = Map::new(&bytes[at..at + len])?;
         at += len;
 
-        let len = (&bytes[at..at + 4]).read_u32::<LittleEndian>()? as usize;
-        at += 4;
-        let term_pointers = JaggedArray::try_new(&bytes[at..at + len])?;
+        let (term_pointers, _len) = JaggedArray::decode_from_bytes(&bytes[at..])?;
         // at += len;
 
         let terms = DictIndexMap {

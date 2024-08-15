@@ -17,20 +17,21 @@ use crate::{Error, Result};
 /*
   Structure (bytes):
   1. array of pointers
-    - len (8)
     repeated 'len' times
       - byte-position of items, divided by 2, where first item is 0. (4)
     - byte length of array of items (4)
   2. contiguous item bytes
     repeated 'len' times:
       bytes of items (n)
+
+  We can retrieve the start and end byte position of an item in array, that we can use to deserialize object.
 */
 #[derive(Serialize, Deserialize)]
 pub struct JaggedArray<'a, T>
 where
     T: Deserialize<'a> + Serialize,
 {
-    len: usize,
+    cnt: usize,
     data: &'a [u8],
     _typ: PhantomData<T>,
 }
@@ -39,22 +40,26 @@ impl<'a, T> JaggedArray<'a, T>
 where
     T: Deserialize<'a> + Serialize,
 {
-    pub fn try_new(data: &'a [u8]) -> Result<Self> {
-        let len = (&data[0..8]).read_u64::<LittleEndian>()? as usize;
-        Ok(Self {
-            data: &data[8..8 + len],
-            len,
+    pub fn decode_from_bytes(source: &'a [u8]) -> Result<(Self, usize)> {
+        let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
+        let cnt = (&source[4..8]).read_u32::<LittleEndian>()? as usize;
+        let data = &source[8..4 + bytes_len];
+        let arr = Self {
+            data,
+            cnt,
             _typ: PhantomData,
-        })
+        };
+
+        Ok((arr, bytes_len + 4))
     }
 
     pub fn len(&self) -> usize {
-        self.len
+        self.cnt
     }
 
     /// Get object at index
     pub fn get(&'a self, index: usize) -> Result<T> {
-        if index >= self.len {
+        if index >= self.cnt {
             return Err(Error::OutOfRange);
         }
 
@@ -87,7 +92,7 @@ where
     }
 
     fn items_start(&self) -> usize {
-        self.len * 4 + 4
+        self.cnt * 4 + 4
     }
 
     /// Create JaggedArray from Vec<T>
@@ -106,19 +111,18 @@ where
         buffer.write_all(&item_bytes)?;
 
         Ok(Self {
-            len: items.len(),
+            cnt: items.len(),
             data: buffer,
             _typ: PhantomData,
         })
     }
 
-    pub fn write_to<W: Write>(&self, writer: &mut W) -> Result<()> {
-        writer.write_u64::<LittleEndian>(self.len() as u64)?;
+    pub fn encode_to<W: Write>(&self, writer: &mut W) -> Result<()> {
+        let bytes_len = 4 + self.data.len();
+        let bytes_len: u32 = bytes_len.try_into()?;
+        writer.write_u32::<LittleEndian>(bytes_len)?;
+        writer.write_u32::<LittleEndian>(self.len().try_into()?)?;
         writer.write(self.data)?;
         Ok(())
-    }
-
-    pub fn data_bytes_cnt(&self) -> usize {
-        self.data.len()
     }
 }
