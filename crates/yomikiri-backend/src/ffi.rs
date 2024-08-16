@@ -10,7 +10,7 @@ use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
 use yomikiri_dictionary::{DICT_FILENAME, DICT_METADATA_FILENAME};
 
-use std::fs::{self, File};
+use fs_err::{self as fs, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};

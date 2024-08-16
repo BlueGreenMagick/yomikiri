@@ -1,6 +1,6 @@
+use fs_err as fs;
+use fs_err::File;
 use std::error::Error;
-use std::fs;
-use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 

@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use fs_err as fs;
 use fst::{IntoStreamer, Streamer};
 use std::path::Path;
 use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
@@ -89,7 +90,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
 // TODO: switch to Memmap
 impl Dictionary<Vec<u8>> {
     pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Vec<u8>>> {
-        let bytes = std::fs::read(dict_path.as_ref())?;
+        let bytes = fs::read(dict_path.as_ref())?;
         Ok(Dictionary::try_new(bytes)?)
     }
 }

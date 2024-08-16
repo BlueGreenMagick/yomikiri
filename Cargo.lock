@@ -2546,6 +2546,7 @@ dependencies = [
  "cfg_aliases",
  "console_error_panic_hook",
  "flate2",
+ "fs-err",
  "fst",
  "js-sys",
  "lindera-core",
