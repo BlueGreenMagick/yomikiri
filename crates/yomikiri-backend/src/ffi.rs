@@ -5,13 +5,12 @@ use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::read::GzDecoder;
-use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
 use yomikiri_dictionary::{DICT_FILENAME, DICT_METADATA_FILENAME};
 
-use std::fs;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -134,13 +133,17 @@ fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
         parse_jmdict_xml(&xml)
     }?;
     let temp_dir = Path::new(&temp_dir);
-    let mut temp_dict_file = NamedTempFile::new_in(&temp_dir)?;
-    DictionaryView::build_and_encode_to(&entries, &mut temp_dict_file)?;
+    let temp_dict_path = temp_dir.join(DICT_FILENAME);
+    let temp_metadata_path = temp_dir.join(DICT_METADATA_FILENAME);
 
-    let file_size = fs::metadata(temp_dict_file.path())?.len();
+    let mut temp_dict_file = File::create(&temp_dict_path)?;
+    DictionaryView::build_and_encode_to(&entries, &mut temp_dict_file)?;
+    std::mem::drop(temp_dict_file);
+
+    let file_size = fs::metadata(&temp_dict_path)?.len();
     let metadata = DictMetadata::new(file_size, true);
     let metadata_json = metadata.to_json()?;
-    let mut temp_metadata_file = NamedTempFile::new_in(&temp_dir)?;
+    let mut temp_metadata_file = File::create(&temp_metadata_path)?;
     temp_metadata_file.write_all(&metadata_json.as_bytes())?;
 
     let replace_job = DictFilesReplaceJob {

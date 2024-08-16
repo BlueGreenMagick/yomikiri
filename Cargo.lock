@@ -2556,7 +2556,6 @@ dependencies = [
  "serde",
  "serde-wasm-bindgen",
  "serde_json",
- "tempfile",
  "thiserror",
  "unicode-normalization",
  "unicode-segmentation",
