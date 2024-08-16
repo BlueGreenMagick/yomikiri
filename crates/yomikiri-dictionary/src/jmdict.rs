@@ -4,8 +4,8 @@ use itertools::Itertools;
 use yomikiri_jmdict::{JMEntry, JMForm, JMReading, JMSense};
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
-    let jm_entries = yomikiri_jmdict::parse_jmdict_xml(xml)?;
-    let entries = jm_entries.into_iter().map(Entry::from).collect();
+    let jmdict = yomikiri_jmdict::parse_jmdict_xml(xml)?;
+    let entries = jmdict.entries.into_iter().map(Entry::from).collect();
     Ok(entries)
 }
 

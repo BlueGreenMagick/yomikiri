@@ -3,7 +3,7 @@ use rustyxml::{Event, Parser};
 
 use std::borrow::Cow;
 
-use crate::jmdict::{JMEntry, JMForm, JMReading, JMSense};
+use crate::jmdict::{JMDict, JMEntry, JMForm, JMReading, JMSense};
 use crate::{Error, Result};
 
 /// RustyXML errors upon custom entity `&xx;`
@@ -19,15 +19,34 @@ pub fn remove_doctype(xml: &str) -> String {
     re.replace(xml, "").into_owned()
 }
 
-pub fn parse_xml(xml_string: &str) -> Result<Vec<JMEntry>> {
+pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
     let mut parser = Parser::new();
     parser.feed_str(xml_string);
 
+    let creation_date_regex = Regex::new(r#"^JMdict created: *([\w\W]+)$"#).unwrap();
+    let mut creation_date: Option<String> = None;
+
     loop {
-        if let Event::ElementStart(tag) = parser.next().ok_or("<JMDict> not found")?? {
-            if &tag.name == "JMdict" {
-                return parse_jmdict(&mut parser);
+        match parser.next().ok_or("<JMDict> not found")?? {
+            Event::ElementStart(tag) => {
+                if &tag.name == "JMdict" {
+                    let entries = parse_jmdict(&mut parser)?;
+                    return Ok(JMDict {
+                        entries,
+                        creation_date,
+                    });
+                }
             }
+            Event::Comment(comment) => {
+                if !creation_date.is_some() {
+                    let trimmed = comment.trim();
+                    // JMdict creation comment comes before <jmdict> tag
+                    if let Some(capture) = creation_date_regex.captures(trimmed) {
+                        creation_date = Some(capture.get(1).unwrap().as_str().to_string());
+                    }
+                }
+            }
+            _ => {}
         }
     }
 }
@@ -249,11 +268,15 @@ pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
+    use crate::jmdict::JMDict;
+
     use super::{parse_xml, unescape_entity, JMEntry, JMForm, JMReading, JMSense};
 
     #[test]
     fn test_xml_parse() {
         let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<!-- some other comment -->
+<!-- JMdict created: 2024-08-07 -->
 <JMdict>
 <entry>
 <ent_seq>1000040</ent_seq>
@@ -288,46 +311,50 @@ mod tests {
 "#;
         let xml = unescape_entity(xml);
         let result = parse_xml(&xml).unwrap();
+
         assert_eq!(
             result,
-            vec![
-                JMEntry {
-                    forms: vec![JMForm {
-                        form: "〃".to_string(),
-                        ..JMForm::default()
-                    }],
-                    readings: vec![
-                        JMReading {
-                            reading: "おなじ".to_string(),
+            JMDict {
+                creation_date: Some("2024-08-07".into()),
+                entries: vec![
+                    JMEntry {
+                        forms: vec![JMForm {
+                            form: "〃".to_string(),
+                            ..JMForm::default()
+                        }],
+                        readings: vec![
+                            JMReading {
+                                reading: "おなじ".to_string(),
+                                ..JMReading::default()
+                            },
+                            JMReading {
+                                reading: "おなじく".to_string(),
+                                ..JMReading::default()
+                            }
+                        ],
+                        senses: vec![JMSense {
+                            part_of_speech: vec!["=n=".to_string()],
+                            meaning: vec!["ditto mark".to_string()],
+                            ..JMSense::default()
+                        }]
+                    },
+                    JMEntry {
+                        forms: vec![JMForm {
+                            form: "仝".to_string(),
+                            ..JMForm::default()
+                        }],
+                        readings: vec![JMReading {
+                            reading: "どうじょう".to_string(),
                             ..JMReading::default()
-                        },
-                        JMReading {
-                            reading: "おなじく".to_string(),
-                            ..JMReading::default()
-                        }
-                    ],
-                    senses: vec![JMSense {
-                        part_of_speech: vec!["=n=".to_string()],
-                        meaning: vec!["ditto mark".to_string()],
-                        ..JMSense::default()
-                    }]
-                },
-                JMEntry {
-                    forms: vec![JMForm {
-                        form: "仝".to_string(),
-                        ..JMForm::default()
-                    }],
-                    readings: vec![JMReading {
-                        reading: "どうじょう".to_string(),
-                        ..JMReading::default()
-                    }],
-                    senses: vec![JMSense {
-                        part_of_speech: vec!["=n=".to_string()],
-                        meaning: vec![r#""as above" mark"#.to_string()],
-                        ..JMSense::default()
-                    }]
-                }
-            ]
+                        }],
+                        senses: vec![JMSense {
+                            part_of_speech: vec!["=n=".to_string()],
+                            meaning: vec![r#""as above" mark"#.to_string()],
+                            ..JMSense::default()
+                        }]
+                    }
+                ]
+            }
         );
     }
 }

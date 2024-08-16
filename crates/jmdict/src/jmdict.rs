@@ -1,3 +1,9 @@
+#[derive(Debug, PartialEq, Eq)]
+pub struct JMDict {
+    pub entries: Vec<JMEntry>,
+    pub creation_date: Option<String>,
+}
+
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct JMEntry {
     /// 0+ k_ele
