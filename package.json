@@ -10,7 +10,7 @@
   "scripts": {
     "update-dictionary": "pnpm run --filter='@yomikiri/dictionary-generator-rs' update-dictionary",
     "construct:dictionary": "pnpm run --filter='@yomikiri/dictionary-generator-rs' download",
-    "construct:unidic": "cd ./crates/unidic; cargo run",
+    "construct:unidic": "pnpm run --filter='@yomikiri/unidic-rs' generate",
     "construct:backend_wasm": "pnpm run --dir ./crates/yomikiri-backend wasm",
     "construct:backend_ios": "pnpm run --dir ./crates/yomikiri-backend ios",
     "construct:backend": "pnpm run construct:backend_wasm && pnpm run construct:backend_ios",
