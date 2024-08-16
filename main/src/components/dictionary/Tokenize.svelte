@@ -94,6 +94,7 @@
 <style>
   .search {
     flex: 0 1 auto;
+    min-width: 0;
 
     height: 100%;
     display: flex;
@@ -116,6 +117,7 @@
 
   .searchbar {
     flex: 1 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     height: 100%;

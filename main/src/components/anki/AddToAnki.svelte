@@ -108,6 +108,7 @@
 
   .add-to-anki {
     flex: 1 1 auto;
+    min-width: 0;
 
     display: flex;
     flex-direction: column;
@@ -133,6 +134,7 @@
   }
   .title-center {
     flex: 0 1 auto;
+    min-width: 0;
     text-align: center;
   }
   .title-right {
@@ -143,6 +145,7 @@
 
   .scrollable {
     flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -151,6 +154,7 @@
 
   .fields-container {
     flex: 1 0 auto;
+    min-width: 0;
   }
 
   .tags {

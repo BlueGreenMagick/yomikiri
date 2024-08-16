@@ -38,6 +38,7 @@
 <style>
   .toolbar-with-pane {
     flex: 0 1 auto;
+    min-width: 0;
     border-bottom: 1px solid var(--border);
   }
 

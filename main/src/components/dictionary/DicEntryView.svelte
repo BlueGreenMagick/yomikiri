@@ -83,6 +83,7 @@
   }
   .term {
     flex: 1 1 auto;
+    min-width: 0;
     margin: 4px 12px 0 0;
   }
   .icons {

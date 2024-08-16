@@ -63,12 +63,14 @@
   }
   .modal-content {
     flex: 1 1 auto;
+    min-width: 0;
     overflow-y: auto;
     border-top: 1px solid var(--border);
   }
 
   .modal-title {
     flex: 1 1 auto;
+    min-width: 0;
   }
 
   .close-button {

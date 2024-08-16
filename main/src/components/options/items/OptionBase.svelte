@@ -32,14 +32,17 @@
   }
   .left {
     flex: 1 1 auto;
+    min-width: 0;
   }
   .right {
     flex: 0 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
   }
   .right.wide {
     flex: 2 1 auto;
+    min-width: 0;
   }
   .title {
     margin: 1px 0px;
