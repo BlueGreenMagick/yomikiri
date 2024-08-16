@@ -2,12 +2,13 @@
   import { PagePlatform } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import Utils, { formatDateString } from "lib/utils";
+  import { formatDateString } from "lib/utils";
   import {
     Backend,
     type DesktopBackend,
     type IosAppBackend,
   } from "@platform/backend";
+  import { YomikiriError } from "lib/error";
 
   type DictState =
     | "loading"
@@ -43,8 +44,9 @@
       state = "downloaded";
     } catch (e) {
       state = "error";
-      dictDescription = "Error: " + Utils.getErrorMessage(e);
-      console.error(e);
+      const err = YomikiriError.from(e);
+      dictDescription = "Error: " + err.message;
+      throw err.context("Failed to update dictionary");
     }
   }
 
