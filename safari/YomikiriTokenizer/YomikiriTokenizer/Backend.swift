@@ -35,6 +35,7 @@ public enum Backend {
         } catch {
             // using restored user dictionary
             Backend.rust = Result { try createRustBackend() }
+            throw error
         }
         let metadata = try getDictionaryMetadata()
         return metadata
