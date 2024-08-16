@@ -22,6 +22,11 @@
   --edge-horizontal-padding: 8px;
 }
 
+:root,
+:host {
+  overflow-wrap: anywhere;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -33,8 +38,8 @@ body {
   border: none;
 }
 
-/* Prevent Chrome setting body font-size to 75% on extension pages */
 body {
+  /* Prevent Chrome setting body font-size to 75% on extension pages */
   font-size: 100%;
 }
 
