@@ -81,7 +81,8 @@ pub struct DictFilesReplaceJob {
 #[uniffi::export]
 impl DictFilesReplaceJob {
     pub fn replace(&self, dict_path: String, metadata_path: String) -> FFIResult<Arc<RustBackend>> {
-        self._replace(dict_path, metadata_path).uniffi()
+        self._replace(Path::new(&dict_path), Path::new(&metadata_path))
+            .uniffi()
     }
 }
 
@@ -91,20 +92,22 @@ impl DictFilesReplaceJob {
     /// Returns a new `RustBackend` with replaced files.
     /// If an error occurs with new files when initializing `RustBackend`,
     /// it tries to restore the previous user dictionary, then an error is thrown.
-    fn _replace(&self, dict_path: String, metadata_path: String) -> Result<Arc<RustBackend>> {
+    fn _replace(&self, dict_path: &Path, metadata_path: &Path) -> Result<Arc<RustBackend>> {
         let backup_dir = self.temp_dir.join("prev");
         if backup_dir.exists() {
             fs::remove_dir_all(&backup_dir)?;
         }
         fs::create_dir(&backup_dir)?;
+
         let backup_dict_path = backup_dir.join(DICT_FILENAME);
         let backup_metadata_path = backup_dir.join(DICT_METADATA_FILENAME);
-
         let temp_dict_path = self.temp_dir.join(DICT_FILENAME);
         let temp_metadata_path = self.temp_dir.join(DICT_METADATA_FILENAME);
 
-        fs::rename(&dict_path, &backup_dict_path)?;
-        fs::rename(&metadata_path, &backup_metadata_path)?;
+        if dict_path.exists() && metadata_path.exists() {
+            fs::rename(dict_path, &backup_dict_path)?;
+            fs::rename(metadata_path, &backup_metadata_path)?;
+        }
 
         fs::rename(&temp_dict_path, &dict_path)?;
         fs::rename(&temp_metadata_path, &metadata_path)?;
@@ -112,15 +115,17 @@ impl DictFilesReplaceJob {
         let backend_result = RustBackend::try_from_paths(&dict_path);
         match backend_result {
             Ok(backend) => {
-                fs::remove_dir_all(&temp_dict_path)?;
+                _ = fs::remove_dir_all(&self.temp_dir);
                 Ok(backend)
             }
             Err(e) => {
                 fs::remove_file(&dict_path)?;
                 fs::remove_file(&metadata_path)?;
-                fs::rename(&backup_dict_path, &dict_path)?;
-                fs::rename(&backup_metadata_path, &metadata_path)?;
-                fs::remove_dir_all(&temp_dict_path)?;
+                if backup_dict_path.exists() && backup_metadata_path.exists() {
+                    fs::rename(&backup_dict_path, &dict_path)?;
+                    fs::rename(&backup_metadata_path, &metadata_path)?;
+                }
+                _ = fs::remove_dir_all(&self.temp_dir);
                 Err(e).into()
             }
         }
@@ -141,9 +146,14 @@ fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
         let xml = String::from_utf8(bytes)?;
         parse_jmdict_xml(&xml)
     }?;
-    let temp_dir = Path::new(&temp_dir);
+    let temp_dir = Path::new(&temp_dir).join("dict");
     let temp_dict_path = temp_dir.join(DICT_FILENAME);
     let temp_metadata_path = temp_dir.join(DICT_METADATA_FILENAME);
+
+    if temp_dir.exists() {
+        fs::remove_dir_all(&temp_dir)?;
+    }
+    fs::create_dir(&temp_dir)?;
 
     let mut temp_dict_file = File::create(&temp_dict_path)?;
     DictionaryView::build_and_encode_to(&entries, &mut temp_dict_file)?;
