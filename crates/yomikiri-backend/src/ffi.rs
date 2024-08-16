@@ -93,6 +93,9 @@ impl DictFilesReplaceJob {
     /// it tries to restore the previous user dictionary, then an error is thrown.
     fn _replace(&self, dict_path: String, metadata_path: String) -> Result<Arc<RustBackend>> {
         let backup_dir = self.temp_dir.join("prev");
+        if backup_dir.exists() {
+            fs::remove_dir_all(&backup_dir)?;
+        }
         fs::create_dir(&backup_dir)?;
         let backup_dict_path = backup_dir.join(DICT_FILENAME);
         let backup_metadata_path = backup_dir.join(DICT_METADATA_FILENAME);
@@ -108,10 +111,16 @@ impl DictFilesReplaceJob {
 
         let backend_result = RustBackend::try_from_paths(&dict_path);
         match backend_result {
-            Ok(backend) => Ok(backend),
+            Ok(backend) => {
+                fs::remove_dir_all(&temp_dict_path)?;
+                Ok(backend)
+            }
             Err(e) => {
+                fs::remove_file(&dict_path)?;
+                fs::remove_file(&metadata_path)?;
                 fs::rename(&backup_dict_path, &dict_path)?;
                 fs::rename(&backup_metadata_path, &metadata_path)?;
+                fs::remove_dir_all(&temp_dict_path)?;
                 Err(e).into()
             }
         }
