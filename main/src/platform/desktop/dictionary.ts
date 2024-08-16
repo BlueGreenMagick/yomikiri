@@ -67,7 +67,8 @@ export async function loadDictionaryMetadata(): Promise<DictMetadata> {
 export async function deleteSavedDictionary() {
   const db = await openDictionaryDB();
   console.info("Will delete user-installed dictionary");
-  await Promise.all([db.clear("yomikiri-dictionary"), db.clear("metadata")]);
+  await db.clear("metadata");
+  await db.clear("yomikiri-dictionary");
   console.info("Deleted user-installed dictionary");
 }
 
