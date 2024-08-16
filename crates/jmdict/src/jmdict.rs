@@ -6,6 +6,7 @@ pub struct JMDict {
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct JMEntry {
+    pub id: u32,
     /// 0+ k_ele
     pub forms: Vec<JMForm>,
     /// 1+ r_ele

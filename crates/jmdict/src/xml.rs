@@ -31,6 +31,10 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
             Event::ElementStart(tag) => {
                 if &tag.name == "JMdict" {
                     let entries = parse_jmdict(&mut parser)?;
+                    if creation_date.is_none() {
+                        println!("Creation date comment could not be found or parsed. Falling back to retrieving creation date from entry");
+                        creation_date = get_jmdict_creation_date_from_entry(&entries);
+                    }
                     return Ok(JMDict {
                         entries,
                         creation_date,
@@ -49,6 +53,20 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
             _ => {}
         }
     }
+}
+
+fn get_jmdict_creation_date_from_entry(entries: &[JMEntry]) -> Option<String> {
+    let reg_date = Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).unwrap();
+    for entry in entries {
+        if entry.id == 9999999 {
+            let sense = entry.senses.get(0)?;
+            let meaning = sense.meaning.get(0)?;
+            if let Some(caps) = reg_date.captures(meaning) {
+                return caps.get(0).map(|e| e.as_str().to_owned());
+            }
+        }
+    }
+    return None;
 }
 
 pub fn parse_jmdict(parser: &mut Parser) -> Result<Vec<JMEntry>> {
@@ -78,7 +96,12 @@ pub fn parse_entry(parser: &mut Parser) -> Result<JMEntry> {
     loop {
         match parser.next().ok_or("<entry> unclosed")?? {
             Event::ElementStart(tag) => match tag.name.as_str() {
-                "ent_seq" => {}
+                "ent_seq" => {
+                    let idstr = parse_characters(parser, "ent_seq")?;
+                    let id = str::parse::<u32>(&idstr)
+                        .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
+                    entry.id = id;
+                }
                 "k_ele" => {
                     let form = parse_form(parser)?;
                     entry.forms.push(form);
@@ -97,6 +120,9 @@ pub fn parse_entry(parser: &mut Parser) -> Result<JMEntry> {
             },
             Event::ElementEnd(tag) => {
                 if &tag.name == "entry" {
+                    if entry.id == 0 {
+                        println!("There is an entry without an id")
+                    }
                     return Ok(entry);
                 }
             }
@@ -269,6 +295,7 @@ pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
 #[cfg(test)]
 mod tests {
     use crate::jmdict::JMDict;
+    use crate::{parse_jmdict_xml, Result};
 
     use super::{parse_xml, unescape_entity, JMEntry, JMForm, JMReading, JMSense};
 
@@ -318,6 +345,7 @@ mod tests {
                 creation_date: Some("2024-08-07".into()),
                 entries: vec![
                     JMEntry {
+                        id: 1000040,
                         forms: vec![JMForm {
                             form: "〃".to_string(),
                             ..JMForm::default()
@@ -339,6 +367,7 @@ mod tests {
                         }]
                     },
                     JMEntry {
+                        id: 1000050,
                         forms: vec![JMForm {
                             form: "仝".to_string(),
                             ..JMForm::default()
@@ -356,5 +385,31 @@ mod tests {
                 ]
             }
         );
+    }
+
+    #[test]
+    fn test_fallback_creation_date() -> Result<()> {
+        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<JMdict>
+<entry>
+<ent_seq>9999999</ent_seq>
+<k_ele>
+<keb>ＪＭｄｉｃｔ</keb>
+</k_ele>
+<r_ele>
+<reb>ジェイエムディクト</reb>
+</r_ele>
+<sense>
+<pos>&unc;</pos>
+<gloss>Japanese-Multilingual Dictionary Project - Creation Date: 2024-08-07</gloss>
+</sense>
+</entry>
+</JMdict>
+"#;
+
+        let dict = parse_jmdict_xml(&xml)?;
+        assert_eq!(dict.creation_date, Some("2024-08-07".into()));
+
+        Ok(())
     }
 }
