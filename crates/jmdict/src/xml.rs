@@ -1,3 +1,4 @@
+use lazy_static::lazy_static;
 use regex::Regex;
 use rustyxml::{Event, Parser};
 
@@ -5,6 +6,10 @@ use std::borrow::Cow;
 
 use crate::jmdict::{JMDict, JMEntry, JMForm, JMReading, JMSense};
 use crate::{Error, Result};
+
+lazy_static! {
+    static ref DATE_REGEX: Regex = Regex::new(r#"(\d\d\d\d-\d\d-\d\d)"#).unwrap();
+}
 
 /// RustyXML errors upon custom entity `&xx;`
 /// So unescape to `=xx=` before parsing
@@ -23,7 +28,6 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
     let mut parser = Parser::new();
     parser.feed_str(xml_string);
 
-    let creation_date_regex = Regex::new(r#"^JMdict created: *([\w\W]+)$"#).unwrap();
     let mut creation_date: Option<String> = None;
 
     loop {
@@ -35,18 +39,25 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
                         println!("Creation date comment could not be found or parsed. Falling back to retrieving creation date from entry");
                         creation_date = get_jmdict_creation_date_from_entry(&entries);
                     }
-                    return Ok(JMDict {
-                        entries,
-                        creation_date,
-                    });
+                    if let Some(creation_date) = creation_date {
+                        return Ok(JMDict {
+                            entries,
+                            creation_date,
+                        });
+                    } else {
+                        return Err("Could not find creation date from dictionary".into());
+                    }
                 }
             }
             Event::Comment(comment) => {
+                // JMdict creation comment comes before <jmdict> tag
                 if !creation_date.is_some() {
                     let trimmed = comment.trim();
-                    // JMdict creation comment comes before <jmdict> tag
-                    if let Some(capture) = creation_date_regex.captures(trimmed) {
-                        creation_date = Some(capture.get(1).unwrap().as_str().to_string());
+                    let opener = "JMdict created:";
+                    if trimmed.starts_with(opener) {
+                        if let Some(caps) = DATE_REGEX.captures(trimmed) {
+                            creation_date = caps.get(0).map(|e| e.as_str().to_owned());
+                        }
                     }
                 }
             }
@@ -56,12 +67,11 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
 }
 
 fn get_jmdict_creation_date_from_entry(entries: &[JMEntry]) -> Option<String> {
-    let reg_date = Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).unwrap();
     for entry in entries {
         if entry.id == 9999999 {
             let sense = entry.senses.get(0)?;
             let meaning = sense.meaning.get(0)?;
-            if let Some(caps) = reg_date.captures(meaning) {
+            if let Some(caps) = DATE_REGEX.captures(meaning) {
                 return caps.get(0).map(|e| e.as_str().to_owned());
             }
         }
@@ -342,7 +352,7 @@ mod tests {
         assert_eq!(
             result,
             JMDict {
-                creation_date: Some("2024-08-07".into()),
+                creation_date: "2024-08-07".into(),
                 entries: vec![
                     JMEntry {
                         id: 1000040,
@@ -408,7 +418,7 @@ mod tests {
 "#;
 
         let dict = parse_jmdict_xml(&xml)?;
-        assert_eq!(dict.creation_date, Some("2024-08-07".into()));
+        assert_eq!(dict.creation_date, "2024-08-07");
 
         Ok(())
     }

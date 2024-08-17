@@ -10,6 +10,7 @@ rustyxml = { workspace = true }
 regex = { workspace = true }
 bincode = { workspace = true }
 thiserror = { workspace = true }
+lazy_static = { workspace = true }
 
 [lints]
 workspace = true
