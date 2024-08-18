@@ -2555,6 +2555,7 @@ dependencies = [
  "lindera-tokenizer",
  "log",
  "oslog",
+ "regex",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",

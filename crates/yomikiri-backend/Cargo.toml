@@ -40,6 +40,7 @@ thiserror = { workspace = true }
 flate2 = { workspace = true }
 fst = { workspace = true }
 anyhow = { workspace = true }
+regex = { workspace = true }
 
 [target.'cfg(target_family="wasm")'.dependencies]
 serde-wasm-bindgen = { version = "0.6" }

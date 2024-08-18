@@ -49,6 +49,11 @@ impl RustBackend {
     pub fn search(&self, term: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
         self._search(term, char_at).uniffi()
     }
+
+    pub fn creation_date(&self) -> FFIResult<String> {
+        let backend = self.inner.lock().unwrap();
+        backend.dictionary.creation_date().uniffi()
+    }
 }
 
 impl RustBackend {
@@ -178,4 +183,12 @@ fn download_dictionary<W: Write>(writer: &mut W) -> Result<()> {
     let mut decoder = GzDecoder::new(resp.into_reader());
     std::io::copy(&mut decoder, writer)?;
     Ok(())
+}
+
+// TODO: switch to Memmap
+impl Dictionary<Vec<u8>> {
+    pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Vec<u8>>> {
+        let bytes = fs::read(dict_path.as_ref())?;
+        Ok(Dictionary::try_new(bytes)?)
+    }
 }

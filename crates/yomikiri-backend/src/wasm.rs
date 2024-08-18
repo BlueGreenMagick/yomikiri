@@ -147,6 +147,11 @@ impl Backend {
         self.inner.dictionary = dict;
         serialize_result(&result)
     }
+
+    pub fn creation_date(&self) -> WasmResult<String> {
+        let creation_date = self.inner.dictionary.creation_date()?;
+        Ok(creation_date)
+    }
 }
 
 fn serialize_result<T: Serialize>(value: &T) -> WasmResult<JsValue> {

@@ -1,7 +1,6 @@
-use anyhow::{Context, Result};
-use fs_err as fs;
+use anyhow::{anyhow, Context, Result};
 use fst::{IntoStreamer, Streamer};
-use std::path::Path;
+use regex::Regex;
 use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
 use yomikiri_dictionary::entry::Entry;
 
@@ -16,7 +15,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         Ok(Self { inner })
     }
 
-    pub fn search(&mut self, term: &str) -> Result<Vec<Entry>> {
+    pub fn search(&self, term: &str) -> Result<Vec<Entry>> {
         let view = self.inner.borrow_view();
         let terms = &view.term_index;
         if let Some(value) = terms.map.get(term) {
@@ -34,7 +33,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
 
     /// Returns true only if there is a dictionary term
     /// that starts with `prefix` and is not `prefix`
-    pub fn has_starts_with_excluding(&mut self, prefix: &str) -> bool {
+    pub fn has_starts_with_excluding(&self, prefix: &str) -> bool {
         // assumes there is at least 1 entry.
         // needed in order to create a bytestring that is 1 greater than prefix below
         if prefix.len() == 0 {
@@ -85,12 +84,21 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
             Ok(Vec::new())
         }
     }
-}
 
-// TODO: switch to Memmap
-impl Dictionary<Vec<u8>> {
-    pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Vec<u8>>> {
-        let bytes = fs::read(dict_path.as_ref())?;
-        Ok(Dictionary::try_new(bytes)?)
+    pub fn creation_date(&self) -> Result<String> {
+        let entries = self.search("ＪＭｄｉｃｔ")?;
+        let date_reg =
+            Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).context("Could not create regexp object")?;
+        for entry in entries {
+            if let Some(sense) = entry.senses.get(0) {
+                if let Some(meaning) = sense.meaning.get(0) {
+                    if let Some(mat) = date_reg.find(&meaning) {
+                        return Ok(mat.as_str().to_owned());
+                    }
+                }
+            }
+        }
+
+        Err(anyhow!("Could not find creation date in dictionary"))
     }
 }
