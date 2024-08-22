@@ -1,8 +1,5 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
-import {
-  Backend as BackendWasm,
-  type DictMetadata,
-} from "@yomikiri/yomikiri-rs";
+import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import {
   createConnection,
   handleConnection,
@@ -99,7 +96,7 @@ export class DesktopBackend implements IBackend {
     return TokenizeResult.from(rawResult);
   }
 
-  updateDictionary(): Utils.PromiseWithProgress<DictMetadata, string> {
+  updateDictionary(): Utils.PromiseWithProgress<void, string> {
     if (EXTENSION_CONTEXT === "background") {
       const prom = PromiseWithProgress.fromPromise(
         _updateDictionary(this.wasm!, progressFn),
@@ -205,16 +202,15 @@ interface ConnectionMessageError {
 async function _updateDictionary(
   wasm: BackendWasm,
   progressFn: (msg: string) => unknown,
-): Promise<DictMetadata> {
+): Promise<void> {
   const jmdict_bytes = await fetchDictionary();
   progressFn("Creating dictionary file...");
   await nextTask();
-  const { dict_bytes, metadata } = wasm.update_dictionary(jmdict_bytes);
+  const { dict_bytes } = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
   await saveDictionaryFile(dict_bytes);
   const schema_ver = wasm.dict_schema_ver();
   await setStorage("dict.schema_ver", schema_ver);
-  return metadata;
 }
 
 async function fetchDictionary(): Promise<Uint8Array> {

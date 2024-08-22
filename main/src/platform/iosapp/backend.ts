@@ -6,7 +6,6 @@ import {
   TokenizeResult,
   type SearchRequest,
 } from "../common/backend";
-import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export * from "../common/backend";
 
@@ -47,7 +46,7 @@ export class IosAppBackend implements IBackend {
     return TokenizeResult.from(raw);
   }
 
-  updateDictionary(): PromiseWithProgress<DictMetadata, string> {
+  updateDictionary(): PromiseWithProgress<void, string> {
     return PromiseWithProgress.fromPromise(
       IosAppPlatform.messageWebview("updateDict", null),
       "Updating dictionary... This may take up to a minute.",

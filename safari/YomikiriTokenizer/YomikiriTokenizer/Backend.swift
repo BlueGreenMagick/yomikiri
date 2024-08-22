@@ -19,7 +19,7 @@ public enum Backend {
     /// Update dictionary files, and update dictionary used within backend.
     ///
     /// If an error occurs, tries to restore previous dictionary.
-    public static func updateDictionary() async throws -> DictMetadata {
+    public static func updateDictionary() async throws {
         let tempDir = FileManager.default.temporaryDirectory
         let userDict = try getUserDictUrl()
         // update file in background thread
@@ -30,7 +30,7 @@ public enum Backend {
         // drop backend to close mmap and open file handle
         Backend.rust = Result.failure(YomikiriTokenizerError.UpdatingDictionary)
         do {
-            let rust = try replaceJob.replace(dictPath: userDict)
+            let rust = try replaceJob.replace(dictPath: userDict.path)
             Backend.rust = Result.success(rust)
         } catch {
             // using restored user dictionary
@@ -39,7 +39,6 @@ public enum Backend {
         }
         let schemaVer = Int(dictSchemaVer())
         try Storage.setDictSchemaVer(schemaVer)
-        return DictMetadata()
     }
 }
 
