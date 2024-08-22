@@ -16,10 +16,7 @@ import {
   type TokenizeRequest,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
-import {
-  migrateConfigObject,
-  type StoredCompatConfiguration,
-} from "lib/compat";
+import { migrateConfigObject } from "lib/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import { YomikiriError } from "lib/error";
 
@@ -88,7 +85,7 @@ export namespace IosPlatform {
 
   // App config is the source of truth
   async function updateConfig(): Promise<StoredConfiguration> {
-    const webConfigP = getStorage<StoredCompatConfiguration>("config", {});
+    const webConfigP = getStorage("config", {});
     const appConfigP = requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {

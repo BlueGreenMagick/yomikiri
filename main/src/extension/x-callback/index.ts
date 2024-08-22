@@ -18,8 +18,8 @@ import { YomikiriError } from "lib/error";
  * 3. tabId
  */
 async function getLastTabId(): Promise<number | null> {
-  const tabId = await getStorage<number | null>("x-callback.tabId", null);
-  const tabUrl = await getStorage<string | null>("x-callback.tabUrl", null);
+  const tabId = await getStorage("x-callback.tabId", null);
+  const tabUrl = await getStorage("x-callback.tabUrl", null);
 
   if (tabId === null || tabUrl === null) {
     // if tabId is undefined, just close this tab

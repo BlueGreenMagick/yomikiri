@@ -31,7 +31,7 @@ export namespace DesktopPlatform {
   });
 
   export async function getConfig(): Promise<StoredCompatConfiguration> {
-    return await getStorage<StoredCompatConfiguration>("config", {});
+    return await getStorage("config", {});
   }
 
   /** subscriber is called when config is changed. */

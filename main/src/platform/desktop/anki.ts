@@ -24,8 +24,6 @@ import {
 import { EXTENSION_CONTEXT } from "consts";
 
 const ANKI_CONNECT_VER = 6;
-const DEFER_NOTES_STORAGE_KEY = "deferred-anki-note";
-const DEFER_ERRORS_STORAGE_KEY = "deferred-anki-note-errors";
 
 interface AnkiConnectSuccess<T> {
   result: T;
@@ -271,7 +269,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
 
   private async deferNote(note: AnkiNote) {
     const existingNotes: AnkiNote[] = await getStorage(
-      DEFER_NOTES_STORAGE_KEY,
+      "deferred-anki-note",
       [],
     );
     existingNotes.push(note);
@@ -299,7 +297,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   async getDeferredNotesErrorMessages(): Promise<string[]> {
-    return await getStorage<string[]>(DEFER_ERRORS_STORAGE_KEY);
+    return await getStorage("deferred-anki-note-errors", []);
   }
 
   private processDeferredNotes(): PromiseWithProgress<void, number> {
@@ -317,13 +315,10 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
 
     (async () => {
-      await setStorage(DEFER_ERRORS_STORAGE_KEY, []);
+      await setStorage("deferred-anki-note-errors", []);
       await this.config.set("state.anki.deferred_note_error", false);
 
-      const deferredNotes = await getStorage<AnkiNote[]>(
-        DEFER_NOTES_STORAGE_KEY,
-        [],
-      );
+      const deferredNotes = await getStorage("deferred-anki-note", []);
       const errorMessages: string[] = [];
 
       // don't remove notes that failed to be added to Anki.
@@ -337,7 +332,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
         } catch (err: unknown) {
           if (err instanceof AnkiConnectError) {
             errorMessages.push(getErrorMessage(err));
-            await setStorage(DEFER_ERRORS_STORAGE_KEY, errorMessages);
+            await setStorage("deferred-anki-note-errors", errorMessages);
             await this.config.set("state.anki.deferred_note_error", true);
             i += 1;
           } else {
@@ -358,7 +353,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   private async setDeferredNotes(notes: AnkiNote[]) {
-    await setStorage(DEFER_NOTES_STORAGE_KEY, notes);
+    await setStorage("deferred-anki-note", notes);
     await this.config.set("state.anki.deferred_note_count", notes.length);
   }
 }
@@ -378,23 +373,21 @@ export class ClearDeferredNotesJob {
   }
 
   static async run(config: Config): Promise<ClearDeferredNotesJob> {
-    const notes =
-      (await getStorage<AnkiNote[] | undefined>(DEFER_NOTES_STORAGE_KEY)) ?? [];
-    const errors =
-      (await getStorage<string[] | undefined>(DEFER_ERRORS_STORAGE_KEY)) ?? [];
+    const notes = (await getStorage("deferred-anki-note")) ?? [];
+    const errors = (await getStorage("deferred-anki-note-errors")) ?? [];
 
     await config.setBatch({
       "state.anki.deferred_note_count": 0,
       "state.anki.deferred_note_error": false,
     });
-    await removeStorage(DEFER_ERRORS_STORAGE_KEY);
-    await removeStorage(DEFER_NOTES_STORAGE_KEY);
+    await removeStorage("deferred-anki-note-errors");
+    await removeStorage("deferred-anki-note");
     return new ClearDeferredNotesJob(config, notes, errors);
   }
 
   async undo() {
-    await setStorage(DEFER_NOTES_STORAGE_KEY, this.notes);
-    await setStorage(DEFER_ERRORS_STORAGE_KEY, this.errors);
+    await setStorage("deferred-anki-note", this.notes);
+    await setStorage("deferred-anki-note-errors", this.errors);
     await this.config.setBatch({
       "state.anki.deferred_note_count": this.notes.length,
       "state.anki.deferred_note_error": this.errors.length > 0,

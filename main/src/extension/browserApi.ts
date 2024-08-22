@@ -25,6 +25,7 @@ import {
 } from "lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
 import { YomikiriError } from "lib/error";
+import type { StoredCompatConfiguration } from "lib/compat";
 
 /**
  * Type map for messages between extension processes
@@ -84,6 +85,17 @@ export interface ApiInitializeOptions {
   handleStorageChange?: boolean;
   handleConnection?: boolean;
   context: ExecutionContext;
+}
+
+/// Must not contain 'undefined'
+interface StorageValues {
+  config: StoredCompatConfiguration;
+  // desktop
+  "deferred-anki-note": AnkiNote[];
+  "deferred-anki-note-errors": string[];
+  // ios
+  "x-callback.tabId": number;
+  "x-callback.tabUrl": string;
 }
 
 /** list of keys that is used for connection */
@@ -432,26 +444,28 @@ export async function currentTab(): Promise<chrome.tabs.Tab> {
   return promise;
 }
 
-/**
- * Assumption:
- * `storage[key]?: T`
- */
-export async function getStorage<T>(key: string, or?: T): Promise<T> {
-  const [promise, resolve] = createPromise<T>();
-  let req: string | Record<string, T> = key;
+/** If `or` is undefined, returns `undefined` if value does not exist. */
+export async function getStorage<K extends keyof StorageValues, V = undefined>(
+  key: K,
+  or?: V,
+): Promise<StorageValues[K] | V> {
+  const [promise, resolve] = createPromise<V>();
+  let req: string | Record<string, V> = key;
   if (or !== undefined) {
     req = {
       [key]: or,
     };
   }
   browserStorage().get(req, (obj) => {
-    resolve(obj[key] as T);
+    resolve(obj[key] as V);
   });
   return promise;
 }
 
-/** value cannot be undefined or null */
-export async function setStorage(key: string, value: NonNullable<unknown>) {
+export async function setStorage<K extends keyof StorageValues>(
+  key: K,
+  value: StorageValues[K],
+) {
   const [promise, resolve] = createPromise<void>();
   const object: Record<string, unknown> = {};
   object[key] = value;
@@ -459,7 +473,7 @@ export async function setStorage(key: string, value: NonNullable<unknown>) {
   return promise;
 }
 
-export async function removeStorage(key: string) {
+export async function removeStorage<K extends keyof StorageValues>(key: K) {
   const [promise, resolve] = createPromise<void>();
   browserStorage().remove(key, resolve);
   return promise;
