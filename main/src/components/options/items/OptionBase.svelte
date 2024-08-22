@@ -35,13 +35,13 @@
     min-width: 0;
   }
   .right {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     min-width: 0;
     display: flex;
     align-items: center;
   }
   .right.wide {
-    flex: 2 1 auto;
+    flex: 2 0 auto;
     min-width: 0;
   }
   .title {
