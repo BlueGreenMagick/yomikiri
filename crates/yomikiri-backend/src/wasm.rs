@@ -13,7 +13,6 @@ use std::io::Read;
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::metadata::DictMetadata;
 use yomikiri_dictionary::SCHEMA_VER;
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -45,14 +44,6 @@ export interface RawTokenizeResult {
 
 export interface DictUpdateResult {
     dict_bytes: Uint8Array;
-    metadata: DictMetadata;
-}
-
-export interface DictMetadata {
-    downloadDate: string;
-    filesSize: number;
-    userDownload: boolean;
-    schemaVer: number;
 }
 
 interface Backend {
@@ -70,7 +61,6 @@ interface Backend {
 struct DictUpdateResult {
     #[serde(with = "serde_wasm_bindgen::preserve")]
     dict_bytes: Uint8Array,
-    metadata: DictMetadata,
 }
 
 #[wasm_bindgen]
@@ -136,12 +126,9 @@ impl Backend {
         let mut dict_bytes: Vec<u8> = Vec::with_capacity(30 * 1024 * 1024);
         DictionaryView::build_and_encode_to(&entries, &mut dict_bytes)
             .context("Failed to write dictionary file")?;
-        let files_size = dict_bytes.len();
         let dict_array = Uint8Array::from(&dict_bytes[..]);
-        let metadata = DictMetadata::new(files_size as u64, true);
         let result = DictUpdateResult {
             dict_bytes: dict_array,
-            metadata,
         };
 
         let dict = Dictionary::try_new(dict_bytes)?;

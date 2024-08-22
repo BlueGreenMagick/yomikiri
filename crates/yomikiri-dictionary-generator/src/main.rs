@@ -9,7 +9,6 @@ use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::metadata::DictMetadata;
 use yomikiri_dictionary::DICT_FILENAME;
 
 const URL: &'static str =
@@ -149,17 +148,6 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let output_file = File::create(&output_path)?;
     let mut output_writer = BufWriter::new(output_file);
     DictionaryView::build_and_encode_to(&entries, &mut output_writer)?;
-
-    if jmdict_downloaded {
-        println!("Writing metadata.json...");
-        let file_size = fs::metadata(&output_path)?.len();
-
-        let metadata = DictMetadata::new(file_size, false);
-        let metadata_json_path = resources_dir.join("dictionary-metadata.json");
-        let metadata_json_file = File::create(metadata_json_path)?;
-        let mut metadata_writer = BufWriter::new(metadata_json_file);
-        serde_json::to_writer(&mut metadata_writer, &metadata)?;
-    }
 
     println!("Data writing complete.");
     Ok(())
