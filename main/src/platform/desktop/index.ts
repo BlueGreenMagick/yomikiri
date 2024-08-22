@@ -15,7 +15,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { LazyAsync } from "lib/utils";
-import { deleteSavedDictionary, loadDictionaryMetadata } from "./dictionary";
+import { deleteSavedDictionary } from "./dictionary";
 import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export * from "../common";
@@ -94,8 +94,15 @@ export namespace DesktopPlatform {
     return migrated;
   }
 
+  // TODO: remove this function
   export async function getDictionaryMetadata(): Promise<DictMetadata> {
-    return loadDictionaryMetadata();
+    await Promise.resolve();
+    return {
+      downloadDate: "",
+      filesSize: 0,
+      userDownload: false,
+      schemaVer: 0,
+    };
   }
 
   export async function deleteDictionary() {

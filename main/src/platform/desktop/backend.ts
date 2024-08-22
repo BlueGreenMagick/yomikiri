@@ -203,7 +203,7 @@ async function _updateDictionary(
   await nextTask();
   const { dict_bytes, metadata } = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
-  await saveDictionaryFile(dict_bytes, metadata);
+  await saveDictionaryFile(dict_bytes);
   const schema_ver = wasm.dict_schema_ver();
   await setStorage("dict.schema_ver", schema_ver);
   return metadata;
@@ -215,16 +215,10 @@ async function fetchDictionary(): Promise<Uint8Array> {
   return new Uint8Array(buffer);
 }
 
-async function saveDictionaryFile(
-  dict_bytes: Uint8Array,
-  metadata: DictMetadata,
-): Promise<void> {
+async function saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
   const db = await openDictionaryDB();
-  const tx = db.transaction(["metadata", "yomikiri-dictionary"], "readwrite");
-  await Promise.all([
-    tx.objectStore("metadata").put(metadata, "value"),
-    tx.objectStore("yomikiri-dictionary").put(dict_bytes, "value"),
-  ]);
+  const tx = db.transaction(["yomikiri-dictionary"], "readwrite");
+  await tx.objectStore("yomikiri-dictionary").put(dict_bytes, "value");
   await tx.done;
 }
 
