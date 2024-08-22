@@ -10,7 +10,7 @@ use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
-use yomikiri_dictionary::{DICT_FILENAME, DICT_METADATA_FILENAME};
+use yomikiri_dictionary::DICT_FILENAME;
 
 const URL: &'static str =
     "https://github.com/BlueGreenMagick/yomikiri/releases/download/jmdict-jun-25/";
@@ -57,7 +57,7 @@ fn run_download(opts: &DownloadOpts) -> Result<()> {
     let resources_dir = crate_dir.join("files");
     fs::create_dir_all(&resources_dir)?;
 
-    let filenames = [DICT_FILENAME, DICT_METADATA_FILENAME];
+    let filenames = [DICT_FILENAME];
     let url_file_path = resources_dir.join("URL");
     let mut url_base = opts.url.clone();
     if !url_base.ends_with('/') {

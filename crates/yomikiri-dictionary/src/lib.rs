@@ -13,7 +13,6 @@ pub use error::{Error, Result};
 pub const SCHEMA_VER: u16 = 3;
 
 pub const DICT_FILENAME: &'static str = "english.yomikiridict";
-pub const DICT_METADATA_FILENAME: &'static str = "dictionary-metadata.json";
 
 #[cfg(feature = "uniffi")]
 uniffi::setup_scaffolding!();

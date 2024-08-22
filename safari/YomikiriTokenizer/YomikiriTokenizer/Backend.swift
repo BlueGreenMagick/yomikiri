@@ -21,7 +21,7 @@ public enum Backend {
     /// If an error occurs, tries to restore previous dictionary.
     public static func updateDictionary() async throws -> DictMetadata {
         let tempDir = FileManager.default.temporaryDirectory
-        let userDict = try DictUrls.user.get()
+        let userDict = try getUserDictUrl()
         // update file in background thread
         let replaceJob = try await Task {
             try updateDictionaryFile(tempDir: tempDir.path)
@@ -30,7 +30,7 @@ public enum Backend {
         // drop backend to close mmap and open file handle
         Backend.rust = Result.failure(YomikiriTokenizerError.UpdatingDictionary)
         do {
-            let rust = try replaceJob.replace(dictPath: userDict.dict.path, metadataPath: userDict.metadata.path)
+            let rust = try replaceJob.replace(dictPath: userDict)
             Backend.rust = Result.success(rust)
         } catch {
             // using restored user dictionary
@@ -39,20 +39,19 @@ public enum Backend {
         }
         let schemaVer = Int(dictSchemaVer())
         try Storage.setDictSchemaVer(schemaVer)
-        let metadata = try getDictionaryMetadata()
-        return metadata
+        return DictMetadata()
     }
 }
 
 private func createRustBackend() throws -> RustBackend {
     os_log(.debug, "start creating backend")
     if let userDict = try? validateAndGetUserDict() {
-        if let rust = try? RustBackend(dictPath: userDict.dict.path) {
+        if let rust = try? RustBackend(dictPath: userDict.path) {
             return rust
         }
     }
-    let bundledDict = try DictUrls.bundled.get()
-    let backend = try RustBackend(dictPath: bundledDict.dict.path)
+    let bundledDict = try getBundledDictUrl()
+    let backend = try RustBackend(dictPath: bundledDict.path)
     os_log(.debug, "finish creating backend")
     return backend
 }
