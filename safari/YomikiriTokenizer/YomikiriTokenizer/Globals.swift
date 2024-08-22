@@ -7,6 +7,8 @@
 
 import Foundation
 
+public let APP_GROUP_ID = "group.com.yoonchae.yomikiri"
+
 let bundle = Bundle(for: RustBackend.self)
 
 func jsonSerialize<T: Encodable>(_ obj: T?) throws -> String {

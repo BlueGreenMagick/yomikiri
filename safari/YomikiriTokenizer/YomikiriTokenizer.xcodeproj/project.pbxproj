@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		69330AC72C770DA20036D053 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69330AC62C770DA20036D053 /* Utils.swift */; };
 		6946AA2D2BA1848000668ACB /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2C2BA1848000668ACB /* Dictionary.swift */; };
 		6946AA2F2BA1879100668ACB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2E2BA1879100668ACB /* Error.swift */; };
 		6946AA322BA191B400668ACB /* files in Resources */ = {isa = PBXBuildFile; fileRef = 6946AA312BA191B400668ACB /* files */; };
-		697EFFB32BA2D2E00035360C /* SharedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697EFFB22BA2D2E00035360C /* SharedStorage.swift */; };
+		697EFFB32BA2D2E00035360C /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697EFFB22BA2D2E00035360C /* Storage.swift */; };
 		699B7D6A2A519ADB00E506F2 /* YomikiriTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69ADFB4A2C621AA2004D7FAF /* uniffi_yomikiriFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 69ADFB442C621AA2004D7FAF /* uniffi_yomikiriFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69ADFB4D2C621AA2004D7FAF /* uniffi_yomikiri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ADFB492C621AA2004D7FAF /* uniffi_yomikiri.swift */; };
@@ -22,10 +23,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		69330AC62C770DA20036D053 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		6946AA2C2BA1848000668ACB /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		6946AA2E2BA1879100668ACB /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		6946AA312BA191B400668ACB /* files */ = {isa = PBXFileReference; lastKnownFileType = folder; name = files; path = "../../crates/yomikiri-dictionary-generator/files"; sourceTree = "<group>"; };
-		697EFFB22BA2D2E00035360C /* SharedStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStorage.swift; sourceTree = "<group>"; };
+		697EFFB22BA2D2E00035360C /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		699B7D662A519ADB00E506F2 /* YomikiriTokenizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YomikiriTokenizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YomikiriTokenizer.h; sourceTree = "<group>"; };
 		699B7D882A519C3400E506F2 /* build_uniffi.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_uniffi.sh; sourceTree = "<group>"; };
@@ -74,12 +76,13 @@
 		699B7D682A519ADB00E506F2 /* YomikiriTokenizer */ = {
 			isa = PBXGroup;
 			children = (
-				697EFFB22BA2D2E00035360C /* SharedStorage.swift */,
+				697EFFB22BA2D2E00035360C /* Storage.swift */,
 				699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */,
 				69D436F22A5C292E0019E35B /* Backend.swift */,
 				6946AA2C2BA1848000668ACB /* Dictionary.swift */,
 				6946AA2E2BA1879100668ACB /* Error.swift */,
 				69ADFB542C634DA6004D7FAF /* Globals.swift */,
+				69330AC62C770DA20036D053 /* Utils.swift */,
 			);
 			path = YomikiriTokenizer;
 			sourceTree = "<group>";
@@ -211,12 +214,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				69ADFB4F2C6223EF004D7FAF /* yomikiri_dictionary.swift in Sources */,
-				697EFFB32BA2D2E00035360C /* SharedStorage.swift in Sources */,
+				697EFFB32BA2D2E00035360C /* Storage.swift in Sources */,
 				6946AA2F2BA1879100668ACB /* Error.swift in Sources */,
 				69ADFB552C634DA6004D7FAF /* Globals.swift in Sources */,
 				69D436F32A5C292E0019E35B /* Backend.swift in Sources */,
 				6946AA2D2BA1848000668ACB /* Dictionary.swift in Sources */,
 				69ADFB4D2C621AA2004D7FAF /* uniffi_yomikiri.swift in Sources */,
+				69330AC72C770DA20036D053 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

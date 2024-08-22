@@ -40,10 +40,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     break
                 case "loadConfig":
                     // already stored in json
-                    jsonResponse = try loadSharedConfig()
+                    jsonResponse = try Storage.getConfig()
                 case "saveConfig":
                     let configJson = request
-                    try saveSharedConfig(configJson: request)
+                    try Storage.setConfig(request)
                 case "tts":
                     let req: TTSRequest = try jsonDeserialize(json: request)
                     try ttsSpeak(voice: req.voice, text: req.text)

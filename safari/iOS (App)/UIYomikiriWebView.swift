@@ -149,11 +149,11 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
             case "loadConfig":
-                let configJson = try loadSharedConfig()
+                let configJson = try Storage.getConfig()
                 return configJson
             case "saveConfig":
                 let configJson = request
-                try saveSharedConfig(configJson: configJson)
+                try Storage.setConfig(configJson)
                 triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
                 return nil
             case "migrateConfig":
