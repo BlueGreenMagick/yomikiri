@@ -66,6 +66,7 @@ export namespace TokenizeResult {
 export interface IBackend {
   tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
   search(term: string): Promise<TokenizeResult>;
+  getDictCreationDate(): Promise<string>;
 }
 
 export declare const Backend:

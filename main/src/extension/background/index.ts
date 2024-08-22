@@ -86,10 +86,16 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
   }, 1000 * 30);
 }
 
+async function getDictCreationDate() {
+  const backend = await Backend.instance.get();
+  return await backend.getDictCreationDate();
+}
+
 handleMessage("searchTerm", searchTerm);
 handleMessage("tokenize", tokenize);
 handleMessage("addAnkiNote", addAnkiNote);
 handleMessage("tabId", tabId);
+handleMessage("getDictCreationDate", getDictCreationDate);
 
 handleBrowserLoad(() => {
   void initialize();

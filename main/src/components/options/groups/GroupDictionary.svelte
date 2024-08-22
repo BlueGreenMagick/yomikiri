@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { PagePlatform } from "@platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import { formatDateString } from "lib/utils";
   import {
     Backend,
     type DesktopBackend,
@@ -21,9 +19,11 @@
   let dictDescription = "Loading...";
 
   async function initialize() {
-    const metadata = await PagePlatform.getDictionaryMetadata();
-    const downloadDate = new Date(metadata.downloadDate);
-    dictDescription = `Last updated: ${formatDateString(downloadDate)}`;
+    const backend = (await Backend.instance.get()) as
+      | DesktopBackend
+      | IosAppBackend;
+    const date = await backend.getDictCreationDate();
+    dictDescription = `Dictionary created on: ${date}`;
     state = "loaded";
   }
 

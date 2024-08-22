@@ -40,6 +40,7 @@ export interface MessageMap {
   translate: [string, TranslateResult];
   tts: [TTSRequest, void];
   migrateConfig: [void, StoredConfiguration];
+  getDictCreationDate: [void, string];
   // ios
   loadConfig: [void, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];

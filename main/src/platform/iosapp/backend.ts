@@ -53,6 +53,10 @@ export class IosAppBackend implements IBackend {
       "Updating dictionary... This may take up to a minute.",
     );
   }
+
+  getDictCreationDate(): Promise<string> {
+    return IosAppPlatform.messageWebview("getDictCreationDate", null);
+  }
 }
 
 export const Backend = IosAppBackend;

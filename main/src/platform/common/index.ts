@@ -5,7 +5,6 @@ import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "lib/utils";
 import type { StoredCompatConfiguration } from "lib/compat";
-import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop";
@@ -29,7 +28,6 @@ export interface IPlatform {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
-  getDictionaryMetadata?(): Promise<DictMetadata>;
 }
 
 export interface VersionInfo {

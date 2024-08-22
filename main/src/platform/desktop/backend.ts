@@ -142,6 +142,14 @@ export class DesktopBackend implements IBackend {
       return promWithProgress;
     }
   }
+
+  async getDictCreationDate(): Promise<string> {
+    if (this.wasm === undefined) {
+      return message("getDictCreationDate", undefined);
+    } else {
+      return this.wasm.creation_date();
+    }
+  }
 }
 
 if (EXTENSION_CONTEXT === "background") {

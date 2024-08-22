@@ -31,6 +31,7 @@ export interface AppMessageMap {
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];
+  getDictCreationDate: [null, string];
 }
 
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];

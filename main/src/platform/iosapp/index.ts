@@ -57,10 +57,10 @@ export interface MessageWebviewMap {
   searchTerm: [SearchRequest, RawTokenizeResult];
   versionInfo: [null, VersionInfo];
   updateDict: [null, DictMetadata];
-  dictMetadata: [null, DictMetadata];
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
   tts: [TTSRequest, null];
+  getDictCreationDate: [null, string];
 
   // action extension
   close: [null, void];
@@ -165,10 +165,6 @@ export namespace IosAppPlatform {
       await saveConfig(migrated);
     }
     return migrated;
-  }
-
-  export async function getDictionaryMetadata(): Promise<DictMetadata> {
-    return await messageWebview("dictMetadata", null);
   }
 }
 

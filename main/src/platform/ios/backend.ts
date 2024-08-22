@@ -63,6 +63,14 @@ export class IosBackend implements IBackend {
     const rawResult = await IosPlatform.requestToApp("search", req);
     return TokenizeResult.from(rawResult);
   }
+
+  async getDictCreationDate(): Promise<string> {
+    if (EXTENSION_CONTEXT !== "contentScript") {
+      return IosPlatform.requestToApp("getDictCreationDate", null);
+    } else {
+      return message("getDictCreationDate", undefined);
+    }
+  }
 }
 
 export const Backend = IosBackend;
