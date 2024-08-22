@@ -93,6 +93,7 @@ interface StorageValues {
   // desktop
   "deferred-anki-note": AnkiNote[];
   "deferred-anki-note-errors": string[];
+  "dict.schema_ver": number;
   // ios
   "x-callback.tabId": number;
   "x-callback.tabUrl": string;

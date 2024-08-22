@@ -7,6 +7,7 @@ import {
   createConnection,
   handleConnection,
   message,
+  setStorage,
 } from "extension/browserApi";
 
 import Utils, {
@@ -203,6 +204,8 @@ async function _updateDictionary(
   const { dict_bytes, metadata } = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
   await saveDictionaryFile(dict_bytes, metadata);
+  const schema_ver = wasm.dict_schema_ver();
+  await setStorage("dict.schema_ver", schema_ver);
   return metadata;
 }
 

@@ -14,6 +14,15 @@ public enum Storage {
     public static func setConfig(_ configJson: String) throws {
         return try defaults.get().set(configJson, forKey: "config")
     }
+
+    /// Returns 0 if not set
+    public static func getDictSchemaVer() throws -> Int {
+        return try defaults.get().integer(forKey: "dict.schema_ver")
+    }
+
+    public static func setDictSchemaVer(_ schemaVer: Int) throws {
+        return try defaults.get().set(schemaVer, forKey: "dict.schema_ver")
+    }
 }
 
 private func getSharedDefaults() -> Result<UserDefaults, YomikiriTokenizerError> {

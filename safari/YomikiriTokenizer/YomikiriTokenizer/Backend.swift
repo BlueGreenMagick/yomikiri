@@ -37,6 +37,8 @@ public enum Backend {
             Backend.rust = Result { try createRustBackend() }
             throw error
         }
+        let schemaVer = Int(dictSchemaVer())
+        try Storage.setDictSchemaVer(schemaVer)
         let metadata = try getDictionaryMetadata()
         return metadata
     }
