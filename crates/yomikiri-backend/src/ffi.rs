@@ -8,7 +8,7 @@ use flate2::read::GzDecoder;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
-use yomikiri_dictionary::{DICT_FILENAME, DICT_METADATA_FILENAME};
+use yomikiri_dictionary::{DICT_FILENAME, DICT_METADATA_FILENAME, SCHEMA_VER};
 
 use fs_err::{self as fs, File};
 use std::io::Write;
@@ -175,6 +175,11 @@ fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
     };
 
     Ok(replace_job)
+}
+
+#[uniffi::export]
+fn dict_schema_ver() -> u16 {
+    SCHEMA_VER
 }
 
 fn download_dictionary<W: Write>(writer: &mut W) -> Result<()> {

@@ -14,6 +14,7 @@ use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::metadata::DictMetadata;
+use yomikiri_dictionary::SCHEMA_VER;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"
@@ -151,6 +152,10 @@ impl Backend {
     pub fn creation_date(&self) -> WasmResult<String> {
         let creation_date = self.inner.dictionary.creation_date()?;
         Ok(creation_date)
+    }
+
+    pub fn dict_schema_ver(&self) -> u16 {
+        SCHEMA_VER
     }
 }
 
