@@ -21,5 +21,5 @@
     "isolatedModules": true
   },
   "include": ["**/*"],
-  "exclude": ["crates/**/*", "main/src/**/*"]
+  "exclude": ["crates/**/*", "main/**/*"]
 }

@@ -10,19 +10,23 @@ import initWasm, { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
 import fs from "node:fs/promises";
 import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
 import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
-import ENYomikiriIndex from "@yomikiri/dictionary-files/english.yomikiriindex";
 
 /* Mock load process of backend wasm */
 
-vi.mock("platform/desktop/fetch.ts", async (importOriginal) => {
-  const module: typeof import("platform/desktop/fetch.ts") =
-    await importOriginal();
-  return {
-    ...module,
-    loadWasm,
-    loadDictionary,
-  };
-});
+vi.mock(
+  "platform/desktop/fetch.ts",
+  async (
+    importOriginal,
+  ): Promise<typeof import("platform/desktop/fetch.ts")> => {
+    const module: typeof import("platform/desktop/fetch.ts") =
+      await importOriginal();
+    return {
+      ...module,
+      loadWasm,
+      loadDictionary,
+    };
+  },
+);
 
 async function loadWasm(): Promise<typeof BackendWasm> {
   const buffer = await fs.readFile(vitePath(wasm));
@@ -31,10 +35,8 @@ async function loadWasm(): Promise<typeof BackendWasm> {
   return BackendWasm;
 }
 
-async function loadDictionary(): Promise<[Uint8Array, Uint8Array]> {
-  const indexBuffer = await fs.readFile(vitePath(ENYomikiriIndex));
-  const entriesBuffer = await fs.readFile(vitePath(ENYomikiridict));
-  return [indexBuffer, entriesBuffer];
+async function loadDictionary(_schemaVer: number): Promise<Uint8Array> {
+  return await fs.readFile(vitePath(ENYomikiridict));
 }
 
 function vitePath(path: string): string {
