@@ -15,10 +15,19 @@ import {
 } from "./ankiBuilder";
 import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
-import { DesktopBackend } from "platform/desktop/backend";
+import { DesktopBackend, TokenizeResult } from "platform/desktop/backend";
+import tokenizeResults from "./ankiBuilder.test.json" assert { type: "json" };
+
+import fs from "node:fs";
+import path from "node:path";
+
+// ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
+//
+// When `TokenizeResult` struct has been modified, re-generate ankiBuilder.test.json
+// by setting this variable to true, and running the test with `pnpm vitest ankiBuilder`
+const REGENERATE_JSON = false;
 
 const config = await Config.instance.get();
-const backend = await DesktopBackend.instance.get();
 const ctx: AnkiBuilderContext = {
   config,
 };
@@ -54,38 +63,74 @@ const tests: TestCase[] = [
   },
 ];
 
-describe.each(tests)("$label", async ({ sentence, idx: charIdx }) => {
-  const tokenizedResult = await backend.tokenize(sentence, charIdx);
-  const data: AnkiBuilderData = {
-    tokenized: tokenizedResult,
-    entry: tokenizedResult.entries[0],
-    sentence,
-    url: "https://yomikiri.test/",
-    pageTitle: "Yomikiri Tests",
-  };
+describe.skipIf(REGENERATE_JSON).each(tests)(
+  "$label",
+  ({ label, sentence }) => {
+    // don't generate 'data' when regenerating json
+    if (REGENERATE_JSON) return;
 
-  test("Check that tokenization result has not changed", () => {
-    expect(data).toMatchSnapshot();
-  });
+    const tokenizedResult = (
+      tokenizeResults as { [label: string]: TokenizeResult }
+    )[label];
+    if (tokenizedResult === undefined) {
+      throw new Error(`Test label not found in 'ankiBuilder.test.json'.
+If you modified the test cases of ankiBuilder.test.ts,
+you need to set \`const REGENERATE_JSON = true\` and run the test
+to regenerate 'ankiBuilder.test.json' file.
 
-  const options = generateAllFieldTemplateOptions();
-  test.each(options)("$label", async ({ template }) => {
-    const field = buildAnkiField(ctx, data, template);
-    const value = await field.value;
-    expect(value).toMatchSnapshot();
-  });
+Missing label: ${label}`);
+    }
 
-  // Test specific meaning field generation
-  const singleTemplateFields = generateSingleMeaningFieldTemplates();
-  const singleData: AnkiBuilderData = {
-    ...data,
-    selectedMeaning: data.entry.senses[0],
-  };
-  test.each(singleTemplateFields)("(single) $label", async ({ template }) => {
-    const field = buildAnkiField(ctx, singleData, template);
-    const value = await field.value;
-    expect(value).toMatchSnapshot();
-  });
+    const data: AnkiBuilderData = {
+      tokenized: tokenizedResult,
+      entry: tokenizedResult.entries[0],
+      sentence,
+      url: "https://yomikiri.test/",
+      pageTitle: "Yomikiri Tests",
+    };
+
+    const options = generateAllFieldTemplateOptions();
+    test.each(options)("$label", async ({ template }) => {
+      const field = buildAnkiField(ctx, data, template);
+      const value = await field.value;
+      expect(value).toMatchSnapshot();
+    });
+
+    // Test specific meaning field generation
+    const singleTemplateFields = generateSingleMeaningFieldTemplates();
+    const singleData: AnkiBuilderData = {
+      ...data,
+      selectedMeaning: data.entry.senses[0],
+    };
+    test.each(singleTemplateFields)("(single) $label", async ({ template }) => {
+      const field = buildAnkiField(ctx, singleData, template);
+      const value = await field.value;
+      expect(value).toMatchSnapshot();
+    });
+  },
+);
+
+test.skipIf(!REGENERATE_JSON)("Re-generate tokenize() result", async () => {
+  const filePath = expect.getState().testPath;
+  if (filePath === undefined) {
+    throw new Error("Could not retrieve file path of ankiBuilder.test.ts");
+  }
+
+  const backend = await DesktopBackend.instance.get();
+
+  const results: { [label: string]: TokenizeResult } = {};
+  for (const test of tests) {
+    const tokenizeResult = await backend.tokenize(test.sentence, test.idx);
+    results[test.label] = tokenizeResult;
+  }
+
+  const resultsJson = JSON.stringify(results);
+  await fs.promises.writeFile(
+    path.resolve(filePath, "../ankiBuilder.test.json"),
+    resultsJson,
+    { encoding: "utf-8" },
+  );
+  // expect(1).toEqual(1)
 });
 
 interface TemplateFieldAndLabel {
