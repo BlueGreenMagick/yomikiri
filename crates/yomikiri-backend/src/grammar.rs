@@ -459,7 +459,7 @@ pub static GRAMMARS: &[GrammarRule] = &[
         name: "と",
         short: "causal relationship",
         tofugu: "https://www.tofugu.com/japanese-grammar/verb-to/",
-        detect: |token, _| token.base == "と" && token.text == "と" && token.is_phrasal_particle(),
+        detect: |token, _| token.base == "と" && token.text == "と" && token.is_conn_particle(),
     },
     GrammarRule {
         name: "に",
