@@ -38,9 +38,15 @@ importers:
       svelte-eslint-parser:
         specifier: 0.34.0-next.12
         version: 0.34.0-next.12(svelte@4.2.17)
+      tsx:
+        specifier: ^4.7.2
+        version: 4.11.2
       typescript-eslint:
         specifier: ^7.7.0
         version: 7.12.0(eslint@8.57.0)(typescript@5.4.5)
+      zx:
+        specifier: ^8.1.4
+        version: 8.1.4
 
   crates/jmdict: {}
 
@@ -826,6 +832,9 @@ packages:
   '@types/firefox-webext-browser@120.0.3':
     resolution: {integrity: sha512-APbBSxOvFMbKwXy/4YrEVa5Di6N0C9yl4w0WA0xzdkOrChAfPQ/KlcC8QLyhemHCHpF1CB/zHy52+oUQurViOg==}
 
+  '@types/fs-extra@11.0.4':
+    resolution: {integrity: sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==}
+
   '@types/har-format@1.2.15':
     resolution: {integrity: sha512-RpQH4rXLuvTXKR0zqHq3go0RVXYv/YVqv4TnPH95VbwUxZdQlK1EtcMvQvMpDngHbt13Csh9Z4qT9AbkiQH5BA==}
 
@@ -834,6 +843,9 @@ packages:
 
   '@types/jsdom@21.1.7':
     resolution: {integrity: sha512-yOriVnggzrnQ3a9OKOCxaVuSug3w3/SbOj5i7VwXWZEyUNl3bLF9V3MfxGbZKuwqJOQyRfqXyROBB1CoZLFWzA==}
+
+  '@types/jsonfile@6.1.4':
+    resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
@@ -3854,6 +3866,11 @@ packages:
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
+  zx@8.1.4:
+    resolution: {integrity: sha512-QFDYYpnzdpRiJ3dL2102Cw26FpXpWshW4QLTGxiYfIcwdAqg084jRCkK/kuP/NOSkxOjydRwNFG81qzA5r1a6w==}
+    engines: {node: '>= 12.17.0'}
+    hasBin: true
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -4438,6 +4455,12 @@ snapshots:
 
   '@types/firefox-webext-browser@120.0.3': {}
 
+  '@types/fs-extra@11.0.4':
+    dependencies:
+      '@types/jsonfile': 6.1.4
+      '@types/node': 20.14.1
+    optional: true
+
   '@types/har-format@1.2.15': {}
 
   '@types/http-cache-semantics@4.0.4': {}
@@ -4447,6 +4470,11 @@ snapshots:
       '@types/node': 20.14.1
       '@types/tough-cookie': 4.0.5
       parse5: 7.1.2
+
+  '@types/jsonfile@6.1.4':
+    dependencies:
+      '@types/node': 20.14.1
+    optional: true
 
   '@types/minimatch@3.0.5': {}
 
@@ -7649,3 +7677,8 @@ snapshots:
       jszip: 3.10.1
 
   zod@3.23.8: {}
+
+  zx@8.1.4:
+    optionalDependencies:
+      '@types/fs-extra': 11.0.4
+      '@types/node': 20.14.1

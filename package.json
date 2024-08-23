@@ -8,8 +8,9 @@
   "url": "https://github.com/bluegreenmagick/yomikiri",
   "type": "module",
   "scripts": {
+    "print-version": "tsx ./extra/scripts/print-version.ts",
     "update-dictionary": "pnpm run --filter='@yomikiri/dictionary-generator-rs' update-dictionary",
-    "construct:dictionary": "pnpm run --filter='@yomikiri/dictionary-generator-rs' download",
+    "construct:dictionary": "pnpm run --filter='@yomikiri/dictionary-generator-rs' download $(pnpm run --silent print-version)",
     "construct:unidic": "pnpm run --filter='@yomikiri/unidic-rs' generate",
     "construct:backend_wasm": "pnpm run --dir ./crates/yomikiri-backend wasm",
     "construct:backend_ios": "pnpm run --dir ./crates/yomikiri-backend ios",
@@ -41,6 +42,8 @@
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.6",
     "svelte-eslint-parser": "0.34.0-next.12",
-    "typescript-eslint": "^7.7.0"
+    "tsx": "^4.7.2",
+    "typescript-eslint": "^7.7.0",
+    "zx": "^8.1.4"
   }
 }

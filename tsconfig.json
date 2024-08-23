@@ -1,0 +1,25 @@
+// For files that are executed with jsx on node
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "DOM",
+      "DOM.Iterable",
+      "ES2020.Promise"
+    ],
+    "outDir": "build",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+		"moduleDetection": "force",
+		"module": "Preserve",
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+  },
+  "include": ["**/*"],
+  "exclude": ["crates/**/*", "main/src/**/*"]
+}
