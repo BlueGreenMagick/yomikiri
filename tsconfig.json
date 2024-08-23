@@ -13,12 +13,12 @@
     "outDir": "build",
     "strict": true,
     "verbatimModuleSyntax": true,
-		"moduleDetection": "force",
-		"module": "Preserve",
-		"resolveJsonModule": true,
-		"allowJs": true,
-		"esModuleInterop": true,
-		"isolatedModules": true,
+    "moduleDetection": "force",
+    "module": "Preserve",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "isolatedModules": true
   },
   "include": ["**/*"],
   "exclude": ["crates/**/*", "main/src/**/*"]
