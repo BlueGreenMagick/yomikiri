@@ -23,28 +23,38 @@ const ctx: AnkiBuilderContext = {
   config,
 };
 
-describe("＄読みたい", async () => {
-  await testSentence("読みたい", 0);
-});
+interface TestCase {
+  idx: number;
+  sentence: string;
+  label: string;
+}
 
-describe("春の茶が飲＄みたいです", async () => {
-  await testSentence("春の茶が飲＄みたいです", 5);
-});
+const tests: TestCase[] = [
+  {
+    label: "＄読みたい",
+    sentence: "読みたい",
+    idx: 0,
+  },
+  {
+    label: "春の茶が飲＄みたいです",
+    sentence: "春の茶が飲みたいです",
+    idx: 5,
+  },
+  { label: "$なかなかに強いです", sentence: "なかなかに強いです", idx: 0 },
+  {
+    label: "Special character is escaped: 図＄書<->",
+    sentence: "図書<->",
+    idx: 1,
+  },
+  // 「か\u{3099}」 -> 「が」
+  {
+    label: "Unicode normalization: 彼か＄\u{3099}学生",
+    sentence: "彼か\u{3099}学生",
+    idx: 2,
+  },
+];
 
-describe("$なかなかに強いです", async () => {
-  await testSentence("なかなかに強いです", 0);
-});
-
-describe("Test that special character is escaped: 図＄書<->", async () => {
-  await testSentence("図書<->", 1);
-});
-
-// 「か\u{3099}」 -> 「が」
-describe("Test unicode normalization: 彼か＄\u{3099}学生", async () => {
-  await testSentence("彼か\u{3099}学生", 2);
-});
-
-async function testSentence(sentence: string, charIdx: number): Promise<void> {
+describe.each(tests)("$label", async ({ sentence, idx: charIdx }) => {
   const tokenizedResult = await backend.tokenize(sentence, charIdx);
   const data: AnkiBuilderData = {
     tokenized: tokenizedResult,
@@ -76,7 +86,7 @@ async function testSentence(sentence: string, charIdx: number): Promise<void> {
     const value = await field.value;
     expect(value).toMatchSnapshot();
   });
-}
+});
 
 interface TemplateFieldAndLabel {
   template: AnkiTemplateField;
