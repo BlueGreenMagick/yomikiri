@@ -106,7 +106,7 @@ fn skip_file_entry(entry: &DirEntry) -> bool {
     let name = entry.file_name();
     if let Some(name) = name.to_str() {
         // skip hidden files starting with '.'
-        if name.starts_with(".") {
+        if name.starts_with('.') {
             return true;
         }
         // thumbs.db is an automatically generated file in Windows
@@ -116,7 +116,7 @@ fn skip_file_entry(entry: &DirEntry) -> bool {
     } else {
         return true;
     }
-    return false;
+    false
 }
 
 /// download and unzip unidic file into `output_path`.
@@ -134,10 +134,9 @@ fn download_unidic_original(output_path: &Path) -> Result<()> {
     let mut archive = ZipArchive::new(tmpfile)?;
     for i in 0..archive.len() {
         let mut file = archive.by_index(i)?;
-        let file_name = file
-            .enclosed_name()
-            .map(|p| if p.is_dir() { None } else { p.file_name() })
-            .flatten();
+        let file_name =
+            file.enclosed_name()
+                .and_then(|p| if p.is_dir() { None } else { p.file_name() });
         let Some(file_name) = file_name else { continue };
         let Some(file_name) = file_name.to_str() else {
             continue;

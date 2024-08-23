@@ -36,7 +36,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
     pub fn has_starts_with_excluding(&self, prefix: &str) -> bool {
         // assumes there is at least 1 entry.
         // needed in order to create a bytestring that is 1 greater than prefix below
-        if prefix.len() == 0 {
+        if prefix.is_empty() {
             return true;
         }
 
@@ -45,18 +45,14 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         next_prefix_bytes[len - 1] += 1;
 
         let terms = &self.inner.borrow_view().term_index;
-        if let Some(_) = terms
+        terms
             .map
             .range()
             .gt(prefix)
             .lt(&next_prefix_bytes)
             .into_stream()
             .next()
-        {
-            true
-        } else {
-            false
-        }
+            .is_some()
     }
 
     pub fn contains(&self, term: &str) -> bool {
@@ -90,9 +86,9 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let date_reg =
             Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).context("Could not create regexp object")?;
         for entry in entries {
-            if let Some(sense) = entry.senses.get(0) {
-                if let Some(meaning) = sense.meaning.get(0) {
-                    if let Some(mat) = date_reg.find(&meaning) {
+            if let Some(sense) = entry.senses.first() {
+                if let Some(meaning) = sense.meaning.first() {
+                    if let Some(mat) = date_reg.find(meaning) {
                         return Ok(mat.as_str().to_owned());
                     }
                 }

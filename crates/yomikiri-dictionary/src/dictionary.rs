@@ -24,7 +24,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let builder = DictionaryTryBuilder {
             source: Box::new(source),
             view_builder: |source| {
-                DictionaryView::try_decode(source.as_ref()).map(|(inner, _len)| inner)
+                DictionaryView::try_decode(source.as_ref().as_ref()).map(|(inner, _len)| inner)
             },
         };
         builder.try_build()

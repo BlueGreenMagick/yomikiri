@@ -27,14 +27,11 @@ impl std::error::Error for BackendError {}
 
 impl fmt::Display for BackendError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            BackendError {
-                message,
-                details: _details,
-            } => {
-                write!(f, "{}", message)
-            }
-        }
+        let BackendError {
+            message,
+            details: _details,
+        } = self;
+        write!(f, "{}", message)
     }
 }
 

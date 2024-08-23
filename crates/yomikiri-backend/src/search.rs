@@ -18,7 +18,8 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                 return Ok(res);
             }
         }
-        return Ok(result);
+
+        Ok(result)
     }
 
     fn search_term_as_is(&mut self, term: &str) -> Result<Option<RawTokenizeResult>> {
@@ -30,15 +31,14 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         };
 
         let entries = self.dictionary.search(&normalized_term)?;
-        if let Some(entry) = entries.get(0) {
+        if let Some(entry) = entries.first() {
             let form = entry.main_form();
             // TODO: convert jmdict pos to unidic pos
             let mut details = TokenDetails::default_with_base(&form);
             details.pos = entry
                 .senses
                 .first()
-                .map(|s| s.pos.first())
-                .flatten()
+                .and_then(|s| s.pos.first())
                 .unwrap_or(&PartOfSpeech::Unclassified)
                 .to_unidic();
             details.reading = entry

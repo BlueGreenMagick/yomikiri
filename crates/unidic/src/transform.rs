@@ -228,6 +228,7 @@ fn transform_lex(lex_path: &Path, output_dir: &Path, dict_path: &Path) -> Result
     Ok(())
 }
 
+#[allow(dead_code)]
 fn transform_matrix(
     matrix_path: &Path,
     output_dir: &Path,
@@ -292,10 +293,10 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> Result
         if entry.is_expression() || entry.is_particle() {
             continue;
         }
-        if entry_form_in_item_bases(&item_bases, &entry) {
+        if entry_form_in_item_bases(&item_bases, entry) {
             continue;
         }
-        let new_items = LexItem::items_from_entry(&entry);
+        let new_items = LexItem::items_from_entry(entry);
         for item in new_items.into_iter() {
             if !item.base.chars().any(|c| c.is_katakana()) {
                 continue;
@@ -365,7 +366,8 @@ fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool
             return true;
         }
     }
-    return false;
+
+    false
 }
 
 fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
@@ -387,6 +389,7 @@ pub fn read_yomikiri_dictionary(dict_path: &Path) -> Result<Vec<Entry>> {
     Ok(entries)
 }
 
+#[allow(dead_code)]
 struct IdMap {
     old_to_new: Vec<Option<u32>>,
     new_to_old: Vec<u32>,
@@ -398,6 +401,7 @@ struct IdMap {
 /// where the id map is a vector of [new id] -> old id
 ///
 /// Mutates item.lid and item.rid to new id
+#[allow(dead_code)]
 fn reindex_ids(items: &mut [LexItem]) -> (IdMap, IdMap) {
     // get largest lid/rid
     let mut largest_lid = 0;
@@ -455,7 +459,8 @@ fn reindex_ids(items: &mut [LexItem]) -> (IdMap, IdMap) {
         old_to_new: old_to_new_rids,
         new_to_old: new_to_old_rids,
     };
-    return (left_map, right_map);
+
+    (left_map, right_map)
 }
 
 pub trait JapaneseChar {

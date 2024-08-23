@@ -58,6 +58,10 @@ where
         self.cnt
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.cnt == 0
+    }
+
     /// Get object at index
     pub fn get(&'a self, index: usize) -> Result<T> {
         if index >= self.cnt {
@@ -74,7 +78,7 @@ where
 
     /// return starting and ending byte index within `.data` of item at index
     /// index is assumed to be valid
-    fn item_position<'foo, 'bar>(&self, index: usize) -> Result<(usize, usize)> {
+    fn item_position(&self, index: usize) -> Result<(usize, usize)> {
         let at = index * 4;
         let mut bytes = &self.data[at..at + 4];
         let start = bytes.read_u32::<LittleEndian>()? as usize;

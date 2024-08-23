@@ -28,7 +28,7 @@ pub struct DictIndexMap<'a> {
 
 impl<'a> DictIndexMap<'a> {
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
-        let bytes = source.as_ref();
+        let bytes = source;
         let mut at = 0;
 
         let len = (&bytes[at..at + 4]).read_u32::<LittleEndian>()? as usize;
@@ -83,7 +83,7 @@ impl<'a> DictIndexMap<'a> {
         builder.finish()?;
 
         writer.write_u32::<LittleEndian>(buffer.len().try_into()?)?;
-        writer.write_all(&mut buffer)?;
+        writer.write_all(&buffer)?;
 
         JaggedArray::build_and_encode_to(&pointers, writer)?;
         Ok(())

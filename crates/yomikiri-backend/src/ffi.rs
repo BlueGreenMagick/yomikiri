@@ -123,7 +123,7 @@ impl DictFilesReplaceJob {
                     fs::rename(&backup_dict_path, &dict_path)?;
                 }
                 _ = fs::remove_dir_all(&self.temp_dir);
-                Err(e).into()
+                Err(e)
             }
         }
     }
@@ -179,6 +179,6 @@ fn download_dictionary<W: Write>(writer: &mut W) -> Result<()> {
 impl Dictionary<Vec<u8>> {
     pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Vec<u8>>> {
         let bytes = fs::read(dict_path.as_ref())?;
-        Ok(Dictionary::try_new(bytes)?)
+        Dictionary::try_new(bytes)
     }
 }

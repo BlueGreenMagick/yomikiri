@@ -51,7 +51,7 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
             }
             Event::Comment(comment) => {
                 // JMdict creation comment comes before <jmdict> tag
-                if !creation_date.is_some() {
+                if creation_date.is_none() {
                     let trimmed = comment.trim();
                     let opener = "JMdict created:";
                     if trimmed.starts_with(opener) {
@@ -69,14 +69,14 @@ pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
 fn get_jmdict_creation_date_from_entry(entries: &[JMEntry]) -> Option<String> {
     for entry in entries {
         if entry.id == 9999999 {
-            let sense = entry.senses.get(0)?;
-            let meaning = sense.meaning.get(0)?;
+            let sense = entry.senses.first()?;
+            let meaning = sense.meaning.first()?;
             if let Some(caps) = DATE_REGEX.captures(meaning) {
                 return caps.get(0).map(|e| e.as_str().to_owned());
             }
         }
     }
-    return None;
+    None
 }
 
 pub fn parse_jmdict(parser: &mut Parser) -> Result<Vec<JMEntry>> {
