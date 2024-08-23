@@ -109,13 +109,12 @@ export class DesktopBackend implements IBackend {
       return prom;
     } else {
       const _port = createConnection("updateDictionary");
-      const [prom, resolve, reject] = createPromise<DictMetadata>();
-      const promWithProgress = PromiseWithProgress.fromPromise<
-        DictMetadata,
-        string
-      >(prom);
+      const [prom, resolve, reject] = createPromise<void>();
+      const promWithProgress = PromiseWithProgress.fromPromise<void, string>(
+        prom,
+      );
       let completed = false;
-      _port.onMessage.addListener((msg: ConnectionMessage<DictMetadata>) => {
+      _port.onMessage.addListener((msg: ConnectionMessage<void>) => {
         if (msg.status === "progress") {
           promWithProgress.setProgress(msg.message);
         } else if (msg.status === "success") {
@@ -163,7 +162,7 @@ if (EXTENSION_CONTEXT === "background") {
 
     progress
       .then((metadata) => {
-        const message: ConnectionMessageSuccess<DictMetadata> = {
+        const message: ConnectionMessageSuccess<void> = {
           status: "success",
           message: metadata,
         };

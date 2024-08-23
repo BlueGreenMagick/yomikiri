@@ -9,8 +9,8 @@ use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 
-const JMDICT_FILENAME: &'static str = "JMdict_e.gz";
-const JMDICT_SOURCE_URL: &'static str = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
+const JMDICT_FILENAME: &str = "JMdict_e.gz";
+const JMDICT_SOURCE_URL: &str = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -90,7 +90,7 @@ fn run_jmdict(opts: &JmdictOpts) -> Result<()> {
     fs::create_dir_all(&output_dir)?;
 
     if opts.mode.new {
-        download_jmdict(JMDICT_SOURCE_URL, &output_path)
+        download_jmdict(JMDICT_SOURCE_URL, output_path)
     } else if let Some(version) = opts.mode.version.as_ref() {
         let url = format!(
             "https://github.com/BlueGreenMagick/yomikiri/releases/download/{}/{}",

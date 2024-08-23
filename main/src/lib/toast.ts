@@ -149,5 +149,3 @@ function createToast<
     throw new YomikiriError(`Invalid toast type: ${type}`);
   }
 }
-
-window.toast = Toast;

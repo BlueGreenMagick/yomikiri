@@ -21,7 +21,6 @@ import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
-import type { DictMetadata } from "@yomikiri/yomikiri-rs";
 import { YomikiriError } from "lib/error";
 
 export * from "../common";
@@ -56,7 +55,7 @@ export interface MessageWebviewMap {
   tokenize: [TokenizeRequest, RawTokenizeResult];
   searchTerm: [SearchRequest, RawTokenizeResult];
   versionInfo: [null, VersionInfo];
-  updateDict: [null, DictMetadata];
+  updateDict: [null, void];
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
   tts: [TTSRequest, null];
