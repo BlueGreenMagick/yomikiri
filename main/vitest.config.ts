@@ -35,7 +35,7 @@ export default defineConfig({
   define: {
     __APP_VERSION__: `"${Package.version}"`,
     __APP_PLATFORM__: '"chrome"',
-    __EXTENSION_CONTEXT__: '"page"',
+    __EXTENSION_CONTEXT__: '"background"',
   },
   assetsInclude: [
     "**/*.wasm",
@@ -56,7 +56,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    watch: false,
+    // watch: false,
     setupFiles: [path.resolve(import.meta.dirname, "test", "setup", "index")],
   },
 });
