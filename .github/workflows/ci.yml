@@ -32,6 +32,9 @@ jobs:
         with:
           targets: aarch64-apple-ios
 
+      - name: Install pnpm deps
+        run: pnpm install
+
       - name: Get version
         id: version
         run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
@@ -57,8 +60,6 @@ jobs:
       - name: Construct
         run: pnpm run construct:all
 
-      - name: Install pnpm deps
-        run: pnpm install
 
       - name: Generate licenses
         run: pnpm run generate-licenses
