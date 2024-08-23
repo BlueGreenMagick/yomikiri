@@ -34,7 +34,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=${pnpm run --silent print-version}" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
