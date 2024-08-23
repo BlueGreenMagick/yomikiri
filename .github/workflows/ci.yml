@@ -28,9 +28,13 @@ jobs:
           cache: "pnpm"
 
       - name: Install cargo
-        run: |
-          rustup toolchain install stable --no-self-update
-          rustup target add aarch64-apple-ios
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - name: Get version
+        id: version
+        run: echo "VERSION=${pnpm run --silent print-version}" >> "$GITHUB_OUTPUT"
 
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
@@ -41,8 +45,14 @@ jobs:
       - name: Cache unidic
         uses: actions/cache@v4
         with:
-          path: unidic/original
+          path: crates/unidic/original
           key: unidic-2.1.2
+
+      - name: Cache jmdict
+        uses: actions/cache@v4
+        with:
+          path: crates/yomikiri-dictionary-generator/jmdict/jmdict_english.xml
+          key: jmdict-english-xml-${{steps.version.outputs.output}}
 
       - name: Construct
         run: pnpm run construct:all
