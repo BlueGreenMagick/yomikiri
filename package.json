@@ -9,8 +9,7 @@
   "type": "module",
   "scripts": {
     "print-version": "tsx './extra/scripts/print-version.ts'",
-    "update-dictionary": "pnpm run --dir './crates/yomikiri-dictionary-generator' update-dictionary",
-    "construct:dictionary": "pnpm run --dir './crates/yomikiri-dictionary-generator' download $(pnpm run --silent print-version)",
+    "construct:dictionary": "pnpm run --dir './crates/yomikiri-dictionary-generator' download-and-generate",
     "construct:unidic": "pnpm run --dir './crates/unidic' generate",
     "construct:backend_wasm": "pnpm run --dir './crates/yomikiri-backend' wasm",
     "construct:backend_ios": "pnpm run --dir './crates/yomikiri-backend' ios",
