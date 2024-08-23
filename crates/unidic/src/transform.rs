@@ -266,7 +266,7 @@ fn transform_matrix(
     let lid_len = lid_map.new_to_old.len();
 
     // header
-    writer.write(format!("{} {}\n", rid_len, lid_len).as_bytes())?;
+    writer.write_all(format!("{} {}\n", rid_len, lid_len).as_bytes())?;
 
     for r in 0..rid_len {
         for l in 0..lid_len {
@@ -274,7 +274,7 @@ fn transform_matrix(
             let old_l = lid_map.new_to_old[l];
 
             let cost = costs[(old_l + old_r * prev_lid_len) as usize];
-            writer.write(format!("{} {} {}\n", r, l, cost).as_bytes())?;
+            writer.write_all(format!("{} {} {}\n", r, l, cost).as_bytes())?;
         }
     }
     Ok(())
