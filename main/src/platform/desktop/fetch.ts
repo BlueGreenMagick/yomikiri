@@ -17,8 +17,10 @@ export async function loadWasm(): Promise<typeof BackendWasm> {
   return BackendWasm;
 }
 
-export async function loadDictionary(): Promise<Uint8Array> {
-  const saved = await loadSavedDictionary();
+export async function loadDictionary(
+  dictSchemaVer: number,
+): Promise<Uint8Array> {
+  const saved = await loadSavedDictionary(dictSchemaVer);
   if (saved !== null) {
     return saved;
   }

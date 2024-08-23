@@ -13,12 +13,12 @@ interface DictionaryDBSchema extends DBSchema {
  * Otherwise, return null and delete saved dictionary.
  */
 export async function loadSavedDictionary(
-  schema_ver: number,
+  schemaVer: number,
 ): Promise<Uint8Array | null> {
   const user_dict_schema_ver = await getStorage("dict.schema_ver");
   if (user_dict_schema_ver === undefined) {
     return null;
-  } else if (user_dict_schema_ver !== schema_ver) {
+  } else if (user_dict_schema_ver !== schemaVer) {
     await deleteSavedDictionary();
     return null;
   } else {

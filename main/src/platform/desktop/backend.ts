@@ -1,5 +1,5 @@
 import { type IBackend, TokenizeResult } from "../common/backend";
-import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
+import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-rs";
 import {
   createConnection,
   handleConnection,
@@ -39,12 +39,10 @@ export class DesktopBackend implements IBackend {
 
   async _initialize(): Promise<void> {
     Utils.bench("start");
-    const BackendWasmConstructorP = loadWasm();
-    const dictionaryP = loadDictionary();
-    const [BackendWasmConstructor, dictBytes] = await Promise.all([
-      BackendWasmConstructorP,
-      dictionaryP,
-    ]);
+    const BackendWasmConstructor = await loadWasm();
+    // Must be called after loadWasm()
+    const schema_ver = dict_schema_ver();
+    const dictBytes = await loadDictionary(schema_ver);
     Utils.bench("loaded");
     this.wasm = new BackendWasmConstructor(dictBytes);
     Utils.bench("backend created");
@@ -208,8 +206,8 @@ async function _updateDictionary(
   const { dict_bytes } = wasm.update_dictionary(jmdict_bytes);
   progressFn("Saving dictionary file...");
   await saveDictionaryFile(dict_bytes);
-  const schema_ver = wasm.dict_schema_ver();
-  await setStorage("dict.schema_ver", schema_ver);
+  const dictSchemaVer = dict_schema_ver();
+  await setStorage("dict.schema_ver", dictSchemaVer);
 }
 
 async function fetchDictionary(): Promise<Uint8Array> {

@@ -140,10 +140,11 @@ impl Backend {
         let creation_date = self.inner.dictionary.creation_date()?;
         Ok(creation_date)
     }
+}
 
-    pub fn dict_schema_ver(&self) -> u16 {
-        SCHEMA_VER
-    }
+#[wasm_bindgen]
+pub fn dict_schema_ver() -> u16 {
+    SCHEMA_VER
 }
 
 fn serialize_result<T: Serialize>(value: &T) -> WasmResult<JsValue> {
