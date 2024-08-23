@@ -7,7 +7,7 @@
     "lint": "cargo clippy -- -D warnings",
     "test": "cargo test",
     "generate": "cargo run -- generate --jmdict='./jmdict/jmdict_english.xml' --out='./files/english.yomikiridict'",
-    "jmdict": "cargo run -- jmdict --out='./jmdict/jmdict_english.xml' --version=\"$(pnpm -w run --silent print-version)\"",
+    "jmdict": "cargo run -- jmdict --out='./jmdict/jmdict_english.xml' --version=\"v$(pnpm -w run --silent print-version)\"",
     "new-jmdict": "cargo run -- jmdict --out='./jmdict/jmdict_english.xml' --new"
   }
 }
