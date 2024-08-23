@@ -19,7 +19,7 @@
     "dev:ios": "pnpm run _dev ios && pnpm run _dev iosapp",
     "dev": "pnpm run dev:chrome",
     "run:firefox": "pnpm web-ext run -s ./build --devtools",
-    "test": "vitest",
+    "test": "vitest run",
     "lint:ts": "tsc --noemit",
     "lint:svelte": "svelte-check --compiler-warnings \"a11y-no-static-element-interactions:ignore\"",
     "lint:eslint": "eslint --cache .",
