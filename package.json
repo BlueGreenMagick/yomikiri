@@ -25,11 +25,15 @@
     "dev:chrome": "pnpm run --dir ./main dev:chrome",
     "dev:ios": "pnpm run --dir ./main dev:ios",
     "dev": "pnpm run dev:chrome",
-    "check": "pnpm run -r check",
-    "lint": "pnpm run -r lint",
-    "test": "pnpm run -r test",
+    "check": "pnpm run -r --sequential check",
+    "lint": "pnpm run -r --sequential lint",
+    "test": "pnpm run -r --sequential test",
     "format:js": "pnpm prettier --write --list-different .",
-    "format": "pnpm format:js; pnpm run -r format"
+    "format:rust": "cargo fmt",
+    "format": "pnpm format:js; pnpm format:rust",
+    "check-format:js": "pnpm prettier --check .",
+    "check-format:rust": "cargo fmt --check",
+    "check-format": "pnpm check-format:js && pnpm check-format:rust"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
