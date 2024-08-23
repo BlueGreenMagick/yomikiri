@@ -5,7 +5,7 @@ import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
-import Package from "./package.json" assert { type: "json" };
+import Package from "../package.json" assert { type: "json" };
 import AdmZip from "adm-zip";
 import { watch } from "chokidar";
 import type { ExecutionContext } from "extension/browserApi";
@@ -94,7 +94,7 @@ const buildManifestPlugin: Plugin = {
       if (!watching) {
         watching = true;
         return {
-          watchFiles: ["./src/manifest.json.ejs"],
+          watchFiles: ["./src/manifest.json.ejs", "../../package.json"],
         };
       }
       return;
