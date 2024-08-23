@@ -18,6 +18,7 @@ ureq = { workspace = true }
 tempfile = { workspace = true }
 zip = { workspace = true }
 anyhow = { workspace = true }
+fs-err = { workspace = true }
 
 [lints]
 workspace = true

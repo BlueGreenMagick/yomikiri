@@ -1,11 +1,10 @@
-use std::fs;
-use std::fs::File;
 use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 
 use anyhow::{anyhow, Context, Result};
 use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
+use fs_err::{self as fs, File};
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;

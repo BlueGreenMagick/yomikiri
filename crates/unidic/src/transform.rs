@@ -1,10 +1,10 @@
 use anyhow::{anyhow, Result};
+use fs_err::{self as fs, File};
+use std::cmp;
 use std::collections::HashSet;
-use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::str::FromStr;
-use std::{cmp, fs};
 use yomikiri_dictionary::dictionary::Dictionary;
 use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
 use yomikiri_dictionary::DICT_FILENAME;
