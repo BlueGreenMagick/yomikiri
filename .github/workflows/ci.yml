@@ -61,7 +61,10 @@ jobs:
         run: pnpm install
 
       - name: Generate licenses
-        run: pnpm generate-licenses
+        run: pnpm run generate-licenses
+      
+      - name: Formatting
+        run: pnpm run check-format
 
       - name: Lint
         run: pnpm run lint
