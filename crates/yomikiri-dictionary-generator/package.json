@@ -6,8 +6,8 @@
     "check": "cargo check",
     "lint": "cargo clippy -- -D warnings",
     "test": "cargo test",
-    "generate": "cargo run -- generate",
-    "update-dictionary": "cargo run -- generate --update",
-    "download": "cargo run -- download"
+    "generate": "cargo run -- generate --jmdict='./jmdict/jmdict_english.xml' --out='./files/english.yomikiridict'",
+    "jmdict": "cargo run -- jmdict --out='./jmdict/jmdict_english.xml' --version=\"$(pnpm -w run --silent print-version)\"",
+    "new-jmdict": "cargo run -- jmdict --out='./jmdict/jmdict_english.xml' --new"
   }
 }

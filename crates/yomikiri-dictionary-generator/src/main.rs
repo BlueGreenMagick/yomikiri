@@ -1,18 +1,17 @@
+use std::fs;
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::{Path, PathBuf};
-use std::{env, fs};
 
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::DICT_FILENAME;
 
-const URL: &'static str =
-    "https://github.com/BlueGreenMagick/yomikiri/releases/download/jmdict-jun-25/";
+const JMDICT_FILENAME: &'static str = "JMdict_e.gz";
+const JMDICT_SOURCE_URL: &'static str = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -22,145 +21,126 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    Download(DownloadOpts),
+    /// Download jmdict file
+    Jmdict(JmdictOpts),
+    /// Generate dictionary file from jmdict file
     Generate(GenerateOpts),
 }
 
 #[derive(Args, Debug)]
-struct DownloadOpts {
-    /// force download dictionary file
+struct JmdictOpts {
+    /// Output path to downloaded jmdict file
+    #[arg(short, long)]
+    out: PathBuf,
+    #[command(flatten)]
+    mode: JmdictMode,
+    /// Force download jmdict file even if file exists at output path
     #[arg(short, long, default_value_t = false)]
     force: bool,
-    #[arg(short, long, default_value_t = URL.into())]
-    url: String,
+}
+
+#[derive(Args, Debug)]
+#[group(required = true, multiple = false)]
+struct JmdictMode {
+    /// Download jmdict file used in specified version
+    #[arg(short, long)]
+    version: Option<String>,
+    /// Download new jmdict file from source website (edrdg.org)
+    #[arg(long)]
+    new: bool,
 }
 
 #[derive(Args, Debug)]
 struct GenerateOpts {
-    /// Redownload new JMDict dictionary
+    /// Path to Jmdict xml file
+    #[arg(long)]
+    jmdict: PathBuf,
+    /// Output path to yomikiri dictionary file
+    #[arg(short, long)]
+    out: PathBuf,
+    /// Skip if dictionary file already exist at output path
     #[arg(short, long, default_value_t = false)]
-    update: bool,
+    skip_exist: bool,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Download(opts) => run_download(opts),
+        Commands::Jmdict(opts) => run_jmdict(opts),
         Commands::Generate(opts) => run_generate(opts),
     }
 }
 
-fn run_download(opts: &DownloadOpts) -> Result<()> {
-    let crate_dir = get_crate_dir()?;
-    let resources_dir = crate_dir.join("files");
-    fs::create_dir_all(&resources_dir)?;
+fn run_jmdict(opts: &JmdictOpts) -> Result<()> {
+    let output_path = &opts.out;
 
-    let filenames = [DICT_FILENAME];
-    let url_file_path = resources_dir.join("URL");
-    let mut url_base = opts.url.clone();
-    if !url_base.ends_with('/') {
-        url_base.push('/');
-    }
-
-    // if false, reuse existing file if it exists
-    let mut force_redownload = opts.force;
-    if !force_redownload {
-        if !url_file_path.exists() {
-            force_redownload = true
+    if output_path.try_exists()? {
+        if !opts.force {
+            println!("Skipped: Jmdict file already exists at output path.");
+            return Ok(());
         } else {
-            let content = fs::read_to_string(&url_file_path)?;
-            if content != url_base {
-                force_redownload = true
-            }
+            println!("Deleting file that already exists at output path.");
+            fs::remove_file(&output_path)?;
         }
     }
 
-    for filename in filenames {
-        let file_path = resources_dir.join(filename);
-        if file_path.exists() && !force_redownload {
-            println!("File already downloaded: {:?}", file_path);
-            continue;
-        }
-
-        let _ = fs::remove_file(&file_path);
-
-        let mut url = url_base.clone();
-        url.push_str(filename);
-        println!("Downloading '{}' from {}", filename, url);
-        download_file(&url, &file_path)?;
-    }
-
-    fs::write(url_file_path, URL)?;
-    Ok(())
-}
-
-fn get_crate_dir() -> Result<PathBuf> {
-    let crate_dir = env::var_os("CARGO_MANIFEST_DIR").context(
-        "CARGO_MANIFEST_DIR env var not found. Are you not running the program with `cargo run`?",
-    )?;
-    let crate_dir = PathBuf::from(crate_dir);
-    Ok(crate_dir)
-}
-
-fn download_file(url: &str, output_path: &Path) -> Result<()> {
     let output_dir = output_path
         .parent()
-        .context("output_path does not have a parent directory.")?;
-    let resp = ureq::get(url).call()?;
-    let mut reader = resp.into_reader();
-    let mut tmpfile = NamedTempFile::new_in(output_dir)?;
-    std::io::copy(&mut reader, &mut tmpfile)?;
-    tmpfile.persist(output_path)?;
-    Ok(())
+        .context("Output path does not have a parent directory.")?;
+    fs::create_dir_all(&output_dir)?;
+
+    if opts.mode.new {
+        download_jmdict(JMDICT_SOURCE_URL, &output_path)
+    } else if let Some(version) = opts.mode.version.as_ref() {
+        let url = format!(
+            "https://github.com/BlueGreenMagick/yomikiri/releases/download/{}/{}",
+            version, JMDICT_FILENAME
+        );
+        download_jmdict(&url, output_path)
+    } else {
+        Err(anyhow!("Unreachable codepath"))
+    }
 }
 
 fn run_generate(opts: &GenerateOpts) -> Result<()> {
-    let crate_dir = get_crate_dir()?;
-    let resources_dir = crate_dir.join("files");
-    let jmdict_dir = crate_dir.join("jmdict");
-    let jmdict_file_path = jmdict_dir.join("JMdict_e");
-    let output_path = resources_dir.join(DICT_FILENAME);
+    let jmdict_file_path = &opts.jmdict;
+    let output_path = &opts.out;
 
-    fs::create_dir_all(&jmdict_dir)?;
+    let output_dir = output_path
+        .parent()
+        .context("output path does not have a parent directory.")?;
 
-    let mut jmdict_downloaded = false;
-
-    if opts.update || !jmdict_file_path.exists() {
-        if jmdict_file_path.exists() {
-            fs::remove_file(&jmdict_file_path)?;
-        }
-        println!("Downloading JMDict file from the web...");
-        download_jmdict(&jmdict_file_path)?;
-        jmdict_downloaded = true;
-    } else {
-        println!("Reusing existing JMDict file...")
+    if opts.skip_exist && output_path.try_exists()? {
+        println!("Skipped: Yomikiri dictionary file already exists at output path.");
+        return Ok(());
     }
 
-    println!("Parsing downloaded JMDict xml file...",);
+    if !jmdict_file_path.exists() {
+        return Err(anyhow!("Jmdict file does not exist"));
+    }
+
+    println!("Parsing JMDict xml file...",);
     let jmdict_xml = fs::read_to_string(&jmdict_file_path)?;
     let entries = parse_jmdict_xml(&jmdict_xml)?;
 
-    println!("Writing yomikiridict and yomikiriindex...");
-    // ignore error from directory not existing
-    fs::create_dir_all(&resources_dir)
-        .with_context(|| format!("Could not create directory: {:?}", &resources_dir))?;
+    println!("Writing yomikiri dictionary file...");
+    fs::create_dir_all(&output_dir)?;
     let output_file = File::create(&output_path)?;
     let mut output_writer = BufWriter::new(output_file);
     DictionaryView::build_and_encode_to(&entries, &mut output_writer)?;
 
-    println!("Data writing complete.");
+    println!("Generated yomikiri dictionary file.");
     Ok(())
 }
 
 /// download and unzip jmdict file into `output_path`
-fn download_jmdict(output_path: &Path) -> Result<()> {
+fn download_jmdict(url: &str, output_path: &Path) -> Result<()> {
     let output_dir = output_path
         .parent()
         .context("output_path does not have a parent directory.")?;
     // download jmdict gzip file
-    let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
-    let resp = ureq::get(download_url)
+    let resp = ureq::get(url)
         .call()
         .context("Could not download file from url")?;
 
