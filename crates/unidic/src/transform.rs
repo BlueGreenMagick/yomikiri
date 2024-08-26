@@ -19,6 +19,7 @@ struct LexItem {
     reading: String,
     pos: String,
     pos2: String,
+    pos3: String,
     conjugation: String,
 }
 
@@ -66,6 +67,7 @@ impl LexItem {
                         reading: reading.reading.clone(),
                         pos: part_of_speech_to_unidic(pos).into(),
                         pos2: "*".into(),
+                        pos3: "*".into(),
                         conjugation: "*".into(),
                     };
                     items.push(item);
@@ -98,6 +100,7 @@ impl LexItem {
                         reading: reading.reading.clone(),
                         pos: part_of_speech_to_unidic(pos).into(),
                         pos2: "*".into(),
+                        pos3: "*".into(),
                         conjugation: "*".into(),
                     };
                     items.push(item);
@@ -176,8 +179,6 @@ fn transform_lex(lex_path: &Path, output_dir: &Path, dict_path: &Path) -> Result
 
     let mut reader = csv::Reader::from_path(lex_path)?;
     let iter = reader.records();
-    // remove emojis and single characters
-    let iter = iter.skip(864);
 
     for record in iter {
         let record = record?;
@@ -189,6 +190,7 @@ fn transform_lex(lex_path: &Path, output_dir: &Path, dict_path: &Path) -> Result
             cost: record.get(3).unwrap().into(),
             pos: record.get(4).unwrap().into(),
             pos2: record.get(5).unwrap().into(),
+            pos3: record.get(6).unwrap().into(),
             reading: record.get(21).unwrap().into(),
             base: record.get(11).unwrap().into(),
             conjugation: record.get(9).unwrap().into(),
@@ -202,6 +204,7 @@ fn transform_lex(lex_path: &Path, output_dir: &Path, dict_path: &Path) -> Result
     }
 
     let jmdict_entries = read_yomikiri_dictionary(dict_path)?;
+    remove_emoticons(&mut items);
     add_words_in_jmdict(&mut items, &jmdict_entries)?;
     let removed = remove_word_not_in_jmdict(&mut items, &jmdict_entries)?;
 
@@ -281,6 +284,17 @@ fn transform_matrix(
     Ok(())
 }
 
+/// Remove emoticons from lex to reduce size.
+/// Emoticons don't usually have japanese characters,
+/// so it shouldn't pollute the result of tokenization anyway.
+fn remove_emoticons(items: &mut Vec<LexItem>) {
+    items.retain(|item| !is_emoticon(item));
+}
+
+fn is_emoticon(item: &LexItem) -> bool {
+    item.pos3 == "顔文字"
+}
+
 /// Add katakana words in JMDict that is not in Unidic lex
 /// and are not longer than 7 chars
 fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> Result<()> {
@@ -327,7 +341,14 @@ fn remove_word_not_in_jmdict(
     let mut retain_len = 0_usize;
     for i in 0..items.len() {
         let item = &items[i];
-        if terms.contains(item.base.as_str()) || terms.contains(item.surface.as_str()) {
+
+        // don't remove symbols as it is needed to correctly tokenize tokens.
+        // 1) single hiragana character symbols are needed so unknown token is not invoked
+        // 2) symbols may help correctly split tokens around it.
+        if terms.contains(item.base.as_str())
+            || terms.contains(item.surface.as_str())
+            || item.pos == "補助記号"
+        {
             items.swap(i, retain_len);
             retain_len += 1;
         }

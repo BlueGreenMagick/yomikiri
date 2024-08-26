@@ -143,6 +143,9 @@ tokenize_tests! {
     other1: "私/は/しる",
     // below 「と」 is 接続助詞, not 格助詞
     other2: "早く/起きないと/遅刻する/よ",
+    // long sequence of hiragana should not output unknown token
+    other3: "ごはん/は/さしみ/だったり/やきそば/おにぎり/だったり/する",
+
 
     abc: " ",
 }
