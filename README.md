@@ -37,10 +37,10 @@ Please note that we do not support building the project on Windows. You may want
 Run the following commands
 
 ```sh
-# Downloads and builds JMDict and UniDic dictionary files
-pnpm run construct:web
 # install node dependencies
 pnpm install
+# Downloads and builds JMDict and UniDic dictionary files
+pnpm run construct:web
 pnpm generate-licenses
 ```
 
