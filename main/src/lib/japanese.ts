@@ -35,7 +35,7 @@ const _RE_JAPANESE_ALL =
   /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f\uffe0-\uffee]/u;
 // excluding most symbols or punctuations
 const RE_JAPANESE_CONTENT =
-  /[\u3040-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/u;
+  /[\u3040-\u30ff\u3190-\u319f\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/u;
 
 export namespace RubyString {
   // Some words are longer in kanji
