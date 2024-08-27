@@ -103,13 +103,13 @@ macro_rules! unidic_pos {
                 match &self {
                     $(
                         $(
-                            UnidicPos::$pos_name => $pos_short as u8,
+                            UnidicPos::$pos_name => $pos_short,
                         )?
                         $(
                             $(
-                                UnidicPos::$pos_name($pos2_enum::$pos2_name) => $pos2_short as u8,
+                                UnidicPos::$pos_name($pos2_enum::$pos2_name) => $pos2_short,
                             )+
-                            UnidicPos::$pos_name($pos2_enum::Unknown) => $pos2_unknown_short as u8,
+                            UnidicPos::$pos_name($pos2_enum::Unknown) => $pos2_unknown_short,
                         )?
 
                     )+
@@ -117,7 +117,7 @@ macro_rules! unidic_pos {
             }
 
             pub fn from_short(short: u8) -> Result<Self> {
-                match short as char {
+                match short {
                     $(
                       $(
                         $pos_short => Ok(UnidicPos::$pos_name),
@@ -139,71 +139,71 @@ macro_rules! unidic_pos {
 
 unidic_pos!(
     Noun 名詞
-    | UnidicNounPos2 '1'
-        - 助動詞語幹 'a'
-        - 固有名詞 'b'
-        - 普通名詞 'c'
-        - 数詞 'd'
+    | UnidicNounPos2 b'1'
+        - 助動詞語幹 b'a'
+        - 固有名詞 b'b'
+        - 普通名詞 b'c'
+        - 数詞 b'd'
 
     Particle 助詞
-    | UnidicParticlePos2 '2'
-        - 係助詞 'e'
-        - 格助詞 'f'
-        - 接続助詞 'g'
-        - 準体助詞 'h'
-        - 終助詞 'i'
-        - 副助詞 'j'
+    | UnidicParticlePos2 b'2'
+        - 係助詞 b'e'
+        - 格助詞 b'f'
+        - 接続助詞 b'g'
+        - 準体助詞 b'h'
+        - 終助詞 b'i'
+        - 副助詞 b'j'
 
     Verb 動詞
-    | UnidicVerbPos2 '3'
-        - 一般 'k'
-        - 非自立可能 'l'
+    | UnidicVerbPos2 b'3'
+        - 一般 b'k'
+        - 非自立可能 b'l'
 
     Adjective 形容詞
-    | UnidicAdjectivePos2 '4'
-        - 一般 'm'
-        - 非自立可能 'n'
+    | UnidicAdjectivePos2 b'4'
+        - 一般 b'm'
+        - 非自立可能 b'n'
 
     NaAdjective 形状詞
-    | UnidicNaAdjectivePos2 '5'
-        - 一般 'o'
-        - 助動詞語幹 'p'
-        - タリ 'q'
+    | UnidicNaAdjectivePos2 b'5'
+        - 一般 b'o'
+        - 助動詞語幹 b'p'
+        - タリ b'q'
 
     Interjection 感動詞
-    | UnidicInterjectionPos2 '6'
-        - 一般 'r'
-        - フィラー 's'
+    | UnidicInterjectionPos2 b'6'
+        - 一般 b'r'
+        - フィラー b's'
 
     Suffix 接尾辞
-    | UnidicSuffixPos2 '7'
-        - 名詞的 't'
-        - 形容詞的 'u'
-        - 動詞的 'v'
-        - 形状詞的 'w'
+    | UnidicSuffixPos2 b'7'
+        - 名詞的 b't'
+        - 形容詞的 b'u'
+        - 動詞的 b'v'
+        - 形状詞的 b'w'
 
-    AuxVerb 助動詞 'x'
-    Whitespace 空白 'y'
-    Pronoun 代名詞 'z'
+    AuxVerb 助動詞 b'x'
+    Whitespace 空白 b'y'
+    Pronoun 代名詞 b'z'
 
     Symbol 記号
-    | UnidicSymbolPos2 '8'
-        - 一般 'A'
-        - 文字 'B'
+    | UnidicSymbolPos2 b'8'
+        - 一般 b'A'
+        - 文字 b'B'
 
     SupplementarySymbol 補助記号
-    | UnidicSupplementarySymbolPos2 '9'
-        - 読点 'C'
-        - 一般 'D'
-        - 括弧開 'E'
-        - 括弧閉 'F'
-        - AA="ＡＡ" 'G'
-        - 句点 'H'
+    | UnidicSupplementarySymbolPos2 b'9'
+        - 読点 b'C'
+        - 一般 b'D'
+        - 括弧開 b'E'
+        - 括弧閉 b'F'
+        - AA="ＡＡ" b'G'
+        - 句点 b'H'
 
-    Conjunction 接続詞 'I'
-    Prefix 接頭辞 'J'
-    PrenounAdjectival 連体詞 'K'
-    Adverb 副詞 'L'
-    Expression exp 'M'
-    Unknown UNK 'O'
+    Conjunction 接続詞 b'I'
+    Prefix 接頭辞 b'J'
+    PrenounAdjectival 連体詞 b'K'
+    Adverb 副詞 b'L'
+    Expression exp b'M'
+    Unknown UNK b'O'
 );
