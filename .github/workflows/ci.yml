@@ -5,6 +5,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  JMDICT_PATH: crates/yomikiri-dictionary-generator/jmdict/jmdict_english.xml
+  DICTIONARY_PATH: crates/yomikiri-dictionary-generator/files/english.yomikiridict
+  UNIDIC_OUTPUT_PATH: crates/unidic/output
+
 jobs:
   test:
     runs-on: macos-latest
@@ -38,6 +43,10 @@ jobs:
       - name: Get version
         id: version
         run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
+      
+      - name: Hash root Cargo.toml and Cargo.lock
+        id: cargo-hash
+        run: echo "HASH=${{hashFiles('./Cargo.lock', './Cargo.toml')}}" >> "$GITHUB_OUTPUT"
 
       - name: Cache cargo dependencies
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
@@ -54,11 +63,44 @@ jobs:
       - name: Cache jmdict
         uses: actions/cache@v4
         with:
-          path: crates/yomikiri-dictionary-generator/jmdict/jmdict_english.xml
+          path: ${{env.JMDICT_PATH}}
           key: jmdict-english-xml-${{steps.version.outputs.VERSION}}
 
-      - name: Construct
-        run: pnpm run construct:all
+      - name: Build yomikiri-dictionary-generator crate
+        run: cargo build
+        working-directory: ./crates/yomikiri-dictionary-generator
+      
+      - name: Cache yomikiri dictionary
+        uses: actions/cache@v4
+        id: cache-yomikiri-dictionary
+        with:
+          path: ${{env.DICTIONARY_PATH}}
+          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-dictionary-generator', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH) }}
+      
+      - name: Construct yomikiri dictionary
+        if: steps.cache-yomikiri-dictionary.outputs.cache-hit != 'true'
+        run: pnpm run construct:dictionary
+
+      - name: Build yomikiri-unidic crate
+        run: cargo build
+        working-directory: ./crates/unidic
+
+      - name: Cache unidic output
+        uses: actions/cache@v4
+        id: cache-unidic
+        with:
+          path: ${{env.UNIDIC_OUTPUT_PATH}}
+          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-unidic', './crates/unidic/Cargo.toml', env.DICTIONARY_PATH, './crates/unidic/original/**') }}
+      
+      - name: Construct unidic files
+        if: steps.cache-unidic.outputs.cache-hit != 'true'
+        run: pnpm run construct:unidic
+
+      - name: Construct backend wasm
+        run: pnpm run construct:backend_wasm
+
+      - name: Construct backend ios
+        run: pnpm run construct:backend_ios
 
       - name: Generate licenses
         run: pnpm run generate-licenses
