@@ -35,6 +35,10 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
+  if (!containsJapaneseContent(charLoc.node.data[charLoc.charAt])) {
+    return false;
+  }
+
   const scannedSentence = sentenceAtCharLocation(charLoc.node, charLoc.charAt);
   if (!containsJapaneseContent(scannedSentence.text)) {
     return false;
@@ -46,9 +50,6 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     scannedSentence.charAt,
   );
   const currToken = result.tokens[result.tokenIdx];
-  if (!containsJapaneseContent(currToken.text)) {
-    return false;
-  }
 
   const nodes = nodesOfToken(
     charLoc.node,
