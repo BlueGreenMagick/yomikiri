@@ -2582,7 +2582,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "yomikiri-unidic-dictionary"
+name = "yomikiri-unidic"
 version = "0.1.0"
 dependencies = [
  "anyhow",

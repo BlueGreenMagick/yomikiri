@@ -1,5 +1,5 @@
 [package]
-name = "yomikiri-unidic-dictionary"
+name = "yomikiri-unidic"
 description = "Customize unidic tokenizer dictionary for Yomikiri"
 version = "0.1.0"
 edition = "2021"
