@@ -3,62 +3,75 @@ mod transform;
 use crate::transform::transform;
 use anyhow::Context;
 use anyhow::Result;
-use filetime::set_file_mtime;
-use filetime::FileTime;
+use clap::Parser;
 use fs_err::{self as fs, File};
 use lindera_core::dictionary_builder::DictionaryBuilder;
 use lindera_unidic_builder::unidic_builder::UnidicBuilder;
-use std::env;
+use std::ffi::OsString;
 use std::path::Path;
 use std::path::PathBuf;
-use std::time::SystemTime;
-use walkdir::{DirEntry, WalkDir};
 use zip::ZipArchive;
 
+/// Transform and build unidic files to be used for Yomikiri
+#[derive(Parser, Debug)]
+struct UnidicOpts {
+    /// Path to directory that stores original unidic files
+    #[arg(short, long)]
+    unidic_dir: PathBuf,
+    /// Path to directory that stores transformed unidic files for lindera
+    #[arg(short, long)]
+    transform_dir: PathBuf,
+    /// Path to directory that stores built unidic files for lindera
+    #[arg(short, long)]
+    output_dir: PathBuf,
+    /// Path to directory that holds `english.yomikiridict` file
+    #[arg(short, long)]
+    resource_dir: PathBuf,
+    /// By default, unidic files are downloaded into `--unidic-dir`
+    /// only if it the directory is empty,
+    /// otherwise uses the files already in the directory.
+    ///
+    /// Specifying this option force re-downloads fresh unidic files instead.
+    #[arg(long, default_value_t = false)]
+    redownload: bool,
+    /// Delete all files in directory before writing files
+    #[arg(short, long, default_value_t = false)]
+    clean: bool,
+}
+
 fn main() -> Result<()> {
-    let crate_dir = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap());
-    let original_dir = crate_dir.join("original");
-    let transform_dir = crate_dir.join("transformed");
-    let output_dir = crate_dir.join("output");
-    let src_dir = crate_dir.join("src");
-    let resource_dir = crate_dir.join("../yomikiri-dictionary-generator/files");
-    let unidic_types_dir = crate_dir.join("../unidic-types");
+    let opts = UnidicOpts::parse();
 
-    if !output_dir.try_exists()? {
-        std::fs::create_dir(&output_dir).context("Failed to create output directory")?;
-    }
-    if !transform_dir.try_exists()? {
-        std::fs::create_dir(&transform_dir).context("Failed to create transform directory")?;
-    }
-    if !original_dir.try_exists()? {
-        std::fs::create_dir(&original_dir).context("Failed to create original directory")?;
-    }
+    let output_dir = opts.output_dir;
+    let transform_dir = opts.transform_dir;
+    let original_dir = opts.unidic_dir;
+    let resource_dir = opts.resource_dir;
 
-    // Check if 'original' dir is empty by looking for matrix.def file
-    // and download original unidic files if it does not exist
-    if !fs::read_dir(&original_dir)?
-        .any(|e| e.map(|p| p.file_name() == "matrix.def").unwrap_or(false))
+    let original_dir_exists = original_dir.try_exists()?;
+    if opts.redownload
+        || !original_dir_exists
+        || !fs::read_dir(&original_dir)?
+            .any(|e| e.map(|p| valid_file_name(&p.file_name())).unwrap_or(false))
     {
-        download_unidic_original(&original_dir).context("Failed to download unidic from web")?;
+        if opts.clean && original_dir_exists {
+            fs::remove_dir_all(&original_dir)?;
+        }
+        fs::create_dir_all(&original_dir)?;
+        download_unidic_original(&original_dir)?;
     }
 
-    let original_mtime = get_last_mtime_of_dir(&original_dir)?;
-    let transform_mtime = get_last_mtime_of_dir(&transform_dir)?;
-    let src_mtime = get_last_mtime_of_dir(&src_dir)?;
-    let resource_mtime = get_last_mtime_of_dir(&resource_dir)?;
-    let manifest_mtime = get_mtime(crate_dir.join("Cargo.toml"))?;
-    let unidic_types_mtime = get_last_mtime_of_dir(&unidic_types_dir)?;
-
-    // re-run only if any relevant files changed after last transform
-    if original_mtime <= transform_mtime
-        && src_mtime <= transform_mtime
-        && manifest_mtime <= transform_mtime
-        && resource_mtime <= transform_mtime
-        && unidic_types_mtime <= transform_mtime
-    {
-        println!("Nothing has changed since last unidic build,");
-        return Ok(());
+    if opts.clean {
+        if transform_dir.try_exists()? {
+            fs::remove_dir_all(&transform_dir)?;
+        }
+        if output_dir.try_exists()? {
+            fs::remove_dir_all(&output_dir)?;
+        }
     }
+
+    fs::create_dir_all(&transform_dir)?;
+    fs::create_dir_all(&output_dir)?;
+
     println!("Transforming unidic for Yomikiri...");
     transform(&original_dir, &transform_dir, &resource_dir)
         .context("Failed to transform unidic file")?;
@@ -68,55 +81,17 @@ fn main() -> Result<()> {
     builder
         .build_dictionary(&transform_dir, &output_dir)
         .context("Failed to build unidic")?;
-    set_file_mtime(&output_dir, FileTime::now())?;
     Ok(())
 }
 
-// Get last modification time of all entries in dir recursively, including dir
-fn get_last_mtime_of_dir(dir: &Path) -> Result<SystemTime> {
-    let entries = WalkDir::new(dir).into_iter();
-    // If files are renamed, only the mtime of the directory changes.
-    let mut latest = get_mtime(dir).with_context(|| {
-        format!(
-            "Failed to get modification time of directory: {}",
-            dir.to_string_lossy()
-        )
-    })?;
-    for entry in entries.filter_entry(|e| !skip_file_entry(e)) {
-        let entry = entry?;
-        let metadata = entry.metadata()?;
-        let mtime = metadata.modified()?;
-        latest = latest.max(mtime);
-    }
-    Ok(latest)
-}
-
-fn get_mtime<P: AsRef<Path>>(path: P) -> Result<SystemTime> {
-    let metadata = fs::metadata(path.as_ref()).with_context(|| {
-        format!(
-            "Failed to get modification time of file: {}",
-            path.as_ref().to_string_lossy()
-        )
-    })?;
-    let mtime = metadata.modified()?;
-    Ok(mtime)
-}
-
-fn skip_file_entry(entry: &DirEntry) -> bool {
-    let name = entry.file_name();
+/// Return `false` for hidden files or `thumbs.db`
+fn valid_file_name(name: &OsString) -> bool {
     if let Some(name) = name.to_str() {
-        // skip hidden files starting with '.'
-        if name.starts_with('.') {
-            return true;
+        if name.starts_with('.') || name.to_lowercase() == "thumbs.db" {
+            return false;
         }
-        // thumbs.db is an automatically generated file in Windows
-        if name.to_lowercase() == "thumbs.db" {
-            return true;
-        }
-    } else {
-        return true;
     }
-    false
+    true
 }
 
 /// download and unzip unidic file into `output_path`.

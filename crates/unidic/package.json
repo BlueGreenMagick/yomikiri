@@ -11,6 +11,6 @@
     "check": "cargo check",
     "lint": "cargo clippy -- -D warnings",
     "test": "cargo test",
-    "generate": "cargo run"
+    "generate": "cargo run -- --clean --unidic-dir='original' --transform-dir='transformed' --output-dir='output' --resource-dir='../yomikiri-dictionary-generator/files'"
   }
 }
