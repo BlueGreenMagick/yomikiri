@@ -93,7 +93,7 @@ jobs:
         id: cache-unidic
         with:
           path: ${{env.UNIDIC_OUTPUT_PATH}}
-          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-unidic', './crates/unidic/Cargo.toml', env.DICTIONARY_PATH, './crates/unidic/original/**') }}
+          key: unidic-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-unidic', './crates/unidic/Cargo.toml', env.DICTIONARY_PATH, './crates/unidic/original/**') }}
       
       - name: Construct unidic files
         if: steps.cache-unidic.outputs.cache-hit != 'true'
