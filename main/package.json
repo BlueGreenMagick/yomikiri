@@ -23,7 +23,8 @@
     "lint:ts": "tsc --noemit",
     "lint:svelte": "svelte-check --compiler-warnings \"a11y-no-static-element-interactions:ignore\"",
     "lint:eslint": "eslint --cache .",
-    "lint": "pnpm lint:ts; pnpm lint:svelte; pnpm lint:eslint"
+    "lint": "pnpm lint:ts; pnpm lint:svelte; pnpm lint:eslint",
+    "format": "pnpm prettier --write --list-different --config '../prettier.config.js' --ignore-path='../.prettierignore' ."
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
