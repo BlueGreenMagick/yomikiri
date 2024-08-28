@@ -1,18 +1,14 @@
 <script lang="ts">
   import DictionaryView from "./DictionaryView.svelte";
-  import type { IosAppAnkiApi } from "platform/iosapp/anki";
   import Page from "components/Page.svelte";
 
-  export let initialized: Promise<[IosAppAnkiApi]>;
   export let context: "app" | "action";
   export let searchText = "";
 </script>
 
 <Page>
   <div id="main">
-    {#await initialized then [ankiApi]}
-      <DictionaryView {context} {ankiApi} {searchText} />
-    {/await}
+    <DictionaryView {context} {searchText} />
   </div>
 </Page>
 

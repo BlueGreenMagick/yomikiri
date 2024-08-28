@@ -1,15 +1,12 @@
 <script lang="ts">
-  import type { AnkiOptionsApi } from "@platform/anki";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
   import { Platform } from "@platform";
-
-  export let ankiApi: AnkiOptionsApi;
 </script>
 
 <div class="container">
   <div id="main-column">
-    <MainColumn {ankiApi} />
+    <MainColumn />
   </div>
   {#if Platform.IS_DESKTOP}
     <div id="preview-column"><PreviewColumn /></div>

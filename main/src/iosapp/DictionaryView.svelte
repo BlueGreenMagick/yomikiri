@@ -2,7 +2,6 @@
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import AddToAnki from "components/anki/AddToAnki.svelte";
-  import type { IosAppAnkiApi } from "platform/iosapp/anki";
   import type { TokenizeResult } from "platform/iosapp/backend";
   import {
     type LoadingAnkiNote,
@@ -12,7 +11,6 @@
   import { Config } from "lib/config";
   import { Platform } from "platform/iosapp";
 
-  export let ankiApi: IosAppAnkiApi;
   export let context: "app" | "action";
   export let searchText: string;
 
@@ -65,7 +63,7 @@
     </Tokenize>
   </div>
   {#if previewIsVisible}
-    <AddToAnki noteData={previewNoteData} {onBack} {noteAdded} {ankiApi} />
+    <AddToAnki noteData={previewNoteData} {onBack} {noteAdded} />
   {/if}
 </div>
 

@@ -1,4 +1,4 @@
-import Utils, { Lazy } from "lib/utils";
+import Utils from "lib/utils";
 import { Platform } from ".";
 import type { AnkiNote } from "lib/anki";
 import { YomikiriError } from "lib/error";
@@ -26,13 +26,11 @@ interface RawAnkiInfo {
 }
 
 export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
-  static instance = new Lazy(() => new IosAppAnkiApi());
-
   ankiInfoP: Promise<AnkiInfo>;
   ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>;
   ankiInfoReject: Utils.PromiseRejector;
 
-  private constructor() {
+  constructor() {
     const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
       Utils.createPromise<AnkiInfo>();
     this.ankiInfoP = ankiInfoP;

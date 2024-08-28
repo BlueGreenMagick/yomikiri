@@ -7,19 +7,14 @@ import {
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
 import { EXTENSION_CONTEXT } from "consts";
-import { LazyAsync } from "lib/utils";
 import { YomikiriError } from "lib/error";
 import type { IAnkiAddNotes } from "../common/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
 
 export class IosAnkiApi implements IAnkiAddNotes {
-  static instance: LazyAsync<IosAnkiApi> = new LazyAsync(
-    async () => new IosAnkiApi(await Config.instance.get()),
-  );
-
   config: Config;
 
-  private constructor(config: Config) {
+  constructor(config: Config) {
     this.config = config;
   }
 

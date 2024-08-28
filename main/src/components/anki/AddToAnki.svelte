@@ -15,15 +15,18 @@
   import { Toast } from "lib/toast";
   import { newChangeTracker, SingleQueued } from "lib/utils";
   import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
+  import Config from "lib/config";
 
   interface FieldWatch extends Field {
     _value: string;
   }
 
-  export let ankiApi: AnkiApi;
   export let noteData: LoadingAnkiNote;
   export let noteAdded: () => void;
   export let onBack: () => void;
+
+  const config = Config.using();
+  const ankiApi = new AnkiApi(config);
 
   let tagField: FieldWatch = {
     name: "Tags",

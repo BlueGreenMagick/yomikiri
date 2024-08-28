@@ -29,13 +29,13 @@ async function initialize(): Promise<void> {
   updateDeferredNoteCountBadge(config);
 
   if (Platform.IS_DESKTOP) {
-    const ankiApi = (await AnkiApi.instance.get()) as DesktopAnkiApi;
+    const ankiApi = new AnkiApi(config) as DesktopAnkiApi;
     runAddDeferredNoteTaskInBackground(ankiApi);
   }
 }
 
 async function addAnkiNote(note: AnkiNote): Promise<boolean> {
-  const ankiApi = await AnkiApi.instance.get();
+  const ankiApi = new AnkiApi(await Config.instance.get());
   return await ankiApi.addNote(note);
 }
 
@@ -81,7 +81,7 @@ handleBrowserLoad(() => {
 exposeGlobals({
   Platform,
   Utils,
-  ankiApi: AnkiApi.instance,
+  AnkiApi,
   Backend,
   config: Config.instance,
 });

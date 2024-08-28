@@ -10,10 +10,7 @@
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import { Config } from "lib/config";
-  import type { AnkiApi } from "@platform/anki";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
-
-  export let ankiApi: AnkiApi;
 
   const config = Config.using();
   let previewIsVisible = false;
@@ -49,11 +46,11 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {onShowAnkiPreview}>
       <ActionButtons />
-      <DeferredNoteInfo {ankiApi} />
+      <DeferredNoteInfo />
     </Tokenize>
   </div>
   {#if previewIsVisible}
-    <AddToAnki noteData={previewNoteData} {onBack} {ankiApi} {noteAdded} />
+    <AddToAnki noteData={previewNoteData} {onBack} {noteAdded} />
   {/if}
 </div>
 

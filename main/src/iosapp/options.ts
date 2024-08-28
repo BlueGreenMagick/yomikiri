@@ -1,27 +1,18 @@
 import OptionsPage from "../components/options/OptionsPage.svelte";
 import { Platform } from "platform/iosapp";
-import { IosAppAnkiApi } from "platform/iosapp/anki";
 import Utils, { exposeGlobals } from "lib/utils";
 import Config from "lib/config";
-
-const ankiApi = IosAppAnkiApi.instance.get();
-
-const initialized = initialize();
-
-async function initialize(): Promise<[IosAppAnkiApi]> {
-  await Promise.resolve();
-  return [ankiApi];
-}
+import { AnkiApi } from "@platform/anki";
 
 const page = new OptionsPage({
   target: document.body,
-  props: { initialized },
+  props: {},
 });
 
 exposeGlobals({
   Platform,
   Utils,
-  ankiApi,
+  AnkiApi,
   config: Config.instance,
   page,
 });

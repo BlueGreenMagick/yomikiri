@@ -1,10 +1,15 @@
 <script lang="ts">
-  import type { AnkiOptionsApi } from "@platform/anki";
+  import {
+    AnkiApi,
+    type DesktopAnkiApi,
+    type IosAppAnkiApi,
+  } from "@platform/anki";
   import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
+  import Config from "lib/config";
 
-  export let ankiApi: AnkiOptionsApi;
-
-  let ankiInfoP = ankiApi.getAnkiInfo();
+  const config = Config.using();
+  const ankiApi = new AnkiApi(config) as DesktopAnkiApi | IosAppAnkiApi;
+  const ankiInfoP = ankiApi.getAnkiInfo();
 </script>
 
 {#await ankiInfoP}

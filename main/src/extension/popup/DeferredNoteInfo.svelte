@@ -3,16 +3,15 @@
   import { Config } from "lib/config";
   import IconRefreshOutline from "@icons/refresh-outline.svg";
   import IconTrash from "@icons/trash.svg";
-  import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
+  import { AnkiApi, type DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
   import CancelDeferredNoteDeletion from "components/toast/CancelDeferredNoteDeletion.svelte";
 
-  export let ankiApi: AnkiApi;
-
   let addingNotes = false;
 
   const config = Config.using();
+  const ankiApi = new AnkiApi(config);
   const confDeferredNoteCount = config.store("state.anki.deferred_note_count");
   const confDeferredNoteError = config.store("state.anki.deferred_note_error");
 

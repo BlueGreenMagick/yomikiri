@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { type DesktopAnkiApi, type AnkiOptionsApi } from "@platform/anki";
+  import {
+    type DesktopAnkiApi,
+    type IosAppAnkiApi,
+    AnkiApi,
+  } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
@@ -12,9 +16,8 @@
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
 
-  export let ankiApi: AnkiOptionsApi;
-
   const config = Config.using();
+  const ankiApi = new AnkiApi(config) as DesktopAnkiApi | IosAppAnkiApi;
   const ankiConnectPortConfig = config.store("anki.connect_port");
   const ankiEnabledConfig = config.store("anki.enabled");
   const ankiIosAutoRedirectConfig = config.store("anki.ios_auto_redirect");
@@ -159,7 +162,6 @@
 </GroupedOptions>
 {#if !ankiTemplateModalHidden && Platform.IS_DESKTOP}
   <ModalAnkiTemplate
-    {ankiApi}
     onClose={() => {
       ankiTemplateModalHidden = true;
     }}
