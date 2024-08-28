@@ -3,7 +3,7 @@
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import AddToAnki from "components/anki/AddToAnki.svelte";
   import type { IosAppAnkiApi } from "platform/iosapp/anki";
-  import type { IosAppBackend, TokenizeResult } from "platform/iosapp/backend";
+  import type { TokenizeResult } from "platform/iosapp/backend";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,
@@ -13,7 +13,6 @@
   import { Platform } from "platform/iosapp";
 
   export let config: Config;
-  export let backend: IosAppBackend;
   export let ankiApi: IosAppAnkiApi;
   export let context: "app" | "action";
   export let searchText: string;
@@ -53,7 +52,6 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize
       {config}
-      {backend}
       bind:searchText
       showCloseButton={context === "action"}
       {onShowAnkiPreview}

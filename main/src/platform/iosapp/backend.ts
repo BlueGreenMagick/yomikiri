@@ -1,4 +1,4 @@
-import { Lazy, PromiseWithProgress } from "lib/utils";
+import { PromiseWithProgress } from "lib/utils";
 import { IosAppPlatform } from ".";
 import {
   type IBackend,
@@ -9,14 +9,11 @@ import {
 
 export * from "../common/backend";
 
-export class IosAppBackend implements IBackend {
-  static instance: Lazy<IosAppBackend> = new Lazy(() => {
-    return new IosAppBackend();
-  });
-
-  private constructor() {}
-
-  async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+export namespace IosAppBackend {
+  export async function tokenize({
+    text,
+    charAt,
+  }: TokenizeRequest): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (text === "") {
@@ -31,7 +28,10 @@ export class IosAppBackend implements IBackend {
     return TokenizeResult.from(raw);
   }
 
-  async search(term: string, charAt?: number): Promise<TokenizeResult> {
+  export async function search({
+    term,
+    charAt,
+  }: SearchRequest): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (term === "") {
@@ -46,17 +46,18 @@ export class IosAppBackend implements IBackend {
     return TokenizeResult.from(raw);
   }
 
-  updateDictionary(): PromiseWithProgress<void, string> {
+  export function updateDictionary(): PromiseWithProgress<void, string> {
     return PromiseWithProgress.fromPromise(
       IosAppPlatform.messageWebview("updateDict", null),
       "Updating dictionary... This may take up to a minute.",
     );
   }
 
-  getDictCreationDate(): Promise<string> {
+  export function getDictCreationDate(): Promise<string> {
     return IosAppPlatform.messageWebview("getDictCreationDate", null);
   }
 }
 
+IosAppBackend satisfies IBackend;
+
 export const Backend = IosAppBackend;
-export type Backend = IosAppBackend;

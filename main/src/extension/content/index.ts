@@ -35,7 +35,7 @@ function initialize() {
   exposeGlobals({
     Platform,
     Utils,
-    backend: Backend.instance,
+    Backend,
     config: Config.instance,
     highlighter,
     tooltip: lazyTooltip,

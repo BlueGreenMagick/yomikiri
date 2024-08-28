@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Backend } from "@platform/backend";
   import type Config from "lib/config";
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
@@ -7,16 +6,16 @@
   import Page from "components/Page.svelte";
   import { Platform } from "@platform";
 
-  export let initialized: Promise<[Config, Backend, AnkiApi]>;
+  export let initialized: Promise<[Config, AnkiApi]>;
 </script>
 
 <Page>
   <div id="main">
-    {#await initialized then [config, backend, ankiApi]}
+    {#await initialized then [config, ankiApi]}
       {#if Platform.IS_IOS}
         <ActionButtons {config} />
       {:else}
-        <PopupView {backend} {config} {ankiApi} />
+        <PopupView {config} {ankiApi} />
       {/if}
     {/await}
   </div>

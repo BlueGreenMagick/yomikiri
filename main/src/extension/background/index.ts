@@ -4,12 +4,7 @@
  * loaded on desktop / ios
  */
 
-import {
-  type TokenizeResult,
-  type TokenizeRequest,
-  type SearchRequest,
-  Backend,
-} from "@platform/backend";
+import { Backend } from "@platform/backend";
 import {
   handleBrowserLoad,
   handleMessage,
@@ -37,16 +32,6 @@ async function initialize(): Promise<void> {
     const ankiApi = (await AnkiApi.instance.get()) as DesktopAnkiApi;
     runAddDeferredNoteTaskInBackground(ankiApi);
   }
-}
-
-async function searchTerm(req: SearchRequest): Promise<TokenizeResult> {
-  const backend = await Backend.instance.get();
-  return await backend.search(req.term, req.charAt);
-}
-
-async function tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-  const backend = await Backend.instance.get();
-  return await backend.tokenize(req.text, req.charAt);
 }
 
 async function addAnkiNote(note: AnkiNote): Promise<boolean> {
@@ -86,16 +71,8 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
   }, 1000 * 30);
 }
 
-async function getDictCreationDate() {
-  const backend = await Backend.instance.get();
-  return await backend.getDictCreationDate();
-}
-
-handleMessage("searchTerm", searchTerm);
-handleMessage("tokenize", tokenize);
 handleMessage("addAnkiNote", addAnkiNote);
 handleMessage("tabId", tabId);
-handleMessage("getDictCreationDate", getDictCreationDate);
 
 handleBrowserLoad(() => {
   void initialize();
@@ -105,6 +82,6 @@ exposeGlobals({
   Platform,
   Utils,
   ankiApi: AnkiApi.instance,
-  backend: Backend.instance,
+  Backend,
   config: Config.instance,
 });

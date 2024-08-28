@@ -12,7 +12,6 @@
   import type { Config } from "lib/config";
 
   export let config: Config;
-  export let backend: Backend;
   export let searchText = "";
   export let showCloseButton = false;
   export let onShowAnkiPreview: (
@@ -30,7 +29,7 @@
   const search = Utils.SingleQueued(_search);
   async function _search(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
-    tokenizeResult = await backend.search(searchText, charAt);
+    tokenizeResult = await Backend.search({ term: searchText, charAt });
   }
 
   function changeSelectedTool(tool: Tools | null) {

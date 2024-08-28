@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Backend, TokenizeResult } from "@platform/backend";
+  import type { TokenizeResult } from "@platform/backend";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,
@@ -14,7 +14,6 @@
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
 
   export let config: Config;
-  export let backend: Backend;
   export let ankiApi: AnkiApi;
 
   let previewIsVisible = false;
@@ -48,7 +47,7 @@
 
 <div class="popup">
   <div class="tokenize-container" class:previewIsVisible>
-    <Tokenize {onShowAnkiPreview} {config} {backend}>
+    <Tokenize {onShowAnkiPreview} {config}>
       <ActionButtons {config} />
       <DeferredNoteInfo {config} {ankiApi} />
     </Tokenize>

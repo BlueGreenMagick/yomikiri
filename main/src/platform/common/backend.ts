@@ -64,8 +64,8 @@ export namespace TokenizeResult {
 }
 
 export interface IBackend {
-  tokenize(text: string, charAt?: number): Promise<TokenizeResult>;
-  search(term: string): Promise<TokenizeResult>;
+  tokenize(req: TokenizeRequest): Promise<TokenizeResult>;
+  search(req: SearchRequest): Promise<TokenizeResult>;
   getDictCreationDate(): Promise<string>;
 }
 
@@ -73,4 +73,3 @@ export declare const Backend:
   | typeof DesktopBackend
   | typeof IosBackend
   | typeof IosAppBackend;
-export type Backend = DesktopBackend | IosBackend | IosAppBackend;

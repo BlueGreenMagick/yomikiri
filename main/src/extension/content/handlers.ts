@@ -44,11 +44,10 @@ async function _trigger(x: number, y: number): Promise<boolean> {
     return false;
   }
 
-  const backend = await Backend.instance.get();
-  const result = await backend.tokenize(
-    scannedSentence.text,
-    scannedSentence.charAt,
-  );
+  const result = await Backend.tokenize({
+    text: scannedSentence.text,
+    charAt: scannedSentence.charAt,
+  });
   const currToken = result.tokens[result.tokenIdx];
 
   const nodes = nodesOfToken(

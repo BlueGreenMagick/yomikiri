@@ -1,32 +1,26 @@
-import { message } from "extension/browserApi";
+import { NonContentScriptFunction } from "extension/browserApi";
 import { IosPlatform } from ".";
 import {
-  type IBackend,
   type TokenizeRequest,
   TokenizeResult,
   type SearchRequest,
+  type IBackend,
 } from "../common/backend";
-import { EXTENSION_CONTEXT } from "consts";
-import { Lazy } from "lib/utils";
 
 export * from "../common/backend";
 
-export class IosBackend implements IBackend {
-  static instance: Lazy<IosBackend> = new Lazy(() => {
-    return new IosBackend();
-  });
+export namespace IosBackend {
+  export const tokenize = NonContentScriptFunction(
+    "tokenize",
+    ({ text, charAt }) => {
+      return _tokenize(text, charAt);
+    },
+  );
 
-  private constructor() {}
-
-  async tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
-    if (EXTENSION_CONTEXT !== "contentScript") {
-      return this._tokenize(text, charAt);
-    } else {
-      return message("tokenize", { text, charAt });
-    }
-  }
-
-  async _tokenize(text: string, charAt?: number): Promise<TokenizeResult> {
+  async function _tokenize(
+    text: string,
+    charAt?: number,
+  ): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (text === "") {
@@ -41,15 +35,17 @@ export class IosBackend implements IBackend {
     return TokenizeResult.from(rawResult);
   }
 
-  async search(term: string, charAt?: number): Promise<TokenizeResult> {
-    if (EXTENSION_CONTEXT !== "contentScript") {
-      return this._search(term, charAt);
-    } else {
-      return message("searchTerm", { term, charAt });
-    }
-  }
+  export const search = NonContentScriptFunction(
+    "searchTerm",
+    ({ term, charAt }) => {
+      return _search(term, charAt);
+    },
+  );
 
-  async _search(term: string, charAt?: number): Promise<TokenizeResult> {
+  async function _search(
+    term: string,
+    charAt?: number,
+  ): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (term === "") {
@@ -64,14 +60,14 @@ export class IosBackend implements IBackend {
     return TokenizeResult.from(rawResult);
   }
 
-  async getDictCreationDate(): Promise<string> {
-    if (EXTENSION_CONTEXT !== "contentScript") {
+  export const getDictCreationDate = NonContentScriptFunction(
+    "getDictCreationDate",
+    () => {
       return IosPlatform.requestToApp("getDictCreationDate", null);
-    } else {
-      return message("getDictCreationDate", undefined);
-    }
-  }
+    },
+  );
 }
 
+IosBackend satisfies IBackend;
+
 export const Backend = IosBackend;
-export type Backend = IosBackend;

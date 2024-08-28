@@ -2,7 +2,7 @@
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
   import {
-    Backend,
+    Backend as PlatformBackend,
     type DesktopBackend,
     type IosAppBackend,
   } from "@platform/backend";
@@ -15,14 +15,15 @@
     | "downloaded"
     | "error";
 
+  const Backend = PlatformBackend as
+    | typeof DesktopBackend
+    | typeof IosAppBackend;
+
   let state: DictState = "loading";
   let dictDescription = "Loading...";
 
   async function initialize() {
-    const backend = (await Backend.instance.get()) as
-      | DesktopBackend
-      | IosAppBackend;
-    const date = await backend.getDictCreationDate();
+    const date = await Backend.getDictCreationDate();
     dictDescription = `Dictionary created on: ${date}`;
     state = "loaded";
   }
@@ -32,10 +33,7 @@
 
     try {
       state = "downloading";
-      const backend = (await Backend.instance.get()) as
-        | DesktopBackend
-        | IosAppBackend;
-      const updating = backend.updateDictionary();
+      const updating = Backend.updateDictionary();
       updating.progress.subscribe((value) => {
         dictDescription = value;
       });

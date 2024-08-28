@@ -7,12 +7,11 @@ import { AnkiApi } from "@platform/anki";
 
 const initialized = initialize();
 
-async function initialize(): Promise<[Config, Backend, AnkiApi]> {
+async function initialize(): Promise<[Config, AnkiApi]> {
   const config = await Config.instance.get();
   config.setStyle(document);
-  const backend = await Backend.instance.get();
   const ankiApi = await AnkiApi.instance.get();
-  return [config, backend, ankiApi];
+  return [config, ankiApi];
 }
 
 const page = new PopupPage({
@@ -23,7 +22,7 @@ const page = new PopupPage({
 exposeGlobals({
   Platform,
   Utils,
-  backend: Backend.instance,
+  Backend,
   config: Config.instance,
   ankiApi: AnkiApi.instance,
   page,

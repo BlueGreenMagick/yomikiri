@@ -1,25 +1,24 @@
+import { Backend } from "@platform/backend";
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
 import Utils, { exposeGlobals } from "lib/utils";
-import { IosAppBackend } from "platform/iosapp/backend";
 import { IosAppAnkiApi } from "platform/iosapp/anki";
 
-const backend = IosAppBackend.instance.get();
 const ankiApi = IosAppAnkiApi.instance.get();
 
 const initialized = initialize();
 
 createSvelte(initialized);
 
-async function initialize(): Promise<[Config, IosAppBackend, IosAppAnkiApi]> {
+async function initialize(): Promise<[Config, IosAppAnkiApi]> {
   const config = await Config.instance.get();
   config.setStyle(document);
 
-  return [config, backend, ankiApi];
+  return [config, ankiApi];
 }
 
 function createSvelte(
-  initialized: Promise<[Config, IosAppBackend, IosAppAnkiApi]>,
+  initialized: Promise<[Config, IosAppAnkiApi]>,
 ): DictionaryPage {
   const params = new URLSearchParams(window.location.search);
   const context = params.get("context") as "app" | "action";
@@ -33,6 +32,6 @@ function createSvelte(
 exposeGlobals({
   Utils,
   config: Config.instance,
-  backend,
+  Backend,
   ankiApi,
 });

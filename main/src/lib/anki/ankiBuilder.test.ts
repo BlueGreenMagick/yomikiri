@@ -116,11 +116,12 @@ test.skipIf(!REGENERATE_JSON)("Re-generate tokenize() result", async () => {
     throw new Error("Could not retrieve file path of ankiBuilder.test.ts");
   }
 
-  const backend = await DesktopBackend.instance.get();
-
   const results: { [label: string]: TokenizeResult } = {};
   for (const test of tests) {
-    const tokenizeResult = await backend.tokenize(test.sentence, test.idx);
+    const tokenizeResult = await DesktopBackend.tokenize({
+      text: test.sentence,
+      charAt: test.idx,
+    });
     results[test.label] = tokenizeResult;
   }
 
