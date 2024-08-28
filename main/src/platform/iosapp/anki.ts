@@ -1,13 +1,13 @@
-import {
-  iosAnkiMobileURL,
-  type AnkiInfo,
-  type IAnkiAddNotes,
-  type IAnkiOptions,
-} from "../common/anki";
 import Utils, { Lazy } from "lib/utils";
 import { Platform } from ".";
 import type { AnkiNote } from "lib/anki";
 import { YomikiriError } from "lib/error";
+import {
+  type AnkiInfo,
+  type IAnkiAddNotes,
+  type IAnkiOptions,
+} from "../common/anki";
+import { iosAnkiMobileURL } from "../shared/anki";
 
 interface Named {
   name: string;

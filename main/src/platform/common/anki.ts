@@ -1,5 +1,4 @@
 import type { AnkiNote } from "lib/anki";
-import Utils from "lib/utils";
 import type { DesktopAnkiApi } from "../desktop/anki";
 import type { IosAnkiApi } from "../ios/anki";
 import type { IosAppAnkiApi } from "../iosapp/anki";
@@ -33,28 +32,6 @@ export interface IAnkiOptions {
 export interface IAnkiAddNotes {
   /** Returns false if note is deferred */
   addNote: (note: AnkiNote, tabId?: number) => Promise<boolean>;
-}
-
-export function iosAnkiMobileURL(note: AnkiNote, successUrl?: string): string {
-  const fields: Record<string, string> = {};
-  for (const field of note.fields) {
-    const queryKey = "fld" + field.name;
-    fields[queryKey] = field.value;
-  }
-  const params: Record<string, string> = {
-    type: note.notetype,
-    deck: note.deck,
-    tags: note.tags,
-    // allow duplicate
-    dupes: "1",
-    ...fields,
-  };
-  if (typeof successUrl === "string") {
-    params["x-success"] = successUrl;
-  }
-  const url =
-    "anki://x-callback-url/addnote?" + Utils.generateUrlParams(params);
-  return url;
 }
 
 export type ExtensionAnkiApi = DesktopAnkiApi | IosAnkiApi;
