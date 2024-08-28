@@ -11,14 +11,15 @@
     buildAnkiField,
     type AnkiTemplateField,
   } from "lib/anki";
-  import type Config from "lib/config";
+
   import Select from "components/Select.svelte";
   import NoteFieldEditor from "components/anki/NoteFieldEditor.svelte";
   import IconedButton from "components/IconedButton.svelte";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
+  import Config from "lib/config";
 
-  export let config: Config;
+  const config = Config.using();
   export let fieldTemplate: AnkiTemplateField;
 
   let content: AnkiTemplateFieldContent;

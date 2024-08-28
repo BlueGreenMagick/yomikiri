@@ -1,6 +1,6 @@
 <script lang="ts">
   import IconedButton from "components/IconedButton.svelte";
-  import type Config from "lib/config";
+  import { Config } from "lib/config";
   import IconRefreshOutline from "@icons/refresh-outline.svg";
   import IconTrash from "@icons/trash.svg";
   import type { AnkiApi, DesktopAnkiApi } from "@platform/anki";
@@ -8,11 +8,11 @@
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
   import CancelDeferredNoteDeletion from "components/toast/CancelDeferredNoteDeletion.svelte";
 
-  export let config: Config;
   export let ankiApi: AnkiApi;
 
   let addingNotes = false;
 
+  const config = Config.using();
   const confDeferredNoteCount = config.store("state.anki.deferred_note_count");
   const confDeferredNoteError = config.store("state.anki.deferred_note_error");
 

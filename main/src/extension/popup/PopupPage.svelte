@@ -1,21 +1,20 @@
 <script lang="ts">
-  import type Config from "lib/config";
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import type { AnkiApi } from "@platform/anki";
   import Page from "components/Page.svelte";
   import { Platform } from "@platform";
 
-  export let initialized: Promise<[Config, AnkiApi]>;
+  export let initialized: Promise<[AnkiApi]>;
 </script>
 
 <Page>
   <div id="main">
-    {#await initialized then [config, ankiApi]}
+    {#await initialized then [ankiApi]}
       {#if Platform.IS_IOS}
-        <ActionButtons {config} />
+        <ActionButtons />
       {:else}
-        <PopupView {config} {ankiApi} />
+        <PopupView {ankiApi} />
       {/if}
     {/await}
   </div>

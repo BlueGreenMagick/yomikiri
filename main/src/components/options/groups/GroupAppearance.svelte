@@ -2,10 +2,9 @@
   import OptionNumber from "../items/OptionNumber.svelte";
   import OptionText from "../items/OptionText.svelte";
   import GroupedOptions from "../GroupedOptions.svelte";
-  import type Config from "lib/config";
+  import Config from "lib/config";
 
-  export let config: Config;
-
+  const config = Config.using();
   const fontSizeConfig = config.store("general.font_size");
   const japaneseFontConfig = config.store("general.font");
 </script>

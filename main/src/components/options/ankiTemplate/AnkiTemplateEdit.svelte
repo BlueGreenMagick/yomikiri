@@ -4,11 +4,11 @@
     type AnkiTemplate,
     type AnkiTemplateField,
   } from "lib/anki";
-  import type { Config } from "lib/config";
   import type { AnkiInfo } from "platform/common/anki";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
+  import Config from "lib/config";
 
-  export let config: Config;
+  const config = Config.using();
   export let ankiInfo: AnkiInfo;
 
   let deckNames: string[];
@@ -130,10 +130,7 @@
   </div>
   <div class="fields group">
     {#each fieldNames as fieldName (fieldName)}
-      <AnkiTemplateFieldEdit
-        {config}
-        bind:fieldTemplate={fieldTemplates[fieldName]}
-      />
+      <AnkiTemplateFieldEdit bind:fieldTemplate={fieldTemplates[fieldName]} />
     {/each}
   </div>
   <div class="tags-container group">

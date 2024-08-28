@@ -8,10 +8,9 @@ const ankiApi = IosAppAnkiApi.instance.get();
 
 const initialized = initialize();
 
-async function initialize(): Promise<[Config, IosAppAnkiApi]> {
-  const config = await Config.instance.get();
-  config.setStyle(document);
-  return [config, ankiApi];
+async function initialize(): Promise<[IosAppAnkiApi]> {
+  await Promise.resolve();
+  return [ankiApi];
 }
 
 const page = new OptionsPage({

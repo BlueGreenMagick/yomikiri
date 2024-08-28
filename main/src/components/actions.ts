@@ -1,4 +1,5 @@
 import { Platform } from "@platform";
+import Config from "lib/config";
 
 /**
  * adds one of .desktop, .ios, .iosapp depending on platform to <html>
@@ -26,4 +27,11 @@ export function platformClass(attached: HTMLElement) {
       return;
     });
   }
+}
+
+export function setStyle(attached: HTMLElement) {
+  const doc = attached.ownerDocument;
+  void Config.instance.get().then((config) => {
+    config.setStyle(doc);
+  });
 }

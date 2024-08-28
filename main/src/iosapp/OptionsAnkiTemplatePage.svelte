@@ -1,16 +1,15 @@
 <script lang="ts">
-  import type Config from "lib/config";
   import LoadAnkiTemplate from "components/options/ankiTemplate/LoadAnkiTemplate.svelte";
   import type { IosAppAnkiApi } from "platform/iosapp/anki";
   import Page from "components/Page.svelte";
 
-  export let initialized: Promise<[Config, IosAppAnkiApi]>;
+  export let initialized: Promise<[IosAppAnkiApi]>;
 </script>
 
 <Page>
   <div id="main">
-    {#await initialized then [config, ankiApi]}
-      <LoadAnkiTemplate {config} {ankiApi} />
+    {#await initialized then [ankiApi]}
+      <LoadAnkiTemplate {ankiApi} />
     {/await}
   </div>
 </Page>

@@ -1,20 +1,18 @@
 <script lang="ts">
   import type { AnkiOptionsApi } from "@platform/anki";
-  import type { Config } from "lib/config";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
   import { Platform } from "@platform";
 
-  export let config: Config;
   export let ankiApi: AnkiOptionsApi;
 </script>
 
 <div class="container">
   <div id="main-column">
-    <MainColumn {config} {ankiApi} />
+    <MainColumn {ankiApi} />
   </div>
   {#if Platform.IS_DESKTOP}
-    <div id="preview-column"><PreviewColumn {config} /></div>
+    <div id="preview-column"><PreviewColumn /></div>
   {/if}
 </div>
 

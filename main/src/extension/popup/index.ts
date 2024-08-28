@@ -7,11 +7,9 @@ import { AnkiApi } from "@platform/anki";
 
 const initialized = initialize();
 
-async function initialize(): Promise<[Config, AnkiApi]> {
-  const config = await Config.instance.get();
-  config.setStyle(document);
+async function initialize(): Promise<[AnkiApi]> {
   const ankiApi = await AnkiApi.instance.get();
-  return [config, ankiApi];
+  return [ankiApi];
 }
 
 const page = new PopupPage({

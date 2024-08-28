@@ -6,11 +6,9 @@ import { DesktopAnkiApi } from "platform/desktop/anki";
 import Utils, { exposeGlobals } from "lib/utils";
 import Config from "lib/config";
 
-async function initialize(): Promise<[Config, DesktopAnkiApi]> {
-  const config = await Config.instance.get();
-  config.setStyle(document);
+async function initialize(): Promise<[DesktopAnkiApi]> {
   const ankiApi = await DesktopAnkiApi.instance.get();
-  return [config, ankiApi];
+  return [ankiApi];
 }
 
 const initialized = initialize();

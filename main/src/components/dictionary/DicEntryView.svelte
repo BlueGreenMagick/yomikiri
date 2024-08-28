@@ -10,19 +10,19 @@
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import { RubyString } from "lib/japanese";
-  import type Config from "lib/config";
+  import { Config } from "lib/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import RubyText from "../RubyText.svelte";
   import IconedButton from "components/IconedButton.svelte";
 
-  export let config: Config;
   export let entry: Entry;
   export let model: DicEntriesModel;
   export let onSelectEntryForAnki: (
     selected: SelectedEntryForAnki,
   ) => void = () => null;
 
+  const config = Config.using();
   const selectedSense = model.selectedSense;
   const ankiEnabledConfig = config.store("anki.enabled");
 
@@ -66,7 +66,7 @@
   <Badges {entry} />
   <div class="groups">
     {#each groups as group}
-      <GroupedSenseView {config} {group} {model} {onSelectSense} />
+      <GroupedSenseView {group} {model} {onSelectSense} />
     {/each}
   </div>
 </div>

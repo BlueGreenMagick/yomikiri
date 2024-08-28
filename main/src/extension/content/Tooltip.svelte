@@ -11,14 +11,15 @@
   import { TokenizeResult } from "@platform/backend";
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import ToolbarWithPane from "components/dictionary/ToolbarWithPane.svelte";
-  import type { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
+  import { Config } from "lib/config";
 
-  export let config: Config;
   export let ankiApi: AnkiApi;
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;
   export let onUpdateHeight: () => void = () => null;
+
+  const config = Config.using();
 
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
@@ -84,7 +85,6 @@
     </div>
     <div class="scrollable">
       <DicEntriesView
-        {config}
         entries={tokenizeResult.entries}
         onSelectEntryForAnki={selectedEntryForAnki}
       />

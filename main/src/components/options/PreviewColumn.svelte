@@ -4,7 +4,7 @@
   import { Config } from "lib/config";
   import { onMount } from "svelte";
 
-  export let config: Config;
+  const config = Config.using();
 
   const entriesData: Entry[] = (
     [
@@ -98,7 +98,7 @@
 
 <div>
   {#key updateTick}
-    <DicEntriesView {config} entries={entriesData} />
+    <DicEntriesView entries={entriesData} />
   {/key}
 </div>
 

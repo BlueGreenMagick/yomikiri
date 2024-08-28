@@ -5,6 +5,7 @@ import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
 import { Disposable, LazyAsync, log } from "./utils";
+import { YomikiriError } from "./error";
 
 /** Incremented each time Configuration interface is modified */
 export const CONFIG_VERSION = 3;
@@ -99,6 +100,23 @@ export class Config {
     const config = new Config(storage);
     await config.updateVersion();
     return config;
+  }
+
+  /**
+   * Assumes config is already initialized, and returns instance.
+   *
+   * Throws an error if config was not initialized.
+   *
+   * This method should only be used in svelte components,
+   * where we *know* config was initialized in `Page.svelte`
+   */
+  static using(): Config {
+    const config = Config.instance.getIfInitialized();
+    if (config !== undefined) {
+      return config;
+    } else {
+      throw new YomikiriError("Fatal: Config was not initialized");
+    }
   }
 
   get<K extends keyof Configuration>(key: K): Configuration[K] {

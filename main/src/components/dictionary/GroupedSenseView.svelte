@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Sense, type GroupedSense } from "lib/dicEntry";
-  import type { Config } from "lib/config";
+  import { Config } from "lib/config";
   import type { DicEntriesModel } from "./dicEntriesModel";
 
-  export let config: Config;
   export let model: DicEntriesModel;
   export let group: GroupedSense;
   export let onSelectSense: (sense: Sense) => void;
 
+  const config = Config.using();
   const selectedSense = model.selectedSense;
   const ankiEnabledConfig = config.store("anki.enabled");
 

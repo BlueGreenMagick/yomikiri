@@ -4,7 +4,7 @@
   import Config from "lib/config";
   import { Platform } from "@platform";
 
-  export let config: Config;
+  const config = Config.using();
 
   let stateEnabledConfig = config.store("state.enabled");
 

@@ -223,7 +223,6 @@ export class Tooltip {
     const tooltipPage = new TooltipPage({
       target: doc.body,
       props: {
-        config: this.config,
         ankiApi: this.ankiApi,
         onClose: () => {
           this.hide();

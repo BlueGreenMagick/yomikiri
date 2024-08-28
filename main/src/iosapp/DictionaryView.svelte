@@ -9,13 +9,14 @@
     type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
-  import type Config from "lib/config";
+  import { Config } from "lib/config";
   import { Platform } from "platform/iosapp";
 
-  export let config: Config;
   export let ankiApi: IosAppAnkiApi;
   export let context: "app" | "action";
   export let searchText: string;
+
+  const config = Config.using();
 
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
@@ -51,7 +52,6 @@
 <div class="dictionary-view">
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize
-      {config}
       bind:searchText
       showCloseButton={context === "action"}
       {onShowAnkiPreview}

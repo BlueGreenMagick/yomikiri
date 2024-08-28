@@ -9,13 +9,13 @@
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import AddToAnki from "../../components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import type { Config } from "lib/config";
+  import { Config } from "lib/config";
   import type { AnkiApi } from "@platform/anki";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
 
-  export let config: Config;
   export let ankiApi: AnkiApi;
 
+  const config = Config.using();
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
 
@@ -47,9 +47,9 @@
 
 <div class="popup">
   <div class="tokenize-container" class:previewIsVisible>
-    <Tokenize {onShowAnkiPreview} {config}>
-      <ActionButtons {config} />
-      <DeferredNoteInfo {config} {ankiApi} />
+    <Tokenize {onShowAnkiPreview}>
+      <ActionButtons />
+      <DeferredNoteInfo {ankiApi} />
     </Tokenize>
   </div>
   {#if previewIsVisible}

@@ -10,16 +10,12 @@ const initialized = initialize();
 
 createSvelte(initialized);
 
-async function initialize(): Promise<[Config, IosAppAnkiApi]> {
-  const config = await Config.instance.get();
-  config.setStyle(document);
-
-  return [config, ankiApi];
+async function initialize(): Promise<[IosAppAnkiApi]> {
+  await Promise.resolve();
+  return [ankiApi];
 }
 
-function createSvelte(
-  initialized: Promise<[Config, IosAppAnkiApi]>,
-): DictionaryPage {
+function createSvelte(initialized: Promise<[IosAppAnkiApi]>): DictionaryPage {
   const params = new URLSearchParams(window.location.search);
   const context = params.get("context") as "app" | "action";
   const searchText = params.get("search") ?? "";
