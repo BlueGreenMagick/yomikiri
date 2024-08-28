@@ -490,6 +490,47 @@ export class Disposable {
   }
 }
 
+export class Hook<I extends Array<unknown> = [], O = void> {
+  private fns: ((...args: I) => O)[] = [];
+
+  listen(fn: (...args: I) => O): Disposable {
+    this.fns.push(fn);
+    return new Disposable(() => {
+      const idx = this.fns.indexOf(fn);
+      this.fns.splice(idx, 1);
+    });
+  }
+
+  call(...args: I): O[] {
+    const results: O[] = [];
+    for (const fn of this.fns) {
+      results.push(fn(...args));
+    }
+    return results;
+  }
+}
+
+export class AsyncHook<I extends Array<unknown> = [], O = void> {
+  private fns: ((...args: I) => Promise<O>)[] = [];
+
+  listen(fn: (...args: I) => Promise<O>): Disposable {
+    this.fns.push(fn);
+    return new Disposable(() => {
+      const idx = this.fns.indexOf(fn);
+      this.fns.splice(idx, 1);
+    });
+  }
+
+  async call(...args: I): Promise<O[]> {
+    const promises = [];
+    for (const fn of this.fns) {
+      const p = fn(...args);
+      promises.push(p);
+    }
+    return Promise.all(promises);
+  }
+}
+
 /**
  * Returns datestring in yyyy-mm-dd format.
  *
