@@ -55,7 +55,7 @@ export interface MessageWebviewMap {
   tokenize: [TokenizeRequest, RawTokenizeResult];
   searchTerm: [SearchRequest, RawTokenizeResult];
   versionInfo: [null, VersionInfo];
-  updateDict: [null, void];
+  updateDict: [null, boolean];
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
   tts: [TTSRequest, null];

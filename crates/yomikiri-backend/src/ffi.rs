@@ -5,12 +5,12 @@ use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::read::GzDecoder;
+use ureq::Response;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::{DICT_FILENAME, SCHEMA_VER};
 
 use fs_err::{self as fs, File};
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
@@ -129,20 +129,45 @@ impl DictFilesReplaceJob {
     }
 }
 
-/// Downloads and writes new dictionary files into specified path.
-#[uniffi::export]
-pub fn update_dictionary_file(temp_dir: String) -> FFIResult<DictFilesReplaceJob> {
-    _update_dictionary_file(temp_dir).uniffi()
+#[derive(uniffi::Enum)]
+pub enum UpdateDictionaryResult {
+    UpToDate,
+    Replace {
+        job: Arc<DictFilesReplaceJob>,
+        etag: Option<String>,
+    },
 }
 
-fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
-    let entries = {
-        // JMDict is currently 58MB.
-        let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
-        download_dictionary(&mut bytes)?;
-        let xml = String::from_utf8(bytes)?;
-        parse_jmdict_xml(&xml)
-    }?;
+/// Downloads and writes new dictionary files into specified path.
+///
+/// - `etag`: ETag header value of previous download
+#[uniffi::export]
+pub fn update_dictionary_file(
+    temp_dir: String,
+    etag: Option<String>,
+) -> FFIResult<UpdateDictionaryResult> {
+    _update_dictionary_file(temp_dir, etag).uniffi()
+}
+
+fn _update_dictionary_file(
+    temp_dir: String,
+    etag: Option<String>,
+) -> Result<UpdateDictionaryResult> {
+    let resp = download_dictionary(&etag)?;
+    if resp.status() == 304 {
+        return Ok(UpdateDictionaryResult::UpToDate);
+    }
+
+    let etag = resp.header("ETag").map(|s| s.to_owned());
+    let mut decoder = GzDecoder::new(resp.into_reader());
+    // JMDict is currently 58MB.
+    let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
+    std::io::copy(&mut decoder, &mut bytes)?;
+    let xml = String::from_utf8(bytes)?;
+
+    std::mem::drop(decoder);
+
+    let entries = parse_jmdict_xml(&xml)?;
     let temp_dir = Path::new(&temp_dir).join("dict");
     let temp_dict_path = temp_dir.join(DICT_FILENAME);
 
@@ -158,8 +183,12 @@ fn _update_dictionary_file(temp_dir: String) -> Result<DictFilesReplaceJob> {
     let replace_job = DictFilesReplaceJob {
         temp_dir: temp_dir.to_path_buf(),
     };
+    let result = UpdateDictionaryResult::Replace {
+        job: Arc::new(replace_job),
+        etag,
+    };
 
-    Ok(replace_job)
+    Ok(result)
 }
 
 #[uniffi::export]
@@ -167,12 +196,14 @@ pub fn dict_schema_ver() -> u16 {
     SCHEMA_VER
 }
 
-fn download_dictionary<W: Write>(writer: &mut W) -> Result<()> {
+fn download_dictionary(etag: &Option<String>) -> Result<Response> {
     let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
-    let resp = ureq::get(download_url).call()?;
-    let mut decoder = GzDecoder::new(resp.into_reader());
-    std::io::copy(&mut decoder, writer)?;
-    Ok(())
+    let mut req = ureq::get(download_url);
+    if let Some(etag) = etag {
+        req = req.set("If-None-Match", etag);
+    }
+    let resp = req.call()?;
+    Ok(resp)
 }
 
 // TODO: switch to Memmap

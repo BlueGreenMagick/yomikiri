@@ -59,5 +59,6 @@ export async function deleteSavedDictionary() {
   console.info("Will delete user-installed dictionary");
   await db.clear("yomikiri-dictionary");
   await removeStorage("dict.schema_ver");
+  await removeStorage("dict.jmdict.etag");
   console.info("Deleted user-installed dictionary");
 }

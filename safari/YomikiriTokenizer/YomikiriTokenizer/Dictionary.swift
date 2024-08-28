@@ -5,6 +5,7 @@ func deleteUserDictionary(_ userDictUrl: URL) {
     os_log(.info, "Deleting user dictionary files")
     _ = try? FileManager.default.removeItem(at: userDictUrl)
     _ = try? Storage.setDictSchemaVer(0)
+    _ = try? Storage.setJmdictEtag(nil)
 }
 
 /// @return user dictionary `URL` if it exists and is valid.

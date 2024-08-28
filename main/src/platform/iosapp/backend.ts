@@ -46,7 +46,7 @@ export namespace IosAppBackend {
     return TokenizeResult.from(raw);
   }
 
-  export function updateDictionary(): PromiseWithProgress<void, string> {
+  export function updateDictionary(): PromiseWithProgress<boolean, string> {
     return PromiseWithProgress.fromPromise(
       IosAppPlatform.messageWebview("updateDict", null),
       "Updating dictionary... This may take up to a minute.",

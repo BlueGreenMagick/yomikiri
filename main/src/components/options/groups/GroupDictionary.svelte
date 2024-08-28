@@ -37,8 +37,13 @@
       updating.progress.subscribe((value) => {
         dictDescription = value;
       });
-      const _dictionaryMetadata = await updating;
-      dictDescription = "Successfully updated dictionary!";
+      const updated = await updating;
+      if (updated) {
+        dictDescription = "Successfully updated dictionary!";
+      } else {
+        dictDescription = "Dictionary is already up to date.";
+      }
+
       state = "downloaded";
     } catch (e) {
       state = "error";

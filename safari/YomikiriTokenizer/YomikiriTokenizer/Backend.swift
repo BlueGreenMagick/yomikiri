@@ -16,21 +16,28 @@ public enum Backend {
         return try Backend.rust.get()
     }
 
-    /// Update dictionary files, and update dictionary used within backend.
+    /// Updates dictionary files, and updates dictionary used within backend.
+    ///
+    /// - Returns: `false` if dictionary is already up-to-date, and was not rebuilt. Otherwise, `true`
     ///
     /// If an error occurs, tries to restore previous dictionary.
-    public static func updateDictionary() async throws {
+    public static func updateDictionary() async throws -> Bool {
         let tempDir = FileManager.default.temporaryDirectory
         let userDict = try getUserDictUrl()
         // update file in background thread
-        let replaceJob = try await Task {
-            try updateDictionaryFile(tempDir: tempDir.path)
+        let result = try await Task {
+            try updateDictionaryFile(tempDir: tempDir.path, etag: Storage.getJmdictEtag())
         }.value
+
+        guard case let .replace(job: replaceJob, etag) = result else {
+            return false
+        }
 
         // drop backend to close mmap and open file handle
         Backend.rust = Result.failure(YomikiriTokenizerError.UpdatingDictionary)
         do {
             let rust = try replaceJob.replace(dictPath: userDict.path)
+            try Storage.setJmdictEtag(etag)
             Backend.rust = Result.success(rust)
         } catch {
             // using restored user dictionary
@@ -39,6 +46,7 @@ public enum Backend {
         }
         let schemaVer = Int(dictSchemaVer())
         try Storage.setDictSchemaVer(schemaVer)
+        return true
     }
 }
 

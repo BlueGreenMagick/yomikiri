@@ -95,6 +95,8 @@ interface StorageValues {
   "deferred-anki-note": AnkiNote[];
   "deferred-anki-note-errors": string[];
   "dict.schema_ver": number;
+  /** ETag of jmdict response */
+  "dict.jmdict.etag": string;
   // ios
   "x-callback.tabId": number;
   "x-callback.tabUrl": string;

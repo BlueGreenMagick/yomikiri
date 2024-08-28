@@ -20,8 +20,16 @@ public enum Storage {
         return try defaults.get().integer(forKey: "dict.schema_ver")
     }
 
-    public static func setDictSchemaVer(_ schemaVer: Int) throws {
+    public static func setDictSchemaVer(_ schemaVer: Int?) throws {
         return try defaults.get().set(schemaVer, forKey: "dict.schema_ver")
+    }
+
+    public static func getJmdictEtag() throws -> String? {
+        return try defaults.get().string(forKey: "dict.jmdict.etag")
+    }
+
+    public static func setJmdictEtag(_ etag: String?) throws {
+        return try defaults.get().set(etag, forKey: "dict.jmdict.etag")
     }
 }
 

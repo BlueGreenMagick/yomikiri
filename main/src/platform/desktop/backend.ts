@@ -3,7 +3,9 @@ import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-rs";
 import {
   BackgroundFunction,
   createConnection,
+  getStorage,
   handleConnection,
+  removeStorage,
   setStorage,
 } from "extension/browserApi";
 
@@ -99,7 +101,8 @@ export namespace DesktopBackend {
     },
   );
 
-  export function updateDictionary(): PromiseWithProgress<void, string> {
+  /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
+  export function updateDictionary(): PromiseWithProgress<boolean, string> {
     if (EXTENSION_CONTEXT === "background") {
       const prom = PromiseWithProgress.fromPromise(
         _updateDictionary(progressFn),
@@ -112,12 +115,12 @@ export namespace DesktopBackend {
       return prom;
     } else {
       const _port = createConnection("updateDictionary");
-      const [prom, resolve, reject] = createPromise<void>();
-      const promWithProgress = PromiseWithProgress.fromPromise<void, string>(
+      const [prom, resolve, reject] = createPromise<boolean>();
+      const promWithProgress = PromiseWithProgress.fromPromise<boolean, string>(
         prom,
       );
       let completed = false;
-      _port.onMessage.addListener((msg: ConnectionMessage<void>) => {
+      _port.onMessage.addListener((msg: ConnectionMessage<boolean>) => {
         if (msg.status === "progress") {
           promWithProgress.setProgress(msg.message);
         } else if (msg.status === "success") {
@@ -142,11 +145,16 @@ export namespace DesktopBackend {
     }
   }
 
+  /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
   async function _updateDictionary(
     progressFn: (msg: string) => unknown,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const wasm = await _wasm!.get();
     const jmdict_bytes = await fetchDictionary();
+    if (jmdict_bytes === false) {
+      return false;
+    }
+
     progressFn("Creating dictionary file...");
     await nextTask();
     const { dict_bytes } = wasm.update_dictionary(jmdict_bytes);
@@ -154,6 +162,7 @@ export namespace DesktopBackend {
     await saveDictionaryFile(dict_bytes);
     const dictSchemaVer = dict_schema_ver();
     await setStorage("dict.schema_ver", dictSchemaVer);
+    return true;
   }
 }
 
@@ -169,10 +178,10 @@ if (EXTENSION_CONTEXT === "background") {
     });
 
     progress
-      .then((metadata) => {
-        const message: ConnectionMessageSuccess<void> = {
+      .then((data) => {
+        const message: ConnectionMessageSuccess<boolean> = {
           status: "success",
-          message: metadata,
+          message: data,
         };
         port.postMessage(message);
       })
@@ -206,10 +215,30 @@ interface ConnectionMessageError {
   message: YomikiriError;
 }
 
-async function fetchDictionary(): Promise<Uint8Array> {
-  const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz");
-  const buffer = await resp.arrayBuffer();
-  return new Uint8Array(buffer);
+/**
+ * Returns `false` if we get '304 NOT MODIFIED' response,
+ * which means existing jmdict file is up to date.
+ *
+ * Otherwise, downloads and returns jmdict file content.
+ */
+async function fetchDictionary(): Promise<Uint8Array | false> {
+  const etag = await getStorage("dict.jmdict.etag");
+  const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz", {
+    headers: etag ? { "If-None-Match": etag } : {},
+  });
+  if (resp.status === 304) {
+    return false;
+  } else {
+    const etag = resp.headers.get("ETag");
+    if (typeof etag === "string") {
+      await setStorage("dict.jmdict.etag", etag);
+    } else {
+      await removeStorage("dict.jmdict.etag");
+    }
+
+    const buffer = await resp.arrayBuffer();
+    return new Uint8Array(buffer);
+  }
 }
 
 async function saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
