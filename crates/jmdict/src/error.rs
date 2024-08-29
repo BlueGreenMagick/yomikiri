@@ -17,6 +17,8 @@ pub enum Error {
         expected: &'static str,
         actual: String,
     },
+    #[error("Invalid xml: {0}")]
+    InvalidXml(String),
     #[error("{0}")]
     Other(String),
 }

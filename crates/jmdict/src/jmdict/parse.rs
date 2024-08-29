@@ -3,7 +3,7 @@ use regex::Regex;
 use rustyxml::{Event, Parser};
 
 use super::types::{JMDict, JMEntry, JMForm, JMReading, JMSense};
-use crate::xml::{remove_doctype, unescape_entity};
+use crate::xml::{parse_characters, remove_doctype, unescape_entity};
 use crate::{Error, Result};
 
 lazy_static! {
@@ -264,35 +264,6 @@ fn parse_sense(parser: &mut Parser) -> Result<JMSense> {
             _ => {}
         }
     }
-}
-
-pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
-    let mut characters = String::new();
-    for event in parser {
-        match event? {
-            Event::ElementStart(tag) => {
-                return Err(Error::Unexpected {
-                    expected: "character",
-                    actual: format!("starting tag <{}>", &tag.name),
-                });
-            }
-            Event::ElementEnd(tag) => {
-                if tag.name == in_tag {
-                    return Ok(characters);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "character",
-                        actual: format!("ending tag </{}>", &tag.name),
-                    });
-                }
-            }
-            Event::Characters(chars) => {
-                characters.push_str(chars.as_str());
-            }
-            _ => {}
-        }
-    }
-    Err(format!("Closing tag not found </{}>", in_tag).into())
 }
 
 #[cfg(test)]
