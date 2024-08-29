@@ -9,8 +9,19 @@ use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 
-const JMDICT_FILENAME: &str = "JMdict_e.gz";
-const JMDICT_SOURCE_URL: &str = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
+struct RawFileMeta {
+    source_filename: &'static str,
+    source_url: &'static str,
+    out_filename: &'static str,
+}
+
+const JMDICT_FILE_META: RawFileMeta = RawFileMeta {
+    source_filename: "JMDICT_e.gz",
+    source_url: "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz",
+    out_filename: "jmdict_english.xml",
+};
+
+const RAW_FILE_METAS: [RawFileMeta; 1] = [JMDICT_FILE_META];
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -28,9 +39,9 @@ enum Commands {
 
 #[derive(Args, Debug)]
 struct DownloadOpts {
-    /// Output path to downloaded jmdict file
-    #[arg(short, long)]
-    out: PathBuf,
+    /// Output directory path to downloaded jmdict file
+    #[arg(long)]
+    outdir: PathBuf,
     #[command(flatten)]
     mode: DownloadMode,
     /// Force download jmdict file even if file exists at output path
@@ -51,9 +62,9 @@ struct DownloadMode {
 
 #[derive(Args, Debug)]
 struct GenerateOpts {
-    /// Path to Jmdict xml file
+    /// Path to directory that contains jmdict files
     #[arg(long)]
-    jmdict: PathBuf,
+    rawdir: PathBuf,
     /// Output path to yomikiri dictionary file
     #[arg(short, long)]
     out: PathBuf,
@@ -72,38 +83,39 @@ fn main() -> Result<()> {
 }
 
 fn run_download(opts: &DownloadOpts) -> Result<()> {
-    let output_path = &opts.out;
+    let output_dir = &opts.outdir;
 
-    if output_path.try_exists()? {
-        if !opts.force {
-            println!("Skipped: Jmdict file already exists at output path.");
-            return Ok(());
-        } else {
-            println!("Deleting file that already exists at output path.");
-            fs::remove_file(&output_path)?;
-        }
-    }
-
-    let output_dir = output_path
-        .parent()
-        .context("Output path does not have a parent directory.")?;
     fs::create_dir_all(&output_dir)?;
 
-    if opts.mode.new {
-        download_jmdict(JMDICT_SOURCE_URL, output_path)
-    } else if let Some(version) = opts.mode.version.as_ref() {
-        let url = format!(
-            "https://github.com/BlueGreenMagick/yomikiri/releases/download/{}/{}",
-            version, JMDICT_FILENAME
-        );
-        download_jmdict(&url, output_path)
-    } else {
-        Err(anyhow!("Unreachable codepath"))
+    for meta in RAW_FILE_METAS {
+        let output_path = output_dir.join(meta.out_filename);
+        if output_path.try_exists()? {
+            if !opts.force {
+                println!("Skipped: '{}' already exists.", &meta.out_filename);
+                return Ok(());
+            } else {
+                fs::remove_file(&output_path)?;
+                println!("Deleted file '{}'", &meta.out_filename);
+            }
+        }
+        if opts.mode.new {
+            download_jmdict(&meta.source_url, &output_path)?;
+        } else if let Some(version) = opts.mode.version.as_ref() {
+            let url = format!(
+                "https://github.com/BlueGreenMagick/yomikiri/releases/download/{}/{}",
+                version, &meta.source_filename
+            );
+            download_jmdict(&url, &output_path)?;
+        } else {
+            return Err(anyhow!("Unreachable codepath"));
+        }
+        println!("Downloaded file '{}'", &meta.out_filename);
     }
+    Ok(())
 }
 
 fn run_generate(opts: &GenerateOpts) -> Result<()> {
-    let jmdict_file_path = &opts.jmdict;
+    let rawdir_path = &opts.rawdir;
     let output_path = &opts.out;
 
     let output_dir = output_path
@@ -114,6 +126,8 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
         println!("Skipped: Yomikiri dictionary file already exists at output path.");
         return Ok(());
     }
+
+    let jmdict_file_path = rawdir_path.join(JMDICT_FILE_META.out_filename);
 
     if !jmdict_file_path.exists() {
         return Err(anyhow!("Jmdict file does not exist"));
