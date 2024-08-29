@@ -21,7 +21,13 @@ const JMDICT_FILE_META: RawFileMeta = RawFileMeta {
     out_filename: "jmdict_english.xml",
 };
 
-const RAW_FILE_METAS: [RawFileMeta; 1] = [JMDICT_FILE_META];
+const JMNEDICT_FILE_META: RawFileMeta = RawFileMeta {
+    source_filename: "JMnedict.xml.gz",
+    source_url: "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz",
+    out_filename: "jmnedict.xml",
+};
+
+const RAW_FILE_METAS: [RawFileMeta; 2] = [JMDICT_FILE_META, JMNEDICT_FILE_META];
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -92,20 +98,20 @@ fn run_download(opts: &DownloadOpts) -> Result<()> {
         if output_path.try_exists()? {
             if !opts.force {
                 println!("Skipped: '{}' already exists.", &meta.out_filename);
-                return Ok(());
+                continue;
             } else {
                 fs::remove_file(&output_path)?;
                 println!("Deleted file '{}'", &meta.out_filename);
             }
         }
         if opts.mode.new {
-            download_jmdict(&meta.source_url, &output_path)?;
+            download_dict(meta.source_url, &output_path)?;
         } else if let Some(version) = opts.mode.version.as_ref() {
             let url = format!(
                 "https://github.com/BlueGreenMagick/yomikiri/releases/download/{}/{}",
                 version, &meta.source_filename
             );
-            download_jmdict(&url, &output_path)?;
+            download_dict(&url, &output_path)?;
         } else {
             return Err(anyhow!("Unreachable codepath"));
         }
@@ -148,7 +154,7 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
 }
 
 /// download and unzip jmdict file into `output_path`
-fn download_jmdict(url: &str, output_path: &Path) -> Result<()> {
+fn download_dict(url: &str, output_path: &Path) -> Result<()> {
     let output_dir = output_path
         .parent()
         .context("output_path does not have a parent directory.")?;
