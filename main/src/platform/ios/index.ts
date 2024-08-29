@@ -180,7 +180,7 @@ export namespace IosPlatform {
     const iv = setInterval(checkReload, 1000);
 
     const ver = await requestToApp("iosVersion", null);
-    if (!(ver.major === 17 && ver.minor === 5)) {
+    if (!(ver.major === 17 && ver.minor >= 5)) {
       clearInterval(iv);
     }
   }
