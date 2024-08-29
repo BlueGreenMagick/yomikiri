@@ -21,18 +21,18 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Download jmdict file
-    Jmdict(JmdictOpts),
+    Download(DownloadOpts),
     /// Generate dictionary file from jmdict file
     Generate(GenerateOpts),
 }
 
 #[derive(Args, Debug)]
-struct JmdictOpts {
+struct DownloadOpts {
     /// Output path to downloaded jmdict file
     #[arg(short, long)]
     out: PathBuf,
     #[command(flatten)]
-    mode: JmdictMode,
+    mode: DownloadMode,
     /// Force download jmdict file even if file exists at output path
     #[arg(short, long, default_value_t = false)]
     force: bool,
@@ -40,7 +40,7 @@ struct JmdictOpts {
 
 #[derive(Args, Debug)]
 #[group(required = true, multiple = false)]
-struct JmdictMode {
+struct DownloadMode {
     /// Download jmdict file used in specified version
     #[arg(short, long)]
     version: Option<String>,
@@ -66,12 +66,12 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Jmdict(opts) => run_jmdict(opts),
+        Commands::Download(opts) => run_download(opts),
         Commands::Generate(opts) => run_generate(opts),
     }
 }
 
-fn run_jmdict(opts: &JmdictOpts) -> Result<()> {
+fn run_download(opts: &DownloadOpts) -> Result<()> {
     let output_path = &opts.out;
 
     if output_path.try_exists()? {
