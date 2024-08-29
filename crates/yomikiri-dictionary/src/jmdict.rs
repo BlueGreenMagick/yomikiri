@@ -1,7 +1,7 @@
 use crate::entry::{Entry, Form, PartOfSpeech, Reading, Sense};
 use crate::Result;
 use itertools::Itertools;
-use yomikiri_jmdict::{JMEntry, JMForm, JMReading, JMSense};
+use yomikiri_jmdict::jmdict::{JMEntry, JMForm, JMReading, JMSense};
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
     let jmdict = yomikiri_jmdict::parse_jmdict_xml(xml)?;
