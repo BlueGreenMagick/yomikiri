@@ -5,15 +5,15 @@ use yomikiri_unidic_types::{
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
+#[cfg(feature = "wasm")]
+use tsify_next::Tsify;
+
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Entry {
-    #[serde(rename = "f", default, skip_serializing_if = "Vec::is_empty")]
     pub forms: Vec<Form>,
-    #[serde(rename = "r")]
     pub readings: Vec<Reading>,
-    #[serde(rename = "s")]
     pub senses: Vec<Sense>,
-    #[serde(rename = "p", default, skip_serializing_if = "is_zero")]
     pub priority: u16,
 }
 
@@ -88,93 +88,67 @@ impl Entry {
     }
 }
 
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Form {
-    #[serde(rename = "f")]
     pub form: String,
-    #[serde(rename = "i", default, skip_serializing_if = "Vec::is_empty")]
     pub info: Vec<String>,
-    #[serde(rename = "u", default, skip_serializing_if = "is_false")]
     pub uncommon: bool,
 }
 
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Reading {
-    #[serde(rename = "r")]
     pub reading: String,
-    #[serde(rename = "nk", default, skip_serializing_if = "is_false")]
     pub nokanji: bool,
-    #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<String>,
-    #[serde(rename = "i", default, skip_serializing_if = "Vec::is_empty")]
     pub info: Vec<String>,
-    #[serde(rename = "u", default, skip_serializing_if = "is_false")]
     pub uncommon: bool,
 }
 
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
 pub struct Sense {
-    #[serde(rename = "tf", default, skip_serializing_if = "Vec::is_empty")]
     pub to_form: Vec<String>,
-    #[serde(rename = "tr", default, skip_serializing_if = "Vec::is_empty")]
     pub to_reading: Vec<String>,
-    #[serde(rename = "p", default, skip_serializing_if = "Vec::is_empty")]
     pub pos: Vec<PartOfSpeech>,
-    #[serde(rename = "mc", default, skip_serializing_if = "Vec::is_empty")]
     pub misc: Vec<String>,
-    #[serde(rename = "i", default, skip_serializing_if = "Vec::is_empty")]
     pub info: Vec<String>,
-    #[serde(rename = "d", default, skip_serializing_if = "Vec::is_empty")]
     pub dialect: Vec<String>,
-    #[serde(rename = "m", default, skip_serializing_if = "Vec::is_empty")]
     pub meaning: Vec<String>,
 }
 
 /// Unidic based pos tagging
+#[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, Decode, Encode)]
 pub enum PartOfSpeech {
     /// 名詞
-    #[serde(rename = "n")]
     Noun,
     /// 動詞
-    #[serde(rename = "v")]
     Verb,
     /// 形容詞
-    #[serde(rename = "a")]
     Adjective,
     /// 形容動詞 / 形状詞 (unidic)
-    #[serde(rename = "na")]
     NaAdjective,
     /// 助詞
-    #[serde(rename = "p")]
     Particle,
     /// 副詞
-    #[serde(rename = "av")]
     Adverb,
     /// 感動詞
-    #[serde(rename = "i")]
     Interjection,
     /// 接尾辞
-    #[serde(rename = "sf")]
     Suffix,
     /// 助動詞
-    #[serde(rename = "ax")]
     AuxiliaryVerb,
     /// 代名詞
-    #[serde(rename = "pn")]
     Pronoun,
     /// 接続詞
-    #[serde(rename = "c")]
     Conjunction,
     /// 接頭辞
-    #[serde(rename = "pf")]
     Prefix,
     /// 連体詞
-    #[serde(rename = "ad")]
     Adnomial,
-    #[serde(rename = "e")]
     Expression,
-    #[serde(rename = "u")]
     Unclassified,
 }
 

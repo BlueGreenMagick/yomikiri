@@ -6,6 +6,10 @@ license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+wasm = ["wasm-bindgen"]
+uniffi = ["dep:uniffi"]
+
 [dependencies]
 yomikiri-jmdict = { workspace = true }
 yomikiri-unidic-types = { workspace = true }
@@ -21,6 +25,8 @@ fst = { workspace = true }
 ouroboros = { workspace = true }
 chrono = { version = "0.4", features = ["alloc"] }
 uniffi = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+tsify-next = { workspace = true }
 
 [target.'cfg(target_family="wasm")'.dependencies.chrono]
 version = "0.4"
