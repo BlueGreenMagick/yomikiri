@@ -30,12 +30,12 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 switch key {
                 case "tokenize":
                     let req: TokenizeRequest = try jsonDeserialize(json: request)
-                    let result = try await Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
-                    jsonResponse = try jsonSerialize(obj: result)
+                    let result = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
+                    jsonResponse = try encodeRawTokenizeResult(res: result)
                 case "search":
                     let req: SearchRequest = try jsonDeserialize(json: request)
-                    let result = try await Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
-                    jsonResponse = try jsonSerialize(obj: result)
+                    let result = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
+                    jsonResponse = try encodeRawTokenizeResult(res: result)
                 case "addNote":
                     break
                 case "loadConfig":

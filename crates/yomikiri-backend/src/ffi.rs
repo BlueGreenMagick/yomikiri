@@ -5,6 +5,7 @@ use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::read::GzDecoder;
+use serde::Serialize;
 use ureq::Response;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
@@ -212,4 +213,21 @@ impl Dictionary<Vec<u8>> {
         let bytes = fs::read(dict_path.as_ref())?;
         Dictionary::try_new(bytes)
     }
+}
+
+pub trait ToJson: Sync + Send {
+    fn to_json(&self) -> FFIResult<String>;
+}
+
+impl<T: Serialize + Sync + Send> ToJson for T {
+    fn to_json(&self) -> FFIResult<String> {
+        serde_json::to_string(&self)
+            .context("Could not serialize object")
+            .uniffi()
+    }
+}
+
+#[uniffi::export]
+pub fn encode_raw_tokenize_result(res: &RawTokenizeResult) -> FFIResult<String> {
+    res.to_json()
 }

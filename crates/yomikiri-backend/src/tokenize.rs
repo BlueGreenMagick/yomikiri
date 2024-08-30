@@ -7,6 +7,7 @@ use crate::SharedBackend;
 use anyhow::{anyhow, Context, Result};
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
+use serde::Serialize;
 use std::borrow::Cow;
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
@@ -15,12 +16,8 @@ use yomikiri_unidic_types::{
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[cfg(wasm)]
-use serde::Serialize;
-
-#[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Token {
     /// NFC normalized
     pub text: String,
@@ -63,9 +60,8 @@ pub struct TokenDetails {
     pub conjugation: UnidicConjugationForm,
 }
 
-#[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct GrammarInfo {
     pub name: String,
     pub short: String,
@@ -82,9 +78,8 @@ impl From<&GrammarRule> for GrammarInfo {
     }
 }
 
-#[cfg_attr(wasm, derive(Serialize))]
 #[cfg_attr(uniffi, derive(uniffi::Record))]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct RawTokenizeResult {
     pub tokens: Vec<Token>,
     /// selected token index
