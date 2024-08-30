@@ -98,6 +98,7 @@ pub struct Form {
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
+#[serde(rename_all = "camelCase")]
 pub struct Reading {
     pub reading: String,
     pub nokanji: bool,
@@ -108,6 +109,7 @@ pub struct Reading {
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
+#[serde(rename_all = "camelCase")]
 pub struct Sense {
     pub to_form: Vec<String>,
     pub to_reading: Vec<String>,
@@ -121,6 +123,7 @@ pub struct Sense {
 /// Unidic based pos tagging
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, Decode, Encode)]
+#[serde(rename_all = "lowercase")]
 pub enum PartOfSpeech {
     /// 名詞
     Noun,
@@ -129,6 +132,7 @@ pub enum PartOfSpeech {
     /// 形容詞
     Adjective,
     /// 形容動詞 / 形状詞 (unidic)
+    #[serde(rename = "na-adjective")]
     NaAdjective,
     /// 助詞
     Particle,
@@ -139,6 +143,7 @@ pub enum PartOfSpeech {
     /// 接尾辞
     Suffix,
     /// 助動詞
+    #[serde(rename = "auxiliary verb")]
     AuxiliaryVerb,
     /// 代名詞
     Pronoun,
@@ -150,14 +155,6 @@ pub enum PartOfSpeech {
     Adnomial,
     Expression,
     Unclassified,
-}
-
-fn is_false(a: &bool) -> bool {
-    !*a
-}
-
-fn is_zero(a: &u16) -> bool {
-    *a == 0
 }
 
 impl PartOfSpeech {
