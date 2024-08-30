@@ -347,7 +347,9 @@ export function BackgroundFunction<K extends keyof MessageMap>(
   messageKey: K,
   fn: SimpleMessageHandlers[K],
 ) {
-  handleMessage(messageKey, fn);
+  if (EXTENSION_CONTEXT === "background") {
+    handleMessage(messageKey, fn);
+  }
 
   return async function inner(arg: MessageRequest<K>) {
     if (EXTENSION_CONTEXT !== "background") {
@@ -369,7 +371,9 @@ export function NonContentScriptFunction<K extends keyof MessageMap>(
   messageKey: K,
   fn: SimpleMessageHandlers[K],
 ) {
-  handleMessage(messageKey, fn);
+  if (EXTENSION_CONTEXT !== "contentScript") {
+    handleMessage(messageKey, fn);
+  }
 
   return async function inner(arg: MessageRequest<K>) {
     if (EXTENSION_CONTEXT === "contentScript") {
