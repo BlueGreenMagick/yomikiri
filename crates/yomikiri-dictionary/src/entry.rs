@@ -2,7 +2,7 @@ use bincode::{Decode, Encode};
 use serde::{Deserialize, Serialize};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
-    UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
+    UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicSymbolPos2, UnidicVerbPos2,
 };
 
 #[cfg(feature = "wasm")]
@@ -155,6 +155,8 @@ pub enum PartOfSpeech {
     Adnomial,
     Expression,
     Unclassified,
+    /// Represents symbol pos from unidic
+    Symbol,
 }
 
 impl PartOfSpeech {
@@ -175,6 +177,32 @@ impl PartOfSpeech {
             PartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
             PartOfSpeech::Expression => UnidicPos::Expression,
             PartOfSpeech::Unclassified => UnidicPos::Unknown,
+            PartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
+        }
+    }
+}
+
+impl From<UnidicPos> for PartOfSpeech {
+    fn from(value: UnidicPos) -> Self {
+        match value {
+            UnidicPos::Noun(_) => PartOfSpeech::Noun,
+            UnidicPos::Verb(_) => PartOfSpeech::Verb,
+            UnidicPos::Adjective(_) => PartOfSpeech::Adjective,
+            UnidicPos::NaAdjective(_) => PartOfSpeech::NaAdjective,
+            UnidicPos::Particle(_) => PartOfSpeech::Particle,
+            UnidicPos::Adverb => PartOfSpeech::Adverb,
+            UnidicPos::Interjection(_) => PartOfSpeech::Interjection,
+            UnidicPos::Suffix(_) => PartOfSpeech::Suffix,
+            UnidicPos::AuxVerb => PartOfSpeech::AuxiliaryVerb,
+            UnidicPos::Pronoun => PartOfSpeech::Pronoun,
+            UnidicPos::Conjunction => PartOfSpeech::Conjunction,
+            UnidicPos::Prefix => PartOfSpeech::Prefix,
+            UnidicPos::PrenounAdjectival => PartOfSpeech::Adnomial,
+            UnidicPos::Expression => PartOfSpeech::Expression,
+            UnidicPos::SupplementarySymbol(_) => PartOfSpeech::Symbol,
+            UnidicPos::Whitespace => PartOfSpeech::Symbol,
+            UnidicPos::Symbol(_) => PartOfSpeech::Symbol,
+            UnidicPos::Unknown => PartOfSpeech::Unclassified,
         }
     }
 }
