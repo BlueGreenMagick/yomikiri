@@ -30,9 +30,7 @@
 </script>
 
 <div>
-  {#await entryP}
-    Loading...
-  {:then entry}
+  {#await entryP then entry}
     {#key updateTick}
       <DicEntriesView entries={[entry]} />
     {/key}
