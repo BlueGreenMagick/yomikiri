@@ -1,6 +1,5 @@
 import type { AnkiBuilderData } from "lib/anki";
 import type { TokenizeResult } from "@platform/backend";
-import { Entry } from "lib/dicEntry";
 
 const tokenized: TokenizeResult = {
   tokens: [
@@ -79,7 +78,6 @@ const tokenized: TokenizeResult = {
   tokenIdx: 0,
   entries: [
     {
-      terms: ["面白い", "おもしろい"],
       forms: [
         {
           form: "面白い",
@@ -148,7 +146,7 @@ const tokenized: TokenizeResult = {
       ],
       priority: 156,
     },
-  ].map(Entry.fromObject),
+  ],
   grammars: [],
 };
 

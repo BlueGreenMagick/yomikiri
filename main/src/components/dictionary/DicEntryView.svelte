@@ -6,7 +6,14 @@
 </script>
 
 <script lang="ts">
-  import { Entry, Sense, type GroupedSense } from "lib/dicEntry";
+  import {
+    type Entry,
+    type Sense,
+    type GroupedSense,
+    getMainForm,
+    groupSenses,
+    getReadingForForm,
+  } from "lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import { RubyString } from "lib/japanese";
@@ -40,10 +47,10 @@
     model.selectSense(entry, sense);
   }
 
-  $: mainForm = Entry.mainForm(entry);
-  $: readingForForm = Entry.readingForForm(entry, mainForm, false).reading;
+  $: mainForm = getMainForm(entry);
+  $: readingForForm = getReadingForForm(entry, mainForm, false).reading;
   $: mainFormRuby = RubyString.generate(mainForm, readingForForm);
-  $: groups = Entry.groupSenses(entry);
+  $: groups = groupSenses(entry);
 </script>
 
 <div class="entryView">

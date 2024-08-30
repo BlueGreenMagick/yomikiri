@@ -1,5 +1,9 @@
 import type { RawTokenizeResult } from "@yomikiri/yomikiri-rs";
-import { Entry, type EntryObject } from "lib/dicEntry";
+import {
+  type Entry,
+  getValidEntriesForSurface,
+  orderEntries,
+} from "lib/dicEntry";
 import { toHiragana } from "lib/japanese";
 import type { DesktopBackend } from "../desktop/backend";
 import type { IosBackend } from "../ios/backend";
@@ -45,13 +49,12 @@ export namespace TokenizeResult {
       token.reading = toHiragana(reading);
     });
 
-    let entries = raw.entries
-      .map((json) => JSON.parse(json) as EntryObject)
-      .map(Entry.fromObject);
+    let entries = raw.entries.map((json) => JSON.parse(json) as Entry);
+
     const selectedToken = raw.tokens[raw.tokenIdx];
     if (raw.tokenIdx >= 0) {
-      entries = Entry.validEntriesForSurface(entries, selectedToken.text);
-      Entry.order(entries, selectedToken);
+      entries = getValidEntriesForSurface(entries, selectedToken.text);
+      orderEntries(entries, selectedToken);
     }
 
     const result = {

@@ -1,6 +1,12 @@
 import type { Token, TokenizeResult } from "@platform/backend";
 import Config from "../config";
-import { Entry, type Sense } from "../dicEntry";
+import {
+  getMainForm,
+  getReadingForForm,
+  groupSenses,
+  type Entry,
+  type Sense,
+} from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils, { escapeHTML } from "../utils";
@@ -145,10 +151,10 @@ addBuilder("word", (opts, data) => {
     reading = token.reading;
   } else if (opts.form === "dict-form") {
     word = token.base;
-    reading = Entry.readingForForm(data.entry, word, false).reading;
+    reading = getReadingForForm(data.entry, word, false).reading;
   } else if (opts.form === "main-dict-form") {
-    word = Entry.mainForm(data.entry);
-    reading = Entry.readingForForm(data.entry, word, false).reading;
+    word = getMainForm(data.entry);
+    reading = getReadingForForm(data.entry, word, false).reading;
   } else {
     throw new YomikiriError(
       `Invalid Anki template field option value for 'form': '${opts.form}'`,
@@ -188,7 +194,7 @@ addBuilder("meaning", (opts, data) => {
 
     let indent = 0;
     const lines: string[] = [];
-    const grouped = Entry.groupSenses(data.entry);
+    const grouped = groupSenses(data.entry);
 
     const addLine = (text: string) => {
       lines.push("  ".repeat(indent) + text);

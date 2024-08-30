@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { Entry } from "lib/dicEntry";
+  import { type Entry, isCommonEntry } from "lib/dicEntry";
 
   export let entry: Entry;
 
   let isCommon: boolean;
   let hasBadges: boolean;
 
-  $: isCommon = Entry.isCommon(entry);
+  $: isCommon = isCommonEntry(entry);
   $: hasBadges = isCommon;
 </script>
 
