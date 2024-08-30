@@ -1,11 +1,10 @@
 use crate::dictionary::Dictionary;
 use crate::error::{FFIResult, ToUniFFIResult};
-use crate::tokenize::{create_tokenizer, RawTokenizeResult};
+use crate::tokenize::create_tokenizer;
 use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::read::GzDecoder;
-use serde::Serialize;
 use ureq::Response;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
@@ -42,11 +41,11 @@ impl RustBackend {
         Self::_new(dict_path).uniffi()
     }
 
-    pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
+    pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<String> {
         self._tokenize(sentence, char_at).uniffi()
     }
 
-    pub fn search(&self, term: String, char_at: u32) -> FFIResult<RawTokenizeResult> {
+    pub fn search(&self, term: String, char_at: u32) -> FFIResult<String> {
         self._search(term, char_at).uniffi()
     }
 
@@ -61,20 +60,22 @@ impl RustBackend {
         Self::try_from_paths(&dict_path)
     }
 
-    fn _tokenize(&self, sentence: String, char_at: u32) -> Result<RawTokenizeResult> {
+    fn _tokenize(&self, sentence: String, char_at: u32) -> Result<String> {
         let mut backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at)
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.tokenize(&sentence, char_at)?;
-        Ok(result)
+        let json = serde_json::to_string(&result)?;
+        Ok(json)
     }
 
-    fn _search(&self, term: String, char_at: u32) -> Result<RawTokenizeResult> {
+    fn _search(&self, term: String, char_at: u32) -> Result<String> {
         let mut backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at)
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.search(&term, char_at)?;
-        Ok(result)
+        let json = serde_json::to_string(&result)?;
+        Ok(json)
     }
 }
 
@@ -213,21 +214,4 @@ impl Dictionary<Vec<u8>> {
         let bytes = fs::read(dict_path.as_ref())?;
         Dictionary::try_new(bytes)
     }
-}
-
-pub trait ToJson: Sync + Send {
-    fn to_json(&self) -> FFIResult<String>;
-}
-
-impl<T: Serialize + Sync + Send> ToJson for T {
-    fn to_json(&self) -> FFIResult<String> {
-        serde_json::to_string(&self)
-            .context("Could not serialize object")
-            .uniffi()
-    }
-}
-
-#[uniffi::export]
-pub fn encode_raw_tokenize_result(res: &RawTokenizeResult) -> FFIResult<String> {
-    res.to_json()
 }

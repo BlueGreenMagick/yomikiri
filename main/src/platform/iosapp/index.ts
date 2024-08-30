@@ -12,7 +12,7 @@ import type {
 } from "../common";
 import { type StoredConfiguration } from "lib/config";
 import type {
-  RawTokenizeResult,
+  TokenizeResult,
   SearchRequest,
   TokenizeRequest,
 } from "../common/backend";
@@ -52,8 +52,8 @@ export interface MessageWebviewMap {
    * If config was already migrated elsewhere, returns false.
    */
   migrateConfig: [null, boolean];
-  tokenize: [TokenizeRequest, RawTokenizeResult];
-  searchTerm: [SearchRequest, RawTokenizeResult];
+  tokenize: [TokenizeRequest, TokenizeResult];
+  searchTerm: [SearchRequest, TokenizeResult];
   versionInfo: [null, VersionInfo];
   updateDict: [null, boolean];
   ttsVoices: [null, TTSVoice[]];

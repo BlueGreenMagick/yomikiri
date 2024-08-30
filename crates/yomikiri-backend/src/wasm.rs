@@ -17,38 +17,13 @@ use yomikiri_dictionary::SCHEMA_VER;
 
 #[wasm_bindgen(typescript_custom_section)]
 const TS_CUSTOM: &'static str = r#"
-export interface Token {
-    text: string;
-    start: number;
-    children: Token[];
-    pos: string;
-    pos2: string;
-    base: string;
-    reading: string;
-    conjugation: string;
-}
-
-export interface GrammarInfo {
-    name: string,
-    short: string,
-    tofugu: string,
-}
-
-export interface RawTokenizeResult {
-    tokens: Token[];
-    /** May be -1 if tokens is empty */
-    tokenIdx: number;
-    entries: string[];
-    grammars: GrammarInfo[];
-}
-
 export interface DictUpdateResult {
     dict_bytes: Uint8Array;
 }
 
 interface Backend {
-    tokenize(sentence: string, charAt: number): RawTokenizeResult;
-    search(term: string, charAt: number): RawTokenizeResult;
+    tokenize(sentence: string, charAt: number): TokenizeResult;
+    search(term: string, charAt: number): TokenizeResult;
     /** 
      * from jmdict gzipped xml, creates dictionary file bytearray,
      * and updates dictionary file used in Backend.

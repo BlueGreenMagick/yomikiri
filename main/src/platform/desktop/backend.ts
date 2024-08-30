@@ -1,4 +1,4 @@
-import { type IBackend, TokenizeResult } from "../common/backend";
+import type { IBackend, TokenizeResult } from "../common/backend";
 import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-rs";
 import {
   BackgroundFunction,
@@ -19,6 +19,10 @@ import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
 import { openDictionaryDB } from "./dictionary";
 import { YomikiriError } from "lib/error";
+import {
+  cleanTokenizeResult,
+  emptyTokenizeResult,
+} from "platform/shared/backend";
 
 export * from "../common/backend";
 
@@ -56,7 +60,7 @@ export namespace DesktopBackend {
     charAt = charAt ?? 0;
 
     if (text === "") {
-      return TokenizeResult.empty();
+      return emptyTokenizeResult();
     }
     if (charAt < 0 || charAt >= text.length) {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
@@ -64,8 +68,9 @@ export namespace DesktopBackend {
 
     const codePointAt = Utils.toCodePointIndex(text, charAt);
 
-    const rawResult = wasm.tokenize(text, codePointAt);
-    return TokenizeResult.from(rawResult);
+    const result = wasm.tokenize(text, codePointAt);
+    cleanTokenizeResult(result);
+    return result;
   }
 
   export const search = BackgroundFunction(
@@ -82,15 +87,16 @@ export namespace DesktopBackend {
   ): TokenizeResult {
     charAt = charAt ?? 0;
     if (term === "") {
-      return TokenizeResult.empty();
+      return emptyTokenizeResult();
     }
     if (charAt < 0 || charAt >= term.length) {
       throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
     }
 
     const codePointAt = Utils.toCodePointIndex(term, charAt);
-    const rawResult = wasm.search(term, codePointAt);
-    return TokenizeResult.from(rawResult);
+    const result = wasm.search(term, codePointAt);
+    cleanTokenizeResult(result);
+    return result;
   }
 
   export const getDictCreationDate = BackgroundFunction(

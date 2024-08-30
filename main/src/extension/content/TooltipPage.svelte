@@ -1,12 +1,13 @@
 <script lang="ts">
   import Tooltip from "./Tooltip.svelte";
-  import { TokenizeResult } from "@platform/backend";
+  import type { TokenizeResult } from "@platform/backend";
   import Page from "components/Page.svelte";
+  import { emptyTokenizeResult } from "platform/shared/backend";
 
   export let onClose: () => void;
   export let onUpdateHeight: () => void = () => null;
 
-  let tokenizeResult = TokenizeResult.empty();
+  let tokenizeResult = emptyTokenizeResult();
 
   export function setTokenizeResult(result: TokenizeResult) {
     tokenizeResult = result;

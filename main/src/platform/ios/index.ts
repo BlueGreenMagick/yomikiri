@@ -11,9 +11,9 @@ import {
 } from "extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
 import {
-  type RawTokenizeResult,
   type SearchRequest,
   type TokenizeRequest,
+  type TokenizeResult,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { migrateConfigObject } from "lib/compat";
@@ -24,10 +24,10 @@ export * from "../common";
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
-  tokenize: [TokenizeRequest, RawTokenizeResult];
+  tokenize: [TokenizeRequest, TokenizeResult];
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, null];
-  search: [SearchRequest, RawTokenizeResult];
+  search: [SearchRequest, TokenizeResult];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];

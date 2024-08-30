@@ -11,12 +11,16 @@ use serde::Serialize;
 use std::borrow::Cow;
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
+use yomikiri_dictionary::Entry;
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicConjugationForm, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[cfg_attr(uniffi, derive(uniffi::Record))]
+#[cfg(wasm)]
+use tsify_next::Tsify;
+
+#[cfg_attr(wasm, derive(Tsify))]
 #[derive(Debug, Clone, Serialize)]
 pub struct Token {
     /// NFC normalized
@@ -60,7 +64,7 @@ pub struct TokenDetails {
     pub conjugation: UnidicConjugationForm,
 }
 
-#[cfg_attr(uniffi, derive(uniffi::Record))]
+#[cfg_attr(wasm, derive(Tsify))]
 #[derive(Debug, Clone, Serialize)]
 pub struct GrammarInfo {
     pub name: String,
@@ -78,9 +82,9 @@ impl From<&GrammarRule> for GrammarInfo {
     }
 }
 
-#[cfg_attr(uniffi, derive(uniffi::Record))]
+#[cfg_attr(wasm, derive(Tsify))]
 #[derive(Debug, Default, Serialize)]
-pub struct RawTokenizeResult {
+pub struct TokenizeResult {
     pub tokens: Vec<Token>,
     /// selected token index
     ///
@@ -88,13 +92,13 @@ pub struct RawTokenizeResult {
     pub tokenIdx: i32,
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
-    pub entries: Vec<String>,
+    pub entries: Vec<Entry>,
     pub grammars: Vec<GrammarInfo>,
 }
 
-impl RawTokenizeResult {
+impl TokenizeResult {
     pub fn empty() -> Self {
-        RawTokenizeResult {
+        TokenizeResult {
             tokenIdx: -1,
             ..Default::default()
         }
@@ -195,10 +199,10 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
     /// char_idx: code point index of selected character in sentence
-    pub fn tokenize(&mut self, sentence: &'_ str, char_idx: usize) -> Result<RawTokenizeResult> {
+    pub fn tokenize(&mut self, sentence: &'_ str, char_idx: usize) -> Result<TokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
         if tokens.is_empty() {
-            return Ok(RawTokenizeResult::empty());
+            return Ok(TokenizeResult::empty());
         }
 
         self.manual_patches(&mut tokens);
@@ -212,11 +216,11 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         let selected_token = &tokens[token_idx];
 
         // 1) joined base
-        let mut entries = self.dictionary.search_json(&selected_token.base)?;
+        let mut entries = self.dictionary.search(&selected_token.base)?;
 
         // 2) joined surface
         if selected_token.base != selected_token.text {
-            let searched_entries = self.dictionary.search_json(&selected_token.text)?;
+            let searched_entries = self.dictionary.search(&selected_token.text)?;
             for entry in searched_entries {
                 if !entries.contains(&entry) {
                     entries.push(entry);
@@ -231,7 +235,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             .map(GrammarInfo::from)
             .collect();
 
-        Ok(RawTokenizeResult {
+        Ok(TokenizeResult {
             tokens: tokens.into_iter().map(Token::from).collect(),
             tokenIdx: token_idx
                 .try_into()

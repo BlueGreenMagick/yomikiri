@@ -165,12 +165,10 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
                 }
             case "tokenize":
                 let req: TokenizeRequest = try jsonDeserialize(json: request)
-                let resp = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt ?? 0)
-                return try encodeRawTokenizeResult(res: resp)
+                return try Backend.get().tokenize(sentence: req.text, charAt: req.charAt ?? 0)
             case "searchTerm":
                 let req: SearchRequest = try jsonDeserialize(json: request)
-                let resp = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
-                return try jsonSerialize(obj: resp)
+                return try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
             case "versionInfo":
                 let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
                 let versionInfo = [

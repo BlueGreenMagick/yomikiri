@@ -31,11 +31,11 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 case "tokenize":
                     let req: TokenizeRequest = try jsonDeserialize(json: request)
                     let result = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
-                    jsonResponse = try encodeRawTokenizeResult(res: result)
+                    jsonResponse = result
                 case "search":
                     let req: SearchRequest = try jsonDeserialize(json: request)
                     let result = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
-                    jsonResponse = try encodeRawTokenizeResult(res: result)
+                    jsonResponse = result
                 case "addNote":
                     break
                 case "loadConfig":

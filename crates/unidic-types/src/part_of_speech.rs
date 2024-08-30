@@ -10,7 +10,7 @@ macro_rules! unidic_pos_enum {
         pub enum UnidicPos {
             $(
                 #[doc = stringify!($pos_value)]
-                $pos_name $( ($pos2_enum) )?,
+                $pos_name $( ( $pos2_enum) )?,
             )+
 
         }

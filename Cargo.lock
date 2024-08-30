@@ -2620,6 +2620,7 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "thiserror",
+ "tsify-next",
  "unicode-normalization",
  "unicode-segmentation",
  "uniffi",

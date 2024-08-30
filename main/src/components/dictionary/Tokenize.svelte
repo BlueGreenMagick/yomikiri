@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TokenizeResult, Backend } from "@platform/backend";
+  import { type TokenizeResult, Backend } from "@platform/backend";
   import Utils from "lib/utils";
   import IconSearch from "@icons/search.svg";
   import IconCloseCircle from "@icons/close-circle.svg";
@@ -9,6 +9,7 @@
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
+  import { emptyTokenizeResult } from "platform/shared/backend";
 
   export let searchText = "";
   export let showCloseButton = false;
@@ -18,7 +19,7 @@
   ) => void;
   export let onClose: () => void = () => null;
 
-  let tokenizeResult: TokenizeResult = TokenizeResult.empty();
+  let tokenizeResult: TokenizeResult = emptyTokenizeResult();
   // may be bigger than total token characters
   let selectedCharAt = 0;
   let selectedTool: Tools | null = null;

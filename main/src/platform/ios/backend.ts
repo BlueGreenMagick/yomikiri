@@ -1,11 +1,15 @@
 import { NonContentScriptFunction } from "extension/browserApi";
 import { IosPlatform } from ".";
-import {
-  type TokenizeRequest,
+import type {
+  TokenizeRequest,
   TokenizeResult,
-  type SearchRequest,
-  type IBackend,
+  SearchRequest,
+  IBackend,
 } from "../common/backend";
+import {
+  cleanTokenizeResult,
+  emptyTokenizeResult,
+} from "platform/shared/backend";
 
 export * from "../common/backend";
 
@@ -24,15 +28,16 @@ export namespace IosBackend {
     charAt = charAt ?? 0;
 
     if (text === "") {
-      return TokenizeResult.empty();
+      return emptyTokenizeResult();
     }
     if (charAt < 0 || charAt >= text.length) {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
     const req: TokenizeRequest = { text, charAt };
-    const rawResult = await IosPlatform.requestToApp("tokenize", req);
-    return TokenizeResult.from(rawResult);
+    const result = await IosPlatform.requestToApp("tokenize", req);
+    cleanTokenizeResult(result);
+    return result;
   }
 
   export const search = NonContentScriptFunction(
@@ -49,15 +54,16 @@ export namespace IosBackend {
     charAt = charAt ?? 0;
 
     if (term === "") {
-      return TokenizeResult.empty();
+      return emptyTokenizeResult();
     }
     if (charAt < 0 || charAt >= term.length) {
       throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
     }
 
     const req: SearchRequest = { term, charAt };
-    const rawResult = await IosPlatform.requestToApp("search", req);
-    return TokenizeResult.from(rawResult);
+    const result = await IosPlatform.requestToApp("search", req);
+    cleanTokenizeResult(result);
+    return result;
   }
 
   export const getDictCreationDate = NonContentScriptFunction(
