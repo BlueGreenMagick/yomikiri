@@ -260,3 +260,52 @@ function formScoreForOrder(entry: Entry, token: Token): number {
 
   return score;
 }
+
+export interface EntryOtherForms {
+  forms: OtherForm[];
+  readings: OtherReading[];
+}
+
+export interface OtherForm {
+  form: string;
+  rare: boolean;
+}
+
+export interface OtherReading {
+  reading: string;
+  rare: boolean;
+}
+
+/** Returns null if there are no other forms or readings in entry */
+export function getOtherFormsInEntry(entry: Entry): EntryOtherForms | null {
+  const forms: OtherForm[] = [];
+  const readings: OtherReading[] = [];
+
+  const mainForm = getMainForm(entry);
+  const mainReading = getReadingForForm(entry, mainForm);
+
+  for (const form of entry.forms) {
+    if (form.form !== mainForm) {
+      forms.push({
+        form: form.form,
+        rare: form.uncommon,
+      });
+    }
+  }
+  for (const reading of entry.readings) {
+    if (reading.reading !== mainReading.reading)
+      readings.push({
+        reading: reading.reading,
+        rare: reading.uncommon,
+      });
+  }
+
+  if (forms.length === 0 && readings.length === 0) {
+    return null;
+  } else {
+    return {
+      forms,
+      readings,
+    };
+  }
+}

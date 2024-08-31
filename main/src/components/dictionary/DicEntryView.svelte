@@ -13,6 +13,8 @@
     getMainForm,
     groupSenses,
     getReadingForForm,
+    type EntryOtherForms,
+    getOtherFormsInEntry,
   } from "lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
@@ -37,6 +39,7 @@
   let readingForForm: string;
   let mainFormRuby: RubyString;
   let groups: GroupedSense[];
+  let otherForms: EntryOtherForms | null;
 
   function selectEntryForAnki() {
     const sense = $selectedSense?.sense ?? undefined;
@@ -51,6 +54,7 @@
   $: readingForForm = getReadingForForm(entry, mainForm, false).reading;
   $: mainFormRuby = RubyString.generate(mainForm, readingForForm);
   $: groups = groupSenses(entry);
+  $: otherForms = getOtherFormsInEntry(entry);
 </script>
 
 <div class="entryView">
@@ -76,6 +80,31 @@
       <GroupedSenseView {group} {model} {onSelectSense} />
     {/each}
   </div>
+  {#if otherForms !== null}
+    <div class="other-forms-section">
+      <div class="section-header">Other Forms</div>
+      <div class="other-forms-values Japanese">
+        {#if otherForms.forms.length > 0}
+          <span class="other-forms">
+            {#each otherForms.forms as form, i}
+              <span>{form.form}</span>
+              {#if i < otherForms.forms.length - 1}<span>、</span>{/if}
+            {/each}
+          </span>
+        {/if}
+        {#if otherForms.readings.length > 0}
+          <span class="other-readings">
+            <span>［</span>
+            {#each otherForms.readings as reading, i}
+              <span class="other-reading">{reading.reading}</span>
+              {#if i < otherForms.readings.length - 1}<span>、</span>{/if}
+            {/each}
+            <span>］</span>
+          </span>
+        {/if}
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -104,6 +133,34 @@
   }
 
   .groups {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+  }
+
+  .other-forms-section {
+    padding: 0 var(--edge-horizontal-padding);
+  }
+
+  .other-forms-section .section-header {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+  }
+
+  .other-forms-values {
+    font-size: 0;
+  }
+
+  .other-forms span {
+    opacity: 0.8;
+    font-size: 1.2rem;
+  }
+
+  .other-readings span {
+    opacity: 0.6;
+    font-size: 0.875rem;
+  }
+
+  .other-readings {
+    margin-left: 0.5rem;
   }
 </style>
