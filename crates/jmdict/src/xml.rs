@@ -1,3 +1,12 @@
+//! XML parsing aims to support future versions of dictionary xml files.
+//!
+//! For example, new entity-tags could be added in the future,
+//! which is supported by an `Other` variant in the enum. (TODO)
+//!
+//! Or new tags could be added, in which case the parser ignores the tags.
+//!
+//! Meanwhile, some core assumptions on its structure must be held.
+//! For example, an element must have one and only one id.
 use quick_xml::escape::{resolve_predefined_entity, unescape_with};
 use quick_xml::events::{BytesEnd, BytesStart, Event};
 use quick_xml::reader::Reader;

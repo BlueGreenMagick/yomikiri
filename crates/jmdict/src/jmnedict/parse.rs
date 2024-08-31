@@ -56,10 +56,20 @@ fn parse_in_jmnedict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMneEntry>> {
 
 fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
     let mut entry = JMneEntry::default();
+    let mut id: Option<u32> = None;
 
     loop {
         match reader.read_event()? {
             Event::Start(tag) => match tag.name().0 {
+                b"ent_seq" => {
+                    if let Some(id) = id {
+                        return Err(Error::MultipleEntryIds(id));
+                    }
+                    let idstr = parse_text_in_tag(reader, b"ent_seq")?;
+                    let seq_id = str::parse::<u32>(&idstr)
+                        .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
+                    id = Some(seq_id);
+                }
                 b"k_ele" => {
                     entry.kanjis.push(parse_in_kanji(reader)?);
                 }
@@ -69,24 +79,18 @@ fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
                 b"trans" => {
                     entry.translations.push(parse_in_translation(reader)?);
                 }
-                b"ent_seq" => {
-                    let idstr = parse_text_in_tag(reader, b"ent_seq")?;
-                    let idval = str::parse::<u32>(&idstr)
-                        .map_err(|_| format!("Couldn't reader as u32 number: {}", idstr))?;
-                    entry.id = idval;
-                }
                 _ => {
                     println!("Unknown tag in <entry>: <{}>", &tag.tag_name());
                 }
             },
             Event::End(tag) => {
-                if &tag.name().0 == b"entry" {
-                    if entry.id == 0 {
-                        println!(
-                                "Found an entry in JMneDict without `<ent_seq>`. Its id has been set to 0."
-                            )
+                if tag.name().0 == b"entry" {
+                    if let Some(id) = id {
+                        entry.id = id;
+                        return Ok(entry);
+                    } else {
+                        return Err(Error::NoEntryId(reader.buffer_position()));
                     }
-                    return Ok(entry);
                 }
             }
             _ => {}

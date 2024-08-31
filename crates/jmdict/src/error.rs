@@ -28,6 +28,10 @@ pub enum Error {
     Other(String),
     #[error("(Unreachable) Error while unescaping xml entities: {0}")]
     EscapeError(#[from] quick_xml::escape::EscapeError),
+    #[error("Entry has multiple ids: {0}")]
+    MultipleEntryIds(u32),
+    #[error("Entry has no id, at pos: {0}")]
+    NoEntryId(u64),
 }
 
 impl From<String> for Error {

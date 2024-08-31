@@ -5,7 +5,7 @@ use quick_xml::Reader;
 
 use super::types::{JMDict, JMEntry, JMForm, JMReading, JMSense};
 use crate::xml::{parse_text_in_tag, TagName};
-use crate::Result;
+use crate::{Error, Result};
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut reader = Reader::from_str(xml);
@@ -52,15 +52,19 @@ fn parse_in_jmdict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMEntry>> {
 }
 /// Parse within `<entry>` tag. `id` is set to 0 if `<ent_seq>` tag is not found.
 pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
+    let mut id: Option<u32> = None;
     let mut entry = JMEntry::default();
     loop {
         match reader.read_event()? {
             Event::Start(tag) => match tag.name().0 {
                 b"ent_seq" => {
+                    if let Some(id) = id {
+                        return Err(Error::MultipleEntryIds(id));
+                    }
                     let idstr = parse_text_in_tag(reader, b"ent_seq")?;
-                    let id = str::parse::<u32>(&idstr)
+                    let seq_id = str::parse::<u32>(&idstr)
                         .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
-                    entry.id = id;
+                    id = Some(seq_id);
                 }
                 b"k_ele" => {
                     let form = parse_in_form(reader)?;
@@ -80,12 +84,13 @@ pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
             },
             Event::End(tag) => {
                 if tag.name().0 == b"entry" {
-                    if entry.id == 0 {
-                        println!("Found an entry in JMDict without `<ent_seq>`. Its id has been set to 0.")
+                    if let Some(id) = id {
+                        entry.id = id;
+                        return Ok(entry);
+                    } else {
+                        return Err(Error::NoEntryId(reader.buffer_position()));
                     }
-                    return Ok(entry);
                 }
-                // skip other ending tags as it may be from unknown starting tags
             }
             _ => {}
         }
