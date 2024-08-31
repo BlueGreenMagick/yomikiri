@@ -192,6 +192,7 @@ fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
                 translation.xref.push(parse_text_in_tag(reader, b"xref")?);
             }
             b"trans_det" => {
+                let tr_text = parse_text_in_tag(reader, b"trans_det")?;
                 for attr in tag.attributes() {
                     let attr = attr?;
                     if attr.key.0 == b"xml:lang" {
@@ -201,13 +202,11 @@ fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
                                 "<trans_det> has non-english value: {}",
                                 str::from_utf8(&lang)?
                             );
-                        } else {
-                            translation
-                                .translations
-                                .push(parse_text_in_tag(reader, b"trans_det")?);
+                            return Ok(());
                         }
                     }
                 }
+                translation.translations.push(tr_text);
             }
             _ => {
                 println!("Unknown tag in <trans>: {}", &tag.tag_name());
@@ -264,30 +263,27 @@ mod tests {
 </trans>
 </entry>
 <entry>
-<ent_seq>5616955</ent_seq>
+<ent_seq>5744957</ent_seq>
 <k_ele>
-<keb>富岳</keb>
+<keb>全日本労働総同盟</keb>
 </k_ele>
 <r_ele>
-<reb>ふがく</reb>
+<reb>ぜんにほんろうどうそうどうめい</reb>
+<re_pri>spec1</re_pri>
 </r_ele>
 <trans>
-<name_type>&given;</name_type>
-<trans_det>Fugaku</trans_det>
+<name_type>&organization;</name_type>
+<trans_det>Japanese Confederation of Labor (1936-1939)</trans_det>
+<trans_det>Zensō</trans_det>
 </trans>
 <trans>
-<name_type>&place;</name_type>
-<trans_det>Mount Fuji (alternative name)</trans_det>
-</trans>
-<trans>
-<name_type>&obj;</name_type>
-<trans_det>Fugaku (supercomputer)</trans_det>
+<name_type>&organization;</name_type>
+<trans_det>Japanese Confederation of Labor (1964-1987)</trans_det>
+<trans_det>Dōmei</trans_det>
 </trans>
 </entry>
 </JMnedict>"#;
-        println!("ABC");
         let result = parse_jmnedict_xml(&xml)?;
-        println!("Done");
         assert_yaml_snapshot!(result);
         Ok(())
     }

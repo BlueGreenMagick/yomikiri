@@ -212,6 +212,8 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
 
 #[cfg(test)]
 mod tests {
+    use insta::assert_yaml_snapshot;
+
     use crate::jmdict::JMDict;
     use crate::parse_jmdict_xml;
 
@@ -255,51 +257,6 @@ mod tests {
 </JMdict>
 "#;
         let result = parse_jmdict_xml(&xml).unwrap();
-
-        assert_eq!(
-            result,
-            JMDict {
-                entries: vec![
-                    JMEntry {
-                        id: 1000040,
-                        forms: vec![JMForm {
-                            form: "〃".to_string(),
-                            ..JMForm::default()
-                        }],
-                        readings: vec![
-                            JMReading {
-                                reading: "おなじ".to_string(),
-                                ..JMReading::default()
-                            },
-                            JMReading {
-                                reading: "おなじく".to_string(),
-                                ..JMReading::default()
-                            }
-                        ],
-                        senses: vec![JMSense {
-                            part_of_speech: vec!["=n=".to_string()],
-                            meaning: vec!["ditto mark".to_string()],
-                            ..JMSense::default()
-                        }]
-                    },
-                    JMEntry {
-                        id: 1000050,
-                        forms: vec![JMForm {
-                            form: "仝".to_string(),
-                            ..JMForm::default()
-                        }],
-                        readings: vec![JMReading {
-                            reading: "どうじょう".to_string(),
-                            ..JMReading::default()
-                        }],
-                        senses: vec![JMSense {
-                            part_of_speech: vec!["=n=".to_string()],
-                            meaning: vec![r#""as above" mark"#.to_string()],
-                            ..JMSense::default()
-                        }]
-                    }
-                ]
-            }
-        );
+        assert_yaml_snapshot!(result);
     }
 }

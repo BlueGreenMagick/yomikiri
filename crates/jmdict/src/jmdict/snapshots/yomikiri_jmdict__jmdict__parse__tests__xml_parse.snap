@@ -1,0 +1,53 @@
+---
+source: crates/jmdict/src/jmdict/parse.rs
+assertion_line: 260
+expression: result
+---
+entries:
+  - id: 1000040
+    forms:
+      - form: 〃
+        info: []
+        priority: []
+    readings:
+      - reading: おなじ
+        nokanji: false
+        to_form: []
+        info: []
+        priority: []
+      - reading: おなじく
+        nokanji: false
+        to_form: []
+        info: []
+        priority: []
+    senses:
+      - to_form: []
+        to_reading: []
+        part_of_speech:
+          - "=n="
+        misc: []
+        info: []
+        dialect: []
+        meaning:
+          - ditto mark
+  - id: 1000050
+    forms:
+      - form: 仝
+        info: []
+        priority: []
+    readings:
+      - reading: どうじょう
+        nokanji: false
+        to_form: []
+        info: []
+        priority: []
+    senses:
+      - to_form: []
+        to_reading: []
+        part_of_speech:
+          - "=n="
+        misc: []
+        info: []
+        dialect: []
+        meaning:
+          - "\"as above\" mark"

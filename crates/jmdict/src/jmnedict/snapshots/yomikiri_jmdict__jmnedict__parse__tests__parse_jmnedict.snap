@@ -1,0 +1,62 @@
+---
+source: crates/jmdict/src/jmnedict/parse.rs
+assertion_line: 289
+expression: result
+---
+entries:
+  - id: 5000000
+    kanjis:
+      - kanji: ゝ泉
+        info: []
+        priority: []
+    readings:
+      - reading: ちゅせん
+        to_form: []
+        info: []
+        priority: []
+    translations:
+      - name_type:
+          - "=given="
+        xref: []
+        translations:
+          - Chusen
+  - id: 5000001
+    kanjis:
+      - kanji: 〆
+        info: []
+        priority: []
+    readings:
+      - reading: しめ
+        to_form: []
+        info: []
+        priority: []
+    translations:
+      - name_type:
+          - "=fem="
+        xref: []
+        translations:
+          - Shime
+  - id: 5744957
+    kanjis:
+      - kanji: 全日本労働総同盟
+        info: []
+        priority: []
+    readings:
+      - reading: ぜんにほんろうどうそうどうめい
+        to_form: []
+        info: []
+        priority:
+          - spec1
+    translations:
+      - name_type:
+          - "=organization="
+        xref: []
+        translations:
+          - Japanese Confederation of Labor (1936-1939)
+          - Zensō
+      - name_type:
+          - "=organization="
+        xref: []
+        translations:
+          - Japanese Confederation of Labor (1964-1987)
+          - Dōmei
