@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct JMDict {
     pub entries: Vec<JMEntry>,
 }
 
-#[derive(Debug, Default, PartialEq, Eq)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JMEntry {
     pub id: u32,
     /// 0+ k_ele
@@ -42,7 +44,7 @@ impl JMEntry {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JMForm {
     pub form: String,
     /// 0+ ke_inf
@@ -62,7 +64,7 @@ impl JMForm {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JMReading {
     pub reading: String,
     pub nokanji: bool,
@@ -85,7 +87,7 @@ impl JMReading {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq)]
+#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JMSense {
     /// 0+ 'stagk'
     pub to_form: Vec<String>,

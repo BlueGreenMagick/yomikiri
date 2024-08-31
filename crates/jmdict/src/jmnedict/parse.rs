@@ -124,12 +124,13 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
                     priorities.push(priority);
                 }
                 _ => {
-                    println!("Unknown tag in <kanji>: {}", tag.tag_name());
+                    println!("Unknown tag in <k_ele>: {}", tag.tag_name());
                 }
             },
             Event::End(tag) => {
-                if tag.name().0 == b"kanji" {
-                    let kanji = kanji.ok_or(Error::InvalidXml("No <keb> found in kanji".into()))?;
+                if tag.name().0 == b"k_ele" {
+                    let kanji =
+                        kanji.ok_or(Error::InvalidXml("No <keb> found in <k_ele>".into()))?;
                     let kanji = JMneKanji {
                         kanji,
                         info: infos,
@@ -168,13 +169,13 @@ fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
                     priorities.push(priority);
                 }
                 _ => {
-                    println!("Unknown tag in <reading>: {}", &tag.tag_name());
+                    println!("Unknown tag in <r_ele>: {}", &tag.tag_name());
                 }
             },
             Event::End(tag) => {
-                if tag.name().0 == b"reading" {
+                if tag.name().0 == b"r_ele" {
                     let reading =
-                        reading.ok_or(Error::InvalidXml("No <reb> found in reading".into()))?;
+                        reading.ok_or(Error::InvalidXml("No <reb> found in <r_ele>".into()))?;
                     let reading = JMneReading {
                         reading,
                         to_form: to_forms,
@@ -232,5 +233,79 @@ fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
             }
             _ => {}
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use insta::assert_yaml_snapshot;
+
+    use crate::Result;
+
+    use super::parse_jmnedict_xml;
+
+    #[test]
+    fn test_parse_jmnedict() -> Result<()> {
+        let xml = r#"<?xml version="1.0"?>
+<!DOCTYPE JMnedict [
+        <!ELEMENT JMnedict (entry*)>
+<!ENTITY char "character">
+<!ENTITY company "company name">
+]>
+<!-- JMnedict created: 2024-08-29 -->
+<JMnedict>
+<entry>
+<ent_seq>5000000</ent_seq>
+<k_ele>
+<keb>ゝ泉</keb>
+</k_ele>
+<r_ele>
+<reb>ちゅせん</reb>
+</r_ele>
+<trans>
+<name_type>&given;</name_type>
+<trans_det>Chusen</trans_det>
+</trans>
+</entry>
+<entry>
+<ent_seq>5000001</ent_seq>
+<k_ele>
+<keb>〆</keb>
+</k_ele>
+<r_ele>
+<reb>しめ</reb>
+</r_ele>
+<trans>
+<name_type>&fem;</name_type>
+<trans_det>Shime</trans_det>
+</trans>
+</entry>
+<entry>
+<ent_seq>5616955</ent_seq>
+<k_ele>
+<keb>富岳</keb>
+</k_ele>
+<r_ele>
+<reb>ふがく</reb>
+</r_ele>
+<trans>
+<name_type>&given;</name_type>
+<trans_det>Fugaku</trans_det>
+</trans>
+<trans>
+<name_type>&place;</name_type>
+<trans_det>Mount Fuji (alternative name)</trans_det>
+</trans>
+<trans>
+<name_type>&obj;</name_type>
+<trans_det>Fugaku (supercomputer)</trans_det>
+</trans>
+</entry>
+</JMnedict>"#;
+        println!("ABC");
+        let result = parse_jmnedict_xml(&xml)?;
+        println!("Done");
+        assert_yaml_snapshot!(result);
+        Ok(())
     }
 }

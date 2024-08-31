@@ -1,10 +1,12 @@
-#[derive(Debug, PartialEq, Eq, Default)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct JMneDict {
     pub entries: Vec<JMneEntry>,
 }
 
 /// `<entry>`
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct JMneEntry {
     pub id: u32,
     /// 0+ k_ele
@@ -16,7 +18,7 @@ pub struct JMneEntry {
 }
 
 /// `<k_ele>`
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct JMneKanji {
     pub kanji: String,
     pub info: Vec<String>,
@@ -24,7 +26,7 @@ pub struct JMneKanji {
 }
 
 /// `<r_ele>`
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JMneReading {
     pub reading: String,
     pub to_form: Vec<String>,
@@ -39,7 +41,7 @@ pub struct JMneReading {
 /// no such translations actually exists in xml.
 /// If non-English translations are added in the future,
 /// they will be ignored and not be added to `translations` field.
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct JMneTranslation {
     pub name_type: Vec<String>,
     pub xref: Vec<String>,

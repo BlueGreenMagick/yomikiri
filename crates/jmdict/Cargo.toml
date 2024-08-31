@@ -10,6 +10,10 @@ bincode = { workspace = true }
 thiserror = { workspace = true }
 lazy_static = { workspace = true }
 quick-xml = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+insta = { workspace = true }
 
 [lints]
 workspace = true
