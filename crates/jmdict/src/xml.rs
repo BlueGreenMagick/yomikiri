@@ -64,7 +64,7 @@ pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<St
 /// Resolves entity in text that only contains 1 custom entity and no other text
 ///
 /// '&ent;' is resolved to '=ent='.
-fn resolve_custom_entity_item<'a>(text: &'a str) -> Cow<'a, str> {
+fn resolve_custom_entity_item(text: &str) -> Cow<'_, str> {
     if !text.starts_with('&') || !text.ends_with(';') {
         Cow::Borrowed(text)
     } else {

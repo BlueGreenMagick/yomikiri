@@ -18,8 +18,8 @@ pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
 
 fn parse_jmnedict(reader: &mut Reader<&[u8]>) -> Result<JMneDict> {
     loop {
-        match reader.read_event()? {
-            Event::Start(tag) => match tag.name().0 {
+        if let Event::Start(tag) = reader.read_event()? {
+            match tag.name().0 {
                 b"JMnedict" => {
                     let entries = parse_in_jmnedict(reader)?;
                     return Ok(JMneDict { entries });
@@ -27,8 +27,7 @@ fn parse_jmnedict(reader: &mut Reader<&[u8]>) -> Result<JMneDict> {
                 _ => {
                     println!("Unknown global tag: {}", tag.tag_name());
                 }
-            },
-            _ => {}
+            }
         }
     }
 }
@@ -83,11 +82,9 @@ fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
             Event::End(tag) => {
                 if &tag.name().0 == b"entry" {
                     if entry.id == 0 {
-                        if entry.id == 0 {
-                            println!(
+                        println!(
                                 "Found an entry in JMneDict without `<ent_seq>`. Its id has been set to 0."
                             )
-                        }
                     }
                     return Ok(entry);
                 }

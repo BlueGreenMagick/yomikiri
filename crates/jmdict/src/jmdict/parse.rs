@@ -17,8 +17,8 @@ pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
 
 fn parse_jmdict(reader: &mut Reader<&[u8]>) -> Result<JMDict> {
     loop {
-        match reader.read_event()? {
-            Event::Start(tag) => match tag.name().0 {
+        if let Event::Start(tag) = reader.read_event()? {
+            match tag.name().0 {
                 b"JMdict" => {
                     let entries = parse_in_jmdict(reader)?;
                     return Ok(JMDict { entries });
@@ -26,9 +26,8 @@ fn parse_jmdict(reader: &mut Reader<&[u8]>) -> Result<JMDict> {
                 _ => {
                     println!("Unknown global tag: {}", tag.tag_name());
                 }
-            },
-            _ => {}
-        };
+            }
+        }
     }
 }
 
