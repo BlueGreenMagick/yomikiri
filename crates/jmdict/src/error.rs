@@ -1,4 +1,5 @@
 use std::io;
+use std::str::Utf8Error;
 
 use thiserror::Error;
 
@@ -17,6 +18,10 @@ pub enum Error {
         expected: &'static str,
         actual: String,
     },
+    #[error("Invalid UTF-8")]
+    Utf8Error(#[from] Utf8Error),
+    #[error("Xml parse error: {0}")]
+    QuickXml(#[from] quick_xml::Error),
     #[error("Invalid xml: {0}")]
     InvalidXml(String),
     #[error("{0}")]

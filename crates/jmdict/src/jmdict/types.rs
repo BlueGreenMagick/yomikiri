@@ -1,8 +1,6 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct JMDict {
     pub entries: Vec<JMEntry>,
-    /// Format: yyyy-mm-dd
-    pub creation_date: String,
 }
 
 #[derive(Debug, Default, PartialEq, Eq)]

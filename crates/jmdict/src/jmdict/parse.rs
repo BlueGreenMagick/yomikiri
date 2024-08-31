@@ -1,91 +1,68 @@
-use lazy_static::lazy_static;
-use regex::Regex;
-use rustyxml::{Event, Parser};
+use core::str;
+
+use quick_xml::events::{BytesEnd, BytesStart, Event};
+use quick_xml::Reader;
 
 use super::types::{JMDict, JMEntry, JMForm, JMReading, JMSense};
-use crate::xml::{parse_characters, remove_doctype, unescape_entity};
 use crate::{Error, Result};
 
-lazy_static! {
-    static ref DATE_REGEX: Regex = Regex::new(r#"(\d\d\d\d-\d\d-\d\d)"#).unwrap();
+trait TagName<'a>
+where
+    Self: 'a,
+{
+    /** Returns "\<Invalid UTF-8\>" if tag name is not valid utf-8 */
+    fn tag_name(&'a self) -> &'a str;
+}
+
+impl<'a> TagName<'a> for BytesStart<'a> {
+    fn tag_name(&'a self) -> &'a str {
+        str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
+    }
+}
+
+impl<'a> TagName<'a> for BytesEnd<'a> {
+    fn tag_name(&'a self) -> &'a str {
+        str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
+    }
 }
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
-    let xml = remove_doctype(xml);
-    let xml = unescape_entity(&xml);
-    let jmdict = parse_xml(&xml)?;
-    Ok(jmdict)
+    let mut reader = Reader::from_str(xml);
+    reader.config_mut().trim_text_start = true;
+    reader.config_mut().trim_text_end = true;
+
+    parse_jmdict(&mut reader)
 }
 
-pub fn parse_xml(xml_string: &str) -> Result<JMDict> {
-    let mut parser = Parser::new();
-    parser.feed_str(xml_string);
-
-    let mut creation_date: Option<String> = None;
-
+fn parse_jmdict(reader: &mut Reader<&[u8]>) -> Result<JMDict> {
     loop {
-        match parser.next().ok_or("<JMDict> not found")?? {
-            Event::ElementStart(tag) => {
-                if &tag.name == "JMdict" {
-                    let entries = parse_jmdict(&mut parser)?;
-                    if creation_date.is_none() {
-                        println!("Creation date comment could not be found or parsed. Falling back to retrieving creation date from entry");
-                        creation_date = get_jmdict_creation_date_from_entry(&entries);
-                    }
-                    if let Some(creation_date) = creation_date {
-                        return Ok(JMDict {
-                            entries,
-                            creation_date,
-                        });
-                    } else {
-                        return Err("Could not find creation date from dictionary".into());
-                    }
-                }
-            }
-            Event::Comment(comment) => {
-                // JMdict creation comment comes before <jmdict> tag
-                if creation_date.is_none() {
-                    let trimmed = comment.trim();
-                    let opener = "JMdict created:";
-                    if trimmed.starts_with(opener) {
-                        if let Some(caps) = DATE_REGEX.captures(trimmed) {
-                            creation_date = caps.get(0).map(|e| e.as_str().to_owned());
-                        }
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-}
-
-fn get_jmdict_creation_date_from_entry(entries: &[JMEntry]) -> Option<String> {
-    for entry in entries {
-        if entry.id == 9999999 {
-            let sense = entry.senses.first()?;
-            let meaning = sense.meaning.first()?;
-            if let Some(caps) = DATE_REGEX.captures(meaning) {
-                return caps.get(0).map(|e| e.as_str().to_owned());
-            }
-        }
-    }
-    None
-}
-
-pub fn parse_jmdict(parser: &mut Parser) -> Result<Vec<JMEntry>> {
-    let mut entries = Vec::new();
-    loop {
-        match parser.next().ok_or("<entry> unclosed")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "entry" => {
-                    entries.push(parse_entry(parser)?);
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"JMdict" => {
+                    let entries = parse_in_jmdict(reader)?;
+                    return Ok(JMDict { entries });
                 }
                 _ => {
-                    println!("Unknown tag in <entry>: {}", &tag.name);
+                    println!("Unknown global tag: {}", tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "JMdict" {
+            _ => {}
+        };
+    }
+}
+
+fn parse_in_jmdict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMEntry>> {
+    let mut entries = Vec::new();
+    loop {
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"entry" => entries.push(parse_in_entry(reader)?),
+                _ => {
+                    println!("Unknown tag in <jmdict>: {}", tag.tag_name());
+                }
+            },
+            Event::End(tag) => {
+                if tag.name().0 == b"JMdict" {
                     return Ok(entries);
                 }
             }
@@ -93,70 +70,72 @@ pub fn parse_jmdict(parser: &mut Parser) -> Result<Vec<JMEntry>> {
         }
     }
 }
-
-pub fn parse_entry(parser: &mut Parser) -> Result<JMEntry> {
+/// Parse within `<entry>` tag. `id` is set to 0 if `<ent_seq>` tag is not found.
+pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
     let mut entry = JMEntry::default();
     loop {
-        match parser.next().ok_or("<entry> unclosed")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "ent_seq" => {
-                    let idstr = parse_characters(parser, "ent_seq")?;
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"ent_seq" => {
+                    let idstr = parse_text_in_tag(reader, b"ent_seq")?;
                     let id = str::parse::<u32>(&idstr)
                         .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
                     entry.id = id;
                 }
-                "k_ele" => {
-                    let form = parse_form(parser)?;
+                b"k_ele" => {
+                    let form = parse_in_form(reader)?;
                     entry.forms.push(form);
                 }
-                "r_ele" => {
-                    let reading = parse_reading(parser)?;
+                b"r_ele" => {
+                    let reading = parse_in_reading(reader)?;
                     entry.readings.push(reading);
                 }
-                "sense" => {
-                    let sense = parse_sense(parser)?;
+                b"sense" => {
+                    let sense = parse_in_sense(reader)?;
                     entry.senses.push(sense);
                 }
                 _ => {
-                    println!("Unknown tag in <entry>: {}", &tag.name);
+                    println!("Unknown tag in <entry>: <{}>", tag.tag_name())
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "entry" {
+            Event::End(tag) => {
+                if tag.name().0 == b"entry" {
                     if entry.id == 0 {
-                        println!("There is an entry without an id")
+                        println!("Found an entry without `<ent_seq>`. Its id has been set to 0.")
                     }
                     return Ok(entry);
                 }
+                // skip other ending tags as it may be from unknown starting tags
             }
             _ => {}
         }
     }
 }
 
-pub fn parse_form(parser: &mut Parser) -> Result<JMForm> {
+pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
     let mut form = JMForm::default();
     loop {
-        match parser.next().ok_or("<k_ele> unclosed")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "keb" => {
-                    form.form = parse_characters(parser, "keb")?;
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"keb" => {
+                    if !form.form.is_empty() {
+                        println!("Warning: Found multiple <keb> in form '{}'", form.form)
+                    }
+                    form.form = parse_text_in_tag(reader, b"keb")?;
                 }
-                "ke_inf" => {
-                    form.info.push(parse_characters(parser, "ke_inf")?);
+                b"ke_inf" => {
+                    form.info.push(parse_text_in_tag(reader, b"ke_inf")?);
                 }
-                "ke_pri" => {
-                    form.priority.push(parse_characters(parser, "ke_pri")?);
+                b"ke_pri" => {
+                    form.priority.push(parse_text_in_tag(reader, b"ke_pri")?);
                 }
                 _ => {
-                    println!("Unknown tag in <entry>: {}", &tag.name);
+                    println!("Warning: Unknown tag in <entry>: {}", tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "k_ele" {
+            Event::End(tag) => {
+                if tag.name().0 == b"k_ele" {
                     return Ok(form);
-                } else {
-                    return Err(format!("Expected </k_ele>, found {}", &tag.name).into());
                 }
             }
             _ => {}
@@ -164,40 +143,37 @@ pub fn parse_form(parser: &mut Parser) -> Result<JMForm> {
     }
 }
 
-pub fn parse_reading(parser: &mut Parser) -> Result<JMReading> {
+pub fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMReading> {
     let mut reading = JMReading::default();
     loop {
-        match parser.next().ok_or("<r_ele> unclosed")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "reb" => {
-                    reading.reading = parse_characters(parser, "reb")?;
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"reb" => {
+                    reading.reading = parse_text_in_tag(reader, b"reb")?;
                 }
-                "re_nokanji" => {
+                b"re_nokanji" => {
                     reading.nokanji = true;
                     // consume ending tag
-                    parse_characters(parser, "re_nokanji")?;
+                    parse_text_in_tag(reader, b"re_nokanji")?;
                 }
-                "re_restr" => {
-                    reading.to_form.push(parse_characters(parser, "re_restr")?);
+                b"re_restr" => {
+                    reading
+                        .to_form
+                        .push(parse_text_in_tag(reader, b"re_restr")?);
                 }
-                "re_inf" => {
-                    reading.info.push(parse_characters(parser, "re_inf")?);
+                b"re_inf" => {
+                    reading.info.push(parse_text_in_tag(reader, b"re_inf")?);
                 }
-                "re_pri" => {
-                    reading.priority.push(parse_characters(parser, "re_pri")?);
+                b"re_pri" => {
+                    reading.priority.push(parse_text_in_tag(reader, b"re_pri")?);
                 }
                 _ => {
-                    println!("Unknown tag in <entry>: {}", &tag.name);
+                    println!("Unknown tag in <r_ele>: {}", &tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "r_ele" {
+            Event::End(tag) => {
+                if tag.name().0 == b"r_ele" {
                     return Ok(reading);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "</r_ele>",
-                        actual: tag.name.to_string(),
-                    });
                 }
             }
             _ => {}
@@ -205,63 +181,92 @@ pub fn parse_reading(parser: &mut Parser) -> Result<JMReading> {
     }
 }
 
-fn parse_sense(parser: &mut Parser) -> Result<JMSense> {
+fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
     let mut sense = JMSense::default();
     loop {
-        match parser.next().ok_or("<sense> unclosed")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "stagk" => {
-                    sense.to_form.push(parse_characters(parser, "stagk")?);
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"stagk" => {
+                    sense.to_form.push(parse_text_in_tag(reader, b"stagk")?);
                 }
-                "stagr" => {
-                    sense.to_reading.push(parse_characters(parser, "stagr")?);
+                b"stagr" => {
+                    sense.to_reading.push(parse_text_in_tag(reader, b"stagr")?);
                 }
-                "pos" => {
-                    sense.part_of_speech.push(parse_characters(parser, "pos")?);
+                b"pos" => {
+                    sense
+                        .part_of_speech
+                        .push(parse_text_in_tag(reader, b"pos")?);
                 }
-                "xref" => {
-                    parse_characters(parser, "xref")?;
+                b"xref" => {
+                    parse_text_in_tag(reader, b"xref")?;
                 }
-                "ant" => {
-                    parse_characters(parser, "ant")?;
+                b"ant" => {
+                    parse_text_in_tag(reader, b"ant")?;
                 }
-                "field" => {
-                    parse_characters(parser, "field")?;
+                b"field" => {
+                    parse_text_in_tag(reader, b"field")?;
                 }
-                "misc" => {
-                    sense.misc.push(parse_characters(parser, "misc")?);
+                b"misc" => {
+                    sense.misc.push(parse_text_in_tag(reader, b"misc")?);
                 }
-                "s_inf" => {
-                    sense.info.push(parse_characters(parser, "s_inf")?);
+                b"s_inf" => {
+                    sense.info.push(parse_text_in_tag(reader, b"s_inf")?);
                 }
-                "dial" => {
-                    sense.dialect.push(parse_characters(parser, "dial")?);
+                b"dial" => {
+                    sense.dialect.push(parse_text_in_tag(reader, b"dial")?);
                 }
-                "gloss" => {
-                    sense.meaning.push(parse_characters(parser, "gloss")?);
+                b"gloss" => {
+                    sense.meaning.push(parse_text_in_tag(reader, b"gloss")?);
                 }
-                "lsource" => {
+                b"lsource" => {
                     // consume ending tag
-                    parse_characters(parser, "lsource")?;
+                    parse_text_in_tag(reader, b"lsource")?;
                 }
-                "example" => {
-                    parse_characters(parser, "example")?;
+                b"example" => {
+                    parse_text_in_tag(reader, b"example")?;
                 }
                 _ => {
-                    println!("Unknown tag in <entry>: {}", &tag.name);
+                    println!("Unknown tag in <sense>: {}", tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "sense" {
+            Event::End(tag) => {
+                if tag.name().0 == b"sense" {
                     return Ok(sense);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "</sense>",
-                        actual: tag.name.to_string(),
-                    });
                 }
             }
             _ => {}
+        }
+    }
+}
+
+pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
+    let mut characters = String::new();
+    loop {
+        match reader.read_event()? {
+            Event::Start(tag) => {
+                return Err(Error::Unexpected {
+                    expected: "text",
+                    actual: format!("starting tag <{}>", tag.tag_name()),
+                });
+            }
+            Event::Text(text) => {
+                let text = text.into_inner();
+                let segment = str::from_utf8(&text)?;
+                characters.push_str(segment);
+            }
+            Event::End(tag) => {
+                if tag.name().0 == in_tag {
+                    return Ok(characters);
+                } else {
+                    return Err(Error::Unexpected {
+                        expected: "character",
+                        actual: format!("ending tag </{}>", tag.tag_name()),
+                    });
+                }
+            }
+            _ => {
+                unimplemented!()
+            }
         }
     }
 }
@@ -269,9 +274,9 @@ fn parse_sense(parser: &mut Parser) -> Result<JMSense> {
 #[cfg(test)]
 mod tests {
     use crate::jmdict::JMDict;
-    use crate::{parse_jmdict_xml, Result};
+    use crate::parse_jmdict_xml;
 
-    use super::{parse_xml, unescape_entity, JMEntry, JMForm, JMReading, JMSense};
+    use super::{JMEntry, JMForm, JMReading, JMSense};
 
     #[test]
     fn test_xml_parse() {
@@ -310,13 +315,11 @@ mod tests {
 </entry>
 </JMdict>
 "#;
-        let xml = unescape_entity(xml);
-        let result = parse_xml(&xml).unwrap();
+        let result = parse_jmdict_xml(&xml).unwrap();
 
         assert_eq!(
             result,
             JMDict {
-                creation_date: "2024-08-07".into(),
                 entries: vec![
                     JMEntry {
                         id: 1000040,
@@ -335,7 +338,7 @@ mod tests {
                             }
                         ],
                         senses: vec![JMSense {
-                            part_of_speech: vec!["=n=".to_string()],
+                            part_of_speech: vec!["&n;".to_string()],
                             meaning: vec!["ditto mark".to_string()],
                             ..JMSense::default()
                         }]
@@ -351,7 +354,7 @@ mod tests {
                             ..JMReading::default()
                         }],
                         senses: vec![JMSense {
-                            part_of_speech: vec!["=n=".to_string()],
+                            part_of_speech: vec!["&n;".to_string()],
                             meaning: vec![r#""as above" mark"#.to_string()],
                             ..JMSense::default()
                         }]
@@ -359,31 +362,5 @@ mod tests {
                 ]
             }
         );
-    }
-
-    #[test]
-    fn test_fallback_creation_date() -> Result<()> {
-        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
-<JMdict>
-<entry>
-<ent_seq>9999999</ent_seq>
-<k_ele>
-<keb>ＪＭｄｉｃｔ</keb>
-</k_ele>
-<r_ele>
-<reb>ジェイエムディクト</reb>
-</r_ele>
-<sense>
-<pos>&unc;</pos>
-<gloss>Japanese-Multilingual Dictionary Project - Creation Date: 2024-08-07</gloss>
-</sense>
-</entry>
-</JMdict>
-"#;
-
-        let dict = parse_jmdict_xml(&xml)?;
-        assert_eq!(dict.creation_date, "2024-08-07");
-
-        Ok(())
     }
 }
