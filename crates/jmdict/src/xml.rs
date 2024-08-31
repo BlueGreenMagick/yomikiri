@@ -1,49 +1,90 @@
+use quick_xml::escape::{resolve_predefined_entity, unescape_with};
+use quick_xml::events::{BytesEnd, BytesStart, Event};
 use quick_xml::reader::Reader;
-use regex::Regex;
-use rustyxml::{Event, Parser};
 
+use core::str;
 use std::borrow::Cow;
 
 use crate::{Error, Result};
 
-/// RustyXML errors upon custom entity `&xx;`
-/// So unescape to `=xx=` before parsing
-pub fn unescape_entity(xml: &str) -> Cow<'_, str> {
-    let re = Regex::new(r#"&([\w\d-]+);"#).unwrap();
-    re.replace_all(xml, "=$1=")
+pub trait TagName<'a>
+where
+    Self: 'a,
+{
+    /** Returns "\<Invalid UTF-8\>" if tag name is not valid utf-8 */
+    fn tag_name(&'a self) -> &'a str;
 }
 
-/// RustyXML cannot parse DOCTYPE declarations
-pub fn remove_doctype(xml: &str) -> String {
-    let re = Regex::new(r#"<!DOCTYPE \w+ \[[^\]]+\]>"#).unwrap();
-    re.replace(xml, "").into_owned()
+impl<'a> TagName<'a> for BytesStart<'a> {
+    fn tag_name(&'a self) -> &'a str {
+        str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
+    }
 }
 
-pub fn parse_characters(parser: &mut Parser, in_tag: &str) -> Result<String> {
+impl<'a> TagName<'a> for BytesEnd<'a> {
+    fn tag_name(&'a self) -> &'a str {
+        str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
+    }
+}
+
+pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
     let mut characters = String::new();
-    for event in parser {
-        match event? {
-            Event::ElementStart(tag) => {
+    loop {
+        match reader.read_event()? {
+            Event::Start(tag) => {
                 return Err(Error::Unexpected {
-                    expected: "character",
-                    actual: format!("starting tag <{}>", &tag.name),
+                    expected: "text",
+                    actual: format!("starting tag <{}>", tag.tag_name()),
                 });
             }
-            Event::ElementEnd(tag) => {
-                if tag.name == in_tag {
-                    return Ok(characters);
+            Event::Text(text) => {
+                let text = text.into_inner();
+                let segment = str::from_utf8(&text)?;
+                characters.push_str(segment);
+            }
+            Event::End(tag) => {
+                if tag.name().0 == in_tag {
+                    let text = resolve_custom_entity_item(&characters);
+                    let text = unescape_with(&text, unescape_entity)?;
+                    return Ok(text.into());
                 } else {
                     return Err(Error::Unexpected {
                         expected: "character",
-                        actual: format!("ending tag </{}>", &tag.name),
+                        actual: format!("ending tag </{}>", tag.tag_name()),
                     });
                 }
             }
-            Event::Characters(chars) => {
-                characters.push_str(chars.as_str());
+            _ => {
+                unimplemented!()
             }
-            _ => {}
         }
     }
-    Err(format!("Closing tag not found </{}>", in_tag).into())
+}
+
+/// Resolves entity in text that only contains 1 custom entity and no other text
+///
+/// '&ent;' is resolved to '=ent='.
+fn resolve_custom_entity_item<'a>(text: &'a str) -> Cow<'a, str> {
+    if !text.starts_with('&') || !text.ends_with(';') {
+        Cow::Borrowed(text)
+    } else {
+        let inner = &text[1..text.len() - 1];
+        if inner.contains(';') {
+            Cow::Borrowed(text)
+        } else {
+            let resolved = format!("={}=", inner);
+            Cow::Owned(resolved)
+        }
+    }
+}
+
+/// Unescapes xml entities, resolving custom entities to empty string "".
+///
+/// Custom entities should be handled before this function is used to unescape entity.
+fn unescape_entity(entity: &str) -> Option<&'static str> {
+    if let Some(unescaped) = resolve_predefined_entity(entity) {
+        Some(unescaped)
+    } else {
+        Some("")
+    }
 }

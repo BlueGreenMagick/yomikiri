@@ -1,45 +1,52 @@
-use rustyxml::{Event, Parser};
+use core::str;
 
-use crate::xml::{parse_characters, remove_doctype, unescape_entity};
+use quick_xml::events::Event;
+use quick_xml::Reader;
+
+use crate::xml::{parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
 use super::types::{JMneDict, JMneEntry, JMneKanji, JMneReading, JMneTranslation};
 
 pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
-    let xml = remove_doctype(xml);
-    let xml = unescape_entity(&xml);
-    let jmdict = parse_xml(&xml)?;
-    Ok(jmdict)
+    let mut reader = Reader::from_str(xml);
+    reader.config_mut().trim_text_start = true;
+    reader.config_mut().trim_text_end = true;
+
+    parse_jmnedict(&mut reader)
 }
 
-fn parse_xml(xml_string: &str) -> Result<JMneDict> {
-    let mut parser = Parser::new();
-    parser.feed_str(xml_string);
-
+fn parse_jmnedict(reader: &mut Reader<&[u8]>) -> Result<JMneDict> {
     loop {
-        if let Event::ElementStart(tag) = parser.next().ok_or("Tag <JMnedict> not found")?? {
-            if &tag.name == "JMnedict" {
-                let entries = parse_jmnedict(&mut parser)?;
-                return Ok(JMneDict { entries });
-            }
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"JMnedict" => {
+                    let entries = parse_in_jmnedict(reader)?;
+                    return Ok(JMneDict { entries });
+                }
+                _ => {
+                    println!("Unknown global tag: {}", tag.tag_name());
+                }
+            },
+            _ => {}
         }
     }
 }
 
-fn parse_jmnedict(parser: &mut Parser) -> Result<Vec<JMneEntry>> {
+fn parse_in_jmnedict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMneEntry>> {
     let mut entries = Vec::with_capacity(1024);
     loop {
-        match parser.next().ok_or("Closing tag </JMnedict> not found")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "entry" => {
-                    entries.push(parse_entry(parser)?);
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"entry" => {
+                    entries.push(parse_in_entry(reader)?);
                 }
                 _ => {
-                    println!("Unknown tag in <JMnedict>: {}", &tag.name);
+                    println!("Unknown tag in <JMnedict>: <{}>", &tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "JMnedict" {
+            Event::End(tag) => {
+                if tag.name().0 == b"JMnedict" {
                     return Ok(entries);
                 }
             }
@@ -48,44 +55,40 @@ fn parse_jmnedict(parser: &mut Parser) -> Result<Vec<JMneEntry>> {
     }
 }
 
-fn parse_entry(parser: &mut Parser) -> Result<JMneEntry> {
-    let mut id: Option<u32> = None;
-    let mut kanjis = vec![];
-    let mut readings = vec![];
-    let mut translations = vec![];
+fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
+    let mut entry = JMneEntry::default();
 
     loop {
-        match parser.next().ok_or("Closing tag </entry> not found")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "k_ele" => {
-                    kanjis.push(parse_kanji(parser)?);
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"k_ele" => {
+                    entry.kanjis.push(parse_in_kanji(reader)?);
                 }
-                "r_ele" => {
-                    readings.push(parse_reading(parser)?);
+                b"r_ele" => {
+                    entry.readings.push(parse_in_reading(reader)?);
                 }
-                "trans" => {
-                    translations.push(parse_translation(parser)?);
+                b"trans" => {
+                    entry.translations.push(parse_in_translation(reader)?);
                 }
-                "ent_seq" => {
-                    let idstr = parse_characters(parser, "ent_seq")?;
+                b"ent_seq" => {
+                    let idstr = parse_text_in_tag(reader, b"ent_seq")?;
                     let idval = str::parse::<u32>(&idstr)
-                        .map_err(|_| format!("Couldn't parser as u32 number: {}", idstr))?;
-                    id = Some(idval);
+                        .map_err(|_| format!("Couldn't reader as u32 number: {}", idstr))?;
+                    entry.id = idval;
                 }
                 _ => {
-                    println!("Unknown tag in <trans>: {}", &tag.name);
+                    println!("Unknown tag in <entry>: <{}>", &tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "entry" {
-                    let id = id.ok_or(Error::InvalidXml("Entry without id".into()))?;
-
-                    let entry = JMneEntry {
-                        id,
-                        kanjis,
-                        readings,
-                        translations,
-                    };
+            Event::End(tag) => {
+                if &tag.name().0 == b"entry" {
+                    if entry.id == 0 {
+                        if entry.id == 0 {
+                            println!(
+                                "Found an entry in JMneDict without `<ent_seq>`. Its id has been set to 0."
+                            )
+                        }
+                    }
                     return Ok(entry);
                 }
             }
@@ -94,31 +97,37 @@ fn parse_entry(parser: &mut Parser) -> Result<JMneEntry> {
     }
 }
 
-fn parse_kanji(parser: &mut Parser) -> Result<JMneKanji> {
+fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
     let mut kanji: Option<String> = None;
     let mut infos = vec![];
     let mut priorities = vec![];
 
     loop {
-        match parser.next().ok_or("Closing tag </kanji> not found")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "keb" => {
-                    kanji = Some(parse_characters(parser, "keb")?);
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"keb" => {
+                    if let Some(kanji) = kanji {
+                        println!(
+                            "Warning: Found multiple <keb> in form '{}' in JMneDict",
+                            kanji
+                        )
+                    }
+                    kanji = Some(parse_text_in_tag(reader, b"keb")?);
                 }
-                "ke_inf" => {
-                    let info = parse_characters(parser, "ke_inf")?;
+                b"ke_inf" => {
+                    let info = parse_text_in_tag(reader, b"ke_inf")?;
                     infos.push(info);
                 }
-                "ke_pri" => {
-                    let priority = parse_characters(parser, "ke_pri")?;
+                b"ke_pri" => {
+                    let priority = parse_text_in_tag(reader, b"ke_pri")?;
                     priorities.push(priority);
                 }
                 _ => {
-                    println!("Unknown tag in <kanji>: {}", &tag.name);
+                    println!("Unknown tag in <kanji>: {}", tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "kanji" {
+            Event::End(tag) => {
+                if tag.name().0 == b"kanji" {
                     let kanji = kanji.ok_or(Error::InvalidXml("No <keb> found in kanji".into()))?;
                     let kanji = JMneKanji {
                         kanji,
@@ -126,11 +135,6 @@ fn parse_kanji(parser: &mut Parser) -> Result<JMneKanji> {
                         priority: priorities,
                     };
                     return Ok(kanji);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "</kanji>",
-                        actual: format!("</{}>", tag.name),
-                    });
                 }
             }
             _ => {}
@@ -138,36 +142,36 @@ fn parse_kanji(parser: &mut Parser) -> Result<JMneKanji> {
     }
 }
 
-fn parse_reading(parser: &mut Parser) -> Result<JMneReading> {
+fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
     let mut reading: Option<String> = None;
     let mut to_forms = vec![];
     let mut infos = vec![];
     let mut priorities = vec![];
 
     loop {
-        match parser.next().ok_or("Closing tag </reading> not found")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "reb" => {
-                    reading = Some(parse_characters(parser, "reb")?);
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"reb" => {
+                    reading = Some(parse_text_in_tag(reader, b"reb")?);
                 }
-                "re_restr" => {
-                    let to_form = parse_characters(parser, "re_restr")?;
+                b"re_restr" => {
+                    let to_form = parse_text_in_tag(reader, b"re_restr")?;
                     to_forms.push(to_form);
                 }
-                "re_inf" => {
-                    let info = parse_characters(parser, "re_inf")?;
+                b"re_inf" => {
+                    let info = parse_text_in_tag(reader, b"re_inf")?;
                     infos.push(info);
                 }
-                "re_pri" => {
-                    let priority = parse_characters(parser, "re_pri")?;
+                b"re_pri" => {
+                    let priority = parse_text_in_tag(reader, b"re_pri")?;
                     priorities.push(priority);
                 }
                 _ => {
-                    println!("Unknown tag in <reading>: {}", &tag.name);
+                    println!("Unknown tag in <reading>: {}", &tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "reading" {
+            Event::End(tag) => {
+                if tag.name().0 == b"reading" {
                     let reading =
                         reading.ok_or(Error::InvalidXml("No <reb> found in reading".into()))?;
                     let reading = JMneReading {
@@ -177,11 +181,6 @@ fn parse_reading(parser: &mut Parser) -> Result<JMneReading> {
                         priority: priorities,
                     };
                     return Ok(reading);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "</reading>",
-                        actual: format!("</{}>", tag.name),
-                    });
                 }
             }
             _ => {}
@@ -189,43 +188,45 @@ fn parse_reading(parser: &mut Parser) -> Result<JMneReading> {
     }
 }
 
-fn parse_translation(parser: &mut Parser) -> Result<JMneTranslation> {
+fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
     let mut translation = JMneTranslation::default();
 
     loop {
-        match parser.next().ok_or("Closing tag </reading> not found")?? {
-            Event::ElementStart(tag) => match tag.name.as_str() {
-                "name_type" => {
+        match reader.read_event()? {
+            Event::Start(tag) => match tag.name().0 {
+                b"name_type" => {
                     translation
                         .name_type
-                        .push(parse_characters(parser, "name_type")?);
+                        .push(parse_text_in_tag(reader, b"name_type")?);
                 }
-                "xref" => {
-                    translation.xref.push(parse_characters(parser, "xref")?);
+                b"xref" => {
+                    translation.xref.push(parse_text_in_tag(reader, b"xref")?);
                 }
-                "trans_det" => {
-                    if let Some(lang) = tag.attributes.get(&("lang".into(), Some("xml".into()))) {
-                        if lang.to_lowercase() != "eng" {
-                            println!("<trans_det> has non-english value: {}", lang);
+                b"trans_det" => {
+                    for attr in tag.attributes() {
+                        let attr = attr?;
+                        if attr.key.0 == b"xml:lang" {
+                            let lang = attr.value;
+                            if lang.as_ref() != b"eng" {
+                                println!(
+                                    "<trans_det> has non-english value: {}",
+                                    str::from_utf8(&lang)?
+                                );
+                            } else {
+                                translation
+                                    .translations
+                                    .push(parse_text_in_tag(reader, b"trans_det")?);
+                            }
                         }
-                    } else {
-                        translation
-                            .translations
-                            .push(parse_characters(parser, "trans_det")?);
                     }
                 }
                 _ => {
-                    println!("Unknown tag in <trans>: {}", &tag.name);
+                    println!("Unknown tag in <trans>: {}", &tag.tag_name());
                 }
             },
-            Event::ElementEnd(tag) => {
-                if &tag.name == "trans" {
+            Event::End(tag) => {
+                if tag.name().0 == b"trans" {
                     return Ok(translation);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "</trans>",
-                        actual: format!("</{}>", tag.name),
-                    });
                 }
             }
             _ => {}

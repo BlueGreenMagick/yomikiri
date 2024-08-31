@@ -11,8 +11,6 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("Bincode {0}")]
     BincodeDecode(#[from] bincode::error::DecodeError),
-    #[error("Xml parse error: {0}")]
-    RustyXml(#[from] rustyxml::ParserError),
     #[error("Expected {expected}, encountered {actual}")]
     Unexpected {
         expected: &'static str,
@@ -24,6 +22,8 @@ pub enum Error {
     QuickXml(#[from] quick_xml::Error),
     #[error("Invalid xml: {0}")]
     InvalidXml(String),
+    #[error("Attribute error {0}")]
+    AttributeError(#[from] quick_xml::events::attributes::AttrError),
     #[error("{0}")]
     Other(String),
     #[error("(Unreachable) Error while unescaping xml entities: {0}")]

@@ -1,33 +1,11 @@
 use core::str;
-use std::borrow::Cow;
-use std::fmt::Write;
 
-use quick_xml::escape::{resolve_predefined_entity, unescape_with};
-use quick_xml::events::{BytesEnd, BytesStart, Event};
+use quick_xml::events::Event;
 use quick_xml::Reader;
 
 use super::types::{JMDict, JMEntry, JMForm, JMReading, JMSense};
-use crate::{Error, Result};
-
-trait TagName<'a>
-where
-    Self: 'a,
-{
-    /** Returns "\<Invalid UTF-8\>" if tag name is not valid utf-8 */
-    fn tag_name(&'a self) -> &'a str;
-}
-
-impl<'a> TagName<'a> for BytesStart<'a> {
-    fn tag_name(&'a self) -> &'a str {
-        str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
-    }
-}
-
-impl<'a> TagName<'a> for BytesEnd<'a> {
-    fn tag_name(&'a self) -> &'a str {
-        str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
-    }
-}
+use crate::xml::{parse_text_in_tag, TagName};
+use crate::Result;
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut reader = Reader::from_str(xml);
@@ -61,7 +39,7 @@ fn parse_in_jmdict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMEntry>> {
             Event::Start(tag) => match tag.name().0 {
                 b"entry" => entries.push(parse_in_entry(reader)?),
                 _ => {
-                    println!("Unknown tag in <jmdict>: {}", tag.tag_name());
+                    println!("Unknown tag in <jmdict>: <{}>", tag.tag_name());
                 }
             },
             Event::End(tag) => {
@@ -104,7 +82,7 @@ pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
             Event::End(tag) => {
                 if tag.name().0 == b"entry" {
                     if entry.id == 0 {
-                        println!("Found an entry without `<ent_seq>`. Its id has been set to 0.")
+                        println!("Found an entry in JMDict without `<ent_seq>`. Its id has been set to 0.")
                     }
                     return Ok(entry);
                 }
@@ -122,7 +100,10 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
             Event::Start(tag) => match tag.name().0 {
                 b"keb" => {
                     if !form.form.is_empty() {
-                        println!("Warning: Found multiple <keb> in form '{}'", form.form)
+                        println!(
+                            "Warning: Found multiple <keb> in form '{}' in JMDict",
+                            form.form
+                        )
                     }
                     form.form = parse_text_in_tag(reader, b"keb")?;
                 }
@@ -239,68 +220,6 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
             }
             _ => {}
         }
-    }
-}
-
-fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
-    let mut characters = String::new();
-    loop {
-        match reader.read_event()? {
-            Event::Start(tag) => {
-                return Err(Error::Unexpected {
-                    expected: "text",
-                    actual: format!("starting tag <{}>", tag.tag_name()),
-                });
-            }
-            Event::Text(text) => {
-                let text = text.into_inner();
-                let segment = str::from_utf8(&text)?;
-                characters.push_str(segment);
-            }
-            Event::End(tag) => {
-                if tag.name().0 == in_tag {
-                    let text = resolve_custom_entity_item(&characters);
-                    let text = unescape_with(&text, unescape_entity)?;
-                    return Ok(text.into());
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: "character",
-                        actual: format!("ending tag </{}>", tag.tag_name()),
-                    });
-                }
-            }
-            _ => {
-                unimplemented!()
-            }
-        }
-    }
-}
-
-/// Resolves entity in text that only contains 1 custom entity and no other text
-///
-/// '&ent;' is resolved to '=ent='.
-fn resolve_custom_entity_item<'a>(text: &'a str) -> Cow<'a, str> {
-    if !text.starts_with('&') || !text.ends_with(';') {
-        Cow::Borrowed(text)
-    } else {
-        let inner = &text[1..text.len() - 1];
-        if inner.contains(';') {
-            Cow::Borrowed(text)
-        } else {
-            let resolved = format!("={}=", inner);
-            Cow::Owned(resolved)
-        }
-    }
-}
-
-/// Unescapes xml entities, resolving custom entities to empty string "".
-///
-/// Custom entities should be handled before this function is used to unescape entity.
-fn unescape_entity(entity: &str) -> Option<&'static str> {
-    if let Some(unescaped) = resolve_predefined_entity(entity) {
-        Some(unescaped)
-    } else {
-        Some("")
     }
 }
 

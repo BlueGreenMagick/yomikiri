@@ -1,10 +1,10 @@
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct JMneDict {
     pub entries: Vec<JMneEntry>,
 }
 
 /// `<entry>`
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct JMneEntry {
     pub id: u32,
     /// 0+ k_ele
@@ -16,7 +16,7 @@ pub struct JMneEntry {
 }
 
 /// `<k_ele>`
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct JMneKanji {
     pub kanji: String,
     pub info: Vec<String>,
