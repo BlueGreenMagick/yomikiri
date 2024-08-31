@@ -26,6 +26,8 @@ pub enum Error {
     InvalidXml(String),
     #[error("{0}")]
     Other(String),
+    #[error("(Unreachable) Error while unescaping xml entities: {0}")]
+    EscapeError(#[from] quick_xml::escape::EscapeError),
 }
 
 impl From<String> for Error {
