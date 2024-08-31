@@ -97,3 +97,27 @@ fn unescape_entity(entity: &str) -> Option<&'static str> {
         Some("")
     }
 }
+
+pub fn parse_in_tag<FStart>(
+    reader: &mut Reader<&[u8]>,
+    tag: &str,
+    mut handle_start: FStart,
+) -> Result<()>
+where
+    FStart: FnMut(&mut Reader<&[u8]>, BytesStart<'_>) -> Result<()>,
+{
+    loop {
+        match reader.read_event()? {
+            Event::Start(start) => {
+                handle_start(reader, start)?;
+            }
+            Event::End(end) => {
+                if end.name().0 == tag.as_bytes() {
+                    return Ok(());
+                }
+            }
+            Event::Eof => return Err(Error::InvalidXml(format!("<{}> not closed", tag))),
+            _ => {}
+        }
+    }
+}
