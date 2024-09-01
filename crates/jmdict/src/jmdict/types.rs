@@ -212,7 +212,9 @@ jm_entity_enum!(
     b"int" => Interjection,
     b"suf" | b"n-suf" | b"ctr" => Suffix,
     b"prt" => Particle,
+    #[serde(rename = "na-adjective")]
     b"adj-na" | b"adj-t" | b"adj-nari" => NaAdjective,
+    #[serde(rename = "auxiliary verb")]
     b"aux-v" | b"aux" | b"aux-adj" | b"cop" => AuxiliaryVerb,
     b"pn" => Pronoun,
     b"pref" => Prefix,

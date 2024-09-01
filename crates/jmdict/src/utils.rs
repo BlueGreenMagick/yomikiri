@@ -24,11 +24,16 @@ console.log(macroCode(decls))
 macro_rules! jm_entity_enum {
   (
       $enum_name:ident;
-      $($key:pat $(if $guard:expr)? => $variant:ident),+,
+      $(
+        $( #[$attrs:meta] )*
+        $key:pat $(if $guard:expr)? => $variant:ident
+      ),+,
   ) => {
-      #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+      #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+      #[serde(rename_all = "lowercase")]
       pub enum $enum_name {
           $(
+              $( #[$attrs] )*
               $variant,
           )+
       }
