@@ -1,5 +1,6 @@
 use core::str;
 
+use log::warn;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
@@ -25,7 +26,7 @@ fn parse_jmnedict(reader: &mut Reader<&[u8]>) -> Result<JMneDict> {
                     return Ok(JMneDict { entries });
                 }
                 _ => {
-                    println!("Unknown global tag: {}", tag.tag_name());
+                    warn!("Unknown global tag: {}", tag.tag_name());
                 }
             },
             Event::Eof => return Err(Error::InvalidXml("<JMnedict> not found".into())),
@@ -43,7 +44,7 @@ fn parse_in_jmnedict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMneEntry>> {
                     entries.push(parse_in_entry(reader)?);
                 }
                 _ => {
-                    println!("Unknown tag in <JMnedict>: <{}>", &tag.tag_name());
+                    warn!("Unknown tag in <JMnedict>: <{}>", &tag.tag_name());
                 }
             },
             Event::End(tag) => {
@@ -82,7 +83,7 @@ fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
                 entry.translations.push(parse_in_translation(reader)?);
             }
             _ => {
-                println!("Unknown tag in <entry>: <{}>", &tag.tag_name());
+                warn!("Unknown tag in <entry>: <{}>", &tag.tag_name());
             }
         };
         Ok(())
@@ -105,7 +106,7 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
         match tag.name().0 {
             b"keb" => {
                 if let Some(kanji) = kanji.as_ref() {
-                    println!(
+                    warn!(
                         "Warning: Found multiple <keb> in form '{}' in JMneDict",
                         kanji
                     )
@@ -121,7 +122,7 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
                 priorities.push(priority);
             }
             _ => {
-                println!("Unknown tag in <k_ele>: {}", tag.tag_name());
+                warn!("Unknown tag in <k_ele>: {}", tag.tag_name());
             }
         };
         Ok(())
@@ -161,7 +162,7 @@ fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
                 priorities.push(priority);
             }
             _ => {
-                println!("Unknown tag in <r_ele>: {}", &tag.tag_name());
+                warn!("Unknown tag in <r_ele>: {}", &tag.tag_name());
             }
         };
         Ok(())
@@ -209,7 +210,7 @@ fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
                 translation.translations.push(tr_text);
             }
             _ => {
-                println!("Unknown tag in <trans>: {}", &tag.tag_name());
+                warn!("Unknown tag in <trans>: {}", &tag.tag_name());
             }
         };
         Ok(())

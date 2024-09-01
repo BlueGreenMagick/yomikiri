@@ -80,6 +80,7 @@ struct GenerateOpts {
 }
 
 fn main() -> Result<()> {
+    setup_logger()?;
     let cli = Cli::parse();
 
     match &cli.command {
@@ -169,4 +170,11 @@ fn download_dict(url: &str, output_path: &Path) -> Result<()> {
     std::io::copy(&mut decoder, &mut tmpfile)?;
     tmpfile.persist(output_path)?;
     Ok(())
+}
+
+fn setup_logger() -> Result<()> {
+    fern::Dispatch::new()
+        .level(log::LevelFilter::Debug)
+        .apply()
+        .context("Could not initialize logger")
 }

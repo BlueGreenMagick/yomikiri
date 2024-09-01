@@ -1,5 +1,6 @@
 use core::str;
 
+use log::warn;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
@@ -24,7 +25,7 @@ fn parse_jmdict(reader: &mut Reader<&[u8]>) -> Result<JMDict> {
                     return Ok(JMDict { entries });
                 }
                 _ => {
-                    println!("Unknown global tag: {}", tag.tag_name());
+                    warn!("Unknown global tag: {}", tag.tag_name());
                 }
             },
             Event::Eof => return Err(Error::InvalidXml("<JMdict> not found".into())),
@@ -40,7 +41,7 @@ fn parse_in_jmdict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMEntry>> {
         match tag.name().0 {
             b"entry" => entries.push(parse_in_entry(reader)?),
             _ => {
-                println!("Unknown tag in <jmdict>: <{}>", tag.tag_name());
+                warn!("Unknown tag in <jmdict>: <{}>", tag.tag_name());
             }
         };
 
@@ -78,7 +79,7 @@ pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
                 entry.senses.push(sense);
             }
             _ => {
-                println!("Unknown tag in <entry>: <{}>", tag.tag_name())
+                warn!("Unknown tag in <entry>: <{}>", tag.tag_name())
             }
         };
         Ok(())
@@ -99,10 +100,7 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
         match tag.name().0 {
             b"keb" => {
                 if !form.form.is_empty() {
-                    println!(
-                        "Warning: Found multiple <keb> in form '{}' in JMDict",
-                        form.form
-                    )
+                    warn!("Found multiple <keb> in form '{}' in JMDict", form.form)
                 }
                 form.form = parse_string_in_tag(reader, b"keb")?;
             }
@@ -112,14 +110,14 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
                 if let Some(kanji_info) = kanji_info {
                     form.info.push(kanji_info);
                 } else {
-                    println!("Unknown kanji info: {}", String::from_utf8_lossy(&field));
+                    warn!("Unknown kanji info: {}", String::from_utf8_lossy(&field));
                 }
             }
             b"ke_pri" => {
                 form.priority.push(parse_string_in_tag(reader, b"ke_pri")?);
             }
             _ => {
-                println!("Warning: Unknown tag in <entry>: {}", tag.tag_name());
+                warn!("Unknown tag in <entry>: {}", tag.tag_name());
             }
         };
         Ok(())
@@ -155,7 +153,7 @@ pub fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMReading> {
                     .push(parse_string_in_tag(reader, b"re_pri")?);
             }
             _ => {
-                println!("Unknown tag in <r_ele>: {}", &tag.tag_name());
+                warn!("Unknown tag in <r_ele>: {}", &tag.tag_name());
             }
         };
         Ok(())
@@ -203,7 +201,7 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                 if let Some(dialect) = dialect {
                     sense.dialect.push(dialect);
                 } else {
-                    println!("Unknown dialect: {}", String::from_utf8_lossy(&field));
+                    warn!("Unknown dialect: {}", String::from_utf8_lossy(&field));
                 }
             }
             b"gloss" => {
@@ -217,7 +215,7 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                 parse_string_in_tag(reader, b"example")?;
             }
             _ => {
-                println!("Unknown tag in <sense>: {}", tag.tag_name());
+                warn!("Unknown tag in <sense>: {}", tag.tag_name());
             }
         };
         Ok(())
