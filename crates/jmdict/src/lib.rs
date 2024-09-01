@@ -1,6 +1,7 @@
 pub mod error;
 pub mod jmdict;
 pub mod jmnedict;
+mod utils;
 mod xml;
 
 pub use crate::error::Error;
