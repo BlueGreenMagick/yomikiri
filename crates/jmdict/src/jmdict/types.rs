@@ -72,19 +72,16 @@ pub struct JMReading {
     /// 0+ re_restr
     pub to_form: Vec<String>,
     /// 0+ re_inf
-    pub info: Vec<String>,
+    pub info: Vec<JMReadingInfo>,
     /// 0+ re_pri
     pub priority: Vec<String>,
 }
 
 impl JMReading {
     pub fn is_uncommon(&self) -> bool {
-        for f in ["=ok=", "=sk="] {
-            if self.info.iter().any(|s| s == f) {
-                return true;
-            }
-        }
-        false
+        self.info
+            .iter()
+            .any(|s| *s == JMReadingInfo::Outdated || *s == JMReadingInfo::SearchOnly)
     }
 }
 
@@ -225,4 +222,13 @@ jm_entity_enum!(
     b"n" | b"adj-no" | b"adj-f" | b"num" | b"vs" | [b'n', b'-', ..] => Noun,
     [b'v', ..] => Verb,
     b"adj-i" | b"adj-ix"  | [b'a', b'd', b'j', b'-', ..] => Adjective,
+);
+
+jm_entity_enum!(
+    JMReadingInfo;
+    b"gikun" => Gikun,
+    b"ik" => Word,
+    b"ok" => Outdated,
+    b"rk" => Rarely,
+    b"sk" => SearchOnly,
 );

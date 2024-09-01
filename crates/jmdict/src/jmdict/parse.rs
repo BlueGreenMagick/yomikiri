@@ -7,9 +7,14 @@ use quick_xml::Reader;
 use super::types::{
     JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMMisc, JMPartOfSpeech, JMReading, JMSense,
 };
+use crate::jmdict::types::JMReadingInfo;
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
+/// `parse_entity_enum!(reader, EnumName, "tag", add_to)`
+///
+/// Parses a field in "tag" using `EnumName::parse_field()`,
+/// and if it returns `Some(val)`, run `add_to.push(val)`
 macro_rules! parse_entity_enum {
     ($reader:ident, $enum: ident, $tag: literal, $to:expr ) => {
         let field = parse_text_in_tag($reader, $tag.as_bytes())?;
@@ -153,7 +158,7 @@ pub fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMReading> {
                     .push(parse_string_in_tag(reader, b"re_restr")?);
             }
             b"re_inf" => {
-                reading.info.push(parse_string_in_tag(reader, b"re_inf")?);
+                parse_entity_enum!(reader, JMReadingInfo, "re_inf", reading.info);
             }
             b"re_pri" => {
                 reading

@@ -26,7 +26,7 @@ macro_rules! jm_entity_enum {
       $enum_name:ident;
       $($key:pat $(if $guard:expr)? => $variant:ident),+,
   ) => {
-      #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+      #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
       pub enum $enum_name {
           $(
               $variant,
