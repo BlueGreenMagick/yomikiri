@@ -8,7 +8,7 @@ function macroCode(decl) {
     for (const m of decls.matchAll(/<!ENTITY (\w+) "([^"]*)">/g)) {
         output += 'b"'
         output += m[1]
-        output += '" '
+        output += '" => '
         const firstWord =  m[2].split(" ")[0]
         output += firstWord[0].toUpperCase() + firstWord.slice(1)
         output += ",\n"
@@ -24,7 +24,7 @@ console.log(macroCode(decls))
 macro_rules! jm_entity_enum {
   (
       $enum_name:ident;
-      $($key:literal $variant:ident),+,
+      $($key:pat => $variant:ident),+,
   ) => {
       #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
       pub enum $enum_name {
