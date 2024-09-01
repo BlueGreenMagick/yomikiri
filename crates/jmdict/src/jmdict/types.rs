@@ -48,19 +48,18 @@ impl JMEntry {
 pub struct JMForm {
     pub form: String,
     /// 0+ ke_inf
-    pub info: Vec<String>,
+    pub info: Vec<JMKanjiInfo>,
     /// 0+ ke_pri
     pub priority: Vec<String>,
 }
 
 impl JMForm {
     pub fn is_uncommon(&self) -> bool {
-        for f in ["=ok=", "=rK=", "=sK="] {
-            if self.info.iter().any(|s| s == f) {
-                return true;
-            }
-        }
-        false
+        self.info.iter().any(|s| {
+            *s == JMKanjiInfo::OutdatedKanji
+                || *s == JMKanjiInfo::RareKanjiForm
+                || *s == JMKanjiInfo::SearchOnlyKanji
+        })
     }
 }
 
@@ -112,6 +111,28 @@ pub struct JMSense {
     // 'example'
     // example: Vec<Example>,
 }
+
+/*
+To easily create jm entity enums,
+run below code on xml entity declarations.
+
+```js
+function macroCode(decl) {
+    let output = ""
+    for (const m of decls.matchAll(/<!ENTITY (\w+) "([^"]*)">/g)) {
+        output += 'b"'
+        output += m[1]
+        output += '" '
+        output += m[2]
+        output += ",\n"
+    }
+    return output
+}
+
+let decls = `<Paste entity declarations in xml>`
+console.log(macroCode(decls))
+```
+*/
 
 macro_rules! jm_entity_enum {
     (
@@ -168,4 +189,15 @@ jm_entity_enum!(
     b"thb" TouhokuBen,
     b"tsb" TosaBen,
     b"tsug" TsugaruBen,
+);
+
+jm_entity_enum!(
+    JMKanjiInfo;
+    b"bateji" AtejiReading,
+    b"bik" IrregularKana,
+    b"biK" IrregularKanji,
+    b"bio" IrregularOkurigana,
+    b"boK" OutdatedKanji,
+    b"brK" RareKanjiForm,
+    b"bsK" SearchOnlyKanji,
 );

@@ -3,7 +3,7 @@ use core::str;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use super::types::{JMDialect, JMDict, JMEntry, JMForm, JMReading, JMSense};
+use super::types::{JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMReading, JMSense};
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
@@ -107,7 +107,13 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
                 form.form = parse_string_in_tag(reader, b"keb")?;
             }
             b"ke_inf" => {
-                form.info.push(parse_string_in_tag(reader, b"ke_inf")?);
+                let field = parse_text_in_tag(reader, b"ke_inf")?;
+                let kanji_info = JMKanjiInfo::parse_field(&field);
+                if let Some(kanji_info) = kanji_info {
+                    form.info.push(kanji_info);
+                } else {
+                    println!("Unknown kanji info: {}", String::from_utf8_lossy(&field));
+                }
             }
             b"ke_pri" => {
                 form.priority.push(parse_string_in_tag(reader, b"ke_pri")?);
@@ -269,8 +275,7 @@ mod tests {
 
     #[test]
     fn test_parse_dialect() {
-        let xml = r#"
-<?xml version="1.0" encoding="UTF-8"?>
+        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
 <JMdict>
 <entry>
 <ent_seq>1234567</ent_seq>
@@ -299,7 +304,7 @@ mod tests {
 <gloss>some meaning</gloss>
 </sense>
 </entry>
-</JMdict>     
+</JMdict>
 "#;
         let result = parse_jmdict_xml(&xml).unwrap();
         assert_yaml_snapshot!(result);
