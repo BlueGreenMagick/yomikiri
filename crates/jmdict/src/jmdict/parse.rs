@@ -3,8 +3,8 @@ use core::str;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use super::types::{JMDict, JMEntry, JMForm, JMReading, JMSense};
-use crate::xml::{parse_in_tag, parse_text_in_tag, TagName};
+use super::types::{JMDialect, JMDict, JMEntry, JMForm, JMReading, JMSense};
+use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
@@ -60,7 +60,7 @@ pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
                 if let Some(id) = id {
                     return Err(Error::MultipleEntryIds(id));
                 }
-                let idstr = parse_text_in_tag(reader, b"ent_seq")?;
+                let idstr = parse_string_in_tag(reader, b"ent_seq")?;
                 let seq_id = str::parse::<u32>(&idstr)
                     .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
                 id = Some(seq_id);
@@ -104,13 +104,13 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
                         form.form
                     )
                 }
-                form.form = parse_text_in_tag(reader, b"keb")?;
+                form.form = parse_string_in_tag(reader, b"keb")?;
             }
             b"ke_inf" => {
-                form.info.push(parse_text_in_tag(reader, b"ke_inf")?);
+                form.info.push(parse_string_in_tag(reader, b"ke_inf")?);
             }
             b"ke_pri" => {
-                form.priority.push(parse_text_in_tag(reader, b"ke_pri")?);
+                form.priority.push(parse_string_in_tag(reader, b"ke_pri")?);
             }
             _ => {
                 println!("Warning: Unknown tag in <entry>: {}", tag.tag_name());
@@ -128,23 +128,25 @@ pub fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMReading> {
     parse_in_tag(reader, "r_ele", |reader, tag| {
         match tag.name().0 {
             b"reb" => {
-                reading.reading = parse_text_in_tag(reader, b"reb")?;
+                reading.reading = parse_string_in_tag(reader, b"reb")?;
             }
             b"re_nokanji" => {
                 reading.nokanji = true;
                 // consume ending tag
-                parse_text_in_tag(reader, b"re_nokanji")?;
+                parse_string_in_tag(reader, b"re_nokanji")?;
             }
             b"re_restr" => {
                 reading
                     .to_form
-                    .push(parse_text_in_tag(reader, b"re_restr")?);
+                    .push(parse_string_in_tag(reader, b"re_restr")?);
             }
             b"re_inf" => {
-                reading.info.push(parse_text_in_tag(reader, b"re_inf")?);
+                reading.info.push(parse_string_in_tag(reader, b"re_inf")?);
             }
             b"re_pri" => {
-                reading.priority.push(parse_text_in_tag(reader, b"re_pri")?);
+                reading
+                    .priority
+                    .push(parse_string_in_tag(reader, b"re_pri")?);
             }
             _ => {
                 println!("Unknown tag in <r_ele>: {}", &tag.tag_name());
@@ -162,43 +164,51 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
     parse_in_tag(reader, "sense", |reader, tag| {
         match tag.name().0 {
             b"stagk" => {
-                sense.to_form.push(parse_text_in_tag(reader, b"stagk")?);
+                sense.to_form.push(parse_string_in_tag(reader, b"stagk")?);
             }
             b"stagr" => {
-                sense.to_reading.push(parse_text_in_tag(reader, b"stagr")?);
+                sense
+                    .to_reading
+                    .push(parse_string_in_tag(reader, b"stagr")?);
             }
             b"pos" => {
                 sense
                     .part_of_speech
-                    .push(parse_text_in_tag(reader, b"pos")?);
+                    .push(parse_string_in_tag(reader, b"pos")?);
             }
             b"xref" => {
-                parse_text_in_tag(reader, b"xref")?;
+                parse_string_in_tag(reader, b"xref")?;
             }
             b"ant" => {
-                parse_text_in_tag(reader, b"ant")?;
+                parse_string_in_tag(reader, b"ant")?;
             }
             b"field" => {
-                parse_text_in_tag(reader, b"field")?;
+                parse_string_in_tag(reader, b"field")?;
             }
             b"misc" => {
-                sense.misc.push(parse_text_in_tag(reader, b"misc")?);
+                sense.misc.push(parse_string_in_tag(reader, b"misc")?);
             }
             b"s_inf" => {
-                sense.info.push(parse_text_in_tag(reader, b"s_inf")?);
+                sense.info.push(parse_string_in_tag(reader, b"s_inf")?);
             }
             b"dial" => {
-                sense.dialect.push(parse_text_in_tag(reader, b"dial")?);
+                let field = parse_text_in_tag(reader, b"dial")?;
+                let dialect = JMDialect::parse_field(&field);
+                if let Some(dialect) = dialect {
+                    sense.dialect.push(dialect);
+                } else {
+                    println!("Unknown dialect: {}", String::from_utf8_lossy(&field));
+                }
             }
             b"gloss" => {
-                sense.meaning.push(parse_text_in_tag(reader, b"gloss")?);
+                sense.meaning.push(parse_string_in_tag(reader, b"gloss")?);
             }
             b"lsource" => {
                 // consume ending tag
-                parse_text_in_tag(reader, b"lsource")?;
+                parse_string_in_tag(reader, b"lsource")?;
             }
             b"example" => {
-                parse_text_in_tag(reader, b"example")?;
+                parse_string_in_tag(reader, b"example")?;
             }
             _ => {
                 println!("Unknown tag in <sense>: {}", tag.tag_name());
@@ -214,10 +224,7 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
 mod tests {
     use insta::assert_yaml_snapshot;
 
-    use crate::jmdict::JMDict;
     use crate::parse_jmdict_xml;
-
-    use super::{JMEntry, JMForm, JMReading, JMSense};
 
     #[test]
     fn test_xml_parse() {
@@ -255,6 +262,44 @@ mod tests {
 </sense>
 </entry>
 </JMdict>
+"#;
+        let result = parse_jmdict_xml(&xml).unwrap();
+        assert_yaml_snapshot!(result);
+    }
+
+    #[test]
+    fn test_parse_dialect() {
+        let xml = r#"
+<?xml version="1.0" encoding="UTF-8"?>
+<JMdict>
+<entry>
+<ent_seq>1234567</ent_seq>
+<k_ele>
+<keb>言葉</keb>
+</k_ele>
+<r_ele>
+<reb>ことば</reb>
+</r_ele>
+<sense>
+<pos>&n;</pos>
+<xref>次発</xref>
+<dial>&bra;</dial>
+<dial>&hob;</dial>
+<dial>&ksb;</dial>
+<dial>&ktb;</dial>
+<dial>&kyb;</dial>
+<dial>&kyu;</dial>
+<dial>&nab;</dial>
+<dial>&osb;</dial>
+<dial>&rkb;</dial>
+<dial>&thb;</dial>
+<dial>&tsb;</dial>
+<dial>&tsug;</dial>
+<dial>unk</dial>
+<gloss>some meaning</gloss>
+</sense>
+</entry>
+</JMdict>     
 "#;
         let result = parse_jmdict_xml(&xml).unwrap();
         assert_yaml_snapshot!(result);

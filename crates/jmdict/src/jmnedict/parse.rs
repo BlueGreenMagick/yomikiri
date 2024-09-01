@@ -3,7 +3,7 @@ use core::str;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use crate::xml::{parse_in_tag, parse_text_in_tag, TagName};
+use crate::xml::{parse_in_tag, parse_string_in_tag, TagName};
 use crate::{Error, Result};
 
 use super::types::{JMneDict, JMneEntry, JMneKanji, JMneReading, JMneTranslation};
@@ -67,7 +67,7 @@ fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
                 if let Some(id) = id {
                     return Err(Error::MultipleEntryIds(id));
                 }
-                let idstr = parse_text_in_tag(reader, b"ent_seq")?;
+                let idstr = parse_string_in_tag(reader, b"ent_seq")?;
                 let seq_id = str::parse::<u32>(&idstr)
                     .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
                 id = Some(seq_id);
@@ -110,14 +110,14 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
                         kanji
                     )
                 }
-                kanji = Some(parse_text_in_tag(reader, b"keb")?);
+                kanji = Some(parse_string_in_tag(reader, b"keb")?);
             }
             b"ke_inf" => {
-                let info = parse_text_in_tag(reader, b"ke_inf")?;
+                let info = parse_string_in_tag(reader, b"ke_inf")?;
                 infos.push(info);
             }
             b"ke_pri" => {
-                let priority = parse_text_in_tag(reader, b"ke_pri")?;
+                let priority = parse_string_in_tag(reader, b"ke_pri")?;
                 priorities.push(priority);
             }
             _ => {
@@ -146,18 +146,18 @@ fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
     parse_in_tag(reader, "r_ele", |reader, tag| {
         match tag.name().0 {
             b"reb" => {
-                reading = Some(parse_text_in_tag(reader, b"reb")?);
+                reading = Some(parse_string_in_tag(reader, b"reb")?);
             }
             b"re_restr" => {
-                let to_form = parse_text_in_tag(reader, b"re_restr")?;
+                let to_form = parse_string_in_tag(reader, b"re_restr")?;
                 to_forms.push(to_form);
             }
             b"re_inf" => {
-                let info = parse_text_in_tag(reader, b"re_inf")?;
+                let info = parse_string_in_tag(reader, b"re_inf")?;
                 infos.push(info);
             }
             b"re_pri" => {
-                let priority = parse_text_in_tag(reader, b"re_pri")?;
+                let priority = parse_string_in_tag(reader, b"re_pri")?;
                 priorities.push(priority);
             }
             _ => {
@@ -186,13 +186,13 @@ fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
             b"name_type" => {
                 translation
                     .name_type
-                    .push(parse_text_in_tag(reader, b"name_type")?);
+                    .push(parse_string_in_tag(reader, b"name_type")?);
             }
             b"xref" => {
-                translation.xref.push(parse_text_in_tag(reader, b"xref")?);
+                translation.xref.push(parse_string_in_tag(reader, b"xref")?);
             }
             b"trans_det" => {
-                let tr_text = parse_text_in_tag(reader, b"trans_det")?;
+                let tr_text = parse_string_in_tag(reader, b"trans_det")?;
                 for attr in tag.attributes() {
                     let attr = attr?;
                     if attr.key.0 == b"xml:lang" {

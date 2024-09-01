@@ -106,9 +106,66 @@ pub struct JMSense {
     /// 's_inf'
     pub info: Vec<String>,
     /// 'dial'
-    pub dialect: Vec<String>,
+    pub dialect: Vec<JMDialect>,
     /// 'gloss'
     pub meaning: Vec<String>,
     // 'example'
     // example: Vec<Example>,
 }
+
+macro_rules! jm_entity_enum {
+    (
+        $enum_name:ident;
+        $($key:literal $variant:ident),+,
+    ) => {
+        #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+        pub enum $enum_name {
+            $(
+                $variant,
+            )+
+        }
+
+        impl $enum_name {
+            pub fn parse_field(field: &[u8]) -> Option<$enum_name> {
+                if is_single_entity(field) {
+                    match &field[1..field.len() -1] {
+                        $(
+                            $key => Some(Self::$variant),
+                        )+
+                        _ => None,
+                    }
+                } else {
+                    None
+                }
+
+            }
+        }
+    };
+}
+
+/// returns true if
+fn is_single_entity(text: &[u8]) -> bool {
+    if text.len() > 2 && text[0] == b'&' && text[text.len() - 1] == b';' {
+        let inner = &text[1..text.len() - 1];
+        if !inner.contains(&b';') {
+            return true;
+        }
+    }
+    return false;
+}
+
+jm_entity_enum!(
+    JMDialect;
+    b"bra" Brazilian,
+    b"hob" HokkaidoBen,
+    b"ksb" KansaiBen,
+    b"ktb" KantouBen,
+    b"kyb" KyotoBen,
+    b"kyu" KyuushuuBen,
+    b"nab" NaganoBen,
+    b"osb" OsakaBen,
+    b"rkb" RyuukyuuBen,
+    b"thb" TouhokuBen,
+    b"tsb" TosaBen,
+    b"tsug" TsugaruBen,
+);

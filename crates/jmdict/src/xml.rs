@@ -1,9 +1,7 @@
-//! XML parsing aims to support future versions of dictionary xml files.
+//! XML parsing aims to not throw errors when
+//! parsing future versions of dictionary xml files.
 //!
-//! For example, new entity-tags could be added in the future,
-//! which is supported by an `Other` variant in the enum. (TODO)
-//!
-//! Or new tags could be added, in which case the parser ignores the tags.
+//! When unknown variant, entity, or tags are encountered, the parser ignores it.
 //!
 //! Meanwhile, some core assumptions on its structure must be held.
 //! For example, an element must have one and only one id.
@@ -36,8 +34,16 @@ impl<'a> TagName<'a> for BytesEnd<'a> {
     }
 }
 
-pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
-    let mut characters = String::new();
+pub fn parse_string_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
+    let characters = parse_text_in_tag(reader, in_tag)?;
+    let string = str::from_utf8(&characters)?;
+    let string = resolve_custom_entity_item(&string);
+    let string = unescape_with(&string, unescape_entity)?;
+    Ok(string.into())
+}
+
+pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<Vec<u8>> {
+    let mut characters = Vec::new();
     loop {
         match reader.read_event()? {
             Event::Start(tag) => {
@@ -48,14 +54,11 @@ pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<St
             }
             Event::Text(text) => {
                 let text = text.into_inner();
-                let segment = str::from_utf8(&text)?;
-                characters.push_str(segment);
+                characters.extend_from_slice(&text);
             }
             Event::End(tag) => {
                 if tag.name().0 == in_tag {
-                    let text = resolve_custom_entity_item(&characters);
-                    let text = unescape_with(&text, unescape_entity)?;
-                    return Ok(text.into());
+                    return Ok(characters);
                 } else {
                     return Err(Error::Unexpected {
                         expected: "character",
