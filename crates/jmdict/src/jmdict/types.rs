@@ -95,7 +95,7 @@ pub struct JMSense {
     /// 0+ 'stagr'
     pub to_reading: Vec<String>,
     /// 'pos'
-    pub part_of_speech: Vec<String>,
+    pub part_of_speech: Vec<JMPartOfSpeech>,
     /// 'xref'
     // pub reference: Vec<String>,
     /// 'ant'
@@ -206,4 +206,23 @@ jm_entity_enum!(
     b"work" => WorkOfArt,
     b"X" => RudeTerm,
     b"yoji" => Yojijukugo,
+);
+
+jm_entity_enum!(
+    JMPartOfSpeech;
+    b"adv" | b"adv-to" | b"vs-c" | b"vs-i" => Adverb,
+    b"conj" => Conjunction,
+    b"int" => Interjection,
+    b"suf" | b"n-suf" | b"ctr" => Suffix,
+    b"prt" => Particle,
+    b"adj-na" | b"adj-t" | b"adj-nari" => NaAdjective,
+    b"aux-v" | b"aux" | b"aux-adj" | b"cop" => AuxiliaryVerb,
+    b"pn" => Pronoun,
+    b"pref" => Prefix,
+    b"adj-pn" => Adnomial,
+    b"exp" => Expression,
+    b"unc" => Unclassified,
+    b"n" | b"adj-no" | b"adj-f" | b"num" | b"vs" | [b'n', b'-', ..] => Noun,
+    [b'v', ..] => Verb,
+    b"adj-i" | b"adj-ix"  | [b'a', b'd', b'j', b'-', ..] => Adjective,
 );

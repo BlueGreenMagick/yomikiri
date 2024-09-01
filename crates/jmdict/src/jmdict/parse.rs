@@ -4,7 +4,9 @@ use log::warn;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use super::types::{JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMMisc, JMReading, JMSense};
+use super::types::{
+    JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMMisc, JMPartOfSpeech, JMReading, JMSense,
+};
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
@@ -176,9 +178,13 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                     .push(parse_string_in_tag(reader, b"stagr")?);
             }
             b"pos" => {
-                sense
-                    .part_of_speech
-                    .push(parse_string_in_tag(reader, b"pos")?);
+                let field = parse_text_in_tag(reader, b"pos")?;
+                let pos = JMPartOfSpeech::parse_field(&field);
+                if let Some(pos) = pos {
+                    sense.part_of_speech.push(pos)
+                } else {
+                    warn!("Unknown pos: {}", String::from_utf8_lossy(&field));
+                }
             }
             b"xref" => {
                 parse_string_in_tag(reader, b"xref")?;

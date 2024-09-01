@@ -66,28 +66,3 @@ impl From<JMSense> for Sense {
         }
     }
 }
-
-fn parse_part_of_speech(value: &str) -> PartOfSpeech {
-    // strip '=' from '=XXX='
-    let value = &value[1..value.len() - 1];
-    match value {
-        "n" | "adj-no" | "adj-f" | "num" | "vs" => PartOfSpeech::Noun,
-        "adv" | "adv-to" | "vs-c" | "vs-i" => PartOfSpeech::Adverb,
-        "conj" => PartOfSpeech::Conjunction,
-        "int" => PartOfSpeech::Interjection,
-        "suf" | "n-suf" | "ctr" => PartOfSpeech::Suffix,
-        "prt" => PartOfSpeech::Particle,
-        "adj-i" | "adj-ix" => PartOfSpeech::Adjective,
-        "adj-na" | "adj-t" | "adj-nari" => PartOfSpeech::NaAdjective,
-        "aux-v" | "aux" | "aux-adj" | "cop" => PartOfSpeech::AuxiliaryVerb,
-        "pn" => PartOfSpeech::Pronoun,
-        "pref" => PartOfSpeech::Prefix,
-        "adj-pn" => PartOfSpeech::Adnomial,
-        "exp" => PartOfSpeech::Expression,
-        "unc" => PartOfSpeech::Unclassified,
-        s if s.starts_with('v') => PartOfSpeech::Verb,
-        s if s.starts_with("adj-") => PartOfSpeech::Adjective,
-        s if s.starts_with("n-") => PartOfSpeech::Noun,
-        other => panic!("Unknown part of speech: {}", other),
-    }
-}

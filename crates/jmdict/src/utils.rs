@@ -24,7 +24,7 @@ console.log(macroCode(decls))
 macro_rules! jm_entity_enum {
   (
       $enum_name:ident;
-      $($key:pat => $variant:ident),+,
+      $($key:pat $(if $guard:expr)? => $variant:ident),+,
   ) => {
       #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
       pub enum $enum_name {
@@ -38,7 +38,7 @@ macro_rules! jm_entity_enum {
               if is_single_entity(field) {
                   match &field[1..field.len() -1] {
                       $(
-                          $key => Some(Self::$variant),
+                          $key $(if $guard)? => Some(Self::$variant),
                       )+
                       _ => None,
                   }
