@@ -10,6 +10,18 @@ use super::types::{
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
+macro_rules! parse_entity_enum {
+    ($reader:ident, $enum: ident, $tag: literal, $to:expr ) => {
+        let field = parse_text_in_tag($reader, $tag.as_bytes())?;
+        let value = $enum::parse_field(&field);
+        if let Some(value) = value {
+            $to.push(value);
+        } else {
+            warn!("Unknown {}: {}", $tag, String::from_utf8_lossy(&field));
+        }
+    };
+}
+
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut reader = Reader::from_str(xml);
     reader.config_mut().trim_text_start = true;
@@ -107,13 +119,7 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
                 form.form = parse_string_in_tag(reader, b"keb")?;
             }
             b"ke_inf" => {
-                let field = parse_text_in_tag(reader, b"ke_inf")?;
-                let kanji_info = JMKanjiInfo::parse_field(&field);
-                if let Some(kanji_info) = kanji_info {
-                    form.info.push(kanji_info);
-                } else {
-                    warn!("Unknown kanji info: {}", String::from_utf8_lossy(&field));
-                }
+                parse_entity_enum!(reader, JMKanjiInfo, "pos", form.info);
             }
             b"ke_pri" => {
                 form.priority.push(parse_string_in_tag(reader, b"ke_pri")?);
@@ -178,13 +184,7 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                     .push(parse_string_in_tag(reader, b"stagr")?);
             }
             b"pos" => {
-                let field = parse_text_in_tag(reader, b"pos")?;
-                let pos = JMPartOfSpeech::parse_field(&field);
-                if let Some(pos) = pos {
-                    sense.part_of_speech.push(pos)
-                } else {
-                    warn!("Unknown pos: {}", String::from_utf8_lossy(&field));
-                }
+                parse_entity_enum!(reader, JMPartOfSpeech, "pos", sense.part_of_speech);
             }
             b"xref" => {
                 parse_string_in_tag(reader, b"xref")?;
@@ -196,25 +196,13 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                 parse_string_in_tag(reader, b"field")?;
             }
             b"misc" => {
-                let field = parse_text_in_tag(reader, b"misc")?;
-                let misc = JMMisc::parse_field(&field);
-                if let Some(misc) = misc {
-                    sense.misc.push(misc)
-                } else {
-                    warn!("Unknown misc: {}", String::from_utf8_lossy(&field));
-                }
+                parse_entity_enum!(reader, JMMisc, "misc", sense.misc);
             }
             b"s_inf" => {
                 sense.info.push(parse_string_in_tag(reader, b"s_inf")?);
             }
             b"dial" => {
-                let field = parse_text_in_tag(reader, b"dial")?;
-                let dialect = JMDialect::parse_field(&field);
-                if let Some(dialect) = dialect {
-                    sense.dialect.push(dialect);
-                } else {
-                    warn!("Unknown dialect: {}", String::from_utf8_lossy(&field));
-                }
+                parse_entity_enum!(reader, JMDialect, "dial", sense.dialect);
             }
             b"gloss" => {
                 sense.meaning.push(parse_string_in_tag(reader, b"gloss")?);
