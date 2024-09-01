@@ -4,7 +4,7 @@ use log::warn;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
-use super::types::{JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMReading, JMSense};
+use super::types::{JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMMisc, JMReading, JMSense};
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
 
@@ -190,7 +190,13 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                 parse_string_in_tag(reader, b"field")?;
             }
             b"misc" => {
-                sense.misc.push(parse_string_in_tag(reader, b"misc")?);
+                let field = parse_text_in_tag(reader, b"misc")?;
+                let misc = JMMisc::parse_field(&field);
+                if let Some(misc) = misc {
+                    sense.misc.push(misc)
+                } else {
+                    warn!("Unknown misc: {}", String::from_utf8_lossy(&field));
+                }
             }
             b"s_inf" => {
                 sense.info.push(parse_string_in_tag(reader, b"s_inf")?);

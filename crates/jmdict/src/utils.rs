@@ -9,7 +9,8 @@ function macroCode(decl) {
         output += 'b"'
         output += m[1]
         output += '" '
-        output += m[2]
+        const firstWord =  m[2].split(" ")[0]
+        output += firstWord[0].toUpperCase() + firstWord.slice(1)
         output += ",\n"
     }
     return output
