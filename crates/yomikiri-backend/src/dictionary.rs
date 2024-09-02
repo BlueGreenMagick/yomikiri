@@ -86,10 +86,12 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let date_reg =
             Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).context("Could not create regexp object")?;
         for entry in entries {
-            if let Some(sense) = entry.senses.first() {
-                if let Some(meaning) = sense.meaning.first() {
-                    if let Some(mat) = date_reg.find(meaning) {
-                        return Ok(mat.as_str().to_owned());
+            if let Some(grouped_sense) = entry.grouped_senses.first() {
+                if let Some(sense) = grouped_sense.senses.first() {
+                    if let Some(meaning) = sense.meanings.first() {
+                        if let Some(mat) = date_reg.find(meaning) {
+                            return Ok(mat.as_str().to_owned());
+                        }
                     }
                 }
             }

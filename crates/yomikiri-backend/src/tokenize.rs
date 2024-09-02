@@ -11,7 +11,7 @@ use serde::Serialize;
 use std::borrow::Cow;
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_dictionary::Entry;
+use yomikiri_dictionary::{Entry, PartOfSpeech};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicConjugationForm, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
@@ -392,13 +392,13 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
 
                 let mut found_pos = None;
                 for e in self.dictionary.search(&text_all)?.iter() {
-                    if all_noun && e.is_noun() {
+                    if all_noun && e.has_pos(PartOfSpeech::Noun) {
                         found_pos = Some(UnidicPos::Noun(UnidicNounPos2::Unknown));
                         break;
-                    } else if all_particle && e.is_particle() {
+                    } else if all_particle && e.has_pos(PartOfSpeech::Particle) {
                         found_pos = Some(UnidicPos::Particle(UnidicParticlePos2::Unknown));
                         break;
-                    } else if noun_particle || e.is_expression() {
+                    } else if noun_particle || e.has_pos(PartOfSpeech::Expression) {
                         found_pos = Some(UnidicPos::Expression)
                     }
                 }
@@ -411,10 +411,10 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                     let text_then_base = concat_string(&joined_text_prev, &token.base);
                     let mut found_pos = None;
                     for e in self.dictionary.search(&text_then_base)?.iter() {
-                        if all_noun && e.is_noun() {
+                        if all_noun && e.has_pos(PartOfSpeech::Noun) {
                             found_pos = Some(UnidicPos::Noun(UnidicNounPos2::Unknown));
                             break;
-                        } else if noun_particle || e.is_expression() {
+                        } else if noun_particle || e.has_pos(PartOfSpeech::Expression) {
                             found_pos = Some(UnidicPos::Expression)
                         }
                     }
@@ -439,7 +439,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                         .dictionary
                         .search(&base_all)?
                         .iter()
-                        .any(|e| e.is_particle());
+                        .any(|e| e.has_pos(PartOfSpeech::Particle));
                     if found_particle {
                         last_found_to = at + 1;
                         last_found_pos = UnidicPos::Particle(UnidicParticlePos2::Unknown);
@@ -544,7 +544,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             .dictionary
             .search(&compound)?
             .iter()
-            .any(|e| e.is_conjunction());
+            .any(|e| e.has_pos(PartOfSpeech::Conjunction));
         if !search {
             return Ok(false);
         }
@@ -626,7 +626,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             .dictionary
             .search(&compound)?
             .iter()
-            .any(|e| e.is_verb());
+            .any(|e| e.has_pos(PartOfSpeech::Verb));
         if !exists {
             return Ok(false);
         }

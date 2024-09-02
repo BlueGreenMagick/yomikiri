@@ -13,6 +13,7 @@ use yomikiri_unidic_types::{
 #[cfg(feature = "wasm")]
 use tsify_next::Tsify;
 
+/// An entry should have one kanji or reading
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
@@ -72,58 +73,77 @@ pub struct Sense {
     pub dialects: Vec<JMDialect>,
 }
 
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct PartOfSpeech(pub JMPartOfSpeech);
+pub type PartOfSpeech = JMPartOfSpeech;
 
-impl PartOfSpeech {
-    fn pos_to_unidic(&self) -> UnidicPos {
-        match &self.0 {
-            JMPartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
-            JMPartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
-            JMPartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
-            JMPartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
-            JMPartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
-            JMPartOfSpeech::Adverb => UnidicPos::Adverb,
-            JMPartOfSpeech::Interjection => {
-                UnidicPos::Interjection(UnidicInterjectionPos2::Unknown)
-            }
-            JMPartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
-            JMPartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
-            JMPartOfSpeech::Pronoun => UnidicPos::Pronoun,
-            JMPartOfSpeech::Conjunction => UnidicPos::Conjunction,
-            JMPartOfSpeech::Prefix => UnidicPos::Prefix,
-            JMPartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
-            JMPartOfSpeech::Expression => UnidicPos::Expression,
-            JMPartOfSpeech::Unclassified => UnidicPos::Unknown,
-            JMPartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
-        }
+fn jmpos_to_unidic(pos: &JMPartOfSpeech) -> UnidicPos {
+    match pos {
+        JMPartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
+        JMPartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
+        JMPartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
+        JMPartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
+        JMPartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
+        JMPartOfSpeech::Adverb => UnidicPos::Adverb,
+        JMPartOfSpeech::Interjection => UnidicPos::Interjection(UnidicInterjectionPos2::Unknown),
+        JMPartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
+        JMPartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
+        JMPartOfSpeech::Pronoun => UnidicPos::Pronoun,
+        JMPartOfSpeech::Conjunction => UnidicPos::Conjunction,
+        JMPartOfSpeech::Prefix => UnidicPos::Prefix,
+        JMPartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
+        JMPartOfSpeech::Expression => UnidicPos::Expression,
+        JMPartOfSpeech::Unclassified => UnidicPos::Unknown,
+        JMPartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
     }
 }
 
-impl From<UnidicPos> for PartOfSpeech {
-    fn from(value: UnidicPos) -> Self {
-        let pos = match value {
-            UnidicPos::Noun(_) => JMPartOfSpeech::Noun,
-            UnidicPos::Verb(_) => JMPartOfSpeech::Verb,
-            UnidicPos::Adjective(_) => JMPartOfSpeech::Adjective,
-            UnidicPos::NaAdjective(_) => JMPartOfSpeech::NaAdjective,
-            UnidicPos::Particle(_) => JMPartOfSpeech::Particle,
-            UnidicPos::Adverb => JMPartOfSpeech::Adverb,
-            UnidicPos::Interjection(_) => JMPartOfSpeech::Interjection,
-            UnidicPos::Suffix(_) => JMPartOfSpeech::Suffix,
-            UnidicPos::AuxVerb => JMPartOfSpeech::AuxiliaryVerb,
-            UnidicPos::Pronoun => JMPartOfSpeech::Pronoun,
-            UnidicPos::Conjunction => JMPartOfSpeech::Conjunction,
-            UnidicPos::Prefix => JMPartOfSpeech::Prefix,
-            UnidicPos::PrenounAdjectival => JMPartOfSpeech::Adnomial,
-            UnidicPos::Expression => JMPartOfSpeech::Expression,
-            UnidicPos::SupplementarySymbol(_) => JMPartOfSpeech::Symbol,
-            UnidicPos::Whitespace => JMPartOfSpeech::Symbol,
-            UnidicPos::Symbol(_) => JMPartOfSpeech::Symbol,
-            UnidicPos::Unknown => JMPartOfSpeech::Unclassified,
-        };
-        Self(pos)
+fn unidic_to_jmpos(unidic: &UnidicPos) -> JMPartOfSpeech {
+    match unidic {
+        UnidicPos::Noun(_) => JMPartOfSpeech::Noun,
+        UnidicPos::Verb(_) => JMPartOfSpeech::Verb,
+        UnidicPos::Adjective(_) => JMPartOfSpeech::Adjective,
+        UnidicPos::NaAdjective(_) => JMPartOfSpeech::NaAdjective,
+        UnidicPos::Particle(_) => JMPartOfSpeech::Particle,
+        UnidicPos::Adverb => JMPartOfSpeech::Adverb,
+        UnidicPos::Interjection(_) => JMPartOfSpeech::Interjection,
+        UnidicPos::Suffix(_) => JMPartOfSpeech::Suffix,
+        UnidicPos::AuxVerb => JMPartOfSpeech::AuxiliaryVerb,
+        UnidicPos::Pronoun => JMPartOfSpeech::Pronoun,
+        UnidicPos::Conjunction => JMPartOfSpeech::Conjunction,
+        UnidicPos::Prefix => JMPartOfSpeech::Prefix,
+        UnidicPos::PrenounAdjectival => JMPartOfSpeech::Adnomial,
+        UnidicPos::Expression => JMPartOfSpeech::Expression,
+        UnidicPos::SupplementarySymbol(_) => JMPartOfSpeech::Symbol,
+        UnidicPos::Whitespace => JMPartOfSpeech::Symbol,
+        UnidicPos::Symbol(_) => JMPartOfSpeech::Symbol,
+        UnidicPos::Unknown => JMPartOfSpeech::Unclassified,
+    }
+}
+
+impl Entry {
+    pub fn main_form(&self) -> Option<&str> {
+        if let Some(kanji) = self.kanjis.first() {
+            if kanji.rarity == Rarity::Normal {
+                return Some(&kanji.kanji);
+            }
+        }
+        if let Some(reading) = self.readings.first() {
+            if reading.rarity == Rarity::Normal {
+                return Some(&reading.reading);
+            }
+        }
+        if let Some(kanji) = self.kanjis.first() {
+            return Some(&kanji.kanji);
+        }
+        if let Some(reading) = self.readings.first() {
+            return Some(&reading.reading);
+        }
+
+        None
+    }
+
+    pub fn has_pos(&self, pos: PartOfSpeech) -> bool {
+        self.grouped_senses
+            .iter()
+            .any(|g| g.part_of_speech.contains(&pos))
     }
 }
