@@ -4,7 +4,7 @@
 //! `Decode`, `Encode` is used to encode the structs into the dictionary file
 
 use serde::{Deserialize, Serialize};
-use yomikiri_jmdict::jmdict::JMSenseMisc;
+use yomikiri_jmdict::jmdict::{JMPartOfSpeech, JMSenseMisc};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicSymbolPos2, UnidicVerbPos2,
@@ -71,89 +71,58 @@ pub struct Sense {
     pub meanings: Vec<String>,
 }
 
-/// Unidic based pos tagging
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum PartOfSpeech {
-    /// 名詞
-    Noun,
-    /// 動詞
-    Verb,
-    /// 形容詞
-    Adjective,
-    /// 形容動詞 / 形状詞 (unidic)
-    #[serde(rename = "na-adjective")]
-    NaAdjective,
-    /// 助詞
-    Particle,
-    /// 副詞
-    Adverb,
-    /// 感動詞
-    Interjection,
-    /// 接尾辞
-    Suffix,
-    /// 助動詞
-    #[serde(rename = "auxiliary verb")]
-    AuxiliaryVerb,
-    /// 代名詞
-    Pronoun,
-    /// 接続詞
-    Conjunction,
-    /// 接頭辞
-    Prefix,
-    /// 連体詞
-    Adnomial,
-    Expression,
-    Unclassified,
-    /// Represents symbol pos from unidic
-    Symbol,
-}
+#[serde(transparent)]
+pub struct PartOfSpeech(JMPartOfSpeech);
 
 impl PartOfSpeech {
-    pub fn to_unidic(&self) -> UnidicPos {
-        match &self {
-            PartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
-            PartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
-            PartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
-            PartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
-            PartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
-            PartOfSpeech::Adverb => UnidicPos::Adverb,
-            PartOfSpeech::Interjection => UnidicPos::Interjection(UnidicInterjectionPos2::Unknown),
-            PartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
-            PartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
-            PartOfSpeech::Pronoun => UnidicPos::Pronoun,
-            PartOfSpeech::Conjunction => UnidicPos::Conjunction,
-            PartOfSpeech::Prefix => UnidicPos::Prefix,
-            PartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
-            PartOfSpeech::Expression => UnidicPos::Expression,
-            PartOfSpeech::Unclassified => UnidicPos::Unknown,
-            PartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
+    fn pos_to_unidic(&self) -> UnidicPos {
+        match &self.0 {
+            JMPartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
+            JMPartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
+            JMPartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
+            JMPartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
+            JMPartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
+            JMPartOfSpeech::Adverb => UnidicPos::Adverb,
+            JMPartOfSpeech::Interjection => {
+                UnidicPos::Interjection(UnidicInterjectionPos2::Unknown)
+            }
+            JMPartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
+            JMPartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
+            JMPartOfSpeech::Pronoun => UnidicPos::Pronoun,
+            JMPartOfSpeech::Conjunction => UnidicPos::Conjunction,
+            JMPartOfSpeech::Prefix => UnidicPos::Prefix,
+            JMPartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
+            JMPartOfSpeech::Expression => UnidicPos::Expression,
+            JMPartOfSpeech::Unclassified => UnidicPos::Unknown,
+            JMPartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
         }
     }
 }
 
 impl From<UnidicPos> for PartOfSpeech {
     fn from(value: UnidicPos) -> Self {
-        match value {
-            UnidicPos::Noun(_) => PartOfSpeech::Noun,
-            UnidicPos::Verb(_) => PartOfSpeech::Verb,
-            UnidicPos::Adjective(_) => PartOfSpeech::Adjective,
-            UnidicPos::NaAdjective(_) => PartOfSpeech::NaAdjective,
-            UnidicPos::Particle(_) => PartOfSpeech::Particle,
-            UnidicPos::Adverb => PartOfSpeech::Adverb,
-            UnidicPos::Interjection(_) => PartOfSpeech::Interjection,
-            UnidicPos::Suffix(_) => PartOfSpeech::Suffix,
-            UnidicPos::AuxVerb => PartOfSpeech::AuxiliaryVerb,
-            UnidicPos::Pronoun => PartOfSpeech::Pronoun,
-            UnidicPos::Conjunction => PartOfSpeech::Conjunction,
-            UnidicPos::Prefix => PartOfSpeech::Prefix,
-            UnidicPos::PrenounAdjectival => PartOfSpeech::Adnomial,
-            UnidicPos::Expression => PartOfSpeech::Expression,
-            UnidicPos::SupplementarySymbol(_) => PartOfSpeech::Symbol,
-            UnidicPos::Whitespace => PartOfSpeech::Symbol,
-            UnidicPos::Symbol(_) => PartOfSpeech::Symbol,
-            UnidicPos::Unknown => PartOfSpeech::Unclassified,
-        }
+        let pos = match value {
+            UnidicPos::Noun(_) => JMPartOfSpeech::Noun,
+            UnidicPos::Verb(_) => JMPartOfSpeech::Verb,
+            UnidicPos::Adjective(_) => JMPartOfSpeech::Adjective,
+            UnidicPos::NaAdjective(_) => JMPartOfSpeech::NaAdjective,
+            UnidicPos::Particle(_) => JMPartOfSpeech::Particle,
+            UnidicPos::Adverb => JMPartOfSpeech::Adverb,
+            UnidicPos::Interjection(_) => JMPartOfSpeech::Interjection,
+            UnidicPos::Suffix(_) => JMPartOfSpeech::Suffix,
+            UnidicPos::AuxVerb => JMPartOfSpeech::AuxiliaryVerb,
+            UnidicPos::Pronoun => JMPartOfSpeech::Pronoun,
+            UnidicPos::Conjunction => JMPartOfSpeech::Conjunction,
+            UnidicPos::Prefix => JMPartOfSpeech::Prefix,
+            UnidicPos::PrenounAdjectival => JMPartOfSpeech::Adnomial,
+            UnidicPos::Expression => JMPartOfSpeech::Expression,
+            UnidicPos::SupplementarySymbol(_) => JMPartOfSpeech::Symbol,
+            UnidicPos::Whitespace => JMPartOfSpeech::Symbol,
+            UnidicPos::Symbol(_) => JMPartOfSpeech::Symbol,
+            UnidicPos::Unknown => JMPartOfSpeech::Unclassified,
+        };
+        Self(pos)
     }
 }

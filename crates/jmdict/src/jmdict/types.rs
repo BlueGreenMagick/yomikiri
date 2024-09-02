@@ -207,23 +207,38 @@ jm_entity_enum!(
 
 jm_entity_enum!(
     JMPartOfSpeech;
+    #[doc = "副詞"]
     b"adv" | b"adv-to" | b"vs-c" | b"vs-i" => Adverb,
+    #[doc = "接続詞"]
     b"conj" => Conjunction,
+    #[doc = "感動詞"]
     b"int" => Interjection,
+    #[doc = "接尾辞"]
     b"suf" | b"n-suf" | b"ctr" => Suffix,
+    #[doc = "助詞"]
     b"prt" => Particle,
     #[serde(rename = "na-adjective")]
+    #[doc = "形容動詞"]
     b"adj-na" | b"adj-t" | b"adj-nari" => NaAdjective,
     #[serde(rename = "auxiliary verb")]
+    #[doc = "助動詞"]
     b"aux-v" | b"aux" | b"aux-adj" | b"cop" => AuxiliaryVerb,
+    #[doc = "代名詞"]
     b"pn" => Pronoun,
+    #[doc = "接頭辞"]
     b"pref" => Prefix,
+    #[doc = "連体詞"]
     b"adj-pn" => Adnomial,
     b"exp" => Expression,
     b"unc" => Unclassified,
+    #[doc = "名詞"]
     b"n" | b"adj-no" | b"adj-f" | b"num" | b"vs" | [b'n', b'-', ..] => Noun,
+    #[doc = "動詞"]
     [b'v', ..] => Verb,
+    #[doc = "形容詞"]
     b"adj-i" | b"adj-ix"  | [b'a', b'd', b'j', b'-', ..] => Adjective,
+    /// Represents symbol pos from unidic
+    => Symbol,
 );
 
 jm_entity_enum!(

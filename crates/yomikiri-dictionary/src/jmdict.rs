@@ -1,4 +1,4 @@
-use crate::entry::{Entry, Form, PartOfSpeech, Reading, Sense};
+use crate::entry::{Entry, Kanji, PartOfSpeech, Reading, Sense};
 use crate::Result;
 use itertools::Itertools;
 use yomikiri_jmdict::jmdict::{JMEntry, JMForm, JMReading, JMSense};

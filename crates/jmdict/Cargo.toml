@@ -5,6 +5,9 @@ edition = "2021"
 description = "JMDict XML Types"
 license = "MIT"
 
+[features]
+wasm = ["dep:tsify-next"]
+
 [dependencies]
 bincode = { workspace = true }
 thiserror = { workspace = true }
@@ -12,6 +15,8 @@ lazy_static = { workspace = true }
 quick-xml = { workspace = true }
 serde = { workspace = true }
 log = { workspace = true }
+
+tsify-next = { workspace = true, optional = true }
 
 [dev-dependencies]
 insta = { workspace = true }

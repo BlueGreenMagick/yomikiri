@@ -26,9 +26,10 @@ macro_rules! jm_entity_enum {
       $enum_name:ident;
       $(
         $( #[$attrs:meta] )*
-        $key:pat $(if $guard:expr)? => $variant:ident
+        $( $key:pat $(if $guard:expr)? )? => $variant:ident
       ),+,
   ) => {
+      #[cfg_attr(feature = "wasm", derive(Tsify))]
       #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
       #[serde(rename_all = "lowercase")]
       pub enum $enum_name {
@@ -43,7 +44,9 @@ macro_rules! jm_entity_enum {
               if is_single_entity(field) {
                   match &field[1..field.len() -1] {
                       $(
-                          $key $(if $guard)? => Some(Self::$variant),
+                          $(
+                            $key $(if $guard)? => Some(Self::$variant),
+                          )?
                       )+
                       _ => None,
                   }

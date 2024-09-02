@@ -2656,6 +2656,7 @@ dependencies = [
  "quick-xml",
  "serde",
  "thiserror",
+ "tsify-next",
 ]
 
 [[package]]
