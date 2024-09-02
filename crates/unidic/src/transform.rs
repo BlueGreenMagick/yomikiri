@@ -1,12 +1,12 @@
 use anyhow::{anyhow, Result};
 use fs_err::{self as fs, File};
 use std::cmp;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::str::FromStr;
 use yomikiri_dictionary::dictionary::Dictionary;
-use yomikiri_dictionary::entry::{Entry, PartOfSpeech};
+use yomikiri_dictionary::entry::{jmpos_to_unidic, Entry, PartOfSpeech, Rarity};
 use yomikiri_dictionary::DICT_FILENAME;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
@@ -24,90 +24,84 @@ struct LexItem {
 }
 
 impl LexItem {
-    // 1. For each form:
-    //     for each sense:
-    //         if sense.to_form is empty or form in sense.to_form:
-    //             create LexItem
-    // 2. For each reading:
+    // 1. For each non-rare form:
+    //        create LexItem
+    // 2. For each non-rare reading:
     //     if reading.nokanji or forms is empty:
-    //         for each sense:
-    //             if sense.to_reading is empty or reading in sense.to_reading:
-    //                 create LexItem
-    //
+    //         create LexItem
     // unclassified pos are excluded
     fn items_from_entry(entry: &Entry) -> Vec<LexItem> {
-        let mut items = vec![];
-        let base = entry.main_form();
+        // (form, pos) => (reading, cost)
+        let mut items: HashMap<(&str, PartOfSpeech), (&str, usize)> = HashMap::new();
 
-        for form in &entry.forms {
-            // some forms don't have associated reading. e.g. 気持ち好い
-            let reading = match entry.reading_for_form(&form.form) {
+        for kanji in &entry.kanjis {
+            if kanji.rarity != Rarity::Normal {
+                continue;
+            }
+            // some kanjis may not have associated reading. e.g. 気持ち好い (sK)
+            let reading = match entry.reading_for_kanji(&kanji.kanji) {
                 Some(r) => r,
                 None => continue,
             };
-            let cost = cmp::min(
-                7000 + 1000 * reading.reading.chars().count(),
-                i16::MAX as usize,
-            );
+            let cost = cmp::min(7000 + 1000 * kanji.kanji.chars().count(), i16::MAX as usize);
 
-            for sense in &entry.senses {
-                if !sense.to_form.is_empty() && !sense.to_form.contains(&form.form) {
-                    continue;
-                }
-                for pos in &sense.pos {
-                    if *pos == PartOfSpeech::Unclassified {
-                        continue;
+            for grouped_sense in &entry.grouped_senses {
+                let applicable = grouped_sense
+                    .senses
+                    .iter()
+                    .any(|s| s.to_kanji.len() == 0 || s.to_kanji.contains(&kanji.kanji));
+                if applicable {
+                    for pos in &grouped_sense.part_of_speech {
+                        items.insert((&kanji.kanji, *pos), (&reading.reading, cost));
                     }
-                    let item = LexItem {
-                        surface: form.form.clone(),
-                        lid: 0,
-                        rid: 0,
-                        cost: cost.to_string(),
-                        base: base.clone(),
-                        reading: reading.reading.clone(),
-                        pos: part_of_speech_to_unidic(pos).into(),
-                        pos2: "*".into(),
-                        pos3: "*".into(),
-                        conjugation: "*".into(),
-                    };
-                    items.push(item);
                 }
             }
         }
+
+        let found_kanji_form = !items.is_empty();
 
         for reading in &entry.readings {
-            if !reading.nokanji && !entry.forms.is_empty() {
+            if reading.rarity != Rarity::Normal {
                 continue;
             }
-            let cost = cmp::min(
-                10000 + 500 * reading.reading.chars().count(),
-                i16::MAX as usize,
-            );
-            for sense in &entry.senses {
-                if !sense.to_reading.is_empty() && !sense.to_reading.contains(&reading.reading) {
-                    continue;
-                }
-                for pos in &sense.pos {
-                    if *pos == PartOfSpeech::Unclassified {
-                        continue;
+
+            if !found_kanji_form || reading.nokanji {
+                let cost = cmp::min(
+                    10000 + 500 * reading.reading.chars().count(),
+                    i16::MAX as usize,
+                );
+                for grouped_sense in &entry.grouped_senses {
+                    let applicable = grouped_sense.senses.iter().any(|s| {
+                        s.to_reading.len() == 0 || s.to_reading.contains(&reading.reading)
+                    });
+                    if applicable {
+                        for pos in &grouped_sense.part_of_speech {
+                            items.insert((&reading.reading, *pos), (&reading.reading, cost));
+                        }
                     }
-                    let item = LexItem {
-                        surface: reading.reading.clone(),
-                        lid: 0,
-                        rid: 0,
-                        cost: cost.to_string(),
-                        base: base.clone(),
-                        reading: reading.reading.clone(),
-                        pos: part_of_speech_to_unidic(pos).into(),
-                        pos2: "*".into(),
-                        pos3: "*".into(),
-                        conjugation: "*".into(),
-                    };
-                    items.push(item);
                 }
             }
         }
-        items
+
+        let base = entry.main_form();
+        let mut lex_items = vec![];
+        for ((form, pos), (reading, cost)) in items {
+            let lex_item = LexItem {
+                surface: form.to_string(),
+                lid: 0,
+                rid: 0,
+                cost: cost.to_string(),
+                base: base.to_string(),
+                reading: reading.to_string(),
+                pos: part_of_speech_to_unidic(&pos).into(),
+                pos2: "*".into(),
+                pos3: "*".into(),
+                conjugation: "*".into(),
+            };
+            lex_items.push(lex_item)
+        }
+
+        lex_items
     }
 
     fn to_record(&self) -> Result<[String; 8]> {
@@ -333,7 +327,12 @@ fn remove_word_not_in_jmdict(
 ) -> Result<Vec<LexItem>> {
     let mut terms: HashSet<&str> = HashSet::with_capacity(entries.len() * 4);
     for entry in entries {
-        for term in entry.terms() {
+        for term in entry
+            .kanjis
+            .iter()
+            .map(|k| &k.kanji)
+            .chain(entry.readings.iter().map(|r| &r.reading))
+        {
             terms.insert(term);
         }
     }
@@ -377,8 +376,8 @@ fn identical_reading_to_empty_string(items: &mut Vec<LexItem>) {
 }
 
 fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool {
-    for form in &entry.forms {
-        if item_bases.contains(&form.form) {
+    for kanji in &entry.kanjis {
+        if item_bases.contains(&kanji.kanji) {
             return true;
         }
     }
@@ -392,7 +391,7 @@ fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool
 }
 
 fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
-    pos.to_unidic().to_unidic().0
+    jmpos_to_unidic(pos).to_unidic().0
 }
 
 pub fn read_yomikiri_dictionary(dict_path: &Path) -> Result<Vec<Entry>> {

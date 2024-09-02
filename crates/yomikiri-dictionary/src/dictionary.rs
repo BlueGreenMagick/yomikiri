@@ -80,7 +80,7 @@ mod tests {
             readings: vec![Reading {
                 reading: "よみきり".into(),
                 nokanji: false,
-                constrain: vec![],
+                to_kanji: vec![],
                 rarity: Rarity::Normal,
             }],
             grouped_senses: vec![],

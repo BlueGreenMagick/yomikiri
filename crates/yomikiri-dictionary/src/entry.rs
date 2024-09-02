@@ -49,7 +49,7 @@ pub struct Reading {
     pub reading: String,
     /// This reading counts as term, not reading
     pub nokanji: bool,
-    pub constrain: Vec<String>,
+    pub to_kanji: Vec<String>,
     pub rarity: Rarity,
 }
 
@@ -77,8 +77,8 @@ pub struct GroupedSense {
 #[serde(rename_all = "camelCase")]
 pub struct Sense {
     pub meanings: Vec<String>,
-    // to_kanji or to_reading
-    pub constrain: Vec<String>,
+    pub to_kanji: Vec<String>,
+    pub to_reading: Vec<String>,
     pub misc: Vec<JMSenseMisc>,
     pub info: Vec<String>,
     pub dialects: Vec<JMDialect>,
@@ -170,6 +170,16 @@ impl Entry {
         self.grouped_senses
             .iter()
             .any(|g| g.part_of_speech.contains(&pos))
+    }
+
+    /// Get first reading that can be applied for kanji.
+    pub fn reading_for_kanji(&self, kanji: &str) -> Option<&Reading> {
+        for reading in &self.readings {
+            if reading.to_kanji.is_empty() || reading.to_kanji.iter().any(|c| c == kanji) {
+                return Some(reading);
+            }
+        }
+        None
     }
 }
 

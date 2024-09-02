@@ -63,7 +63,7 @@ impl From<JMReading> for Reading {
             reading: jm_reading.reading,
             nokanji: jm_reading.nokanji,
             rarity,
-            constrain: jm_reading.to_form,
+            to_kanji: jm_reading.to_form,
         }
     }
 }
@@ -98,10 +98,9 @@ impl Rarity {
 
 impl From<JMSense> for Sense {
     fn from(jm_sense: JMSense) -> Self {
-        let mut constrain = jm_sense.to_form;
-        constrain.extend_from_slice(&jm_sense.to_reading);
         Sense {
-            constrain,
+            to_kanji: jm_sense.to_form,
+            to_reading: jm_sense.to_reading,
             misc: jm_sense.misc,
             info: jm_sense.info,
             dialects: jm_sense.dialect,
