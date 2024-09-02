@@ -110,7 +110,7 @@ impl From<JMSense> for Sense {
 fn group_senses(values: Vec<JMSense>) -> Vec<GroupedSense> {
     let mut groups: Vec<GroupedSense> = vec![];
     for value in values {
-        let pos = value.part_of_speech.to_vec();
+        let pos = value.part_of_speech.clone();
         let sense = Sense::from(value);
         insert_into_grouped_senses(&mut groups, pos, sense);
     }
