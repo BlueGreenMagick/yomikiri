@@ -1,5 +1,10 @@
-use bincode::{Decode, Encode};
+//! Contains dictionary entry struct
+//!
+//! `Serialize`, `Deserialize`, `Tsify` is used when passing to web
+//! `Decode`, `Encode` is used to encode the structs into the dictionary file
+
 use serde::{Deserialize, Serialize};
+use yomikiri_jmdict::jmdict::JMSenseMisc;
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicSymbolPos2, UnidicVerbPos2,
@@ -9,120 +14,66 @@ use yomikiri_unidic_types::{
 use tsify_next::Tsify;
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
-    pub forms: Vec<Form>,
+    pub id: u32,
+    pub kanjis: Vec<Kanji>,
     pub readings: Vec<Reading>,
-    pub senses: Vec<Sense>,
+    pub grouped_senses: Vec<GroupedSense>,
     pub priority: u16,
 }
 
-impl Entry {
-    pub fn terms(&self) -> Vec<&str> {
-        let mut terms: Vec<&str> = vec![];
-        for form in &self.forms {
-            terms.push(&form.form);
-        }
-        for reading in &self.readings {
-            terms.push(&reading.reading);
-        }
-        terms
-    }
-
-    pub fn is_expression(&self) -> bool {
-        self.senses
-            .iter()
-            .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Expression))
-    }
-
-    pub fn is_noun(&self) -> bool {
-        self.senses
-            .iter()
-            .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Noun))
-    }
-
-    pub fn is_particle(&self) -> bool {
-        self.senses
-            .iter()
-            .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Particle))
-    }
-
-    pub fn is_conjunction(&self) -> bool {
-        self.senses
-            .iter()
-            .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Conjunction))
-    }
-
-    pub fn is_verb(&self) -> bool {
-        self.senses
-            .iter()
-            .any(|s| s.pos.iter().any(|p| *p == PartOfSpeech::Verb))
-    }
-
-    pub fn main_form(&self) -> String {
-        for form in &self.forms {
-            if !form.uncommon {
-                return form.form.clone();
-            }
-        }
-        for reading in &self.readings {
-            if !reading.uncommon {
-                return reading.reading.clone();
-            }
-        }
-        if !self.forms.is_empty() {
-            return self.forms[0].form.clone();
-        }
-        if !self.readings.is_empty() {
-            return self.readings[0].reading.clone();
-        }
-
-        "".into()
-    }
-
-    pub fn reading_for_form(&self, form: &str) -> Option<&Reading> {
-        self.readings.iter().find(|reading| {
-            (reading.to_form.is_empty() || reading.to_form.iter().any(|f| f == form))
-                && !reading.nokanji
-        })
-    }
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Kanji {
+    pub kanji: String,
+    pub rarity: Rarity,
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
-pub struct Form {
-    pub form: String,
-    pub info: Vec<String>,
-    pub uncommon: bool,
-}
-
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Reading {
     pub reading: String,
+    /// This reading counts as term, not reading
     pub nokanji: bool,
-    pub to_form: Vec<String>,
-    pub info: Vec<String>,
-    pub uncommon: bool,
+    pub constrain: Vec<String>,
+    pub rarity: Rarity,
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize, Clone, Decode, Encode)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+enum Rarity {
+    Normal,
+    Rare,
+    Outdated,
+    Incorrect,
+    Search,
+}
+
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GroupedSense {
+    part_of_speech: Vec<PartOfSpeech>,
+    senses: Vec<Sense>,
+}
+
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Sense {
-    pub to_form: Vec<String>,
-    pub to_reading: Vec<String>,
+    // to_kanji or to_reading
+    pub constrain: Vec<String>,
     pub pos: Vec<PartOfSpeech>,
-    pub misc: Vec<String>,
+    pub misc: Vec<JMSenseMisc>,
     pub info: Vec<String>,
-    pub dialect: Vec<String>,
-    pub meaning: Vec<String>,
+    pub dialects: Vec<String>,
+    pub meanings: Vec<String>,
 }
 
 /// Unidic based pos tagging
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy, Hash, Decode, Encode)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum PartOfSpeech {
     /// 名詞

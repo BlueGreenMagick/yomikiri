@@ -5,7 +5,8 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 
 use super::types::{
-    JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMMisc, JMPartOfSpeech, JMReading, JMSense,
+    JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMPartOfSpeech, JMReading, JMSense,
+    JMSenseMisc,
 };
 use crate::jmdict::types::JMReadingInfo;
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
@@ -201,7 +202,7 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                 parse_string_in_tag(reader, b"field")?;
             }
             b"misc" => {
-                parse_entity_enum!(reader, JMMisc, "misc", sense.misc);
+                parse_entity_enum!(reader, JMSenseMisc, "misc", sense.misc);
             }
             b"s_inf" => {
                 sense.info.push(parse_string_in_tag(reader, b"s_inf")?);

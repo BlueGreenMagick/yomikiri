@@ -100,7 +100,7 @@ pub struct JMSense {
     /// 'field'
     // pub field: Vec<String>,
     /// 'misc'
-    pub misc: Vec<JMMisc>,
+    pub misc: Vec<JMSenseMisc>,
     /// 's_inf'
     pub info: Vec<String>,
     /// 'dial'
@@ -150,7 +150,7 @@ jm_entity_enum!(
 );
 
 jm_entity_enum!(
-    JMMisc;
+    JMSenseMisc;
     b"abbr" => Abbreviation,
     b"arch" => Archaic,
     b"char" => Character,
