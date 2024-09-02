@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
   export interface SelectedEntryForAnki {
     entry: Entry;
-    sense?: Sense | undefined;
+    selected?: SelectedMeaning | undefined;
   }
 </script>
 
@@ -9,19 +9,18 @@
   import {
     type Entry,
     type Sense,
-    type GroupedSense,
     getMainForm,
-    groupSenses,
     getReadingForForm,
     type EntryOtherForms,
     getOtherFormsInEntry,
+    type PartOfSpeech,
   } from "lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import { RubyString } from "lib/japanese";
   import { Config } from "lib/config";
   import Badges from "./Badges.svelte";
-  import type { DicEntriesModel } from "./dicEntriesModel";
+  import type { DicEntriesModel, SelectedMeaning } from "./dicEntriesModel";
   import RubyText from "../RubyText.svelte";
   import IconedButton from "components/IconedButton.svelte";
 
@@ -32,28 +31,26 @@
   ) => void = () => null;
 
   const config = Config.using();
-  const selectedSense = model.selectedSense;
+  const selectedMeaning = model.selectedMeaning;
   const ankiEnabledConfig = config.store("anki.enabled");
 
   let mainForm: string;
   let readingForForm: string;
   let mainFormRuby: RubyString;
-  let groups: GroupedSense[];
   let otherForms: EntryOtherForms | null;
 
   function selectEntryForAnki() {
-    const sense = $selectedSense?.sense ?? undefined;
-    onSelectEntryForAnki({ entry, sense });
+    const selected = $selectedMeaning ?? undefined;
+    onSelectEntryForAnki({ entry, selected });
   }
 
-  function onSelectSense(sense: Sense) {
-    model.selectSense(entry, sense);
+  function onSelectSense(sense: Sense, poss: PartOfSpeech[]) {
+    model.selectSense(entry, sense, poss);
   }
 
   $: mainForm = getMainForm(entry);
   $: readingForForm = getReadingForForm(entry, mainForm, false).reading;
   $: mainFormRuby = RubyString.generate(mainForm, readingForForm);
-  $: groups = groupSenses(entry);
   $: otherForms = getOtherFormsInEntry(entry);
 </script>
 
@@ -66,7 +63,7 @@
       {#if $ankiEnabledConfig}
         <IconedButton
           size="2em"
-          highlight={$selectedSense?.entry === entry}
+          highlight={$selectedMeaning?.entry === entry}
           on:click={selectEntryForAnki}
         >
           <IconAddCircleOutline />
@@ -76,7 +73,7 @@
   </div>
   <Badges {entry} />
   <div class="groups">
-    {#each groups as group}
+    {#each entry.grouped_senses as group}
       <GroupedSenseView {group} {model} {onSelectSense} />
     {/each}
   </div>
@@ -84,11 +81,11 @@
     <div class="other-forms-section">
       <div class="section-header">Other Forms</div>
       <div class="other-forms-values Japanese">
-        {#if otherForms.forms.length > 0}
+        {#if otherForms.kanjis.length > 0}
           <span class="other-forms">
-            {#each otherForms.forms as form, i}
-              <span>{form.form}</span>
-              {#if i < otherForms.forms.length - 1}<span>、</span>{/if}
+            {#each otherForms.kanjis as kanjiForm, i}
+              <span>{kanjiForm.kanji}</span>
+              {#if i < otherForms.kanjis.length - 1}<span>、</span>{/if}
             {/each}
           </span>
         {/if}

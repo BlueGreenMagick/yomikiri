@@ -1,12 +1,6 @@
 import type { Token, TokenizeResult } from "@platform/backend";
 import Config from "../config";
-import {
-  getMainForm,
-  getReadingForForm,
-  groupSenses,
-  type Entry,
-  type Sense,
-} from "../dicEntry";
+import { getMainForm, getReadingForForm, type Entry } from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils, { escapeHTML } from "../utils";
@@ -16,6 +10,7 @@ import type {
   AnkiTemplateFieldTypes,
 } from "./template";
 import { YomikiriError } from "lib/error";
+import type { SelectedMeaning } from "components/dictionary/dicEntriesModel";
 
 export interface LoadingAnkiNote {
   deck: string;
@@ -46,7 +41,7 @@ export interface AnkiBuilderContext {
 export interface AnkiBuilderData {
   tokenized: TokenizeResult;
   entry: Entry;
-  selectedMeaning?: Sense | undefined;
+  selected?: SelectedMeaning | undefined;
   /** NFC normalized string */
   sentence: string;
   /** window.location.href */
@@ -182,7 +177,7 @@ addBuilder("word", (opts, data) => {
 });
 
 addBuilder("meaning", (opts, data) => {
-  if (data.selectedMeaning === undefined) {
+  if (data.selected === undefined) {
     const format = opts.full_format;
     if (
       !["numbered", "unnumbered", "line", "div", "yomichan"].includes(format)
@@ -194,7 +189,6 @@ addBuilder("meaning", (opts, data) => {
 
     let indent = 0;
     const lines: string[] = [];
-    const grouped = groupSenses(data.entry);
 
     const addLine = (text: string) => {
       lines.push("  ".repeat(indent) + text);
@@ -210,7 +204,7 @@ addBuilder("meaning", (opts, data) => {
       indent += 1;
     }
 
-    for (const group of grouped) {
+    for (const group of data.entry.grouped_senses) {
       if (format === "div") {
         addLine('<div class="yomi-group">');
         indent += 1;
@@ -223,7 +217,7 @@ addBuilder("meaning", (opts, data) => {
       let lineMeaning = "";
 
       if (opts.full_pos) {
-        const poss = escapeHTML(group.pos.join(", "));
+        const poss = escapeHTML(group.part_of_speech.join(", "));
         if (format === "yomichan") {
           addLine(`<i>(${poss})</i>`);
         } else if (format === "line") {
@@ -249,9 +243,9 @@ addBuilder("meaning", (opts, data) => {
       for (const sense of group.senses) {
         let items;
         if (opts.full_max_item > 0) {
-          items = sense.meaning.slice(0, opts.full_max_item);
+          items = sense.meanings.slice(0, opts.full_max_item);
         } else {
-          items = sense.meaning;
+          items = sense.meanings;
         }
         if (format === "yomichan") {
           for (const item of items) {
@@ -314,18 +308,19 @@ addBuilder("meaning", (opts, data) => {
       return lines.join("\n");
     }
   } else {
-    const sense = data.selectedMeaning;
+    const selected = data.selected;
+    const sense = selected.sense;
     let line = "";
     if (opts.single_pos) {
-      const poss = sense.pos.join(", ");
+      const poss = selected.partOfSpeech.join(", ");
       line += `(${escapeHTML(poss)}) `;
     }
 
     let items: string[];
     if (opts.single_max_item > 0) {
-      items = sense.meaning.slice(0, opts.single_max_item);
+      items = sense.meanings.slice(0, opts.single_max_item);
     } else {
-      items = sense.meaning;
+      items = sense.meanings;
     }
 
     line += escapeHTML(items.join(", "));

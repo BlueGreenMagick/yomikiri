@@ -24,7 +24,7 @@ import path from "node:path";
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
 // When `TokenizeResult` struct has been modified, re-generate ankiBuilder.test.json
-// by setting this variable to true, and running the test with `pnpm vitest ankiBuilder`
+// by setting this variable to true, and running the test with `pnpm vitest --run ankiBuilder`
 const REGENERATE_JSON = false;
 
 const config = await Config.instance.get();
@@ -100,7 +100,11 @@ Missing label: ${label}`);
     const singleTemplateFields = generateSingleMeaningFieldTemplates();
     const singleData: AnkiBuilderData = {
       ...data,
-      selectedMeaning: data.entry.senses[0],
+      selected: {
+        entry: data.entry,
+        sense: data.entry.grouped_senses[0].senses[0],
+        partOfSpeech: data.entry.grouped_senses[0].part_of_speech,
+      },
     };
     test.each(singleTemplateFields)("(single) $label", async ({ template }) => {
       const field = buildAnkiField(ctx, singleData, template);

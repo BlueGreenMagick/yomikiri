@@ -14,7 +14,7 @@ use yomikiri_unidic_types::{
 };
 
 #[cfg(feature = "wasm")]
-use tsify_next::Tsify;
+use tsify_next::{declare, Tsify};
 
 use crate::{Error, Result};
 
@@ -84,6 +84,7 @@ pub struct Sense {
     pub dialects: Vec<JMDialect>,
 }
 
+#[cfg_attr(feature = "wasm", declare)]
 pub type PartOfSpeech = JMPartOfSpeech;
 
 pub fn jmpos_to_unidic(pos: &JMPartOfSpeech) -> UnidicPos {

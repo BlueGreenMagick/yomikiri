@@ -23,7 +23,7 @@
     const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
       entry: selectedEntry.entry,
-      selectedMeaning: selectedEntry.sense,
+      selected: selectedEntry.selected,
       sentence: tokenizeResult.tokens.map((tok) => tok.text).join(""),
       url: "",
       pageTitle: "",

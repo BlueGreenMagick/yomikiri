@@ -1,19 +1,20 @@
 <script lang="ts">
-  import type { Sense, GroupedSense } from "lib/dicEntry";
+  import type { PartOfSpeech, Sense } from "lib/dicEntry";
   import { Config } from "lib/config";
   import type { DicEntriesModel } from "./dicEntriesModel";
+  import type { GroupedSense } from "@yomikiri/yomikiri-rs";
 
   export let model: DicEntriesModel;
   export let group: GroupedSense;
-  export let onSelectSense: (sense: Sense) => void;
+  export let onSelectSense: (sense: Sense, poss: PartOfSpeech[]) => void;
 
   const config = Config.using();
-  const selectedSense = model.selectedSense;
+  const selectedSense = model.selectedMeaning;
   const ankiEnabledConfig = config.store("anki.enabled");
 
   let posText: string;
 
-  $: posText = group.pos.join(", ");
+  $: posText = group.part_of_speech.join(", ");
 </script>
 
 <div class="grouped-sense" class:anki={$ankiEnabledConfig}>
@@ -26,10 +27,10 @@
         class="meaning"
         class:selected={$selectedSense?.sense === sense}
         on:mousedown|stopPropagation={() => {
-          onSelectSense(sense);
+          onSelectSense(sense, group.part_of_speech);
         }}
       >
-        {idx + 1}. {sense.meaning.join(", ")}
+        {idx + 1}. {sense.meanings.join(", ")}
       </div>
     {/each}
   </div>

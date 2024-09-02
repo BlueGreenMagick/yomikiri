@@ -1,78 +1,31 @@
-import Utils, { hasOwnProperty } from "./utils";
+import { hasOwnProperty } from "./utils";
 import ENTITIES from "../assets/dicEntities.json";
 import type { Token } from "@platform/backend";
 import { extractKanjis } from "./japanese";
 import type {
   Entry,
-  PartOfSpeech,
+  Kanji,
+  JMPartOfSpeech,
   Reading,
-  Sense,
 } from "@yomikiri/yomikiri-rs";
-export type {
-  Entry,
-  PartOfSpeech,
-  Reading,
-  Sense,
-} from "@yomikiri/yomikiri-rs";
+export type { Entry, Reading, Sense } from "@yomikiri/yomikiri-rs";
 
-// list of tuple (pos sorted list, senses)
-export interface GroupedSense {
-  pos: string[];
-  senses: Sense[];
-}
+export type PartOfSpeech = JMPartOfSpeech;
+
 export type DictionaryResult = Entry[];
 
 export function getMainForm(entry: Entry): string {
-  const form = getFirstNotUncommonForm(entry);
-  if (form !== null) {
-    return form;
-  } else {
-    if (entry.forms.length > 0) {
-      return entry.forms[0].form;
-    } else {
+  if (entry.kanjis.length > 0) {
+    if (entry.kanjis[0].rarity === "Normal") {
+      return entry.kanjis[0].kanji;
+    } else if (entry.readings[0].rarity === "Normal") {
       return entry.readings[0].reading;
+    } else {
+      return entry.kanjis[0].kanji;
     }
+  } else {
+    return entry.readings[0].reading;
   }
-}
-
-function getFirstNotUncommonForm(entry: Entry): string | null {
-  for (const form of entry.forms) {
-    if (!form.uncommon) {
-      return form.form;
-    }
-  }
-  for (const reading of entry.readings) {
-    if (!reading.uncommon) {
-      return reading.reading;
-    }
-  }
-
-  return null;
-}
-
-/** groups senses with same partOfSpeech. Preserves order. */
-export function groupSenses(entry: Entry): GroupedSense[] {
-  const groups: GroupedSense[] = [];
-  for (const sense of entry.senses) {
-    insertIntoGroupedSenses(groups, sense);
-  }
-  return groups;
-}
-
-function insertIntoGroupedSenses(groups: GroupedSense[], sense: Sense) {
-  const pos = sense.pos;
-  const sortedPos = [...pos].sort();
-  for (const group of groups) {
-    if (Utils.listIsIdentical(group.pos, sortedPos)) {
-      group.senses.push(sense);
-      return;
-    }
-  }
-  const group: GroupedSense = {
-    pos: sortedPos,
-    senses: [sense],
-  };
-  groups.push(group);
 }
 
 /** if `nokanji` is true, include readings that aren't true readings of kanji */
@@ -83,7 +36,7 @@ export function getReadingForForm(
 ): Reading {
   for (const reading of entry.readings) {
     if (nokanji && reading.nokanji) continue;
-    if (reading.toForm.length == 0 || reading.toForm.includes(form)) {
+    if (reading.toKanji.length == 0 || reading.toKanji.includes(form)) {
       return reading;
     }
   }
@@ -140,8 +93,8 @@ export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
     throw Error(`Invalid part-of-speech in token: ${tokenPos}`);
   }
 
-  for (const sense of entry.senses) {
-    if (sense.pos.includes(dictPos)) {
+  for (const group of entry.grouped_senses) {
+    if (group.part_of_speech.includes(dictPos)) {
       return true;
     }
   }
@@ -168,10 +121,10 @@ export function getValidEntriesForSurface(
 
   const validEntries: Entry[] = [];
   for (const entry of entries) {
-    for (const form of entry.forms) {
+    for (const kanjiForm of entry.kanjis) {
       let containsAll = true;
       for (const kanji of kanjis) {
-        if (!form.form.includes(kanji)) {
+        if (!kanjiForm.kanji.includes(kanji)) {
           containsAll = false;
           break;
         }
@@ -241,9 +194,9 @@ function formScoreForOrder(entry: Entry, token: Token): number {
   }
 
   let score = 0;
-  for (const form of entry.forms) {
-    if (form.form == token.base || form.form == token.text) {
-      if (!form.uncommon) {
+  for (const kanji of entry.kanjis) {
+    if (kanji.kanji == token.base || kanji.kanji == token.text) {
+      if (kanji.rarity !== "Normal") {
         return 2;
       }
       score = 1;
@@ -251,7 +204,7 @@ function formScoreForOrder(entry: Entry, token: Token): number {
   }
   for (const reading of entry.readings) {
     if (reading.reading == token.base || reading.reading == token.text) {
-      if (!reading.uncommon) {
+      if (reading.rarity !== "Normal") {
         return 2;
       }
       score = 1;
@@ -262,49 +215,36 @@ function formScoreForOrder(entry: Entry, token: Token): number {
 }
 
 export interface EntryOtherForms {
-  forms: OtherForm[];
-  readings: OtherReading[];
+  kanjis: Kanji[];
+  readings: Reading[];
 }
 
-export interface OtherForm {
-  form: string;
-  rare: boolean;
-}
-
-export interface OtherReading {
-  reading: string;
-  rare: boolean;
-}
-
-/** Returns null if there are no other forms or readings in entry */
+/**
+ * Returns non-search forms and readings
+ * Returns null if there are no other forms or readings in entry
+ */
 export function getOtherFormsInEntry(entry: Entry): EntryOtherForms | null {
-  const forms: OtherForm[] = [];
-  const readings: OtherReading[] = [];
+  const kanjis: Kanji[] = [];
+  const readings: Reading[] = [];
 
   const mainForm = getMainForm(entry);
   const mainReading = getReadingForForm(entry, mainForm);
 
-  for (const form of entry.forms) {
-    if (form.form !== mainForm) {
-      forms.push({
-        form: form.form,
-        rare: form.uncommon,
-      });
+  for (const kanji of entry.kanjis) {
+    if (kanji.kanji !== mainForm && kanji.rarity !== "Search") {
+      kanjis.push(kanji);
     }
   }
   for (const reading of entry.readings) {
-    if (reading.reading !== mainReading.reading)
-      readings.push({
-        reading: reading.reading,
-        rare: reading.uncommon,
-      });
+    if (reading.reading !== mainReading.reading && reading.rarity !== "Search")
+      readings.push(reading);
   }
 
-  if (forms.length === 0 && readings.length === 0) {
+  if (kanjis.length === 0 && readings.length === 0) {
     return null;
   } else {
     return {
-      forms,
+      kanjis,
       readings,
     };
   }

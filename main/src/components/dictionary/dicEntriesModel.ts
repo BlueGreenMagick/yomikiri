@@ -1,23 +1,25 @@
 import { writable, type Writable } from "svelte/store";
 import type { Entry, Sense } from "lib/dicEntry";
+import type { PartOfSpeech } from "@yomikiri/yomikiri-rs";
 
-export interface SelectedSense {
+export interface SelectedMeaning {
   entry: Entry;
   sense: Sense;
+  partOfSpeech: PartOfSpeech[];
 }
 
 export class DicEntriesModel {
-  selectedSense: Writable<SelectedSense | null> = writable(null);
+  selectedMeaning: Writable<SelectedMeaning | null> = writable(null);
 
   reset() {
-    this.selectedSense.set(null);
+    this.selectedMeaning.set(null);
   }
 
-  selectSense(entry: Entry, sense: Sense) {
-    this.selectedSense.set({ entry, sense });
+  selectSense(entry: Entry, sense: Sense, partOfSpeech: PartOfSpeech[]) {
+    this.selectedMeaning.set({ entry, sense, partOfSpeech });
   }
 
   unselectSense() {
-    this.selectedSense.set(null);
+    this.selectedMeaning.set(null);
   }
 }
