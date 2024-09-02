@@ -30,7 +30,7 @@ use crate::{Error, Result};
 #[derive(Serialize, Deserialize)]
 pub struct JaggedArray<'a, T>
 where
-    T: BorrowDecode<'a> + Encode,
+    T: Deserialize<'a> + Serialize,
 {
     cnt: usize,
     data: &'a [u8],
@@ -39,7 +39,7 @@ where
 
 impl<'a, T> JaggedArray<'a, T>
 where
-    T: BorrowDecode<'a> + Encode,
+    T: Deserialize<'a> + Serialize,
 {
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;

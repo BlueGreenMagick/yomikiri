@@ -1,9 +1,11 @@
 use std::collections::HashMap;
 use std::io::Write;
+use std::ops::Deref;
 
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
-use fst::{Map, MapBuilder};
+use fst::MapBuilder;
 use itertools::Itertools;
+use serde::de::Error as DeserializeError;
 use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
@@ -21,9 +23,49 @@ pub(crate) struct DictIndexItem {
 /// map values are u64 with structure:
 /// | literal '0' | entry idx (63) |
 /// | literal '1' | '0' * 31 | pointers array index (32) |
+#[derive(Serialize, Deserialize)]
 pub struct DictIndexMap<'a> {
-    pub map: Map<&'a [u8]>,
+    #[serde(borrow)]
+    pub map: Map<'a>,
     pub pointers: JaggedArray<'a, Vec<usize>>,
+}
+
+pub struct Map<'a>(pub fst::Map<&'a [u8]>);
+
+impl<'a> Deref for Map<'a> {
+    type Target = fst::Map<&'a [u8]>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<'a> Map<'a> {
+    fn new(bytes: &'a [u8]) -> fst::Result<Self> {
+        fst::Map::new(bytes).map(|m| Self(m))
+    }
+}
+
+impl<'a> Serialize for Map<'a> {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_bytes(self.0.as_fst().as_inner())
+    }
+}
+
+impl<'a, 'de> Deserialize<'de> for Map<'a>
+where
+    'de: 'a,
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let bytes = <&'a [u8]>::deserialize(deserializer)?;
+        Self::new(bytes).map_err(DeserializeError::custom)
+    }
 }
 
 impl<'a> DictIndexMap<'a> {
