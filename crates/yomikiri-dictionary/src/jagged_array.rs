@@ -1,7 +1,6 @@
 use std::io::Write;
 use std::marker::PhantomData;
 
-use bincode::{BorrowDecode, Encode};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use serde::{Deserialize, Serialize};
 

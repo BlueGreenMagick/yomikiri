@@ -137,7 +137,12 @@ pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictIn
     let mut indexes: HashMap<&str, Vec<usize>> = HashMap::with_capacity(entries.len() * 4);
 
     for (i, entry) in entries.iter().enumerate() {
-        for term in entry.terms() {
+        for term in entry
+            .kanjis
+            .iter()
+            .map(|k| &k.kanji)
+            .chain(entry.readings.iter().map(|r| &r.reading))
+        {
             indexes
                 .entry(term)
                 .and_modify(|v| v.push(i))

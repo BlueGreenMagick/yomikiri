@@ -60,32 +60,30 @@ impl<'a> DictionaryView<'a> {
 #[cfg(test)]
 mod tests {
     use crate::dictionary::Dictionary;
-    use crate::entry::{Entry, Form, Reading};
+    use crate::entry::{Entry, Kanji, Rarity, Reading};
     use crate::Result;
 
     #[test]
     fn write_then_read_dictionary_with_single_entry() -> Result<()> {
         let entry = Entry {
-            forms: vec![
-                Form {
-                    form: "読み切り".into(),
-                    info: vec![],
-                    uncommon: false,
+            id: 1234,
+            kanjis: vec![
+                Kanji {
+                    kanji: "読み切り".into(),
+                    rarity: Rarity::Normal,
                 },
-                Form {
-                    form: "読みきり".into(),
-                    info: vec![],
-                    uncommon: false,
+                Kanji {
+                    kanji: "読みきり".into(),
+                    rarity: Rarity::Normal,
                 },
             ],
             readings: vec![Reading {
                 reading: "よみきり".into(),
                 nokanji: false,
-                to_form: vec![],
-                info: vec!["information".into()],
-                uncommon: false,
+                constrain: vec![],
+                rarity: Rarity::Normal,
             }],
-            senses: vec![],
+            grouped_senses: vec![],
             priority: 10,
         };
         let mut buffer = Vec::with_capacity(1024);
