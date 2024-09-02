@@ -12,10 +12,7 @@ pub enum Error {
     #[error("Bincode {0}")]
     BincodeDecode(#[from] bincode::error::DecodeError),
     #[error("Expected {expected}, encountered {actual}")]
-    Unexpected {
-        expected: &'static str,
-        actual: String,
-    },
+    Unexpected { expected: String, actual: String },
     #[error("Invalid UTF-8")]
     Utf8Error(#[from] Utf8Error),
     #[error("Xml parse error: {0}")]

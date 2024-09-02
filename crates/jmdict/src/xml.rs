@@ -48,7 +48,7 @@ pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<Ve
         match reader.read_event()? {
             Event::Start(tag) => {
                 return Err(Error::Unexpected {
-                    expected: "text",
+                    expected: "text".into(),
                     actual: format!("starting tag <{}>", tag.tag_name()),
                 });
             }
@@ -61,7 +61,7 @@ pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<Ve
                     return Ok(characters);
                 } else {
                     return Err(Error::Unexpected {
-                        expected: "character",
+                        expected: format!("ending tag </{}>", tag.tag_name()),
                         actual: format!("ending tag </{}>", tag.tag_name()),
                     });
                 }

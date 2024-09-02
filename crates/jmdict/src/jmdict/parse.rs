@@ -125,7 +125,7 @@ pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
                 form.form = parse_string_in_tag(reader, b"keb")?;
             }
             b"ke_inf" => {
-                parse_entity_enum!(reader, JMKanjiInfo, "pos", form.info);
+                parse_entity_enum!(reader, JMKanjiInfo, "ke_inf", form.info);
             }
             b"ke_pri" => {
                 form.priority.push(parse_string_in_tag(reader, b"ke_pri")?);
