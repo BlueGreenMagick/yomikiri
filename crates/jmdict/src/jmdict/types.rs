@@ -244,8 +244,8 @@ jm_entity_enum!(
 jm_entity_enum!(
     JMReadingInfo;
     b"gikun" => Gikun,
-    b"ik" => Word,
+    b"ik" => Irregular,
     b"ok" => Outdated,
-    b"rk" => Rarely,
+    b"rk" => Rare,
     b"sk" => SearchOnly,
 );

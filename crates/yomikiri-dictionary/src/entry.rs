@@ -4,7 +4,7 @@
 //! `Decode`, `Encode` is used to encode the structs into the dictionary file
 
 use serde::{Deserialize, Serialize};
-use yomikiri_jmdict::jmdict::{JMPartOfSpeech, JMSenseMisc};
+use yomikiri_jmdict::jmdict::{JMDialect, JMPartOfSpeech, JMSenseMisc};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicSymbolPos2, UnidicVerbPos2,
@@ -41,9 +41,11 @@ pub struct Reading {
     pub rarity: Rarity,
 }
 
+/// Ordered by rarity.
+/// `Normal` is the most common and `Search`` is the rarest.
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-enum Rarity {
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum Rarity {
     Normal,
     Rare,
     Outdated,
@@ -54,27 +56,26 @@ enum Rarity {
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GroupedSense {
-    part_of_speech: Vec<PartOfSpeech>,
-    senses: Vec<Sense>,
+    pub part_of_speech: Vec<PartOfSpeech>,
+    pub senses: Vec<Sense>,
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Sense {
+    pub meanings: Vec<String>,
     // to_kanji or to_reading
     pub constrain: Vec<String>,
-    pub pos: Vec<PartOfSpeech>,
     pub misc: Vec<JMSenseMisc>,
     pub info: Vec<String>,
-    pub dialects: Vec<String>,
-    pub meanings: Vec<String>,
+    pub dialects: Vec<JMDialect>,
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct PartOfSpeech(JMPartOfSpeech);
+pub struct PartOfSpeech(pub JMPartOfSpeech);
 
 impl PartOfSpeech {
     fn pos_to_unidic(&self) -> UnidicPos {
