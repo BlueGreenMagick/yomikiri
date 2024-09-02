@@ -13,10 +13,8 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("TryFromInt {0}")]
     TryFromInt(#[from] TryFromIntError),
-    #[error("Bincode encode: {0}")]
-    BincodeEncode(#[from] bincode::error::EncodeError),
-    #[error("Bincode decode: {0}")]
-    BincodeDecode(#[from] bincode::error::DecodeError),
+    #[error("Bincode: {0}")]
+    BincodeEncode(#[from] bincode::Error),
     #[error("JMDict parse error {0}")]
     JMDict(#[from] yomikiri_jmdict::Error),
     #[error("FST error: {0}")]

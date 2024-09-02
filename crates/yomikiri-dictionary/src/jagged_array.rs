@@ -1,6 +1,7 @@
 use std::io::Write;
 use std::marker::PhantomData;
 
+use bincode::Options;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use serde::{Deserialize, Serialize};
 
@@ -69,8 +70,7 @@ where
 
         let (item_start, item_end) = self.item_position(index)?;
         let item_bytes = &self.data[item_start..item_end];
-        let (item, _l) =
-            bincode::borrow_decode_from_slice(item_bytes, bincode::config::standard())?;
+        let item = bincode::options().deserialize(item_bytes)?;
 
         Ok(item)
     }
@@ -97,7 +97,7 @@ where
         let mut item_bytes: Vec<u8> = Vec::with_capacity(8 * items.len());
         for item in items {
             index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-            bincode::encode_into_std_write(item, &mut item_bytes, bincode::config::standard())?;
+            bincode::options().serialize_into(&mut item_bytes, item)?;
         }
         index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
 
