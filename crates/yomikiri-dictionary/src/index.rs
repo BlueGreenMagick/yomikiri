@@ -42,7 +42,7 @@ impl<'a> Deref for Map<'a> {
 
 impl<'a> Map<'a> {
     fn new(bytes: &'a [u8]) -> fst::Result<Self> {
-        fst::Map::new(bytes).map(|m| Self(m))
+        fst::Map::new(bytes).map(Self)
     }
 }
 

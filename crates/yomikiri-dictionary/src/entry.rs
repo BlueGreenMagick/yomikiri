@@ -137,7 +137,7 @@ impl Entry {
     }
 
     fn validate_entry(inner: &EntryInner) -> Result<()> {
-        if inner.readings.len() == 0 {
+        if inner.readings.is_empty() {
             return Err(Error::InvalidEntry(
                 "Entry must contain at least 1 kanji or reading".into(),
             ));
@@ -174,12 +174,9 @@ impl Entry {
 
     /// Get first reading that can be applied for kanji.
     pub fn reading_for_kanji(&self, kanji: &str) -> Option<&Reading> {
-        for reading in &self.readings {
-            if reading.to_kanji.is_empty() || reading.to_kanji.iter().any(|c| c == kanji) {
-                return Some(reading);
-            }
-        }
-        None
+        self.readings.iter().find(|reading| {
+            reading.to_kanji.is_empty() || reading.to_kanji.iter().any(|c| c == kanji)
+        })
     }
 }
 
@@ -197,7 +194,7 @@ impl<'de> Deserialize<'de> for Entry {
         D: serde::Deserializer<'de>,
     {
         let inner = EntryInner::deserialize(deserializer)?;
-        Self::validate_entry(&inner).map_err(|e| D::Error::custom(e))?;
+        Self::validate_entry(&inner).map_err(D::Error::custom)?;
 
         Ok(Self(inner))
     }

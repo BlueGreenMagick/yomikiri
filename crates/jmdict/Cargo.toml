@@ -6,7 +6,7 @@ description = "JMDict XML Types"
 license = "MIT"
 
 [features]
-wasm = ["dep:tsify-next"]
+wasm = ["dep:tsify-next", "dep:wasm-bindgen"]
 
 [dependencies]
 bincode = { workspace = true }
@@ -17,6 +17,7 @@ serde = { workspace = true }
 log = { workspace = true }
 
 tsify-next = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true, optional = true }
 
 [dev-dependencies]
 insta = { workspace = true }

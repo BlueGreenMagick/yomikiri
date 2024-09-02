@@ -2657,6 +2657,7 @@ dependencies = [
  "serde",
  "thiserror",
  "tsify-next",
+ "wasm-bindgen",
 ]
 
 [[package]]

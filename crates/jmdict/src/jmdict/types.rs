@@ -119,7 +119,7 @@ fn is_single_entity(text: &[u8]) -> bool {
             return true;
         }
     }
-    return false;
+    false
 }
 
 jm_entity_enum!(

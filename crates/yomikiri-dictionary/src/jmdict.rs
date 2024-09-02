@@ -37,8 +37,7 @@ impl From<JMForm> for Kanji {
         let rarity = value
             .info
             .iter()
-            .map(Rarity::from_kanji)
-            .flatten()
+            .filter_map(Rarity::from_kanji)
             .min()
             .unwrap_or(Rarity::Normal);
 
@@ -54,8 +53,7 @@ impl From<JMReading> for Reading {
         let rarity = jm_reading
             .info
             .iter()
-            .map(Rarity::from_reading)
-            .flatten()
+            .filter_map(Rarity::from_reading)
             .min()
             .unwrap_or(Rarity::Normal);
 
@@ -112,7 +110,7 @@ impl From<JMSense> for Sense {
 fn group_senses(values: Vec<JMSense>) -> Vec<GroupedSense> {
     let mut groups: Vec<GroupedSense> = vec![];
     for value in values {
-        let pos = value.part_of_speech.iter().map(|p| *p).collect();
+        let pos = value.part_of_speech.to_vec();
         let sense = Sense::from(value);
         insert_into_grouped_senses(&mut groups, pos, sense);
     }

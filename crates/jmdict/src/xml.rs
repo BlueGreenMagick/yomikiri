@@ -37,7 +37,7 @@ impl<'a> TagName<'a> for BytesEnd<'a> {
 pub fn parse_string_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
     let characters = parse_text_in_tag(reader, in_tag)?;
     let string = str::from_utf8(&characters)?;
-    let string = resolve_custom_entity_item(&string);
+    let string = resolve_custom_entity_item(string);
     let string = unescape_with(&string, unescape_entity)?;
     Ok(string.into())
 }

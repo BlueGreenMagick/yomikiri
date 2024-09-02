@@ -35,13 +35,13 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         if let Some(entry) = entries.first() {
             let form = entry.main_form();
             // TODO: convert jmdict pos to unidic pos
-            let mut details = TokenDetails::default_with_base(&form);
+            let mut details = TokenDetails::default_with_base(form);
             let dicpos = entry
                 .grouped_senses
                 .first()
                 .and_then(|s| s.part_of_speech.first())
                 .unwrap_or(&PartOfSpeech::Unclassified);
-            details.pos = jmpos_to_unidic(&dicpos);
+            details.pos = jmpos_to_unidic(dicpos);
             details.reading = entry.main_reading().to_string();
             let inner_token = InnerToken::new(normalized_term, details, 0);
             let token = Token::from(inner_token);

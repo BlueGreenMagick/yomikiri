@@ -49,7 +49,7 @@ impl LexItem {
                 let applicable = grouped_sense
                     .senses
                     .iter()
-                    .any(|s| s.to_kanji.len() == 0 || s.to_kanji.contains(&kanji.kanji));
+                    .any(|s| s.to_kanji.is_empty() || s.to_kanji.contains(&kanji.kanji));
                 if applicable {
                     for pos in &grouped_sense.part_of_speech {
                         items.insert((&kanji.kanji, *pos), (&reading.reading, cost));
@@ -72,7 +72,7 @@ impl LexItem {
                 );
                 for grouped_sense in &entry.grouped_senses {
                     let applicable = grouped_sense.senses.iter().any(|s| {
-                        s.to_reading.len() == 0 || s.to_reading.contains(&reading.reading)
+                        s.to_reading.is_empty() || s.to_reading.contains(&reading.reading)
                     });
                     if applicable {
                         for pos in &grouped_sense.part_of_speech {
