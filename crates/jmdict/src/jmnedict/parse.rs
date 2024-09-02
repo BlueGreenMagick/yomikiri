@@ -13,6 +13,7 @@ pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
     let mut reader = Reader::from_str(xml);
     reader.config_mut().trim_text_start = true;
     reader.config_mut().trim_text_end = true;
+    reader.config_mut().expand_empty_elements = true;
 
     parse_jmnedict(&mut reader)
 }

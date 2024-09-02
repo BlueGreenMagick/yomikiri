@@ -32,6 +32,7 @@ pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut reader = Reader::from_str(xml);
     reader.config_mut().trim_text_start = true;
     reader.config_mut().trim_text_end = true;
+    reader.config_mut().expand_empty_elements = true;
 
     parse_jmdict(&mut reader)
 }
