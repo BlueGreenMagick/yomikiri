@@ -2,6 +2,7 @@ use std::borrow::Cow;
 
 use anyhow::Result;
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
+use yomikiri_dictionary::entry::jmpos_to_unidic;
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::tokenize::{InnerToken, Token, TokenDetails, TokenizeResult};
@@ -35,17 +36,13 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             let form = entry.main_form();
             // TODO: convert jmdict pos to unidic pos
             let mut details = TokenDetails::default_with_base(&form);
-            details.pos = entry
-                .senses
+            let dicpos = entry
+                .grouped_senses
                 .first()
-                .and_then(|s| s.pos.first())
-                .unwrap_or(&PartOfSpeech::Unclassified)
-                .to_unidic();
-            details.reading = entry
-                .reading_for_form(&form)
-                .map(|r| r.reading.as_str())
-                .unwrap_or("*")
-                .into();
+                .and_then(|s| s.part_of_speech.first())
+                .unwrap_or(&PartOfSpeech::Unclassified);
+            details.pos = jmpos_to_unidic(&dicpos);
+            details.reading = entry.main_reading().to_string();
             let inner_token = InnerToken::new(normalized_term, details, 0);
             let token = Token::from(inner_token);
             Ok(Some(TokenizeResult {

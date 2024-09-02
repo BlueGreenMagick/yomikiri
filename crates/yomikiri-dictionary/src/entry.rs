@@ -86,7 +86,7 @@ pub struct Sense {
 
 pub type PartOfSpeech = JMPartOfSpeech;
 
-fn jmpos_to_unidic(pos: &JMPartOfSpeech) -> UnidicPos {
+pub fn jmpos_to_unidic(pos: &JMPartOfSpeech) -> UnidicPos {
     match pos {
         JMPartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
         JMPartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
@@ -107,7 +107,7 @@ fn jmpos_to_unidic(pos: &JMPartOfSpeech) -> UnidicPos {
     }
 }
 
-fn unidic_to_jmpos(unidic: &UnidicPos) -> JMPartOfSpeech {
+pub fn unidic_to_jmpos(unidic: &UnidicPos) -> JMPartOfSpeech {
     match unidic {
         UnidicPos::Noun(_) => JMPartOfSpeech::Noun,
         UnidicPos::Verb(_) => JMPartOfSpeech::Verb,
@@ -145,6 +145,10 @@ impl Entry {
         Ok(())
     }
 
+    pub fn main_reading(&self) -> &str {
+        &self.readings.first().unwrap().reading
+    }
+
     pub fn main_form(&self) -> &str {
         if let Some(kanji) = self.kanjis.first() {
             if kanji.rarity == Rarity::Normal {
@@ -159,7 +163,7 @@ impl Entry {
         if let Some(kanji) = self.kanjis.first() {
             return &kanji.kanji;
         }
-        &self.readings.first().unwrap().reading
+        self.main_reading()
     }
 
     pub fn has_pos(&self, pos: PartOfSpeech) -> bool {

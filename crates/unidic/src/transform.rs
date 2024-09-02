@@ -304,7 +304,7 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> Result
     }
 
     for entry in entries {
-        if entry.is_expression() || entry.is_particle() {
+        if entry.has_pos(PartOfSpeech::Expression) || entry.has_pos(PartOfSpeech::Particle) {
             continue;
         }
         if entry_form_in_item_bases(&item_bases, entry) {
