@@ -3,6 +3,9 @@
 //! `Serialize`, `Deserialize`, `Tsify` is used when passing to web
 //! `Decode`, `Encode` is used to encode the structs into the dictionary file
 
+use std::ops::Deref;
+
+use serde::de::Error as DeserializeError;
 use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::jmdict::{JMDialect, JMPartOfSpeech, JMSenseMisc};
 use yomikiri_unidic_types::{
@@ -13,10 +16,18 @@ use yomikiri_unidic_types::{
 #[cfg(feature = "wasm")]
 use tsify_next::Tsify;
 
-/// An entry should have one kanji or reading
+use crate::{Error, Result};
+
+/// Constraints:
+/// 1. Must have at least 1 reading
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(transparent)]
+pub struct Entry(EntryInner);
+
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Entry {
+pub struct EntryInner {
     pub id: u32,
     pub kanjis: Vec<Kanji>,
     pub readings: Vec<Reading>,
@@ -120,30 +131,60 @@ fn unidic_to_jmpos(unidic: &UnidicPos) -> JMPartOfSpeech {
 }
 
 impl Entry {
-    pub fn main_form(&self) -> Option<&str> {
+    pub fn new(inner: EntryInner) -> Result<Self> {
+        Self::validate_entry(&inner)?;
+        Ok(Self(inner))
+    }
+
+    fn validate_entry(inner: &EntryInner) -> Result<()> {
+        if inner.readings.len() == 0 {
+            return Err(Error::InvalidEntry(
+                "Entry must contain at least 1 kanji or reading".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub fn main_form(&self) -> &str {
         if let Some(kanji) = self.kanjis.first() {
             if kanji.rarity == Rarity::Normal {
-                return Some(&kanji.kanji);
+                return &kanji.kanji;
             }
         }
         if let Some(reading) = self.readings.first() {
             if reading.rarity == Rarity::Normal {
-                return Some(&reading.reading);
+                return &reading.reading;
             }
         }
         if let Some(kanji) = self.kanjis.first() {
-            return Some(&kanji.kanji);
+            return &kanji.kanji;
         }
-        if let Some(reading) = self.readings.first() {
-            return Some(&reading.reading);
-        }
-
-        None
+        &self.readings.first().unwrap().reading
     }
 
     pub fn has_pos(&self, pos: PartOfSpeech) -> bool {
         self.grouped_senses
             .iter()
             .any(|g| g.part_of_speech.contains(&pos))
+    }
+}
+
+impl Deref for Entry {
+    type Target = EntryInner;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<'de> Deserialize<'de> for Entry {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let inner = EntryInner::deserialize(deserializer)?;
+        Self::validate_entry(&inner).map_err(|e| D::Error::custom(e))?;
+
+        Ok(Self(inner))
     }
 }

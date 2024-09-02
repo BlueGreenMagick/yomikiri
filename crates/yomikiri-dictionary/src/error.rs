@@ -23,4 +23,6 @@ pub enum Error {
     OutOfRange,
     #[error("Could not reserve space for vector")]
     CouldNotReserve(#[from] std::collections::TryReserveError),
+    #[error("Invalid dictionary entry: {0}")]
+    InvalidEntry(String),
 }

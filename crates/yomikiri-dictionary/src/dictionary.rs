@@ -60,12 +60,12 @@ impl<'a> DictionaryView<'a> {
 #[cfg(test)]
 mod tests {
     use crate::dictionary::Dictionary;
-    use crate::entry::{Entry, Kanji, Rarity, Reading};
+    use crate::entry::{Entry, EntryInner, Kanji, Rarity, Reading};
     use crate::Result;
 
     #[test]
     fn write_then_read_dictionary_with_single_entry() -> Result<()> {
-        let entry = Entry {
+        let inner = EntryInner {
             id: 1234,
             kanjis: vec![
                 Kanji {
@@ -86,6 +86,7 @@ mod tests {
             grouped_senses: vec![],
             priority: 10,
         };
+        let entry = Entry::new(inner)?;
         let mut buffer = Vec::with_capacity(1024);
         Dictionary::<Vec<u8>>::build_and_encode_to(&[entry.clone()], &mut buffer)?;
         let dict = Dictionary::try_decode(buffer)?;
