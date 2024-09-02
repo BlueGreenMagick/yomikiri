@@ -1,6 +1,6 @@
 ---
 source: crates/jmdict/src/jmdict/parse.rs
-assertion_line: 260
+assertion_line: 277
 expression: result
 ---
 entries:
@@ -24,7 +24,7 @@ entries:
       - to_form: []
         to_reading: []
         part_of_speech:
-          - "=n="
+          - noun
         misc: []
         info: []
         dialect: []
@@ -45,7 +45,7 @@ entries:
       - to_form: []
         to_reading: []
         part_of_speech:
-          - "=n="
+          - noun
         misc: []
         info: []
         dialect: []

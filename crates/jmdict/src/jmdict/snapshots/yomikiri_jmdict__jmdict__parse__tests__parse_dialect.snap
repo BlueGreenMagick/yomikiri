@@ -1,6 +1,6 @@
 ---
 source: crates/jmdict/src/jmdict/parse.rs
-assertion_line: 305
+assertion_line: 314
 expression: result
 ---
 entries:
@@ -19,21 +19,21 @@ entries:
       - to_form: []
         to_reading: []
         part_of_speech:
-          - "=n="
+          - noun
         misc: []
         info: []
         dialect:
-          - Brazilian
-          - HokkaidoBen
-          - KansaiBen
-          - KantouBen
-          - KyotoBen
-          - KyuushuuBen
-          - NaganoBen
-          - OsakaBen
-          - RyuukyuuBen
-          - TouhokuBen
-          - TosaBen
-          - TsugaruBen
+          - brazilian
+          - hokkaidoBen
+          - kansaiBen
+          - kantouBen
+          - kyotoBen
+          - kyuushuuBen
+          - naganoBen
+          - osakaBen
+          - ryuukyuuBen
+          - touhokuBen
+          - tosaBen
+          - tsugaruBen
         meaning:
           - some meaning
