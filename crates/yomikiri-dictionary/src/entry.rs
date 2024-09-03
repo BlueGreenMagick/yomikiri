@@ -27,6 +27,7 @@ pub struct Entry(EntryInner);
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct EntryInner {
     pub id: u32,
     pub kanjis: Vec<Kanji>,
@@ -37,6 +38,7 @@ pub struct EntryInner {
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Kanji {
     pub kanji: String,
     pub rarity: Rarity,
@@ -57,6 +59,7 @@ pub struct Reading {
 /// `Normal` is the most common and `Search`` is the rarest.
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum Rarity {
     Normal,
     Rare,
@@ -67,6 +70,7 @@ pub enum Rarity {
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GroupedSense {
     pub part_of_speech: Vec<PartOfSpeech>,
     pub senses: Vec<Sense>,

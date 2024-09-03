@@ -16,9 +16,9 @@ export type DictionaryResult = Entry[];
 
 export function getMainForm(entry: Entry): string {
   if (entry.kanjis.length > 0) {
-    if (entry.kanjis[0].rarity === "Normal") {
+    if (entry.kanjis[0].rarity === "normal") {
       return entry.kanjis[0].kanji;
-    } else if (entry.readings[0].rarity === "Normal") {
+    } else if (entry.readings[0].rarity === "normal") {
       return entry.readings[0].reading;
     } else {
       return entry.kanjis[0].kanji;
@@ -93,8 +93,8 @@ export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
     throw Error(`Invalid part-of-speech in token: ${tokenPos}`);
   }
 
-  for (const group of entry.grouped_senses) {
-    if (group.part_of_speech.includes(dictPos)) {
+  for (const group of entry.groupedSenses) {
+    if (group.partOfSpeech.includes(dictPos)) {
       return true;
     }
   }
@@ -196,7 +196,7 @@ function formScoreForOrder(entry: Entry, token: Token): number {
   let score = 0;
   for (const kanji of entry.kanjis) {
     if (kanji.kanji == token.base || kanji.kanji == token.text) {
-      if (kanji.rarity !== "Normal") {
+      if (kanji.rarity !== "normal") {
         return 2;
       }
       score = 1;
@@ -204,7 +204,7 @@ function formScoreForOrder(entry: Entry, token: Token): number {
   }
   for (const reading of entry.readings) {
     if (reading.reading == token.base || reading.reading == token.text) {
-      if (reading.rarity !== "Normal") {
+      if (reading.rarity !== "normal") {
         return 2;
       }
       score = 1;
@@ -231,12 +231,12 @@ export function getOtherFormsInEntry(entry: Entry): EntryOtherForms | null {
   const mainReading = getReadingForForm(entry, mainForm);
 
   for (const kanji of entry.kanjis) {
-    if (kanji.kanji !== mainForm && kanji.rarity !== "Search") {
+    if (kanji.kanji !== mainForm && kanji.rarity !== "search") {
       kanjis.push(kanji);
     }
   }
   for (const reading of entry.readings) {
-    if (reading.reading !== mainReading.reading && reading.rarity !== "Search")
+    if (reading.reading !== mainReading.reading && reading.rarity !== "search")
       readings.push(reading);
   }
 

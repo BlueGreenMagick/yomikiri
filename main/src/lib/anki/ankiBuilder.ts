@@ -204,7 +204,7 @@ addBuilder("meaning", (opts, data) => {
       indent += 1;
     }
 
-    for (const group of data.entry.grouped_senses) {
+    for (const group of data.entry.groupedSenses) {
       if (format === "div") {
         addLine('<div class="yomi-group">');
         indent += 1;
@@ -217,7 +217,7 @@ addBuilder("meaning", (opts, data) => {
       let lineMeaning = "";
 
       if (opts.full_pos) {
-        const poss = escapeHTML(group.part_of_speech.join(", "));
+        const poss = escapeHTML(group.partOfSpeech.join(", "));
         if (format === "yomichan") {
           addLine(`<i>(${poss})</i>`);
         } else if (format === "line") {

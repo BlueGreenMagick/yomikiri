@@ -82,20 +82,20 @@ const tokenized: TokenizeResult = {
       kanjis: [
         {
           kanji: "面白い",
-          rarity: "Normal",
+          rarity: "normal",
         },
       ],
       readings: [
         {
           reading: "おもしろい",
           nokanji: false,
-          rarity: "Normal",
+          rarity: "normal",
           toKanji: [],
         },
       ],
-      grouped_senses: [
+      groupedSenses: [
         {
-          part_of_speech: ["adjective"],
+          partOfSpeech: ["adjective"],
           senses: [
             {
               toKanji: [],

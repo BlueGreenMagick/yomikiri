@@ -38,21 +38,30 @@
       {
         "id": 1456360,
         "kanjis": [
-          { "kanji": "読む", "rarity": "Normal" },
-          { "kanji": "讀む", "rarity": "Normal" },
-          { "kanji": "訓む", "rarity": "Normal" }
+          {
+            "kanji": "読む",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "讀む",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "訓む",
+            "rarity": "normal"
+          }
         ],
         "readings": [
           {
             "reading": "よむ",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["verb"],
+            "partOfSpeech": ["verb"],
             "senses": [
               {
                 "meanings": ["to read"],
@@ -226,21 +235,30 @@
       {
         "id": 1169870,
         "kanjis": [
-          { "kanji": "飲む", "rarity": "Normal" },
-          { "kanji": "呑む", "rarity": "Normal" },
-          { "kanji": "飮む", "rarity": "Normal" }
+          {
+            "kanji": "飲む",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "呑む",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "飮む",
+            "rarity": "normal"
+          }
         ],
         "readings": [
           {
             "reading": "のむ",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["verb"],
+            "partOfSpeech": ["verb"],
             "senses": [
               {
                 "meanings": [
@@ -373,24 +391,42 @@
       {
         "id": 1599420,
         "kanjis": [
-          { "kanji": "中々", "rarity": "Normal" },
-          { "kanji": "中中", "rarity": "Normal" },
-          { "kanji": "仲々", "rarity": "Normal" },
-          { "kanji": "仲仲", "rarity": "Normal" },
-          { "kanji": "却々", "rarity": "Normal" },
-          { "kanji": "却却", "rarity": "Normal" }
+          {
+            "kanji": "中々",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "中中",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "仲々",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "仲仲",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "却々",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "却却",
+            "rarity": "normal"
+          }
         ],
         "readings": [
           {
             "reading": "なかなか",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["adverb", "na-adjective"],
+            "partOfSpeech": ["adverb", "na-adjective"],
             "senses": [
               {
                 "meanings": [
@@ -412,7 +448,7 @@
             ]
           },
           {
-            "part_of_speech": ["adverb"],
+            "partOfSpeech": ["adverb"],
             "senses": [
               {
                 "meanings": ["by no means", "not readily"],
@@ -425,7 +461,7 @@
             ]
           },
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["middle", "half-way point"],
@@ -478,24 +514,29 @@
     "entries": [
       {
         "id": 1370410,
-        "kanjis": [{ "kanji": "図書", "rarity": "Normal" }],
+        "kanjis": [
+          {
+            "kanji": "図書",
+            "rarity": "normal"
+          }
+        ],
         "readings": [
           {
             "reading": "としょ",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           },
           {
             "reading": "ずしょ",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Outdated"
+            "rarity": "outdated"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["books"],
@@ -556,24 +597,24 @@
             "reading": "が",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           },
           {
             "reading": "ヶ",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Search"
+            "rarity": "search"
           },
           {
             "reading": "ケ",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Search"
+            "rarity": "search"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["particle"],
+            "partOfSpeech": ["particle"],
             "senses": [
               {
                 "meanings": ["indicates the subject of a sentence"],
@@ -658,7 +699,7 @@
             ]
           },
           {
-            "part_of_speech": ["conjunction", "particle"],
+            "partOfSpeech": ["conjunction", "particle"],
             "senses": [
               {
                 "meanings": [
@@ -683,26 +724,32 @@
       {
         "id": 1202270,
         "kanjis": [
-          { "kanji": "絵", "rarity": "Normal" },
-          { "kanji": "画", "rarity": "Normal" }
+          {
+            "kanji": "絵",
+            "rarity": "normal"
+          },
+          {
+            "kanji": "画",
+            "rarity": "normal"
+          }
         ],
         "readings": [
           {
             "reading": "え",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           },
           {
             "reading": "が",
             "nokanji": false,
             "toKanji": ["画"],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["picture", "drawing", "painting", "sketch"],
@@ -727,24 +774,29 @@
       },
       {
         "id": 1197760,
-        "kanjis": [{ "kanji": "蛾", "rarity": "Normal" }],
+        "kanjis": [
+          {
+            "kanji": "蛾",
+            "rarity": "normal"
+          }
+        ],
         "readings": [
           {
             "reading": "が",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           },
           {
             "reading": "ガ",
             "nokanji": true,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["moth"],
@@ -761,18 +813,23 @@
       },
       {
         "id": 2220800,
-        "kanjis": [{ "kanji": "我", "rarity": "Normal" }],
+        "kanjis": [
+          {
+            "kanji": "我",
+            "rarity": "normal"
+          }
+        ],
         "readings": [
           {
             "reading": "が",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["obstinacy"],
@@ -797,18 +854,23 @@
       },
       {
         "id": 2224630,
-        "kanjis": [{ "kanji": "雅", "rarity": "Normal" }],
+        "kanjis": [
+          {
+            "kanji": "雅",
+            "rarity": "normal"
+          }
+        ],
         "readings": [
           {
             "reading": "が",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun", "na-adjective"],
+            "partOfSpeech": ["noun", "na-adjective"],
             "senses": [
               {
                 "meanings": ["elegance", "grace"],
@@ -821,7 +883,7 @@
             ]
           },
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["festal song (genre of the Shi Jing)"],
@@ -838,18 +900,23 @@
       },
       {
         "id": 2232110,
-        "kanjis": [{ "kanji": "賀", "rarity": "Normal" }],
+        "kanjis": [
+          {
+            "kanji": "賀",
+            "rarity": "normal"
+          }
+        ],
         "readings": [
           {
             "reading": "が",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["congratulation", "celebration"],
@@ -866,18 +933,23 @@
       },
       {
         "id": 2834041,
-        "kanjis": [{ "kanji": "駕", "rarity": "Normal" }],
+        "kanjis": [
+          {
+            "kanji": "駕",
+            "rarity": "normal"
+          }
+        ],
         "readings": [
           {
             "reading": "が",
             "nokanji": false,
             "toKanji": [],
-            "rarity": "Normal"
+            "rarity": "normal"
           }
         ],
-        "grouped_senses": [
+        "groupedSenses": [
           {
-            "part_of_speech": ["noun"],
+            "partOfSpeech": ["noun"],
             "senses": [
               {
                 "meanings": ["vehicle", "horse-drawn carriage"],
