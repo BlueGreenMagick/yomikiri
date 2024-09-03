@@ -1,12 +1,12 @@
 ---
 source: crates/jmdict/src/jmdict/parse.rs
-assertion_line: 314
+assertion_line: 315
 expression: result
 ---
 entries:
   - id: 1234567
-    forms:
-      - form: 言葉
+    kanjis:
+      - kanji: 言葉
         info: []
         priority: []
     readings:
@@ -18,11 +18,11 @@ entries:
     senses:
       - to_form: []
         to_reading: []
-        part_of_speech:
+        pos:
           - noun
         misc: []
         info: []
-        dialect:
+        dialects:
           - brazilian
           - hokkaidoBen
           - kansaiBen
@@ -35,5 +35,5 @@ entries:
           - touhokuBen
           - tosaBen
           - tsugaruBen
-        meaning:
+        meanings:
           - some meaning
