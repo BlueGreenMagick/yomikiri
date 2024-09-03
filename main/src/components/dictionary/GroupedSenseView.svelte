@@ -14,7 +14,7 @@
 
   let posText: string;
 
-  $: posText = group.partOfSpeech.join(", ");
+  $: posText = group.pos.join(", ");
 </script>
 
 <div class="grouped-sense" class:anki={$ankiEnabledConfig}>
@@ -27,7 +27,7 @@
         class="meaning"
         class:selected={$selectedSense?.sense === sense}
         on:mousedown|stopPropagation={() => {
-          onSelectSense(sense, group.partOfSpeech);
+          onSelectSense(sense, group.pos);
         }}
       >
         {idx + 1}. {sense.meanings.join(", ")}

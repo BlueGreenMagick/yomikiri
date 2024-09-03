@@ -52,7 +52,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["verb"],
+            "pos": ["verb"],
             "senses": [
               {
                 "meanings": ["to read"],
@@ -240,7 +240,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["verb"],
+            "pos": ["verb"],
             "senses": [
               {
                 "meanings": [
@@ -390,7 +390,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["adverb", "na-adjective"],
+            "pos": ["adverb", "na-adjective"],
             "senses": [
               {
                 "meanings": [
@@ -412,7 +412,7 @@
             ]
           },
           {
-            "partOfSpeech": ["adverb"],
+            "pos": ["adverb"],
             "senses": [
               {
                 "meanings": ["by no means", "not readily"],
@@ -425,7 +425,7 @@
             ]
           },
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["middle", "half-way point"],
@@ -495,7 +495,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["books"],
@@ -573,7 +573,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["particle"],
+            "pos": ["particle"],
             "senses": [
               {
                 "meanings": ["indicates the subject of a sentence"],
@@ -658,7 +658,7 @@
             ]
           },
           {
-            "partOfSpeech": ["conjunction", "particle"],
+            "pos": ["conjunction", "particle"],
             "senses": [
               {
                 "meanings": [
@@ -702,7 +702,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["picture", "drawing", "painting", "sketch"],
@@ -744,7 +744,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["moth"],
@@ -772,7 +772,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["obstinacy"],
@@ -808,7 +808,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun", "na-adjective"],
+            "pos": ["noun", "na-adjective"],
             "senses": [
               {
                 "meanings": ["elegance", "grace"],
@@ -821,7 +821,7 @@
             ]
           },
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["festal song (genre of the Shi Jing)"],
@@ -849,7 +849,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["congratulation", "celebration"],
@@ -877,7 +877,7 @@
         ],
         "groupedSenses": [
           {
-            "partOfSpeech": ["noun"],
+            "pos": ["noun"],
             "senses": [
               {
                 "meanings": ["vehicle", "horse-drawn carriage"],

@@ -104,7 +104,7 @@ Missing label: ${label}`);
       selected: {
         entry: data.entry,
         sense: data.entry.groupedSenses[0].senses[0],
-        partOfSpeech: data.entry.groupedSenses[0].partOfSpeech,
+        partOfSpeech: data.entry.groupedSenses[0].pos,
       },
     };
     test.each(singleTemplateFields)("(single) $label", async ({ template }) => {

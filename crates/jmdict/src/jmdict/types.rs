@@ -11,7 +11,7 @@ pub struct JMDict {
 pub struct JMEntry {
     pub id: u32,
     /// 0+ k_ele
-    pub forms: Vec<JMForm>,
+    pub kanjis: Vec<JMKanji>,
     /// 1+ r_ele
     pub readings: Vec<JMReading>,
     /// 1+ sense
@@ -47,15 +47,15 @@ impl JMEntry {
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct JMForm {
-    pub form: String,
+pub struct JMKanji {
+    pub kanji: String,
     /// 0+ ke_inf
     pub info: Vec<JMKanjiInfo>,
     /// 0+ ke_pri
     pub priority: Vec<String>,
 }
 
-impl JMForm {
+impl JMKanji {
     pub fn is_uncommon(&self) -> bool {
         self.info.iter().any(|s| {
             *s == JMKanjiInfo::OutdatedKanji
@@ -92,7 +92,7 @@ pub struct JMSense {
     /// 0+ 'stagr'
     pub to_reading: Vec<String>,
     /// 'pos'
-    pub part_of_speech: Vec<JMPartOfSpeech>,
+    pub pos: Vec<JMPartOfSpeech>,
     /// 'xref'
     // pub reference: Vec<String>,
     /// 'ant'
@@ -104,9 +104,9 @@ pub struct JMSense {
     /// 's_inf'
     pub info: Vec<String>,
     /// 'dial'
-    pub dialect: Vec<JMDialect>,
+    pub dialects: Vec<JMDialect>,
     /// 'gloss'
-    pub meaning: Vec<String>,
+    pub meanings: Vec<String>,
     // 'example'
     // example: Vec<Example>,
 }

@@ -95,7 +95,7 @@ const tokenized: TokenizeResult = {
       ],
       groupedSenses: [
         {
-          partOfSpeech: ["adjective"],
+          pos: ["adjective"],
           senses: [
             {
               toKanji: [],

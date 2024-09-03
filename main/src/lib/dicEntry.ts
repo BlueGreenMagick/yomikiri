@@ -94,7 +94,7 @@ export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
   }
 
   for (const group of entry.groupedSenses) {
-    if (group.partOfSpeech.includes(dictPos)) {
+    if (group.pos.includes(dictPos)) {
       return true;
     }
   }

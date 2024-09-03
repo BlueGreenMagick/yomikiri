@@ -1,7 +1,7 @@
 use crate::entry::{Entry, EntryInner, GroupedSense, Kanji, PartOfSpeech, Rarity, Reading, Sense};
 use crate::{Error, Result};
 use itertools::Itertools;
-use yomikiri_jmdict::jmdict::{JMEntry, JMForm, JMKanjiInfo, JMReading, JMReadingInfo, JMSense};
+use yomikiri_jmdict::jmdict::{JMEntry, JMKanji, JMKanjiInfo, JMReading, JMReadingInfo, JMSense};
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
     let jmdict = yomikiri_jmdict::parse_jmdict_xml(xml)?;
@@ -18,7 +18,7 @@ impl TryFrom<JMEntry> for Entry {
 
     fn try_from(jm_entry: JMEntry) -> Result<Entry> {
         let priority = jm_entry.priority();
-        let kanjis: Vec<Kanji> = jm_entry.forms.into_iter().map(Kanji::from).collect();
+        let kanjis: Vec<Kanji> = jm_entry.kanjis.into_iter().map(Kanji::from).collect();
         let readings: Vec<Reading> = jm_entry.readings.into_iter().map(Reading::from).collect();
         let grouped_senses: Vec<GroupedSense> = group_senses(jm_entry.senses);
         let inner = EntryInner {
@@ -32,8 +32,8 @@ impl TryFrom<JMEntry> for Entry {
     }
 }
 
-impl From<JMForm> for Kanji {
-    fn from(value: JMForm) -> Self {
+impl From<JMKanji> for Kanji {
+    fn from(value: JMKanji) -> Self {
         let rarity = value
             .info
             .iter()
@@ -43,7 +43,7 @@ impl From<JMForm> for Kanji {
 
         Self {
             rarity,
-            kanji: value.form,
+            kanji: value.kanji,
         }
     }
 }
@@ -101,8 +101,8 @@ impl From<JMSense> for Sense {
             to_reading: jm_sense.to_reading,
             misc: jm_sense.misc,
             info: jm_sense.info,
-            dialects: jm_sense.dialect,
-            meanings: jm_sense.meaning,
+            dialects: jm_sense.dialects,
+            meanings: jm_sense.meanings,
         }
     }
 }
@@ -110,7 +110,7 @@ impl From<JMSense> for Sense {
 fn group_senses(values: Vec<JMSense>) -> Vec<GroupedSense> {
     let mut groups: Vec<GroupedSense> = vec![];
     for value in values {
-        let pos = value.part_of_speech.clone();
+        let pos = value.pos.clone();
         let sense = Sense::from(value);
         insert_into_grouped_senses(&mut groups, pos, sense);
     }
@@ -123,13 +123,13 @@ fn insert_into_grouped_senses(
     sense: Sense,
 ) {
     for group in groups.iter_mut() {
-        if group.part_of_speech == pos {
+        if group.pos == pos {
             group.senses.push(sense);
             return;
         }
     }
     let group = GroupedSense {
-        part_of_speech: pos,
+        pos,
         senses: vec![sense],
     };
     groups.push(group);

@@ -51,7 +51,7 @@ impl LexItem {
                     .iter()
                     .any(|s| s.to_kanji.is_empty() || s.to_kanji.contains(&kanji.kanji));
                 if applicable {
-                    for pos in &grouped_sense.part_of_speech {
+                    for pos in &grouped_sense.pos {
                         items.insert((&kanji.kanji, *pos), (&reading.reading, cost));
                     }
                 }
@@ -75,7 +75,7 @@ impl LexItem {
                         s.to_reading.is_empty() || s.to_reading.contains(&reading.reading)
                     });
                     if applicable {
-                        for pos in &grouped_sense.part_of_speech {
+                        for pos in &grouped_sense.pos {
                             items.insert((&reading.reading, *pos), (&reading.reading, cost));
                         }
                     }

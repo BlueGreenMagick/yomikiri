@@ -7,7 +7,7 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 
 use super::types::{
-    JMDialect, JMDict, JMEntry, JMForm, JMKanjiInfo, JMPartOfSpeech, JMReading, JMSense,
+    JMDialect, JMDict, JMEntry, JMKanji, JMKanjiInfo, JMPartOfSpeech, JMReading, JMSense,
     JMSenseMisc,
 };
 use crate::jmdict::types::JMReadingInfo;
@@ -91,7 +91,7 @@ pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
             }
             b"k_ele" => {
                 let form = parse_in_form(reader)?;
-                entry.forms.push(form);
+                entry.kanjis.push(form);
             }
             b"r_ele" => {
                 let reading = parse_in_reading(reader)?;
@@ -116,16 +116,16 @@ pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
     }
 }
 
-pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMForm> {
-    let mut form = JMForm::default();
+pub fn parse_in_form(reader: &mut Reader<&[u8]>) -> Result<JMKanji> {
+    let mut form = JMKanji::default();
 
     parse_in_tag(reader, "k_ele", |reader, tag| {
         match tag.name().0 {
             b"keb" => {
-                if !form.form.is_empty() {
-                    warn!("Found multiple <keb> in form '{}' in JMDict", form.form)
+                if !form.kanji.is_empty() {
+                    warn!("Found multiple <keb> in form '{}' in JMDict", form.kanji)
                 }
-                form.form = parse_string_in_tag(reader, b"keb")?;
+                form.kanji = parse_string_in_tag(reader, b"keb")?;
             }
             b"ke_inf" => {
                 parse_entity_enum!(reader, JMKanjiInfo, "ke_inf", form.info);
@@ -193,8 +193,8 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                     .push(parse_string_in_tag(reader, b"stagr")?);
             }
             b"pos" => {
-                parse_entity_enum!(reader, JMPartOfSpeech, "pos", sense.part_of_speech);
-                dedup_vec(&mut sense.part_of_speech);
+                parse_entity_enum!(reader, JMPartOfSpeech, "pos", sense.pos);
+                dedup_vec(&mut sense.pos);
             }
             b"xref" => {
                 parse_string_in_tag(reader, b"xref")?;
@@ -212,10 +212,10 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
                 sense.info.push(parse_string_in_tag(reader, b"s_inf")?);
             }
             b"dial" => {
-                parse_entity_enum!(reader, JMDialect, "dial", sense.dialect);
+                parse_entity_enum!(reader, JMDialect, "dial", sense.dialects);
             }
             b"gloss" => {
-                sense.meaning.push(parse_string_in_tag(reader, b"gloss")?);
+                sense.meanings.push(parse_string_in_tag(reader, b"gloss")?);
             }
             b"lsource" => {
                 // consume ending tag

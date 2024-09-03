@@ -39,7 +39,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             let dicpos = entry
                 .grouped_senses
                 .first()
-                .and_then(|s| s.part_of_speech.first())
+                .and_then(|s| s.pos.first())
                 .unwrap_or(&PartOfSpeech::Unclassified);
             details.pos = jmpos_to_unidic(dicpos);
             details.reading = entry.main_reading().to_string();

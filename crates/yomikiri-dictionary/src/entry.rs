@@ -72,7 +72,7 @@ pub enum Rarity {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupedSense {
-    pub part_of_speech: Vec<PartOfSpeech>,
+    pub pos: Vec<PartOfSpeech>,
     pub senses: Vec<Sense>,
 }
 
@@ -172,9 +172,7 @@ impl Entry {
     }
 
     pub fn has_pos(&self, pos: PartOfSpeech) -> bool {
-        self.grouped_senses
-            .iter()
-            .any(|g| g.part_of_speech.contains(&pos))
+        self.grouped_senses.iter().any(|g| g.pos.contains(&pos))
     }
 
     /// Get first reading that can be applied for kanji.

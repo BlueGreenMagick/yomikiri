@@ -217,7 +217,7 @@ addBuilder("meaning", (opts, data) => {
       let lineMeaning = "";
 
       if (opts.full_pos) {
-        const poss = escapeHTML(group.partOfSpeech.join(", "));
+        const poss = escapeHTML(group.pos.join(", "));
         if (format === "yomichan") {
           addLine(`<i>(${poss})</i>`);
         } else if (format === "line") {
