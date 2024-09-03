@@ -372,7 +372,7 @@ jm_entity_enum!(
     #[doc="Godan verb - Uru old class verb (old form of Eru)"]
     b"v5uru" => VerbGodanUru,
     #[doc="intransitive verb"]
-    b"vi" => IntransitiveVerb,
+    b"vi" => VerbIntransitive,
     #[doc="Kuru verb - special class"]
     b"vk" => VerbKuru,
     #[doc="irregular nu verb"]

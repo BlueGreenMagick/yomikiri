@@ -3,6 +3,8 @@
 //! `Serialize`, `Deserialize`, `Tsify` is used when passing to web
 //! `Decode`, `Encode` is used to encode the structs into the dictionary file
 
+use std::collections::HashSet;
+use std::hash::Hash;
 use std::ops::Deref;
 
 use serde::de::Error as DeserializeError;
@@ -135,40 +137,56 @@ impl PartialEq for EntryInner {
     }
 }
 
-impl From<&JMPartOfSpeech> for PartOfSpeech {
-    fn from(pos: &JMPartOfSpeech) -> Self {
+impl PartOfSpeech {
+    pub fn from_jmdict(jm_poss: &[JMPartOfSpeech]) -> Vec<Self> {
         use JMPartOfSpeech::*;
-
-        match *pos {
-            Adverb | AdverbTo => PartOfSpeech::Adverb,
-            Conjunction => PartOfSpeech::Conjunction,
-            Interjection => PartOfSpeech::Interjection,
-            Suffix | SuffixNoun | Counter => PartOfSpeech::Suffix,
-            Particle => PartOfSpeech::Particle,
-            NaAdjectivalNoun | AdjectiveTaru | NaAdjectiveNari => PartOfSpeech::NaAdjective,
-            AuxiliaryVerb | Auxiliary | AuxiliaryAdjective | Copula => PartOfSpeech::AuxiliaryVerb,
-            Pronoun => PartOfSpeech::Pronoun,
-            Prefix => PartOfSpeech::Prefix,
-            PrenounAdjectival => PartOfSpeech::Adnomial,
-            Expression => PartOfSpeech::Expression,
-            Unclassified => PartOfSpeech::Unclassified,
-            Noun | NounNo | PrenominalNounOrVerb | Numeric | AdverbialNoun | ProperNoun
-            | PrefixNoun | TemporalNoun => PartOfSpeech::Noun,
-            UnspecifiedVerb | VerbIchidan | VerbIchidanKureru | VerbNidanU | VerbNidanBK
-            | VerbNidanBS | VerbNidanDK | VerbNidanDS | VerbNidanGK | VerbNidanGS | VerbNidanHK
-            | VerbNidanHS | VerbNidanKK | VerbNidanKS | VerbNidanMK | VerbNidanMS | VerbNidanNS
-            | VerbNidanRK | VerbNidanRS | VerbNidanSS | VerbNidanTK | VerbNidanTS | VerbNidanWS
-            | VerbNidanYK | VerbNidanYS | VerbNidanZS | VerbYodanB | VerbYodanG | VerbYodanH
-            | VerbYodanK | VerbYodanM | VerbYodanN | VerbYodanR | VerbYodanS | VerbYodanT
-            | VerbGodanAru | VerbGodanB | VerbGodanG | VerbGodanK | VerbGodanKS | VerbGodanM
-            | VerbGodanN | VerbGodanR | VerbGodanRI | VerbGodanS | VerbGodanT | VerbGodanU
-            | VerbGodanUS | VerbGodanUru | IntransitiveVerb | VerbKuru | VerbNu | VerbRu
-            | VerbTransitive | VerbIchidanZ => PartOfSpeech::Verb,
-            Adjective | AdjectiveYoiOrIi | AdjectiveKari | AdjectiveKu | AdjectiveShiku => {
-                PartOfSpeech::Adjective
+        let mut poss = vec![];
+        for jm_pos in jm_poss {
+            if let Some(p) = match *jm_pos {
+                Adverb | AdverbTo => Some(PartOfSpeech::Adverb),
+                Conjunction => Some(PartOfSpeech::Conjunction),
+                Interjection => Some(PartOfSpeech::Interjection),
+                Suffix | SuffixNoun | Counter => Some(PartOfSpeech::Suffix),
+                Particle => Some(PartOfSpeech::Particle),
+                NaAdjectivalNoun | AdjectiveTaru | NaAdjectiveNari => {
+                    Some(PartOfSpeech::NaAdjective)
+                }
+                AuxiliaryVerb | Auxiliary | AuxiliaryAdjective | Copula => {
+                    Some(PartOfSpeech::AuxiliaryVerb)
+                }
+                Pronoun => Some(PartOfSpeech::Pronoun),
+                Prefix => Some(PartOfSpeech::Prefix),
+                PrenounAdjectival => Some(PartOfSpeech::Adnomial),
+                Expression => Some(PartOfSpeech::Expression),
+                Unclassified => Some(PartOfSpeech::Unclassified),
+                Noun | NounNo | PrenominalNounOrVerb | Numeric | AdverbialNoun | ProperNoun
+                | PrefixNoun | TemporalNoun => Some(PartOfSpeech::Noun),
+                UnspecifiedVerb | VerbIchidan | VerbIchidanKureru | VerbNidanU | VerbNidanBK
+                | VerbNidanBS | VerbNidanDK | VerbNidanDS | VerbNidanGK | VerbNidanGS
+                | VerbNidanHK | VerbNidanHS | VerbNidanKK | VerbNidanKS | VerbNidanMK
+                | VerbNidanMS | VerbNidanNS | VerbNidanRK | VerbNidanRS | VerbNidanSS
+                | VerbNidanTK | VerbNidanTS | VerbNidanWS | VerbNidanYK | VerbNidanYS
+                | VerbNidanZS | VerbYodanB | VerbYodanG | VerbYodanH | VerbYodanK | VerbYodanM
+                | VerbYodanN | VerbYodanR | VerbYodanS | VerbYodanT | VerbGodanAru | VerbGodanB
+                | VerbGodanG | VerbGodanK | VerbGodanKS | VerbGodanM | VerbGodanN | VerbGodanR
+                | VerbGodanRI | VerbGodanS | VerbGodanT | VerbGodanU | VerbGodanUS
+                | VerbGodanUru | VerbKuru | VerbNu | VerbRu | VerbIchidanZ => {
+                    Some(PartOfSpeech::Verb)
+                }
+                Adjective | AdjectiveYoiOrIi | AdjectiveKari | AdjectiveKu | AdjectiveShiku => {
+                    Some(PartOfSpeech::Adjective)
+                }
+                VerbSuru | VerbSu | VerbSuruIncluded | VerbSuruSpecial => {
+                    Some(PartOfSpeech::SuruVerb)
+                }
+                // These tags are accompanied by other verb tag to describe them
+                VerbTransitive | VerbIntransitive => None,
+            } {
+                poss.push(p);
             }
-            VerbSuru | VerbSu | VerbSuruIncluded | VerbSuruSpecial => PartOfSpeech::SuruVerb,
         }
+        dedup_vec(&mut poss);
+        poss
     }
 }
 
@@ -302,4 +320,9 @@ impl<'de> Deserialize<'de> for Entry {
 
         Ok(Self(inner))
     }
+}
+
+fn dedup_vec<T: Eq + Hash + Copy>(vec: &mut Vec<T>) {
+    let mut set = HashSet::with_capacity(vec.len());
+    vec.retain(|x| set.insert(*x));
 }
