@@ -73,7 +73,7 @@
   </div>
   <Badges {entry} />
   <div class="groups">
-    {#each entry.grouped_senses as group}
+    {#each entry.groupedSenses as group}
       <GroupedSenseView {group} {model} {onSelectSense} />
     {/each}
   </div>
