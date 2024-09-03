@@ -1,3 +1,6 @@
+use std::collections::HashSet;
+use std::hash::Hash;
+
 use crate::entry::{Entry, EntryInner, GroupedSense, Kanji, PartOfSpeech, Rarity, Reading, Sense};
 use crate::{Error, Result};
 use itertools::Itertools;
@@ -110,7 +113,8 @@ impl From<JMSense> for Sense {
 fn group_senses(values: Vec<JMSense>) -> Vec<GroupedSense> {
     let mut groups: Vec<GroupedSense> = vec![];
     for value in values {
-        let pos = value.pos.clone();
+        let mut pos = value.pos.iter().map(PartOfSpeech::from).collect();
+        dedup_vec(&mut pos);
         let sense = Sense::from(value);
         insert_into_grouped_senses(&mut groups, pos, sense);
     }
@@ -133,4 +137,9 @@ fn insert_into_grouped_senses(
         senses: vec![sense],
     };
     groups.push(group);
+}
+
+fn dedup_vec<T: Eq + Hash + Copy>(vec: &mut Vec<T>) {
+    let mut set = HashSet::with_capacity(vec.len());
+    vec.retain(|x| set.insert(*x));
 }

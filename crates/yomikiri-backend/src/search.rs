@@ -2,7 +2,6 @@ use std::borrow::Cow;
 
 use anyhow::Result;
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
-use yomikiri_dictionary::entry::jmpos_to_unidic;
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::tokenize::{InnerToken, Token, TokenDetails, TokenizeResult};
@@ -41,7 +40,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                 .first()
                 .and_then(|s| s.pos.first())
                 .unwrap_or(&PartOfSpeech::Unclassified);
-            details.pos = jmpos_to_unidic(dicpos);
+            details.pos = dicpos.to_unidic();
             details.reading = entry.main_reading().to_string();
             let inner_token = InnerToken::new(normalized_term, details, 0);
             let token = Token::from(inner_token);

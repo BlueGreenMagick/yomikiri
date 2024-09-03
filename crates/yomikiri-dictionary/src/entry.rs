@@ -14,7 +14,7 @@ use yomikiri_unidic_types::{
 };
 
 #[cfg(feature = "wasm")]
-use tsify_next::{declare, Tsify};
+use tsify_next::Tsify;
 
 use crate::{Error, Result};
 
@@ -88,50 +88,131 @@ pub struct Sense {
     pub dialects: Vec<JMDialect>,
 }
 
-#[cfg_attr(feature = "wasm", declare)]
-pub type PartOfSpeech = JMPartOfSpeech;
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum PartOfSpeech {
+    /// 名詞
+    Noun,
+    /// 動詞
+    Verb,
+    // する-verb / サ変動詞語幹 / サ変可能　(unidic)
+    #[serde(rename = "suru verb")]
+    SuruVerb,
+    /// 形容詞
+    Adjective,
+    /// 形容動詞 / 形状詞 (unidic)
+    #[serde(rename = "na-adjective")]
+    NaAdjective,
+    /// 助詞
+    Particle,
+    /// 副詞
+    Adverb,
+    /// 感動詞
+    Interjection,
+    /// 接尾辞
+    Suffix,
+    /// 助動詞
+    #[serde(rename = "auxiliary verb")]
+    AuxiliaryVerb,
+    /// 代名詞
+    Pronoun,
+    /// 接続詞
+    Conjunction,
+    /// 接頭辞
+    Prefix,
+    /// 連体詞
+    Adnomial,
+    Expression,
+    Unclassified,
+    /// Represents symbol pos from unidic
+    Symbol,
+}
 
-pub fn jmpos_to_unidic(pos: &JMPartOfSpeech) -> UnidicPos {
-    match pos {
-        JMPartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
-        JMPartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
-        JMPartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
-        JMPartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
-        JMPartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
-        JMPartOfSpeech::Adverb => UnidicPos::Adverb,
-        JMPartOfSpeech::Interjection => UnidicPos::Interjection(UnidicInterjectionPos2::Unknown),
-        JMPartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
-        JMPartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
-        JMPartOfSpeech::Pronoun => UnidicPos::Pronoun,
-        JMPartOfSpeech::Conjunction => UnidicPos::Conjunction,
-        JMPartOfSpeech::Prefix => UnidicPos::Prefix,
-        JMPartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
-        JMPartOfSpeech::Expression => UnidicPos::Expression,
-        JMPartOfSpeech::Unclassified => UnidicPos::Unknown,
-        JMPartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
+impl From<&JMPartOfSpeech> for PartOfSpeech {
+    fn from(pos: &JMPartOfSpeech) -> Self {
+        use JMPartOfSpeech::*;
+
+        match *pos {
+            Adverb | AdverbTo => PartOfSpeech::Adverb,
+            Conjunction => PartOfSpeech::Conjunction,
+            Interjection => PartOfSpeech::Interjection,
+            Suffix | SuffixNoun | Counter => PartOfSpeech::Suffix,
+            Particle => PartOfSpeech::Particle,
+            NaAdjectivalNoun | AdjectiveTaru | NaAdjectiveNari => PartOfSpeech::NaAdjective,
+            AuxiliaryVerb | Auxiliary | AuxiliaryAdjective | Copula => PartOfSpeech::AuxiliaryVerb,
+            Pronoun => PartOfSpeech::Pronoun,
+            Prefix => PartOfSpeech::Prefix,
+            PrenounAdjectival => PartOfSpeech::Adnomial,
+            Expression => PartOfSpeech::Expression,
+            Unclassified => PartOfSpeech::Unclassified,
+            Noun | NounNo | PrenominalNounOrVerb | Numeric | AdverbialNoun | ProperNoun
+            | PrefixNoun | TemporalNoun => PartOfSpeech::Noun,
+            UnspecifiedVerb | VerbIchidan | VerbIchidanKureru | VerbNidanU | VerbNidanBK
+            | VerbNidanBS | VerbNidanDK | VerbNidanDS | VerbNidanGK | VerbNidanGS | VerbNidanHK
+            | VerbNidanHS | VerbNidanKK | VerbNidanKS | VerbNidanMK | VerbNidanMS | VerbNidanNS
+            | VerbNidanRK | VerbNidanRS | VerbNidanSS | VerbNidanTK | VerbNidanTS | VerbNidanWS
+            | VerbNidanYK | VerbNidanYS | VerbNidanZS | VerbYodanB | VerbYodanG | VerbYodanH
+            | VerbYodanK | VerbYodanM | VerbYodanN | VerbYodanR | VerbYodanS | VerbYodanT
+            | VerbGodanAru | VerbGodanB | VerbGodanG | VerbGodanK | VerbGodanKS | VerbGodanM
+            | VerbGodanN | VerbGodanR | VerbGodanRI | VerbGodanS | VerbGodanT | VerbGodanU
+            | VerbGodanUS | VerbGodanUru | IntransitiveVerb | VerbKuru | VerbNu | VerbRu
+            | VerbTransitive | VerbIchidanZ => PartOfSpeech::Verb,
+            Adjective | AdjectiveYoiOrIi | AdjectiveKari | AdjectiveKu | AdjectiveShiku => {
+                PartOfSpeech::Adjective
+            }
+            VerbSuru | VerbSu | VerbSuruIncluded | VerbSuruSpecial => PartOfSpeech::SuruVerb,
+        }
     }
 }
 
-pub fn unidic_to_jmpos(unidic: &UnidicPos) -> JMPartOfSpeech {
-    match unidic {
-        UnidicPos::Noun(_) => JMPartOfSpeech::Noun,
-        UnidicPos::Verb(_) => JMPartOfSpeech::Verb,
-        UnidicPos::Adjective(_) => JMPartOfSpeech::Adjective,
-        UnidicPos::NaAdjective(_) => JMPartOfSpeech::NaAdjective,
-        UnidicPos::Particle(_) => JMPartOfSpeech::Particle,
-        UnidicPos::Adverb => JMPartOfSpeech::Adverb,
-        UnidicPos::Interjection(_) => JMPartOfSpeech::Interjection,
-        UnidicPos::Suffix(_) => JMPartOfSpeech::Suffix,
-        UnidicPos::AuxVerb => JMPartOfSpeech::AuxiliaryVerb,
-        UnidicPos::Pronoun => JMPartOfSpeech::Pronoun,
-        UnidicPos::Conjunction => JMPartOfSpeech::Conjunction,
-        UnidicPos::Prefix => JMPartOfSpeech::Prefix,
-        UnidicPos::PrenounAdjectival => JMPartOfSpeech::Adnomial,
-        UnidicPos::Expression => JMPartOfSpeech::Expression,
-        UnidicPos::SupplementarySymbol(_) => JMPartOfSpeech::Symbol,
-        UnidicPos::Whitespace => JMPartOfSpeech::Symbol,
-        UnidicPos::Symbol(_) => JMPartOfSpeech::Symbol,
-        UnidicPos::Unknown => JMPartOfSpeech::Unclassified,
+impl From<&UnidicPos> for PartOfSpeech {
+    fn from(value: &UnidicPos) -> Self {
+        match *value {
+            UnidicPos::Noun(_) => PartOfSpeech::Noun,
+            UnidicPos::Verb(_) => PartOfSpeech::Verb,
+            UnidicPos::Adjective(_) => PartOfSpeech::Adjective,
+            UnidicPos::NaAdjective(_) => PartOfSpeech::NaAdjective,
+            UnidicPos::Particle(_) => PartOfSpeech::Particle,
+            UnidicPos::Adverb => PartOfSpeech::Adverb,
+            UnidicPos::Interjection(_) => PartOfSpeech::Interjection,
+            UnidicPos::Suffix(_) => PartOfSpeech::Suffix,
+            UnidicPos::AuxVerb => PartOfSpeech::AuxiliaryVerb,
+            UnidicPos::Pronoun => PartOfSpeech::Pronoun,
+            UnidicPos::Conjunction => PartOfSpeech::Conjunction,
+            UnidicPos::Prefix => PartOfSpeech::Prefix,
+            UnidicPos::PrenounAdjectival => PartOfSpeech::Adnomial,
+            UnidicPos::Expression => PartOfSpeech::Expression,
+            UnidicPos::SupplementarySymbol(_) => PartOfSpeech::Symbol,
+            UnidicPos::Whitespace => PartOfSpeech::Symbol,
+            UnidicPos::Symbol(_) => PartOfSpeech::Symbol,
+            UnidicPos::Unknown => PartOfSpeech::Unclassified,
+        }
+    }
+}
+
+impl PartOfSpeech {
+    pub fn to_unidic(&self) -> UnidicPos {
+        match *self {
+            PartOfSpeech::Noun => UnidicPos::Noun(UnidicNounPos2::Unknown),
+            PartOfSpeech::Verb => UnidicPos::Verb(UnidicVerbPos2::Unknown),
+            // Most 'suru verbs' are nouns.
+            PartOfSpeech::SuruVerb => UnidicPos::Noun(UnidicNounPos2::普通名詞),
+            PartOfSpeech::Adjective => UnidicPos::Adjective(UnidicAdjectivePos2::Unknown),
+            PartOfSpeech::NaAdjective => UnidicPos::NaAdjective(UnidicNaAdjectivePos2::Unknown),
+            PartOfSpeech::Particle => UnidicPos::Particle(UnidicParticlePos2::Unknown),
+            PartOfSpeech::Adverb => UnidicPos::Adverb,
+            PartOfSpeech::Interjection => UnidicPos::Interjection(UnidicInterjectionPos2::Unknown),
+            PartOfSpeech::Suffix => UnidicPos::Suffix(UnidicSuffixPos2::Unknown),
+            PartOfSpeech::AuxiliaryVerb => UnidicPos::AuxVerb,
+            PartOfSpeech::Pronoun => UnidicPos::Pronoun,
+            PartOfSpeech::Conjunction => UnidicPos::Conjunction,
+            PartOfSpeech::Prefix => UnidicPos::Prefix,
+            PartOfSpeech::Adnomial => UnidicPos::PrenounAdjectival,
+            PartOfSpeech::Expression => UnidicPos::Expression,
+            PartOfSpeech::Unclassified => UnidicPos::Unknown,
+            PartOfSpeech::Symbol => UnidicPos::Symbol(UnidicSymbolPos2::Unknown),
+        }
     }
 }
 

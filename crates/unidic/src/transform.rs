@@ -6,7 +6,7 @@ use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::str::FromStr;
 use yomikiri_dictionary::dictionary::Dictionary;
-use yomikiri_dictionary::entry::{jmpos_to_unidic, Entry, PartOfSpeech, Rarity};
+use yomikiri_dictionary::entry::{Entry, PartOfSpeech, Rarity};
 use yomikiri_dictionary::DICT_FILENAME;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
@@ -391,7 +391,7 @@ fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool
 }
 
 fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
-    jmpos_to_unidic(pos).to_unidic().0
+    pos.to_unidic().to_unidic().0
 }
 
 pub fn read_yomikiri_dictionary(dict_path: &Path) -> Result<Vec<Entry>> {

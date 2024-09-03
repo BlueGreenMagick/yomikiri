@@ -5,7 +5,8 @@ run below code on xml entity declarations.
 ```js
 function macroCode(decl) {
     let output = ""
-    for (const m of decls.matchAll(/<!ENTITY (\w+) "([^"]*)">/g)) {
+    for (const m of decls.matchAll(/<!ENTITY ([^\s]+) "([^"]*)">/g)) {
+        output += `#[doc="${m[2]}"]`
         output += 'b"'
         output += m[1]
         output += '" => '

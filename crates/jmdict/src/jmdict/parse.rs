@@ -1,6 +1,4 @@
 use core::str;
-use std::collections::HashSet;
-use std::hash::Hash;
 
 use log::warn;
 use quick_xml::events::Event;
@@ -194,7 +192,6 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
             }
             b"pos" => {
                 parse_entity_enum!(reader, JMPartOfSpeech, "pos", sense.pos);
-                dedup_vec(&mut sense.pos);
             }
             b"xref" => {
                 parse_string_in_tag(reader, b"xref")?;
@@ -232,11 +229,6 @@ fn parse_in_sense(reader: &mut Reader<&[u8]>) -> Result<JMSense> {
     })?;
 
     Ok(sense)
-}
-
-fn dedup_vec<T: Eq + Hash + Copy>(vec: &mut Vec<T>) {
-    let mut set = HashSet::with_capacity(vec.len());
-    vec.retain(|x| set.insert(*x));
 }
 
 #[cfg(test)]

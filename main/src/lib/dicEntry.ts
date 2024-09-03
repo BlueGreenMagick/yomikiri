@@ -5,12 +5,15 @@ import { extractKanjis } from "./japanese";
 import type {
   Entry,
   Kanji,
-  JMPartOfSpeech,
+  PartOfSpeech,
   Reading,
 } from "@yomikiri/yomikiri-rs";
-export type { Entry, Reading, Sense } from "@yomikiri/yomikiri-rs";
-
-export type PartOfSpeech = JMPartOfSpeech;
+export type {
+  Entry,
+  Reading,
+  Sense,
+  PartOfSpeech,
+} from "@yomikiri/yomikiri-rs";
 
 export type DictionaryResult = Entry[];
 
