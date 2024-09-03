@@ -38,18 +38,9 @@
       {
         "id": 1456360,
         "kanjis": [
-          {
-            "kanji": "読む",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "讀む",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "訓む",
-            "rarity": "normal"
-          }
+          { "kanji": "読む", "rarity": "normal" },
+          { "kanji": "讀む", "rarity": "normal" },
+          { "kanji": "訓む", "rarity": "normal" }
         ],
         "readings": [
           {
@@ -235,18 +226,9 @@
       {
         "id": 1169870,
         "kanjis": [
-          {
-            "kanji": "飲む",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "呑む",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "飮む",
-            "rarity": "normal"
-          }
+          { "kanji": "飲む", "rarity": "normal" },
+          { "kanji": "呑む", "rarity": "normal" },
+          { "kanji": "飮む", "rarity": "normal" }
         ],
         "readings": [
           {
@@ -391,30 +373,12 @@
       {
         "id": 1599420,
         "kanjis": [
-          {
-            "kanji": "中々",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "中中",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "仲々",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "仲仲",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "却々",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "却却",
-            "rarity": "normal"
-          }
+          { "kanji": "中々", "rarity": "normal" },
+          { "kanji": "中中", "rarity": "normal" },
+          { "kanji": "仲々", "rarity": "normal" },
+          { "kanji": "仲仲", "rarity": "normal" },
+          { "kanji": "却々", "rarity": "normal" },
+          { "kanji": "却却", "rarity": "normal" }
         ],
         "readings": [
           {
@@ -514,12 +478,7 @@
     "entries": [
       {
         "id": 1370410,
-        "kanjis": [
-          {
-            "kanji": "図書",
-            "rarity": "normal"
-          }
-        ],
+        "kanjis": [{ "kanji": "図書", "rarity": "normal" }],
         "readings": [
           {
             "reading": "としょ",
@@ -724,14 +683,8 @@
       {
         "id": 1202270,
         "kanjis": [
-          {
-            "kanji": "絵",
-            "rarity": "normal"
-          },
-          {
-            "kanji": "画",
-            "rarity": "normal"
-          }
+          { "kanji": "絵", "rarity": "normal" },
+          { "kanji": "画", "rarity": "normal" }
         ],
         "readings": [
           {
@@ -774,12 +727,7 @@
       },
       {
         "id": 1197760,
-        "kanjis": [
-          {
-            "kanji": "蛾",
-            "rarity": "normal"
-          }
-        ],
+        "kanjis": [{ "kanji": "蛾", "rarity": "normal" }],
         "readings": [
           {
             "reading": "が",
@@ -813,12 +761,7 @@
       },
       {
         "id": 2220800,
-        "kanjis": [
-          {
-            "kanji": "我",
-            "rarity": "normal"
-          }
-        ],
+        "kanjis": [{ "kanji": "我", "rarity": "normal" }],
         "readings": [
           {
             "reading": "が",
@@ -854,12 +797,7 @@
       },
       {
         "id": 2224630,
-        "kanjis": [
-          {
-            "kanji": "雅",
-            "rarity": "normal"
-          }
-        ],
+        "kanjis": [{ "kanji": "雅", "rarity": "normal" }],
         "readings": [
           {
             "reading": "が",
@@ -900,12 +838,7 @@
       },
       {
         "id": 2232110,
-        "kanjis": [
-          {
-            "kanji": "賀",
-            "rarity": "normal"
-          }
-        ],
+        "kanjis": [{ "kanji": "賀", "rarity": "normal" }],
         "readings": [
           {
             "reading": "が",
@@ -933,12 +866,7 @@
       },
       {
         "id": 2834041,
-        "kanjis": [
-          {
-            "kanji": "駕",
-            "rarity": "normal"
-          }
-        ],
+        "kanjis": [{ "kanji": "駕", "rarity": "normal" }],
         "readings": [
           {
             "reading": "が",
