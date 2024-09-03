@@ -23,9 +23,9 @@ import path from "node:path";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
-// When `TokenizeResult` struct has been modified, re-generate ankiBuilder.test.json
-// by setting this variable to true, and running the test with `pnpm vitest --run ankiBuilder`
-const REGENERATE_JSON = false;
+// When `TokenizeResult` struct has been modified, you should re-generate ankiBuilder.test.json
+// by running the test with `UPDATE=1 pnpm vitest --run ankiBuilder`
+const REGENERATE_JSON = !!process.env.UPDATE;
 
 const config = await Config.instance.get();
 const ctx: AnkiBuilderContext = {
