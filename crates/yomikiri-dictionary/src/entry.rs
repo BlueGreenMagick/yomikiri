@@ -26,7 +26,7 @@ use crate::{Error, Result};
 pub struct Entry(EntryInner);
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EntryInner {
     pub id: u32,
@@ -58,7 +58,7 @@ pub struct Reading {
 /// Ordered by rarity.
 /// `Normal` is the most common and `Search`` is the rarest.
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Rarity {
     Normal,
@@ -127,6 +127,12 @@ pub enum PartOfSpeech {
     Unclassified,
     /// Represents symbol pos from unidic
     Symbol,
+}
+
+impl PartialEq for EntryInner {
+    fn eq(&self, other: &Self) -> bool {
+        other.id == self.id
+    }
 }
 
 impl From<&JMPartOfSpeech> for PartOfSpeech {
@@ -261,6 +267,20 @@ impl Entry {
         self.readings.iter().find(|reading| {
             reading.to_kanji.is_empty() || reading.to_kanji.iter().any(|c| c == kanji)
         })
+    }
+
+    pub fn term_rarity(&self, term: &str) -> Result<Rarity> {
+        self.kanjis
+            .iter()
+            .find(|kanji_obj| kanji_obj.kanji == term)
+            .map(|k_obj| k_obj.rarity)
+            .or_else(|| {
+                self.readings
+                    .iter()
+                    .find(|reading_obj| reading_obj.reading == term)
+                    .map(|r_obj| r_obj.rarity)
+            })
+            .ok_or_else(|| Error::NotFound(format!("term '{}'", term)))
     }
 }
 

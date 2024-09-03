@@ -2,7 +2,10 @@ use anyhow::{anyhow, Context, Result};
 use fst::{IntoStreamer, Streamer};
 use regex::Regex;
 use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
-use yomikiri_dictionary::entry::Entry;
+use yomikiri_dictionary::entry::{Entry, Rarity};
+use yomikiri_dictionary::PartOfSpeech;
+
+use crate::tokenize::InnerToken;
 
 pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     inner: InnerDictionary<D>,
@@ -98,5 +101,71 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         }
 
         Err(anyhow!("Could not find creation date in dictionary"))
+    }
+
+    /// Finds entries, ordered by what best matches token
+    ///
+    /// 1. Non-search -> search-only
+    /// 2. token.base -> token.text
+    /// 3. Entries whose POS matches token.pos
+    /// 4. Rare -> Non rare
+    /// 5. Entry with higher priority is shown first
+
+    pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<Entry>> {
+        struct EntryMeta {
+            entry: Entry,
+            rarity: Rarity,
+            from_base: bool,
+        }
+
+        // Gather all entries
+        let mut entry_metas: Vec<EntryMeta> = vec![];
+
+        let entries = self.search(&token.base)?;
+        for entry in entries {
+            let rarity = entry.term_rarity(&token.base)?;
+            let entry_meta = EntryMeta {
+                entry,
+                rarity,
+                from_base: true,
+            };
+            entry_metas.push(entry_meta);
+        }
+
+        let entries = self.search(&token.text)?;
+        for entry in entries {
+            if entry_metas.iter().any(|e| e.entry == entry) {
+                continue;
+            }
+            let rarity = entry.term_rarity(&token.text)?;
+            let entry_meta = EntryMeta {
+                entry,
+                rarity,
+                from_base: false,
+            };
+            entry_metas.push(entry_meta);
+        }
+
+        // Sort entries. Less means 'a' comes before 'b'
+        entry_metas.sort_by(|a, b| {
+            let a_is_search = a.rarity == Rarity::Search;
+            let b_is_search = b.rarity == Rarity::Search;
+            a_is_search
+                .cmp(&b_is_search)
+                .then(a.from_base.cmp(&b.from_base).reverse())
+                .then_with(|| {
+                    let pos = PartOfSpeech::from(&token.pos);
+                    a.entry.has_pos(pos).cmp(&b.entry.has_pos(pos)).reverse()
+                })
+                .then_with(|| {
+                    let a_is_normal = a.rarity == Rarity::Normal;
+                    let b_is_normal = a.rarity == Rarity::Normal;
+                    a_is_normal.cmp(&b_is_normal).reverse()
+                })
+                .then(a.entry.priority.cmp(&b.entry.priority).reverse())
+        });
+
+        let entries = entry_metas.into_iter().map(|meta| meta.entry).collect();
+        Ok(entries)
     }
 }

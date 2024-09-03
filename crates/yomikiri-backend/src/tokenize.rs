@@ -214,19 +214,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         };
 
         let selected_token = &tokens[token_idx];
-
-        // 1) joined base
-        let mut entries = self.dictionary.search(&selected_token.base)?;
-
-        // 2) joined surface
-        if selected_token.base != selected_token.text {
-            let searched_entries = self.dictionary.search(&selected_token.text)?;
-            for entry in searched_entries {
-                if !entries.contains(&entry) {
-                    entries.push(entry);
-                }
-            }
-        }
+        let entries = self.dictionary.search_for_token(selected_token)?;
 
         let grammar_analyzer = GrammarDetector::new(&tokens, token_idx);
         let grammars = grammar_analyzer

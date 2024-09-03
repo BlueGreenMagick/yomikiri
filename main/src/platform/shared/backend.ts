@@ -1,5 +1,5 @@
 import type { TokenizeResult } from "@yomikiri/yomikiri-rs";
-import { getValidEntriesForSurface, orderEntries } from "lib/dicEntry";
+import { getValidEntriesForSurface } from "lib/dicEntry";
 import { toHiragana } from "lib/japanese";
 
 export function cleanTokenizeResult(res: TokenizeResult) {
@@ -11,7 +11,6 @@ export function cleanTokenizeResult(res: TokenizeResult) {
   const selectedToken = res.tokens[res.tokenIdx];
   if (res.tokenIdx >= 0) {
     res.entries = getValidEntriesForSurface(res.entries, selectedToken.text);
-    orderEntries(res.entries, selectedToken);
   }
   console.debug(res);
 }
