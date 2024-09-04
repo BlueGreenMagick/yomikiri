@@ -13,7 +13,9 @@
       {#each otherForms.writings as writingForm, i}
         <div class="other-writing {writingForm.rarity}">
           {writingForm.writing}<!--
-       -->{#if writingForm.rarity !== "normal"}({writingForm.rarity}){/if}<!--
+       -->{#if writingForm.rarity !== "normal"}<span
+              class="rarity-tag">({writingForm.rarity})</span
+            >{/if}<!--
        -->{#if i < otherForms.writings.length - 1}、{/if}
         </div>
       {/each}
@@ -23,7 +25,9 @@
         {#each otherForms.readings as reading, i}
           <div class="other-reading {reading.rarity}">
             {reading.reading}<!--
-         -->{#if reading.rarity !== "normal"}({reading.rarity}){/if}<!--
+         -->{#if reading.rarity !== "normal"}<span
+                class="rarity-tag">({reading.rarity})</span
+              >{/if}<!--
          -->{#if i < otherForms.readings.length - 1}、{/if}
           </div>
         {/each}
@@ -66,5 +70,9 @@
   .outdated,
   .incorrect {
     color: var(--text-light);
+  }
+
+  .rarity-tag {
+    font-size: 0.625em;
   }
 </style>
