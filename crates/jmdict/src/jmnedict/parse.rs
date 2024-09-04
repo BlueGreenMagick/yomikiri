@@ -4,6 +4,8 @@ use log::warn;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
+use crate::jmnedict::types::JMneNameType;
+use crate::utils::parse_entity_enum;
 use crate::xml::{parse_in_tag, parse_string_in_tag, TagName};
 use crate::{Error, Result};
 
@@ -186,9 +188,7 @@ fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
     parse_in_tag(reader, "trans", |reader, tag| {
         match tag.name().0 {
             b"name_type" => {
-                translation
-                    .name_type
-                    .push(parse_string_in_tag(reader, b"name_type")?);
+                parse_entity_enum!(reader, JMneNameType, "name_type", translation.name_type);
             }
             b"xref" => {
                 translation.xref.push(parse_string_in_tag(reader, b"xref")?);

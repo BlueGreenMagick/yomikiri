@@ -111,17 +111,6 @@ pub struct JMSense {
     // example: Vec<Example>,
 }
 
-/// returns true if
-fn is_single_entity(text: &[u8]) -> bool {
-    if text.len() > 2 && text[0] == b'&' && text[text.len() - 1] == b';' {
-        let inner = &text[1..text.len() - 1];
-        if !inner.contains(&b';') {
-            return true;
-        }
-    }
-    false
-}
-
 jm_entity_enum!(
     JMDialect;
     b"hob" => HokkaidoBen,

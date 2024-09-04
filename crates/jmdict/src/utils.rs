@@ -6,7 +6,7 @@ run below code on xml entity declarations.
 function macroCode(decl) {
     let output = ""
     for (const m of decls.matchAll(/<!ENTITY ([^\s]+) "([^"]*)">/g)) {
-        output += `#[doc="${m[2]}"]`
+        output += `#[doc="${m[2]}"]\n`
         output += 'b"'
         output += m[1]
         output += '" => '
@@ -44,7 +44,7 @@ macro_rules! jm_entity_enum {
 
       impl $enum_name {
           pub fn parse_field(field: &[u8]) -> Option<$enum_name> {
-              if is_single_entity(field) {
+              if crate::utils::is_single_entity(field) {
                   match &field[1..field.len() -1] {
                       $(
                           $(
@@ -62,4 +62,32 @@ macro_rules! jm_entity_enum {
   };
 }
 
+/// `parse_entity_enum!(reader, EnumName, "tag", add_to)`
+///
+/// Parses a field in "tag" using `EnumName::parse_field()`,
+/// and if it returns `Some(val)`, run `add_to.push(val)`
+macro_rules! parse_entity_enum {
+    ($reader:ident, $enum: ident, $tag: literal, $to:expr ) => {
+        let field = crate::xml::parse_text_in_tag($reader, $tag.as_bytes())?;
+        let value = $enum::parse_field(&field);
+        if let Some(value) = value {
+            $to.push(value);
+        } else {
+            warn!("Unknown {}: {}", $tag, String::from_utf8_lossy(&field));
+        }
+    };
+}
+
+/// returns true if
+pub(crate) fn is_single_entity(text: &[u8]) -> bool {
+    if text.len() > 2 && text[0] == b'&' && text[text.len() - 1] == b';' {
+        let inner = &text[1..text.len() - 1];
+        if !inner.contains(&b';') {
+            return true;
+        }
+    }
+    false
+}
+
 pub(crate) use jm_entity_enum;
+pub(crate) use parse_entity_enum;

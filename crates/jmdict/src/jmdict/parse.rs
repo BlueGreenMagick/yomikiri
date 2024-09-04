@@ -9,24 +9,9 @@ use super::types::{
     JMSenseMisc,
 };
 use crate::jmdict::types::JMReadingInfo;
+use crate::utils::parse_entity_enum;
 use crate::xml::{parse_in_tag, parse_string_in_tag, parse_text_in_tag, TagName};
 use crate::{Error, Result};
-
-/// `parse_entity_enum!(reader, EnumName, "tag", add_to)`
-///
-/// Parses a field in "tag" using `EnumName::parse_field()`,
-/// and if it returns `Some(val)`, run `add_to.push(val)`
-macro_rules! parse_entity_enum {
-    ($reader:ident, $enum: ident, $tag: literal, $to:expr ) => {
-        let field = parse_text_in_tag($reader, $tag.as_bytes())?;
-        let value = $enum::parse_field(&field);
-        if let Some(value) = value {
-            $to.push(value);
-        } else {
-            warn!("Unknown {}: {}", $tag, String::from_utf8_lossy(&field));
-        }
-    };
-}
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut reader = Reader::from_str(xml);
