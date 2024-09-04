@@ -4,6 +4,8 @@ pub mod error;
 pub mod index;
 pub mod jagged_array;
 pub mod jmdict;
+pub mod jmnedict;
+pub mod name;
 
 pub use entry::{Entry, Kanji, PartOfSpeech, Reading, Sense};
 pub use error::{Error, Result};
