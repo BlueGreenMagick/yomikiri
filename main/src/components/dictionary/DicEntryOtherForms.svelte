@@ -9,17 +9,19 @@
 <div class="dic-entry-other-forms">
   <div class="section-header">Other Forms</div>
   <div class="other-forms-values Japanese">
-    <div class="other-writings">
-      {#each otherForms.writings as writingForm, i}
-        <div class="other-writing {writingForm.rarity}">
-          {writingForm.writing}<!--
+    {#if otherForms.writings.length > 0}
+      <div class="other-writings">
+        {#each otherForms.writings as writingForm, i}
+          <div class="other-writing {writingForm.rarity}">
+            {writingForm.writing}<!--
        -->{#if writingForm.rarity !== "normal"}<span
-              class="rarity-tag">({writingForm.rarity})</span
-            >{/if}<!--
+                class="rarity-tag">({writingForm.rarity})</span
+              >{/if}<!--
        -->{#if i < otherForms.writings.length - 1}、{/if}
-        </div>
-      {/each}
-    </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
     {#if otherForms.readings.length > 0}
       <div class="other-readings">
         {#each otherForms.readings as reading, i}
@@ -39,17 +41,19 @@
 <style>
   .dic-entry-other-forms {
     padding: 0 var(--edge-horizontal-padding);
+    margin-top: 0.5rem;
   }
 
   .section-header {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: var(--text-light);
-    margin-bottom: 0.25rem;
   }
 
-  .other-writings {
+  .other-writings,
+  .other-readings {
     display: flex;
     flex-wrap: wrap;
+    margin-top: 0.5rem;
   }
 
   .other-readings {

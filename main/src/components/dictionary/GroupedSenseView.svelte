@@ -47,7 +47,7 @@
 
   .part-of-speech {
     color: var(--text-light);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     margin-bottom: 2px;
     padding: 0 var(--edge-horizontal-padding);
   }

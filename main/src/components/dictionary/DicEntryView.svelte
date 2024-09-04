@@ -86,11 +86,12 @@
 <style>
   .entryView {
     overflow: hidden;
+    padding-top: 0.25rem;
+    padding-bottom: 0.75rem;
   }
 
   .header {
-    margin: 4px var(--edge-horizontal-padding);
-    margin-bottom: 0px;
+    margin: 0 var(--edge-horizontal-padding);
     display: flex;
   }
   .term {
@@ -106,9 +107,5 @@
 
   .mainForm {
     font-size: 1.5rem;
-  }
-
-  .groups {
-    margin-bottom: 12px;
   }
 </style>
