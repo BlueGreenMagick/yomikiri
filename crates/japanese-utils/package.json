@@ -1,0 +1,14 @@
+{
+  "name": "@yomikiri/japanese-utils-rs",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "format": "cargo fmt",
+    "check": "cargo check",
+    "lint": "cargo clippy -- -D warnings",
+    "test": "cargo test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

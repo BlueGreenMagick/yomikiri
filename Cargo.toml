@@ -7,6 +7,7 @@ members = [
   "crates/unidic-types",
   "extra/generate-license/rust",
   "crates/yomikiri-dictionary-generator",
+  "crates/japanese-utils",
 ]
 resolver = "2"
 
@@ -55,6 +56,7 @@ quick-xml = "0.36"
 insta = { version = "1.39", features = ["yaml"] }
 fern = "0.6"
 
+japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }
 yomikiri-jmdict = { path = "./crates/jmdict" }
 yomikiri-unidic-types = { path = "./crates/unidic-types" }

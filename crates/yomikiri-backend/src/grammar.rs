@@ -1,8 +1,8 @@
 use std::borrow::Cow;
 
+use japanese_utils::{GoDan, GoDanEnding};
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicParticlePos2, UnidicPos};
 
-use crate::japanese::{GoDan, GoDanEnding};
 use crate::tokenize::InnerToken as Token;
 
 pub struct GrammarRule {

@@ -1,10 +1,10 @@
 #![allow(non_snake_case)]
 
 use crate::grammar::{GrammarDetector, GrammarRule};
-use crate::japanese::JapaneseString;
 use crate::unidic::load_dictionary;
 use crate::SharedBackend;
 use anyhow::{anyhow, Context, Result};
+use japanese_utils::JapaneseString;
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
 use serde::Serialize;

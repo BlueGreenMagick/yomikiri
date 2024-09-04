@@ -81,3 +81,44 @@ impl GoDanEnding for str {
         self.chars().last().and_then(GoDan::from_char)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::JapaneseChar;
+
+    #[derive(Debug, PartialEq, Eq)]
+    enum Kind {
+        Hiragana,
+        Katakana,
+        Kanji,
+        // Characters used in Japanese, but are not kana or kanji.
+        // e.g. full width alphabets
+        JapaneseExtended,
+        Other,
+    }
+
+    use Kind::*;
+
+    macro_rules! char_tests {
+        ($($name: ident : $ch: literal, $kind: ident ;)+) => {
+            $(
+                #[test]
+                fn $name() {
+                    assert_eq!($ch.is_hiragana(), $kind == Kind::Hiragana);
+                    assert_eq!($ch.is_katakana(), $kind == Kind::Katakana);
+                    assert_eq!($ch.is_kana(), $kind == Kind::Hiragana || $kind == Kind::Katakana);
+                }
+            )+
+        }
+    }
+
+    char_tests! {
+        hiragana_a: 'あ', Hiragana;
+        hiragana_xtsu: 'っ', Hiragana;
+        katakana_a: 'ア', Katakana;
+        kanji_ji: '字', Kanji;
+        jp_period: '。', JapaneseExtended;
+        english_a: 'a', Other;
+        korean_ga: '가', Other;
+    }
+}

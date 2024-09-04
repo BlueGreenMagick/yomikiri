@@ -1,7 +1,6 @@
 pub mod dictionary;
 pub mod error;
 pub mod grammar;
-pub mod japanese;
 pub mod search;
 pub mod tokenize;
 mod unidic;
