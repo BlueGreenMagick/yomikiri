@@ -3,10 +3,11 @@ import ENTITIES from "../assets/dicEntities.json";
 import { extractKanjis } from "./japanese";
 import type {
   Entry,
-  Kanji,
   PartOfSpeech,
+  Rarity,
   Reading,
 } from "@yomikiri/yomikiri-rs";
+import { YomikiriError } from "./error";
 export type {
   Entry,
   Reading,
@@ -146,8 +147,13 @@ export function getValidEntriesForSurface(
   }
 }
 
+export interface Writing {
+  writing: string;
+  rarity: Rarity;
+}
+
 export interface EntryOtherForms {
-  kanjis: Kanji[];
+  writings: Writing[];
   readings: Reading[];
 }
 
@@ -156,7 +162,7 @@ export interface EntryOtherForms {
  * Returns null if there are no other forms or readings in entry
  */
 export function getOtherFormsInEntry(entry: Entry): EntryOtherForms | null {
-  const kanjis: Kanji[] = [];
+  const writings: Writing[] = [];
   const readings: Reading[] = [];
 
   const mainForm = getMainForm(entry);
@@ -164,20 +170,60 @@ export function getOtherFormsInEntry(entry: Entry): EntryOtherForms | null {
 
   for (const kanji of entry.kanjis) {
     if (kanji.kanji !== mainForm && kanji.rarity !== "search") {
-      kanjis.push(kanji);
+      writings.push({
+        writing: kanji.kanji,
+        rarity: kanji.rarity,
+      });
     }
   }
   for (const reading of entry.readings) {
-    if (reading.reading !== mainReading.reading && reading.rarity !== "search")
-      readings.push(reading);
+    if (
+      reading.reading !== mainReading.reading &&
+      reading.rarity !== "search"
+    ) {
+      if (reading.nokanji) {
+        writings.push({
+          writing: reading.reading,
+          rarity: reading.rarity,
+        });
+      } else {
+        readings.push(reading);
+      }
+    }
   }
 
-  if (kanjis.length === 0 && readings.length === 0) {
+  writings.sort((a, b) => orderRarity(a.rarity, b.rarity));
+  readings.sort((a, b) => orderRarity(a.rarity, b.rarity));
+
+  if (writings.length === 0 && readings.length === 0) {
     return null;
   } else {
     return {
-      kanjis,
+      writings,
       readings,
     };
   }
+}
+
+function rarityEnumValue(rarity: Rarity): number {
+  if (rarity === "normal") {
+    return 0;
+  } else if (rarity === "rare") {
+    return 1;
+  } else if (rarity === "outdated") {
+    return 2;
+  } else if (rarity === "incorrect") {
+    return 3;
+  } else if (rarity === "search") {
+    return 4;
+  } else {
+    throw new YomikiriError(`Unknown rarity: ${rarity}`);
+  }
+}
+
+function orderRarity(a: Rarity, b: Rarity): number {
+  if (a == b) {
+    return 0;
+  }
+  return rarityEnumValue(a) - rarityEnumValue(b);
 }
