@@ -1,0 +1,2 @@
+mod jmdict;
+mod jmnedict;

@@ -1,6 +1,6 @@
 ---
-source: crates/jmdict/src/jmnedict/parse.rs
-assertion_line: 289
+source: crates/jmdict/tests/it/jmnedict.rs
+assertion_line: 63
 expression: result
 ---
 entries:
@@ -16,7 +16,7 @@ entries:
         priority: []
     translations:
       - name_type:
-          - "=given="
+          - forename
         xref: []
         translations:
           - Chusen
@@ -32,7 +32,7 @@ entries:
         priority: []
     translations:
       - name_type:
-          - "=fem="
+          - female
         xref: []
         translations:
           - Shime
@@ -49,13 +49,13 @@ entries:
           - spec1
     translations:
       - name_type:
-          - "=organization="
+          - organization
         xref: []
         translations:
           - Japanese Confederation of Labor (1936-1939)
           - Zensō
       - name_type:
-          - "=organization="
+          - organization
         xref: []
         translations:
           - Japanese Confederation of Labor (1964-1987)

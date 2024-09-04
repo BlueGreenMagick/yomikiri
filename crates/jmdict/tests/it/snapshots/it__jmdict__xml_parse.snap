@@ -1,6 +1,6 @@
 ---
-source: crates/jmdict/src/jmdict/parse.rs
-assertion_line: 278
+source: crates/jmdict/tests/it/jmdict.rs
+assertion_line: 42
 expression: result
 ---
 entries:
