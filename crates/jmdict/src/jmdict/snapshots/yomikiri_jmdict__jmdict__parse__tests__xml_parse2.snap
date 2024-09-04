@@ -1,0 +1,42 @@
+---
+source: crates/jmdict/src/jmdict/parse.rs
+assertion_line: 352
+expression: result
+---
+entries:
+  - id: 1580500
+    kanjis:
+      - kanji: 剰え
+        info:
+          - rareKanjiForm
+        priority: []
+      - kanji: 剰
+        info:
+          - irregularOkurigana
+          - rareKanjiForm
+        priority: []
+    readings:
+      - reading: あまつさえ
+        nokanji: false
+        to_form: []
+        info: []
+        priority: []
+      - reading: あまっさえ
+        nokanji: false
+        to_form: []
+        info: []
+        priority: []
+    senses:
+      - to_form: []
+        to_reading: []
+        pos:
+          - adverb
+        misc:
+          - usuallyKanaAlone
+        info:
+          - usu. negative nuance
+        dialects: []
+        meanings:
+          - besides
+          - moreover
+          - in addition

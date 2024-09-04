@@ -2616,6 +2616,7 @@ dependencies = [
  "chrono",
  "flate2",
  "fst",
+ "insta",
  "itertools 0.11.0",
  "log",
  "ouroboros",

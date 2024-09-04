@@ -140,13 +140,13 @@ jm_entity_enum!(
 
 jm_entity_enum!(
     JMKanjiInfo;
-    b"bateji" => AtejiReading,
-    b"bik" => IrregularKana,
-    b"biK" => IrregularKanji,
-    b"bio" => IrregularOkurigana,
-    b"boK" => OutdatedKanji,
-    b"brK" => RareKanjiForm,
-    b"bsK" => SearchOnlyKanji,
+    b"ateji" => AtejiReading,
+    b"ik" => IrregularKana,
+    b"iK" => IrregularKanji,
+    b"io" => IrregularOkurigana,
+    b"oK" => OutdatedKanji,
+    b"rK" => RareKanjiForm,
+    b"sK" => SearchOnlyKanji,
 );
 
 jm_entity_enum!(

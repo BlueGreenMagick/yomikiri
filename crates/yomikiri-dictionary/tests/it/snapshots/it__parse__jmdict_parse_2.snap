@@ -1,0 +1,59 @@
+---
+source: crates/yomikiri-dictionary/tests/it/parse.rs
+assertion_line: 91
+expression: entries
+---
+- id: 1006950
+  kanjis:
+    - kanji: 抑
+      rarity: rare
+    - kanji: 抑々
+      rarity: rare
+    - kanji: 抑抑
+      rarity: rare
+    - kanji: 抑も
+      rarity: rare
+  readings:
+    - reading: そもそも
+      nokanji: false
+      toKanji: []
+      rarity: normal
+  groupedSenses:
+    - pos:
+        - noun
+        - adverb
+      senses:
+        - meanings:
+            - in the first place
+          toKanji: []
+          toReading: []
+          misc:
+            - usuallyKanaAlone
+          info: []
+          dialects: []
+    - pos:
+        - conjunction
+      senses:
+        - meanings:
+            - after all
+            - anyway
+          toKanji: []
+          toReading: []
+          misc:
+            - usuallyKanaAlone
+          info:
+            - used when bringing up something already mentioned
+          dialects: []
+    - pos:
+        - noun
+      senses:
+        - meanings:
+            - beginning
+            - start
+          toKanji: []
+          toReading: []
+          misc:
+            - usuallyKanaAlone
+          info: []
+          dialects: []
+  priority: 0

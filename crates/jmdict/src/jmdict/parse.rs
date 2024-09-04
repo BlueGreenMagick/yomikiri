@@ -314,4 +314,41 @@ mod tests {
         let result = parse_jmdict_xml(&xml).unwrap();
         assert_yaml_snapshot!(result);
     }
+
+    #[test]
+    fn test_xml_parse2() {
+        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<!-- JMdict created: 2024-08-07 -->
+<JMdict>
+<entry>
+<ent_seq>1580500</ent_seq>
+<k_ele>
+<keb>剰え</keb>
+<ke_inf>&rK;</ke_inf>
+</k_ele>
+<k_ele>
+<keb>剰</keb>
+<ke_inf>&io;</ke_inf>
+<ke_inf>&rK;</ke_inf>
+</k_ele>
+<r_ele>
+<reb>あまつさえ</reb>
+</r_ele>
+<r_ele>
+<reb>あまっさえ</reb>
+</r_ele>
+<sense>
+<pos>&adv;</pos>
+<misc>&uk;</misc>
+<s_inf>usu. negative nuance</s_inf>
+<gloss>besides</gloss>
+<gloss>moreover</gloss>
+<gloss>in addition</gloss>
+</sense>
+</entry>
+</JMdict>
+        "#;
+        let result = parse_jmdict_xml(&xml).unwrap();
+        assert_yaml_snapshot!(result);
+    }
 }

@@ -32,5 +32,8 @@ bincode = "1"
 version = "0.4"
 features = ["wasmbind"]
 
+[dev-dependencies]
+insta = { workspace = true }
+
 [lints]
 workspace = true
