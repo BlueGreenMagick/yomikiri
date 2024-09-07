@@ -102,7 +102,6 @@ fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
 
 fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
     let mut kanji: Option<String> = None;
-    let mut infos = vec![];
     let mut priorities = vec![];
 
     parse_in_tag(reader, "k_ele", |reader, tag| {
@@ -115,10 +114,6 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
                     )
                 }
                 kanji = Some(parse_string_in_tag(reader, b"keb")?);
-            }
-            b"ke_inf" => {
-                let info = parse_string_in_tag(reader, b"ke_inf")?;
-                infos.push(info);
             }
             b"ke_pri" => {
                 let priority = parse_string_in_tag(reader, b"ke_pri")?;
@@ -134,7 +129,6 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
     let kanji = kanji.ok_or(Error::InvalidXml("No <keb> found in <k_ele>".into()))?;
     let kanji = JMneKanji {
         kanji,
-        info: infos,
         priority: priorities,
     };
 

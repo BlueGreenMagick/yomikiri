@@ -23,7 +23,8 @@ pub struct JMneEntry {
 #[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct JMneKanji {
     pub kanji: String,
-    pub info: Vec<String>,
+    // Defined, but no entry actually uses the field.
+    // pub info: Vec<String>,
     pub priority: Vec<String>,
 }
 
