@@ -137,8 +137,7 @@ fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
 
 fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
     let mut reading: Option<String> = None;
-    let mut to_forms = vec![];
-    let mut infos = vec![];
+    let mut to_kanjis = vec![];
     let mut priorities = vec![];
 
     parse_in_tag(reader, "r_ele", |reader, tag| {
@@ -148,11 +147,7 @@ fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
             }
             b"re_restr" => {
                 let to_form = parse_string_in_tag(reader, b"re_restr")?;
-                to_forms.push(to_form);
-            }
-            b"re_inf" => {
-                let info = parse_string_in_tag(reader, b"re_inf")?;
-                infos.push(info);
+                to_kanjis.push(to_form);
             }
             b"re_pri" => {
                 let priority = parse_string_in_tag(reader, b"re_pri")?;
@@ -168,8 +163,7 @@ fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
     let reading = reading.ok_or(Error::InvalidXml("No <reb> found in <r_ele>".into()))?;
     let reading = JMneReading {
         reading,
-        to_form: to_forms,
-        info: infos,
+        to_kanji: to_kanjis,
         priority: priorities,
     };
 
