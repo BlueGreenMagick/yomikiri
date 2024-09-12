@@ -2,7 +2,7 @@ use anyhow::{anyhow, Context, Result};
 use fst::{IntoStreamer, Streamer};
 use regex::Regex;
 use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
-use yomikiri_dictionary::entry::{Entry, Rarity};
+use yomikiri_dictionary::entry::{Rarity, WordEntry};
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::tokenize::InnerToken;
@@ -18,15 +18,15 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         Ok(Self { inner })
     }
 
-    pub fn search(&self, term: &str) -> Result<Vec<Entry>> {
+    pub fn search(&self, term: &str) -> Result<Vec<WordEntry>> {
         let view = self.inner.borrow_view();
         let terms = &view.term_index;
         if let Some(value) = terms.map.get(term) {
             let entry_indexes = terms.parse_value(value)?;
-            let entries: Vec<Entry> = entry_indexes
+            let entries: Vec<WordEntry> = entry_indexes
                 .iter()
                 .map(|idx| view.entries.get(*idx))
-                .collect::<yomikiri_dictionary::error::Result<Vec<Entry>>>(
+                .collect::<yomikiri_dictionary::error::Result<Vec<WordEntry>>>(
             )?;
             Ok(entries)
         } else {
@@ -68,10 +68,10 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let terms = &self.inner.borrow_view().term_index;
         if let Some(value) = terms.map.get(term) {
             let entry_indexes = terms.parse_value(value)?;
-            let entries: Vec<Entry> = entry_indexes
+            let entries: Vec<WordEntry> = entry_indexes
                 .iter()
                 .map(|idx| view.entries.get(*idx))
-                .collect::<yomikiri_dictionary::error::Result<Vec<Entry>>>(
+                .collect::<yomikiri_dictionary::error::Result<Vec<WordEntry>>>(
             )?;
             let jsons = entries
                 .iter()
@@ -111,9 +111,9 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
     /// 4. Rare -> Non rare
     /// 5. Entry with higher priority is shown first
 
-    pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<Entry>> {
+    pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<WordEntry>> {
         struct EntryMeta {
-            entry: Entry,
+            entry: WordEntry,
             rarity: Rarity,
             from_base: bool,
         }

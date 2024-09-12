@@ -25,12 +25,12 @@ use crate::{Error, Result};
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(transparent)]
-pub struct Entry(EntryInner);
+pub struct WordEntry(WordEntryInner);
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct EntryInner {
+pub struct WordEntryInner {
     pub id: u32,
     pub kanjis: Vec<Kanji>,
     pub readings: Vec<Reading>,
@@ -131,7 +131,7 @@ pub enum PartOfSpeech {
     Symbol,
 }
 
-impl PartialEq for EntryInner {
+impl PartialEq for WordEntryInner {
     fn eq(&self, other: &Self) -> bool {
         other.id == self.id
     }
@@ -240,13 +240,13 @@ impl PartOfSpeech {
     }
 }
 
-impl Entry {
-    pub fn new(inner: EntryInner) -> Result<Self> {
+impl WordEntry {
+    pub fn new(inner: WordEntryInner) -> Result<Self> {
         Self::validate_entry(&inner)?;
         Ok(Self(inner))
     }
 
-    fn validate_entry(inner: &EntryInner) -> Result<()> {
+    fn validate_entry(inner: &WordEntryInner) -> Result<()> {
         if inner.readings.is_empty() {
             return Err(Error::InvalidEntry(
                 "Entry must contain at least 1 kanji or reading".into(),
@@ -302,20 +302,20 @@ impl Entry {
     }
 }
 
-impl Deref for Entry {
-    type Target = EntryInner;
+impl Deref for WordEntry {
+    type Target = WordEntryInner;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl<'de> Deserialize<'de> for Entry {
+impl<'de> Deserialize<'de> for WordEntry {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        let inner = EntryInner::deserialize(deserializer)?;
+        let inner = WordEntryInner::deserialize(deserializer)?;
         Self::validate_entry(&inner).map_err(D::Error::custom)?;
 
         Ok(Self(inner))

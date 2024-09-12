@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::Result;
 use crate::jagged_array::JaggedArray;
-use crate::Entry;
+use crate::WordEntry;
 
 /// Multiple jmdict entry indexes that corresponds to a key
 #[derive(Debug, Serialize, Deserialize)]
@@ -132,7 +132,7 @@ impl<'a> DictIndexMap<'a> {
     }
 }
 
-pub(crate) fn create_sorted_term_indexes(entries: &[Entry]) -> Result<Vec<DictIndexItem>> {
+pub(crate) fn create_sorted_term_indexes(entries: &[WordEntry]) -> Result<Vec<DictIndexItem>> {
     // some entries have multiple terms
     let mut indexes: HashMap<&str, Vec<usize>> = HashMap::with_capacity(entries.len() * 4);
 

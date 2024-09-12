@@ -6,7 +6,7 @@ use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::str::FromStr;
 use yomikiri_dictionary::dictionary::Dictionary;
-use yomikiri_dictionary::entry::{Entry, PartOfSpeech, Rarity};
+use yomikiri_dictionary::entry::{PartOfSpeech, Rarity, WordEntry};
 use yomikiri_dictionary::DICT_FILENAME;
 use yomikiri_unidic_types::{UnidicConjugationForm, UnidicPos};
 
@@ -30,7 +30,7 @@ impl LexItem {
     //     if reading.nokanji or forms is empty:
     //         create LexItem
     // unclassified pos are excluded
-    fn items_from_entry(entry: &Entry) -> Vec<LexItem> {
+    fn items_from_entry(entry: &WordEntry) -> Vec<LexItem> {
         // (form, pos) => (reading, cost)
         let mut items: HashMap<(&str, PartOfSpeech), (&str, usize)> = HashMap::new();
 
@@ -291,7 +291,7 @@ fn is_emoticon(item: &LexItem) -> bool {
 
 /// Add katakana words in JMDict that is not in Unidic lex
 /// and are not longer than 7 chars
-fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> Result<()> {
+fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<WordEntry>) -> Result<()> {
     let mut item_bases: HashSet<String> = HashSet::with_capacity(items.len() * 2);
     for i in items.iter() {
         item_bases.insert(i.base.clone());
@@ -323,7 +323,7 @@ fn add_words_in_jmdict(items: &mut Vec<LexItem>, entries: &Vec<Entry>) -> Result
 /// Returns removed LexItems.
 fn remove_word_not_in_jmdict(
     items: &mut Vec<LexItem>,
-    entries: &Vec<Entry>,
+    entries: &Vec<WordEntry>,
 ) -> Result<Vec<LexItem>> {
     let mut terms: HashSet<&str> = HashSet::with_capacity(entries.len() * 4);
     for entry in entries {
@@ -375,7 +375,7 @@ fn identical_reading_to_empty_string(items: &mut Vec<LexItem>) {
     }
 }
 
-fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &Entry) -> bool {
+fn entry_form_in_item_bases(item_bases: &HashSet<String>, entry: &WordEntry) -> bool {
     for kanji in &entry.kanjis {
         if item_bases.contains(&kanji.kanji) {
             return true;
@@ -394,7 +394,7 @@ fn part_of_speech_to_unidic(pos: &PartOfSpeech) -> &'static str {
     pos.to_unidic().to_unidic().0
 }
 
-pub fn read_yomikiri_dictionary(dict_path: &Path) -> Result<Vec<Entry>> {
+pub fn read_yomikiri_dictionary(dict_path: &Path) -> Result<Vec<WordEntry>> {
     let mut entries = vec![];
 
     let dict_bytes = fs::read(dict_path)?;

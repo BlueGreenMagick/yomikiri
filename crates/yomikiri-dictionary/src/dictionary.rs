@@ -4,7 +4,7 @@ use ouroboros::self_referencing;
 
 use crate::index::{create_sorted_term_indexes, DictIndexMap};
 use crate::jagged_array::JaggedArray;
-use crate::{Entry, Result};
+use crate::{Result, WordEntry};
 
 #[self_referencing]
 pub struct Dictionary<D: AsRef<[u8]> + 'static> {
@@ -16,7 +16,7 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
 
 pub struct DictionaryView<'a> {
     pub term_index: DictIndexMap<'a>,
-    pub entries: JaggedArray<'a, Entry>,
+    pub entries: JaggedArray<'a, WordEntry>,
 }
 
 impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
@@ -30,7 +30,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         builder.try_build()
     }
 
-    pub fn build_and_encode_to<W: Write>(entries: &[Entry], writer: &mut W) -> Result<()> {
+    pub fn build_and_encode_to<W: Write>(entries: &[WordEntry], writer: &mut W) -> Result<()> {
         DictionaryView::build_and_encode_to(entries, writer)
     }
 }
@@ -49,7 +49,7 @@ impl<'a> DictionaryView<'a> {
         Ok((s, at))
     }
 
-    pub fn build_and_encode_to<W: Write>(entries: &[Entry], writer: &mut W) -> Result<()> {
+    pub fn build_and_encode_to<W: Write>(entries: &[WordEntry], writer: &mut W) -> Result<()> {
         let term_index_items = create_sorted_term_indexes(entries)?;
         DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
         JaggedArray::build_and_encode_to(entries, writer)?;
@@ -60,12 +60,12 @@ impl<'a> DictionaryView<'a> {
 #[cfg(test)]
 mod tests {
     use crate::dictionary::Dictionary;
-    use crate::entry::{Entry, EntryInner, Kanji, Rarity, Reading};
+    use crate::entry::{Kanji, Rarity, Reading, WordEntry, WordEntryInner};
     use crate::Result;
 
     #[test]
     fn write_then_read_dictionary_with_single_entry() -> Result<()> {
-        let inner = EntryInner {
+        let inner = WordEntryInner {
             id: 1234,
             kanjis: vec![
                 Kanji {
@@ -86,7 +86,7 @@ mod tests {
             grouped_senses: vec![],
             priority: 10,
         };
-        let entry = Entry::new(inner)?;
+        let entry = WordEntry::new(inner)?;
         let mut buffer = Vec::with_capacity(1024);
         Dictionary::<Vec<u8>>::build_and_encode_to(&[entry.clone()], &mut buffer)?;
         let dict = Dictionary::try_decode(buffer)?;

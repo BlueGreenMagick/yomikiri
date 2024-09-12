@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use yomikiri_jmdict::jmdict::JMSenseMisc;
 use yomikiri_jmdict::jmnedict::{JMneKanji, JMneNameType, JMneReading, JMneTranslation};
 
-use crate::entry::{EntryInner, GroupedSense, Rarity};
+use crate::entry::{GroupedSense, Rarity, WordEntryInner};
 use crate::name::{GroupedNameItem, NameEntry, NameItem, NameType};
-use crate::{Entry, Kanji, PartOfSpeech, Reading, Result, Sense};
+use crate::{Kanji, PartOfSpeech, Reading, Result, Sense, WordEntry};
 
 type NameEntryKanji = String;
 
@@ -34,10 +34,10 @@ struct NameEntryFragmentValue {
 ///     - If it is `Person` with `Female` or `Male`, only a WordItem is created, and `Female` / `Male` is ignored.
 ///       The gender tag seems to be mistagged here to only indicate the person's gender, instead of the forename + gender info.
 ///     - For other tag combinations, we only create `NameItem`, as it's a transliteration anyway.
-pub fn parse_jmnedict_xml(xml: &str) -> Result<(Vec<NameEntry>, Vec<Entry>)> {
+pub fn parse_jmnedict_xml(xml: &str) -> Result<(Vec<NameEntry>, Vec<WordEntry>)> {
     let mut fragments: HashMap<NameEntryKanji, Vec<NameEntryFragmentValue>> = HashMap::new();
     let mut name_entries: Vec<NameEntry> = vec![];
-    let mut word_entries: Vec<Entry> = vec![];
+    let mut word_entries: Vec<WordEntry> = vec![];
     let jmnedict = yomikiri_jmdict::jmnedict::parse_jmnedict_xml(xml)?;
 
     for entry in jmnedict.entries {
@@ -82,8 +82,8 @@ pub fn parse_jmnedict_xml(xml: &str) -> Result<(Vec<NameEntry>, Vec<Entry>)> {
 
         if !for_words.is_empty() {
             let inner =
-                EntryInner::from_jmnedict(entry.id, &entry.kanjis, &entry.readings, &for_words);
-            let entry = Entry::new(inner)?;
+                WordEntryInner::from_jmnedict(entry.id, &entry.kanjis, &entry.readings, &for_words);
+            let entry = WordEntry::new(inner)?;
             word_entries.push(entry);
         }
     }
@@ -135,13 +135,13 @@ fn is_name_type(name_types: &[JMneNameType]) -> bool {
     }
 }
 
-impl EntryInner {
+impl WordEntryInner {
     fn from_jmnedict(
         id: u32,
         kanjis: &[JMneKanji],
         readings: &[JMneReading],
         translations: &[JMneTranslation],
-    ) -> EntryInner {
+    ) -> WordEntryInner {
         let kanjis = kanjis
             .iter()
             .map(|k| Kanji {
@@ -173,7 +173,7 @@ impl EntryInner {
                 .collect(),
         }];
 
-        EntryInner {
+        WordEntryInner {
             id,
             kanjis,
             readings,

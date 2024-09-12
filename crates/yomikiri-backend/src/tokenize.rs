@@ -11,7 +11,7 @@ use serde::Serialize;
 use std::borrow::Cow;
 use unicode_normalization::{is_nfc, UnicodeNormalization};
 use unicode_segmentation::UnicodeSegmentation;
-use yomikiri_dictionary::{Entry, PartOfSpeech};
+use yomikiri_dictionary::{PartOfSpeech, WordEntry};
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicConjugationForm, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
@@ -92,7 +92,7 @@ pub struct TokenizeResult {
     pub tokenIdx: i32,
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
-    pub entries: Vec<Entry>,
+    pub entries: Vec<WordEntry>,
     pub grammars: Vec<GrammarInfo>,
 }
 

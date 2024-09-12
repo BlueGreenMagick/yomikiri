@@ -1,34 +1,36 @@
-use crate::entry::{Entry, EntryInner, GroupedSense, Kanji, PartOfSpeech, Rarity, Reading, Sense};
+use crate::entry::{
+    GroupedSense, Kanji, PartOfSpeech, Rarity, Reading, Sense, WordEntry, WordEntryInner,
+};
 use crate::{Error, Result};
 use itertools::Itertools;
 use yomikiri_jmdict::jmdict::{JMEntry, JMKanji, JMKanjiInfo, JMReading, JMReadingInfo, JMSense};
 
-pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<Entry>> {
+pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<WordEntry>> {
     let jmdict = yomikiri_jmdict::parse_jmdict_xml(xml)?;
     let entries = jmdict
         .entries
         .into_iter()
-        .map(Entry::try_from)
+        .map(WordEntry::try_from)
         .try_collect()?;
     Ok(entries)
 }
 
-impl TryFrom<JMEntry> for Entry {
+impl TryFrom<JMEntry> for WordEntry {
     type Error = Error;
 
-    fn try_from(jm_entry: JMEntry) -> Result<Entry> {
+    fn try_from(jm_entry: JMEntry) -> Result<WordEntry> {
         let priority = jm_entry.priority();
         let kanjis: Vec<Kanji> = jm_entry.kanjis.into_iter().map(Kanji::from).collect();
         let readings: Vec<Reading> = jm_entry.readings.into_iter().map(Reading::from).collect();
         let grouped_senses: Vec<GroupedSense> = group_senses(jm_entry.senses);
-        let inner = EntryInner {
+        let inner = WordEntryInner {
             id: jm_entry.id,
             kanjis,
             readings,
             grouped_senses,
             priority,
         };
-        Entry::new(inner)
+        WordEntry::new(inner)
     }
 }
 

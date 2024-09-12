@@ -7,7 +7,7 @@ pub mod jmdict;
 pub mod jmnedict;
 pub mod name;
 
-pub use entry::{Entry, Kanji, PartOfSpeech, Reading, Sense};
+pub use entry::{Kanji, PartOfSpeech, Reading, Sense, WordEntry};
 pub use error::{Error, Result};
 
 /** This value should be increased each time dictionary file schema is modified */
