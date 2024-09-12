@@ -43,7 +43,7 @@ pub fn parse_jmnedict_xml(xml: &str) -> Result<(Vec<NameEntry>, Vec<Entry>)> {
     for entry in jmnedict.entries {
         let mut for_names: Vec<JMneTranslation> = vec![];
         let mut for_words: Vec<JMneTranslation> = vec![];
-        if entry.kanjis.len() == 0 {
+        if entry.kanjis.is_empty() {
             for_words.extend(entry.translations);
         } else {
             for translation_obj in entry.translations {
@@ -127,12 +127,11 @@ fn is_name_type(name_types: &[JMneNameType]) -> bool {
             _ => {}
         };
     }
+
     if has_gender && has_person {
         false
-    } else if has_fore_surname || has_gender {
-        true
     } else {
-        false
+        has_fore_surname || has_gender
     }
 }
 

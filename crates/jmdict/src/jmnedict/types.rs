@@ -117,13 +117,7 @@ impl JMneReading {
     ///
     /// `kanji` must be in same entry.
     pub fn is_for_kanji(&self, kanji: &String) -> bool {
-        if self.to_kanji.len() == 0 {
-            true
-        } else if self.to_kanji.contains(kanji) {
-            true
-        } else {
-            false
-        }
+        self.to_kanji.is_empty() || self.to_kanji.contains(kanji)
     }
 }
 
