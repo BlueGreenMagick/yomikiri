@@ -3,8 +3,9 @@ use std::collections::HashMap;
 use yomikiri_jmdict::jmdict::JMSenseMisc;
 use yomikiri_jmdict::jmnedict::{JMneKanji, JMneNameType, JMneReading, JMneTranslation};
 
-use crate::entry::{GroupedSense, Rarity, WordEntryInner};
-use crate::name::{GroupedNameItem, NameEntry, NameItem, NameType};
+use crate::entry::{
+    GroupedNameItem, GroupedSense, NameEntry, NameItem, NameType, Rarity, WordEntryInner,
+};
 use crate::{Kanji, PartOfSpeech, Reading, Result, Sense, WordEntry};
 
 type NameEntryKanji = String;

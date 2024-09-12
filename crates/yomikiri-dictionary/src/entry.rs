@@ -10,13 +10,14 @@ use std::ops::Deref;
 use serde::de::Error as DeserializeError;
 use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::jmdict::{JMDialect, JMPartOfSpeech, JMSenseMisc};
+use yomikiri_jmdict::jmnedict::JMneNameType;
 use yomikiri_unidic_types::{
     UnidicAdjectivePos2, UnidicInterjectionPos2, UnidicNaAdjectivePos2, UnidicNounPos2,
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicSymbolPos2, UnidicVerbPos2,
 };
 
 #[cfg(feature = "wasm")]
-use tsify_next::Tsify;
+use tsify_next::{declare, Tsify};
 
 use crate::{Error, Result};
 
@@ -130,6 +131,30 @@ pub enum PartOfSpeech {
     /// Represents symbol pos from unidic
     Symbol,
 }
+
+// Alternatively, use below kind of struct?
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NameEntry {
+    pub kanji: String,
+    pub groups: Vec<GroupedNameItem>,
+}
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GroupedNameItem {
+    pub types: Vec<NameType>,
+    pub items: Vec<NameItem>,
+}
+
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NameItem {
+    pub id: u32,
+    pub reading: String,
+}
+
+#[cfg_attr(feature = "wasm", declare)]
+pub type NameType = JMneNameType;
 
 impl PartialEq for WordEntryInner {
     fn eq(&self, other: &Self) -> bool {
