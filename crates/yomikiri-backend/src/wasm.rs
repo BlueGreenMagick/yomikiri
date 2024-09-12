@@ -99,7 +99,8 @@ impl Backend {
         debug!("parsed jmdict file");
 
         let mut dict_bytes: Vec<u8> = Vec::with_capacity(30 * 1024 * 1024);
-        DictionaryView::build_and_encode_to(&entries, &mut dict_bytes)
+        // TODO: Update JMnedict as well
+        DictionaryView::build_and_encode_to(&[], &entries, &mut dict_bytes)
             .context("Failed to write dictionary file")?;
         let dict_array = Uint8Array::from(&dict_bytes[..]);
         let result = DictUpdateResult {

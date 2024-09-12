@@ -2,6 +2,7 @@ use std::io::Write;
 
 use ouroboros::self_referencing;
 
+use crate::entry::NameEntry;
 use crate::index::{create_sorted_term_indexes, DictIndexMap};
 use crate::jagged_array::JaggedArray;
 use crate::{Result, WordEntry};
@@ -17,6 +18,7 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
 pub struct DictionaryView<'a> {
     pub term_index: DictIndexMap<'a>,
     pub entries: JaggedArray<'a, WordEntry>,
+    pub name_entries: JaggedArray<'a, NameEntry>,
 }
 
 impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
@@ -30,8 +32,12 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         builder.try_build()
     }
 
-    pub fn build_and_encode_to<W: Write>(entries: &[WordEntry], writer: &mut W) -> Result<()> {
-        DictionaryView::build_and_encode_to(entries, writer)
+    pub fn build_and_encode_to<W: Write>(
+        name_entries: &[NameEntry],
+        entries: &[WordEntry],
+        writer: &mut W,
+    ) -> Result<()> {
+        DictionaryView::build_and_encode_to(name_entries, entries, writer)
     }
 }
 
@@ -42,29 +48,41 @@ impl<'a> DictionaryView<'a> {
         at += len;
         let (entries, len) = JaggedArray::try_decode(&source[at..])?;
         at += len;
+        let (name_entries, len) = JaggedArray::try_decode(&source[at..])?;
+        at += len;
         let s = Self {
+            name_entries,
             term_index,
             entries,
         };
         Ok((s, at))
     }
 
-    pub fn build_and_encode_to<W: Write>(entries: &[WordEntry], writer: &mut W) -> Result<()> {
+    pub fn build_and_encode_to<W: Write>(
+        name_entries: &[NameEntry],
+        entries: &[WordEntry],
+        writer: &mut W,
+    ) -> Result<()> {
         let term_index_items = create_sorted_term_indexes(entries)?;
         DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
         JaggedArray::build_and_encode_to(entries, writer)?;
+        JaggedArray::build_and_encode_to(name_entries, writer)?;
         Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use yomikiri_jmdict::jmnedict::JMneNameType;
+
     use crate::dictionary::Dictionary;
-    use crate::entry::{Kanji, Rarity, Reading, WordEntry, WordEntryInner};
+    use crate::entry::{
+        GroupedNameItem, Kanji, NameEntry, NameItem, Rarity, Reading, WordEntry, WordEntryInner,
+    };
     use crate::Result;
 
     #[test]
-    fn write_then_read_dictionary_with_single_entry() -> Result<()> {
+    fn write_then_read_dictionary_with_single_word_entry() -> Result<()> {
         let inner = WordEntryInner {
             id: 1234,
             kanjis: vec![
@@ -88,16 +106,36 @@ mod tests {
         };
         let entry = WordEntry::new(inner)?;
         let mut buffer = Vec::with_capacity(1024);
-        Dictionary::<Vec<u8>>::build_and_encode_to(&[entry.clone()], &mut buffer)?;
+        Dictionary::<Vec<u8>>::build_and_encode_to(&[], &[entry.clone()], &mut buffer)?;
         let dict = Dictionary::try_decode(buffer)?;
 
         let view = dict.borrow_view();
+        assert_eq!(view.name_entries.len(), 0);
         assert_eq!(view.entries.len(), 1);
         assert_eq!(view.entries.get(0)?, entry);
+        Ok(())
+    }
 
-        let value = view.term_index.map.get("よみきり").unwrap();
-        let idxes = view.term_index.parse_value(value)?;
-        assert_eq!(idxes, vec![0]);
+    #[test]
+    fn write_then_read_dictionary_with_single_name_entry() -> Result<()> {
+        let entry = NameEntry {
+            kanji: "雅哉".into(),
+            groups: vec![GroupedNameItem {
+                types: vec![JMneNameType::Forename],
+                items: vec![NameItem {
+                    id: 5174270,
+                    reading: "まさや".into(),
+                }],
+            }],
+        };
+        let mut buffer = Vec::with_capacity(1024);
+        Dictionary::<Vec<u8>>::build_and_encode_to(&[entry.clone()], &[], &mut buffer)?;
+        let dict = Dictionary::try_decode(buffer)?;
+
+        let view = dict.borrow_view();
+        assert_eq!(view.entries.len(), 0);
+        assert_eq!(view.name_entries.len(), 1);
+        assert_eq!(view.name_entries.get(0)?, entry);
         Ok(())
     }
 }

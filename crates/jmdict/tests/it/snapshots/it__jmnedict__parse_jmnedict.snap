@@ -7,12 +7,10 @@ entries:
   - id: 5000000
     kanjis:
       - kanji: ゝ泉
-        info: []
         priority: []
     readings:
       - reading: ちゅせん
-        to_form: []
-        info: []
+        to_kanji: []
         priority: []
     translations:
       - name_type:
@@ -23,28 +21,24 @@ entries:
   - id: 5000001
     kanjis:
       - kanji: 〆
-        info: []
         priority: []
     readings:
       - reading: しめ
-        to_form: []
-        info: []
+        to_kanji: []
         priority: []
     translations:
       - name_type:
-          - female
+          - forename (female)
         xref: []
         translations:
           - Shime
   - id: 5744957
     kanjis:
       - kanji: 全日本労働総同盟
-        info: []
         priority: []
     readings:
       - reading: ぜんにほんろうどうそうどうめい
-        to_form: []
-        info: []
+        to_kanji: []
         priority:
           - spec1
     translations:

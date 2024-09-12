@@ -179,7 +179,8 @@ fn _update_dictionary_file(
     fs::create_dir(&temp_dir)?;
 
     let mut temp_dict_file = File::create(&temp_dict_path)?;
-    DictionaryView::build_and_encode_to(&entries, &mut temp_dict_file)?;
+    // TODO: update JMnedict as well
+    DictionaryView::build_and_encode_to(&[], &entries, &mut temp_dict_file)?;
     std::mem::drop(temp_dict_file);
 
     let replace_job = DictFilesReplaceJob {
