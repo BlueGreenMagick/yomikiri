@@ -2,8 +2,8 @@ use std::io::Write;
 
 use ouroboros::self_referencing;
 
-use crate::entry::NameEntry;
-use crate::index::{create_sorted_term_indexes, DictIndexMap};
+use crate::entry::{Entry, NameEntry};
+use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryPointer};
 use crate::jagged_array::JaggedArray;
 use crate::{Result, WordEntry};
 
@@ -68,6 +68,16 @@ impl<'a> DictionaryView<'a> {
         JaggedArray::build_and_encode_to(entries, writer)?;
         JaggedArray::build_and_encode_to(name_entries, writer)?;
         Ok(())
+    }
+
+    pub fn get_entries(&self, pointers: &[EntryPointer]) -> Result<Vec<Entry>> {
+        pointers
+            .iter()
+            .map(|p| match p {
+                EntryPointer::Word(idx) => self.entries.get(*idx as usize).map(Entry::Word),
+                EntryPointer::Name(idx) => self.name_entries.get(*idx as usize).map(Entry::Name),
+            })
+            .collect::<Result<Vec<Entry>>>()
     }
 }
 

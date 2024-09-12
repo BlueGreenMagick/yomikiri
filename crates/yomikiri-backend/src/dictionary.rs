@@ -2,7 +2,7 @@ use anyhow::{anyhow, Context, Result};
 use fst::{IntoStreamer, Streamer};
 use regex::Regex;
 use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
-use yomikiri_dictionary::entry::{Entry, Rarity, WordEntry};
+use yomikiri_dictionary::entry::{Entry, NameEntry, Rarity, WordEntry};
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::tokenize::InnerToken;
@@ -18,16 +18,12 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         Ok(Self { inner })
     }
 
-    pub fn search(&self, term: &str) -> Result<Vec<WordEntry>> {
+    pub fn search(&self, term: &str) -> Result<Vec<Entry>> {
         let view = self.inner.borrow_view();
         let terms = &view.term_index;
         if let Some(value) = terms.map.get(term) {
-            let entry_indexes = terms.parse_value(value)?;
-            let entries: Vec<WordEntry> = entry_indexes
-                .iter()
-                .map(|idx| view.entries.get(*idx))
-                .collect::<yomikiri_dictionary::error::Result<Vec<WordEntry>>>(
-            )?;
+            let pointers = terms.parse_value(value)?;
+            let entries = view.get_entries(&pointers)?;
             Ok(entries)
         } else {
             Ok(Vec::new())
@@ -67,12 +63,8 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let view = &self.inner.borrow_view();
         let terms = &self.inner.borrow_view().term_index;
         if let Some(value) = terms.map.get(term) {
-            let entry_indexes = terms.parse_value(value)?;
-            let entries: Vec<WordEntry> = entry_indexes
-                .iter()
-                .map(|idx| view.entries.get(*idx))
-                .collect::<yomikiri_dictionary::error::Result<Vec<WordEntry>>>(
-            )?;
+            let pointers = terms.parse_value(value)?;
+            let entries = view.get_entries(&pointers)?;
             let jsons = entries
                 .iter()
                 .map(serde_json::to_string)
@@ -89,11 +81,13 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let date_reg =
             Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).context("Could not create regexp object")?;
         for entry in entries {
-            if let Some(grouped_sense) = entry.grouped_senses.first() {
-                if let Some(sense) = grouped_sense.senses.first() {
-                    if let Some(meaning) = sense.meanings.first() {
-                        if let Some(mat) = date_reg.find(meaning) {
-                            return Ok(mat.as_str().to_owned());
+            if let Entry::Word(entry) = entry {
+                if let Some(grouped_sense) = entry.grouped_senses.first() {
+                    if let Some(sense) = grouped_sense.senses.first() {
+                        if let Some(meaning) = sense.meanings.first() {
+                            if let Some(mat) = date_reg.find(meaning) {
+                                return Ok(mat.as_str().to_owned());
+                            }
                         }
                     }
                 }
@@ -105,6 +99,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
 
     /// Finds entries, ordered by what best matches token
     ///
+    /// 0. Name entry -> Word entry
     /// 1. Non-search -> search-only
     /// 2. token.base -> token.text
     /// 3. Entries whose POS matches token.pos
@@ -118,32 +113,50 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
             from_base: bool,
         }
 
-        // Gather all entries
+        let mut name_entries: Vec<NameEntry> = vec![];
+        // word entry metas
         let mut entry_metas: Vec<EntryMeta> = vec![];
 
         let entries = self.search(&token.base)?;
         for entry in entries {
-            let rarity = entry.term_rarity(&token.base)?;
-            let entry_meta = EntryMeta {
-                entry,
-                rarity,
-                from_base: true,
-            };
-            entry_metas.push(entry_meta);
+            match entry {
+                Entry::Word(entry) => {
+                    let rarity = entry.term_rarity(&token.base)?;
+                    let entry_meta = EntryMeta {
+                        entry,
+                        rarity,
+                        from_base: true,
+                    };
+                    entry_metas.push(entry_meta);
+                }
+                Entry::Name(entry) => {
+                    name_entries.push(entry);
+                }
+            }
         }
 
         let entries = self.search(&token.text)?;
         for entry in entries {
-            if entry_metas.iter().any(|e| e.entry == entry) {
-                continue;
+            match entry {
+                Entry::Word(entry) => {
+                    if entry_metas.iter().any(|e| e.entry == entry) {
+                        continue;
+                    }
+                    let rarity = entry.term_rarity(&token.text)?;
+                    let entry_meta = EntryMeta {
+                        entry,
+                        rarity,
+                        from_base: false,
+                    };
+                    entry_metas.push(entry_meta);
+                }
+                Entry::Name(entry) => {
+                    if name_entries.contains(&entry) {
+                        continue;
+                    }
+                    name_entries.push(entry);
+                }
             }
-            let rarity = entry.term_rarity(&token.text)?;
-            let entry_meta = EntryMeta {
-                entry,
-                rarity,
-                from_base: false,
-            };
-            entry_metas.push(entry_meta);
         }
 
         // Sort entries. Less means 'a' comes before 'b'
@@ -165,10 +178,10 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
                 .then(a.entry.priority.cmp(&b.entry.priority).reverse())
         });
 
-        let entries = entry_metas
-            .into_iter()
-            .map(|meta| Entry::Word(meta.entry))
-            .collect();
+        let mut entries: Vec<Entry> = name_entries.into_iter().map(Entry::Name).collect();
+        for meta in entry_metas {
+            entries.push(Entry::Word(meta.entry));
+        }
         Ok(entries)
     }
 }

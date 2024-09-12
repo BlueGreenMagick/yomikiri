@@ -274,6 +274,41 @@ impl PartOfSpeech {
     }
 }
 
+impl Entry {
+    pub fn main_form(&self) -> &str {
+        match self {
+            Entry::Word(word) => word.main_form(),
+            Entry::Name(name) => &name.kanji,
+        }
+    }
+
+    pub fn has_pos(&self, pos: PartOfSpeech) -> bool {
+        match self {
+            Entry::Word(word) => word.has_pos(pos),
+            Entry::Name(_) => pos == PartOfSpeech::Noun,
+        }
+    }
+
+    pub fn first_pos(&self) -> PartOfSpeech {
+        match self {
+            Entry::Word(word) => word.first_pos(),
+            Entry::Name(_) => PartOfSpeech::Noun,
+        }
+    }
+
+    /// Returns "" if no reading found
+    pub fn main_reading(&self) -> &str {
+        match self {
+            Entry::Word(word) => word.main_reading(),
+            Entry::Name(name) => name
+                .groups
+                .iter()
+                .find_map(|grp| grp.items.first().map(|item| item.reading.as_str()))
+                .unwrap_or(""),
+        }
+    }
+}
+
 impl WordEntry {
     pub fn new(inner: WordEntryInner) -> Result<Self> {
         Self::validate_entry(&inner)?;
@@ -308,6 +343,15 @@ impl WordEntry {
             return &kanji.kanji;
         }
         self.main_reading()
+    }
+
+    /// If first sense does not have POS, returns PartOfSpeech::Unclassified
+    pub fn first_pos(&self) -> PartOfSpeech {
+        *self
+            .grouped_senses
+            .first()
+            .and_then(|s| s.pos.first())
+            .unwrap_or(&PartOfSpeech::Unclassified)
     }
 
     pub fn has_pos(&self, pos: PartOfSpeech) -> bool {
