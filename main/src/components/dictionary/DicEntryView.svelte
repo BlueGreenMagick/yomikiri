@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   export interface SelectedEntryForAnki {
-    entry: Entry;
+    entry: WordEntry;
     selected?: SelectedMeaning | undefined;
   }
 </script>
@@ -14,6 +14,7 @@
     type EntryOtherForms,
     getOtherFormsInEntry,
     type PartOfSpeech,
+    type WordEntry,
   } from "lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
@@ -25,7 +26,7 @@
   import IconedButton from "components/IconedButton.svelte";
   import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
 
-  export let entry: Entry;
+  export let entry: Entry.word;
   export let model: DicEntriesModel;
   export let onSelectEntryForAnki: (
     selected: SelectedEntryForAnki,

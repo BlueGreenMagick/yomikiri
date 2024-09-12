@@ -2,6 +2,7 @@ use std::borrow::Cow;
 
 use anyhow::Result;
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
+use yomikiri_dictionary::entry::Entry;
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::tokenize::{InnerToken, Token, TokenDetails, TokenizeResult};
@@ -47,7 +48,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             Ok(Some(TokenizeResult {
                 tokens: vec![token],
                 tokenIdx: 0,
-                entries,
+                entries: entries.into_iter().map(Entry::Word).collect(),
                 grammars: vec![],
             }))
         } else {

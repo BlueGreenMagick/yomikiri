@@ -2,7 +2,7 @@ use anyhow::{anyhow, Context, Result};
 use fst::{IntoStreamer, Streamer};
 use regex::Regex;
 use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
-use yomikiri_dictionary::entry::{Rarity, WordEntry};
+use yomikiri_dictionary::entry::{Entry, Rarity, WordEntry};
 use yomikiri_dictionary::PartOfSpeech;
 
 use crate::tokenize::InnerToken;
@@ -111,7 +111,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
     /// 4. Rare -> Non rare
     /// 5. Entry with higher priority is shown first
 
-    pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<WordEntry>> {
+    pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<Entry>> {
         struct EntryMeta {
             entry: WordEntry,
             rarity: Rarity,
@@ -165,7 +165,10 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
                 .then(a.entry.priority.cmp(&b.entry.priority).reverse())
         });
 
-        let entries = entry_metas.into_iter().map(|meta| meta.entry).collect();
+        let entries = entry_metas
+            .into_iter()
+            .map(|meta| Entry::Word(meta.entry))
+            .collect();
         Ok(entries)
     }
 }

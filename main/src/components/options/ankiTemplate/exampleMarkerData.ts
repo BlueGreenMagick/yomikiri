@@ -1,5 +1,6 @@
 import type { AnkiBuilderData } from "lib/anki";
 import type { TokenizeResult } from "@platform/backend";
+import type { Entry } from "@yomikiri/yomikiri-rs";
 
 const tokenized: TokenizeResult = {
   tokens: [
@@ -78,6 +79,7 @@ const tokenized: TokenizeResult = {
   tokenIdx: 0,
   entries: [
     {
+      type: "word",
       id: 1533580,
       kanjis: [
         {
@@ -157,7 +159,7 @@ const tokenized: TokenizeResult = {
 
 export const exampleMarkerData: AnkiBuilderData = {
   tokenized,
-  entry: tokenized.entries[0],
+  entry: tokenized.entries[0] as Entry & { type: "word" },
   sentence: tokenized.tokens.map((tok) => tok.text).join(""),
   url: "https://yomikiri.example/",
   pageTitle: "Yomikiri Examples",

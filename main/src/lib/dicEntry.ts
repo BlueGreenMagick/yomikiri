@@ -6,18 +6,20 @@ import type {
   PartOfSpeech,
   Rarity,
   Reading,
+  WordEntry,
 } from "@yomikiri/yomikiri-rs";
 import { YomikiriError } from "./error";
 export type {
+  WordEntry,
   Entry,
   Reading,
   Sense,
   PartOfSpeech,
 } from "@yomikiri/yomikiri-rs";
 
-export type DictionaryResult = Entry[];
+export type DictionaryResult = WordEntry[];
 
-export function getMainForm(entry: Entry): string {
+export function getMainForm(entry: WordEntry): string {
   if (entry.kanjis.length > 0) {
     if (entry.kanjis[0].rarity === "normal") {
       return entry.kanjis[0].kanji;
@@ -33,7 +35,7 @@ export function getMainForm(entry: Entry): string {
 
 /** if `nokanji` is true, include readings that aren't true readings of kanji */
 export function getReadingForForm(
-  entry: Entry,
+  entry: WordEntry,
   form: string,
   nokanji = true,
 ): Reading {
@@ -43,11 +45,13 @@ export function getReadingForForm(
       return reading;
     }
   }
-  console.error(`Entry ${getMainForm(entry)} has no reading for form: ${form}`);
+  console.error(
+    `WordEntry ${getMainForm(entry)} has no reading for form: ${form}`,
+  );
   return entry.readings[0];
 }
 
-export function isCommonEntry(entry: Entry): boolean {
+export function isCommonEntry(entry: WordEntry): boolean {
   return entry.priority >= 100;
 }
 
@@ -90,7 +94,7 @@ const unidicPosMap: Record<string, PartOfSpeech> = {
 /**
  * entry matches token.pos from unidic 2.2.0
  */
-export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
+export function matchesTokenPos(entry: WordEntry, tokenPos: string): boolean {
   const dictPos: PartOfSpeech | undefined = unidicPosMap[tokenPos];
   if (!(typeof dictPos === "string")) {
     throw Error(`Invalid part-of-speech in token: ${tokenPos}`);
@@ -105,7 +109,7 @@ export function matchesTokenPos(entry: Entry, tokenPos: string): boolean {
 }
 
 /**
- * Returns a separate list of entries valid for token surface.
+ * Returns a list of entries valid for token surface.
  * If no entries are valid, return a copy of `entries`.
  *
  * A valid entry has a term that contain all the kanji of surface.
@@ -124,6 +128,11 @@ export function getValidEntriesForSurface(
 
   const validEntries: Entry[] = [];
   for (const entry of entries) {
+    if (entry.type == "name") {
+      validEntries.push(entry);
+      continue;
+    }
+
     for (const kanjiForm of entry.kanjis) {
       let containsAll = true;
       for (const kanji of kanjis) {
@@ -161,7 +170,7 @@ export interface EntryOtherForms {
  * Returns non-search forms and readings
  * Returns null if there are no other forms or readings in entry
  */
-export function getOtherFormsInEntry(entry: Entry): EntryOtherForms | null {
+export function getOtherFormsInEntry(entry: WordEntry): EntryOtherForms | null {
   const writings: Writing[] = [];
   const readings: Reading[] = [];
 

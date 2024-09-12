@@ -21,6 +21,15 @@ use tsify_next::{declare, Tsify};
 
 use crate::{Error, Result};
 
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(namespace))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum Entry {
+    Name(NameEntry),
+    Word(WordEntry),
+}
+
 /// Constraints:
 /// 1. Must have at least 1 reading
 #[cfg_attr(feature = "wasm", derive(Tsify))]
