@@ -31,7 +31,7 @@ pub enum EntryPointer {
 pub(crate) struct DictIndexItem {
     pub key: String,
     /// Sorted
-    pub entry_indexes: Vec<usize>,
+    pub entry_indexes: Vec<StoredEntryPointer>,
 }
 
 /// map values are u64 with structure:
@@ -153,16 +153,16 @@ impl<'a> DictIndexMap<'a> {
     ) -> Result<()> {
         let mut buffer = Vec::with_capacity(16 * items.len());
         let mut builder = MapBuilder::new(&mut buffer)?;
-        let mut pointers: Vec<Vec<usize>> = vec![];
+        let mut pointers: Vec<Vec<u32>> = vec![];
 
         for item in items {
             if item.entry_indexes.len() == 1 {
-                let index = item.entry_indexes[0] as u64;
+                let index = item.entry_indexes[0].0 as u64;
                 builder.insert(&item.key, index)?;
             } else {
-                let mut term_ids: Vec<usize> = vec![];
+                let mut term_ids: Vec<u32> = vec![];
                 for index in &item.entry_indexes {
-                    term_ids.push(*index);
+                    term_ids.push(index.0);
                 }
                 builder.insert(
                     &item.key,
@@ -183,7 +183,8 @@ impl<'a> DictIndexMap<'a> {
 
 pub(crate) fn create_sorted_term_indexes(entries: &[WordEntry]) -> Result<Vec<DictIndexItem>> {
     // some entries have multiple terms
-    let mut indexes: HashMap<&str, Vec<usize>> = HashMap::with_capacity(entries.len() * 4);
+    let mut indexes: HashMap<&str, Vec<StoredEntryPointer>> =
+        HashMap::with_capacity(entries.len() * 4);
 
     for (i, entry) in entries.iter().enumerate() {
         for term in entry
@@ -192,10 +193,11 @@ pub(crate) fn create_sorted_term_indexes(entries: &[WordEntry]) -> Result<Vec<Di
             .map(|k| &k.kanji)
             .chain(entry.readings.iter().map(|r| &r.reading))
         {
+            let pointer: StoredEntryPointer = EntryPointer::Word(i as u32).into();
             indexes
                 .entry(term)
-                .and_modify(|v| v.push(i))
-                .or_insert_with(|| vec![i]);
+                .and_modify(|v| v.push(pointer))
+                .or_insert_with(|| vec![pointer]);
         }
     }
 
