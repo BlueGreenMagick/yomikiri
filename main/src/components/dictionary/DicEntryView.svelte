@@ -1,17 +1,12 @@
 <script lang="ts" context="module">
   export interface SelectedEntryForAnki {
-    entry: WordEntry;
+    entry: Entry.word;
     selected?: SelectedMeaning | undefined;
   }
 </script>
 
 <script lang="ts">
-  import {
-    type Entry,
-    getMainForm,
-    getReadingForForm,
-    type WordEntry,
-  } from "lib/dicEntry";
+  import { type Entry, getMainForm, getMainReading } from "lib/dicEntry";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import { RubyString } from "lib/japanese";
   import { Config } from "lib/config";
@@ -20,8 +15,9 @@
   import RubyText from "../RubyText.svelte";
   import IconedButton from "components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
+  import DicNameEntryContent from "./DicNameEntryContent.svelte";
 
-  export let entry: Entry.word;
+  export let entry: Entry;
   export let model: DicEntriesModel;
   export let onSelectEntryForAnki: (
     selected: SelectedEntryForAnki,
@@ -31,18 +27,16 @@
   const selectedMeaning = model.selectedMeaning;
   const ankiEnabledConfig = config.store("anki.enabled");
 
-  let mainForm: string;
-  let readingForForm: string;
-  let mainFormRuby: RubyString;
-
-  function selectEntryForAnki() {
-    const selected = $selectedMeaning ?? undefined;
-    onSelectEntryForAnki({ entry, selected });
+  function generateMainFormRuby(entry: Entry): RubyString {
+    let mainForm = getMainForm(entry);
+    let mainReading = "";
+    if (entry.type === "word") {
+      mainReading = getMainReading(entry, mainForm);
+    }
+    return RubyString.generate(mainForm, mainReading);
   }
 
-  $: mainForm = getMainForm(entry);
-  $: readingForForm = getReadingForForm(entry, mainForm, false).reading;
-  $: mainFormRuby = RubyString.generate(mainForm, readingForForm);
+  $: mainFormRuby = generateMainFormRuby(entry);
 </script>
 
 <div class="entryView">
@@ -51,11 +45,16 @@
       <span class="mainForm"><RubyText text={mainFormRuby} /></span>
     </div>
     <div class="icons">
-      {#if $ankiEnabledConfig}
+      {#if $ankiEnabledConfig && entry.type === "word"}
         <IconedButton
           size="2em"
           highlight={$selectedMeaning?.entry === entry}
-          on:click={selectEntryForAnki}
+          on:click={() => {
+            onSelectEntryForAnki({
+              entry,
+              selected: $selectedMeaning ?? undefined,
+            });
+          }}
         >
           <IconAddCircleOutline />
         </IconedButton>
@@ -63,7 +62,11 @@
     </div>
   </div>
   <Badges {entry} />
-  <DicWordEntryContent {entry} {model} />
+  {#if entry.type == "word"}
+    <DicWordEntryContent {entry} {model} />
+  {:else}
+    <DicNameEntryContent {entry} />
+  {/if}
 </div>
 
 <style>

@@ -25,9 +25,7 @@
 
 <div id="yomikiri-entries" on:mousedown={onMouseDown}>
   {#each entries as entry (entry)}
-    {#if entry.type === "word"}
-      <DicEntryView {entry} {model} {onSelectEntryForAnki} />
-    {/if}
+    <DicEntryView {entry} {model} {onSelectEntryForAnki} />
   {/each}
 </div>
 

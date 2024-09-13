@@ -19,7 +19,15 @@ export type {
 
 export type DictionaryResult = WordEntry[];
 
-export function getMainForm(entry: WordEntry): string {
+export function getMainForm(entry: Entry): string {
+  if (entry.type === "word") {
+    return getWordEntryMainForm(entry);
+  } else {
+    return entry.kanji;
+  }
+}
+
+function getWordEntryMainForm(entry: WordEntry): string {
   if (entry.kanjis.length > 0) {
     if (entry.kanjis[0].rarity === "normal") {
       return entry.kanjis[0].kanji;
@@ -33,9 +41,22 @@ export function getMainForm(entry: WordEntry): string {
   }
 }
 
+export function getMainReading(entry: Entry, mainForm: string): string {
+  if (entry.type === "word") {
+    return getReadingForForm(entry, mainForm, false).reading;
+  } else {
+    for (const group of entry.groups) {
+      for (const item of group.items) {
+        return item.reading;
+      }
+    }
+    return "";
+  }
+}
+
 /** if `nokanji` is true, include readings that aren't true readings of kanji */
 export function getReadingForForm(
-  entry: WordEntry,
+  entry: Entry.word,
   form: string,
   nokanji = true,
 ): Reading {
@@ -170,7 +191,9 @@ export interface EntryOtherForms {
  * Returns non-search forms and readings
  * Returns null if there are no other forms or readings in entry
  */
-export function getOtherFormsInEntry(entry: WordEntry): EntryOtherForms | null {
+export function getOtherFormsInEntry(
+  entry: Entry.word,
+): EntryOtherForms | null {
   const writings: Writing[] = [];
   const readings: Reading[] = [];
 

@@ -17,11 +17,11 @@ import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
 import { DesktopBackend, type TokenizeResult } from "platform/desktop/backend";
 import tokenizeResults from "./ankiBuilder.test.json" assert { type: "json" };
+import type { Entry } from "../dicEntry";
 
 import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
-import type { WordEntry } from "@yomikiri/yomikiri-rs";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
@@ -85,7 +85,7 @@ Missing label: ${label}`);
 
     const data: AnkiBuilderData = {
       tokenized: tokenizedResult,
-      entry: tokenizedResult.entries[0] as WordEntry,
+      entry: tokenizedResult.entries[0] as Entry.word,
       sentence,
       url: "https://yomikiri.test/",
       pageTitle: "Yomikiri Tests",

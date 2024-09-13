@@ -1,6 +1,6 @@
 import type { Token, TokenizeResult } from "@platform/backend";
 import Config from "../config";
-import { getMainForm, getReadingForForm } from "../dicEntry";
+import { getMainForm, getReadingForForm, type Entry } from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils, { escapeHTML } from "../utils";
@@ -11,7 +11,6 @@ import type {
 } from "./template";
 import { YomikiriError } from "lib/error";
 import type { SelectedMeaning } from "components/dictionary/dicEntriesModel";
-import type { WordEntry } from "@yomikiri/yomikiri-rs";
 
 export interface LoadingAnkiNote {
   deck: string;
@@ -41,7 +40,7 @@ export interface AnkiBuilderContext {
 /** This data is saved in the history */
 export interface AnkiBuilderData {
   tokenized: TokenizeResult;
-  entry: WordEntry;
+  entry: Entry.word;
   selected?: SelectedMeaning | undefined;
   /** NFC normalized string */
   sentence: string;

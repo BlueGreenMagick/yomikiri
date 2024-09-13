@@ -15,6 +15,9 @@
     {#if isCommon}
       <div class="badge">common</div>
     {/if}
+    {#if entry.type === "name"}
+      <div class="badge">name</div>
+    {/if}
   </div>
 {/if}
 
