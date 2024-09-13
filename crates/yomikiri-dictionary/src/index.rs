@@ -8,6 +8,7 @@ use itertools::Itertools;
 use serde::de::Error as DeserializeError;
 use serde::{Deserialize, Serialize};
 
+use crate::entry::NameEntry;
 use crate::error::Result;
 use crate::jagged_array::JaggedArray;
 use crate::WordEntry;
@@ -181,7 +182,10 @@ impl<'a> DictIndexMap<'a> {
     }
 }
 
-pub(crate) fn create_sorted_term_indexes(entries: &[WordEntry]) -> Result<Vec<DictIndexItem>> {
+pub(crate) fn create_sorted_term_indexes(
+    name_entries: &[NameEntry],
+    entries: &[WordEntry],
+) -> Result<Vec<DictIndexItem>> {
     // some entries have multiple terms
     let mut indexes: HashMap<&str, Vec<StoredEntryPointer>> =
         HashMap::with_capacity(entries.len() * 4);
@@ -199,6 +203,15 @@ pub(crate) fn create_sorted_term_indexes(entries: &[WordEntry]) -> Result<Vec<Di
                 .and_modify(|v| v.push(pointer))
                 .or_insert_with(|| vec![pointer]);
         }
+    }
+
+    for (i, entry) in name_entries.iter().enumerate() {
+        let pointer: StoredEntryPointer = EntryPointer::Name(i as u32).into();
+        let term = &entry.kanji;
+        indexes
+            .entry(term)
+            .and_modify(|v| v.push(pointer))
+            .or_insert_with(|| vec![pointer]);
     }
 
     let indexes: Vec<DictIndexItem> = indexes

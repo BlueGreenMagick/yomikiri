@@ -63,7 +63,7 @@ impl<'a> DictionaryView<'a> {
         entries: &[WordEntry],
         writer: &mut W,
     ) -> Result<()> {
-        let term_index_items = create_sorted_term_indexes(entries)?;
+        let term_index_items = create_sorted_term_indexes(name_entries, entries)?;
         DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
         JaggedArray::build_and_encode_to(entries, writer)?;
         JaggedArray::build_and_encode_to(name_entries, writer)?;
