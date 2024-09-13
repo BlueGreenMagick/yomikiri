@@ -1,4 +1,5 @@
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
+use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -89,5 +90,118 @@ fn test_jmdict_parse_2() -> Result<()> {
 "#;
     let entries = parse_jmdict_xml(&xml)?;
     insta::assert_yaml_snapshot!(entries);
+    Ok(())
+}
+
+#[test]
+fn test_jmnedict_parse_single() -> Result<()> {
+    let xml = r#"<?xml version="1.0"?>
+<!-- JMnedict created: 2024-08-29 -->
+<JMnedict>
+<entry>
+<ent_seq>5073921</ent_seq>
+<k_ele>
+<keb>恵山</keb>
+</k_ele>
+<r_ele>
+<reb>ヘサン</reb>
+</r_ele>
+<r_ele>
+<reb>けいざん</reb>
+</r_ele>
+<trans>
+<name_type>&place;</name_type>
+<trans_det>Hyesan (North Korea)</trans_det>
+</trans>
+</entry>
+</JMnedict>
+"#;
+    let (name_entries, entries) = parse_jmnedict_xml(&xml)?;
+    insta::assert_yaml_snapshot!((name_entries, entries));
+    Ok(())
+}
+
+// multiple jmne entries are merged into one name entry
+// and also creates a word entry
+#[test]
+fn test_jmnedict_parse_multiple() -> Result<()> {
+    let xml = r#"<?xml version="1.0"?>
+<!-- JMnedict created: 2024-08-29 -->
+<JMnedict>
+<entry>
+<ent_seq>5000268</ent_seq>
+<k_ele>
+<keb>あく屋</keb>
+</k_ele>
+<r_ele>
+<reb>あくや</reb>
+</r_ele>
+<trans>
+<name_type>&place;</name_type>
+<trans_det>Akuya</trans_det>
+</trans>
+</entry>
+<entry>
+<ent_seq>5538229</ent_seq>
+<k_ele>
+<keb>鏑木</keb>
+</k_ele>
+<r_ele>
+<reb>かぶらき</reb>
+</r_ele>
+<trans>
+<name_type>&place;</name_type>
+<name_type>&surname;</name_type>
+<trans_det>Kaburaki</trans_det>
+</trans>
+</entry>
+<entry>
+<ent_seq>5538230</ent_seq>
+<k_ele>
+<keb>鏑木</keb>
+</k_ele>
+<r_ele>
+<reb>かぶらぎ</reb>
+</r_ele>
+<trans>
+<name_type>&surname;</name_type>
+<trans_det>Kaburagi</trans_det>
+</trans>
+</entry>
+<entry>
+<ent_seq>5057716</ent_seq>
+<r_ele>
+<reb>ナウシカア</reb>
+<re_pri>spec1</re_pri>
+</r_ele>
+<r_ele>
+<reb>ナウシカー</reb>
+</r_ele>
+<trans>
+<name_type>&fem;</name_type>
+<trans_det>Nausicaa</trans_det>
+</trans>
+<trans>
+<name_type>&char;</name_type>
+<trans_det>Nausicaa (in Homer's Odyssey)</trans_det>
+</trans>
+</entry>
+<entry>
+<ent_seq>5538231</ent_seq>
+<k_ele>
+<keb>鏑木</keb>
+</k_ele>
+<r_ele>
+<reb>かぶらやき</reb>
+</r_ele>
+<trans>
+<name_type>&surname;</name_type>
+<trans_det>Kaburayaki</trans_det>
+</trans>
+</entry>
+</JMnedict>
+"#;
+    let (name_entries, entries) = parse_jmnedict_xml(&xml)?;
+    insta::assert_yaml_snapshot!((name_entries, entries));
     Ok(())
 }

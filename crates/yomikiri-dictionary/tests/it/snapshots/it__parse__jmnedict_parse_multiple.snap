@@ -1,0 +1,74 @@
+---
+source: crates/yomikiri-dictionary/tests/it/parse.rs
+assertion_line: 205
+expression: "(name_entries, entries)"
+---
+- - kanji: 鏑木
+    groups:
+      - types:
+          - place
+          - surname
+        items:
+          - id: 5538229
+            reading: かぶらき
+      - types:
+          - surname
+        items:
+          - id: 5538230
+            reading: かぶらぎ
+          - id: 5538231
+            reading: かぶらやき
+- - id: 5000268
+    kanjis:
+      - kanji: あく屋
+        rarity: normal
+    readings:
+      - reading: あくや
+        nokanji: false
+        toKanji: []
+        rarity: normal
+    groupedSenses:
+      - pos:
+          - noun
+        senses:
+          - meanings:
+              - Akuya
+            toKanji: []
+            toReading: []
+            misc:
+              - place
+            info: []
+            dialects: []
+    priority: 0
+  - id: 5057716
+    kanjis: []
+    readings:
+      - reading: ナウシカア
+        nokanji: false
+        toKanji: []
+        rarity: normal
+      - reading: ナウシカー
+        nokanji: false
+        toKanji: []
+        rarity: normal
+    groupedSenses:
+      - pos:
+          - noun
+        senses:
+          - meanings:
+              - Nausicaa
+            toKanji: []
+            toReading: []
+            misc:
+              - female
+            info: []
+            dialects: []
+          - meanings:
+              - "Nausicaa (in Homer's Odyssey)"
+            toKanji: []
+            toReading: []
+            misc:
+              - character
+            info: []
+            dialects: []
+    priority: 0

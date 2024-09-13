@@ -1,0 +1,32 @@
+---
+source: crates/yomikiri-dictionary/tests/it/parse.rs
+assertion_line: 120
+expression: "(name_entries, entries)"
+---
+- []
+- - id: 5073921
+    kanjis:
+      - kanji: 恵山
+        rarity: normal
+    readings:
+      - reading: ヘサン
+        nokanji: false
+        toKanji: []
+        rarity: normal
+      - reading: けいざん
+        nokanji: false
+        toKanji: []
+        rarity: normal
+    groupedSenses:
+      - pos:
+          - noun
+        senses:
+          - meanings:
+              - Hyesan (North Korea)
+            toKanji: []
+            toReading: []
+            misc:
+              - place
+            info: []
+            dialects: []
+    priority: 0

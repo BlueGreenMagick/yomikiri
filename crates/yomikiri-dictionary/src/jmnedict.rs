@@ -92,14 +92,17 @@ pub fn parse_jmnedict_xml(xml: &str) -> Result<(Vec<NameEntry>, Vec<WordEntry>)>
     for (kanji, values) in fragments {
         let mut groups: Vec<GroupedNameItem> = vec![];
         for val in values {
-            for grp in &mut groups {
-                if grp.types == val.name_type {
-                    grp.items.push(NameItem {
-                        id: val.id,
-                        reading: val.reading,
-                    });
-                    break;
-                }
+            let name_item = NameItem {
+                id: val.id,
+                reading: val.reading,
+            };
+            if let Some(grp) = groups.iter_mut().find(|grp| grp.types == val.name_type) {
+                grp.items.push(name_item);
+            } else {
+                groups.push(GroupedNameItem {
+                    types: val.name_type,
+                    items: vec![name_item],
+                })
             }
         }
         let name_entry = NameEntry { kanji, groups };
