@@ -5,11 +5,14 @@ use crate::{Error, Result};
 use itertools::Itertools;
 use yomikiri_jmdict::jmdict::{JMEntry, JMKanji, JMKanjiInfo, JMReading, JMReadingInfo, JMSense};
 
+/// Skips entries that are from jmnedict
 pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<WordEntry>> {
     let jmdict = yomikiri_jmdict::parse_jmdict_xml(xml)?;
     let entries = jmdict
         .entries
         .into_iter()
+        // skip entries that are duplicate of jmne entry
+        .filter(|e| e.id < 5000000 || e.id >= 6000000)
         .map(WordEntry::try_from)
         .try_collect()?;
     Ok(entries)

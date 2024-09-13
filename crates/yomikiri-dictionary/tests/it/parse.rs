@@ -94,6 +94,49 @@ fn test_jmdict_parse_2() -> Result<()> {
 }
 
 #[test]
+fn skip_name_entries_in_jmdict() -> Result<()> {
+    let xml = r#"<?xml version="1.0"?>
+<!-- JMnedict created: 2024-08-29 -->
+<JMdict>
+<entry>
+<ent_seq>2862076</ent_seq>
+<k_ele>
+<keb>自己査定</keb>
+</k_ele>
+<r_ele>
+<reb>じこさてい</reb>
+</r_ele>
+<sense>
+<pos>&n;</pos>
+<gloss>self-assessment</gloss>
+<gloss>self-evaluation</gloss>
+<gloss>self-appraisal</gloss>
+<gloss>self-audit</gloss>
+</sense>
+</entry>
+<entry>
+<ent_seq>5000058</ent_seq>
+<k_ele>
+<keb>ＰＣエンジン</keb>
+</k_ele>
+<r_ele>
+<reb>ピーシーエンジン</reb>
+</r_ele>
+<sense>
+<pos>&n;</pos>
+<misc>&product;</misc>
+<gloss>(NEC) PC Engine</gloss>
+<gloss>TurboGrafx-16</gloss>
+</sense>
+</entry>
+</JMdict>
+"#;
+    let entries = parse_jmdict_xml(&xml)?;
+    insta::assert_yaml_snapshot!(entries);
+    Ok(())
+}
+
+#[test]
 fn test_jmnedict_parse_single() -> Result<()> {
     let xml = r#"<?xml version="1.0"?>
 <!-- JMnedict created: 2024-08-29 -->
