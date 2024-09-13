@@ -38,11 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 [[res]]
-name = "JMDict/EDICT"
+name = "JMDict, JMneDict"
 url = "https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project"
 license = "CC-BY-SA-4.0 | Custom"
 text = """
-The JMDict/EDICT dictionary files are the property of the <a href='https://www.edrdg.org/'>Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href='https://www.edrdg.org/edrdg/licence.html'>license.</a>
+The JMDict, JMneDict dictionary files are the property of the <a href='https://www.edrdg.org/'>Electronic Dictionary Research and Development Group</a>, and are used in conformance with the Group's <a href='https://www.edrdg.org/edrdg/licence.html'>license.</a>
 
 The dictionary files are made available under a Creative Commons Attribution-ShareAlike Licence (V4.0). The Licence Deed can be viewed here (https://creativecommons.org/licenses/by-sa/4.0/), and the full Licence Code is here (https://creativecommons.org/licenses/by-sa/4.0/legalcode). 
 

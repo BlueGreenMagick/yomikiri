@@ -10,11 +10,11 @@
     <div class="jmdict">
       <h3>Dictionary Files</h3>
       <div>
-        Yomikiri uses JMDict/EDICT dictionary files for JP-EN dictionary.
+        Yomikiri uses JMDict/JMneDict dictionary files for JP-EN dictionary.
       </div>
       <br />
       <div>
-        The JMDict/EDICT dictionary files are the property of the
+        The JMDict/JMneDict dictionary files are the property of the
         <a href="https://www.edrdg.org/"
           >Electronic Dictionary Research and Development Group</a
         >, and are used in conformance with the Group's
