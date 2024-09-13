@@ -8,15 +8,10 @@
 <script lang="ts">
   import {
     type Entry,
-    type Sense,
     getMainForm,
     getReadingForForm,
-    type EntryOtherForms,
-    getOtherFormsInEntry,
-    type PartOfSpeech,
     type WordEntry,
   } from "lib/dicEntry";
-  import GroupedSenseView from "./GroupedSenseView.svelte";
   import IconAddCircleOutline from "@icons/add-circle-outline.svg";
   import { RubyString } from "lib/japanese";
   import { Config } from "lib/config";
@@ -24,7 +19,7 @@
   import type { DicEntriesModel, SelectedMeaning } from "./dicEntriesModel";
   import RubyText from "../RubyText.svelte";
   import IconedButton from "components/IconedButton.svelte";
-  import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
+  import DicWordEntryContent from "./DicWordEntryContent.svelte";
 
   export let entry: Entry.word;
   export let model: DicEntriesModel;
@@ -39,21 +34,15 @@
   let mainForm: string;
   let readingForForm: string;
   let mainFormRuby: RubyString;
-  let otherForms: EntryOtherForms | null;
 
   function selectEntryForAnki() {
     const selected = $selectedMeaning ?? undefined;
     onSelectEntryForAnki({ entry, selected });
   }
 
-  function onSelectSense(sense: Sense, poss: PartOfSpeech[]) {
-    model.selectSense(entry, sense, poss);
-  }
-
   $: mainForm = getMainForm(entry);
   $: readingForForm = getReadingForForm(entry, mainForm, false).reading;
   $: mainFormRuby = RubyString.generate(mainForm, readingForForm);
-  $: otherForms = getOtherFormsInEntry(entry);
 </script>
 
 <div class="entryView">
@@ -74,14 +63,7 @@
     </div>
   </div>
   <Badges {entry} />
-  <div class="groups">
-    {#each entry.groupedSenses as group}
-      <GroupedSenseView {group} {model} {onSelectSense} />
-    {/each}
-  </div>
-  {#if otherForms !== null}
-    <DicEntryOtherForms {otherForms} />
-  {/if}
+  <DicWordEntryContent {entry} {model} />
 </div>
 
 <style>
