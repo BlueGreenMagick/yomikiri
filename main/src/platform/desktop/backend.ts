@@ -17,12 +17,12 @@ import Utils, {
 } from "lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
-import { openDictionaryDB } from "./dictionary";
 import { YomikiriError } from "lib/error";
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,
 } from "platform/shared/backend";
+import { idbWriteFiles } from "./idb";
 
 export * from "../common/backend";
 
@@ -248,10 +248,7 @@ async function fetchDictionary(): Promise<Uint8Array | false> {
 }
 
 async function saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
-  const db = await openDictionaryDB();
-  const tx = db.transaction(["yomikiri-dictionary"], "readwrite");
-  await tx.objectStore("yomikiri-dictionary").put(dict_bytes, "value");
-  await tx.done;
+  await idbWriteFiles([["yomikiri-dictionary", dict_bytes]]);
 }
 
 DesktopBackend satisfies IBackend;
