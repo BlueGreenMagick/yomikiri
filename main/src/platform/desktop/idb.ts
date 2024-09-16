@@ -2,7 +2,11 @@ import { deleteDB, openDB, type DBSchema, type IDBPDatabase } from "idb";
 
 const DB_NAME = "yomikiri";
 const DB_FILES_STORE = "files";
-const FILENAMES = ["yomikiri-dictionary"] as const;
+const FILENAMES = [
+  "yomikiri-dictionary",
+  "JMdict_e.gz",
+  "JMnedict.xml.gz",
+] as const;
 
 export type FileName = (typeof FILENAMES)[number];
 
@@ -33,6 +37,7 @@ async function openFilesDB(): Promise<IDBPDatabase<YomikiriDBSchema>> {
   });
 }
 
+/** Returns undefined if file does not exist */
 export async function idbReadFile(
   file: FileName,
 ): Promise<Uint8Array | undefined> {
@@ -57,6 +62,15 @@ export async function idbReadFiles(
   return results;
 }
 
+export async function idbWriteFile(
+  file: FileName,
+  content: Uint8Array,
+): Promise<void> {
+  const db = await openFilesDB();
+  await db.put(DB_FILES_STORE, content, file);
+  db.close();
+}
+
 export async function idbWriteFiles(
   files: [FileName, Uint8Array][],
 ): Promise<void> {
@@ -69,7 +83,7 @@ export async function idbWriteFiles(
   db.close();
 }
 
-export async function deleteFiles(filenames: FileName[]): Promise<void> {
+export async function idbDeleteFiles(filenames: FileName[]): Promise<void> {
   const db = await openFilesDB();
   const tx = db.transaction(DB_FILES_STORE, "readwrite");
   for (const file of filenames) {
@@ -77,6 +91,24 @@ export async function deleteFiles(filenames: FileName[]): Promise<void> {
   }
   db.close();
   await tx.done;
+}
+
+export async function idbHasFile(filename: FileName): Promise<boolean> {
+  const results = await idbHasFiles([filename]);
+  return results[0];
+}
+
+export async function idbHasFiles(filenames: FileName[]): Promise<boolean[]> {
+  const db = await openFilesDB();
+  const tx = db.transaction(DB_FILES_STORE, "readonly");
+  const results: boolean[] = [];
+  for (const file of filenames) {
+    const count = await tx.store.count(file);
+    if (count > 0) {
+      results.push(true);
+    }
+  }
+  return results;
 }
 
 /** Deletes unused idb databases */

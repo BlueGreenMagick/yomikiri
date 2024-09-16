@@ -1,5 +1,5 @@
 import { getStorage, removeStorage } from "extension/browserApi";
-import { deleteFiles, idbReadFile } from "./idb";
+import { idbDeleteFiles, idbReadFile } from "./idb";
 
 /**
  * Loads user dictionary (index, entries) if it exists, valid, and fresh.
@@ -21,7 +21,7 @@ export async function loadSavedDictionary(
 
 export async function deleteSavedDictionary() {
   console.info("Will delete user-installed dictionary");
-  await deleteFiles(["yomikiri-dictionary"]);
+  await idbDeleteFiles(["yomikiri-dictionary"]);
   await removeStorage("dict.schema_ver");
   await removeStorage("dict.jmdict.etag");
   console.info("Deleted user-installed dictionary");

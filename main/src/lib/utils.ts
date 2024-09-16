@@ -544,4 +544,23 @@ export function formatDateString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * Parses a version string in the format of n.n.n.n (with 1 ~ 4 parts).
+ * Unspecified part is set as 0
+ */
+export class Version {
+  major: number;
+  minor: number;
+  patch: number;
+  dev: number;
+
+  constructor(versionString: string) {
+    const [major, minor, patch, dev] = versionString.split(".");
+    this.major = major !== undefined ? parseInt(major) : 0;
+    this.minor = minor !== undefined ? parseInt(minor) : 0;
+    this.patch = patch !== undefined ? parseInt(patch) : 0;
+    this.dev = dev !== undefined ? parseInt(dev) : 0;
+  }
+}
+
 export * as default from "./utils";

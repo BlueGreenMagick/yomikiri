@@ -22,7 +22,14 @@ import {
   cleanTokenizeResult,
   emptyTokenizeResult,
 } from "platform/shared/backend";
-import { idbWriteFiles } from "./idb";
+import {
+  idbHasFile,
+  idbHasFiles,
+  idbReadFile,
+  idbWriteFile,
+  idbWriteFiles,
+  type FileName,
+} from "./idb";
 
 export * from "../common/backend";
 
@@ -156,14 +163,20 @@ export namespace DesktopBackend {
     progressFn: (msg: string) => unknown,
   ): Promise<boolean> {
     const wasm = await _wasm!.get();
-    const jmdict_bytes = await fetchDictionary();
-    if (jmdict_bytes === false) {
-      return false;
-    }
+    const jmdict_bytes = await fetchDictionaryFile(
+      "JMdict_e.gz",
+      JMDICT_URL,
+      "dict.jmdict.etag",
+    );
+    const jmnedict_bytes = await fetchDictionaryFile(
+      "JMnedict.xml.gz",
+      JMNEDICT_URL,
+      "dict.jmnedict.etag",
+    );
 
     progressFn("Creating dictionary file...");
     await nextTask();
-    const { dict_bytes } = wasm.update_dictionary(jmdict_bytes);
+    const { dict_bytes } = wasm.update_dictionary(jmdict_bytes, jmnedict_bytes);
     progressFn("Saving dictionary file...");
     await saveDictionaryFile(dict_bytes);
     const dictSchemaVer = dict_schema_ver();
@@ -221,29 +234,33 @@ interface ConnectionMessageError {
   message: YomikiriError;
 }
 
-/**
- * Returns `false` if we get '304 NOT MODIFIED' response,
- * which means existing jmdict file is up to date.
- *
- * Otherwise, downloads and returns jmdict file content.
- */
-async function fetchDictionary(): Promise<Uint8Array | false> {
-  const etag = await getStorage("dict.jmdict.etag");
-  const resp = await fetch("http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz", {
+const JMDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
+const JMNEDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz";
+
+async function fetchDictionaryFile(
+  filename: FileName,
+  url: string,
+  etag_key: "dict.jmdict.etag" | "dict.jmnedict.etag",
+): Promise<Uint8Array> {
+  const file_exists = await idbHasFile(filename);
+  const etag = file_exists ? await getStorage(etag_key) : undefined;
+  const resp = await fetch(url, {
     headers: etag ? { "If-None-Match": etag } : {},
   });
+
   if (resp.status === 304) {
-    return false;
+    return (await idbReadFile(filename)) as Uint8Array;
   } else {
     const etag = resp.headers.get("ETag");
-    if (typeof etag === "string") {
-      await setStorage("dict.jmdict.etag", etag);
-    } else {
-      await removeStorage("dict.jmdict.etag");
-    }
-
+    // remove previous etag until file is written to idb
+    await removeStorage("dict.jmdict.etag");
     const buffer = await resp.arrayBuffer();
-    return new Uint8Array(buffer);
+    const content = new Uint8Array(buffer);
+    await idbWriteFile(filename, content);
+    if (etag !== null) {
+      await setStorage("dict.jmdict.etag", etag);
+    }
+    return content;
   }
 }
 

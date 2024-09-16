@@ -4,7 +4,7 @@ use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 
-use anyhow::{anyhow, Context};
+use anyhow::{anyhow, Context, Result};
 use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
@@ -13,6 +13,7 @@ use std::io::Read;
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
+use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
 use yomikiri_dictionary::SCHEMA_VER;
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -83,24 +84,33 @@ impl Backend {
     ///
     /// Returns [.yomikiriindex, .yomikiridict] bytes as [UInt8Array, UInt8Array]
     #[wasm_bindgen(skip_typescript)]
-    pub fn update_dictionary(&mut self, gzipped_jmdict: &Uint8Array) -> WasmResult<JsValue> {
-        let gzipped = gzipped_jmdict.to_vec();
-        let mut decoder = GzDecoder::new(&gzipped[..]);
-        let mut xml = String::with_capacity(72 * 1024 * 1024);
-        decoder
-            .read_to_string(&mut xml)
-            .context("Failed to decompress gzipped JMDict xml file")?;
-        std::mem::drop(decoder);
-        std::mem::drop(gzipped);
-        debug!("unzipped jmdict file");
+    pub fn update_dictionary(
+        &mut self,
+        gzip_jmdict: &Uint8Array,
+        gzip_jmnedict: &Uint8Array,
+    ) -> WasmResult<JsValue> {
+        let gzip_jmnedict = gzip_jmnedict.to_vec();
+        let jmnedict_xml = decode_gzip_xml(gzip_jmnedict, 160 * 1024 * 1024)
+            .context("Failed to decompress gzipped JMneDict xml file")?;
+        debug!("unzipped JMneDict file");
 
-        let entries = parse_jmdict_xml(&xml).context("Failed to parse JMDict xml file")?;
-        std::mem::drop(xml);
+        let (name_entries, mut word_entries) =
+            parse_jmnedict_xml(&jmnedict_xml).context("Failed to parse JMneDict xml file")?;
+        std::mem::drop(jmnedict_xml);
         debug!("parsed jmdict file");
 
-        let mut dict_bytes: Vec<u8> = Vec::with_capacity(30 * 1024 * 1024);
-        // TODO: Update JMnedict as well
-        DictionaryView::build_and_encode_to(&[], &entries, &mut dict_bytes)
+        let gzip_jmdict = gzip_jmdict.to_vec();
+        let jmdict_xml = decode_gzip_xml(gzip_jmdict, 64 * 1024 * 1024)
+            .context("Failed to decompress gzipped JMDict xml file")?;
+        debug!("unzipped JMDict file");
+
+        let entries = parse_jmdict_xml(&jmdict_xml).context("Failed to parse JMDict xml file")?;
+        std::mem::drop(jmdict_xml);
+        debug!("parsed jmdict file");
+        word_entries.extend(entries);
+
+        let mut dict_bytes: Vec<u8> = Vec::with_capacity(84 * 1024 * 1024);
+        DictionaryView::build_and_encode_to(&name_entries, &word_entries, &mut dict_bytes)
             .context("Failed to write dictionary file")?;
         let dict_array = Uint8Array::from(&dict_bytes[..]);
         let result = DictUpdateResult {
@@ -116,6 +126,13 @@ impl Backend {
         let creation_date = self.inner.dictionary.creation_date()?;
         Ok(creation_date)
     }
+}
+
+fn decode_gzip_xml(gzipped: Vec<u8>, capacity: usize) -> Result<String> {
+    let mut decoder = GzDecoder::new(&gzipped[..]);
+    let mut xml = String::with_capacity(capacity);
+    decoder.read_to_string(&mut xml)?;
+    return Ok(xml);
 }
 
 #[wasm_bindgen]

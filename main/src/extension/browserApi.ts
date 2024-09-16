@@ -97,10 +97,13 @@ interface StorageValues {
   "dict.schema_ver": number;
   /** ETag of jmdict response */
   "dict.jmdict.etag": string;
+  "dict.jmnedict.etag": string;
   // ios
   "x-callback.tabId": number;
   "x-callback.tabUrl": string;
 }
+
+export type StorageKey = keyof StorageValues;
 
 /** list of keys that is used for connection */
 type ConnectionKey = "updateDictionary";
@@ -453,7 +456,7 @@ export async function currentTab(): Promise<chrome.tabs.Tab> {
 }
 
 /** If `or` is undefined, returns `undefined` if value does not exist. */
-export async function getStorage<K extends keyof StorageValues, V = undefined>(
+export async function getStorage<K extends StorageKey, V = undefined>(
   key: K,
   or?: V,
 ): Promise<StorageValues[K] | V> {
