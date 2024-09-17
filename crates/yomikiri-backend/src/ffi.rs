@@ -80,67 +80,6 @@ impl RustBackend {
     }
 }
 
-#[derive(uniffi::Object)]
-pub struct DictFilesReplaceJob {
-    temp_dir: PathBuf,
-}
-
-#[uniffi::export]
-impl DictFilesReplaceJob {
-    pub fn replace(&self, dict_path: String) -> FFIResult<Arc<RustBackend>> {
-        self._replace(Path::new(&dict_path)).uniffi()
-    }
-}
-
-impl DictFilesReplaceJob {
-    /// Replace user dictionary files.
-    ///
-    /// Returns a new `RustBackend` with replaced files.
-    /// If an error occurs with new files when initializing `RustBackend`,
-    /// it tries to restore the previous user dictionary, then an error is thrown.
-    fn _replace(&self, dict_path: &Path) -> Result<Arc<RustBackend>> {
-        let backup_dir = self.temp_dir.join("prev");
-        if backup_dir.exists() {
-            fs::remove_dir_all(&backup_dir)?;
-        }
-        fs::create_dir(&backup_dir)?;
-
-        let backup_dict_path = backup_dir.join(DICT_FILENAME);
-        let temp_dict_path = self.temp_dir.join(DICT_FILENAME);
-
-        if dict_path.exists() {
-            fs::rename(dict_path, &backup_dict_path)?;
-        }
-
-        fs::rename(&temp_dict_path, &dict_path)?;
-
-        let backend_result = RustBackend::try_from_paths(&dict_path);
-        match backend_result {
-            Ok(backend) => {
-                _ = fs::remove_dir_all(&self.temp_dir);
-                Ok(backend)
-            }
-            Err(e) => {
-                fs::remove_file(&dict_path)?;
-                if backup_dict_path.exists() {
-                    fs::rename(&backup_dict_path, &dict_path)?;
-                }
-                _ = fs::remove_dir_all(&self.temp_dir);
-                Err(e)
-            }
-        }
-    }
-}
-
-#[derive(uniffi::Enum)]
-pub enum UpdateDictionaryResult {
-    UpToDate,
-    Replace {
-        job: Arc<DictFilesReplaceJob>,
-        etag: Option<String>,
-    },
-}
-
 #[derive(uniffi::Enum)]
 pub enum DownloadDictionaryResult {
     UpToDate,

@@ -31,6 +31,14 @@ public enum Storage {
     public static func setJmdictEtag(_ etag: String?) throws {
         return try defaults.get().set(etag, forKey: "dict.jmdict.etag")
     }
+
+    public static func getJmnedictEtag() throws -> String? {
+        return try defaults.get().string(forKey: "dict.jmdict.etag")
+    }
+
+    public static func setJmnedictEtag(_ etag: String?) throws {
+        return try defaults.get().set(etag, forKey: "dict.jmnedict.etag")
+    }
 }
 
 private func getSharedDefaults() -> Result<UserDefaults, YomikiriTokenizerError> {

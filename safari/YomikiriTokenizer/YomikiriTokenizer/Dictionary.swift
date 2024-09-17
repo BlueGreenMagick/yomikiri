@@ -29,10 +29,14 @@ func validateAndGetUserDict() throws -> URL? {
     }
 }
 
+func filesDirectory() throws -> URL {
+    let rootDirUrl = try getSharedDirectory()
+    return rootDirUrl.appendingPathComponent("dictionary")
+}
+
 /// Get user dictionary directory, creating the directory if it does not exist.
 func getUserDictUrl() throws -> URL {
-    let rootDirUrl = try getSharedDirectory()
-    let dir = rootDirUrl.appendingPathComponent("dictionary")
+    let dir = try filesDirectory()
     if !FileManager.default.fileExists(atPath: dir.path) {
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     }

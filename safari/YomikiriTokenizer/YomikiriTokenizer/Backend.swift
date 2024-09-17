@@ -19,33 +19,35 @@ public enum Backend {
     /// Updates dictionary files, and updates dictionary used within backend.
     ///
     /// - Returns: `false` if dictionary is already up-to-date, and was not rebuilt. Otherwise, `true`
-    ///
-    /// If an error occurs, tries to restore previous dictionary.
     public static func updateDictionary() async throws -> Bool {
-        let tempDir = FileManager.default.temporaryDirectory
-        let userDict = try getUserDictUrl()
-        // update file in background thread
-        let result = try await Task {
-            try updateDictionaryFile(tempDir: tempDir.path, etag: Storage.getJmdictEtag())
-        }.value
+        let dir = try filesDirectory()
 
-        guard case let .replace(job: replaceJob, etag) = result else {
-            return false
+        let jmdictResult = try downloadJmdict(dir: dir.path, etag: Storage.getJmdictEtag())
+        if case let .replace(etag: etag) = jmdictResult {
+            try Storage.setJmdictEtag(etag)
+        }
+        let jmnedictResult = try downloadJmnedict(dir: dir.path, etag: Storage.getJmnedictEtag())
+        if case let .replace(etag: etag) = jmnedictResult {
+            try Storage.setJmnedictEtag(etag)
         }
 
         // drop backend to close mmap and open file handle
         Backend.rust = Result.failure(YomikiriTokenizerError.UpdatingDictionary)
+        var err: (any Error)? = nil
         do {
-            let rust = try replaceJob.replace(dictPath: userDict.path)
-            try Storage.setJmdictEtag(etag)
-            Backend.rust = Result.success(rust)
+            try createDictionary(dir: dir.path)
         } catch {
-            // using restored user dictionary
-            Backend.rust = Result { try createRustBackend() }
-            throw error
+            err = error
         }
+        // this may result in using bundled dictionary if new user dictionary throws an error
+        Backend.rust = Result { try createRustBackend() }
+
         let schemaVer = Int(dictSchemaVer())
         try Storage.setDictSchemaVer(schemaVer)
+
+        if let err = err {
+            throw err
+        }
         return true
     }
 }
@@ -55,6 +57,8 @@ private func createRustBackend() throws -> RustBackend {
     if let userDict = try? validateAndGetUserDict() {
         if let rust = try? RustBackend(dictPath: userDict.path) {
             return rust
+        } else {
+            os_log(.error, "Failed to create rust backend using user downlaoded dictionary. Using bundled dictionary instead.")
         }
     }
     let bundledDict = try getBundledDictUrl()
