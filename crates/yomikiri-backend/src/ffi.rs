@@ -185,7 +185,7 @@ fn decode_gzip_xml<R: Read>(gzipped: R, capacity: usize) -> Result<String> {
     let mut decoder = GzDecoder::new(gzipped);
     let mut xml = String::with_capacity(capacity);
     decoder.read_to_string(&mut xml)?;
-    return Ok(xml);
+    Ok(xml)
 }
 
 /// Downloads and writes new dictionary files into specif

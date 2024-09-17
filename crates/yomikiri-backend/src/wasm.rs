@@ -29,7 +29,7 @@ interface Backend {
      * from jmdict gzipped xml, creates dictionary file bytearray,
      * and updates dictionary file used in Backend.
      */
-    update_dictionary(gzip: Uint8Array): DictUpdateResult;
+    update_dictionary(jmdict: Uint8Array, jmnedict: Uint8Array): DictUpdateResult;
 }
 "#;
 
@@ -132,7 +132,7 @@ fn decode_gzip_xml(gzipped: Vec<u8>, capacity: usize) -> Result<String> {
     let mut decoder = GzDecoder::new(&gzipped[..]);
     let mut xml = String::with_capacity(capacity);
     decoder.read_to_string(&mut xml)?;
-    return Ok(xml);
+    Ok(xml)
 }
 
 #[wasm_bindgen]

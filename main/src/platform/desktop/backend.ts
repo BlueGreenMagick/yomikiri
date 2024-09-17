@@ -24,7 +24,6 @@ import {
 } from "platform/shared/backend";
 import {
   idbHasFile,
-  idbHasFiles,
   idbReadFile,
   idbWriteFile,
   idbWriteFiles,
