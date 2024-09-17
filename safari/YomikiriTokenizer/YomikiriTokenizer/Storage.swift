@@ -2,42 +2,39 @@
 
 import Foundation
 
+private let defaults = getSharedDefaults()
+
 /// Wrapper for shared storage between app and extensions
 /// Each value saved in Storage has its own getter and setter
 public enum Storage {
-    static var defaults = getSharedDefaults()
+    public static let config = StoragePropertyWithDefault<String>(key: "config", other: "{}")
+    public static let jmdictEtag = StorageProperty<String>(key: "dict.jmdict.etag")
+    public static let jmnedictEtag = StorageProperty<String>(key: "dict.jmnedict.etag")
+    public static let dictSchemaVer = StorageProperty<Int>(key: "dict.schema_ver")
+}
 
-    public static func getConfig() throws -> String {
-        return try defaults.get().string(forKey: "config") ?? "{}"
+public struct StorageProperty<T> {
+    let key: String
+
+    public func get() throws -> T? {
+        return try defaults.get().object(forKey: key) as? T
     }
 
-    public static func setConfig(_ configJson: String) throws {
-        return try defaults.get().set(configJson, forKey: "config")
+    public func set(_ value: T?) throws {
+        return try defaults.get().set(value, forKey: key)
+    }
+}
+
+public struct StoragePropertyWithDefault<T> {
+    let key: String
+    let other: T
+
+    public func get() throws -> T {
+        return try defaults.get().object(forKey: key) as? T ?? other
     }
 
-    /// Returns 0 if not set
-    public static func getDictSchemaVer() throws -> Int {
-        return try defaults.get().integer(forKey: "dict.schema_ver")
-    }
-
-    public static func setDictSchemaVer(_ schemaVer: Int?) throws {
-        return try defaults.get().set(schemaVer, forKey: "dict.schema_ver")
-    }
-
-    public static func getJmdictEtag() throws -> String? {
-        return try defaults.get().string(forKey: "dict.jmdict.etag")
-    }
-
-    public static func setJmdictEtag(_ etag: String?) throws {
-        return try defaults.get().set(etag, forKey: "dict.jmdict.etag")
-    }
-
-    public static func getJmnedictEtag() throws -> String? {
-        return try defaults.get().string(forKey: "dict.jmdict.etag")
-    }
-
-    public static func setJmnedictEtag(_ etag: String?) throws {
-        return try defaults.get().set(etag, forKey: "dict.jmnedict.etag")
+    public func set(_ value: T?) throws {
+        return try defaults.get().set(value, forKey: key)
     }
 }
 

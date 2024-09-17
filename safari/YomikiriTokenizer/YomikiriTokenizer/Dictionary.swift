@@ -1,11 +1,11 @@
 import Foundation
 import os.log
 
+// TODO: remove jmdict and jmnedict xml files as well
 func deleteUserDictionary(_ userDictUrl: URL) {
     os_log(.info, "Deleting user dictionary files")
     _ = try? FileManager.default.removeItem(at: userDictUrl)
-    _ = try? Storage.setDictSchemaVer(0)
-    _ = try? Storage.setJmdictEtag(nil)
+    _ = try? Storage.dictSchemaVer.set(nil)
 }
 
 /// @return user dictionary `URL` if it exists and is valid.
@@ -20,7 +20,7 @@ func validateAndGetUserDict() throws -> URL? {
     }
 
     let schemaVer = dictSchemaVer()
-    let userDictSchemaVer = try Storage.getDictSchemaVer()
+    let userDictSchemaVer = try Storage.dictSchemaVer.get() ?? 0
     if userDictSchemaVer == schemaVer {
         return userDict
     } else {

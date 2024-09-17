@@ -22,13 +22,13 @@ public enum Backend {
     public static func updateDictionary() async throws -> Bool {
         let dir = try filesDirectory()
 
-        let jmdictResult = try downloadJmdict(dir: dir.path, etag: Storage.getJmdictEtag())
+        let jmdictResult = try downloadJmdict(dir: dir.path, etag: Storage.jmdictEtag.get())
         if case let .replace(etag: etag) = jmdictResult {
-            try Storage.setJmdictEtag(etag)
+            try Storage.jmdictEtag.set(etag)
         }
-        let jmnedictResult = try downloadJmnedict(dir: dir.path, etag: Storage.getJmnedictEtag())
+        let jmnedictResult = try downloadJmnedict(dir: dir.path, etag: Storage.jmnedictEtag.get())
         if case let .replace(etag: etag) = jmnedictResult {
-            try Storage.setJmnedictEtag(etag)
+            try Storage.jmnedictEtag.set(etag)
         }
 
         // drop backend to close mmap and open file handle
@@ -43,7 +43,7 @@ public enum Backend {
         Backend.rust = Result { try createRustBackend() }
 
         let schemaVer = Int(dictSchemaVer())
-        try Storage.setDictSchemaVer(schemaVer)
+        try Storage.dictSchemaVer.set(schemaVer)
 
         if let err = err {
             throw err
