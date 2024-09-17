@@ -5,12 +5,13 @@ use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::read::GzDecoder;
-use ureq::Response;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
+use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
 use yomikiri_dictionary::{DICT_FILENAME, SCHEMA_VER};
 
 use fs_err::{self as fs, File};
+use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
@@ -140,73 +141,118 @@ pub enum UpdateDictionaryResult {
     },
 }
 
-/// Downloads and writes new dictionary files into specified path.
-///
-/// - `etag`: ETag header value of previous download
-#[uniffi::export]
-pub fn update_dictionary_file(
-    temp_dir: String,
-    etag: Option<String>,
-) -> FFIResult<UpdateDictionaryResult> {
-    _update_dictionary_file(temp_dir, etag).uniffi()
+#[derive(uniffi::Enum)]
+pub enum DownloadDictionaryResult {
+    UpToDate,
+    Replace { etag: Option<String> },
 }
 
-fn _update_dictionary_file(
-    temp_dir: String,
-    etag: Option<String>,
-) -> Result<UpdateDictionaryResult> {
-    let resp = download_dictionary(&etag)?;
-    if resp.status() == 304 {
-        return Ok(UpdateDictionaryResult::UpToDate);
+#[uniffi::export]
+pub fn download_jmdict(dir: String, etag: Option<String>) -> FFIResult<DownloadDictionaryResult> {
+    let dir = PathBuf::from(dir);
+    download_dictionary_xml(
+        &dir,
+        "JMdict_e.gz",
+        "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz",
+        etag.as_deref(),
+    )
+    .uniffi()
+}
+
+#[uniffi::export]
+pub fn download_jmnedict(dir: String, etag: Option<String>) -> FFIResult<DownloadDictionaryResult> {
+    let dir = PathBuf::from(dir);
+    download_dictionary_xml(
+        &dir,
+        "JMnedict.xml.gz",
+        "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz",
+        etag.as_deref(),
+    )
+    .uniffi()
+}
+
+/// `dir` must exist
+pub fn download_dictionary_xml(
+    dir: &Path,
+    filename: &str,
+    url: &str,
+    etag: Option<&str>,
+) -> Result<DownloadDictionaryResult> {
+    let target_path = dir.join(filename);
+
+    let mut req = ureq::get(url);
+    if let Some(etag) = etag {
+        if target_path.try_exists()? {
+            req = req.set("If-None-Match", etag);
+        }
     }
+    let resp = req.call()?;
+
+    if resp.status() == 304 {
+        return Ok(DownloadDictionaryResult::UpToDate);
+    }
+
+    let temp_path = dir.join(format!("{}.temp", filename));
 
     let etag = resp.header("ETag").map(|s| s.to_owned());
-    let mut decoder = GzDecoder::new(resp.into_reader());
-    // JMDict is currently 58MB.
-    let mut bytes: Vec<u8> = Vec::with_capacity(72 * 1024 * 1024);
-    std::io::copy(&mut decoder, &mut bytes)?;
-    let xml = String::from_utf8(bytes)?;
+    let mut reader = resp.into_reader();
+    let mut file = File::create(&temp_path)?;
+    std::io::copy(&mut reader, &mut file)?;
 
-    std::mem::drop(decoder);
+    fs::rename(&temp_path, &target_path)?;
 
-    let entries = parse_jmdict_xml(&xml)?;
-    let temp_dir = Path::new(&temp_dir).join("dict");
-    let temp_dict_path = temp_dir.join(DICT_FILENAME);
+    Ok(DownloadDictionaryResult::Replace { etag })
+}
 
-    if temp_dir.exists() {
-        fs::remove_dir_all(&temp_dir)?;
-    }
-    fs::create_dir(&temp_dir)?;
+/// Creates `english.yomikiridict` at directory
+#[uniffi::export]
+pub fn create_dictionary(dir: String) -> FFIResult<()> {
+    _create_dictionary(dir).uniffi()
+}
+
+fn _create_dictionary(dir: String) -> Result<()> {
+    let dir = PathBuf::from(dir);
+    let jmdict_path = dir.join("JMdict_e.gz");
+    let jmnedict_path = dir.join("JMnedict.xml.gz");
+    let temp_dict_path = dir.join(format!("{}.temp", DICT_FILENAME));
+    let dict_path = dir.join(DICT_FILENAME);
+
+    let jmnedict_file = File::open(&jmnedict_path)?;
+    let jmnedict_reader = BufReader::new(jmnedict_file);
+    let jmnedict_xml = decode_gzip_xml(jmnedict_reader, 160 * 1024 * 1024)?;
+
+    let (name_entries, mut word_entries) =
+        parse_jmnedict_xml(&jmnedict_xml).context("Failed to parse JMneDict xml file")?;
+    std::mem::drop(jmnedict_xml);
+
+    let jmdict_file = File::open(&jmdict_path)?;
+    let jmdict_reader = BufReader::new(jmdict_file);
+    let jmdict_xml = decode_gzip_xml(jmdict_reader, 64 * 1024 * 1024)?;
+
+    let entries = parse_jmdict_xml(&jmdict_xml).context("Failed to parse JMDict xml file")?;
+    std::mem::drop(jmdict_xml);
+    word_entries.extend(entries);
 
     let mut temp_dict_file = File::create(&temp_dict_path)?;
     // TODO: update JMnedict as well
-    DictionaryView::build_and_encode_to(&[], &entries, &mut temp_dict_file)?;
+    DictionaryView::build_and_encode_to(&name_entries, &word_entries, &mut temp_dict_file)?;
     std::mem::drop(temp_dict_file);
+    fs::rename(&temp_dict_path, &dict_path)?;
 
-    let replace_job = DictFilesReplaceJob {
-        temp_dir: temp_dir.to_path_buf(),
-    };
-    let result = UpdateDictionaryResult::Replace {
-        job: Arc::new(replace_job),
-        etag,
-    };
-
-    Ok(result)
+    Ok(())
 }
 
+fn decode_gzip_xml<R: Read>(gzipped: R, capacity: usize) -> Result<String> {
+    let mut decoder = GzDecoder::new(gzipped);
+    let mut xml = String::with_capacity(capacity);
+    decoder.read_to_string(&mut xml)?;
+    return Ok(xml);
+}
+
+/// Downloads and writes new dictionary files into specif
 #[uniffi::export]
 pub fn dict_schema_ver() -> u16 {
     SCHEMA_VER
-}
-
-fn download_dictionary(etag: &Option<String>) -> Result<Response> {
-    let download_url = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
-    let mut req = ureq::get(download_url);
-    if let Some(etag) = etag {
-        req = req.set("If-None-Match", etag);
-    }
-    let resp = req.call()?;
-    Ok(resp)
 }
 
 // TODO: switch to Memmap
