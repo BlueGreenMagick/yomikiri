@@ -33,7 +33,7 @@ fn test_jmdict_parse_1() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let entries = parse_jmdict_xml(&xml)?;
+    let entries = parse_jmdict_xml(xml.as_bytes())?;
     insta::assert_yaml_snapshot!(entries);
     Ok(())
 }
@@ -88,7 +88,7 @@ fn test_jmdict_parse_2() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let entries = parse_jmdict_xml(&xml)?;
+    let entries = parse_jmdict_xml(xml.as_bytes())?;
     insta::assert_yaml_snapshot!(entries);
     Ok(())
 }
@@ -131,7 +131,7 @@ fn skip_name_entries_in_jmdict() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let entries = parse_jmdict_xml(&xml)?;
+    let entries = parse_jmdict_xml(xml.as_bytes())?;
     insta::assert_yaml_snapshot!(entries);
     Ok(())
 }

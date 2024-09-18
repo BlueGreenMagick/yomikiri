@@ -150,8 +150,9 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     let (name_entries, word_entries) = parse_jmnedict_xml(jmnedict_reader)?;
 
     println!("Parsing JMDict xml file...",);
-    let jmdict_xml = fs::read_to_string(&jmdict_file_path)?;
-    let mut entries = parse_jmdict_xml(&jmdict_xml)?;
+    let jmdict_file = File::open(&jmdict_file_path)?;
+    let jmdict_reader = BufReader::new(jmdict_file);
+    let mut entries = parse_jmdict_xml(jmdict_reader)?;
     entries.extend(word_entries);
 
     println!("Writing yomikiri dictionary file...");

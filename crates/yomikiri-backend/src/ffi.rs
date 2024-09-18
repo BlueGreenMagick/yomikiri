@@ -4,15 +4,14 @@ use crate::tokenize::create_tokenizer;
 use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
-use flate2::bufread::GzDecoder as BufGzDecoder;
-use flate2::read::GzDecoder;
+use flate2::bufread::GzDecoder;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
 use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
 use yomikiri_dictionary::{DICT_FILENAME, SCHEMA_VER};
 
 use fs_err::{self as fs, File};
-use std::io::{BufReader, Read};
+use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
@@ -157,20 +156,12 @@ fn _create_dictionary(dir: String) -> Result<()> {
     let temp_dict_path = dir.join(format!("{}.temp", DICT_FILENAME));
     let dict_path = dir.join(DICT_FILENAME);
 
-    let jmnedict_gzip_file = File::open(&jmnedict_path)?;
-    let jmnedict_gzip_reader = BufReader::new(jmnedict_gzip_file);
-    let jmnedict_decoder = BufGzDecoder::new(jmnedict_gzip_reader);
-    let jmnedict_reader = BufReader::new(jmnedict_decoder);
-
+    let jmnedict_reader = decode_gzip_xml(&jmnedict_path)?;
     let (name_entries, mut word_entries) =
         parse_jmnedict_xml(jmnedict_reader).context("Failed to parse JMneDict xml file")?;
 
-    let jmdict_file = File::open(&jmdict_path)?;
-    let jmdict_reader = BufReader::new(jmdict_file);
-    let jmdict_xml = decode_gzip_xml(jmdict_reader, 64 * 1024 * 1024)?;
-
-    let entries = parse_jmdict_xml(&jmdict_xml).context("Failed to parse JMDict xml file")?;
-    std::mem::drop(jmdict_xml);
+    let jmdict_reader = decode_gzip_xml(&jmdict_path)?;
+    let entries = parse_jmdict_xml(jmdict_reader).context("Failed to parse JMDict xml file")?;
     word_entries.extend(entries);
 
     let mut temp_dict_file = File::create(&temp_dict_path)?;
@@ -182,11 +173,12 @@ fn _create_dictionary(dir: String) -> Result<()> {
     Ok(())
 }
 
-fn decode_gzip_xml<R: Read>(gzipped: R, capacity: usize) -> Result<String> {
-    let mut decoder = GzDecoder::new(gzipped);
-    let mut xml = String::with_capacity(capacity);
-    decoder.read_to_string(&mut xml)?;
-    Ok(xml)
+fn decode_gzip_xml(path: &Path) -> Result<BufReader<GzDecoder<BufReader<File>>>> {
+    let file = File::open(path)?;
+    let gzip_reader = BufReader::new(file);
+    let decoder = GzDecoder::new(gzip_reader);
+    let reader = BufReader::new(decoder);
+    Ok(reader)
 }
 
 /// Downloads and writes new dictionary files into specif
