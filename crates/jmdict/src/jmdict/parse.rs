@@ -1,7 +1,9 @@
 use core::str;
+use std::io::BufRead;
 
 use log::warn;
-use quick_xml::events::Event;
+use polonius_the_crab::{polonius, polonius_return};
+use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 
 use super::types::{
@@ -12,6 +14,105 @@ use crate::jmdict::types::JMReadingInfo;
 use crate::utils::parse_entity_enum;
 use crate::xml::{parse_in_tag, parse_string_in_tag, TagName};
 use crate::{Error, Result};
+
+struct JMDictParser<R: BufRead> {
+    reader: Reader<R>,
+    buf: Vec<u8>,
+}
+
+impl<R: BufRead> JMDictParser<R> {
+    pub fn new(reader: R) -> Self {
+        let reader = Reader::from_reader(reader);
+        let buf = Vec::new();
+        JMDictParser { reader, buf }
+    }
+
+    fn parse_in_entry(&mut self) -> Result<JMEntry> {
+        let mut id: Option<u32> = None;
+        let mut entry = JMEntry::default();
+
+        while let Some(start) = get_next_child_in(&mut self.reader, &mut self.buf, "entry")? {
+            match start.name().0 {
+                b"ent_seq" => {
+                    if let Some(id) = id {
+                        return Err(Error::MultipleEntryIds(id));
+                    }
+                    let idstr = self.parse_string_in_tag(b"ent_seq")?;
+                    let seq_id = str::parse::<u32>(&idstr)
+                        .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
+                    id = Some(seq_id);
+                }
+                b"k_ele" => {
+                    let form = self.parse_in_form()?;
+                    entry.kanjis.push(form);
+                }
+                b"r_ele" => {
+                    let reading = self.parse_in_reading()?;
+                    entry.readings.push(reading);
+                }
+                b"sense" => {
+                    let sense = self.parse_in_sense()?;
+                    entry.senses.push(sense);
+                }
+                _ => {
+                    warn!("Unknown tag in <entry>: <{}>", start.tag_name())
+                }
+            };
+        }
+
+        if let Some(id) = id {
+            entry.id = id;
+            return Ok(entry);
+        } else {
+            return Err(Error::NoEntryId(self.reader.buffer_position()));
+        }
+    }
+
+    fn parse_in_form(&mut self) -> Result<JMKanji> {
+        unimplemented!()
+    }
+
+    fn parse_in_reading(&mut self) -> Result<JMReading> {
+        unimplemented!()
+    }
+
+    fn parse_in_sense(&mut self) -> Result<JMSense> {
+        unimplemented!()
+    }
+
+    fn parse_string_in_tag(&mut self, tag: &[u8]) -> Result<String> {
+        unimplemented!()
+    }
+}
+
+fn get_next_child_in<'b, R: BufRead>(
+    reader: &mut Reader<R>,
+    mut buf: &'b mut Vec<u8>,
+    tag: &str,
+) -> Result<Option<BytesStart<'b>>> {
+    loop {
+        polonius!(|buf| -> Result<Option<BytesStart<'polonius>>> {
+            let ev = match reader.read_event_into(buf) {
+                Ok(ev) => ev,
+                Err(err) => {
+                    polonius_return!(Err(err.into()))
+                }
+            };
+            match ev {
+                Event::Start(start) => polonius_return!(Ok(Some(start))),
+                Event::End(end) => {
+                    if end.name().0 == tag.as_bytes() {
+                        polonius_return!(Ok(None));
+                    }
+                }
+                Event::Eof => {
+                    polonius_return!(Err(Error::InvalidXml(format!("<{}> not closed", tag))))
+                }
+                _ => {}
+            }
+        })
+    }
+}
 
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut reader = Reader::from_str(xml);
@@ -56,6 +157,7 @@ fn parse_in_jmdict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMEntry>> {
 
     Ok(entries)
 }
+
 /// Parse within `<entry>` tag. `id` is set to 0 if `<ent_seq>` tag is not found.
 pub fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMEntry> {
     let mut id: Option<u32> = None;

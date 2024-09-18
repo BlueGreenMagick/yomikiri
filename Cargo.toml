@@ -55,6 +55,7 @@ wasm-bindgen = "0.2"
 quick-xml = "0.36"
 insta = { version = "1.39", features = ["yaml"] }
 fern = "0.6"
+polonius-the-crab = "0.4.1"
 
 japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }
