@@ -97,6 +97,8 @@ impl<R: BufRead> JMDictParser<R> {
             };
         }
 
+        self.buf.clear();
+
         if let Some(id) = id {
             entry.id = id;
             return Ok(entry);
