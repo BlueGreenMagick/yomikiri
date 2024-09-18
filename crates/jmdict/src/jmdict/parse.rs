@@ -92,6 +92,8 @@ fn get_next_child_in<'b, R: BufRead>(
 ) -> Result<Option<BytesStart<'b>>> {
     loop {
         polonius!(|buf| -> Result<Option<BytesStart<'polonius>>> {
+            buf.clear();
+
             let ev = match reader.read_event_into(buf) {
                 Ok(ev) => ev,
                 Err(err) => {
