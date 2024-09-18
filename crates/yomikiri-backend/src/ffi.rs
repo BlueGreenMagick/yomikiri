@@ -4,6 +4,7 @@ use crate::tokenize::create_tokenizer;
 use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
+use flate2::bufread::GzDecoder as BufGzDecoder;
 use flate2::read::GzDecoder;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
@@ -156,13 +157,13 @@ fn _create_dictionary(dir: String) -> Result<()> {
     let temp_dict_path = dir.join(format!("{}.temp", DICT_FILENAME));
     let dict_path = dir.join(DICT_FILENAME);
 
-    let jmnedict_file = File::open(&jmnedict_path)?;
-    let jmnedict_reader = BufReader::new(jmnedict_file);
-    let jmnedict_xml = decode_gzip_xml(jmnedict_reader, 160 * 1024 * 1024)?;
+    let jmnedict_gzip_file = File::open(&jmnedict_path)?;
+    let jmnedict_gzip_reader = BufReader::new(jmnedict_gzip_file);
+    let jmnedict_decoder = BufGzDecoder::new(jmnedict_gzip_reader);
+    let jmnedict_reader = BufReader::new(jmnedict_decoder);
 
     let (name_entries, mut word_entries) =
-        parse_jmnedict_xml(&jmnedict_xml).context("Failed to parse JMneDict xml file")?;
-    std::mem::drop(jmnedict_xml);
+        parse_jmnedict_xml(jmnedict_reader).context("Failed to parse JMneDict xml file")?;
 
     let jmdict_file = File::open(&jmdict_path)?;
     let jmdict_reader = BufReader::new(jmdict_file);

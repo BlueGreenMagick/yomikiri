@@ -1,4 +1,4 @@
-use std::io::BufWriter;
+use std::io::{BufReader, BufWriter};
 use std::path::{Path, PathBuf};
 
 use anyhow::{anyhow, Context, Result};
@@ -145,8 +145,9 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
     }
 
     println!("Parsing JMneDict xml file...",);
-    let jmnedict_xml = fs::read_to_string(&jmnedict_file_path)?;
-    let (name_entries, word_entries) = parse_jmnedict_xml(&jmnedict_xml)?;
+    let jmnedict_file = File::open(&jmnedict_file_path)?;
+    let jmnedict_reader = BufReader::new(jmnedict_file);
+    let (name_entries, word_entries) = parse_jmnedict_xml(jmnedict_reader)?;
 
     println!("Parsing JMDict xml file...",);
     let jmdict_xml = fs::read_to_string(&jmdict_file_path)?;

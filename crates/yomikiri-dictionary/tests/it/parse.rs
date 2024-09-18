@@ -159,7 +159,7 @@ fn test_jmnedict_parse_single() -> Result<()> {
 </entry>
 </JMnedict>
 "#;
-    let (name_entries, entries) = parse_jmnedict_xml(&xml)?;
+    let (name_entries, entries) = parse_jmnedict_xml(xml.as_bytes())?;
     insta::assert_yaml_snapshot!((name_entries, entries));
     Ok(())
 }
@@ -244,7 +244,7 @@ fn test_jmnedict_parse_multiple() -> Result<()> {
 </entry>
 </JMnedict>
 "#;
-    let (name_entries, entries) = parse_jmnedict_xml(&xml)?;
+    let (name_entries, entries) = parse_jmnedict_xml(xml.as_bytes())?;
     insta::assert_yaml_snapshot!((name_entries, entries));
     Ok(())
 }

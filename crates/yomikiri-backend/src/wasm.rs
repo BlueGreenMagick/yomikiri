@@ -9,7 +9,7 @@ use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
 use serde::Serialize;
-use std::io::Read;
+use std::io::{BufReader, Read};
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
@@ -90,13 +90,10 @@ impl Backend {
         gzip_jmnedict: &Uint8Array,
     ) -> WasmResult<JsValue> {
         let gzip_jmnedict = gzip_jmnedict.to_vec();
-        let jmnedict_xml = decode_gzip_xml(gzip_jmnedict, 160 * 1024 * 1024)
-            .context("Failed to decompress gzipped JMneDict xml file")?;
-        debug!("unzipped JMneDict file");
-
+        let jmnedict_decoder = GzDecoder::new(&gzip_jmnedict[..]);
+        let jmnedict_reader = BufReader::new(jmnedict_decoder);
         let (name_entries, mut word_entries) =
-            parse_jmnedict_xml(&jmnedict_xml).context("Failed to parse JMneDict xml file")?;
-        std::mem::drop(jmnedict_xml);
+            parse_jmnedict_xml(jmnedict_reader).context("Failed to parse JMneDict xml file")?;
         debug!("parsed jmdict file");
 
         let gzip_jmdict = gzip_jmdict.to_vec();
