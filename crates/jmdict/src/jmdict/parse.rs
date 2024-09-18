@@ -14,7 +14,7 @@ use crate::utils::parse_entity_enum_into;
 use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName};
 use crate::{Error, Result};
 
-struct JMDictParser<R: BufRead> {
+pub struct JMDictParser<R: BufRead> {
     reader: Reader<R>,
     buf: Vec<u8>,
 }
@@ -30,6 +30,10 @@ impl<R: BufRead> JMDictParser<R> {
         let mut parser = JMDictParser { reader, buf };
         parser.parse_jmdict_start()?;
         Ok(parser)
+    }
+
+    pub fn next_entry(&mut self) -> Result<Option<JMEntry>> {
+        self.parse_entry_in_jmdict()
     }
 
     fn parse_jmdict_start(&mut self) -> Result<()> {
@@ -278,7 +282,7 @@ impl<R: BufRead> JMDictParser<R> {
 pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
     let mut parser = JMDictParser::new(xml.as_bytes())?;
     let mut entries = vec![];
-    while let Some(entry) = parser.parse_entry_in_jmdict()? {
+    while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
     Ok(JMDict { entries })

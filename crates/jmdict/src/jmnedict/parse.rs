@@ -12,7 +12,7 @@ use crate::{Error, Result};
 
 use super::types::{JMneDict, JMneEntry, JMneKanji, JMneReading, JMneTranslation};
 
-struct JMneDictParser<R: BufRead> {
+pub struct JMneDictParser<R: BufRead> {
     reader: Reader<R>,
     buf: Vec<u8>,
 }
@@ -28,6 +28,10 @@ impl<R: BufRead> JMneDictParser<R> {
         let mut parser = JMneDictParser { reader, buf };
         parser.parse_jmnedict_start()?;
         Ok(parser)
+    }
+
+    pub fn next_entry(&mut self) -> Result<Option<JMneEntry>> {
+        self.parse_entry_in_jmnedict()
     }
 
     fn parse_jmnedict_start(&mut self) -> Result<()> {
