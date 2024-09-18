@@ -101,9 +101,9 @@ impl<R: BufRead> JMDictParser<R> {
 
         if let Some(id) = id {
             entry.id = id;
-            return Ok(entry);
+            Ok(entry)
         } else {
-            return Err(Error::NoEntryId(self.reader.buffer_position()));
+            Err(Error::NoEntryId(self.reader.buffer_position()))
         }
     }
 
