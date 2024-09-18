@@ -36,14 +36,6 @@ impl<'a> TagName<'a> for BytesEnd<'a> {
     }
 }
 
-pub fn parse_string_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<String> {
-    let characters = parse_text_in_tag(reader, in_tag)?;
-    let string = str::from_utf8(&characters)?;
-    let string = resolve_custom_entity_item(string);
-    let string = unescape_with(&string, unescape_entity)?;
-    Ok(string.into())
-}
-
 pub fn parse_string_in_tag_into<R: BufRead>(
     reader: &mut Reader<R>,
     buf: &mut Vec<u8>,
@@ -54,37 +46,6 @@ pub fn parse_string_in_tag_into<R: BufRead>(
     let string = resolve_custom_entity_item(string);
     let string = unescape_with(&string, unescape_entity)?;
     Ok(string.into())
-}
-
-pub fn parse_text_in_tag(reader: &mut Reader<&[u8]>, in_tag: &[u8]) -> Result<Vec<u8>> {
-    let mut characters = Vec::new();
-    loop {
-        match reader.read_event()? {
-            Event::Start(tag) => {
-                return Err(Error::Unexpected {
-                    expected: "text".into(),
-                    actual: format!("starting tag <{}>", tag.tag_name()),
-                });
-            }
-            Event::Text(text) => {
-                let text = text.into_inner();
-                characters.extend_from_slice(&text);
-            }
-            Event::End(tag) => {
-                if tag.name().0 == in_tag {
-                    return Ok(characters);
-                } else {
-                    return Err(Error::Unexpected {
-                        expected: format!("ending tag </{}>", tag.tag_name()),
-                        actual: format!("ending tag </{}>", tag.tag_name()),
-                    });
-                }
-            }
-            _ => {
-                unimplemented!()
-            }
-        }
-    }
 }
 
 pub fn parse_text_in_tag_into<R: BufRead>(
@@ -148,30 +109,6 @@ fn unescape_entity(entity: &str) -> Option<&'static str> {
         Some(unescaped)
     } else {
         Some("")
-    }
-}
-
-pub fn parse_in_tag<FStart>(
-    reader: &mut Reader<&[u8]>,
-    tag: &str,
-    mut handle_start: FStart,
-) -> Result<()>
-where
-    FStart: FnMut(&mut Reader<&[u8]>, BytesStart<'_>) -> Result<()>,
-{
-    loop {
-        match reader.read_event()? {
-            Event::Start(start) => {
-                handle_start(reader, start)?;
-            }
-            Event::End(end) => {
-                if end.name().0 == tag.as_bytes() {
-                    return Ok(());
-                }
-            }
-            Event::Eof => return Err(Error::InvalidXml(format!("<{}> not closed", tag))),
-            _ => {}
-        }
     }
 }
 

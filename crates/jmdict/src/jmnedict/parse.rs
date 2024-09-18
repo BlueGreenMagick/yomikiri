@@ -1,209 +1,249 @@
 use core::str;
+use std::io::BufRead;
 
 use log::warn;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 
 use crate::jmnedict::types::JMneNameType;
-use crate::utils::parse_entity_enum;
-use crate::xml::{parse_in_tag, parse_string_in_tag, TagName};
+use crate::utils::parse_entity_enum_into;
+use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName};
 use crate::{Error, Result};
 
 use super::types::{JMneDict, JMneEntry, JMneKanji, JMneReading, JMneTranslation};
 
-pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
-    let mut reader = Reader::from_str(xml);
-    reader.config_mut().trim_text_start = true;
-    reader.config_mut().trim_text_end = true;
-    reader.config_mut().expand_empty_elements = true;
-
-    parse_jmnedict(&mut reader)
+struct JMneDictParser<R: BufRead> {
+    reader: Reader<R>,
+    buf: Vec<u8>,
 }
 
-fn parse_jmnedict(reader: &mut Reader<&[u8]>) -> Result<JMneDict> {
-    loop {
-        match reader.read_event()? {
-            Event::Start(tag) => match tag.name().0 {
-                b"JMnedict" => {
-                    let entries = parse_in_jmnedict(reader)?;
-                    return Ok(JMneDict { entries });
-                }
-                _ => {
-                    warn!("Unknown global tag: {}", tag.tag_name());
-                }
-            },
-            Event::Eof => return Err(Error::InvalidXml("<JMnedict> not found".into())),
-            _ => {}
+impl<R: BufRead> JMneDictParser<R> {
+    pub fn new(reader: R) -> Result<Self> {
+        let mut reader = Reader::from_reader(reader);
+        reader.config_mut().trim_text_start = true;
+        reader.config_mut().trim_text_end = true;
+        reader.config_mut().expand_empty_elements = true;
+
+        let buf = Vec::new();
+        let mut parser = JMneDictParser { reader, buf };
+        parser.parse_jmnedict_start()?;
+        Ok(parser)
+    }
+
+    fn parse_jmnedict_start(&mut self) -> Result<()> {
+        loop {
+            self.buf.clear();
+            match self.reader.read_event_into(&mut self.buf)? {
+                Event::Start(tag) => match tag.name().0 {
+                    b"JMnedict" => {
+                        return Ok(());
+                    }
+                    _ => {
+                        warn!("Unknown global tag: {}", tag.tag_name());
+                    }
+                },
+                Event::Eof => return Err(Error::InvalidXml("<JMnedict> not found".into())),
+                _ => {}
+            }
         }
     }
-}
 
-fn parse_in_jmnedict(reader: &mut Reader<&[u8]>) -> Result<Vec<JMneEntry>> {
-    let mut entries = Vec::with_capacity(1024);
-    loop {
-        match reader.read_event()? {
-            Event::Start(tag) => match tag.name().0 {
-                b"entry" => {
-                    entries.push(parse_in_entry(reader)?);
-                }
+    fn parse_entry_in_jmnedict(&mut self) -> Result<Option<JMneEntry>> {
+        loop {
+            let start = match get_next_child_in(&mut self.reader, &mut self.buf, "JMnedict")? {
+                Some(tag) => tag,
+                None => return Ok(None),
+            };
+            match start.name().0 {
+                b"entry" => return self.parse_in_entry().map(Some),
                 _ => {
-                    warn!("Unknown tag in <JMnedict>: <{}>", &tag.tag_name());
-                }
-            },
-            Event::End(tag) => {
-                if tag.name().0 == b"JMnedict" {
-                    return Ok(entries);
+                    warn!("Unknown tag in <jmdict>: <{}>", start.tag_name());
                 }
             }
-            Event::Eof => return Err(Error::InvalidXml("<JMnedict not closed>".into())),
-            _ => {}
         }
     }
-}
 
-fn parse_in_entry(reader: &mut Reader<&[u8]>) -> Result<JMneEntry> {
-    let mut entry = JMneEntry::default();
-    let mut id: Option<u32> = None;
+    fn parse_in_entry(&mut self) -> Result<JMneEntry> {
+        let mut entry = JMneEntry::default();
+        let mut id: Option<u32> = None;
 
-    parse_in_tag(reader, "entry", |reader, tag| {
-        match tag.name().0 {
-            b"ent_seq" => {
-                if let Some(id) = id {
-                    return Err(Error::MultipleEntryIds(id));
+        while let Some(tag) = get_next_child_in(&mut self.reader, &mut self.buf, "entry")? {
+            match tag.name().0 {
+                b"ent_seq" => {
+                    if let Some(id) = id {
+                        return Err(Error::MultipleEntryIds(id));
+                    }
+                    let idstr =
+                        parse_string_in_tag_into(&mut self.reader, &mut self.buf, b"ent_seq")?;
+                    let seq_id = str::parse::<u32>(&idstr)
+                        .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
+                    id = Some(seq_id);
                 }
-                let idstr = parse_string_in_tag(reader, b"ent_seq")?;
-                let seq_id = str::parse::<u32>(&idstr)
-                    .map_err(|_| format!("Couldn't parse as u32 number: {}", idstr))?;
-                id = Some(seq_id);
-            }
-            b"k_ele" => {
-                entry.kanjis.push(parse_in_kanji(reader)?);
-            }
-            b"r_ele" => {
-                entry.readings.push(parse_in_reading(reader)?);
-            }
-            b"trans" => {
-                entry.translations.push(parse_in_translation(reader)?);
-            }
-            _ => {
-                warn!("Unknown tag in <entry>: <{}>", &tag.tag_name());
-            }
-        };
-        Ok(())
-    })?;
+                b"k_ele" => {
+                    entry.kanjis.push(self.parse_in_kanji()?);
+                }
+                b"r_ele" => {
+                    entry.readings.push(self.parse_in_reading()?);
+                }
+                b"trans" => {
+                    entry.translations.push(self.parse_in_translation()?);
+                }
+                _ => {
+                    warn!("Unknown tag in <entry>: <{}>", &tag.tag_name());
+                }
+            };
+        }
 
-    if let Some(id) = id {
-        entry.id = id;
-        Ok(entry)
-    } else {
-        Err(Error::NoEntryId(reader.buffer_position()))
+        self.buf.clear();
+
+        if let Some(id) = id {
+            entry.id = id;
+            Ok(entry)
+        } else {
+            Err(Error::NoEntryId(self.reader.buffer_position()))
+        }
     }
-}
 
-fn parse_in_kanji(reader: &mut Reader<&[u8]>) -> Result<JMneKanji> {
-    let mut kanji: Option<String> = None;
-    let mut priorities = vec![];
+    fn parse_in_kanji(&mut self) -> Result<JMneKanji> {
+        let mut kanji: Option<String> = None;
+        let mut priorities = vec![];
 
-    parse_in_tag(reader, "k_ele", |reader, tag| {
-        match tag.name().0 {
-            b"keb" => {
-                if let Some(kanji) = kanji.as_ref() {
-                    warn!(
-                        "Warning: Found multiple <keb> in form '{}' in JMneDict",
-                        kanji
-                    )
+        while let Some(tag) = get_next_child_in(&mut self.reader, &mut self.buf, "k_ele")? {
+            match tag.name().0 {
+                b"keb" => {
+                    if let Some(kanji) = kanji.as_ref() {
+                        warn!(
+                            "Warning: Found multiple <keb> in form '{}' in JMneDict",
+                            kanji
+                        )
+                    }
+                    kanji = Some(parse_string_in_tag_into(
+                        &mut self.reader,
+                        &mut self.buf,
+                        b"keb",
+                    )?);
                 }
-                kanji = Some(parse_string_in_tag(reader, b"keb")?);
-            }
-            b"ke_pri" => {
-                let priority = parse_string_in_tag(reader, b"ke_pri")?;
-                priorities.push(priority);
-            }
-            _ => {
-                warn!("Unknown tag in <k_ele>: {}", tag.tag_name());
-            }
+                b"ke_pri" => {
+                    let priority =
+                        parse_string_in_tag_into(&mut self.reader, &mut self.buf, b"ke_pri")?;
+                    priorities.push(priority);
+                }
+                _ => {
+                    warn!("Unknown tag in <k_ele>: {}", tag.tag_name());
+                }
+            };
+        }
+
+        let kanji = kanji.ok_or(Error::InvalidXml("No <keb> found in <k_ele>".into()))?;
+        let kanji = JMneKanji {
+            kanji,
+            priority: priorities,
         };
-        Ok(())
-    })?;
 
-    let kanji = kanji.ok_or(Error::InvalidXml("No <keb> found in <k_ele>".into()))?;
-    let kanji = JMneKanji {
-        kanji,
-        priority: priorities,
-    };
+        Ok(kanji)
+    }
 
-    Ok(kanji)
-}
+    fn parse_in_reading(&mut self) -> Result<JMneReading> {
+        let mut reading: Option<String> = None;
+        let mut to_kanjis = vec![];
+        let mut priorities = vec![];
 
-fn parse_in_reading(reader: &mut Reader<&[u8]>) -> Result<JMneReading> {
-    let mut reading: Option<String> = None;
-    let mut to_kanjis = vec![];
-    let mut priorities = vec![];
+        while let Some(tag) = get_next_child_in(&mut self.reader, &mut self.buf, "r_ele")? {
+            match tag.name().0 {
+                b"reb" => {
+                    reading = Some(parse_string_in_tag_into(
+                        &mut self.reader,
+                        &mut self.buf,
+                        b"reb",
+                    )?);
+                }
+                b"re_restr" => {
+                    let to_form =
+                        parse_string_in_tag_into(&mut self.reader, &mut self.buf, b"re_restr")?;
+                    to_kanjis.push(to_form);
+                }
+                b"re_pri" => {
+                    let priority =
+                        parse_string_in_tag_into(&mut self.reader, &mut self.buf, b"re_pri")?;
+                    priorities.push(priority);
+                }
+                _ => {
+                    warn!("Unknown tag in <r_ele>: {}", &tag.tag_name());
+                }
+            };
+        }
 
-    parse_in_tag(reader, "r_ele", |reader, tag| {
-        match tag.name().0 {
-            b"reb" => {
-                reading = Some(parse_string_in_tag(reader, b"reb")?);
-            }
-            b"re_restr" => {
-                let to_form = parse_string_in_tag(reader, b"re_restr")?;
-                to_kanjis.push(to_form);
-            }
-            b"re_pri" => {
-                let priority = parse_string_in_tag(reader, b"re_pri")?;
-                priorities.push(priority);
-            }
-            _ => {
-                warn!("Unknown tag in <r_ele>: {}", &tag.tag_name());
-            }
+        let reading = reading.ok_or(Error::InvalidXml("No <reb> found in <r_ele>".into()))?;
+        let reading = JMneReading {
+            reading,
+            to_kanji: to_kanjis,
+            priority: priorities,
         };
-        Ok(())
-    })?;
 
-    let reading = reading.ok_or(Error::InvalidXml("No <reb> found in <r_ele>".into()))?;
-    let reading = JMneReading {
-        reading,
-        to_kanji: to_kanjis,
-        priority: priorities,
-    };
+        Ok(reading)
+    }
 
-    Ok(reading)
-}
+    fn parse_in_translation(&mut self) -> Result<JMneTranslation> {
+        let mut translation = JMneTranslation::default();
 
-fn parse_in_translation(reader: &mut Reader<&[u8]>) -> Result<JMneTranslation> {
-    let mut translation = JMneTranslation::default();
-
-    parse_in_tag(reader, "trans", |reader, tag| {
-        match tag.name().0 {
-            b"name_type" => {
-                parse_entity_enum!(reader, JMneNameType, "name_type", translation.name_type);
-            }
-            b"xref" => {
-                translation.xref.push(parse_string_in_tag(reader, b"xref")?);
-            }
-            b"trans_det" => {
-                let tr_text = parse_string_in_tag(reader, b"trans_det")?;
-                for attr in tag.attributes() {
-                    let attr = attr?;
-                    if attr.key.0 == b"xml:lang" {
-                        let lang = attr.value;
-                        if lang.as_ref() != b"eng" {
-                            println!(
-                                "<trans_det> has non-english value: {}",
-                                str::from_utf8(&lang)?
-                            );
-                            return Ok(());
+        while let Some(tag) = get_next_child_in(&mut self.reader, &mut self.buf, "trans")? {
+            match tag.name().0 {
+                b"name_type" => {
+                    parse_entity_enum_into!(
+                        JMneNameType,
+                        &mut self.reader,
+                        &mut self.buf,
+                        "name_type",
+                        translation.name_type
+                    );
+                }
+                b"xref" => {
+                    translation.xref.push(parse_string_in_tag_into(
+                        &mut self.reader,
+                        &mut self.buf,
+                        b"xref",
+                    )?);
+                }
+                b"trans_det" => {
+                    let mut is_english = true;
+                    for attr in tag.attributes() {
+                        let attr = attr?;
+                        if attr.key.0 == b"xml:lang" {
+                            let lang = attr.value;
+                            if lang.as_ref() != b"eng" {
+                                println!(
+                                    "<trans_det> has non-english value: {}",
+                                    str::from_utf8(&lang)?
+                                );
+                                is_english = false;
+                            }
+                            break;
                         }
                     }
+                    if is_english {
+                        let tr_text = parse_string_in_tag_into(
+                            &mut self.reader,
+                            &mut self.buf,
+                            b"trans_det",
+                        )?;
+                        translation.translations.push(tr_text);
+                    }
                 }
-                translation.translations.push(tr_text);
-            }
-            _ => {
-                warn!("Unknown tag in <trans>: {}", &tag.tag_name());
-            }
-        };
-        Ok(())
-    })?;
+                _ => {
+                    warn!("Unknown tag in <trans>: {}", &tag.tag_name());
+                }
+            };
+        }
 
-    Ok(translation)
+        Ok(translation)
+    }
+}
+
+pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
+    let mut parser = JMneDictParser::new(xml.as_bytes())?;
+    let mut entries = vec![];
+    while let Some(entry) = parser.parse_entry_in_jmnedict()? {
+        entries.push(entry);
+    }
+    Ok(JMneDict { entries })
 }
