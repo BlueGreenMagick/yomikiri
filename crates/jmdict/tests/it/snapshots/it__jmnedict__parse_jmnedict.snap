@@ -1,6 +1,6 @@
 ---
 source: crates/jmdict/tests/it/jmnedict.rs
-assertion_line: 63
+assertion_line: 76
 expression: result
 ---
 entries:
@@ -54,3 +54,18 @@ entries:
         translations:
           - Japanese Confederation of Labor (1964-1987)
           - Dōmei
+  - id: 9999990
+    kanjis:
+      - kanji: ＪＭｎｅｄｉｃｔ
+        priority: []
+    readings:
+      - reading: ジェイエムエヌイーディクト
+        to_kanji: []
+        priority: []
+    translations:
+      - name_type:
+          - artwork
+        xref: []
+        translations:
+          - "Japanese-Multilingual Named Entity Dictionary Project - Creation Date: 2024-08-29"
+creation_date: 2024-08-29

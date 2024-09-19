@@ -41,6 +41,10 @@ impl<R: BufRead> JMneDictParser<R> {
         self.parse_entry_in_jmnedict()
     }
 
+    pub fn creation_date(&self) -> Option<&str> {
+        self.creation_date.as_deref()
+    }
+
     fn parse_jmnedict_start(&mut self) -> Result<()> {
         loop {
             self.buf.clear();
@@ -265,11 +269,18 @@ impl<R: BufRead> JMneDictParser<R> {
     }
 }
 
-pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
-    let mut parser = JMneDictParser::new(xml.as_bytes())?;
+pub fn parse_jmnedict_xml<R: BufRead>(reader: R) -> Result<JMneDict> {
+    let mut parser = JMneDictParser::new(reader)?;
     let mut entries = vec![];
-    while let Some(entry) = parser.parse_entry_in_jmnedict()? {
+    while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
-    Ok(JMneDict { entries })
+    let creation_date = parser
+        .creation_date()
+        .ok_or(Error::CreationDateNotFound)?
+        .to_owned();
+    Ok(JMneDict {
+        entries,
+        creation_date,
+    })
 }

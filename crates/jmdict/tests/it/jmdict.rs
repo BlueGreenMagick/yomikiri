@@ -36,9 +36,22 @@ fn test_xml_parse() -> Result<()> {
 <gloss>"as above" mark</gloss>
 </sense>
 </entry>
+<entry>
+<ent_seq>9999999</ent_seq>
+<k_ele>
+<keb>ＪＭｄｉｃｔ</keb>
+</k_ele>
+<r_ele>
+<reb>ジェイエムディクト</reb>
+</r_ele>
+<sense>
+<pos>&unc;</pos>
+<gloss>Japanese-Multilingual Dictionary Project - Creation Date: 2024-08-23</gloss>
+</sense>
+</entry>
 </JMdict>
 "#;
-    let result = parse_jmdict_xml(&xml)?;
+    let result = parse_jmdict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }
@@ -74,9 +87,22 @@ fn test_parse_dialect() -> Result<()> {
 <gloss>some meaning</gloss>
 </sense>
 </entry>
+<entry>
+<ent_seq>9999999</ent_seq>
+<k_ele>
+<keb>ＪＭｄｉｃｔ</keb>
+</k_ele>
+<r_ele>
+<reb>ジェイエムディクト</reb>
+</r_ele>
+<sense>
+<pos>&unc;</pos>
+<gloss>Japanese-Multilingual Dictionary Project - Creation Date: 2024-08-23</gloss>
+</sense>
+</entry>
 </JMdict>
 "#;
-    let result = parse_jmdict_xml(&xml)?;
+    let result = parse_jmdict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }
@@ -112,9 +138,22 @@ fn test_xml_parse2() -> Result<()> {
 <gloss>in addition</gloss>
 </sense>
 </entry>
+<entry>
+<ent_seq>9999999</ent_seq>
+<k_ele>
+<keb>ＪＭｄｉｃｔ</keb>
+</k_ele>
+<r_ele>
+<reb>ジェイエムディクト</reb>
+</r_ele>
+<sense>
+<pos>&unc;</pos>
+<gloss>Japanese-Multilingual Dictionary Project - Creation Date: 2024-08-23</gloss>
+</sense>
+</entry>
 </JMdict>
     "#;
-    let result = parse_jmdict_xml(&xml)?;
+    let result = parse_jmdict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }

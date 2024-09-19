@@ -306,11 +306,18 @@ impl<R: BufRead> JMDictParser<R> {
     }
 }
 
-pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
-    let mut parser = JMDictParser::new(xml.as_bytes())?;
+pub fn parse_jmdict_xml<R: BufRead>(reader: R) -> Result<JMDict> {
+    let mut parser = JMDictParser::new(reader)?;
     let mut entries = vec![];
     while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
-    Ok(JMDict { entries })
+    let creation_date = parser
+        .creation_date()
+        .ok_or(Error::CreationDateNotFound)?
+        .to_owned();
+    Ok(JMDict {
+        entries,
+        creation_date,
+    })
 }

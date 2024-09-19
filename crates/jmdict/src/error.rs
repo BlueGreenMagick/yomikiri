@@ -29,6 +29,8 @@ pub enum Error {
     MultipleEntryIds(u32),
     #[error("Entry has no id, at pos: {0}")]
     NoEntryId(u64),
+    #[error("Creation date not found")]
+    CreationDateNotFound,
 }
 
 impl From<String> for Error {
