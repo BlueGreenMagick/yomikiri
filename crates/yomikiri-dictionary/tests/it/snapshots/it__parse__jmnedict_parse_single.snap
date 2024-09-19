@@ -1,9 +1,8 @@
 ---
 source: crates/yomikiri-dictionary/tests/it/parse.rs
-assertion_line: 120
-expression: "(name_entries, entries)"
+assertion_line: 189
+expression: result
 ---
-- []
 - - id: 5073921
     kanjis:
       - kanji: 恵山
@@ -30,3 +29,4 @@ expression: "(name_entries, entries)"
             info: []
             dialects: []
     priority: 0
+- []

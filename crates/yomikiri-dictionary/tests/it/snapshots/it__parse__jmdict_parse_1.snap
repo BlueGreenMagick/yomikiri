@@ -1,33 +1,34 @@
 ---
 source: crates/yomikiri-dictionary/tests/it/parse.rs
-assertion_line: 36
-expression: entries
+assertion_line: 62
+expression: result
 ---
-- id: 1000810
-  kanjis:
-    - kanji: いじり回す
-      rarity: normal
-    - kanji: 弄り回す
-      rarity: normal
-    - kanji: 弄りまわす
-      rarity: normal
-  readings:
-    - reading: いじりまわす
-      nokanji: false
-      toKanji: []
-      rarity: normal
-  groupedSenses:
-    - pos:
-        - verb
-      senses:
-        - meanings:
-            - to tinker with
-            - to fumble with
-            - to fiddle with
-            - to twiddle
-          toKanji: []
-          toReading: []
-          misc: []
-          info: []
-          dialects: []
-  priority: 0
+- - id: 1000810
+    kanjis:
+      - kanji: いじり回す
+        rarity: normal
+      - kanji: 弄り回す
+        rarity: normal
+      - kanji: 弄りまわす
+        rarity: normal
+    readings:
+      - reading: いじりまわす
+        nokanji: false
+        toKanji: []
+        rarity: normal
+    groupedSenses:
+      - pos:
+          - verb
+        senses:
+          - meanings:
+              - to tinker with
+              - to fumble with
+              - to fiddle with
+              - to twiddle
+            toKanji: []
+            toReading: []
+            misc: []
+            info: []
+            dialects: []
+    priority: 0
+- []

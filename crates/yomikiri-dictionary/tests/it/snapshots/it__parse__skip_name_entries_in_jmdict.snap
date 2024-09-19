@@ -1,29 +1,30 @@
 ---
 source: crates/yomikiri-dictionary/tests/it/parse.rs
-assertion_line: 135
-expression: entries
+assertion_line: 161
+expression: result
 ---
-- id: 2862076
-  kanjis:
-    - kanji: 自己査定
-      rarity: normal
-  readings:
-    - reading: じこさてい
-      nokanji: false
-      toKanji: []
-      rarity: normal
-  groupedSenses:
-    - pos:
-        - noun
-      senses:
-        - meanings:
-            - self-assessment
-            - self-evaluation
-            - self-appraisal
-            - self-audit
-          toKanji: []
-          toReading: []
-          misc: []
-          info: []
-          dialects: []
-  priority: 0
+- - id: 2862076
+    kanjis:
+      - kanji: 自己査定
+        rarity: normal
+    readings:
+      - reading: じこさてい
+        nokanji: false
+        toKanji: []
+        rarity: normal
+    groupedSenses:
+      - pos:
+          - noun
+        senses:
+          - meanings:
+              - self-assessment
+              - self-evaluation
+              - self-appraisal
+              - self-audit
+            toKanji: []
+            toReading: []
+            misc: []
+            info: []
+            dialects: []
+    priority: 0
+- []

@@ -1,10 +1,12 @@
-use std::io::Write;
+use std::io::{BufRead, Write};
 
 use ouroboros::self_referencing;
+use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
 use crate::entry::{Entry, NameEntry};
 use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryPointer};
 use crate::jagged_array::JaggedArray;
+use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
 use crate::{Result, WordEntry};
 
 #[self_referencing]
@@ -78,6 +80,78 @@ impl<'a> DictionaryView<'a> {
                 EntryPointer::Name(idx) => self.name_entries.get(*idx as usize).map(Entry::Name),
             })
             .collect::<Result<Vec<Entry>>>()
+    }
+}
+
+pub struct DictionaryWriterJMDict {}
+pub struct DictionaryWriterJMneDict {
+    entries: Vec<WordEntry>,
+}
+
+pub struct DictionaryWriterFinal {
+    entries: Vec<WordEntry>,
+    name_entries: Vec<NameEntry>,
+}
+
+#[derive(Default)]
+pub struct DictionaryWriter<STATE> {
+    state: STATE,
+}
+
+impl DictionaryWriter<DictionaryWriterJMDict> {
+    pub fn new() -> Self {
+        Self {
+            state: DictionaryWriterJMDict {},
+        }
+    }
+
+    pub fn read_jmdict<R: BufRead>(
+        self,
+        jmdict: R,
+    ) -> Result<DictionaryWriter<DictionaryWriterJMneDict>> {
+        let mut parser = JMDictParser::new(jmdict)?;
+        let mut entries = Vec::new();
+        while let Some(entry) = parser.next_entry()? {
+            if entry.id < 5000000 || entry.id >= 6000000 {
+                entries.push(WordEntry::try_from(entry)?)
+            }
+        }
+        Ok(DictionaryWriter {
+            state: DictionaryWriterJMneDict { entries },
+        })
+    }
+}
+
+impl DictionaryWriter<DictionaryWriterJMneDict> {
+    pub fn read_jmnedict<R: BufRead>(
+        mut self,
+        jmnedict: R,
+    ) -> Result<DictionaryWriter<DictionaryWriterFinal>> {
+        let mut name_builder = NameEntriesBuilder::new();
+
+        let mut parser = JMneDictParser::new(jmnedict)?;
+        while let Some(entry) = parser.next_entry()? {
+            parse_jmnedict_entry(&mut self.state.entries, &mut name_builder, entry)?;
+        }
+
+        let mut name_entries = vec![];
+        for name_entry in name_builder.into_iter() {
+            name_entries.push(name_entry);
+        }
+
+        Ok(DictionaryWriter {
+            state: DictionaryWriterFinal {
+                entries: self.state.entries,
+                name_entries,
+            },
+        })
+    }
+}
+
+impl DictionaryWriter<DictionaryWriterFinal> {
+    pub fn write<W: Write>(self, writer: &mut W) -> Result<()> {
+        DictionaryView::build_and_encode_to(&self.state.name_entries, &self.state.entries, writer)?;
+        Ok(())
     }
 }
 

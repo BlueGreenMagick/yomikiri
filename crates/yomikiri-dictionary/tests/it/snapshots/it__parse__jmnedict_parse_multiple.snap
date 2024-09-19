@@ -1,23 +1,8 @@
 ---
 source: crates/yomikiri-dictionary/tests/it/parse.rs
-assertion_line: 205
-expression: "(name_entries, entries)"
+assertion_line: 275
+expression: result
 ---
-- - kanji: 鏑木
-    groups:
-      - types:
-          - place
-          - surname
-        items:
-          - id: 5538229
-            reading: かぶらき
-      - types:
-          - surname
-        items:
-          - id: 5538230
-            reading: かぶらぎ
-          - id: 5538231
-            reading: かぶらやき
 - - id: 5000268
     kanjis:
       - kanji: あく屋
@@ -72,3 +57,18 @@ expression: "(name_entries, entries)"
             info: []
             dialects: []
     priority: 0
+- - kanji: 鏑木
+    groups:
+      - types:
+          - place
+          - surname
+        items:
+          - id: 5538229
+            reading: かぶらき
+      - types:
+          - surname
+        items:
+          - id: 5538230
+            reading: かぶらぎ
+          - id: 5538231
+            reading: かぶらやき
