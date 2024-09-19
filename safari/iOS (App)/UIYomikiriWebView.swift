@@ -178,8 +178,8 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             case "updateDict":
                 let resp = try await Backend.updateDictionary()
                 return try jsonSerialize(obj: resp)
-            case "getDictCreationDate":
-                let resp = try Backend.get().creationDate()
+            case "getDictMetadata":
+                let resp = try Backend.get().metadata()
                 return try jsonSerialize(obj: resp)
             case "openLink":
                 let urlString: String = try jsonDeserialize(json: request)

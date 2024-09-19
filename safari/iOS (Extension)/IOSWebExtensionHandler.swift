@@ -51,6 +51,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     let ver = ProcessInfo.processInfo.operatingSystemVersion
                     let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
                     jsonResponse = try jsonSerialize(obj: iosVersion)
+                case "getDictMetadata":
+                    let metadata = try Backend.get().metadata()
+                    jsonResponse = try jsonSerialize(obj: metadata)
                 default:
                     return
                 }

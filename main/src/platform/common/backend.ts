@@ -1,4 +1,4 @@
-import type { TokenizeResult } from "@yomikiri/yomikiri-rs";
+import type { DictionaryMetadata, TokenizeResult } from "@yomikiri/yomikiri-rs";
 import type { DesktopBackend } from "../desktop/backend";
 import type { IosBackend } from "../ios/backend";
 import type { IosAppBackend } from "../iosapp/backend";
@@ -7,7 +7,11 @@ export type { DesktopBackend } from "../desktop/backend";
 export type { IosBackend } from "../ios/backend";
 export type { IosAppBackend } from "../iosapp/backend";
 
-export type { Token, TokenizeResult } from "@yomikiri/yomikiri-rs";
+export type {
+  Token,
+  TokenizeResult,
+  DictionaryMetadata,
+} from "@yomikiri/yomikiri-rs";
 
 export interface TokenizeRequest {
   text: string;
@@ -26,7 +30,7 @@ export interface SearchRequest {
 export interface IBackend {
   tokenize(req: TokenizeRequest): Promise<TokenizeResult>;
   search(req: SearchRequest): Promise<TokenizeResult>;
-  getDictCreationDate(): Promise<string>;
+  getDictMetadata(): Promise<DictionaryMetadata>;
 }
 
 export declare const Backend:

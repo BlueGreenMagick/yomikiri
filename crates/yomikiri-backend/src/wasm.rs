@@ -28,6 +28,7 @@ interface Backend {
      * and updates dictionary file used in Backend.
      */
     update_dictionary(jmdict: Uint8Array, jmnedict: Uint8Array): DictUpdateResult;
+    metadata(): DictionaryMetadata;
 }
 "#;
 
@@ -118,9 +119,10 @@ impl Backend {
         serialize_result(&result)
     }
 
-    pub fn creation_date(&self) -> WasmResult<String> {
-        let creation_date = self.inner.dictionary.creation_date()?;
-        Ok(creation_date)
+    #[wasm_bindgen(skip_typescript)]
+    pub fn metadata(&self) -> WasmResult<JsValue> {
+        let metadata = self.inner.dictionary.metadata();
+        serialize_result(metadata)
     }
 }
 

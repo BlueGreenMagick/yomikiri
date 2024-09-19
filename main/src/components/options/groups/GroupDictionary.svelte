@@ -23,7 +23,8 @@
   let dictDescription = "Loading...";
 
   async function initialize() {
-    const date = await Backend.getDictCreationDate();
+    const metadata = await Backend.getDictMetadata();
+    const date = metadata.jmdict_creation_date ?? "Unknown date";
     dictDescription = `Dictionary created on: ${date}`;
     state = "loaded";
   }

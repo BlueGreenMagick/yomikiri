@@ -105,11 +105,11 @@ export namespace DesktopBackend {
     return result;
   }
 
-  export const getDictCreationDate = BackgroundFunction(
-    "getDictCreationDate",
+  export const getDictMetadata = BackgroundFunction(
+    "getDictMetadata",
     async () => {
       const wasm = await _wasm!.get();
-      return wasm.creation_date();
+      return wasm.metadata();
     },
   );
 

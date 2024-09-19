@@ -48,9 +48,9 @@ impl RustBackend {
         self._search(term, char_at).uniffi()
     }
 
-    pub fn creation_date(&self) -> FFIResult<String> {
-        let backend = self.inner.lock().unwrap();
-        backend.dictionary.creation_date().uniffi()
+    /// Returns JSON string if DictionaryMetadata
+    pub fn metadata(&self) -> FFIResult<String> {
+        self._metadata().uniffi()
     }
 }
 
@@ -74,6 +74,13 @@ impl RustBackend {
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.search(&term, char_at)?;
         let json = serde_json::to_string(&result)?;
+        Ok(json)
+    }
+
+    fn _metadata(&self) -> Result<String> {
+        let backend = self.inner.lock().unwrap();
+        let metadata = backend.dictionary.metadata();
+        let json = serde_json::to_string(metadata)?;
         Ok(json)
     }
 }

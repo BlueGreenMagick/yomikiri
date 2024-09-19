@@ -6,6 +6,7 @@ Terminology for messaging:
 
 import type { AnkiNote } from "lib/anki";
 import type {
+  DictionaryMetadata,
   SearchRequest,
   TokenizeRequest,
   TokenizeResult,
@@ -40,7 +41,7 @@ export interface MessageMap {
   translate: [string, TranslateResult];
   tts: [TTSRequest, void];
   migrateConfig: [void, StoredConfiguration];
-  getDictCreationDate: [void, string];
+  getDictMetadata: [void, DictionaryMetadata];
   // ios
   loadConfig: [void, StoredConfiguration];
   saveConfig: [StoredConfiguration, void];
