@@ -5,9 +5,7 @@ use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::bufread::GzDecoder;
-use yomikiri_dictionary::dictionary::DictionaryView;
-use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
+use yomikiri_dictionary::dictionary::DictionaryWriter;
 use yomikiri_dictionary::{DICT_FILENAME, SCHEMA_VER};
 
 use fs_err::{self as fs, File};
@@ -50,9 +48,9 @@ impl RustBackend {
         self._search(term, char_at).uniffi()
     }
 
-    pub fn creation_date(&self) -> FFIResult<String> {
-        let backend = self.inner.lock().unwrap();
-        backend.dictionary.creation_date().uniffi()
+    /// Returns JSON string if DictionaryMetadata
+    pub fn metadata(&self) -> FFIResult<String> {
+        self._metadata().uniffi()
     }
 }
 
@@ -76,6 +74,13 @@ impl RustBackend {
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.search(&term, char_at)?;
         let json = serde_json::to_string(&result)?;
+        Ok(json)
+    }
+
+    fn _metadata(&self) -> Result<String> {
+        let backend = self.inner.lock().unwrap();
+        let metadata = backend.dictionary.metadata();
+        let json = serde_json::to_string(metadata)?;
         Ok(json)
     }
 }
@@ -156,17 +161,22 @@ fn _create_dictionary(dir: String) -> Result<()> {
     let temp_dict_path = dir.join(format!("{}.temp", DICT_FILENAME));
     let dict_path = dir.join(DICT_FILENAME);
 
-    let jmnedict_reader = decode_gzip_xml(&jmnedict_path)?;
-    let (name_entries, mut word_entries) =
-        parse_jmnedict_xml(jmnedict_reader).context("Failed to parse JMneDict xml file")?;
+    let writer = DictionaryWriter::new();
 
     let jmdict_reader = decode_gzip_xml(&jmdict_path)?;
-    let entries = parse_jmdict_xml(jmdict_reader).context("Failed to parse JMDict xml file")?;
-    word_entries.extend(entries);
+    let writer = writer
+        .read_jmdict(jmdict_reader)
+        .context("Failed to parse JMDict xml file")?;
+
+    let jmnedict_reader = decode_gzip_xml(&jmnedict_path)?;
+    let writer = writer
+        .read_jmnedict(jmnedict_reader)
+        .context("Failed to parse JMneDict xml file")?;
 
     let mut temp_dict_file = File::create(&temp_dict_path)?;
-    // TODO: update JMnedict as well
-    DictionaryView::build_and_encode_to(&name_entries, &word_entries, &mut temp_dict_file)?;
+    writer
+        .write(&mut temp_dict_file)
+        .context("Failed to write dictionary file")?;
     std::mem::drop(temp_dict_file);
     fs::rename(&temp_dict_path, &dict_path)?;
 

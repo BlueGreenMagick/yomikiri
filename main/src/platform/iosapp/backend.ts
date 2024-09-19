@@ -5,6 +5,7 @@ import type {
   TokenizeRequest,
   TokenizeResult,
   SearchRequest,
+  DictionaryMetadata,
 } from "../common/backend";
 import {
   cleanTokenizeResult,
@@ -59,8 +60,8 @@ export namespace IosAppBackend {
     );
   }
 
-  export function getDictCreationDate(): Promise<string> {
-    return IosAppPlatform.messageWebview("getDictCreationDate", null);
+  export function getDictMetadata(): Promise<DictionaryMetadata> {
+    return IosAppPlatform.messageWebview("getDictMetadata", null);
   }
 }
 

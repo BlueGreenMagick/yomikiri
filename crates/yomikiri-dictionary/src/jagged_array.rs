@@ -108,6 +108,10 @@ where
         writer.write_all(&item_bytes)?;
         Ok(())
     }
+
+    pub fn all_items_iter(&'a self) -> impl Iterator<Item = Result<T>> + 'a {
+        (0..self.cnt).map(move |i| self.get(i))
+    }
 }
 
 #[cfg(test)]

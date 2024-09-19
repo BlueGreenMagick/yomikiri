@@ -7,14 +7,17 @@ use quick_xml::Reader;
 
 use crate::jmnedict::types::JMneNameType;
 use crate::utils::parse_entity_enum_into;
-use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName};
+use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName, DATE_REG};
 use crate::{Error, Result};
 
 use super::types::{JMneDict, JMneEntry, JMneKanji, JMneReading, JMneTranslation};
 
+pub const JMNEDICT_META_ENTRY_ID: u32 = 9999990;
+
 pub struct JMneDictParser<R: BufRead> {
     reader: Reader<R>,
     buf: Vec<u8>,
+    creation_date: Option<String>,
 }
 
 impl<R: BufRead> JMneDictParser<R> {
@@ -25,13 +28,21 @@ impl<R: BufRead> JMneDictParser<R> {
         reader.config_mut().expand_empty_elements = true;
 
         let buf = Vec::new();
-        let mut parser = JMneDictParser { reader, buf };
+        let mut parser = JMneDictParser {
+            reader,
+            buf,
+            creation_date: None,
+        };
         parser.parse_jmnedict_start()?;
         Ok(parser)
     }
 
     pub fn next_entry(&mut self) -> Result<Option<JMneEntry>> {
         self.parse_entry_in_jmnedict()
+    }
+
+    pub fn creation_date(&self) -> Option<&str> {
+        self.creation_date.as_deref()
     }
 
     fn parse_jmnedict_start(&mut self) -> Result<()> {
@@ -102,6 +113,9 @@ impl<R: BufRead> JMneDictParser<R> {
 
         if let Some(id) = id {
             entry.id = id;
+            if id == JMNEDICT_META_ENTRY_ID {
+                self.parse_creation_date(&entry)?;
+            }
             Ok(entry)
         } else {
             Err(Error::NoEntryId(self.reader.buffer_position()))
@@ -241,13 +255,29 @@ impl<R: BufRead> JMneDictParser<R> {
 
         Ok(translation)
     }
+
+    fn parse_creation_date(&mut self, entry: &JMneEntry) -> Result<()> {
+        debug_assert_eq!(entry.id, JMNEDICT_META_ENTRY_ID);
+        for trans_obj in &entry.translations {
+            for translation in &trans_obj.translations {
+                if let Some(date) = DATE_REG.find(translation) {
+                    self.creation_date = Some(date.as_str().to_owned())
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
-pub fn parse_jmnedict_xml(xml: &str) -> Result<JMneDict> {
-    let mut parser = JMneDictParser::new(xml.as_bytes())?;
+pub fn parse_jmnedict_xml<R: BufRead>(reader: R) -> Result<JMneDict> {
+    let mut parser = JMneDictParser::new(reader)?;
     let mut entries = vec![];
-    while let Some(entry) = parser.parse_entry_in_jmnedict()? {
+    while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
-    Ok(JMneDict { entries })
+    let creation_date = parser.creation_date().map(|d| d.to_owned());
+    Ok(JMneDict {
+        entries,
+        creation_date,
+    })
 }

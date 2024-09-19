@@ -2,8 +2,13 @@ use insta::assert_yaml_snapshot;
 use yomikiri_jmdict::{parse_jmdict_xml, Result};
 
 #[test]
-fn test_xml_parse() -> Result<()> {
+fn parse_jmdict() -> Result<()> {
     let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JMdict [
+<!ELEMENT JMdict (entry*)>
+<!ENTITY char "character">
+<!ENTITY company "company name">
+]>
 <!-- some other comment -->
 <!-- JMdict created: 2024-08-07 -->
 <JMdict>
@@ -36,15 +41,28 @@ fn test_xml_parse() -> Result<()> {
 <gloss>"as above" mark</gloss>
 </sense>
 </entry>
+<entry>
+<ent_seq>9999999</ent_seq>
+<k_ele>
+<keb>ＪＭｄｉｃｔ</keb>
+</k_ele>
+<r_ele>
+<reb>ジェイエムディクト</reb>
+</r_ele>
+<sense>
+<pos>&unc;</pos>
+<gloss>Japanese-Multilingual Dictionary Project - Creation Date: 2024-08-23</gloss>
+</sense>
+</entry>
 </JMdict>
 "#;
-    let result = parse_jmdict_xml(&xml)?;
+    let result = parse_jmdict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }
 
 #[test]
-fn test_parse_dialect() -> Result<()> {
+fn parse_dialect() -> Result<()> {
     let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
 <JMdict>
 <entry>
@@ -76,13 +94,13 @@ fn test_parse_dialect() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let result = parse_jmdict_xml(&xml)?;
+    let result = parse_jmdict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }
 
 #[test]
-fn test_xml_parse2() -> Result<()> {
+fn parse_jmdict_2() -> Result<()> {
     let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
 <!-- JMdict created: 2024-08-07 -->
 <JMdict>
@@ -113,8 +131,8 @@ fn test_xml_parse2() -> Result<()> {
 </sense>
 </entry>
 </JMdict>
-    "#;
-    let result = parse_jmdict_xml(&xml)?;
+"#;
+    let result = parse_jmdict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }

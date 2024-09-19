@@ -10,7 +10,7 @@ pub use entry::{Kanji, PartOfSpeech, Reading, Sense, WordEntry};
 pub use error::{Error, Result};
 
 /** This value should be increased each time dictionary file schema is modified */
-pub const SCHEMA_VER: u16 = 3;
+pub const SCHEMA_VER: u16 = 4;
 
 pub const DICT_FILENAME: &str = "english.yomikiridict";
 

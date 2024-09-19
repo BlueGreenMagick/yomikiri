@@ -10,10 +10,11 @@ import {
   updateTab,
 } from "extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
-import {
-  type SearchRequest,
-  type TokenizeRequest,
-  type TokenizeResult,
+import type {
+  SearchRequest,
+  TokenizeRequest,
+  TokenizeResult,
+  DictionaryMetadata,
 } from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { migrateConfigObject } from "lib/compat";
@@ -31,7 +32,7 @@ export interface AppMessageMap {
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];
-  getDictCreationDate: [null, string];
+  getDictMetadata: [null, DictionaryMetadata];
 }
 
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];

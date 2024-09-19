@@ -1,9 +1,7 @@
 use std::collections::HashMap;
-use std::io::BufRead;
 
 use yomikiri_jmdict::jmdict::JMSenseMisc;
-use yomikiri_jmdict::jmnedict::{JMneKanji, JMneNameType, JMneReading, JMneTranslation};
-use yomikiri_jmdict::JMneDictParser;
+use yomikiri_jmdict::jmnedict::{JMneEntry, JMneKanji, JMneNameType, JMneReading, JMneTranslation};
 
 use crate::entry::{
     GroupedNameItem, GroupedSense, NameEntry, NameItem, NameType, Rarity, WordEntryInner,
@@ -21,8 +19,48 @@ struct NameEntryFragmentValue {
     priority: u16,
 }
 
-/// Parses JMnedict xml and returns (Vec<NameEntry>, Vec<Entry[]>)
-/// where the second `Entry[]` is treated as a 'word entry'.
+#[derive(Debug, Clone)]
+pub(crate) struct NameEntriesBuilder {
+    fragments: HashMap<NameEntryKanji, Vec<NameEntryFragmentValue>>,
+}
+
+impl NameEntriesBuilder {
+    pub fn new() -> Self {
+        Self {
+            fragments: HashMap::new(),
+        }
+    }
+
+    fn add_fragment(&mut self, kanji: &String, fragment_value: NameEntryFragmentValue) {
+        if !self.fragments.contains_key(kanji) {
+            self.fragments.insert(kanji.clone(), vec![]);
+        }
+        self.fragments.get_mut(kanji).unwrap().push(fragment_value)
+    }
+
+    pub fn into_iter(self) -> impl Iterator<Item = NameEntry> {
+        self.fragments.into_iter().map(|(kanji, values)| {
+            let mut groups: Vec<GroupedNameItem> = vec![];
+            for val in values {
+                let name_item = NameItem {
+                    id: val.id,
+                    reading: val.reading,
+                };
+                if let Some(grp) = groups.iter_mut().find(|grp| grp.types == val.name_type) {
+                    grp.items.push(name_item);
+                } else {
+                    groups.push(GroupedNameItem {
+                        types: val.name_type,
+                        items: vec![name_item],
+                    })
+                }
+            }
+            NameEntry { kanji, groups }
+        })
+    }
+}
+
+/// Parses JMnedict entry and adds 0 or 1 new WordEntry and n NameEntryFragments
 ///
 /// A `JMneTranslation` entry either creates (multiple) `NameItem`, or one `Sense` in `Entry`, not both.
 ///
@@ -37,81 +75,51 @@ struct NameEntryFragmentValue {
 ///     - If it is `Person` with `Female` or `Male`, only a WordItem is created, and `Female` / `Male` is ignored.
 ///       The gender tag seems to be mistagged here to only indicate the person's gender, instead of the forename + gender info.
 ///     - For other tag combinations, we only create `NameItem`, as it's a transliteration anyway.
-pub fn parse_jmnedict_xml<R: BufRead>(reader: R) -> Result<(Vec<NameEntry>, Vec<WordEntry>)> {
-    let mut fragments: HashMap<NameEntryKanji, Vec<NameEntryFragmentValue>> = HashMap::new();
-    let mut name_entries: Vec<NameEntry> = vec![];
-    let mut word_entries: Vec<WordEntry> = vec![];
-
-    let mut parser = JMneDictParser::new(reader)?;
-    while let Some(entry) = parser.next_entry()? {
-        let mut for_names: Vec<JMneTranslation> = vec![];
-        let mut for_words: Vec<JMneTranslation> = vec![];
-        if entry.kanjis.is_empty() {
-            for_words.extend(entry.translations);
-        } else {
-            for translation_obj in entry.translations {
-                if is_name_type(&translation_obj.name_type) {
-                    for_names.push(translation_obj);
-                } else {
-                    for_words.push(translation_obj);
-                }
-            }
-        }
-
-        if !for_names.is_empty() {
-            for kanji in &entry.kanjis {
-                for reading in &entry.readings {
-                    if !reading.is_for_kanji(&kanji.kanji) {
-                        continue;
-                    }
-                    for trans_obj in &for_names {
-                        let fragment_value = NameEntryFragmentValue {
-                            id: entry.id,
-                            reading: reading.reading.clone(),
-                            name_type: trans_obj.name_type.clone(),
-                            priority: 0, // TODO: Set priority info
-                        };
-                        if !fragments.contains_key(&kanji.kanji) {
-                            fragments.insert(kanji.kanji.clone(), vec![]);
-                        }
-                        fragments
-                            .get_mut(&kanji.kanji)
-                            .unwrap()
-                            .push(fragment_value)
-                    }
-                }
-            }
-        }
-
-        if !for_words.is_empty() {
-            let inner =
-                WordEntryInner::from_jmnedict(entry.id, &entry.kanjis, &entry.readings, &for_words);
-            let entry = WordEntry::new(inner)?;
-            word_entries.push(entry);
-        }
-    }
-
-    for (kanji, values) in fragments {
-        let mut groups: Vec<GroupedNameItem> = vec![];
-        for val in values {
-            let name_item = NameItem {
-                id: val.id,
-                reading: val.reading,
-            };
-            if let Some(grp) = groups.iter_mut().find(|grp| grp.types == val.name_type) {
-                grp.items.push(name_item);
+pub(crate) fn parse_jmnedict_entry(
+    word_entries: &mut Vec<WordEntry>,
+    name_builder: &mut NameEntriesBuilder,
+    entry: JMneEntry,
+) -> Result<()> {
+    let mut for_names: Vec<JMneTranslation> = vec![];
+    let mut for_words: Vec<JMneTranslation> = vec![];
+    if entry.kanjis.is_empty() {
+        for_words.extend(entry.translations);
+    } else {
+        for translation_obj in entry.translations {
+            if is_name_type(&translation_obj.name_type) {
+                for_names.push(translation_obj);
             } else {
-                groups.push(GroupedNameItem {
-                    types: val.name_type,
-                    items: vec![name_item],
-                })
+                for_words.push(translation_obj);
             }
         }
-        let name_entry = NameEntry { kanji, groups };
-        name_entries.push(name_entry);
     }
 
-    Ok((name_entries, word_entries))
+    if !for_names.is_empty() {
+        for kanji in &entry.kanjis {
+            for reading in &entry.readings {
+                if !reading.is_for_kanji(&kanji.kanji) {
+                    continue;
+                }
+                for trans_obj in &for_names {
+                    let fragment_value = NameEntryFragmentValue {
+                        id: entry.id,
+                        reading: reading.reading.clone(),
+                        name_type: trans_obj.name_type.clone(),
+                        priority: 0, // TODO: Set priority info
+                    };
+                    name_builder.add_fragment(&kanji.kanji, fragment_value);
+                }
+            }
+        }
+    }
+
+    if !for_words.is_empty() {
+        let inner =
+            WordEntryInner::from_jmnedict(entry.id, &entry.kanjis, &entry.readings, &for_words);
+        let entry = WordEntry::new(inner)?;
+        word_entries.push(entry);
+    }
+    Ok(())
 }
 
 /// Returns `true` if it is a 'name-type' suitable for a NameEntry.

@@ -66,10 +66,10 @@ export namespace IosBackend {
     return result;
   }
 
-  export const getDictCreationDate = NonContentScriptFunction(
-    "getDictCreationDate",
+  export const getDictMetadata = NonContentScriptFunction(
+    "getDictMetadata",
     () => {
-      return IosPlatform.requestToApp("getDictCreationDate", null);
+      return IosPlatform.requestToApp("getDictMetadata", null);
     },
   );
 }

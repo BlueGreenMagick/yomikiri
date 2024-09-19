@@ -1,6 +1,6 @@
 ---
 source: crates/jmdict/tests/it/jmdict.rs
-assertion_line: 118
+assertion_line: 136
 expression: result
 ---
 entries:
@@ -40,3 +40,4 @@ entries:
           - besides
           - moreover
           - in addition
+creation_date: ~

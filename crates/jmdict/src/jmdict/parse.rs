@@ -11,12 +11,15 @@ use super::types::{
 };
 use crate::jmdict::types::JMReadingInfo;
 use crate::utils::parse_entity_enum_into;
-use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName};
+use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName, DATE_REG};
 use crate::{Error, Result};
+
+pub const JMDICT_META_ENTRY_ID: u32 = 9999999;
 
 pub struct JMDictParser<R: BufRead> {
     reader: Reader<R>,
     buf: Vec<u8>,
+    creation_date: Option<String>,
 }
 
 impl<R: BufRead> JMDictParser<R> {
@@ -27,13 +30,21 @@ impl<R: BufRead> JMDictParser<R> {
         reader.config_mut().expand_empty_elements = true;
 
         let buf = Vec::new();
-        let mut parser = JMDictParser { reader, buf };
+        let mut parser = JMDictParser {
+            reader,
+            buf,
+            creation_date: None,
+        };
         parser.parse_jmdict_start()?;
         Ok(parser)
     }
 
     pub fn next_entry(&mut self) -> Result<Option<JMEntry>> {
         self.parse_entry_in_jmdict()
+    }
+
+    pub fn creation_date(&self) -> Option<&str> {
+        self.creation_date.as_deref()
     }
 
     fn parse_jmdict_start(&mut self) -> Result<()> {
@@ -105,6 +116,10 @@ impl<R: BufRead> JMDictParser<R> {
 
         if let Some(id) = id {
             entry.id = id;
+            if id == JMDICT_META_ENTRY_ID {
+                self.parse_creation_date(&entry)?;
+            }
+
             Ok(entry)
         } else {
             Err(Error::NoEntryId(self.reader.buffer_position()))
@@ -277,13 +292,29 @@ impl<R: BufRead> JMDictParser<R> {
 
         Ok(sense)
     }
+
+    fn parse_creation_date(&mut self, entry: &JMEntry) -> Result<()> {
+        debug_assert_eq!(entry.id, JMDICT_META_ENTRY_ID);
+        for sense in &entry.senses {
+            for meaning in &sense.meanings {
+                if let Some(date) = DATE_REG.find(meaning) {
+                    self.creation_date = Some(date.as_str().to_owned())
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
-pub fn parse_jmdict_xml(xml: &str) -> Result<JMDict> {
-    let mut parser = JMDictParser::new(xml.as_bytes())?;
+pub fn parse_jmdict_xml<R: BufRead>(reader: R) -> Result<JMDict> {
+    let mut parser = JMDictParser::new(reader)?;
     let mut entries = vec![];
     while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
-    Ok(JMDict { entries })
+    let creation_date = parser.creation_date().map(|d| d.to_owned());
+    Ok(JMDict {
+        entries,
+        creation_date,
+    })
 }

@@ -22,6 +22,7 @@ import {
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { YomikiriError } from "lib/error";
+import type { DictionaryMetadata } from "@yomikiri/yomikiri-rs";
 
 export * from "../common";
 
@@ -59,7 +60,7 @@ export interface MessageWebviewMap {
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
   tts: [TTSRequest, null];
-  getDictCreationDate: [null, string];
+  getDictMetadata: [null, DictionaryMetadata];
 
   // action extension
   close: [null, void];

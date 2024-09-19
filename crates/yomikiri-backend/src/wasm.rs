@@ -11,9 +11,7 @@ use log::debug;
 use serde::Serialize;
 use std::io::BufReader;
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::dictionary::DictionaryView;
-use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
+use yomikiri_dictionary::dictionary::DictionaryWriter;
 use yomikiri_dictionary::SCHEMA_VER;
 
 #[wasm_bindgen(typescript_custom_section)]
@@ -30,6 +28,7 @@ interface Backend {
      * and updates dictionary file used in Backend.
      */
     update_dictionary(jmdict: Uint8Array, jmnedict: Uint8Array): DictUpdateResult;
+    metadata(): DictionaryMetadata;
 }
 "#;
 
@@ -89,23 +88,27 @@ impl Backend {
         gzip_jmdict: &Uint8Array,
         gzip_jmnedict: &Uint8Array,
     ) -> WasmResult<JsValue> {
-        let gzip_jmnedict = gzip_jmnedict.to_vec();
-        let jmnedict_decoder = GzDecoder::new(&gzip_jmnedict[..]);
-        let jmnedict_reader = BufReader::new(jmnedict_decoder);
-        let (name_entries, mut word_entries) =
-            parse_jmnedict_xml(jmnedict_reader).context("Failed to parse JMneDict xml file")?;
-        debug!("parsed jmdict file");
-
+        let writer = DictionaryWriter::new();
         let gzip_jmdict = gzip_jmdict.to_vec();
         let jmdict_decoder = GzDecoder::new(&gzip_jmdict[..]);
         let jmdict_reader = BufReader::new(jmdict_decoder);
-        let entries = parse_jmdict_xml(jmdict_reader).context("Failed to parse JMDict xml file")?;
+        let writer = writer
+            .read_jmdict(jmdict_reader)
+            .context("Failed to parse JMDict xml file")?;
         debug!("parsed jmdict file");
-        word_entries.extend(entries);
+
+        let gzip_jmnedict = gzip_jmnedict.to_vec();
+        let jmnedict_decoder = GzDecoder::new(&gzip_jmnedict[..]);
+        let jmnedict_reader = BufReader::new(jmnedict_decoder);
+        let writer = writer
+            .read_jmnedict(jmnedict_reader)
+            .context("Failed to parse JMneDict xml file")?;
 
         let mut dict_bytes: Vec<u8> = Vec::with_capacity(84 * 1024 * 1024);
-        DictionaryView::build_and_encode_to(&name_entries, &word_entries, &mut dict_bytes)
+        writer
+            .write(&mut dict_bytes)
             .context("Failed to write dictionary file")?;
+
         let dict_array = Uint8Array::from(&dict_bytes[..]);
         let result = DictUpdateResult {
             dict_bytes: dict_array,
@@ -116,9 +119,10 @@ impl Backend {
         serialize_result(&result)
     }
 
-    pub fn creation_date(&self) -> WasmResult<String> {
-        let creation_date = self.inner.dictionary.creation_date()?;
-        Ok(creation_date)
+    #[wasm_bindgen(skip_typescript)]
+    pub fn metadata(&self) -> WasmResult<JsValue> {
+        let metadata = self.inner.dictionary.metadata();
+        serialize_result(metadata)
     }
 }
 

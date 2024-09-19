@@ -6,9 +6,7 @@ use clap::{Args, Parser, Subcommand};
 use flate2::read::GzDecoder;
 use fs_err::{self as fs, File};
 use tempfile::NamedTempFile;
-use yomikiri_dictionary::dictionary::DictionaryView;
-use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
+use yomikiri_dictionary::dictionary::DictionaryWriter;
 
 struct RawFileMeta {
     source_filename: &'static str,
@@ -144,22 +142,23 @@ fn run_generate(opts: &GenerateOpts) -> Result<()> {
         return Err(anyhow!("JMnedict file does not exist"));
     }
 
-    println!("Parsing JMneDict xml file...",);
-    let jmnedict_file = File::open(&jmnedict_file_path)?;
-    let jmnedict_reader = BufReader::new(jmnedict_file);
-    let (name_entries, word_entries) = parse_jmnedict_xml(jmnedict_reader)?;
+    let writer = DictionaryWriter::new();
 
     println!("Parsing JMDict xml file...",);
     let jmdict_file = File::open(&jmdict_file_path)?;
     let jmdict_reader = BufReader::new(jmdict_file);
-    let mut entries = parse_jmdict_xml(jmdict_reader)?;
-    entries.extend(word_entries);
+    let writer = writer.read_jmdict(jmdict_reader)?;
 
-    println!("Writing yomikiri dictionary file...");
+    println!("Parsing JMneDict xml file...");
+    let jmnedict_file = File::open(&jmnedict_file_path)?;
+    let jmnedict_reader = BufReader::new(jmnedict_file);
+    let writer = writer.read_jmnedict(jmnedict_reader)?;
+
+    println!("Creating index and writing yomikiri dictionary file...");
     fs::create_dir_all(&output_dir)?;
     let output_file = File::create(&output_path)?;
     let mut output_writer = BufWriter::new(output_file);
-    DictionaryView::build_and_encode_to(&name_entries, &entries, &mut output_writer)?;
+    writer.write(&mut output_writer)?;
 
     println!("Generated yomikiri dictionary file.");
     Ok(())

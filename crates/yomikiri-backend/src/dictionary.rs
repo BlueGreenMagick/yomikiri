@@ -1,7 +1,6 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result};
 use fst::{IntoStreamer, Streamer};
-use regex::Regex;
-use yomikiri_dictionary::dictionary::Dictionary as InnerDictionary;
+use yomikiri_dictionary::dictionary::{Dictionary as InnerDictionary, DictionaryMetadata};
 use yomikiri_dictionary::entry::{Entry, NameEntry, Rarity, WordEntry};
 use yomikiri_dictionary::PartOfSpeech;
 
@@ -76,25 +75,8 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         }
     }
 
-    pub fn creation_date(&self) -> Result<String> {
-        let entries = self.search("ＪＭｄｉｃｔ")?;
-        let date_reg =
-            Regex::new(r#"\d\d\d\d-\d\d-\d\d"#).context("Could not create regexp object")?;
-        for entry in entries {
-            if let Entry::Word(entry) = entry {
-                if let Some(grouped_sense) = entry.grouped_senses.first() {
-                    if let Some(sense) = grouped_sense.senses.first() {
-                        if let Some(meaning) = sense.meanings.first() {
-                            if let Some(mat) = date_reg.find(meaning) {
-                                return Ok(mat.as_str().to_owned());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Err(anyhow!("Could not find creation date in dictionary"))
+    pub fn metadata(&self) -> &DictionaryMetadata {
+        &self.inner.borrow_view().metadata
     }
 
     /// Finds entries, ordered by what best matches token

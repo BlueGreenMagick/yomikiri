@@ -1,7 +1,31 @@
-use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
+use itertools::Itertools;
+use yomikiri_dictionary::dictionary::{DictionaryView, DictionaryWriter};
+use yomikiri_dictionary::entry::NameEntry;
+use yomikiri_dictionary::WordEntry;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn parse_jmdicts(
+    jmdict: Option<&str>,
+    jmnedict: Option<&str>,
+) -> Result<(Vec<WordEntry>, Vec<NameEntry>)> {
+    let writer = DictionaryWriter::new();
+    let jmdict = jmdict.unwrap_or("<JMdict></JMdict>");
+    let jmnedict = jmnedict.unwrap_or("<JMnedict></JMnedict>");
+
+    let writer = writer.read_jmdict(jmdict.as_bytes())?;
+    let writer = writer.read_jmnedict(jmnedict.as_bytes())?;
+    let mut bytes = Vec::with_capacity(128);
+    writer.write(&mut bytes)?;
+
+    let (dict, _) = DictionaryView::try_decode(&bytes)?;
+    let mut word_entries: Vec<WordEntry> = dict.entries.all_items_iter().try_collect()?;
+    let mut name_entries: Vec<NameEntry> = dict.name_entries.all_items_iter().try_collect()?;
+    word_entries.sort_by(|a, b| a.id.cmp(&b.id));
+    name_entries.sort_by(|a, b| a.kanji.cmp(&b.kanji));
+
+    Ok((word_entries, name_entries))
+}
 
 #[test]
 fn test_jmdict_parse_1() -> Result<()> {
@@ -33,8 +57,8 @@ fn test_jmdict_parse_1() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let entries = parse_jmdict_xml(xml.as_bytes())?;
-    insta::assert_yaml_snapshot!(entries);
+    let result = parse_jmdicts(Some(xml), None)?;
+    insta::assert_yaml_snapshot!(result);
     Ok(())
 }
 
@@ -88,8 +112,9 @@ fn test_jmdict_parse_2() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let entries = parse_jmdict_xml(xml.as_bytes())?;
-    insta::assert_yaml_snapshot!(entries);
+
+    let result = parse_jmdicts(Some(xml), None)?;
+    insta::assert_yaml_snapshot!(result);
     Ok(())
 }
 
@@ -131,8 +156,8 @@ fn skip_name_entries_in_jmdict() -> Result<()> {
 </entry>
 </JMdict>
 "#;
-    let entries = parse_jmdict_xml(xml.as_bytes())?;
-    insta::assert_yaml_snapshot!(entries);
+    let result = parse_jmdicts(Some(xml), None)?;
+    insta::assert_yaml_snapshot!(result);
     Ok(())
 }
 
@@ -159,8 +184,8 @@ fn test_jmnedict_parse_single() -> Result<()> {
 </entry>
 </JMnedict>
 "#;
-    let (name_entries, entries) = parse_jmnedict_xml(xml.as_bytes())?;
-    insta::assert_yaml_snapshot!((name_entries, entries));
+    let result = parse_jmdicts(None, Some(xml))?;
+    insta::assert_yaml_snapshot!(result);
     Ok(())
 }
 
@@ -244,7 +269,9 @@ fn test_jmnedict_parse_multiple() -> Result<()> {
 </entry>
 </JMnedict>
 "#;
-    let (name_entries, entries) = parse_jmnedict_xml(xml.as_bytes())?;
-    insta::assert_yaml_snapshot!((name_entries, entries));
+
+    let result = parse_jmdicts(None, Some(xml))?;
+    insta::assert_yaml_snapshot!(result);
+
     Ok(())
 }

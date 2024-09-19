@@ -3,10 +3,8 @@
 //! New entries may be added to the XML, so tests must not test that some entry does not exist.
 //! However, tests may assume that no new entries will be added with identical terms.
 
-use yomikiri_dictionary::dictionary::Dictionary;
+use yomikiri_dictionary::dictionary::{Dictionary, DictionaryWriter};
 use yomikiri_dictionary::entry::Entry;
-use yomikiri_dictionary::jmdict::parse_jmdict_xml;
-use yomikiri_dictionary::jmnedict::parse_jmnedict_xml;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -132,11 +130,11 @@ const JMNEDICT_XML: &'static str = r#"<?xml version="1.0"?>
 "#;
 
 fn create_dictionary() -> Result<Dictionary<Vec<u8>>> {
-    let (name_entries, mut entries) = parse_jmnedict_xml(JMNEDICT_XML.as_bytes())?;
-    entries.extend(parse_jmdict_xml(JMDICT_XML.as_bytes())?);
-
+    let writer = DictionaryWriter::new();
+    let writer = writer.read_jmdict(JMDICT_XML.as_bytes())?;
+    let writer = writer.read_jmnedict(JMNEDICT_XML.as_bytes())?;
     let mut bytes: Vec<u8> = Vec::with_capacity(32 * 1024);
-    Dictionary::<Vec<u8>>::build_and_encode_to(&name_entries, &entries, &mut bytes)?;
+    writer.write(&mut bytes)?;
     let dict = Dictionary::try_decode(bytes)?;
     Ok(dict)
 }

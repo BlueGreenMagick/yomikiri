@@ -58,8 +58,21 @@ fn test_parse_jmnedict() -> Result<()> {
 <trans_det>Dōmei</trans_det>
 </trans>
 </entry>
+<entry>
+<ent_seq>9999990</ent_seq>
+<k_ele>
+<keb>ＪＭｎｅｄｉｃｔ</keb>
+</k_ele>
+<r_ele>
+<reb>ジェイエムエヌイーディクト</reb>
+</r_ele>
+<trans>
+<name_type>&work;</name_type>
+<trans_det>Japanese-Multilingual Named Entity Dictionary Project - Creation Date: 2024-08-29</trans_det>
+</trans>
+</entry>
 </JMnedict>"#;
-    let result = parse_jmnedict_xml(&xml)?;
+    let result = parse_jmnedict_xml(xml.as_bytes())?;
     assert_yaml_snapshot!(result);
     Ok(())
 }
