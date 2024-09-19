@@ -14,6 +14,8 @@ use crate::utils::parse_entity_enum_into;
 use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName, DATE_REG};
 use crate::{Error, Result};
 
+pub const JMDICT_META_ENTRY_ID: u32 = 9999999;
+
 pub struct JMDictParser<R: BufRead> {
     reader: Reader<R>,
     buf: Vec<u8>,
@@ -114,7 +116,10 @@ impl<R: BufRead> JMDictParser<R> {
 
         if let Some(id) = id {
             entry.id = id;
-            self.maybe_retrieve_creation_date(&entry)?;
+            if id == JMDICT_META_ENTRY_ID {
+                self.parse_creation_date(&entry)?;
+            }
+
             Ok(entry)
         } else {
             Err(Error::NoEntryId(self.reader.buffer_position()))
@@ -288,11 +293,8 @@ impl<R: BufRead> JMDictParser<R> {
         Ok(sense)
     }
 
-    /// Sets `this.creation_date` if `entry` is the JMDict metadata entry
-    fn maybe_retrieve_creation_date(&mut self, entry: &JMEntry) -> Result<()> {
-        if entry.id != 9999999 {
-            return Ok(());
-        }
+    fn parse_creation_date(&mut self, entry: &JMEntry) -> Result<()> {
+        debug_assert_eq!(entry.id, JMDICT_META_ENTRY_ID);
         for sense in &entry.senses {
             for meaning in &sense.meanings {
                 if let Some(date) = DATE_REG.find(meaning) {
