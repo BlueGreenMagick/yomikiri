@@ -1481,8 +1481,7 @@ dependencies = [
 [[package]]
 name = "quick-xml"
 version = "0.36.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96a05e2e8efddfa51a84ca47cec303fac86c8541b686d37cac5efc0e094417bc"
+source = "git+https://github.com/BlueGreenMagick/quick-xml.git?branch=fix-bufread-doctype#50be08dcc19e2ddb74c24a7630e4fa57389db5ab"
 dependencies = [
  "memchr",
 ]
