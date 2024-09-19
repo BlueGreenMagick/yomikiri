@@ -132,8 +132,8 @@ const JMNEDICT_XML: &'static str = r#"<?xml version="1.0"?>
 "#;
 
 fn create_dictionary() -> Result<Dictionary<Vec<u8>>> {
-    let (name_entries, mut entries) = parse_jmnedict_xml(&JMNEDICT_XML)?;
-    entries.extend(parse_jmdict_xml(&JMDICT_XML)?);
+    let (name_entries, mut entries) = parse_jmnedict_xml(JMNEDICT_XML.as_bytes())?;
+    entries.extend(parse_jmdict_xml(JMDICT_XML.as_bytes())?);
 
     let mut bytes: Vec<u8> = Vec::with_capacity(32 * 1024);
     Dictionary::<Vec<u8>>::build_and_encode_to(&name_entries, &entries, &mut bytes)?;

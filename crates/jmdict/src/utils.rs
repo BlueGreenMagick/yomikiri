@@ -62,13 +62,13 @@ macro_rules! jm_entity_enum {
   };
 }
 
-/// `parse_entity_enum!(reader, EnumName, "tag", add_to)`
+/// `parse_entity_enum_into!(EnumName, reader, buf, "tag", add_to)`
 ///
 /// Parses a field in "tag" using `EnumName::parse_field()`,
 /// and if it returns `Some(val)`, run `add_to.push(val)`
-macro_rules! parse_entity_enum {
-    ($reader:ident, $enum: ident, $tag: literal, $to:expr ) => {
-        let field = crate::xml::parse_text_in_tag($reader, $tag.as_bytes())?;
+macro_rules! parse_entity_enum_into {
+    ($enum: ident, $reader:expr, $buf:expr, $tag: literal, $to:expr ) => {
+        let field = crate::xml::parse_text_in_tag_into($reader, $buf, $tag.as_bytes())?;
         let value = $enum::parse_field(&field);
         if let Some(value) = value {
             $to.push(value);
@@ -90,4 +90,4 @@ pub(crate) fn is_single_entity(text: &[u8]) -> bool {
 }
 
 pub(crate) use jm_entity_enum;
-pub(crate) use parse_entity_enum;
+pub(crate) use parse_entity_enum_into;

@@ -4,12 +4,12 @@ use crate::tokenize::create_tokenizer;
 use crate::utils;
 use crate::SharedBackend;
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Context};
 use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
 use serde::Serialize;
-use std::io::Read;
+use std::io::BufReader;
 use wasm_bindgen::prelude::*;
 use yomikiri_dictionary::dictionary::DictionaryView;
 use yomikiri_dictionary::jmdict::parse_jmdict_xml;
@@ -90,22 +90,16 @@ impl Backend {
         gzip_jmnedict: &Uint8Array,
     ) -> WasmResult<JsValue> {
         let gzip_jmnedict = gzip_jmnedict.to_vec();
-        let jmnedict_xml = decode_gzip_xml(gzip_jmnedict, 160 * 1024 * 1024)
-            .context("Failed to decompress gzipped JMneDict xml file")?;
-        debug!("unzipped JMneDict file");
-
+        let jmnedict_decoder = GzDecoder::new(&gzip_jmnedict[..]);
+        let jmnedict_reader = BufReader::new(jmnedict_decoder);
         let (name_entries, mut word_entries) =
-            parse_jmnedict_xml(&jmnedict_xml).context("Failed to parse JMneDict xml file")?;
-        std::mem::drop(jmnedict_xml);
+            parse_jmnedict_xml(jmnedict_reader).context("Failed to parse JMneDict xml file")?;
         debug!("parsed jmdict file");
 
         let gzip_jmdict = gzip_jmdict.to_vec();
-        let jmdict_xml = decode_gzip_xml(gzip_jmdict, 64 * 1024 * 1024)
-            .context("Failed to decompress gzipped JMDict xml file")?;
-        debug!("unzipped JMDict file");
-
-        let entries = parse_jmdict_xml(&jmdict_xml).context("Failed to parse JMDict xml file")?;
-        std::mem::drop(jmdict_xml);
+        let jmdict_decoder = GzDecoder::new(&gzip_jmdict[..]);
+        let jmdict_reader = BufReader::new(jmdict_decoder);
+        let entries = parse_jmdict_xml(jmdict_reader).context("Failed to parse JMDict xml file")?;
         debug!("parsed jmdict file");
         word_entries.extend(entries);
 
@@ -126,13 +120,6 @@ impl Backend {
         let creation_date = self.inner.dictionary.creation_date()?;
         Ok(creation_date)
     }
-}
-
-fn decode_gzip_xml(gzipped: Vec<u8>, capacity: usize) -> Result<String> {
-    let mut decoder = GzDecoder::new(&gzipped[..]);
-    let mut xml = String::with_capacity(capacity);
-    decoder.read_to_string(&mut xml)?;
-    Ok(xml)
 }
 
 #[wasm_bindgen]

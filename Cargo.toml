@@ -52,9 +52,10 @@ fs-err = "2.11"
 lazy_static = "1.5"
 tsify-next = "0.5"
 wasm-bindgen = "0.2"
-quick-xml = "0.36"
+quick-xml = { git = "https://github.com/BlueGreenMagick/quick-xml.git", branch = "fix-bufread-doctype" }
 insta = { version = "1.39", features = ["yaml"] }
 fern = "0.6"
+polonius-the-crab = "0.4.1"
 
 japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }

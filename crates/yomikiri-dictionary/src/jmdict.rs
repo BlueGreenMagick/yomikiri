@@ -1,20 +1,22 @@
+use std::io::BufRead;
+
 use crate::entry::{
     GroupedSense, Kanji, PartOfSpeech, Rarity, Reading, Sense, WordEntry, WordEntryInner,
 };
 use crate::{Error, Result};
-use itertools::Itertools;
 use yomikiri_jmdict::jmdict::{JMEntry, JMKanji, JMKanjiInfo, JMReading, JMReadingInfo, JMSense};
+use yomikiri_jmdict::JMDictParser;
 
 /// Skips entries that are from jmnedict
-pub fn parse_jmdict_xml(xml: &str) -> Result<Vec<WordEntry>> {
-    let jmdict = yomikiri_jmdict::parse_jmdict_xml(xml)?;
-    let entries = jmdict
-        .entries
-        .into_iter()
-        // skip entries that are duplicate of jmne entry
-        .filter(|e| e.id < 5000000 || e.id >= 6000000)
-        .map(WordEntry::try_from)
-        .try_collect()?;
+pub fn parse_jmdict_xml<R: BufRead>(reader: R) -> Result<Vec<WordEntry>> {
+    let mut parser = JMDictParser::new(reader)?;
+    let mut entries = vec![];
+    while let Some(entry) = parser.next_entry()? {
+        if entry.id < 5000000 || entry.id >= 6000000 {
+            entries.push(WordEntry::try_from(entry)?)
+        }
+    }
+
     Ok(entries)
 }
 

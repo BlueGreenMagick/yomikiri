@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+use std::io::BufRead;
 
 use yomikiri_jmdict::jmdict::JMSenseMisc;
 use yomikiri_jmdict::jmnedict::{JMneKanji, JMneNameType, JMneReading, JMneTranslation};
+use yomikiri_jmdict::JMneDictParser;
 
 use crate::entry::{
     GroupedNameItem, GroupedSense, NameEntry, NameItem, NameType, Rarity, WordEntryInner,
@@ -35,13 +37,13 @@ struct NameEntryFragmentValue {
 ///     - If it is `Person` with `Female` or `Male`, only a WordItem is created, and `Female` / `Male` is ignored.
 ///       The gender tag seems to be mistagged here to only indicate the person's gender, instead of the forename + gender info.
 ///     - For other tag combinations, we only create `NameItem`, as it's a transliteration anyway.
-pub fn parse_jmnedict_xml(xml: &str) -> Result<(Vec<NameEntry>, Vec<WordEntry>)> {
+pub fn parse_jmnedict_xml<R: BufRead>(reader: R) -> Result<(Vec<NameEntry>, Vec<WordEntry>)> {
     let mut fragments: HashMap<NameEntryKanji, Vec<NameEntryFragmentValue>> = HashMap::new();
     let mut name_entries: Vec<NameEntry> = vec![];
     let mut word_entries: Vec<WordEntry> = vec![];
-    let jmnedict = yomikiri_jmdict::jmnedict::parse_jmnedict_xml(xml)?;
 
-    for entry in jmnedict.entries {
+    let mut parser = JMneDictParser::new(reader)?;
+    while let Some(entry) = parser.next_entry()? {
         let mut for_names: Vec<JMneTranslation> = vec![];
         let mut for_words: Vec<JMneTranslation> = vec![];
         if entry.kanjis.is_empty() {
