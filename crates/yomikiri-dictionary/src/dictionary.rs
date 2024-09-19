@@ -1,6 +1,8 @@
 use std::io::{BufRead, Write};
 
+use bincode::Options;
 use ouroboros::self_referencing;
+use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
 use crate::entry::{Entry, NameEntry};
@@ -17,10 +19,17 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     pub view: DictionaryView<'this>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DictionaryMetadata {
+    jmdict_creation_date: Option<String>,
+    jmnedict_creation_date: Option<String>,
+}
+
 pub struct DictionaryView<'a> {
     pub term_index: DictIndexMap<'a>,
     pub entries: JaggedArray<'a, WordEntry>,
     pub name_entries: JaggedArray<'a, NameEntry>,
+    pub metadata: DictionaryMetadata,
 }
 
 impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
@@ -33,14 +42,6 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         };
         builder.try_build()
     }
-
-    pub fn build_and_encode_to<W: Write>(
-        name_entries: &[NameEntry],
-        entries: &[WordEntry],
-        writer: &mut W,
-    ) -> Result<()> {
-        DictionaryView::build_and_encode_to(name_entries, entries, writer)
-    }
 }
 
 impl<'a> DictionaryView<'a> {
@@ -52,10 +53,12 @@ impl<'a> DictionaryView<'a> {
         at += len;
         let (name_entries, len) = JaggedArray::try_decode(&source[at..])?;
         at += len;
+        let metadata = bincode::options().deserialize_from(&source[at..])?;
         let s = Self {
             name_entries,
             term_index,
             entries,
+            metadata,
         };
         Ok((s, at))
     }
@@ -63,12 +66,14 @@ impl<'a> DictionaryView<'a> {
     pub fn build_and_encode_to<W: Write>(
         name_entries: &[NameEntry],
         entries: &[WordEntry],
+        metadata: &DictionaryMetadata,
         writer: &mut W,
     ) -> Result<()> {
         let term_index_items = create_sorted_term_indexes(name_entries, entries)?;
         DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
         JaggedArray::build_and_encode_to(entries, writer)?;
         JaggedArray::build_and_encode_to(name_entries, writer)?;
+        bincode::options().serialize_into(writer, metadata)?;
         Ok(())
     }
 
@@ -86,11 +91,14 @@ impl<'a> DictionaryView<'a> {
 pub struct DictionaryWriterJMDict {}
 pub struct DictionaryWriterJMneDict {
     entries: Vec<WordEntry>,
+    jmdict_creation_date: Option<String>,
 }
 
 pub struct DictionaryWriterFinal {
     entries: Vec<WordEntry>,
+    jmdict_creation_date: Option<String>,
     name_entries: Vec<NameEntry>,
+    jmnedict_creation_date: Option<String>,
 }
 
 #[derive(Default)]
@@ -117,7 +125,10 @@ impl DictionaryWriter<DictionaryWriterJMDict> {
             }
         }
         Ok(DictionaryWriter {
-            state: DictionaryWriterJMneDict { entries },
+            state: DictionaryWriterJMneDict {
+                entries,
+                jmdict_creation_date: parser.creation_date().map(|d| d.to_string()),
+            },
         })
     }
 }
@@ -142,7 +153,9 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
         Ok(DictionaryWriter {
             state: DictionaryWriterFinal {
                 entries: self.state.entries,
+                jmdict_creation_date: self.state.jmdict_creation_date,
                 name_entries,
+                jmnedict_creation_date: parser.creation_date().map(|d| d.to_string()),
             },
         })
     }
@@ -150,7 +163,16 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
 
 impl DictionaryWriter<DictionaryWriterFinal> {
     pub fn write<W: Write>(self, writer: &mut W) -> Result<()> {
-        DictionaryView::build_and_encode_to(&self.state.name_entries, &self.state.entries, writer)?;
+        let metadata = DictionaryMetadata {
+            jmdict_creation_date: self.state.jmdict_creation_date,
+            jmnedict_creation_date: self.state.jmnedict_creation_date,
+        };
+        DictionaryView::build_and_encode_to(
+            &self.state.name_entries,
+            &self.state.entries,
+            &metadata,
+            writer,
+        )?;
         Ok(())
     }
 }
@@ -159,7 +181,7 @@ impl DictionaryWriter<DictionaryWriterFinal> {
 mod tests {
     use yomikiri_jmdict::jmnedict::JMneNameType;
 
-    use crate::dictionary::Dictionary;
+    use crate::dictionary::{Dictionary, DictionaryMetadata, DictionaryView};
     use crate::entry::{
         GroupedNameItem, Kanji, NameEntry, NameItem, Rarity, Reading, WordEntry, WordEntryInner,
     };
@@ -190,7 +212,11 @@ mod tests {
         };
         let entry = WordEntry::new(inner)?;
         let mut buffer = Vec::with_capacity(1024);
-        Dictionary::<Vec<u8>>::build_and_encode_to(&[], &[entry.clone()], &mut buffer)?;
+        let metadata = DictionaryMetadata {
+            jmdict_creation_date: Some("2024-09-19".into()),
+            jmnedict_creation_date: None,
+        };
+        DictionaryView::build_and_encode_to(&[], &[entry.clone()], &metadata, &mut buffer)?;
         let dict = Dictionary::try_decode(buffer)?;
 
         let view = dict.borrow_view();
@@ -212,8 +238,12 @@ mod tests {
                 }],
             }],
         };
+        let metadata = DictionaryMetadata {
+            jmdict_creation_date: None,
+            jmnedict_creation_date: Some("2024-09-19".into()),
+        };
         let mut buffer = Vec::with_capacity(1024);
-        Dictionary::<Vec<u8>>::build_and_encode_to(&[entry.clone()], &[], &mut buffer)?;
+        DictionaryView::build_and_encode_to(&[entry.clone()], &[], &metadata, &mut buffer)?;
         let dict = Dictionary::try_decode(buffer)?;
 
         let view = dict.borrow_view();
