@@ -275,10 +275,7 @@ pub fn parse_jmnedict_xml<R: BufRead>(reader: R) -> Result<JMneDict> {
     while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
-    let creation_date = parser
-        .creation_date()
-        .ok_or(Error::CreationDateNotFound)?
-        .to_owned();
+    let creation_date = parser.creation_date().map(|d| d.to_owned());
     Ok(JMneDict {
         entries,
         creation_date,

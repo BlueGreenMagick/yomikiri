@@ -312,10 +312,7 @@ pub fn parse_jmdict_xml<R: BufRead>(reader: R) -> Result<JMDict> {
     while let Some(entry) = parser.next_entry()? {
         entries.push(entry);
     }
-    let creation_date = parser
-        .creation_date()
-        .ok_or(Error::CreationDateNotFound)?
-        .to_owned();
+    let creation_date = parser.creation_date().map(|d| d.to_owned());
     Ok(JMDict {
         entries,
         creation_date,

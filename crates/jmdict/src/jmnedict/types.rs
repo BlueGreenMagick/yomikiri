@@ -6,7 +6,7 @@ use crate::utils::jm_entity_enum;
 #[derive(Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct JMneDict {
     pub entries: Vec<JMneEntry>,
-    pub creation_date: String,
+    pub creation_date: Option<String>,
 }
 
 /// `<entry>`

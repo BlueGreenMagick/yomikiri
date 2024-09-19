@@ -5,7 +5,7 @@ use crate::utils::jm_entity_enum;
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JMDict {
     pub entries: Vec<JMEntry>,
-    pub creation_date: String,
+    pub creation_date: Option<String>,
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
