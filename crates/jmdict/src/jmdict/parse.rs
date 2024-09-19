@@ -11,12 +11,13 @@ use super::types::{
 };
 use crate::jmdict::types::JMReadingInfo;
 use crate::utils::parse_entity_enum_into;
-use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName};
+use crate::xml::{get_next_child_in, parse_string_in_tag_into, TagName, DATE_REG};
 use crate::{Error, Result};
 
 pub struct JMDictParser<R: BufRead> {
     reader: Reader<R>,
     buf: Vec<u8>,
+    creation_date: Option<String>,
 }
 
 impl<R: BufRead> JMDictParser<R> {
@@ -27,13 +28,21 @@ impl<R: BufRead> JMDictParser<R> {
         reader.config_mut().expand_empty_elements = true;
 
         let buf = Vec::new();
-        let mut parser = JMDictParser { reader, buf };
+        let mut parser = JMDictParser {
+            reader,
+            buf,
+            creation_date: None,
+        };
         parser.parse_jmdict_start()?;
         Ok(parser)
     }
 
     pub fn next_entry(&mut self) -> Result<Option<JMEntry>> {
         self.parse_entry_in_jmdict()
+    }
+
+    pub fn creation_date(&self) -> Option<&str> {
+        self.creation_date.as_deref()
     }
 
     fn parse_jmdict_start(&mut self) -> Result<()> {
@@ -105,6 +114,7 @@ impl<R: BufRead> JMDictParser<R> {
 
         if let Some(id) = id {
             entry.id = id;
+            self.maybe_retrieve_creation_date(&entry)?;
             Ok(entry)
         } else {
             Err(Error::NoEntryId(self.reader.buffer_position()))
@@ -276,6 +286,21 @@ impl<R: BufRead> JMDictParser<R> {
         }
 
         Ok(sense)
+    }
+
+    /// Sets `this.creation_date` if `entry` is the JMDict metadata entry
+    fn maybe_retrieve_creation_date(&mut self, entry: &JMEntry) -> Result<()> {
+        if entry.id != 9999999 {
+            return Ok(());
+        }
+        for sense in &entry.senses {
+            for meaning in &sense.meanings {
+                if let Some(date) = DATE_REG.find(meaning) {
+                    self.creation_date = Some(date.as_str().to_owned())
+                }
+            }
+        }
+        Ok(())
     }
 }
 

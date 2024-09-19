@@ -56,6 +56,7 @@ quick-xml = { git = "https://github.com/BlueGreenMagick/quick-xml.git", branch =
 insta = { version = "1.39", features = ["yaml"] }
 fern = "0.6"
 polonius-the-crab = "0.4.1"
+lazy-regex = "3.3"
 
 japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }

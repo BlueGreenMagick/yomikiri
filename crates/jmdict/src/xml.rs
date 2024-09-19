@@ -5,6 +5,7 @@
 //!
 //! Meanwhile, some core assumptions on its structure must be held.
 //! For example, an element must have one and only one id.
+use lazy_regex::{lazy_regex, Lazy, Regex};
 use polonius_the_crab::{polonius, polonius_return};
 use quick_xml::escape::{resolve_predefined_entity, unescape_with};
 use quick_xml::events::{BytesEnd, BytesStart, Event};
@@ -35,6 +36,8 @@ impl<'a> TagName<'a> for BytesEnd<'a> {
         str::from_utf8(self.name().0).unwrap_or("<Invalid UTF-8>")
     }
 }
+
+pub(crate) static DATE_REG: Lazy<Regex> = lazy_regex!(r#"\d\d\d\d-\d\d-\d\d"#);
 
 pub fn parse_string_in_tag_into<R: BufRead>(
     reader: &mut Reader<R>,
