@@ -12,16 +12,22 @@ const program = new Command();
 program.name("yomikiri-backend-scripts");
 
 program
-  .command("wasm")
+  .command("build-wasm")
   .description("Build backend for wasm")
   .option("--release", "optimize for release", false)
   .action((opts) => buildWasm(opts));
 
 program
-  .command("ios")
+  .command("build-ios")
   .description("Build backend for ios")
   .option("--release", "optimize for release", false)
   .action((opts) => buildIos(opts));
+
+program
+  .command("build-all")
+  .description("Build backend for all targets")
+  .option("--release", "optimize for release", false)
+  .action((opts) => buildAll(opts));
 
 program
   .command("clean")
@@ -102,6 +108,11 @@ async function buildIos(opts) {
         "Run 'rustup target add aarch64-apple-ios-sim' to build backend for ios simulator.",
     );
   }
+}
+
+async function buildAll(opts) {
+  await buildWasm(opts);
+  await buildIos(opts);
 }
 
 async function cleanAllDirs() {
