@@ -27,9 +27,10 @@
     "check": "pnpm run -r --sequential check",
     "lint": "pnpm run -r --sequential lint",
     "test": "pnpm run -r --sequential test",
-    "format:js": "pnpm prettier --write --list-different .",
+    "_prettier": "pnpm prettier --write --list-different",
+    "format:prettier": "pnpm prettier --write --list-different .",
     "format:rust": "cargo fmt",
-    "format": "pnpm format:js; pnpm format:rust",
+    "format": "pnpm prettier --write --list-different .; cargo fmt",
     "check-format:js": "pnpm prettier --check .",
     "check-format:rust": "cargo fmt --check",
     "check-format": "pnpm check-format:js && pnpm check-format:rust"

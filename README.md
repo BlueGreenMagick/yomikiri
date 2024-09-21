@@ -52,7 +52,6 @@ Then run `pnpm build:chrome`, `pnpm build:firefox`, which builds desktop browser
 
 To build ios app, open `/safari/Yomikiri.xcodeproj` on XCode, and build.
 
-
 ### Desktop browser extensions only
 
 If you only need to build for desktop browser extensions only, you can run below command.

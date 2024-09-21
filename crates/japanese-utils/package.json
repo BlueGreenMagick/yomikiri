@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "format": "cargo fmt",
+    "format": "cargo fmt; pnpm -w run _prettier -- \"$PWD\"",
     "check": "cargo check",
     "lint": "cargo clippy -- -D warnings",
     "test": "cargo test"

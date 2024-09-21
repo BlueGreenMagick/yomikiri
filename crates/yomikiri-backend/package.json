@@ -13,7 +13,7 @@
     "generate:release:ios": "node scripts.js build-ios --release",
     "generate:release": "node scripts.js build-all --release",
     "clean": "node scripts.js clean",
-    "format": "cargo fmt",
+    "format": "cargo fmt; pnpm -w run _prettier -- \"$PWD\"",
     "check": "cargo check --target wasm32-unknown-unknown --target aarch64-apple-ios",
     "lint": "cargo clippy --target wasm32-unknown-unknown --target aarch64-apple-ios -- -D warnings",
     "test": "cargo test"
