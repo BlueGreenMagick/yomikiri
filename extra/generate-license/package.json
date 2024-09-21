@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "generate": "tsx index.ts > res/THIRD_PARTY.txt",
-    "lint": "tsc --noemit; eslint --cache ."
+    "lint": "tsc --noemit; eslint --cache .",
+    "format": "pnpm -w prettier --write --list-different \"$PWD\""
   },
   "files": [
     "res/THIRD_PARTY.txt"
