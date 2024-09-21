@@ -19,8 +19,12 @@
           "kind": "bin"
         }
       },
-      "args": ["generate", "--rawdir=./jmdict/", "--out=./files/english.yomikiridict"],
+      "args": [
+        "generate",
+        "--rawdir=./jmdict/",
+        "--out=./files/english.yomikiridict"
+      ],
       "cwd": "${workspaceFolder}/crates/yomikiri-dictionary-generator"
-    },
+    }
   ]
 }
