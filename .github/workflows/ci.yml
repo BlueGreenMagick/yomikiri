@@ -80,9 +80,9 @@ jobs:
           path: ${{env.DICTIONARY_PATH}}
           key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-dictionary-generator', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH) }}
 
-      - name: Construct yomikiri dictionary
+      - name: Generate yomikiri dictionary
         if: steps.cache-yomikiri-dictionary.outputs.cache-hit != 'true'
-        run: pnpm run construct:dictionary
+        run: pnpm run generate:dictionary
 
       - name: Build yomikiri-unidic crate
         run: cargo build
@@ -95,18 +95,18 @@ jobs:
           path: ${{env.UNIDIC_OUTPUT_PATH}}
           key: unidic-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-unidic', './crates/unidic/Cargo.toml', env.DICTIONARY_PATH, './crates/unidic/original/**') }}
 
-      - name: Construct unidic files
+      - name: Generate unidic files
         if: steps.cache-unidic.outputs.cache-hit != 'true'
-        run: pnpm run construct:unidic
+        run: pnpm run generate:unidic
 
-      - name: Construct backend wasm
-        run: pnpm run construct:backend_wasm
+      - name: Generate backend wasm
+        run: pnpm run generate:backend-wasm
 
-      - name: Construct backend ios
-        run: pnpm run construct:backend_ios
+      - name: Generate backend ios
+        run: pnpm run generate:backend-ios
 
       - name: Generate licenses
-        run: pnpm run generate-licenses
+        run: pnpm run generate:licenses
 
       - name: Lint
         run: pnpm run lint
