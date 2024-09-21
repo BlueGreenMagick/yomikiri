@@ -12,6 +12,9 @@
 pnpm-lock.yaml
 Cargo.lock
 
+# Experiments
+/crates/**/experiment/
+
 # Artifacts
 .mypy_cache
 /target/
