@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "generate": "tsx index.ts > res/THIRD_PARTY.txt",
-    "lint": "tsc --noemit; eslint --cache ."
+    "check": "cd rust; cargo check",
+    "lint": "tsc --noemit; eslint --cache .; cd rust; cargo clippy",
+    "format": "pnpm -w prettier --write --list-different \"$PWD\"; cd rust; cargo fmt;"
   },
   "files": [
     "res/THIRD_PARTY.txt"

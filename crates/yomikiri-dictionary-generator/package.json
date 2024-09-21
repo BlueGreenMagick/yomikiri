@@ -2,7 +2,7 @@
   "name": "@yomikiri/dictionary-generator-rs",
   "version": "0.0.1",
   "scripts": {
-    "format": "cargo fmt",
+    "format": "cargo fmt; pnpm -w run _prettier -- \"$PWD\"",
     "check": "cargo check",
     "lint": "cargo clippy -- -D warnings",
     "test": "cargo test",

@@ -1,36 +1,26 @@
+# Ignore non-js files
+*.rs
+/safari/
 
-# Ignore all
-*.*
-# Except certain extensions
-!*.svelte
-!*.ts
-!*.cts
-!*.mts
-!*.tsx
-!*.js
-!*.cjs
-!*.mjs
-!*.jsx
-!*.html
-!*.css
-!*.json
-!*.md
-!*.toml
-!*.yaml
-
-# Generated files
-main/build
-crates/yomikiri-dictionary/pkg
-crates/yomikiri-backend/pkg
-crates/unidic/transformed
-crates/unidic/output
+# Downloaded & Generated files
+/main/build
+/crates/yomikiri-dictionary/pkg
+/crates/yomikiri-backend/pkg
+/crates/unidic/original
+/crates/unidic/transformed
+/crates/unidic/output
 pnpm-lock.yaml
+Cargo.lock
 
-# Downloaded files
-crates/unidic/original
+# Experiments
+/crates/**/experiment/
 
 # Artifacts
 .mypy_cache
+/target/
+node_modules/
+.DS_store
+.eslintcache
 
-# IOS
-safari/**/*.json
+# Other
+.git/

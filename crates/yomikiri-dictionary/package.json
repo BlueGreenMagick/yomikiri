@@ -10,7 +10,7 @@
     "res/*"
   ],
   "scripts": {
-    "format": "cargo fmt",
+    "format": "cargo fmt; pnpm -w run _prettier -- \"$PWD\"",
     "check": "cargo check --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown",
     "lint": "cargo clippy --target \"$(rustc -vV | grep host | (IFS=\" \"; read -r key value; echo $value))\" --target wasm32-unknown-unknown -- -D warnings",
     "test": "cargo test"
