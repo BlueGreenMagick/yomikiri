@@ -2067,6 +2067,7 @@ checksum = "2f4a645dca4ee0800f5ab60ce166deba2db6a0315de795a2691e138a3d55d756"
 dependencies = [
  "gloo-utils",
  "serde",
+ "serde-wasm-bindgen",
  "serde_json",
  "tsify-next-macros",
  "wasm-bindgen",

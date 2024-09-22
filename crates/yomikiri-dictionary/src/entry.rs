@@ -22,7 +22,7 @@ use tsify_next::{declare, Tsify};
 use crate::{Error, Result};
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
-#[cfg_attr(feature = "wasm", tsify(namespace))]
+#[cfg_attr(feature = "wasm", tsify(namespace, into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Entry {
@@ -33,11 +33,13 @@ pub enum Entry {
 /// Constraints:
 /// 1. Must have at least 1 reading
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(transparent)]
 pub struct WordEntry(WordEntryInner);
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct WordEntryInner {
@@ -49,6 +51,7 @@ pub struct WordEntryInner {
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Kanji {
@@ -57,6 +60,7 @@ pub struct Kanji {
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Reading {
@@ -70,6 +74,7 @@ pub struct Reading {
 /// Ordered by rarity.
 /// `Normal` is the most common and `Search`` is the rarest.
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum Rarity {
@@ -81,6 +86,7 @@ pub enum Rarity {
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupedSense {
@@ -89,6 +95,7 @@ pub struct GroupedSense {
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Sense {
@@ -101,6 +108,7 @@ pub struct Sense {
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum PartOfSpeech {
@@ -143,12 +151,14 @@ pub enum PartOfSpeech {
 
 // Alternatively, use below kind of struct?
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NameEntry {
     pub kanji: String,
     pub groups: Vec<GroupedNameItem>,
 }
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GroupedNameItem {
     pub types: Vec<NameType>,
@@ -156,6 +166,7 @@ pub struct GroupedNameItem {
 }
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NameItem {
     pub id: u32,

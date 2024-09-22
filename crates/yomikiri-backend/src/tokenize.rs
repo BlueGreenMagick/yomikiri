@@ -22,6 +22,7 @@ use yomikiri_unidic_types::{
 use tsify_next::Tsify;
 
 #[cfg_attr(wasm, derive(Tsify))]
+#[cfg_attr(wasm, tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Serialize)]
 pub struct Token {
     /// NFC normalized
@@ -66,6 +67,7 @@ pub struct TokenDetails {
 }
 
 #[cfg_attr(wasm, derive(Tsify))]
+#[cfg_attr(wasm, tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Serialize)]
 pub struct GrammarInfo {
     pub name: String,
@@ -84,6 +86,7 @@ impl From<&GrammarRule> for GrammarInfo {
 }
 
 #[cfg_attr(wasm, derive(Tsify))]
+#[cfg_attr(wasm, tsify(into_wasm_abi))]
 #[derive(Debug, Default, Serialize)]
 pub struct TokenizeResult {
     pub tokens: Vec<Token>,

@@ -24,6 +24,7 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 pub struct DictionaryMetadata {
     jmdict_creation_date: Option<String>,
     jmnedict_creation_date: Option<String>,

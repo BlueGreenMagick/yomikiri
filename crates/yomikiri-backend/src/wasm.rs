@@ -1,39 +1,23 @@
 use crate::dictionary::Dictionary;
 use crate::error::WasmResult;
-use crate::tokenize::create_tokenizer;
+use crate::tokenize::{create_tokenizer, TokenizeResult};
 use crate::utils;
 use crate::SharedBackend;
 
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
 use serde::Serialize;
 use std::io::BufReader;
+use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::dictionary::DictionaryWriter;
+use yomikiri_dictionary::dictionary::{DictionaryMetadata, DictionaryWriter};
 use yomikiri_dictionary::SCHEMA_VER;
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_CUSTOM: &'static str = r#"
-export interface DictUpdateResult {
-    dict_bytes: Uint8Array;
-}
-
-interface Backend {
-    tokenize(sentence: string, charAt: number): TokenizeResult;
-    search(term: string, charAt: number): TokenizeResult;
-    /** 
-     * from jmdict gzipped xml, creates dictionary file bytearray,
-     * and updates dictionary file used in Backend.
-     */
-    update_dictionary(jmdict: Uint8Array, jmnedict: Uint8Array): DictUpdateResult;
-    metadata(): DictionaryMetadata;
-}
-"#;
-
-#[derive(Serialize)]
-struct DictUpdateResult {
+#[derive(Serialize, Tsify)]
+#[tsify(into_wasm_abi)]
+pub struct DictUpdateResult {
     #[serde(with = "serde_wasm_bindgen::preserve")]
     dict_bytes: Uint8Array,
 }
@@ -59,35 +43,32 @@ impl Backend {
         Ok(Backend { inner })
     }
 
-    #[wasm_bindgen(skip_typescript)]
-    pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> WasmResult<JsValue> {
+    pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> WasmResult<TokenizeResult> {
         let result = self
             .inner
             .tokenize(sentence, char_at)
             .context("Error occured while tokenizing sentence")?;
-        serialize_result(&result)
+        Ok(result)
     }
 
     /// dictionary search
-    #[wasm_bindgen(skip_typescript)]
-    pub fn search(&mut self, term: &str, char_at: usize) -> WasmResult<JsValue> {
+    pub fn search(&mut self, term: &str, char_at: usize) -> WasmResult<TokenizeResult> {
         let result = self
             .inner
             .search(term, char_at)
             .context("Error occured while searching")?;
-        serialize_result(&result)
+        Ok(result)
     }
 
     /// Generates new yomikiri dictionary files from gzipped jmdict bytes,
     /// and replaces dictionary used in Backend.
     ///
     /// Returns [.yomikiriindex, .yomikiridict] bytes as [UInt8Array, UInt8Array]
-    #[wasm_bindgen(skip_typescript)]
     pub fn update_dictionary(
         &mut self,
         gzip_jmdict: &Uint8Array,
         gzip_jmnedict: &Uint8Array,
-    ) -> WasmResult<JsValue> {
+    ) -> WasmResult<DictUpdateResult> {
         let writer = DictionaryWriter::new();
         let gzip_jmdict = gzip_jmdict.to_vec();
         debug!("will parse jmdict file");
@@ -120,25 +101,16 @@ impl Backend {
 
         let dict = Dictionary::try_new(dict_bytes)?;
         self.inner.dictionary = dict;
-        serialize_result(&result)
+        Ok(result)
     }
 
-    #[wasm_bindgen(skip_typescript)]
-    pub fn metadata(&self) -> WasmResult<JsValue> {
+    pub fn metadata(&self) -> WasmResult<DictionaryMetadata> {
         let metadata = self.inner.dictionary.metadata();
-        serialize_result(metadata)
+        Ok(metadata.clone())
     }
 }
 
 #[wasm_bindgen]
 pub fn dict_schema_ver() -> u16 {
     SCHEMA_VER
-}
-
-fn serialize_result<T: Serialize>(value: &T) -> WasmResult<JsValue> {
-    let result = serde_wasm_bindgen::to_value(value);
-    match result {
-        Ok(inner) => Ok(inner),
-        Err(_) => Err(anyhow!("Failed to serialize result to JSON").into()),
-    }
 }
