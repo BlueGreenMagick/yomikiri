@@ -123,7 +123,8 @@ impl DictionaryWriter<DictionaryWriterJMDict> {
         jmdict: R,
     ) -> Result<DictionaryWriter<DictionaryWriterJMneDict>> {
         let mut parser = JMDictParser::new(jmdict)?;
-        let mut entries = Vec::new();
+        // 203736 entries (2022-08-23)
+        let mut entries = Vec::with_capacity(210000);
         while let Some(entry) = parser.next_entry()? {
             if entry.id < 5000000 || entry.id >= 6000000 {
                 entries.push(WordEntry::try_from(entry)?)
@@ -150,7 +151,7 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
             parse_jmnedict_entry(&mut self.state.entries, &mut name_builder, entry)?;
         }
 
-        let mut name_entries = vec![];
+        let mut name_entries = Vec::with_capacity(NameEntriesBuilder::ENTRIES_CAPACITY);
         for name_entry in name_builder.into_iter() {
             name_entries.push(name_entry);
         }

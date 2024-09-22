@@ -25,9 +25,12 @@ pub(crate) struct NameEntriesBuilder {
 }
 
 impl NameEntriesBuilder {
+    /// 234561 (jmnedict: 2024-08-29, calculated: 2024-09-22)
+    pub const ENTRIES_CAPACITY: usize = 250000;
+
     pub fn new() -> Self {
         Self {
-            fragments: HashMap::new(),
+            fragments: HashMap::with_capacity(Self::ENTRIES_CAPACITY),
         }
     }
 
@@ -39,6 +42,7 @@ impl NameEntriesBuilder {
     }
 
     pub fn into_iter(self) -> impl Iterator<Item = NameEntry> {
+        // println!("name_entries.len() = {}", self.fragments.len());
         self.fragments.into_iter().map(|(kanji, values)| {
             let mut groups: Vec<GroupedNameItem> = vec![];
             for val in values {
