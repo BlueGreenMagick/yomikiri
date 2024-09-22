@@ -118,7 +118,7 @@ export namespace DesktopBackend {
     if (EXTENSION_CONTEXT === "background") {
       const prom = PromiseWithProgress.fromPromise(
         _updateDictionary(progressFn),
-        "Downloading JMDict file...",
+        "Updating dictionary...",
       );
 
       function progressFn(msg: string) {
@@ -162,11 +162,13 @@ export namespace DesktopBackend {
     progressFn: (msg: string) => unknown,
   ): Promise<boolean> {
     const wasm = await _wasm!.get();
+    progressFn("Downloading JMdict file...");
     const jmdict_bytes = await fetchDictionaryFile(
       "JMdict_e.gz",
       JMDICT_URL,
       "dict.jmdict.etag",
     );
+    progressFn("Downloading JMnedict file...");
     const jmnedict_bytes = await fetchDictionaryFile(
       "JMnedict.xml.gz",
       JMNEDICT_URL,
@@ -241,6 +243,7 @@ async function fetchDictionaryFile(
   url: string,
   etag_key: "dict.jmdict.etag" | "dict.jmnedict.etag",
 ): Promise<Uint8Array> {
+  console.log(`Fetching ${filename} at ${url}`);
   const file_exists = await idbHasFile(filename);
   const etag = file_exists ? await getStorage(etag_key) : undefined;
   const resp = await fetch(url, {
@@ -248,8 +251,10 @@ async function fetchDictionaryFile(
   });
 
   if (resp.status === 304) {
+    console.log("Will use existing file as it is already up to date");
     return (await idbReadFile(filename)) as Uint8Array;
   } else {
+    console.log("Saving downloaded file");
     const etag = resp.headers.get("ETag");
     // remove previous etag until file is written to idb
     await removeStorage("dict.jmdict.etag");

@@ -90,6 +90,7 @@ impl Backend {
     ) -> WasmResult<JsValue> {
         let writer = DictionaryWriter::new();
         let gzip_jmdict = gzip_jmdict.to_vec();
+        debug!("will parse jmdict file");
         let jmdict_decoder = GzDecoder::new(&gzip_jmdict[..]);
         let jmdict_reader = BufReader::new(jmdict_decoder);
         let writer = writer
@@ -98,16 +99,19 @@ impl Backend {
         debug!("parsed jmdict file");
 
         let gzip_jmnedict = gzip_jmnedict.to_vec();
+        debug!("will parse jmnedict file");
         let jmnedict_decoder = GzDecoder::new(&gzip_jmnedict[..]);
         let jmnedict_reader = BufReader::new(jmnedict_decoder);
         let writer = writer
             .read_jmnedict(jmnedict_reader)
             .context("Failed to parse JMneDict xml file")?;
+        debug!("parsed jmnedict file");
 
         let mut dict_bytes: Vec<u8> = Vec::with_capacity(84 * 1024 * 1024);
         writer
             .write(&mut dict_bytes)
             .context("Failed to write dictionary file")?;
+        debug!("built dictionary file");
 
         let dict_array = Uint8Array::from(&dict_bytes[..]);
         let result = DictUpdateResult {
