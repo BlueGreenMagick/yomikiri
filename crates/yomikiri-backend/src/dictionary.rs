@@ -1,5 +1,4 @@
 use anyhow::{Context, Result};
-use fst::{IntoStreamer, Streamer};
 use yomikiri_dictionary::dictionary::{Dictionary as InnerDictionary, DictionaryMetadata};
 use yomikiri_dictionary::entry::{Entry, NameEntry, Rarity, WordEntry};
 use yomikiri_dictionary::PartOfSpeech;
@@ -20,13 +19,9 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
     pub fn search(&self, term: &str) -> Result<Vec<Entry>> {
         let view = self.inner.borrow_view();
         let terms = &view.term_index;
-        if let Some(value) = terms.map.get(term) {
-            let pointers = terms.parse_value(value)?;
-            let entries = view.get_entries(&pointers)?;
-            Ok(entries)
-        } else {
-            Ok(Vec::new())
-        }
+        let idxs = terms.get(term)?;
+        let entries = view.get_entries(&idxs)?;
+        Ok(entries)
     }
 
     /// Returns true only if there is a dictionary term
@@ -43,36 +38,25 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         next_prefix_bytes[len - 1] += 1;
 
         let terms = &self.inner.borrow_view().term_index;
-        terms
-            .map
-            .range()
-            .gt(prefix)
-            .lt(&next_prefix_bytes)
-            .into_stream()
-            .next()
-            .is_some()
+        terms.has_starts_with_excluding(prefix)
     }
 
     pub fn contains(&self, term: &str) -> bool {
-        self.inner.borrow_view().term_index.map.contains_key(term)
+        self.inner.borrow_view().term_index.contains_key(term)
     }
 
     /// Returns json text of entries
     pub fn search_json(&self, term: &str) -> Result<Vec<String>> {
         let view = &self.inner.borrow_view();
         let terms = &self.inner.borrow_view().term_index;
-        if let Some(value) = terms.map.get(term) {
-            let pointers = terms.parse_value(value)?;
-            let entries = view.get_entries(&pointers)?;
-            let jsons = entries
-                .iter()
-                .map(serde_json::to_string)
-                .collect::<serde_json::Result<Vec<String>>>()
-                .context("Failed to serialize dictionary entry into JSON")?;
-            Ok(jsons)
-        } else {
-            Ok(Vec::new())
-        }
+        let idxs = terms.get(term)?;
+        let entries = view.get_entries(&idxs)?;
+        let jsons = entries
+            .iter()
+            .map(serde_json::to_string)
+            .collect::<serde_json::Result<Vec<String>>>()
+            .context("Failed to serialize dictionary entry into JSON")?;
+        Ok(jsons)
     }
 
     pub fn metadata(&self) -> &DictionaryMetadata {

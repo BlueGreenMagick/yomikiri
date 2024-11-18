@@ -3,7 +3,7 @@ use std::io::Write;
 use std::ops::Deref;
 
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
-use fst::MapBuilder;
+use fst::{IntoStreamer, MapBuilder, Streamer};
 use itertools::Itertools;
 use serde::de::Error as DeserializeError;
 use serde::{Deserialize, Serialize};
@@ -41,7 +41,7 @@ pub(crate) struct DictIndexItem {
 #[derive(Serialize, Deserialize)]
 pub struct DictIndexMap<'a> {
     #[serde(borrow)]
-    pub map: Map<'a>,
+    map: Map<'a>,
     pointers: JaggedArray<'a, Vec<StoredEntryIdx>>,
 }
 
@@ -112,6 +112,36 @@ where
 }
 
 impl<'a> DictIndexMap<'a> {
+    pub fn get<K: AsRef<[u8]>>(&self, key: K) -> Result<Vec<EntryIdx>> {
+        if let Some(value) = self.map.get(key) {
+            self.parse_value(value)
+        } else {
+            Ok(vec![])
+        }
+    }
+
+    pub fn contains_key<K: AsRef<[u8]>>(&self, key: K) -> bool {
+        self.map.contains_key(key)
+    }
+
+    /// Returns `true` if index map contains any key that starts with prefix, and is not prefix.
+    ///
+    /// e.g. If index map contains a single key "abcd":
+    /// - returns `true` for `prefix = "abc"`
+    /// - returns `false` for `prefix = "abcd"`
+    pub fn has_starts_with_excluding<K: AsRef<[u8]>>(&self, prefix: K) -> bool {
+        let mut next_prefix_bytes = prefix.as_ref().to_vec();
+        increment_bytes(&mut next_prefix_bytes);
+
+        self.map
+            .range()
+            .gt(prefix)
+            .lt(&next_prefix_bytes)
+            .into_stream()
+            .next()
+            .is_some()
+    }
+
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let bytes = source;
         let mut at = 0;
@@ -132,7 +162,7 @@ impl<'a> DictIndexMap<'a> {
         Ok((terms, at))
     }
 
-    pub fn parse_value(&self, value: u64) -> Result<Vec<EntryIdx>> {
+    fn parse_value(&self, value: u64) -> Result<Vec<EntryIdx>> {
         let idx = (value & ((1_u64 << 63) - 1)) as usize;
         if value >= 1_u64 << 63 {
             Ok(self
@@ -223,4 +253,44 @@ pub(crate) fn create_sorted_term_indexes(
         .collect();
 
     Ok(indexes)
+}
+
+fn increment_bytes(bytes: &mut Vec<u8>) {
+    let mut i = bytes.len();
+    loop {
+        if i > 0 {
+            i -= 1;
+        } else {
+            break;
+        }
+        if bytes[i] == 255 {
+            bytes[i] = 0;
+        } else {
+            bytes[i] += 1;
+            return;
+        }
+    }
+    bytes.push(0);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::increment_bytes;
+
+    #[test]
+    fn test_increment_bytes() {
+        macro_rules! test_case {
+            ($in: expr, $out: expr) => {
+                let mut next = $in.to_vec();
+                increment_bytes(&mut next);
+                assert_eq!(&next, $out);
+            };
+        }
+
+        test_case!(b"a", b"b");
+        test_case!(b"art", b"aru");
+        test_case!(b"a\xff", b"b\x00");
+        test_case!(b"\xff\xff", b"\x00\x00\x00");
+        test_case!(b"", b"\x00");
+    }
 }
