@@ -19,10 +19,10 @@ use crate::WordEntry;
 /// | '0' | word entry idx (31) |
 /// | '1' | name entry idx (31) |
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy)]
-pub(crate) struct StoredEntryPointer(u32);
+pub(crate) struct StoredEntryIdx(u32);
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum EntryPointer {
+pub enum EntryIdx {
     Word(u32),
     Name(u32),
 }
@@ -32,44 +32,44 @@ pub enum EntryPointer {
 pub(crate) struct DictIndexItem {
     pub key: String,
     /// Sorted
-    pub entry_indexes: Vec<StoredEntryPointer>,
+    pub entry_indexes: Vec<StoredEntryIdx>,
 }
 
 /// map values are u64 with structure:
-/// | literal '0' | '0' * 31 | StoredEntryPointer (32) |
+/// | literal '0' | '0' * 31 | StoredEntryIdx (32) |
 /// | literal '1' | '0' * 31 | pointers array index (32) |
 #[derive(Serialize, Deserialize)]
 pub struct DictIndexMap<'a> {
     #[serde(borrow)]
     pub map: Map<'a>,
-    pointers: JaggedArray<'a, Vec<StoredEntryPointer>>,
+    pointers: JaggedArray<'a, Vec<StoredEntryIdx>>,
 }
 
 pub struct Map<'a>(pub fst::Map<&'a [u8]>);
 
-impl From<StoredEntryPointer> for EntryPointer {
-    fn from(value: StoredEntryPointer) -> Self {
+impl From<StoredEntryIdx> for EntryIdx {
+    fn from(value: StoredEntryIdx) -> Self {
         let inner = value.0;
         let idx = inner & ((1_u32 << 31) - 1_u32);
         if inner >= (1_u32 << 31) {
-            EntryPointer::Name(idx)
+            EntryIdx::Name(idx)
         } else {
-            EntryPointer::Word(idx)
+            EntryIdx::Word(idx)
         }
     }
 }
 
-impl From<EntryPointer> for StoredEntryPointer {
-    fn from(value: EntryPointer) -> Self {
+impl From<EntryIdx> for StoredEntryIdx {
+    fn from(value: EntryIdx) -> Self {
         let inner = match value {
-            EntryPointer::Word(idx) => idx & ((1_u32 << 31) - 1),
-            EntryPointer::Name(idx) => 1_u32 << 31 | (idx & ((1_u32 << 31) - 1)),
+            EntryIdx::Word(idx) => idx & ((1_u32 << 31) - 1),
+            EntryIdx::Name(idx) => 1_u32 << 31 | (idx & ((1_u32 << 31) - 1)),
         };
-        StoredEntryPointer(inner)
+        StoredEntryIdx(inner)
     }
 }
 
-impl From<u32> for StoredEntryPointer {
+impl From<u32> for StoredEntryIdx {
     fn from(value: u32) -> Self {
         Self(value)
     }
@@ -132,18 +132,18 @@ impl<'a> DictIndexMap<'a> {
         Ok((terms, at))
     }
 
-    pub fn parse_value(&self, value: u64) -> Result<Vec<EntryPointer>> {
+    pub fn parse_value(&self, value: u64) -> Result<Vec<EntryIdx>> {
         let idx = (value & ((1_u64 << 63) - 1)) as usize;
         if value >= 1_u64 << 63 {
             Ok(self
                 .pointers
                 .get(idx)?
                 .iter()
-                .map(|i| EntryPointer::from(*i))
+                .map(|i| EntryIdx::from(*i))
                 .collect())
         } else {
-            let stored_pointer = StoredEntryPointer(idx as u32);
-            let pointer = EntryPointer::from(stored_pointer);
+            let stored_pointer = StoredEntryIdx(idx as u32);
+            let pointer = EntryIdx::from(stored_pointer);
             Ok(vec![pointer])
         }
     }
@@ -187,8 +187,7 @@ pub(crate) fn create_sorted_term_indexes(
     entries: &[WordEntry],
 ) -> Result<Vec<DictIndexItem>> {
     // some entries have multiple terms
-    let mut indexes: HashMap<&str, Vec<StoredEntryPointer>> =
-        HashMap::with_capacity(entries.len() * 4);
+    let mut indexes: HashMap<&str, Vec<StoredEntryIdx>> = HashMap::with_capacity(entries.len() * 4);
 
     for (i, entry) in entries.iter().enumerate() {
         for term in entry
@@ -197,7 +196,7 @@ pub(crate) fn create_sorted_term_indexes(
             .map(|k| &k.kanji)
             .chain(entry.readings.iter().map(|r| &r.reading))
         {
-            let pointer: StoredEntryPointer = EntryPointer::Word(i as u32).into();
+            let pointer: StoredEntryIdx = EntryIdx::Word(i as u32).into();
             indexes
                 .entry(term)
                 .and_modify(|v| v.push(pointer))
@@ -206,7 +205,7 @@ pub(crate) fn create_sorted_term_indexes(
     }
 
     for (i, entry) in name_entries.iter().enumerate() {
-        let pointer: StoredEntryPointer = EntryPointer::Name(i as u32).into();
+        let pointer: StoredEntryIdx = EntryIdx::Name(i as u32).into();
         let term = &entry.kanji;
         indexes
             .entry(term)

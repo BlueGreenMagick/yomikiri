@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
 use crate::entry::{Entry, NameEntry};
-use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryPointer};
+use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryIdx};
 use crate::jagged_array::JaggedArray;
 use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
 use crate::{Result, WordEntry};
@@ -82,12 +82,12 @@ impl<'a> DictionaryView<'a> {
         Ok(())
     }
 
-    pub fn get_entries(&self, pointers: &[EntryPointer]) -> Result<Vec<Entry>> {
+    pub fn get_entries(&self, pointers: &[EntryIdx]) -> Result<Vec<Entry>> {
         pointers
             .iter()
             .map(|p| match p {
-                EntryPointer::Word(idx) => self.entries.get(*idx as usize).map(Entry::Word),
-                EntryPointer::Name(idx) => self.name_entries.get(*idx as usize).map(Entry::Name),
+                EntryIdx::Word(idx) => self.entries.get(*idx as usize).map(Entry::Word),
+                EntryIdx::Name(idx) => self.name_entries.get(*idx as usize).map(Entry::Name),
             })
             .collect::<Result<Vec<Entry>>>()
     }
