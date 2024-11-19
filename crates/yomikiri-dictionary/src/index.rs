@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::io::Write;
 use std::ops::Deref;
 
@@ -28,52 +29,67 @@ pub enum EntryIdx {
 }
 
 /// Multiple jmdict entry indexes that corresponds to a key
-#[derive(Debug, Serialize, Deserialize)]
-pub(crate) struct DictIndexItem {
+#[derive(Debug)]
+pub struct DictIndexItem<T: EncodableIdx> {
     pub key: String,
     /// Sorted
-    pub entry_indexes: Vec<StoredEntryIdx>,
+    pub entry_indexes: Vec<T>,
 }
 
-/// map values are u64 with structure:
-/// | literal '0' | '0' * 31 | StoredEntryIdx (32) |
-/// | literal '1' | '0' * 31 | pointers array index (32) |
-#[derive(Serialize, Deserialize)]
-pub struct DictIndexMap<'a> {
-    #[serde(borrow)]
-    map: Map<'a>,
-    pointers: JaggedArray<'a, Vec<StoredEntryIdx>>,
+pub trait EncodableIdx: Sized + Debug {
+    type EncodedType: Debug + Serialize + for<'de> Deserialize<'de>;
+
+    fn encode(&self) -> Self::EncodedType;
+    fn decode(value: &Self::EncodedType) -> Self;
+    /// Try to encode `self` into 63bit value.
+    /// If this returns `None`, use multi-encoding scheme instead
+    fn single_encode(&self) -> Option<u64>;
+    /// Decode last 63bit into single idx
+    fn single_decode(value: u64) -> Result<Self>;
 }
 
-pub struct Map<'a>(pub fst::Map<&'a [u8]>);
+impl EncodableIdx for EntryIdx {
+    type EncodedType = u32;
 
-impl From<StoredEntryIdx> for EntryIdx {
-    fn from(value: StoredEntryIdx) -> Self {
-        let inner = value.0;
-        let idx = inner & ((1_u32 << 31) - 1_u32);
-        if inner >= (1_u32 << 31) {
+    fn encode(&self) -> Self::EncodedType {
+        match self {
+            EntryIdx::Word(idx) => idx & ((1_u32 << 31) - 1),
+            EntryIdx::Name(idx) => 1_u32 << 31 | (idx & ((1_u32 << 31) - 1)),
+        }
+    }
+
+    fn decode(inner: &Self::EncodedType) -> Self {
+        let idx = *inner & ((1_u32 << 31) - 1_u32);
+        if *inner >= (1_u32 << 31) {
             EntryIdx::Name(idx)
         } else {
             EntryIdx::Word(idx)
         }
     }
-}
 
-impl From<EntryIdx> for StoredEntryIdx {
-    fn from(value: EntryIdx) -> Self {
-        let inner = match value {
-            EntryIdx::Word(idx) => idx & ((1_u32 << 31) - 1),
-            EntryIdx::Name(idx) => 1_u32 << 31 | (idx & ((1_u32 << 31) - 1)),
-        };
-        StoredEntryIdx(inner)
+    fn single_encode(&self) -> Option<u64> {
+        Some(self.encode() as u64)
+    }
+
+    fn single_decode(value: u64) -> Result<Self> {
+        Ok(Self::decode(&(value as u32)))
     }
 }
 
-impl From<u32> for StoredEntryIdx {
-    fn from(value: u32) -> Self {
-        Self(value)
-    }
+#[derive(Debug, Serialize, Deserialize)]
+struct EncodedIdx<T: EncodableIdx>(T::EncodedType);
+
+/// map values are u64 with structure:
+/// | literal '0' | '0' * 31 | StoredEntryIdx (32) |
+/// | literal '1' | '0' * 31 | pointers array index (32) |
+#[derive(Serialize, Deserialize)]
+pub struct DictIndexMap<'a, T: EncodableIdx> {
+    #[serde(borrow)]
+    map: Map<'a>,
+    pointers: JaggedArray<'a, Vec<T::EncodedType>>,
 }
+
+pub struct Map<'a>(pub fst::Map<&'a [u8]>);
 
 impl<'a> Deref for Map<'a> {
     type Target = fst::Map<&'a [u8]>;
@@ -111,8 +127,8 @@ where
     }
 }
 
-impl<'a> DictIndexMap<'a> {
-    pub fn get<K: AsRef<[u8]>>(&self, key: K) -> Result<Vec<EntryIdx>> {
+impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
+    pub fn get<K: AsRef<[u8]>>(&self, key: K) -> Result<Vec<T>> {
         if let Some(value) = self.map.get(key) {
             self.parse_value(value)
         } else {
@@ -162,52 +178,54 @@ impl<'a> DictIndexMap<'a> {
         Ok((terms, at))
     }
 
-    fn parse_value(&self, value: u64) -> Result<Vec<EntryIdx>> {
+    fn parse_value(&self, value: u64) -> Result<Vec<T>> {
         let idx = (value & ((1_u64 << 63) - 1)) as usize;
-        if value >= 1_u64 << 63 {
+        if value < 1_u64 << 63 {
+            let idx = T::single_decode(value)?;
+            Ok(vec![idx])
+        } else {
             Ok(self
                 .pointers
                 .get(idx)?
                 .iter()
-                .map(|i| EntryIdx::from(*i))
+                .map(|i| T::decode(i))
                 .collect())
-        } else {
-            let stored_pointer = StoredEntryIdx(idx as u32);
-            let pointer = EntryIdx::from(stored_pointer);
-            Ok(vec![pointer])
         }
     }
 
     pub(crate) fn build_and_encode_to<W: Write>(
-        items: &[DictIndexItem],
+        items: &[DictIndexItem<T>],
         writer: &mut W,
     ) -> Result<()> {
         let mut buffer = Vec::with_capacity(16 * items.len());
         let mut builder = MapBuilder::new(&mut buffer)?;
-        let mut pointers: Vec<Vec<u32>> = vec![];
+        let mut idx_arrs: Vec<Vec<T::EncodedType>> = vec![];
 
         for item in items {
             if item.entry_indexes.len() == 1 {
-                let index = item.entry_indexes[0].0 as u64;
-                builder.insert(&item.key, index)?;
-            } else {
-                let mut term_ids: Vec<u32> = vec![];
-                for index in &item.entry_indexes {
-                    term_ids.push(index.0);
+                let index = &item.entry_indexes[0];
+                if let Some(val) = index.single_encode() {
+                    builder.insert(&item.key, val)?;
+                    continue;
                 }
-                builder.insert(
-                    &item.key,
-                    1_u64 << 63 | (pointers.len() as u64 & ((1_u64 << 32) - 1)),
-                )?;
-                pointers.push(term_ids);
             }
+            // Store idxes into separate array, and store index within array as fst::map value
+            let mut term_ids: Vec<T::EncodedType> = vec![];
+            for index in &item.entry_indexes {
+                term_ids.push(index.encode());
+            }
+            builder.insert(
+                &item.key,
+                1_u64 << 63 | (idx_arrs.len() as u64 & ((1_u64 << 32) - 1)),
+            )?;
+            idx_arrs.push(term_ids);
         }
         builder.finish()?;
 
         writer.write_u32::<LittleEndian>(buffer.len().try_into()?)?;
         writer.write_all(&buffer)?;
 
-        JaggedArray::build_and_encode_to(&pointers, writer)?;
+        JaggedArray::build_and_encode_to(&idx_arrs, writer)?;
         Ok(())
     }
 }
@@ -215,9 +233,9 @@ impl<'a> DictIndexMap<'a> {
 pub(crate) fn create_sorted_term_indexes(
     name_entries: &[NameEntry],
     entries: &[WordEntry],
-) -> Result<Vec<DictIndexItem>> {
+) -> Result<Vec<DictIndexItem<EntryIdx>>> {
     // some entries have multiple terms
-    let mut indexes: HashMap<&str, Vec<StoredEntryIdx>> = HashMap::with_capacity(entries.len() * 4);
+    let mut indexes: HashMap<&str, Vec<EntryIdx>> = HashMap::with_capacity(entries.len() * 4);
 
     for (i, entry) in entries.iter().enumerate() {
         for term in entry
@@ -226,24 +244,24 @@ pub(crate) fn create_sorted_term_indexes(
             .map(|k| &k.kanji)
             .chain(entry.readings.iter().map(|r| &r.reading))
         {
-            let pointer: StoredEntryIdx = EntryIdx::Word(i as u32).into();
+            let idx = EntryIdx::Word(i as u32);
             indexes
                 .entry(term)
-                .and_modify(|v| v.push(pointer))
-                .or_insert_with(|| vec![pointer]);
+                .and_modify(|v| v.push(idx))
+                .or_insert_with(|| vec![idx]);
         }
     }
 
     for (i, entry) in name_entries.iter().enumerate() {
-        let pointer: StoredEntryIdx = EntryIdx::Name(i as u32).into();
+        let idx = EntryIdx::Name(i as u32);
         let term = &entry.kanji;
         indexes
             .entry(term)
-            .and_modify(|v| v.push(pointer))
-            .or_insert_with(|| vec![pointer]);
+            .and_modify(|v| v.push(idx))
+            .or_insert_with(|| vec![idx]);
     }
 
-    let indexes: Vec<DictIndexItem> = indexes
+    let indexes: Vec<DictIndexItem<EntryIdx>> = indexes
         .into_iter()
         .map(|(term, indexes)| DictIndexItem {
             key: term.to_string(),

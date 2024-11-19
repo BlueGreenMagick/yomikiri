@@ -31,7 +31,7 @@ pub struct DictionaryMetadata {
 }
 
 pub struct DictionaryView<'a> {
-    pub term_index: DictIndexMap<'a>,
+    pub term_index: DictIndexMap<'a, EntryIdx>,
     pub entries: JaggedArray<'a, WordEntry>,
     pub name_entries: JaggedArray<'a, NameEntry>,
     pub metadata: DictionaryMetadata,
