@@ -86,8 +86,8 @@ impl<'a> DictionaryView<'a> {
         pointers
             .iter()
             .map(|p| match p {
-                EntryIdx::Word(idx) => self.entries.get(*idx as usize).map(Entry::Word),
-                EntryIdx::Name(idx) => self.name_entries.get(*idx as usize).map(Entry::Name),
+                EntryIdx::Word(idx) => self.entries.get(idx.0 as usize).map(Entry::Word),
+                EntryIdx::Name(idx) => self.name_entries.get(idx.0 as usize).map(Entry::Name),
             })
             .collect::<Result<Vec<Entry>>>()
     }

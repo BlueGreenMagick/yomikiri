@@ -14,28 +14,6 @@ use crate::error::Result;
 use crate::jagged_array::JaggedArray;
 use crate::WordEntry;
 
-/// If first bit is 0, word entry pointer, otherwise name entry pointer.
-///
-/// Structure:
-/// | '0' | word entry idx (31) |
-/// | '1' | name entry idx (31) |
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy)]
-pub(crate) struct StoredEntryIdx(u32);
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum EntryIdx {
-    Word(u32),
-    Name(u32),
-}
-
-/// Multiple jmdict entry indexes that corresponds to a key
-#[derive(Debug)]
-pub struct DictIndexItem<T: EncodableIdx> {
-    pub key: String,
-    /// Sorted
-    pub entry_indexes: Vec<T>,
-}
-
 pub trait EncodableIdx: Sized + Debug {
     type EncodedType: Debug + Serialize + for<'de> Deserialize<'de>;
 
@@ -48,22 +26,62 @@ pub trait EncodableIdx: Sized + Debug {
     fn single_decode(value: u64) -> Result<Self>;
 }
 
+/// If first bit is 0, word entry pointer, otherwise name entry pointer.
+///
+/// Structure:
+/// | '0' | word entry idx (31) |
+/// | '1' | name entry idx (31) |
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy)]
+pub(crate) struct StoredEntryIdx(u32);
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum EntryIdx {
+    Word(WordEntryIdx),
+    Name(NameEntryIdx),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct WordEntryIdx(pub(crate) u32);
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct NameEntryIdx(pub(crate) u32);
+
+impl WordEntryIdx {
+    pub fn entry_idx(self) -> EntryIdx {
+        EntryIdx::Word(self)
+    }
+}
+
+impl NameEntryIdx {
+    pub fn entry_idx(self) -> EntryIdx {
+        EntryIdx::Name(self)
+    }
+}
+
+/// Multiple jmdict entry indexes that corresponds to a key
+#[derive(Debug)]
+pub struct DictIndexItem<T: EncodableIdx> {
+    pub key: String,
+    /// Sorted
+    pub entry_indexes: Vec<T>,
+}
+
 impl EncodableIdx for EntryIdx {
     type EncodedType = u32;
 
     fn encode(&self) -> Self::EncodedType {
         match self {
-            EntryIdx::Word(idx) => idx & ((1_u32 << 31) - 1),
-            EntryIdx::Name(idx) => 1_u32 << 31 | (idx & ((1_u32 << 31) - 1)),
+            EntryIdx::Word(idx) => idx.0 & ((1_u32 << 31) - 1),
+            EntryIdx::Name(idx) => 1_u32 << 31 | (idx.0 & ((1_u32 << 31) - 1)),
         }
     }
 
     fn decode(inner: &Self::EncodedType) -> Self {
         let idx = *inner & ((1_u32 << 31) - 1_u32);
         if *inner >= (1_u32 << 31) {
-            EntryIdx::Name(idx)
+            EntryIdx::Name(NameEntryIdx(idx))
         } else {
-            EntryIdx::Word(idx)
+            EntryIdx::Word(WordEntryIdx(idx))
         }
     }
 
@@ -244,7 +262,7 @@ pub(crate) fn create_sorted_term_indexes(
             .map(|k| &k.kanji)
             .chain(entry.readings.iter().map(|r| &r.reading))
         {
-            let idx = EntryIdx::Word(i as u32);
+            let idx = WordEntryIdx(i as u32).entry_idx();
             indexes
                 .entry(term)
                 .and_modify(|v| v.push(idx))
@@ -253,7 +271,7 @@ pub(crate) fn create_sorted_term_indexes(
     }
 
     for (i, entry) in name_entries.iter().enumerate() {
-        let idx = EntryIdx::Name(i as u32);
+        let idx = NameEntryIdx(i as u32).entry_idx();
         let term = &entry.kanji;
         indexes
             .entry(term)
