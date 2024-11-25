@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::io::Write;
+use std::marker::PhantomData;
 use std::ops::Deref;
 
-use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use fst::{IntoStreamer, MapBuilder, Streamer};
 use itertools::Itertools;
 use serde::de::Error as DeserializeError;
@@ -11,7 +11,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::entry::NameEntry;
 use crate::error::Result;
-use crate::jagged_array::JaggedArray;
 use crate::WordEntry;
 
 pub trait EncodableIdx: Sized + Debug {
@@ -97,14 +96,18 @@ impl EncodableIdx for EntryIdx {
 #[derive(Debug, Serialize, Deserialize)]
 struct EncodedIdx<T: EncodableIdx>(T::EncodedType);
 
-/// map values are u64 with structure:
-/// | literal '0' | '0' * 31 | StoredEntryIdx (32) |
-/// | literal '1' | '0' * 31 | pointers array index (32) |
+/// Because `fst::Map` can only store 1 u64 as value.
+/// when multiple indexes are associated with a key,
+/// they are stored separately in `idxs_storage` as contiguous bytes,
+/// and the map stores its starting byte position.
 #[derive(Serialize, Deserialize)]
 pub struct DictIndexMap<'a, T: EncodableIdx> {
     #[serde(borrow)]
     map: Map<'a>,
-    pointers: JaggedArray<'a, Vec<T::EncodedType>>,
+    #[serde(borrow)]
+    idxs_storage: &'a [u8],
+    #[serde(skip)]
+    _typ: PhantomData<T>,
 }
 
 pub struct Map<'a>(pub fst::Map<&'a [u8]>);
@@ -177,23 +180,9 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
     }
 
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
-        let bytes = source;
-        let mut at = 0;
-
-        let len = (&bytes[at..at + 4]).read_u32::<LittleEndian>()? as usize;
-        at += 4;
-        let term_map = Map::new(&bytes[at..at + len])?;
-        at += len;
-
-        let (term_pointers, len) = JaggedArray::try_decode(&bytes[at..])?;
-        at += len;
-
-        let terms = DictIndexMap {
-            map: term_map,
-            pointers: term_pointers,
-        };
-
-        Ok((terms, at))
+        let start = source.len();
+        let (idx_map, rest) = postcard::take_from_bytes(source)?;
+        Ok((idx_map, start - rest.len()))
     }
 
     fn parse_value(&self, value: u64) -> Result<Vec<T>> {
@@ -202,12 +191,9 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
             let idx = T::single_decode(value)?;
             Ok(vec![idx])
         } else {
-            Ok(self
-                .pointers
-                .get(idx)?
-                .iter()
-                .map(|i| T::decode(i))
-                .collect())
+            let idxs = postcard::from_bytes::<Vec<T::EncodedType>>(&self.idxs_storage[idx..])?;
+            let values = idxs.iter().map(|i| T::decode(i)).collect();
+            Ok(values)
         }
     }
 
@@ -217,7 +203,8 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
     ) -> Result<()> {
         let mut buffer = Vec::with_capacity(16 * items.len());
         let mut builder = MapBuilder::new(&mut buffer)?;
-        let mut idx_arrs: Vec<Vec<T::EncodedType>> = vec![];
+        // stores arrays of indexes contiguously
+        let mut idxs_storage: Vec<u8> = vec![];
 
         for item in items {
             if item.entry_indexes.len() == 1 {
@@ -232,18 +219,18 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
             for index in &item.entry_indexes {
                 term_ids.push(index.encode());
             }
-            builder.insert(
-                &item.key,
-                1_u64 << 63 | (idx_arrs.len() as u64 & ((1_u64 << 32) - 1)),
-            )?;
-            idx_arrs.push(term_ids);
+            debug_assert!((idxs_storage.len() as u64) < (1_u64 << 63));
+            builder.insert(&item.key, 1_u64 << 63 | idxs_storage.len() as u64)?;
+            postcard::to_io(&term_ids, &mut idxs_storage)?;
         }
         builder.finish()?;
 
-        writer.write_u32::<LittleEndian>(buffer.len().try_into()?)?;
-        writer.write_all(&buffer)?;
-
-        JaggedArray::build_and_encode_to(&idx_arrs, writer)?;
+        let idx_map: DictIndexMap<T> = DictIndexMap {
+            map: Map::new(&buffer)?,
+            idxs_storage: &idxs_storage,
+            _typ: PhantomData,
+        };
+        postcard::to_io(&idx_map, &mut *writer)?;
         Ok(())
     }
 }
