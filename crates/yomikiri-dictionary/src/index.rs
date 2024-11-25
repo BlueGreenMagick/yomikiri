@@ -13,25 +13,8 @@ use crate::entry::NameEntry;
 use crate::error::Result;
 use crate::WordEntry;
 
-pub trait EncodableIdx: Sized + Debug {
-    type EncodedType: Debug + Serialize + for<'de> Deserialize<'de>;
-
-    fn encode(&self) -> Self::EncodedType;
-    fn decode(value: &Self::EncodedType) -> Self;
-    /// Try to encode `self` into 63bit value.
-    /// If this returns `None`, use multi-encoding scheme instead
-    fn single_encode(&self) -> Option<u64>;
-    /// Decode last 63bit into single idx
-    fn single_decode(value: u64) -> Result<Self>;
-}
-
-/// If first bit is 0, word entry pointer, otherwise name entry pointer.
-///
-/// Structure:
-/// | '0' | word entry idx (31) |
-/// | '1' | name entry idx (31) |
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, Clone, Copy)]
-pub(crate) struct StoredEntryIdx(u32);
+/// Trait that all dictionary index types implement
+pub trait EncodableIdx: Sized + Debug + Serialize + for<'de> Deserialize<'de> {}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum EntryIdx {
@@ -57,6 +40,35 @@ impl NameEntryIdx {
     }
 }
 
+impl Serialize for EntryIdx {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let transform = match self {
+            EntryIdx::Word(idx) => idx.0 * 2,
+            EntryIdx::Name(idx) => idx.0 * 2 + 1,
+        };
+        serializer.serialize_u32(transform)
+    }
+}
+
+impl<'de> Deserialize<'de> for EntryIdx {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let transform = u32::deserialize(deserializer)?;
+        if transform % 2 == 0 {
+            Ok(EntryIdx::Word(WordEntryIdx(transform / 2)))
+        } else {
+            Ok(EntryIdx::Name(NameEntryIdx((transform - 1) / 2)))
+        }
+    }
+}
+
+impl EncodableIdx for EntryIdx {}
+
 /// Multiple jmdict entry indexes that corresponds to a key
 #[derive(Debug)]
 pub struct DictIndexItem<T: EncodableIdx> {
@@ -65,41 +77,16 @@ pub struct DictIndexItem<T: EncodableIdx> {
     pub entry_indexes: Vec<T>,
 }
 
-impl EncodableIdx for EntryIdx {
-    type EncodedType = u32;
-
-    fn encode(&self) -> Self::EncodedType {
-        match self {
-            EntryIdx::Word(idx) => idx.0 & ((1_u32 << 31) - 1),
-            EntryIdx::Name(idx) => 1_u32 << 31 | (idx.0 & ((1_u32 << 31) - 1)),
-        }
-    }
-
-    fn decode(inner: &Self::EncodedType) -> Self {
-        let idx = *inner & ((1_u32 << 31) - 1_u32);
-        if *inner >= (1_u32 << 31) {
-            EntryIdx::Name(NameEntryIdx(idx))
-        } else {
-            EntryIdx::Word(WordEntryIdx(idx))
-        }
-    }
-
-    fn single_encode(&self) -> Option<u64> {
-        Some(self.encode() as u64)
-    }
-
-    fn single_decode(value: u64) -> Result<Self> {
-        Ok(Self::decode(&(value as u32)))
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct EncodedIdx<T: EncodableIdx>(T::EncodedType);
-
 /// Because `fst::Map` can only store 1 u64 as value.
 /// when multiple indexes are associated with a key,
 /// they are stored separately in `idxs_storage` as contiguous bytes,
 /// and the map stores its starting byte position.
+///
+/// When the value is a single index that fit within 63bit,
+/// it is stored directly within the map as little-endian.
+///
+/// When decoding, if the MSB is 0, it is a single index,
+/// otherwise the starting byte position within `idxs_storage``.
 #[derive(Serialize, Deserialize)]
 pub struct DictIndexMap<'a, T: EncodableIdx> {
     #[serde(borrow)]
@@ -186,14 +173,13 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
     }
 
     fn parse_value(&self, value: u64) -> Result<Vec<T>> {
-        let idx = (value & ((1_u64 << 63) - 1)) as usize;
-        if value < 1_u64 << 63 {
-            let idx = T::single_decode(value)?;
+        if value & (1_u64 << 63) == 0 {
+            let idx: T = postcard::from_bytes(&value.to_le_bytes())?;
             Ok(vec![idx])
         } else {
-            let idxs = postcard::from_bytes::<Vec<T::EncodedType>>(&self.idxs_storage[idx..])?;
-            let values = idxs.iter().map(|i| T::decode(i)).collect();
-            Ok(values)
+            let idx = (value & ((1_u64 << 63) - 1)) as usize;
+            let idxs = postcard::from_bytes::<Vec<T>>(&self.idxs_storage[idx..])?;
+            Ok(idxs)
         }
     }
 
@@ -209,15 +195,16 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
         for item in items {
             if item.entry_indexes.len() == 1 {
                 let index = &item.entry_indexes[0];
-                if let Some(val) = index.single_encode() {
+                let encoded = postcard::to_stdvec(&index)?;
+                if let Some(val) = single_storable(&encoded) {
                     builder.insert(&item.key, val)?;
                     continue;
                 }
             }
             // Store idxes into separate array, and store index within array as fst::map value
-            let mut term_ids: Vec<T::EncodedType> = vec![];
+            let mut term_ids: Vec<&T> = vec![];
             for index in &item.entry_indexes {
-                term_ids.push(index.encode());
+                term_ids.push(index);
             }
             debug_assert!((idxs_storage.len() as u64) < (1_u64 << 63));
             builder.insert(&item.key, 1_u64 << 63 | idxs_storage.len() as u64)?;
@@ -294,6 +281,22 @@ fn increment_bytes(bytes: &mut Vec<u8>) {
         }
     }
     bytes.push(0);
+}
+
+/// Returns Some(u64) if the bytes can be stored within 63 bits.
+/// Either `bytes.len() < 7`, or its length is 8 bytes and MSB is 0.
+///
+/// Returned value is little-endian encoded value.
+fn single_storable(bytes: &[u8]) -> Option<u64> {
+    if bytes.len() <= 7 {
+        let mut value = [0u8; 8];
+        value[..bytes.len()].copy_from_slice(bytes);
+        Some(u64::from_le_bytes(value))
+    } else if bytes.len() == 8 && bytes[7] & (1_u8 << 7) == 0 {
+        Some(u64::from_le_bytes(bytes.try_into().unwrap()))
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]
