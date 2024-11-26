@@ -22,10 +22,10 @@ pub enum EntryIdx {
     Name(NameEntryIdx),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct WordEntryIdx(pub(crate) u32);
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct NameEntryIdx(pub(crate) u32);
 
 impl WordEntryIdx {
@@ -68,6 +68,37 @@ impl<'de> Deserialize<'de> for EntryIdx {
 }
 
 impl EncodableIdx for EntryIdx {}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub enum MeaningIdx {
+    Word(WordMeaningIdx),
+    Name(NameReadingIdx),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct WordMeaningIdx {
+    entry_idx: WordEntryIdx,
+    inner_idx: InnerWordMeaningIdx,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct InnerWordMeaningIdx {
+    /// Idx of sense within entry. Counts sense in each group
+    sense_idx: usize,
+    /// Idx of meaning within sense
+    meaning_idx: usize,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct NameReadingIdx {
+    entry_idx: NameEntryIdx,
+    inner_idx: InnerNameReadingIdx,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct InnerNameReadingIdx {
+    item_idx: usize,
+}
 
 /// Multiple jmdict entry indexes that corresponds to a key
 #[derive(Debug)]
