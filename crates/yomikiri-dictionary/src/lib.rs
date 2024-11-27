@@ -5,6 +5,7 @@ pub mod index;
 pub mod jagged_array;
 pub mod jmdict;
 pub mod jmnedict;
+pub mod meaning;
 mod utils;
 
 pub use entry::{Kanji, PartOfSpeech, Reading, Sense, WordEntry};

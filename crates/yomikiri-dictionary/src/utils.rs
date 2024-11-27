@@ -11,23 +11,6 @@ pub fn nfc_normalize(text: &str) -> Cow<'_, str> {
     }
 }
 
-/// Removes diacritic marks and decomposes some ligatures
-pub fn normalize_latin_basic_form(text: &NFCString) -> Cow<'_, str> {
-    if is_nfkd(text) {
-        Cow::Borrowed(text)
-    } else {
-        text.nfkd()
-            .filter(is_not_diacritical_marks)
-            .collect::<String>()
-            .into()
-    }
-}
-
-/// `ch` is not diacritic marks
-fn is_not_diacritical_marks(ch: &char) -> bool {
-    *ch < '\u{0300}' || *ch > '\u{036f}'
-}
-
 /// NFC normalized string
 pub struct NFCString(String);
 
