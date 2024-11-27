@@ -299,14 +299,22 @@ pub(crate) fn create_sorted_term_indexes(
     Ok(indexes)
 }
 
-struct MeaningIndexBuilder {
+pub(crate) struct MeaningIndexBuilder {
     map: HashMap<String, Vec<MeaningIdx>>,
     word_idx: u32,
     name_idx: u32,
 }
 
 impl MeaningIndexBuilder {
-    fn with_capacity(capacity: usize) -> Self {
+    pub fn new() -> Self {
+        Self {
+            map: HashMap::new(),
+            word_idx: 0,
+            name_idx: 0,
+        }
+    }
+
+    pub fn with_capacity(capacity: usize) -> Self {
         Self {
             map: HashMap::with_capacity(capacity),
             word_idx: 0,
@@ -373,6 +381,7 @@ impl MeaningIndexBuilder {
                 key,
                 entry_indexes: idxs,
             })
+            .sorted_by(|a, b| a.key.cmp(&b.key))
             .collect::<Vec<DictIndexItem<MeaningIdx>>>();
         DictIndexMap::build_and_encode_to(&items, writer)
     }
