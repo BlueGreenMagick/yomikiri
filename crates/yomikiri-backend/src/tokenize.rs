@@ -92,7 +92,7 @@ pub struct TokenizeResult {
     pub tokens: Vec<Token>,
     /// selected token index
     ///
-    /// may be -1 if no there
+    /// may be -1 if there are no tokens
     pub tokenIdx: i32,
     /// DicEntry JSONs returned by lindera tokenizer
     /// searched with base and surface of selected token
@@ -104,6 +104,14 @@ impl TokenizeResult {
     pub fn empty() -> Self {
         TokenizeResult {
             tokenIdx: -1,
+            ..Default::default()
+        }
+    }
+
+    pub fn with_entries(entries: Vec<Entry>) -> Self {
+        TokenizeResult {
+            tokenIdx: -1,
+            entries,
             ..Default::default()
         }
     }

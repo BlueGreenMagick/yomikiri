@@ -24,6 +24,12 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         Ok(entries)
     }
 
+    pub fn search_meaning(&self, query: &str) -> Result<Vec<Entry>> {
+        let view = self.inner.borrow_view();
+        let entries = view.search_meaning(query)?;
+        Ok(entries)
+    }
+
     /// Returns true only if there is a dictionary term
     /// that starts with `prefix` and is not `prefix`
     pub fn has_starts_with_excluding(&self, prefix: &str) -> bool {
