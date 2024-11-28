@@ -7,6 +7,9 @@ use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
 use crate::tokenize::{InnerToken, Token, TokenDetails, TokenizeResult};
 use crate::SharedBackend;
 
+/// Maximum number of entries returned when searching for meaning
+const MAX_ENTRY_LEN: usize = 100;
+
 impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     pub fn search(&mut self, query: &str, char_idx: usize) -> Result<TokenizeResult> {
         if query.chars().any(|c| c.is_japanese_content()) {
@@ -22,7 +25,10 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
 
             Ok(result)
         } else {
-            let entries = self.dictionary.search_meaning(query)?;
+            let mut entries = self.dictionary.search_meaning(query)?;
+            if entries.len() > 100 {
+                entries = entries.into_iter().take(MAX_ENTRY_LEN).collect();
+            }
             Ok(TokenizeResult::with_entries(entries))
         }
     }
