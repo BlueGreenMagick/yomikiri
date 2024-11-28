@@ -12,7 +12,7 @@ use crate::error::Result;
 use crate::index::{
     DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, NameEntryIdx, WordEntryIdx,
 };
-use crate::utils::NFCString;
+use crate::utils::NFKCString;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub enum MeaningIdx {
@@ -93,8 +93,7 @@ impl MeaningIndexBuilder {
                             meaning_idx,
                         },
                     });
-                    let normalized = NFCString::normalize(meaning);
-                    let meaning_keys = generate_meaning_index_keys(&normalized);
+                    let meaning_keys = generate_meaning_index_keys(&meaning);
                     for key in meaning_keys {
                         self.map
                             .entry(key)
@@ -116,8 +115,7 @@ impl MeaningIndexBuilder {
                     entry_idx: NameEntryIdx(self.name_idx),
                     inner_idx: InnerNameReadingIdx { item_idx },
                 });
-                let normalized = NFCString::normalize(&item.reading);
-                let reading_keys = generate_meaning_index_keys(&normalized);
+                let reading_keys = generate_meaning_index_keys(&item.reading);
                 for key in reading_keys {
                     self.map
                         .entry(key)
@@ -145,9 +143,8 @@ impl MeaningIndexBuilder {
 }
 
 impl<'a> DictionaryView<'a> {
-    pub fn search_meaning(&self, phrase: &str) -> Result<Vec<Entry>> {
-        let normalized = NFCString::normalize(phrase);
-        let words = generate_meaning_index_keys(&normalized);
+    pub fn search_meaning(&self, query: &str) -> Result<Vec<Entry>> {
+        let words = generate_meaning_index_keys(&query);
 
         if words.is_empty() {
             return Ok(vec![]);
@@ -207,11 +204,11 @@ fn meaning_equals_phrase(meaning: &str, phrase: &str) -> bool {
             ))
 }
 
-/// Generate words used as meaning index
-fn generate_meaning_index_keys(normalized: &NFCString) -> Vec<String> {
-    let lowercased = normalized.to_lowercase();
-    let lowercased = NFCString::assume_normalized(lowercased);
-    let basic_latin = normalize_latin_basic_form(&lowercased);
+/// Split text into words and generate list of meaning index keys
+fn generate_meaning_index_keys(text: &str) -> Vec<String> {
+    let lowercased = text.to_lowercase();
+    let normalized = NFKCString::normalize(lowercased);
+    let basic_latin = normalize_latin_basic_form(&normalized);
     split_alphanumeric_words(&basic_latin)
         .into_iter()
         .map(|s| s.to_owned())
@@ -234,7 +231,7 @@ fn split_alphanumeric_words(text: &str) -> Vec<&str> {
 }
 
 /// Removes diacritic marks and decomposes some ligatures
-fn normalize_latin_basic_form(text: &NFCString) -> Cow<'_, str> {
+fn normalize_latin_basic_form(text: &NFKCString) -> Cow<'_, str> {
     if is_nfkd(text) {
         Cow::Borrowed(text)
     } else {
