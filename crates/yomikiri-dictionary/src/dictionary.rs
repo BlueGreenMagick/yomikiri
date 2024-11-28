@@ -6,11 +6,10 @@ use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
 use crate::entry::{Entry, NameEntry};
-use crate::index::{
-    create_sorted_term_indexes, DictIndexMap, EntryIdx, MeaningIdx, MeaningIndexBuilder,
-};
+use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryIdx};
 use crate::jagged_array::JaggedArray;
 use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
+use crate::meaning::{MeaningIdx, MeaningIndexBuilder};
 use crate::{Result, WordEntry};
 
 #[cfg(feature = "wasm")]

@@ -16,16 +16,16 @@ use crate::WordEntry;
 /// Trait that all dictionary index types implement
 pub trait EncodableIdx: Sized + Debug + Serialize + for<'de> Deserialize<'de> {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum EntryIdx {
     Word(WordEntryIdx),
     Name(NameEntryIdx),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub struct WordEntryIdx(pub(crate) u32);
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub struct NameEntryIdx(pub(crate) u32);
 
 impl WordEntryIdx {

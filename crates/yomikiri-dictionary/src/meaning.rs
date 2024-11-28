@@ -1,29 +1,32 @@
 use std::borrow::Cow;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::Write;
 
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use unicode_normalization::{is_nfkd, UnicodeNormalization};
 
-use crate::entry::{NameEntry, WordEntry};
+use crate::dictionary::DictionaryView;
+use crate::entry::{Entry, NameEntry, WordEntry};
 use crate::error::Result;
-use crate::index::{DictIndexItem, DictIndexMap, EncodableIdx, NameEntryIdx, WordEntryIdx};
+use crate::index::{
+    DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, NameEntryIdx, WordEntryIdx,
+};
 use crate::utils::NFCString;
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub enum MeaningIdx {
     Word(WordMeaningIdx),
     Name(NameReadingIdx),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct WordMeaningIdx {
     entry_idx: WordEntryIdx,
     inner_idx: InnerWordMeaningIdx,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct InnerWordMeaningIdx {
     /// Idx of sense within entry. Counts sense in each group
     sense_idx: usize,
@@ -31,18 +34,27 @@ pub struct InnerWordMeaningIdx {
     meaning_idx: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct NameReadingIdx {
     entry_idx: NameEntryIdx,
     inner_idx: InnerNameReadingIdx,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct InnerNameReadingIdx {
     item_idx: usize,
 }
 
 impl EncodableIdx for MeaningIdx {}
+
+impl MeaningIdx {
+    pub fn entry_idx(&self) -> EntryIdx {
+        match self {
+            MeaningIdx::Word(idx) => idx.entry_idx.entry_idx(),
+            MeaningIdx::Name(idx) => idx.entry_idx.entry_idx(),
+        }
+    }
+}
 
 pub(crate) struct MeaningIndexBuilder {
     map: HashMap<String, Vec<MeaningIdx>>,
@@ -129,6 +141,55 @@ impl MeaningIndexBuilder {
             .sorted_by(|a, b| a.key.cmp(&b.key))
             .collect::<Vec<DictIndexItem<MeaningIdx>>>();
         DictIndexMap::build_and_encode_to(&items, writer)
+    }
+}
+
+impl<'a> DictionaryView<'a> {
+    pub fn search_meaning(&self, phrase: &str) -> Result<Vec<Entry>> {
+        let normalized = NFCString::normalize(phrase);
+        let words = generate_meaning_index_keys(&normalized);
+
+        if words.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let mut idxs_arr: Vec<Vec<MeaningIdx>> = vec![];
+        for word in words {
+            let idxs = self.meaning_index.get(word)?;
+            idxs_arr.push(idxs);
+        }
+
+        // Get intersection of meaning idxs for each index key word
+        let meaning_idxs = {
+            match idxs_arr.len() {
+                0 => vec![],
+                1 => idxs_arr.pop().unwrap(),
+                _ => {
+                    let last = idxs_arr.len() - 1;
+                    for i in 0..last {
+                        if idxs_arr[last].len() > idxs_arr[i].len() {
+                            idxs_arr.swap(last, i);
+                        }
+                    }
+                    let smallest_idxs = idxs_arr.pop().unwrap();
+                    let mut intersection_idxs: HashSet<MeaningIdx> =
+                        HashSet::from_iter(smallest_idxs);
+                    for idxs in idxs_arr {
+                        intersection_idxs.retain(|i| idxs.contains(i));
+                    }
+                    Vec::from_iter(intersection_idxs)
+                }
+            }
+        };
+
+        let entry_idxs = meaning_idxs
+            .iter()
+            .map(|m| m.entry_idx())
+            .dedup()
+            .collect::<Vec<EntryIdx>>();
+
+        let entries = self.get_entries(&entry_idxs)?;
+        Ok(entries)
     }
 }
 
