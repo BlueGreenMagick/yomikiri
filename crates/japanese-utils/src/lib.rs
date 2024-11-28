@@ -1,9 +1,14 @@
+// c.f. main/src/lib/japanese.ts for japanese char ranges
+
 pub trait JapaneseChar {
     /** Character is hiragana or katakana */
     fn is_kana(&self) -> bool;
     fn is_hiragana(&self) -> bool;
     fn is_katakana(&self) -> bool;
     fn to_katakana(&self) -> char;
+    /// Character is Japanese kana or kanji.
+    /// These characters should trigger Yomikiri dictionary.
+    fn is_japanese_content(&self) -> bool;
 }
 
 impl JapaneseChar for char {
@@ -25,6 +30,20 @@ impl JapaneseChar for char {
         } else {
             *self
         }
+    }
+
+    fn is_japanese_content(&self) -> bool {
+        matches!(*self,
+            '\u{3040}'..='\u{30ff}' |
+            '\u{3190}'..='\u{319f}' |
+            '\u{31f0}'..='\u{31ff}' |
+            '\u{3220}'..='\u{325f}' |
+            '\u{3280}'..='\u{337f}' |
+            '\u{33e0}'..='\u{4dbf}' |
+            '\u{4e00}'..='\u{9fff}' |
+            '\u{f900}'..='\u{faff}' |
+            '\u{ff66}'..='\u{ff9d}'
+        )
     }
 }
 
