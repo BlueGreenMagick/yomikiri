@@ -13,29 +13,34 @@ export type RubyString = RubyUnit[];
  * \u3000-\u303f: Japanese punctuation
  * \u3040-\u309f: hiragana
  * \u30a0-\u30ff: katakana
- * \u31f0-\u31ff: katakana extension (ainu)
- * \u3220-\u32ff: Japanese symbol
- * \u3300-\u33ff: Japanese symbol
+ * \u3190-\u319f: kanbun (historical annotation)
+ * \u31f0-\u31ff: katakana extension (ainu small kana)
+ * \u3200-\u32ff: CJK symbols (enclosed letters, months)
+ *  - \u3220-\u325f, \u3280-\u32ff: Japanese / numeric
+ * \u3300-\u33ff: Japanese symbol (kumimoji)
+ *  - \u3300-\u337F, \u33e0-\u33ff: mostly Japanese
  * \u3400-\u4dbf: Rare hanji variant
  * \u4e00-\u9fff: kanji
  * \uf900-\ufaff: kanji
  * \ufe30-\ufe4f: rare Japanese punctuation
- * \uff00-\uff9f: halfwidth/fullwidth alphabet & punctuation
- *   - \uff60-\uff65: halfwidth katakana punctuation
- *   - \uff66-\uff9f: halfwidth katakana
- * \uffe0-\uffee: halfwidth/fullwidth symbols
+ * \uff00-\uffef: halfwidth/fullwidth alphabet & punctuation
+ *   - \uff60-\uff65, \uff9e-\uff9f: halfwidth katakana punctuation
+ *   - \uff66-\uff9d: halfwidth katakana
  */
 const _RE_HIRAGANA = /[\u3041-\u309f]/u;
 // including '゠', 'ー'
 const _RE_KATAKANA = /[\u30a0-\u30ff]/u;
 const RE_KANJI = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 const _RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
-// including symbols
-const _RE_JAPANESE_ALL =
-  /[\u3000-\u30ff\u31f0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff9f\uffe0-\uffee]/u;
-// excluding most symbols or punctuations
+
+/**
+ * Char range that triggers Yomikiri dictionary.
+ *
+ * It aims to only include Japanese kana and kanji, and exclude punctuations.
+ * However, some exceptions are made for ease and perforamnce.
+ */
 const RE_JAPANESE_CONTENT =
-  /[\u3040-\u30ff\u3190-\u319f\u31f0-\u31ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9f]/u;
+  /[\u3040-\u30ff\u3190-\u319f\u31f0-\u31ff\u3220-\u325f\u3280-\u337f\u33e0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9d]/u;
 
 export namespace RubyString {
   // Some words are longer in kanji
