@@ -27,6 +27,8 @@ pub enum Error {
     CouldNotReserve(#[from] std::collections::TryReserveError),
     #[error("Invalid dictionary entry: {0}")]
     InvalidEntry(String),
+    #[error("Invalid meaning index: {0}")]
+    InvalidIndex(String),
     /// An item (e.g. term) is expected to be in another resource, but not found
     #[error("Could not find {0}")]
     NotFound(String),

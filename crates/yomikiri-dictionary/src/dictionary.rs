@@ -6,7 +6,9 @@ use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
 use crate::entry::{Entry, NameEntry};
-use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryIdx};
+use crate::index::{
+    create_sorted_term_indexes, DictIndexMap, EntryIdx, NameEntryIdx, WordEntryIdx,
+};
 use crate::jagged_array::JaggedArray;
 use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
 use crate::meaning::{MeaningIdx, MeaningIndexBuilder};
@@ -76,11 +78,23 @@ impl<'a> DictionaryView<'a> {
     pub fn get_entries(&self, pointers: &[EntryIdx]) -> Result<Vec<Entry>> {
         pointers
             .iter()
-            .map(|p| match p {
-                EntryIdx::Word(idx) => self.entries.get(idx.0 as usize).map(Entry::Word),
-                EntryIdx::Name(idx) => self.name_entries.get(idx.0 as usize).map(Entry::Name),
-            })
+            .map(|p| self.get_entry(p))
             .collect::<Result<Vec<Entry>>>()
+    }
+
+    pub fn get_entry(&self, pointer: &EntryIdx) -> Result<Entry> {
+        match pointer {
+            EntryIdx::Word(idx) => self.get_word_entry(idx).map(Entry::Word),
+            EntryIdx::Name(idx) => self.get_name_entry(idx).map(Entry::Name),
+        }
+    }
+
+    pub fn get_word_entry(&self, idx: &WordEntryIdx) -> Result<WordEntry> {
+        self.entries.get(idx.0 as usize)
+    }
+
+    pub fn get_name_entry(&self, idx: &NameEntryIdx) -> Result<NameEntry> {
+        self.name_entries.get(idx.0 as usize)
     }
 }
 

@@ -13,6 +13,7 @@ use crate::index::{
     DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, NameEntryIdx, WordEntryIdx,
 };
 use crate::utils::NFKCString;
+use crate::Error;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub enum MeaningIdx {
@@ -179,14 +180,113 @@ impl<'a> DictionaryView<'a> {
             }
         };
 
-        let entry_idxs = meaning_idxs
+        let mut ordering = meaning_idxs
             .iter()
-            .map(|m| m.entry_idx())
+            .map(|idx| {
+                let entry_idx = idx.entry_idx();
+                let order = match idx {
+                    MeaningIdx::Word(idx) => MeaningSearchOrder::word(
+                        &self.get_word_entry(&idx.entry_idx)?,
+                        &idx.inner_idx,
+                        &NFKCString::normalize(query),
+                    )?,
+                    MeaningIdx::Name(idx) => MeaningSearchOrder::name(
+                        &self.get_name_entry(&idx.entry_idx)?,
+                        &idx.inner_idx,
+                        &NFKCString::normalize(query),
+                    )?,
+                };
+                Ok((entry_idx, order))
+            })
+            .collect::<Result<Vec<_>>>()?;
+        ordering.sort_by(|(_, a), (_, b)| a.cmp(b));
+
+        let entry_idxs = ordering
+            .into_iter()
+            .map(|(idx, _)| idx)
             .dedup()
             .collect::<Vec<EntryIdx>>();
-
         let entries = self.get_entries(&entry_idxs)?;
         Ok(entries)
+    }
+}
+
+#[derive(PartialEq, Eq, Debug, Clone)]
+struct MeaningSearchOrder {
+    /// Meaning contains full query as substring
+    contains_full: bool,
+    /// TODO: All index words (before removing diacritical marks) exist in meaning
+    // all_words_as_is: bool,
+    /// Length of meaning string
+    meaning_len: usize,
+    /// Priority of entry
+    priority: u16,
+}
+
+impl MeaningSearchOrder {
+    fn word(
+        entry: &WordEntry,
+        inner_idx: &InnerWordMeaningIdx,
+        lowercase_query: &NFKCString,
+    ) -> Result<Self> {
+        let sense = entry
+            .grouped_senses
+            .iter()
+            .flat_map(|g| g.senses.iter())
+            .nth(inner_idx.sense_idx)
+            .ok_or_else(|| Error::InvalidIndex("Sense index out of bounds".to_owned()))?;
+        let meaning = sense
+            .meanings
+            .get(inner_idx.meaning_idx)
+            .ok_or_else(|| Error::InvalidIndex("Meaning index out of bounds".to_owned()))?;
+
+        let contains_full = meaning.contains(lowercase_query.as_str());
+        let meaning_len = meaning.len();
+        let priority = entry.priority;
+
+        Ok(Self {
+            contains_full,
+            meaning_len,
+            priority,
+        })
+    }
+
+    fn name(
+        entry: &NameEntry,
+        inner_idx: &InnerNameReadingIdx,
+        lowercase_query: &NFKCString,
+    ) -> Result<Self> {
+        let item = entry
+            .groups
+            .iter()
+            .flat_map(|g| g.items.iter())
+            .nth(inner_idx.item_idx)
+            .ok_or_else(|| Error::InvalidIndex("Name item index out of bounds".to_owned()))?;
+        let contains_full = item.reading.contains(lowercase_query.as_str());
+        let meaning_len = item.reading.len();
+        let priority = 0;
+
+        Ok(Self {
+            contains_full,
+            meaning_len,
+            priority,
+        })
+    }
+}
+
+impl Ord for MeaningSearchOrder {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.contains_full
+            .cmp(&other.contains_full)
+            .reverse()
+            .then_with(|| self.meaning_len.cmp(&other.meaning_len))
+            .then_with(|| self.priority.cmp(&other.priority).reverse())
+    }
+}
+
+impl PartialOrd for MeaningSearchOrder {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
