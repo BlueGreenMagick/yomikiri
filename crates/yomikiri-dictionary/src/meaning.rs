@@ -1,11 +1,12 @@
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
+use std::hash::Hash;
 use std::io::Write;
 
 use itertools::Itertools;
 use memchr::memchr2_iter;
 use serde::{Deserialize, Serialize};
-use unicode_normalization::{is_nfkd, UnicodeNormalization};
+use unicode_normalization::UnicodeNormalization;
 
 use crate::dictionary::DictionaryView;
 use crate::entry::{Entry, NameEntry, WordEntry};
@@ -13,7 +14,6 @@ use crate::error::Result;
 use crate::index::{
     DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, NameEntryIdx, WordEntryIdx,
 };
-use crate::utils::NFKCString;
 use crate::Error;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
@@ -95,7 +95,8 @@ impl MeaningIndexBuilder {
                             meaning_idx,
                         },
                     });
-                    let meaning_keys = generate_meaning_index_keys(&meaning);
+                    let normalized = normalize_meaning(&meaning);
+                    let meaning_keys = split_meaning_index_words(&normalized);
                     for key in meaning_keys {
                         self.map
                             .entry(key)
@@ -117,7 +118,8 @@ impl MeaningIndexBuilder {
                     entry_idx: NameEntryIdx(self.name_idx),
                     inner_idx: InnerNameReadingIdx { item_idx },
                 });
-                let reading_keys = generate_meaning_index_keys(&item.reading);
+                let normalized = normalize_meaning(&item.reading);
+                let reading_keys = split_meaning_index_words(&normalized);
                 for key in reading_keys {
                     self.map
                         .entry(key)
@@ -146,14 +148,15 @@ impl MeaningIndexBuilder {
 
 impl<'a> DictionaryView<'a> {
     pub fn search_meaning(&self, query: &str) -> Result<Vec<Entry>> {
-        let words = generate_meaning_index_keys(&query);
+        let normalized = normalize_meaning(query);
+        let words = split_meaning_index_words(&normalized);
 
         if words.is_empty() {
             return Ok(vec![]);
         }
 
         let mut idxs_arr: Vec<Vec<MeaningIdx>> = vec![];
-        for word in words {
+        for word in &words {
             let idxs = self.meaning_index.get(word)?;
             idxs_arr.push(idxs);
         }
@@ -181,26 +184,23 @@ impl<'a> DictionaryView<'a> {
             }
         };
 
+        let order_calc = MeaningSearchOrderCalculator::new(&normalized, &words);
+
         let mut ordering = meaning_idxs
             .iter()
             .map(|idx| {
                 let entry_idx = idx.entry_idx();
                 let order = match idx {
-                    MeaningIdx::Word(idx) => MeaningSearchOrder::word(
-                        &self.get_word_entry(&idx.entry_idx)?,
-                        &idx.inner_idx,
-                        &NFKCString::normalize(query),
-                    )?,
-                    MeaningIdx::Name(idx) => MeaningSearchOrder::name(
-                        &self.get_name_entry(&idx.entry_idx)?,
-                        &idx.inner_idx,
-                        &NFKCString::normalize(query),
-                    )?,
+                    MeaningIdx::Word(idx) => order_calc
+                        .calc_word(&self.get_word_entry(&idx.entry_idx)?, &idx.inner_idx)?,
+                    MeaningIdx::Name(idx) => order_calc
+                        .calc_name(&self.get_name_entry(&idx.entry_idx)?, &idx.inner_idx)?,
                 };
                 Ok((entry_idx, order))
             })
             .collect::<Result<Vec<_>>>()?;
-        ordering.sort_by(|(_, a), (_, b)| a.cmp(b));
+        // sort reverse order
+        ordering.sort_by(|(_, a), (_, b)| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Less));
 
         let entry_idxs = ordering
             .into_iter()
@@ -212,24 +212,76 @@ impl<'a> DictionaryView<'a> {
     }
 }
 
-#[derive(PartialEq, Eq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, PartialOrd)]
 struct MeaningSearchOrder {
-    /// Meaning contains full query as substring
-    contains_full: bool,
-    /// TODO: All index words (before removing diacritical marks) exist in meaning
-    // all_words_as_is: bool,
-    /// Length of meaning string
-    meaning_len: usize,
+    /// Search query is identical to meaning
+    identical_full: bool,
+    /// Search query is identical to parenthesis-removed meaning
+    identical_parenthesis_removed: bool,
+    /// Number of Words in query and meaning / Total words in unparenthesized meaning
+    words_in_query_and_meaning_ratio: f32,
     /// Priority of entry
     priority: u16,
 }
 
-impl MeaningSearchOrder {
-    fn word(
+struct MeaningSearchOrderCalculator<'a> {
+    normalized: &'a str,
+    unparenthesized: Cow<'a, str>,
+    /// words in search query
+    words: &'a [String],
+}
+
+impl<'a> MeaningSearchOrderCalculator<'a> {
+    fn new(normalized: &'a str, words: &'a [String]) -> Self {
+        Self {
+            normalized,
+            unparenthesized: remove_parenthesis(normalized),
+            words,
+        }
+    }
+
+    pub fn calc_word(
+        &self,
         entry: &WordEntry,
         inner_idx: &InnerWordMeaningIdx,
-        lowercase_query: &NFKCString,
-    ) -> Result<Self> {
+    ) -> Result<MeaningSearchOrder> {
+        let meaning = Self::word_meaning(entry, inner_idx)?;
+        self.calc_inner(meaning, entry.priority)
+    }
+
+    pub fn calc_name(
+        &self,
+        entry: &NameEntry,
+        inner_idx: &InnerNameReadingIdx,
+    ) -> Result<MeaningSearchOrder> {
+        let reading = Self::name_reading(entry, inner_idx)?;
+        self.calc_inner(reading, 0)
+    }
+
+    fn calc_inner(&self, meaning: &str, priority: u16) -> Result<MeaningSearchOrder> {
+        let normalized = normalize_meaning(meaning);
+        let unparenthesized = remove_parenthesis(&normalized);
+
+        let identical_full = self.normalized == normalized.as_str();
+        let identical_parenthesis_removed = self.unparenthesized == unparenthesized;
+        let words_in_query_and_meaning_ratio = self.calculate_word_ratio(&unparenthesized);
+
+        Ok(MeaningSearchOrder {
+            identical_full,
+            identical_parenthesis_removed,
+            words_in_query_and_meaning_ratio,
+            priority: priority,
+        })
+    }
+
+    // `unparenthesized` is normalized unparenthesized meaning
+    fn calculate_word_ratio(&self, unparenthesized: &str) -> f32 {
+        let meaning_words = split_meaning_index_words(unparenthesized);
+        let intersection_cnt = common_entries_count(&self.words, &meaning_words);
+        intersection_cnt as f32 / meaning_words.len() as f32
+    }
+
+    fn word_meaning<'e>(entry: &'e WordEntry, inner_idx: &InnerWordMeaningIdx) -> Result<&'e str> {
         let sense = entry
             .grouped_senses
             .iter()
@@ -240,78 +292,28 @@ impl MeaningSearchOrder {
             .meanings
             .get(inner_idx.meaning_idx)
             .ok_or_else(|| Error::InvalidIndex("Meaning index out of bounds".to_owned()))?;
-
-        let contains_full = meaning.contains(lowercase_query.as_str());
-        let meaning_len = meaning.len();
-        let priority = entry.priority;
-
-        Ok(Self {
-            contains_full,
-            meaning_len,
-            priority,
-        })
+        Ok(meaning)
     }
 
-    fn name(
-        entry: &NameEntry,
-        inner_idx: &InnerNameReadingIdx,
-        lowercase_query: &NFKCString,
-    ) -> Result<Self> {
+    fn name_reading<'e>(
+        entry: &'e NameEntry,
+        inner_idx: &'e InnerNameReadingIdx,
+    ) -> Result<&'e str> {
         let item = entry
             .groups
             .iter()
             .flat_map(|g| g.items.iter())
             .nth(inner_idx.item_idx)
             .ok_or_else(|| Error::InvalidIndex("Name item index out of bounds".to_owned()))?;
-        let contains_full = item.reading.contains(lowercase_query.as_str());
-        let meaning_len = item.reading.len();
-        let priority = 0;
-
-        Ok(Self {
-            contains_full,
-            meaning_len,
-            priority,
-        })
+        Ok(&item.reading)
     }
 }
 
-impl Ord for MeaningSearchOrder {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.contains_full
-            .cmp(&other.contains_full)
-            .reverse()
-            .then_with(|| self.meaning_len.cmp(&other.meaning_len))
-            .then_with(|| self.priority.cmp(&other.priority).reverse())
-    }
-}
-
-impl PartialOrd for MeaningSearchOrder {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-/// Returns true if `meaning` == `phrase`,
-/// or if meaning contains content in parenthesis, content before parenthesis.
-///
-/// e.g. phrase "to kick" matches meaning "to kick (a ball)"
-fn meaning_equals_phrase(meaning: &str, phrase: &str) -> bool {
-    meaning.len() >= phrase.len()
-        && meaning[0..phrase.len()] == *phrase
-        && (meaning.len() == phrase.len()
-            || matches!(
-                meaning[phrase.len()..].trim_ascii_start().chars().next(),
-                None | Some('(')
-            ))
-}
-
-/// Split text into words and generate list of meaning index keys
-fn generate_meaning_index_keys(text: &str) -> Vec<String> {
-    let lowercased = text.to_lowercase();
-    let normalized = NFKCString::normalize(lowercased);
-    let basic_latin = normalize_latin_basic_form(&normalized);
-    split_alphanumeric_words(&basic_latin)
+/// Split text into words and generate list of unique meaning index keys
+fn split_meaning_index_words(normalized: &str) -> Vec<String> {
+    split_alphanumeric_words(&normalized)
         .into_iter()
+        .unique()
         .map(|s| s.to_owned())
         .collect()
 }
@@ -331,16 +333,17 @@ fn split_alphanumeric_words(text: &str) -> Vec<&str> {
         .collect()
 }
 
-/// Removes diacritic marks and decomposes some ligatures
-fn normalize_latin_basic_form(text: &NFKCString) -> Cow<'_, str> {
-    if is_nfkd(text) {
-        Cow::Borrowed(text)
-    } else {
-        text.nfkd()
-            .filter(is_not_diacritical_marks)
-            .collect::<String>()
-            .into()
-    }
+/// Normalize text used for entry meaning.
+///
+/// 1. Lowercases text
+/// 2. Removes diacritic marks
+/// 3. Returns NFKC normalized string
+fn normalize_meaning(meaning: &str) -> String {
+    let text = meaning.to_lowercase();
+    text.nfkd()
+        .filter(is_not_diacritical_marks)
+        .nfkc()
+        .collect()
 }
 
 /// `ch` is not diacritic marks
@@ -407,6 +410,12 @@ fn remove_parenthesis(text: &str) -> Cow<'_, str> {
             .expect("Must be valid UTF-8")
             .into()
     }
+}
+
+/// Returns number of entries in `b` that also exist in `a`.
+fn common_entries_count<T: Eq + Hash>(a: &[T], b: &[T]) -> usize {
+    let set_a: HashSet<_> = a.iter().collect();
+    b.iter().filter(|&item| set_a.contains(item)).count()
 }
 
 #[cfg(test)]
