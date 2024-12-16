@@ -190,24 +190,31 @@ impl<'a> DictionaryView<'a> {
             .iter()
             .map(|idx| {
                 let entry_idx = idx.entry_idx();
-                let order = match idx {
-                    MeaningIdx::Word(idx) => order_calc
-                        .calc_word(&self.get_word_entry(&idx.entry_idx)?, &idx.inner_idx)?,
-                    MeaningIdx::Name(idx) => order_calc
-                        .calc_name(&self.get_name_entry(&idx.entry_idx)?, &idx.inner_idx)?,
-                };
-                Ok((entry_idx, order))
+                Ok(match idx {
+                    MeaningIdx::Word(idx) => {
+                        let entry = self.get_word_entry(&idx.entry_idx)?;
+                        let order = order_calc.calc_word(&entry, &idx.inner_idx)?;
+                        (entry_idx, Entry::Word(entry), order)
+                    }
+                    MeaningIdx::Name(idx) => {
+                        let entry = self.get_name_entry(&idx.entry_idx)?;
+                        let order = order_calc.calc_name(&entry, &idx.inner_idx)?;
+                        (entry_idx, Entry::Name(entry), order)
+                    }
+                })
             })
             .collect::<Result<Vec<_>>>()?;
-        // sort reverse order
-        ordering.sort_by(|(_, a), (_, b)| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Less));
 
-        let entry_idxs = ordering
+        // sort reverse order
+        ordering
+            .sort_by(|(_, _, a), (_, _, b)| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Less));
+
+        let entries = ordering
             .into_iter()
-            .map(|(idx, _)| idx)
-            .dedup()
-            .collect::<Vec<EntryIdx>>();
-        let entries = self.get_entries(&entry_idxs)?;
+            .dedup_by(|(idx, _, _), (idx2, _, _)| idx == idx2)
+            .map(|(_, entry, _)| entry)
+            .collect::<Vec<Entry>>();
+
         Ok(entries)
     }
 }
