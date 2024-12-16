@@ -3,6 +3,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::Write;
 
 use itertools::Itertools;
+use memchr::memchr2_iter;
 use serde::{Deserialize, Serialize};
 use unicode_normalization::{is_nfkd, UnicodeNormalization};
 
@@ -345,4 +346,102 @@ fn normalize_latin_basic_form(text: &NFKCString) -> Cow<'_, str> {
 /// `ch` is not diacritic marks
 fn is_not_diacritical_marks(ch: &char) -> bool {
     *ch < '\u{0300}' || *ch > '\u{036f}'
+}
+
+/// Remove text wrapped inside a parenthesis.
+/// e.g. '(a) cat' -> 'cat', 'policy (procedure(s))' -> 'policy'
+///
+/// Whitespaces around parentheses are collapsed into one
+fn remove_parenthesis(text: &str) -> Cow<'_, str> {
+    let text_bytes = text.as_bytes();
+    let mut it = memchr2_iter(b'(', b')', text_bytes);
+    let mut level = 0;
+    let mut chunk_start = 0;
+    let mut chunk_end = 0;
+    let mut removed = Vec::<u8>::new();
+    // Space should be added before chunk-to-be-added.
+    let mut space_before_chunk = false;
+
+    for idx in &mut it {
+        if text_bytes[idx] == b'(' {
+            if level == 0 {
+                chunk_end = idx;
+            }
+            level += 1;
+        } else {
+            // text_bytes[idx] == b')'
+            if level > 1 {
+                level -= 1;
+            } else if level == 1 {
+                level -= 1;
+                let chunk = &text_bytes[chunk_start..chunk_end].trim_ascii();
+                if !chunk.is_empty() {
+                    if space_before_chunk && !removed.is_empty() {
+                        removed.push(b' ');
+                    }
+                    removed.extend_from_slice(chunk);
+                    space_before_chunk = false;
+                }
+                if chunk_end > 0 && text_bytes[chunk_end - 1] == b' ' {
+                    space_before_chunk = true;
+                }
+                if idx + 1 < text_bytes.len() && text_bytes[idx + 1] == b' ' {
+                    space_before_chunk = true;
+                }
+                chunk_start = idx + 1;
+            }
+        }
+    }
+
+    if chunk_start == 0 {
+        text.into()
+    } else {
+        let chunk = &text_bytes[chunk_start..].trim_ascii();
+        if !chunk.is_empty() {
+            if space_before_chunk && !removed.is_empty() {
+                removed.push(b' ');
+            }
+            removed.extend_from_slice(chunk);
+        }
+        String::from_utf8(removed)
+            .expect("Must be valid UTF-8")
+            .into()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    mod remove_parenthesis_tests {
+        use super::super::remove_parenthesis;
+
+        #[test]
+        fn basic() {
+            let res = remove_parenthesis("cat (meow)");
+            assert_eq!(res, "cat");
+        }
+
+        #[test]
+        fn trim_space() {
+            let res = remove_parenthesis("(a) cat jump over (the) (hard-)(ware)house (roof)");
+            assert_eq!(res, "cat jump over house");
+        }
+
+        #[test]
+        fn without_space() {
+            let res = remove_parenthesis("cat(s) colo(u)r (pre-)market(s)");
+            assert_eq!(res, "cat color market");
+        }
+
+        #[test]
+        fn multi_level() {
+            let res = remove_parenthesis("cat (meow (loudly (not silently)))");
+            assert_eq!(res, "cat");
+        }
+
+        #[test]
+        fn no_remove() {
+            let res = remove_parenthesis(")-(");
+            assert_eq!(res, ")-(")
+        }
+    }
 }
