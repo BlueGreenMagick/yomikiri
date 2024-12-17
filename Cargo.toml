@@ -18,6 +18,10 @@ opt-level = "z"
 [workspace.lints.clippy]
 needless_borrows_for_generic_args = "allow"
 
+[profile.dev.package]
+insta.opt-level = 3
+similar.opt-level = 3
+
 [workspace.dependencies]
 lindera-core = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 lindera-dictionary = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
