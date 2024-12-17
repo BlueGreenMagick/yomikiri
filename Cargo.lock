@@ -2725,10 +2725,12 @@ checksum = "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
 name = "yomikiri-dictionary"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bincode 1.3.3",
  "byteorder",
  "chrono",
  "flate2",
+ "fs-err",
  "fst",
  "insta",
  "itertools 0.11.0",

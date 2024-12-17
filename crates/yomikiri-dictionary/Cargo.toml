@@ -37,6 +37,8 @@ features = ["wasmbind"]
 
 [dev-dependencies]
 insta = { workspace = true }
+anyhow = { workspace = true }
+fs-err = { workspace = true }
 
 [lints]
 workspace = true
