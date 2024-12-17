@@ -9,21 +9,13 @@ use serde::{Deserialize, Serialize};
 use unicode_normalization::UnicodeNormalization;
 
 use crate::dictionary::DictionaryView;
-use crate::entry::{Entry, NameEntry, WordEntry};
+use crate::entry::{Entry, WordEntry};
 use crate::error::Result;
-use crate::index::{
-    DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, NameEntryIdx, WordEntryIdx,
-};
+use crate::index::{DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, WordEntryIdx};
 use crate::Error;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-pub enum MeaningIdx {
-    Word(WordMeaningIdx),
-    Name(NameReadingIdx),
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-pub struct WordMeaningIdx {
+pub struct MeaningIdx {
     entry_idx: WordEntryIdx,
     inner_idx: InnerWordMeaningIdx,
 }
@@ -36,32 +28,17 @@ pub struct InnerWordMeaningIdx {
     meaning_idx: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-pub struct NameReadingIdx {
-    entry_idx: NameEntryIdx,
-    inner_idx: InnerNameReadingIdx,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-pub struct InnerNameReadingIdx {
-    item_idx: usize,
-}
-
 impl EncodableIdx for MeaningIdx {}
 
 impl MeaningIdx {
     pub fn entry_idx(&self) -> EntryIdx {
-        match self {
-            MeaningIdx::Word(idx) => idx.entry_idx.entry_idx(),
-            MeaningIdx::Name(idx) => idx.entry_idx.entry_idx(),
-        }
+        self.entry_idx.entry_idx()
     }
 }
 
 pub(crate) struct MeaningIndexBuilder {
     map: HashMap<String, Vec<MeaningIdx>>,
     word_idx: u32,
-    name_idx: u32,
 }
 
 impl MeaningIndexBuilder {
@@ -69,7 +46,6 @@ impl MeaningIndexBuilder {
         Self {
             map: HashMap::with_capacity(capacity),
             word_idx: 0,
-            name_idx: 0,
         }
     }
 
@@ -80,13 +56,13 @@ impl MeaningIndexBuilder {
         for grp in &entry.grouped_senses {
             for sense in &grp.senses {
                 for (meaning_idx, meaning) in sense.meanings.iter().enumerate() {
-                    let idx = MeaningIdx::Word(WordMeaningIdx {
+                    let idx = MeaningIdx {
                         entry_idx: WordEntryIdx(self.word_idx),
                         inner_idx: InnerWordMeaningIdx {
                             sense_idx,
                             meaning_idx,
                         },
-                    });
+                    };
                     let normalized = normalize_meaning(meaning);
                     let meaning_keys = split_meaning_index_words(&normalized);
                     for key in meaning_keys {
@@ -100,28 +76,6 @@ impl MeaningIndexBuilder {
             }
         }
         self.word_idx += 1;
-    }
-
-    pub fn add_name_entry(&mut self, entry: &NameEntry) {
-        let mut item_idx = 0;
-        for grp in &entry.groups {
-            for item in &grp.items {
-                let idx = MeaningIdx::Name(NameReadingIdx {
-                    entry_idx: NameEntryIdx(self.name_idx),
-                    inner_idx: InnerNameReadingIdx { item_idx },
-                });
-                let normalized = normalize_meaning(&item.reading);
-                let reading_keys = split_meaning_index_words(&normalized);
-                for key in reading_keys {
-                    self.map
-                        .entry(key)
-                        .and_modify(|v| v.push(idx.clone()))
-                        .or_insert_with(|| vec![idx.clone()]);
-                }
-                item_idx += 1;
-            }
-        }
-        self.name_idx += 1;
     }
 
     pub fn write_into<W: Write>(self, writer: &mut W) -> Result<()> {
@@ -182,18 +136,9 @@ impl DictionaryView<'_> {
             .iter()
             .map(|idx| {
                 let entry_idx = idx.entry_idx();
-                Ok(match idx {
-                    MeaningIdx::Word(idx) => {
-                        let entry = self.get_word_entry(&idx.entry_idx)?;
-                        let order = order_calc.word(&entry, &idx.inner_idx)?;
-                        (entry_idx, Entry::Word(entry), order)
-                    }
-                    MeaningIdx::Name(idx) => {
-                        let entry = self.get_name_entry(&idx.entry_idx)?;
-                        let order = order_calc.name(&entry, &idx.inner_idx)?;
-                        (entry_idx, Entry::Name(entry), order)
-                    }
-                })
+                let entry = self.get_word_entry(&idx.entry_idx)?;
+                let order = order_calc.calc(&entry, &idx.inner_idx)?;
+                Ok((entry_idx, Entry::Word(entry), order))
             })
             .collect::<Result<Vec<_>>>()?;
 
@@ -239,25 +184,12 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
         }
     }
 
-    pub fn word(
+    pub fn calc(
         &self,
         entry: &WordEntry,
         inner_idx: &InnerWordMeaningIdx,
     ) -> Result<MeaningSearchOrder> {
         let meaning = Self::word_meaning(entry, inner_idx)?;
-        self.calc_inner(meaning, entry.priority)
-    }
-
-    pub fn name(
-        &self,
-        entry: &NameEntry,
-        inner_idx: &InnerNameReadingIdx,
-    ) -> Result<MeaningSearchOrder> {
-        let reading = Self::name_reading(entry, inner_idx)?;
-        self.calc_inner(reading, 0)
-    }
-
-    fn calc_inner(&self, meaning: &str, priority: u16) -> Result<MeaningSearchOrder> {
         let normalized = normalize_meaning(meaning);
         let unparenthesized = remove_parenthesis(&normalized);
 
@@ -271,7 +203,7 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
             identical_parenthesis,
             identical_unparenthesized,
             words_in_query_and_meaning_ratio,
-            priority,
+            priority: entry.priority,
         })
     }
 
@@ -294,19 +226,6 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
             .get(inner_idx.meaning_idx)
             .ok_or_else(|| Error::InvalidIndex("Meaning index out of bounds".to_owned()))?;
         Ok(meaning)
-    }
-
-    fn name_reading<'e>(
-        entry: &'e NameEntry,
-        inner_idx: &'e InnerNameReadingIdx,
-    ) -> Result<&'e str> {
-        let item = entry
-            .groups
-            .iter()
-            .flat_map(|g| g.items.iter())
-            .nth(inner_idx.item_idx)
-            .ok_or_else(|| Error::InvalidIndex("Name item index out of bounds".to_owned()))?;
-        Ok(&item.reading)
     }
 }
 

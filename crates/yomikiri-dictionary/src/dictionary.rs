@@ -173,7 +173,6 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
 
         let mut name_entries = Vec::with_capacity(NameEntriesBuilder::ENTRIES_CAPACITY);
         for name_entry in name_builder.into_iter() {
-            self.state.meaning_index_builder.add_name_entry(&name_entry);
             name_entries.push(name_entry);
         }
 
