@@ -95,7 +95,7 @@ impl MeaningIndexBuilder {
                             meaning_idx,
                         },
                     });
-                    let normalized = normalize_meaning(&meaning);
+                    let normalized = normalize_meaning(meaning);
                     let meaning_keys = split_meaning_index_words(&normalized);
                     for key in meaning_keys {
                         self.map
@@ -279,14 +279,14 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
             identical_parenthesis,
             identical_unparenthesized,
             words_in_query_and_meaning_ratio,
-            priority: priority,
+            priority,
         })
     }
 
     // `unparenthesized` is normalized unparenthesized meaning
     fn calculate_word_ratio(&self, unparenthesized: &str) -> f32 {
         let meaning_words = split_meaning_index_words(unparenthesized);
-        let intersection_cnt = common_entries_count(&self.words, &meaning_words);
+        let intersection_cnt = common_entries_count(self.words, &meaning_words);
         intersection_cnt as f32 / meaning_words.len() as f32
     }
 
@@ -320,7 +320,7 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
 
 /// Split text into words and generate list of unique meaning index keys
 fn split_meaning_index_words(normalized: &str) -> Vec<String> {
-    split_alphanumeric_words(&normalized)
+    split_alphanumeric_words(normalized)
         .into_iter()
         .unique()
         .map(|s| s.to_owned())
@@ -382,26 +382,30 @@ fn remove_parenthesis(text: &str) -> Cow<'_, str> {
             level += 1;
         } else {
             // text_bytes[idx] == b')'
-            if level > 1 {
-                level -= 1;
-            } else if level == 1 {
-                level -= 1;
-                let chunk = &text_bytes[chunk_start..chunk_end].trim_ascii();
-                if !chunk.is_empty() {
-                    if space_before_chunk && !removed.is_empty() {
-                        removed.push(b' ');
+            match level {
+                ..1 => {
+                    level -= 1;
+                }
+                1 => {
+                    level -= 1;
+                    let chunk = &text_bytes[chunk_start..chunk_end].trim_ascii();
+                    if !chunk.is_empty() {
+                        if space_before_chunk && !removed.is_empty() {
+                            removed.push(b' ');
+                        }
+                        removed.extend_from_slice(chunk);
+                        space_before_chunk = false;
                     }
-                    removed.extend_from_slice(chunk);
-                    space_before_chunk = false;
+                    if chunk_end > 0 && text_bytes[chunk_end - 1] == b' ' {
+                        space_before_chunk = true;
+                    }
+                    if idx + 1 < text_bytes.len() && text_bytes[idx + 1] == b' ' {
+                        space_before_chunk = true;
+                    }
+                    chunk_start = idx + 1;
                 }
-                if chunk_end > 0 && text_bytes[chunk_end - 1] == b' ' {
-                    space_before_chunk = true;
-                }
-                if idx + 1 < text_bytes.len() && text_bytes[idx + 1] == b' ' {
-                    space_before_chunk = true;
-                }
-                chunk_start = idx + 1;
-            }
+                _ => {}
+            };
         }
     }
 
