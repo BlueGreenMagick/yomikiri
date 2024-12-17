@@ -22,7 +22,16 @@ pub fn setup_dictionary() -> Result<Dictionary<Vec<u8>>> {
 
 pub fn short_entry_info(entry: &Entry) -> String {
     match entry {
-        Entry::Word(entry) => format!("{} (Word: {})", entry.main_form(), entry.id),
-        Entry::Name(entry) => format!("{} (Name)", entry.kanji),
+        Entry::Word(entry) => format!("(Word {}) {}", entry.id, entry.main_form()),
+        Entry::Name(entry) => format!("(Name) {}", entry.kanji),
+    }
+}
+
+pub fn order_entries(a: &Entry, b: &Entry) -> std::cmp::Ordering {
+    match (a, b) {
+        (Entry::Word(a), Entry::Word(b)) => a.id.cmp(&b.id),
+        (Entry::Name(a), Entry::Name(b)) => a.kanji.cmp(&b.kanji),
+        (Entry::Word(_), Entry::Name(_)) => std::cmp::Ordering::Greater,
+        (Entry::Name(_), Entry::Word(_)) => std::cmp::Ordering::Less,
     }
 }

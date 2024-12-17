@@ -6,7 +6,7 @@
 use insta;
 use itertools::Itertools;
 
-use crate::common::{short_entry_info, DICTIONARY};
+use crate::common::{order_entries, short_entry_info, DICTIONARY};
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -17,7 +17,8 @@ macro_rules! test_term {
             let dict = &*DICTIONARY;
             let term_index = &dict.borrow_view().term_index;
             let idxs = term_index.get($term)?;
-            let entries = dict.borrow_view().get_entries(&idxs)?;
+            let mut entries = dict.borrow_view().get_entries(&idxs)?;
+            entries.sort_by(order_entries);
             let infos = entries.iter().map(|e| short_entry_info(e)).collect_vec();
             insta::with_settings!({
               info => &entries
@@ -33,10 +34,12 @@ macro_rules! test_term {
 
 test_term!(term1, "いじり回す", @r#"
 ---
-- "いじり回す (Word: 1000810)"
+- (Word 1000810) いじり回す
 "#);
 
 test_term!(term2, "鏑木", @r#"
 ---
-- 鏑木 (Name)
+- (Name) 鏑木
+"#);
+
 "#);
