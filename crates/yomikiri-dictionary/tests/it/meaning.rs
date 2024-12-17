@@ -12,7 +12,8 @@ macro_rules! test {
             let dict = DICTIONARY.borrow_view();
             let entries = dict.search_meaning($meaning)?;
             // limit to first 10 entries
-            let infos = entries.iter().map(|e| short_entry_info(e)).take(10).collect_vec();
+            let entries = entries.into_iter().take(10).collect_vec();
+            let infos = entries.iter().map(|e| short_entry_info(e)).collect_vec();
             insta::with_settings!({
               info => &entries
             }, {
