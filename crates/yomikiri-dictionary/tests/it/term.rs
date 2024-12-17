@@ -1,8 +1,3 @@
-//! JMDict and JMnedict XML are shared between all tests.
-//!
-//! New entries may be added to the XML, so tests must not test that some entry does not exist.
-//! However, tests may assume that no new entries will be added with identical terms.
-
 use insta;
 use itertools::Itertools;
 
