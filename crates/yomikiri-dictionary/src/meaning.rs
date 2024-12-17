@@ -146,11 +146,15 @@ impl DictionaryView<'_> {
         ordering
             .sort_by(|(_, _, a), (_, _, b)| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Less));
 
-        let entries = ordering
-            .into_iter()
-            .dedup_by(|(idx, _, _), (idx2, _, _)| idx == idx2)
-            .map(|(_, entry, _)| entry)
-            .collect::<Vec<Entry>>();
+        let mut entries = Vec::with_capacity(ordering.len());
+        let mut entry_ids = HashSet::with_capacity(ordering.len() * 2);
+
+        for (idx, entry, _) in ordering {
+            if !entry_ids.contains(&idx) {
+                entries.push(entry);
+                entry_ids.insert(idx);
+            }
+        }
 
         Ok(entries)
     }
