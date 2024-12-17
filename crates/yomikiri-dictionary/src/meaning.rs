@@ -221,10 +221,10 @@ impl<'a> DictionaryView<'a> {
 
 #[derive(PartialEq, Debug, Clone, PartialOrd)]
 struct MeaningSearchOrder {
-    /// Search query is identical to meaning
-    identical_full: bool,
-    /// Search query is identical to parenthesis-removed meaning
-    identical_parenthesis_removed: bool,
+    /// Search query contains parenthesis and is identical to meaning
+    identical_parenthesis: bool,
+    /// Unparenthesized search query is identical to unparenthesized meaning
+    identical_unparenthesized: bool,
     /// Number of Words in query and meaning / Total words in unparenthesized meaning
     words_in_query_and_meaning_ratio: f32,
     /// Priority of entry
@@ -269,13 +269,15 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
         let normalized = normalize_meaning(meaning);
         let unparenthesized = remove_parenthesis(&normalized);
 
-        let identical_full = self.normalized == normalized.as_str();
-        let identical_parenthesis_removed = self.unparenthesized == unparenthesized;
+        let query_contains_parenthesis = self.normalized != self.unparenthesized;
+        let identical_parenthesis =
+            query_contains_parenthesis && self.normalized == normalized.as_str();
+        let identical_unparenthesized = self.unparenthesized == unparenthesized;
         let words_in_query_and_meaning_ratio = self.calculate_word_ratio(&unparenthesized);
 
         Ok(MeaningSearchOrder {
-            identical_full,
-            identical_parenthesis_removed,
+            identical_parenthesis,
+            identical_unparenthesized,
             words_in_query_and_meaning_ratio,
             priority: priority,
         })
