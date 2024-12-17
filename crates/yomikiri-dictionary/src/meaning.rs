@@ -65,14 +65,6 @@ pub(crate) struct MeaningIndexBuilder {
 }
 
 impl MeaningIndexBuilder {
-    pub fn new() -> Self {
-        Self {
-            map: HashMap::new(),
-            word_idx: 0,
-            name_idx: 0,
-        }
-    }
-
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             map: HashMap::with_capacity(capacity),
