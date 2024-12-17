@@ -143,8 +143,12 @@ impl DictionaryView<'_> {
             .collect::<Result<Vec<_>>>()?;
 
         // sort reverse order
-        ordering
-            .sort_by(|(_, _, a), (_, _, b)| b.partial_cmp(a).unwrap_or(std::cmp::Ordering::Less));
+        ordering.sort_by(|(idx_a, _, a), (idx_b, _, b)| {
+            b.partial_cmp(a)
+                .unwrap_or(std::cmp::Ordering::Less)
+                // sort by entry_idx for deterministic order
+                .then(idx_a.cmp(idx_b))
+        });
 
         let mut entries = Vec::with_capacity(ordering.len());
         let mut entry_ids = HashSet::with_capacity(ordering.len() * 2);

@@ -71,10 +71,10 @@ test!(meaning3, "felis", @r#"
 test!(meaning4, "to fly", @r#"
 ---
 - (Word 1429700) 飛ぶ
+- (Word 1575310) 靡かせる
 - (Word 1897780) 飛び翔る
 - (Word 2026860) 素っ飛ぶ
 - (Word 2432240) ぶっ飛ぶ
-- (Word 1575310) 靡かせる
 - (Word 1250600) 掲げる
 - (Word 1570710) 翔る
 - (Word 1523350) 翻る
