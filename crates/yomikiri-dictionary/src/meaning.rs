@@ -185,12 +185,12 @@ impl<'a> DictionaryView<'a> {
                 Ok(match idx {
                     MeaningIdx::Word(idx) => {
                         let entry = self.get_word_entry(&idx.entry_idx)?;
-                        let order = order_calc.calc_word(&entry, &idx.inner_idx)?;
+                        let order = order_calc.word(&entry, &idx.inner_idx)?;
                         (entry_idx, Entry::Word(entry), order)
                     }
                     MeaningIdx::Name(idx) => {
                         let entry = self.get_name_entry(&idx.entry_idx)?;
-                        let order = order_calc.calc_name(&entry, &idx.inner_idx)?;
+                        let order = order_calc.name(&entry, &idx.inner_idx)?;
                         (entry_idx, Entry::Name(entry), order)
                     }
                 })
@@ -239,7 +239,7 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
         }
     }
 
-    pub fn calc_word(
+    pub fn word(
         &self,
         entry: &WordEntry,
         inner_idx: &InnerWordMeaningIdx,
@@ -248,7 +248,7 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
         self.calc_inner(meaning, entry.priority)
     }
 
-    pub fn calc_name(
+    pub fn name(
         &self,
         entry: &NameEntry,
         inner_idx: &InnerNameReadingIdx,
@@ -265,7 +265,7 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
         let identical_parenthesis =
             query_contains_parenthesis && self.normalized == normalized.as_str();
         let identical_unparenthesized = self.unparenthesized == unparenthesized;
-        let words_in_query_and_meaning_ratio = self.calculate_word_ratio(&unparenthesized);
+        let words_in_query_and_meaning_ratio = self.words_ratio(&unparenthesized);
 
         Ok(MeaningSearchOrder {
             identical_parenthesis,
@@ -276,7 +276,7 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
     }
 
     // `unparenthesized` is normalized unparenthesized meaning
-    fn calculate_word_ratio(&self, unparenthesized: &str) -> f32 {
+    fn words_ratio(&self, unparenthesized: &str) -> f32 {
         let meaning_words = split_meaning_index_words(unparenthesized);
         let intersection_cnt = common_entries_count(self.words, &meaning_words);
         intersection_cnt as f32 / meaning_words.len() as f32
