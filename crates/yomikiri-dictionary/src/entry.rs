@@ -99,10 +99,12 @@ pub struct GroupedSense {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Sense {
+    /// NFKC normalized
     pub meanings: Vec<String>,
     pub to_kanji: Vec<String>,
     pub to_reading: Vec<String>,
     pub misc: Vec<JMSenseMisc>,
+    /// NFKC normalized
     pub info: Vec<String>,
     pub dialects: Vec<JMDialect>,
 }

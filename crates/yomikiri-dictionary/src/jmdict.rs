@@ -1,6 +1,7 @@
 use crate::entry::{
     GroupedSense, Kanji, PartOfSpeech, Rarity, Reading, Sense, WordEntry, WordEntryInner,
 };
+use crate::utils::nfkc_normalize;
 use crate::{Error, Result};
 use yomikiri_jmdict::jmdict::{JMEntry, JMKanji, JMKanjiInfo, JMReading, JMReadingInfo, JMSense};
 
@@ -91,9 +92,17 @@ impl From<JMSense> for Sense {
             to_kanji: jm_sense.to_form,
             to_reading: jm_sense.to_reading,
             misc: jm_sense.misc,
-            info: jm_sense.info,
+            info: jm_sense
+                .info
+                .into_iter()
+                .map(|i| nfkc_normalize(i).into())
+                .collect(),
             dialects: jm_sense.dialects,
-            meanings: jm_sense.meanings,
+            meanings: jm_sense
+                .meanings
+                .into_iter()
+                .map(|i| nfkc_normalize(i).into())
+                .collect(),
         }
     }
 }
