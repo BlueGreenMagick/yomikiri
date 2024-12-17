@@ -1,50 +1,28 @@
 use crate::common::BACKEND;
 use anyhow::Result;
+use insta;
 use yomikiri_rs::tokenize::Token;
 
-fn surface_pos_string(tokens: &[Token]) -> String {
-    let mut output = String::new();
-    let mut iter = tokens.iter();
-    let token = match iter.next() {
-        Some(t) => t,
-        None => return output,
-    };
-
-    output.push_str(&token.text);
-    output.push_str("「");
-    output.push_str(&token.pos);
-    output.push_str("」");
-
-    for token in iter {
-        output.push_str("/");
-        output.push_str(&token.text);
-        output.push_str("「");
-        output.push_str(&token.pos);
-        output.push_str("」");
-    }
-    output
+/// Generate sentence from tokenization result
+/// where tokens are split with '/'
+fn tokenized_sentence(tokens: &[Token]) -> String {
+    let token_texts: Vec<&str> = tokens.into_iter().map(|t| t.text.as_str()).collect();
+    token_texts.join("/")
 }
 
-macro_rules! tokenize_tests {
-    ($($name:ident: $expected:expr,)*) => {
-        $(
-            #[test]
-            fn $name() -> Result<()> {
-                let expected = $expected;
-                let text = expected.replace("/", "");
-                let result = BACKEND.tokenize(&text, 0)?;
-                let result_string = result
-                    .tokens
-                    .iter()
-                    .map(|t| t.text.as_str())
-                    .collect::<Vec<&str>>()
-                    .join("/");
-                if result_string != expected {
-                    panic!("{}\nexpected: {}", surface_pos_string(&result.tokens), expected)
-                }
-                Ok(())
-            }
-        )*
+macro_rules! test {
+    ($name: ident, $sentence: expr, $($val: tt)*) => {
+        #[test]
+        fn $name() -> Result<()> {
+            let result = BACKEND.tokenize($sentence, 0)?;
+            let tokenized = tokenized_sentence(&result.tokens);
+            insta::with_settings!({
+                info => &result.tokens
+            }, {
+                insta::assert_snapshot!(&tokenized, $($val)*)
+            });
+            Ok(())
+        }
     }
 }
 
@@ -54,98 +32,6 @@ fn test_tokenize() {
     assert_eq!(result.tokenIdx, 0);
     assert!(!result.entries.is_empty());
     assert!(result.tokens.len() > 3);
-}
-
-tokenize_tests! {
-    // # Basic
-    basic1: "私/は/学生/です",
-
-    // # Multi: expressions, nouns, conjunctions
-    // # 1. any+ => exp
-    // 「じゃない」(exp,adj-i)＜助動詞「じゃ｜だ」＋形容詞「なかっ」＋助動詞「た」>
-    exp1: "この/本/は/最高/じゃなかった",
-    // 「かもしれない」(exp)＜副助詞「か」係助詞「も」動詞「しれ」助動詞「ない」＞
-    exp2: "魚フライ/を/食べた/かもしれない/猫",
-    // 「について」(exp)＜格助詞「に」動詞「つい」接続助詞「て」＞
-    exp3: "地震/について/語る",
-
-    // ## 3. 助詞+
-    // 「には」(prt)<助詞「に」助詞「は」＞
-    part1: "街/には/行く",
-    // んい「のに」(助詞)＜助詞「の」助詞「に」＞
-    part2: "だから/言った/んに",
-
-    // ## 4. (名詞|代名詞) 助詞+
-    // 「誰か」(pron)＜代名詞「だれ」助詞「か」＞
-    npart1: "誰か/来た/よ",
-    // 「何とも」(adv)＜代名詞「何」助詞「と」助詞「も」＞
-    npart2: "何とも/言えません",
-    // 「誠に」(adv)＜名詞「誠」助詞「に」＞
-    npart3: "誠に/申し訳ありません",
-
-    // ## 5. 動詞 動詞／非自立可能
-    // 「読み切る」＜動詞「読む」動詞「切る」＞
-    v1: "本/を/読み切る",
-
-
-    // # Subsequent Verbs
-    // 運動 + する
-    verb_する1: "彼/は/運動する",
-    // 旅行 + する
-    verb_する2: "私/は/旅行しました",
-    // 食べる + なさい「為さる」
-    verb_なさい: "たくさん/食べなさい",
-
-    // # Inflection
-    // 「きそう」＜き「動詞」そう「形状詞/助動詞語幹」な「助動詞」＞
-    inf1: "聞こえて/きそうな/くらい",
-    // 「生まれる」＜動詞「生まれ」、助動詞「まし」、助動詞「た」＞
-    inf2: "赤ちゃん/が/生まれました",
-    // 「する」＜動詞「し」、助動詞「ませ」、助動詞「ん」、助動詞「でし」助動詞「た」＞
-    inf3: "だから/しませんでした",
-    // な「助動詞」
-    inf4: "静かな/日",
-    // 接続助詞 that contains kanji should not join
-    // 聞き「動詞」/乍ら「助詞/接続助詞」
-    inf5: "ラジオ/を/聞き/乍ら/勉強する",
-    // 美味しい「形容詞」/そう「形状詞/助動詞語幹」
-    inf6: "美味しそう",
-    // Don't join ーそう「名詞/助動詞語幹」 as in hearsay
-    inf7: "美味しい/そうです",
-    // 「ーたり」 is to be considered as inflection
-    inf8: "ここ/は/暑かったり/寒かったり/します",
-    inf9: "これは/本/でした",
-
-    // # Prefix
-    // 「全否定」＜接頭辞「全」名詞「否定」＞
-    pref1: "全否定",
-    // prefix + suffix
-    // 「お母さん」（n)＜接頭辞「お」名詞「母」接尾辞「さん」＞
-    pref2: "お母さん/だ",
-
-    // # Suffix
-    // exception
-    // 形容詞「羨ましい」＋接尾辞「がる」
-    suf1: "彼/は/羨ましがった",
-
-    // # Pre-noun
-    // 「この間」(n)<連体詞「この」名詞「間」＞
-    pren12: "この間/は",
-
-    // # Conjunction
-    // 「それで」(conj)＜「それ」格助詞「で」＞
-    conj1: "それで/読めた",
-
-    // # Other
-    // don't compound. 私/はしる is wrong
-    other1: "私/は/しる",
-    // below 「と」 is 接続助詞, not 格助詞
-    other2: "早く/起きないと/遅刻する/よ",
-    // long sequence of hiragana should not output unknown token
-    other3: "ごはん/は/さしみ/だったり/やきそば/おにぎり/だったり/する",
-
-
-    abc: " ",
 }
 
 // If string passed to tokenizer is not in NFC normalized form,
@@ -169,3 +55,59 @@ fn empty_string() -> Result<()> {
     assert_eq!(result.tokenIdx, -1);
     Ok(())
 }
+
+// # Basic
+test!(basic1, "私は学生です", @"私/は/学生/です");
+
+// # Multi: expressions, nouns, conjunctions
+// ## 1. any+ => exp
+test!(exp1, "この本は最高じゃなかった", @"この/本/は/最高/じゃなかった");
+test!(exp2, "魚フライを食べたかもしれない猫", @"魚フライ/を/食べた/かもしれない/猫");
+test!(exp3, "地震について語る", @"地震/について/語る");
+
+// ## 3. 助詞+
+test!(part1, "街には行く", @"街/には/行く");
+test!(part2, "だから言ったんに", @"だから/言った/んに");
+
+// ## 4. (名詞|代名詞) 助詞+
+test!(npart1, "誰か来たよ", @"誰か/来た/よ");
+// ## 4. (名詞|代名詞) 助詞+
+test!(npart2, "何とも言えません", @"何とも/言えません");
+test!(npart3, "誠に申し訳ありません", @"誠に/申し訳ありません");
+
+// ## 5. 動詞 動詞／非自立可能
+test!(v1, "本を読み切る", @"本/を/読み切る");
+
+// # Subsequent Verbs
+test!(verb_する1, "彼は運動する", @"彼/は/運動する");
+test!(verb_する2, "私は旅行しました", @"私/は/旅行しました");
+test!(verb_なさい, "たくさん食べなさい", @"たくさん/食べなさい");
+
+// # Inflection
+test!(inf1, "聞こえてきそうなくらい", @"聞こえて/きそうな/くらい");
+test!(inf2, "赤ちゃんが生まれました", @"赤ちゃん/が/生まれました");
+test!(inf3, "だからしませんでした", @"だから/しませんでした");
+test!(inf4, "静かな日", @"静かな/日");
+test!(inf5, "ラジオを聞き乍ら勉強する", @"ラジオ/を/聞き/乍ら/勉強する");
+test!(inf6, "美味しそう", @"美味しそう");
+test!(inf7, "美味しいそうです", @"美味しい/そうです");
+test!(inf8, "ここは暑かったり寒かったりします", @"ここ/は/暑かったり/寒かったり/します");
+test!(inf9, "これは本でした", @"これは/本/でした");
+
+// # Prefix
+test!(pref1, "全否定", @"全否定");
+test!(pref2, "お母さんだ", @"お母さん/だ");
+
+// # Suffix
+test!(suf1, "彼は羨ましがった", @"彼/は/羨ましがった");
+
+// # Pre-noun
+test!(pren12, "この間は", @"この間/は");
+
+// # Conjunction
+test!(conj1, "それで読めた", @"それで/読めた");
+
+// # Other
+test!(other1, "私はしる", @"私/は/しる");
+test!(other2, "早く起きないと遅刻するよ", @"早く/起きないと/遅刻する/よ");
+test!(other3, "ごはんはさしみだったりやきそばおにぎりだったりする", @"ごはん/は/さしみ/だったり/やきそば/おにぎり/だったり/する");

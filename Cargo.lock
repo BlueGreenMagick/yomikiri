@@ -2793,6 +2793,7 @@ dependencies = [
  "flate2",
  "fs-err",
  "fst",
+ "insta",
  "japanese-utils",
  "js-sys",
  "lindera-core",

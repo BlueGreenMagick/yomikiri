@@ -73,6 +73,7 @@ uniffi = { workspace = true, features = ["build"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
+insta = { workspace = true }
 
 [lints.rust]
 unexpected_cfgs = { level = "allow", check-cfg = ['cfg(uniffi)', 'cfg(wasm)'] }
