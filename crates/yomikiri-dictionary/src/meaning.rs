@@ -164,6 +164,8 @@ struct MeaningSearchOrder {
     identical_unparenthesized: bool,
     /// Number of Words in query and meaning / Total words in unparenthesized meaning
     words_in_query_and_meaning_ratio: f32,
+    /// Is first (main) sense in entry
+    first_sense: bool,
     /// Priority of entry
     priority: u16,
 }
@@ -198,11 +200,13 @@ impl<'a> MeaningSearchOrderCalculator<'a> {
             query_contains_parenthesis && self.normalized == normalized.as_str();
         let identical_unparenthesized = self.unparenthesized == unparenthesized;
         let words_in_query_and_meaning_ratio = self.words_ratio(&unparenthesized);
+        let first_sense = inner_idx.sense_idx == 0;
 
         Ok(MeaningSearchOrder {
             identical_parenthesis,
             identical_unparenthesized,
             words_in_query_and_meaning_ratio,
+            first_sense,
             priority: entry.priority,
         })
     }
