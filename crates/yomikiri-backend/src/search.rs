@@ -11,7 +11,7 @@ use crate::SharedBackend;
 const MAX_ENTRY_LEN: usize = 100;
 
 impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
-    pub fn search(&mut self, query: &str, char_idx: usize) -> Result<TokenizeResult> {
+    pub fn search(&self, query: &str, char_idx: usize) -> Result<TokenizeResult> {
         if query.chars().any(|c| c.is_japanese_content()) {
             let result = self.tokenize(query, char_idx)?;
 
@@ -33,7 +33,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         }
     }
 
-    fn search_term_as_is(&mut self, term: &str) -> Result<Option<TokenizeResult>> {
+    fn search_term_as_is(&self, term: &str) -> Result<Option<TokenizeResult>> {
         let normalized_term = if is_nfc_quick(term.chars()) == IsNormalized::Yes {
             Cow::Borrowed(term)
         } else {

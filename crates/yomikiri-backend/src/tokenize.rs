@@ -211,7 +211,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     /// Tokenizes sentence and returns the tokens, and DicEntry of token that contains character at char_idx.
     ///
     /// char_idx: code point index of selected character in sentence
-    pub fn tokenize(&mut self, sentence: &'_ str, char_idx: usize) -> Result<TokenizeResult> {
+    pub fn tokenize(&self, sentence: &'_ str, char_idx: usize) -> Result<TokenizeResult> {
         let mut tokens = self.tokenize_inner(sentence)?;
         if tokens.is_empty() {
             return Ok(TokenizeResult::empty());
@@ -317,7 +317,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
 
     /// Join tokens in-place if longer token exist in dictionary
     /// /// e.g. [込ん,で,いる] => 込んでいる
-    fn join_all_tokens(&mut self, tokens: &mut Vec<InnerToken>) -> Result<()> {
+    fn join_all_tokens(&self, tokens: &mut Vec<InnerToken>) -> Result<()> {
         let mut i = 0;
         while i < tokens.len() {
             self.join_tokens_from(tokens, i)?;
@@ -326,7 +326,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         Ok(())
     }
 
-    fn join_tokens_from(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<()> {
+    fn join_tokens_from(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<()> {
         self.join_compounds_multi(tokens, from)?;
         self.join_prefix(tokens, from)?;
         self.join_pre_noun(tokens, from)?;
@@ -360,7 +360,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     //     if any 固有名詞 => 固有名詞
     //     elif all 数詞 => 数詞
     //     else: 普通名詞
-    fn join_compounds_multi(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_compounds_multi(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         let token = &tokens[from];
         let mut all_noun = token.is_noun();
         let mut all_particle = token.is_particle();
@@ -469,7 +469,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     }
 
     /// (接頭詞) (any) => 'dict' (any)
-    fn join_prefix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_prefix(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -496,7 +496,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     }
 
     /// (連体詞) (名詞 | 代名詞 | 接頭辞) => 'dict' (any)
-    fn join_pre_noun(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_pre_noun(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -529,7 +529,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     ///
     /// Join any that ends with 助詞 because
     /// unidic is not good at determining if a given 助詞 is 接続助詞
-    fn join_conjunction(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_conjunction(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -564,7 +564,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     /// ーがる is joined even if it does not exist in dictionary
     ///
     /// e.g. お<母「名詞」さん「接尾辞／名詞的」>だ
-    fn join_suffix(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_suffix(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -610,7 +610,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     }
 
     /// 動詞 動詞／非自立可能 => 'dict' 動詞
-    fn join_dependent_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_dependent_verb(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -648,7 +648,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     ///
     /// 1. 名詞 + する
     /// 2. 動詞 + なさい「為さる」
-    fn join_specific_verb(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_specific_verb(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         if from + 1 >= tokens.len() {
             return Ok(false);
         }
@@ -688,7 +688,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     }
 
     /// (動詞 | 形容詞 | 形状詞 | 副詞 | 助動詞 | exp) (kana-only 助動詞 | 助詞/接続助詞 | 形状詞/助動詞語幹)+ => $1
-    fn join_inflections(&mut self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
+    fn join_inflections(&self, tokens: &mut Vec<InnerToken>, from: usize) -> Result<bool> {
         let mut to = from + 1;
         let token = &tokens[from];
         if !matches!(
@@ -721,7 +721,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
     }
 
     #[allow(clippy::if_same_then_else)]
-    fn manual_patches(&mut self, tokens: &mut [InnerToken]) {
+    fn manual_patches(&self, tokens: &mut [InnerToken]) {
         for i in 0..tokens.len() {
             let token = &tokens[i];
 

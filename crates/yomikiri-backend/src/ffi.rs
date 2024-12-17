@@ -60,7 +60,7 @@ impl RustBackend {
     }
 
     fn _tokenize(&self, sentence: String, char_at: u32) -> Result<String> {
-        let mut backend = self.inner.lock().unwrap();
+        let backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at)
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.tokenize(&sentence, char_at)?;
@@ -69,7 +69,7 @@ impl RustBackend {
     }
 
     fn _search(&self, term: String, char_at: u32) -> Result<String> {
-        let mut backend = self.inner.lock().unwrap();
+        let backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at)
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
         let result = backend.search(&term, char_at)?;
