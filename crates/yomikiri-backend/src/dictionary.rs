@@ -77,7 +77,6 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
     /// 3. Entries whose POS matches token.pos
     /// 4. Rare -> Non rare
     /// 5. Entry with higher priority is shown first
-
     pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<Entry>> {
         struct EntryMeta {
             entry: WordEntry,

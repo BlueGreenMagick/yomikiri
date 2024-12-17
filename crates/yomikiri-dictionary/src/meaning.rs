@@ -138,7 +138,7 @@ impl MeaningIndexBuilder {
     }
 }
 
-impl<'a> DictionaryView<'a> {
+impl DictionaryView<'_> {
     pub fn search_meaning(&self, query: &str) -> Result<Vec<Entry>> {
         let normalized = normalize_meaning(query);
         let words = split_meaning_index_words(&normalized);
