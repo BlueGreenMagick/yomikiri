@@ -375,7 +375,7 @@ fn remove_parenthesis(text: &str) -> Cow<'_, str> {
         } else {
             // text_bytes[idx] == b')'
             match level {
-                ..1 => {
+                2.. => {
                     level -= 1;
                 }
                 1 => {
