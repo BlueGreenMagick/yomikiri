@@ -143,10 +143,9 @@ fn create_dictionary() -> Result<Dictionary<Vec<u8>>> {
 fn test_search_word_term_index() -> Result<()> {
     let dict = create_dictionary()?;
     let term_index = &dict.borrow_view().term_index;
-    let value = term_index.map.get("いじり回す").unwrap();
-    let pointers = term_index.parse_value(value)?;
-    assert_eq!(pointers.len(), 1);
-    let entries = dict.borrow_view().get_entries(&pointers)?;
+    let idxs = term_index.get("いじり回す")?;
+    assert_eq!(idxs.len(), 1);
+    let entries = dict.borrow_view().get_entries(&idxs)?;
     assert_eq!(entries.len(), 1);
     let entry = &entries[0];
     assert!(matches!(entry, Entry::Word(_)));
@@ -164,10 +163,9 @@ fn test_search_word_term_index() -> Result<()> {
 fn test_search_name_term_index() -> Result<()> {
     let dict = create_dictionary()?;
     let term_index = &dict.borrow_view().term_index;
-    let value = term_index.map.get("鏑木").unwrap();
-    let pointers = term_index.parse_value(value)?;
-    assert_eq!(pointers.len(), 1);
-    let entries = dict.borrow_view().get_entries(&pointers)?;
+    let idxs = term_index.get("鏑木").unwrap();
+    assert_eq!(idxs.len(), 1);
+    let entries = dict.borrow_view().get_entries(&idxs)?;
     assert_eq!(entries.len(), 1);
     let entry = &entries[0];
     assert!(matches!(entry, Entry::Name(_)));

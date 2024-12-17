@@ -6,9 +6,12 @@ use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
 use crate::entry::{Entry, NameEntry};
-use crate::index::{create_sorted_term_indexes, DictIndexMap, EntryPointer};
+use crate::index::{
+    create_sorted_term_indexes, DictIndexMap, EntryIdx, NameEntryIdx, WordEntryIdx,
+};
 use crate::jagged_array::JaggedArray;
 use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
+use crate::meaning::{MeaningIdx, MeaningIndexBuilder};
 use crate::{Result, WordEntry};
 
 #[cfg(feature = "wasm")]
@@ -31,7 +34,8 @@ pub struct DictionaryMetadata {
 }
 
 pub struct DictionaryView<'a> {
-    pub term_index: DictIndexMap<'a>,
+    pub term_index: DictIndexMap<'a, EntryIdx>,
+    pub meaning_index: DictIndexMap<'a, MeaningIdx>,
     pub entries: JaggedArray<'a, WordEntry>,
     pub name_entries: JaggedArray<'a, NameEntry>,
     pub metadata: DictionaryMetadata,
@@ -52,7 +56,9 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
 impl<'a> DictionaryView<'a> {
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
         let mut at = 0;
-        let (term_index, len) = DictIndexMap::try_decode(&source[at..])?;
+        let (term_index, len) = DictIndexMap::<EntryIdx>::try_decode(&source[at..])?;
+        at += len;
+        let (meaning_index, len) = DictIndexMap::<MeaningIdx>::try_decode(&source[at..])?;
         at += len;
         let (entries, len) = JaggedArray::try_decode(&source[at..])?;
         at += len;
@@ -62,41 +68,43 @@ impl<'a> DictionaryView<'a> {
         let s = Self {
             name_entries,
             term_index,
+            meaning_index,
             entries,
             metadata,
         };
         Ok((s, at))
     }
 
-    pub fn build_and_encode_to<W: Write>(
-        name_entries: &[NameEntry],
-        entries: &[WordEntry],
-        metadata: &DictionaryMetadata,
-        writer: &mut W,
-    ) -> Result<()> {
-        let term_index_items = create_sorted_term_indexes(name_entries, entries)?;
-        DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
-        JaggedArray::build_and_encode_to(entries, writer)?;
-        JaggedArray::build_and_encode_to(name_entries, writer)?;
-        bincode::options().serialize_into(writer, metadata)?;
-        Ok(())
-    }
-
-    pub fn get_entries(&self, pointers: &[EntryPointer]) -> Result<Vec<Entry>> {
+    pub fn get_entries(&self, pointers: &[EntryIdx]) -> Result<Vec<Entry>> {
         pointers
             .iter()
-            .map(|p| match p {
-                EntryPointer::Word(idx) => self.entries.get(*idx as usize).map(Entry::Word),
-                EntryPointer::Name(idx) => self.name_entries.get(*idx as usize).map(Entry::Name),
-            })
+            .map(|p| self.get_entry(p))
             .collect::<Result<Vec<Entry>>>()
+    }
+
+    pub fn get_entry(&self, pointer: &EntryIdx) -> Result<Entry> {
+        match pointer {
+            EntryIdx::Word(idx) => self.get_word_entry(idx).map(Entry::Word),
+            EntryIdx::Name(idx) => self.get_name_entry(idx).map(Entry::Name),
+        }
+    }
+
+    pub fn get_word_entry(&self, idx: &WordEntryIdx) -> Result<WordEntry> {
+        self.entries.get(idx.0 as usize)
+    }
+
+    pub fn get_name_entry(&self, idx: &NameEntryIdx) -> Result<NameEntry> {
+        self.name_entries.get(idx.0 as usize)
     }
 }
 
-pub struct DictionaryWriterJMDict {}
+pub struct DictionaryWriterJMDict {
+    meaning_index_builder: MeaningIndexBuilder,
+}
 pub struct DictionaryWriterJMneDict {
     entries: Vec<WordEntry>,
     jmdict_creation_date: Option<String>,
+    meaning_index_builder: MeaningIndexBuilder,
 }
 
 pub struct DictionaryWriterFinal {
@@ -104,8 +112,15 @@ pub struct DictionaryWriterFinal {
     jmdict_creation_date: Option<String>,
     name_entries: Vec<NameEntry>,
     jmnedict_creation_date: Option<String>,
+    meaning_index_builder: MeaningIndexBuilder,
 }
 
+/// ## Dictionary Format:
+/// 1. DictIndexMap<TermIdx>
+/// 2. DictIndexMap<MeaningIdx>
+/// 3. JaggedArray<WordEntry>
+/// 4. JaggedArray<NameEntry>
+/// 5. DictionaryMetadata
 #[derive(Default)]
 pub struct DictionaryWriter<STATE> {
     state: STATE,
@@ -114,12 +129,14 @@ pub struct DictionaryWriter<STATE> {
 impl DictionaryWriter<DictionaryWriterJMDict> {
     pub fn new() -> Self {
         Self {
-            state: DictionaryWriterJMDict {},
+            state: DictionaryWriterJMDict {
+                meaning_index_builder: MeaningIndexBuilder::with_capacity(200000),
+            },
         }
     }
 
     pub fn read_jmdict<R: BufRead>(
-        self,
+        mut self,
         jmdict: R,
     ) -> Result<DictionaryWriter<DictionaryWriterJMneDict>> {
         let mut parser = JMDictParser::new(jmdict)?;
@@ -127,12 +144,15 @@ impl DictionaryWriter<DictionaryWriterJMDict> {
         let mut entries = Vec::with_capacity(210000);
         while let Some(entry) = parser.next_entry()? {
             if entry.id < 5000000 || entry.id >= 6000000 {
-                entries.push(WordEntry::try_from(entry)?)
+                let entry = WordEntry::try_from(entry)?;
+                self.state.meaning_index_builder.add_word_entry(&entry);
+                entries.push(entry);
             }
         }
         Ok(DictionaryWriter {
             state: DictionaryWriterJMneDict {
                 entries,
+                meaning_index_builder: self.state.meaning_index_builder,
                 jmdict_creation_date: parser.creation_date().map(|d| d.to_string()),
             },
         })
@@ -153,6 +173,7 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
 
         let mut name_entries = Vec::with_capacity(NameEntriesBuilder::ENTRIES_CAPACITY);
         for name_entry in name_builder.into_iter() {
+            self.state.meaning_index_builder.add_name_entry(&name_entry);
             name_entries.push(name_entry);
         }
 
@@ -162,6 +183,7 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
                 jmdict_creation_date: self.state.jmdict_creation_date,
                 name_entries,
                 jmnedict_creation_date: parser.creation_date().map(|d| d.to_string()),
+                meaning_index_builder: self.state.meaning_index_builder,
             },
         })
     }
@@ -173,89 +195,14 @@ impl DictionaryWriter<DictionaryWriterFinal> {
             jmdict_creation_date: self.state.jmdict_creation_date,
             jmnedict_creation_date: self.state.jmnedict_creation_date,
         };
-        DictionaryView::build_and_encode_to(
-            &self.state.name_entries,
-            &self.state.entries,
-            &metadata,
-            writer,
-        )?;
-        Ok(())
-    }
-}
 
-#[cfg(test)]
-mod tests {
-    use yomikiri_jmdict::jmnedict::JMneNameType;
-
-    use crate::dictionary::{Dictionary, DictionaryMetadata, DictionaryView};
-    use crate::entry::{
-        GroupedNameItem, Kanji, NameEntry, NameItem, Rarity, Reading, WordEntry, WordEntryInner,
-    };
-    use crate::Result;
-
-    #[test]
-    fn write_then_read_dictionary_with_single_word_entry() -> Result<()> {
-        let inner = WordEntryInner {
-            id: 1234,
-            kanjis: vec![
-                Kanji {
-                    kanji: "読み切り".into(),
-                    rarity: Rarity::Normal,
-                },
-                Kanji {
-                    kanji: "読みきり".into(),
-                    rarity: Rarity::Normal,
-                },
-            ],
-            readings: vec![Reading {
-                reading: "よみきり".into(),
-                nokanji: false,
-                to_kanji: vec![],
-                rarity: Rarity::Normal,
-            }],
-            grouped_senses: vec![],
-            priority: 10,
-        };
-        let entry = WordEntry::new(inner)?;
-        let mut buffer = Vec::with_capacity(1024);
-        let metadata = DictionaryMetadata {
-            jmdict_creation_date: Some("2024-09-19".into()),
-            jmnedict_creation_date: None,
-        };
-        DictionaryView::build_and_encode_to(&[], &[entry.clone()], &metadata, &mut buffer)?;
-        let dict = Dictionary::try_decode(buffer)?;
-
-        let view = dict.borrow_view();
-        assert_eq!(view.name_entries.len(), 0);
-        assert_eq!(view.entries.len(), 1);
-        assert_eq!(view.entries.get(0)?, entry);
-        Ok(())
-    }
-
-    #[test]
-    fn write_then_read_dictionary_with_single_name_entry() -> Result<()> {
-        let entry = NameEntry {
-            kanji: "雅哉".into(),
-            groups: vec![GroupedNameItem {
-                types: vec![JMneNameType::Forename],
-                items: vec![NameItem {
-                    id: 5174270,
-                    reading: "まさや".into(),
-                }],
-            }],
-        };
-        let metadata = DictionaryMetadata {
-            jmdict_creation_date: None,
-            jmnedict_creation_date: Some("2024-09-19".into()),
-        };
-        let mut buffer = Vec::with_capacity(1024);
-        DictionaryView::build_and_encode_to(&[entry.clone()], &[], &metadata, &mut buffer)?;
-        let dict = Dictionary::try_decode(buffer)?;
-
-        let view = dict.borrow_view();
-        assert_eq!(view.entries.len(), 0);
-        assert_eq!(view.name_entries.len(), 1);
-        assert_eq!(view.name_entries.get(0)?, entry);
+        let term_index_items =
+            create_sorted_term_indexes(&self.state.name_entries, &self.state.entries)?;
+        DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
+        self.state.meaning_index_builder.write_into(writer)?;
+        JaggedArray::build_and_encode_to(&self.state.entries, writer)?;
+        JaggedArray::build_and_encode_to(&self.state.name_entries, writer)?;
+        bincode::options().serialize_into(writer, &metadata)?;
         Ok(())
     }
 }

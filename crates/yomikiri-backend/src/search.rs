@@ -1,24 +1,36 @@
 use std::borrow::Cow;
 
 use anyhow::Result;
+use japanese_utils::JapaneseChar;
 use unicode_normalization::{is_nfc_quick, IsNormalized, UnicodeNormalization};
 
 use crate::tokenize::{InnerToken, Token, TokenDetails, TokenizeResult};
 use crate::SharedBackend;
 
+/// Maximum number of entries returned when searching for meaning
+const MAX_ENTRY_LEN: usize = 100;
+
 impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
-    pub fn search(&mut self, term: &str, char_idx: usize) -> Result<TokenizeResult> {
-        let result = self.tokenize(term, char_idx)?;
+    pub fn search(&mut self, query: &str, char_idx: usize) -> Result<TokenizeResult> {
+        if query.chars().any(|c| c.is_japanese_content()) {
+            let result = self.tokenize(query, char_idx)?;
 
-        // if tokenize separates the term into multiple tokens,
-        // but term exists as-is in dictionary, return that instead.
-        if result.tokens.len() > 1 {
-            if let Some(res) = self.search_term_as_is(term)? {
-                return Ok(res);
+            // if tokenize separates the term into multiple tokens,
+            // but term exists as-is in dictionary, return that instead.
+            if result.tokens.len() > 1 {
+                if let Some(res) = self.search_term_as_is(query)? {
+                    return Ok(res);
+                }
             }
-        }
 
-        Ok(result)
+            Ok(result)
+        } else {
+            let mut entries = self.dictionary.search_meaning(query)?;
+            if entries.len() > 100 {
+                entries = entries.into_iter().take(MAX_ENTRY_LEN).collect();
+            }
+            Ok(TokenizeResult::with_entries(entries))
+        }
     }
 
     fn search_term_as_is(&mut self, term: &str) -> Result<Option<TokenizeResult>> {
