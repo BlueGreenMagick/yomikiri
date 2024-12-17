@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
 use yomikiri_rs::grammar::GRAMMARS;
-use yomikiri_rs::SharedBackend;
 
-use crate::common::setup_backend;
+use crate::common::BACKEND;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -33,7 +32,6 @@ fn test_rule_exists(rules: &[(&str, &str)]) {
 }
 
 fn test_grammar(
-    backend: &mut SharedBackend<Vec<u8>>,
     sentence_inp: &'static str,
     includes: &[(&str, &str)],
     excludes: &[(&str, &str)],
@@ -43,7 +41,7 @@ fn test_grammar(
 
     let char_at = sentence_inp.chars().position(|c| c == '＿').unwrap_or(0);
     let sentence = sentence_inp.replace('＿', "");
-    let result = backend.tokenize(&sentence, char_at)?;
+    let result = BACKEND.tokenize(&sentence, char_at)?;
 
     let grammars: Vec<(String, String)> = result
         .grammars
@@ -120,7 +118,6 @@ macro_rules! test {
       $(
         #[test]
         fn $test() -> Result<()> {
-          let mut backend = setup_backend();
           let mut main = vec![];
           $(
             main.push(($name, default_if_empty!("", $($short)?)));
@@ -132,7 +129,7 @@ macro_rules! test {
               includes.push(($include_name, default_if_empty!("", $($include_short)?)));
             )*
             let excludes = vec![$( ($exclude_name, default_if_empty!("", $($exclude_short)?)) ),*];
-            test_grammar(&mut backend, $sentence, &includes, &excludes)?;
+            test_grammar($sentence, &includes, &excludes)?;
           )*
           $(
             let includes = vec![$( ($ninclude_name, default_if_empty!("", $($ninclude_short)?)) ),*];
@@ -140,7 +137,7 @@ macro_rules! test {
             $(
               excludes.push(($nexclude_name, default_if_empty!("", $($nexclude_short)?)));
             )*
-            test_grammar(&mut backend, $nsentence, &includes, &excludes)?;
+            test_grammar($nsentence, &includes, &excludes)?;
           )*
           Ok(())
         }

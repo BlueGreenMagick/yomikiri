@@ -1,4 +1,4 @@
-use crate::common::setup_backend;
+use crate::common::BACKEND;
 use anyhow::Result;
 use yomikiri_rs::tokenize::Token;
 
@@ -30,10 +30,9 @@ macro_rules! tokenize_tests {
         $(
             #[test]
             fn $name() -> Result<()> {
-                let mut backend = setup_backend();
                 let expected = $expected;
                 let text = expected.replace("/", "");
-                let result = backend.tokenize(&text, 0)?;
+                let result = BACKEND.tokenize(&text, 0)?;
                 let result_string = result
                     .tokens
                     .iter()
@@ -51,8 +50,7 @@ macro_rules! tokenize_tests {
 
 #[test]
 fn test_tokenize() {
-    let mut backend = setup_backend();
-    let result = backend.tokenize("これは例文です。", 0).unwrap();
+    let result = BACKEND.tokenize("これは例文です。", 0).unwrap();
     assert_eq!(result.tokenIdx, 0);
     assert!(!result.entries.is_empty());
     assert!(result.tokens.len() > 3);
@@ -155,9 +153,8 @@ tokenize_tests! {
 // but token.start must be starting character position in un-normalized string
 #[test]
 fn decomposed_unicode() -> Result<()> {
-    let mut backend = setup_backend();
     // か\u3099 = が
-    let result = backend.tokenize("本か\u{3099}好きだ", 2)?;
+    let result = BACKEND.tokenize("本か\u{3099}好きだ", 2)?;
     let start_indices: Vec<u32> = result.tokens.iter().map(|t| t.start).collect();
     assert_eq!(start_indices[0], 0);
     assert_eq!(start_indices[1], 1);
@@ -168,8 +165,7 @@ fn decomposed_unicode() -> Result<()> {
 
 #[test]
 fn empty_string() -> Result<()> {
-    let mut backend = setup_backend();
-    let result = backend.tokenize("", 0)?;
+    let result = BACKEND.tokenize("", 0)?;
     assert_eq!(result.tokenIdx, -1);
     Ok(())
 }
