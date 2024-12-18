@@ -1,6 +1,5 @@
 use std::io::{BufRead, Write};
 
-use bincode::Options;
 use ouroboros::self_referencing;
 use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
@@ -64,7 +63,10 @@ impl<'a> DictionaryView<'a> {
         at += len;
         let (name_entries, len) = JaggedArray::try_decode(&source[at..])?;
         at += len;
-        let metadata = bincode::options().deserialize_from(&source[at..])?;
+        let start = source[at..].len();
+        let (metadata, rest) = postcard::take_from_bytes(&source[at..])?;
+        at += start - rest.len();
+
         let s = Self {
             name_entries,
             term_index,
@@ -198,7 +200,7 @@ impl DictionaryWriter<DictionaryWriterFinal> {
         self.state.meaning_index_builder.write_into(writer)?;
         JaggedArray::build_and_encode_to(&self.state.entries, writer)?;
         JaggedArray::build_and_encode_to(&self.state.name_entries, writer)?;
-        bincode::options().serialize_into(writer, &metadata)?;
+        postcard::to_io(&metadata, &mut *writer)?;
         Ok(())
     }
 }

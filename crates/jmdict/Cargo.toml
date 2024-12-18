@@ -9,7 +9,6 @@ license = "MIT"
 wasm = ["dep:tsify-next", "dep:wasm-bindgen"]
 
 [dependencies]
-bincode = { workspace = true }
 thiserror = { workspace = true }
 lazy_static = { workspace = true }
 quick-xml = { workspace = true }

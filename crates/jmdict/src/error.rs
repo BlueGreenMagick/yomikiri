@@ -9,8 +9,6 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     #[error("IO {0}")]
     Io(#[from] io::Error),
-    #[error("Bincode {0}")]
-    BincodeDecode(#[from] bincode::error::DecodeError),
     #[error("Expected {expected}, encountered {actual}")]
     Unexpected { expected: String, actual: String },
     #[error("Invalid UTF-8")]

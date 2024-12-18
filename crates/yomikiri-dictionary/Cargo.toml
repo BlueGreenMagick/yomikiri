@@ -26,7 +26,6 @@ chrono = { version = "0.4", features = ["alloc"] }
 uniffi = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true, optional = true }
 tsify-next = { workspace = true }
-bincode = "1"
 postcard = { workspace = true }
 unicode-normalization = { workspace = true }
 memchr = { workspace = true }

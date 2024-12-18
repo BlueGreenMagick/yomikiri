@@ -13,8 +13,6 @@ pub enum Error {
     Io(#[from] io::Error),
     #[error("TryFromInt {0}")]
     TryFromInt(#[from] TryFromIntError),
-    #[error("Bincode: {0}")]
-    BincodeEncode(#[from] bincode::Error),
     #[error("Postcard: {0}")]
     Postcard(#[from] postcard::Error),
     #[error("JMDict parse error {0}")]

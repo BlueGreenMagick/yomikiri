@@ -29,7 +29,6 @@ lindera-tokenizer = { git = "https://github.com/BlueGreenMagick/lindera.git", br
 lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git", branch = "yomikiri" }
 
 anyhow = "1"
-bincode = { version = "2.0.0-rc.3", features = ["serde"] }
 byteorder = "1"
 cfg_aliases = "0.2"
 chrono = { version = "0.4", features = ["alloc"] }
