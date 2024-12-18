@@ -31,7 +31,7 @@ const _RE_HIRAGANA = /[\u3041-\u309f]/u;
 // including '゠', 'ー'
 const _RE_KATAKANA = /[\u30a0-\u30ff]/u;
 const RE_KANJI = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
-const _RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
+const RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 
 /**
  * Char range that triggers Yomikiri dictionary.
@@ -42,20 +42,27 @@ const _RE_NOKANJI = /[^\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/u;
 const RE_JAPANESE_CONTENT =
   /[\u3040-\u30ff\u3190-\u319f\u31f0-\u31ff\u3220-\u325f\u3280-\u337f\u33e0-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff66-\uff9d]/u;
 
+const RE_KANJI_SEGMENT_SPLIT = new RegExp(
+  `(${RE_KANJI.source}*)(${RE_NOKANJI.source}*)`,
+  "g",
+);
+
 export namespace RubyString {
   // Some words are longer in kanji
   // https://japanese.stackexchange.com/questions/61993/are-there-any-words-that-are-longer-in-kanji-than-in-hiragana
   // 1. split kanji into blocks of pure kanji and kana.
   // 2. use regex to split reading into parts.
   // e.g. [読,み,切,り] => "よみきり".match(/(.+)み(.+)り/)
-  // This might be inaccurate for long test
-  //
-  // FIX: May generate incorrect RubyString for readings that have both hiragana and katakana.
+  // This might be inaccurate for long texts
+
   /**
    * Generate furigana from text and its reading.
    * Assumes `text` and `reading` is normalized
    * Assumes `text` to not contain any regex special characters.
    * (No JMDict entry forms contains regex special characters)
+   * Assumes `reading` to only contain hiragana and katakana
+   *
+   * Can match between hiragana and katakana. (e.g. 'あ' matches 'ア')
    */
   export function generate(text: string, reading?: string): RubyString {
     if (text === "") {
@@ -69,21 +76,18 @@ export namespace RubyString {
     ) {
       return [{ base: text }];
     }
-    const inKatakana = isKatakana(reading);
-    const splitted = splitKanjiSegment(text);
+
+    const [kanjiSegs, noKanjiSegs] = splitKanjiSegments(text);
     let regexp = "";
-    if (splitted[0] !== "") {
-      regexp += "(.+?)";
+
+    for (let i = 0; i < kanjiSegs.length; i++) {
+      if (i != 0 || kanjiSegs[0] !== "") {
+        regexp += "(.+?)";
+      }
+      regexp += Utils.escapeRegex(toHiragana(noKanjiSegs[i]));
     }
-    // Should written kana be converted to hiragana/katakana based on reading?
-    for (let i = 1; i < splitted.length; i++) {
-      regexp +=
-        i % 2 === 0 ? "(.+?)"
-        : inKatakana ? Utils.escapeRegex(toKatakana(splitted[i]))
-        : Utils.escapeRegex(toHiragana(splitted[i]));
-    }
-    const r = new RegExp("^" + regexp + "$", "u");
-    const matches = reading.match(r);
+    const r = new RegExp("^" + regexp + "$");
+    const matches = toHiragana(reading).match(r);
 
     const rubyString: RubyString = [];
     if (matches === null) {
@@ -92,19 +96,20 @@ export namespace RubyString {
         ruby: reading,
       });
     } else {
-      let first = 0;
-      if (splitted[0] !== "") {
-        rubyString.push({
-          base: splitted[0],
-          ruby: matches[1],
-        });
-        first = 1;
-      }
-      for (let i = 1; i < splitted.length; i++) {
-        rubyString.push({
-          base: splitted[i],
-          ...(i % 2 === 0 && { ruby: matches[i / 2 + first] }),
-        });
+      const start = kanjiSegs[0] === "" ? 0 : 1;
+      for (let i = 0; i < kanjiSegs.length; i++) {
+        if (i !== 0 || kanjiSegs[0] !== "") {
+          rubyString.push({
+            base: kanjiSegs[i],
+            ruby: matches[i + start],
+          });
+        }
+        // last nokanji segment may be empty
+        if (noKanjiSegs[i] !== "") {
+          rubyString.push({
+            base: noKanjiSegs[i],
+          });
+        }
       }
     }
 
@@ -153,25 +158,24 @@ export namespace RubyString {
 /**
  * Split text into kanji segments and non-kanji segments.
  *
- * Returns an array of [kanji, non-kanji, kanji, ...].
+ * Returns [kanji segments, non-kanji segments]
+ * where text is [kanji[0], non-kanji[0], kanji[1], non-kanji[1], ...]
  *
- * If text starts with non-kanji, first element is "".
+ * If text starts with non-kanji, kanji[0] is "".
  */
-function splitKanjiSegment(text: string): string[] {
-  const splitted = [];
-  let gettingKanji = true;
-  let chars = "";
-  for (const char of text) {
-    if (RE_KANJI.test(char) === gettingKanji) {
-      chars += char;
-    } else {
-      splitted.push(chars);
-      gettingKanji = !gettingKanji;
-      chars = char;
+function splitKanjiSegments(text: string): [string[], string[]] {
+  const kanjis: string[] = [];
+  const noKanjis: string[] = [];
+
+  for (const match of text.matchAll(RE_KANJI_SEGMENT_SPLIT)) {
+    if (match[0] === "") {
+      break;
     }
+    kanjis.push(match[1]);
+    noKanjis.push(match[2]);
   }
-  splitted.push(chars);
-  return splitted;
+
+  return [kanjis, noKanjis];
 }
 
 /** First char of text is hiragana. Return false if text is "" */

@@ -47,6 +47,13 @@ describe("RubyString", () => {
       { base: "否認不能", ruby: "ひにんふのう" },
     ]);
 
+    // both hiragana and katakana
+    expect(RubyString.generate("ウケ狙い", "ウケねらい")).toEqual([
+      { base: "ウケ" },
+      { base: "狙", ruby: "ねら" },
+      { base: "い" },
+    ]);
+
     // TODO: furigana for joined-tokens may generate incorrectly
     /*
     expect(RubyString.generate("書式付き形式", "しょしきつきけいしき")).toEqual(
