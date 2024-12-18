@@ -10,7 +10,7 @@ use crate::index::{
 };
 use crate::jagged_array::JaggedArray;
 use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
-use crate::meaning::{MeaningIdx, MeaningIndexBuilder};
+use crate::meaning::{create_meaning_indexes, MeaningIdx};
 use crate::{Result, WordEntry};
 
 #[cfg(feature = "wasm")]
@@ -100,13 +100,11 @@ impl<'a> DictionaryView<'a> {
     }
 }
 
-pub struct DictionaryWriterJMDict {
-    meaning_index_builder: MeaningIndexBuilder,
-}
+pub struct DictionaryWriterJMDict;
+
 pub struct DictionaryWriterJMneDict {
     entries: Vec<WordEntry>,
     jmdict_creation_date: Option<String>,
-    meaning_index_builder: MeaningIndexBuilder,
 }
 
 pub struct DictionaryWriterFinal {
@@ -114,7 +112,6 @@ pub struct DictionaryWriterFinal {
     jmdict_creation_date: Option<String>,
     name_entries: Vec<NameEntry>,
     jmnedict_creation_date: Option<String>,
-    meaning_index_builder: MeaningIndexBuilder,
 }
 
 /// ## Dictionary Format:
@@ -131,14 +128,12 @@ pub struct DictionaryWriter<STATE> {
 impl DictionaryWriter<DictionaryWriterJMDict> {
     pub fn new() -> Self {
         Self {
-            state: DictionaryWriterJMDict {
-                meaning_index_builder: MeaningIndexBuilder::with_capacity(200000),
-            },
+            state: DictionaryWriterJMDict {},
         }
     }
 
     pub fn read_jmdict<R: BufRead>(
-        mut self,
+        self,
         jmdict: R,
     ) -> Result<DictionaryWriter<DictionaryWriterJMneDict>> {
         let mut parser = JMDictParser::new(jmdict)?;
@@ -147,14 +142,12 @@ impl DictionaryWriter<DictionaryWriterJMDict> {
         while let Some(entry) = parser.next_entry()? {
             if entry.id < 5000000 || entry.id >= 6000000 {
                 let entry = WordEntry::try_from(entry)?;
-                self.state.meaning_index_builder.add_word_entry(&entry);
                 entries.push(entry);
             }
         }
         Ok(DictionaryWriter {
             state: DictionaryWriterJMneDict {
                 entries,
-                meaning_index_builder: self.state.meaning_index_builder,
                 jmdict_creation_date: parser.creation_date().map(|d| d.to_string()),
             },
         })
@@ -181,7 +174,6 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
                 jmdict_creation_date: self.state.jmdict_creation_date,
                 name_entries,
                 jmnedict_creation_date: parser.creation_date().map(|d| d.to_string()),
-                meaning_index_builder: self.state.meaning_index_builder,
             },
         })
     }
@@ -197,7 +189,8 @@ impl DictionaryWriter<DictionaryWriterFinal> {
         let term_index_items =
             create_sorted_term_indexes(&self.state.name_entries, &self.state.entries)?;
         DictIndexMap::build_and_encode_to(&term_index_items, writer)?;
-        self.state.meaning_index_builder.write_into(writer)?;
+        let meaning_indexes = create_meaning_indexes(&self.state.entries)?;
+        DictIndexMap::build_and_encode_to(&meaning_indexes, writer)?;
         JaggedArray::build_and_encode_to(&self.state.entries, writer)?;
         JaggedArray::build_and_encode_to(&self.state.name_entries, writer)?;
         postcard::to_io(&metadata, &mut *writer)?;

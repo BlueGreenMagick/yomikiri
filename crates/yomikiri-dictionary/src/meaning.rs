@@ -1,7 +1,6 @@
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
-use std::io::Write;
 
 use itertools::Itertools;
 use memchr::memchr2_iter;
@@ -11,7 +10,7 @@ use unicode_normalization::UnicodeNormalization;
 use crate::dictionary::DictionaryView;
 use crate::entry::{Entry, WordEntry};
 use crate::error::Result;
-use crate::index::{DictIndexItem, DictIndexMap, EncodableIdx, EntryIdx, WordEntryIdx};
+use crate::index::{DictIndexItem, EncodableIdx, EntryIdx, WordEntryIdx};
 use crate::Error;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
@@ -36,28 +35,17 @@ impl MeaningIdx {
     }
 }
 
-pub(crate) struct MeaningIndexBuilder {
-    map: HashMap<String, Vec<MeaningIdx>>,
-    word_idx: u32,
-}
+pub fn create_meaning_indexes(entries: &[WordEntry]) -> Result<Vec<DictIndexItem<MeaningIdx>>> {
+    let mut map: HashMap<String, Vec<MeaningIdx>> = HashMap::new();
 
-impl MeaningIndexBuilder {
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self {
-            map: HashMap::with_capacity(capacity),
-            word_idx: 0,
-        }
-    }
-
-    /// Entries must be stored in the same order provided to this function
-    pub fn add_word_entry(&mut self, entry: &WordEntry) {
+    for (word_idx, entry) in entries.iter().enumerate() {
         let mut sense_idx = 0;
 
         for grp in &entry.grouped_senses {
             for sense in &grp.senses {
                 for (meaning_idx, meaning) in sense.meanings.iter().enumerate() {
                     let idx = MeaningIdx {
-                        entry_idx: WordEntryIdx(self.word_idx),
+                        entry_idx: WordEntryIdx(word_idx as u32),
                         inner_idx: InnerWordMeaningIdx {
                             sense_idx,
                             meaning_idx,
@@ -66,8 +54,7 @@ impl MeaningIndexBuilder {
                     let normalized = normalize_meaning(meaning);
                     let meaning_keys = split_meaning_index_words(&normalized);
                     for key in meaning_keys {
-                        self.map
-                            .entry(key)
+                        map.entry(key)
                             .and_modify(|v| v.push(idx.clone()))
                             .or_insert_with(|| vec![idx.clone()]);
                     }
@@ -75,21 +62,17 @@ impl MeaningIndexBuilder {
                 sense_idx += 1;
             }
         }
-        self.word_idx += 1;
     }
 
-    pub fn write_into<W: Write>(self, writer: &mut W) -> Result<()> {
-        let items = self
-            .map
-            .into_iter()
-            .map(|(key, idxs)| DictIndexItem {
-                key,
-                entry_indexes: idxs,
-            })
-            .sorted_by(|a, b| a.key.cmp(&b.key))
-            .collect::<Vec<DictIndexItem<MeaningIdx>>>();
-        DictIndexMap::build_and_encode_to(&items, writer)
-    }
+    let items = map
+        .into_iter()
+        .map(|(key, idxs)| DictIndexItem {
+            key,
+            entry_indexes: idxs,
+        })
+        .sorted_by(|a, b| a.key.cmp(&b.key))
+        .collect::<Vec<DictIndexItem<MeaningIdx>>>();
+    Ok(items)
 }
 
 impl DictionaryView<'_> {
