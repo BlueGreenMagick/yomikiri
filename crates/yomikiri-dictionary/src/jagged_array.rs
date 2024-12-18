@@ -1,7 +1,6 @@
 use std::io::Write;
 use std::marker::PhantomData;
 
-use bincode::Options;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use serde::{Deserialize, Serialize};
 
@@ -19,8 +18,8 @@ use crate::{Error, Result};
   Structure (bytes):
   1. array of pointers
     repeated 'len' times
-      - byte-position of items, divided by 2, where first item is 0. (4)
-    - byte length of array of items (4)
+      - starting byte-position of items. (4)
+    - byte length of item bytes (4)
   2. contiguous item bytes
     repeated 'len' times:
       bytes of items (n)
@@ -57,7 +56,7 @@ where
 
         let (item_start, item_end) = self.item_position(index)?;
         let item_bytes = &self.data[item_start..item_end];
-        let item = bincode::options().deserialize(item_bytes)?;
+        let item = postcard::from_bytes(item_bytes)?;
 
         Ok(item)
     }
@@ -80,33 +79,31 @@ where
     }
 
     pub fn build_and_encode_to<W: Write>(items: &[T], writer: &mut W) -> Result<()> {
-        let mut index_bytes: Vec<u8> = Vec::with_capacity(4 * items.len());
+        postcard::to_io(&items.len(), &mut *writer)?;
+
         let mut item_bytes: Vec<u8> = Vec::with_capacity(8 * items.len());
         for item in items {
-            index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-            bincode::options().serialize_into(&mut item_bytes, item)?;
+            writer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
+            postcard::to_io(item, &mut item_bytes)?;
         }
-        index_bytes.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
-
-        let bytes_len = 4 + index_bytes.len() + item_bytes.len();
-        writer.write_u32::<LittleEndian>(bytes_len.try_into()?)?;
-        writer.write_u32::<LittleEndian>(items.len().try_into()?)?;
-        writer.write_all(&index_bytes)?;
+        writer.write_u32::<LittleEndian>(item_bytes.len().try_into()?)?;
         writer.write_all(&item_bytes)?;
         Ok(())
     }
 
     pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
-        let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
-        let cnt = (&source[4..8]).read_u32::<LittleEndian>()? as usize;
-        let data = &source[8..4 + bytes_len];
+        let start = source.len();
+        let (cnt, source) = postcard::take_from_bytes(source)?;
+        let items_len = (&source[(cnt * 4)..((cnt + 1) * 4)]).read_u32::<LittleEndian>()? as usize;
+        let end_idx = (cnt + 1) * 4 + items_len;
         let arr = Self {
-            data,
+            data: &source[0..end_idx],
             cnt,
             _typ: PhantomData,
         };
-
-        Ok((arr, bytes_len + 4))
+        let source = &source[end_idx..];
+        let end = source.len();
+        Ok((arr, start - end))
     }
 
     pub fn all_items_iter(&'a self) -> impl Iterator<Item = Result<T>> + 'a {
@@ -124,11 +121,12 @@ mod tests {
         let vec = vec![1, 4, -5];
         let mut bytes: Vec<u8> = Vec::with_capacity(128);
         JaggedArray::build_and_encode_to(&vec, &mut bytes)?;
-        let (arr, _len) = JaggedArray::<i32>::try_decode(&bytes)?;
+        let (arr, decoded_len) = JaggedArray::<i32>::try_decode(&bytes)?;
         assert_eq!(arr.len(), vec.len());
         assert_eq!(arr.get(0)?, vec[0]);
         assert_eq!(arr.get(1)?, vec[1]);
         assert_eq!(arr.get(2)?, vec[2]);
+        assert_eq!(bytes.len(), decoded_len);
 
         Ok(())
     }
