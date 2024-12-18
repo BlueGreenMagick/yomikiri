@@ -171,10 +171,7 @@ impl DictionaryWriter<DictionaryWriterJMneDict> {
             parse_jmnedict_entry(&mut self.state.entries, &mut name_builder, entry)?;
         }
 
-        let mut name_entries = Vec::with_capacity(NameEntriesBuilder::ENTRIES_CAPACITY);
-        for name_entry in name_builder.into_iter() {
-            name_entries.push(name_entry);
-        }
+        let name_entries = name_builder.into_iter().collect::<Vec<NameEntry>>();
 
         Ok(DictionaryWriter {
             state: DictionaryWriterFinal {
