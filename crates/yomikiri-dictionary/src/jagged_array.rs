@@ -41,19 +41,6 @@ impl<'a, T> JaggedArray<'a, T>
 where
     T: Deserialize<'a> + Serialize,
 {
-    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
-        let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
-        let cnt = (&source[4..8]).read_u32::<LittleEndian>()? as usize;
-        let data = &source[8..4 + bytes_len];
-        let arr = Self {
-            data,
-            cnt,
-            _typ: PhantomData,
-        };
-
-        Ok((arr, bytes_len + 4))
-    }
-
     pub fn len(&self) -> usize {
         self.cnt
     }
@@ -107,6 +94,19 @@ where
         writer.write_all(&index_bytes)?;
         writer.write_all(&item_bytes)?;
         Ok(())
+    }
+
+    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
+        let bytes_len = (&source[0..4]).read_u32::<LittleEndian>()? as usize;
+        let cnt = (&source[4..8]).read_u32::<LittleEndian>()? as usize;
+        let data = &source[8..4 + bytes_len];
+        let arr = Self {
+            data,
+            cnt,
+            _typ: PhantomData,
+        };
+
+        Ok((arr, bytes_len + 4))
     }
 
     pub fn all_items_iter(&'a self) -> impl Iterator<Item = Result<T>> + 'a {

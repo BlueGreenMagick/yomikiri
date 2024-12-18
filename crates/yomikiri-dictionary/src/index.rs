@@ -166,12 +166,6 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
             .is_some()
     }
 
-    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
-        let start = source.len();
-        let (idx_map, rest) = postcard::take_from_bytes(source)?;
-        Ok((idx_map, start - rest.len()))
-    }
-
     fn parse_value(&self, value: u64) -> Result<Vec<T>> {
         if value & (1_u64 << 63) == 0 {
             let idx: T = postcard::from_bytes(&value.to_le_bytes())?;
@@ -217,8 +211,16 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
             idxs_storage: &idxs_storage,
             _typ: PhantomData,
         };
+
+        // encode to writer
         postcard::to_io(&idx_map, &mut *writer)?;
         Ok(())
+    }
+
+    pub fn try_decode(source: &'a [u8]) -> Result<(Self, usize)> {
+        let start = source.len();
+        let (idx_map, rest) = postcard::take_from_bytes(source)?;
+        Ok((idx_map, start - rest.len()))
     }
 }
 
