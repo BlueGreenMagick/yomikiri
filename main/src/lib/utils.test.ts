@@ -40,4 +40,8 @@ describe("Utils", () => {
     expect(Utils.toCodePointIndex("1😄2😄3", 5)).toBe(3);
     expect(Utils.toCodePointIndex("1😄2😄3", 6)).toBe(4);
   });
+
+  test("escapeRegex", () => {
+    expect(Utils.escapeRegex("[a.b\\]")).toBe("\\[a\\.b\\\\\\]");
+  });
 });

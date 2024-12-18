@@ -214,8 +214,10 @@ export function escapeHTML(input: string): string {
     .replace(/>/g, "&gt;");
 }
 
+// From rust regex::escape()
+// https://github.com/rust-lang/regex/blob/1a069b9232c607b34c4937122361aa075ef573fa/regex-syntax/src/lib.rs#L260
 export function escapeRegex(text: string): string {
-  return text.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
+  return text.replace(/[\\.+*?()|[\]{}^$#&\-~]/g, "\\$&");
 }
 
 /** "http://url?" + generateUrlParams({key: value}) */
