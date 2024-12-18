@@ -391,7 +391,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                 let text_all = concat_string(&joined_text_prev, &token.text);
 
                 let mut found_pos = None;
-                for e in self.dictionary.search(&text_all)?.iter() {
+                for e in self.dictionary.search_term(&text_all)?.iter() {
                     if all_noun && e.has_pos(PartOfSpeech::Noun) {
                         found_pos = Some(UnidicPos::Noun(UnidicNounPos2::Unknown));
                         break;
@@ -410,7 +410,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                 } else {
                     let text_then_base = concat_string(&joined_text_prev, &token.base);
                     let mut found_pos = None;
-                    for e in self.dictionary.search(&text_then_base)?.iter() {
+                    for e in self.dictionary.search_term(&text_then_base)?.iter() {
                         if all_noun && e.has_pos(PartOfSpeech::Noun) {
                             found_pos = Some(UnidicPos::Noun(UnidicNounPos2::Unknown));
                             break;
@@ -437,7 +437,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
                 if last_found_to != at + 1 {
                     let found_particle = self
                         .dictionary
-                        .search(&base_all)?
+                        .search_term(&base_all)?
                         .iter()
                         .any(|e| e.has_pos(PartOfSpeech::Particle));
                     if found_particle {
@@ -542,7 +542,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         let compound = concat_string(&token.text, &next_token.text);
         let search = self
             .dictionary
-            .search(&compound)?
+            .search_term(&compound)?
             .iter()
             .any(|e| e.has_pos(PartOfSpeech::Conjunction));
         if !search {
@@ -624,7 +624,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
         let compound = concat_string(&token.text, &next.base);
         let exists = self
             .dictionary
-            .search(&compound)?
+            .search_term(&compound)?
             .iter()
             .any(|e| e.has_pos(PartOfSpeech::Verb));
         if !exists {

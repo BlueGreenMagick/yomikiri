@@ -41,7 +41,7 @@ impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {
             Cow::Owned(normalized)
         };
 
-        let entries = self.dictionary.search(&normalized_term)?;
+        let entries = self.dictionary.search_term(&normalized_term)?;
         if let Some(entry) = entries.first() {
             let form = entry.main_form();
             // TODO: convert jmdict pos to unidic pos

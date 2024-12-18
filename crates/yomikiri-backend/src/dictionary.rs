@@ -19,7 +19,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         Ok(Self { inner })
     }
 
-    pub fn search(&self, term: &str) -> Result<Vec<Entry>> {
+    pub fn search_term(&self, term: &str) -> Result<Vec<Entry>> {
         let view = self.inner.borrow_view();
         let terms = &view.term_index;
         let idxs = terms.get(term)?;
@@ -54,20 +54,6 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         self.inner.borrow_view().term_index.contains_key(term)
     }
 
-    /// Returns json text of entries
-    pub fn search_json(&self, term: &str) -> Result<Vec<String>> {
-        let view = &self.inner.borrow_view();
-        let terms = &self.inner.borrow_view().term_index;
-        let idxs = terms.get(term)?;
-        let entries = view.get_entries(&idxs)?;
-        let jsons = entries
-            .iter()
-            .map(serde_json::to_string)
-            .collect::<serde_json::Result<Vec<String>>>()
-            .context("Failed to serialize dictionary entry into JSON")?;
-        Ok(jsons)
-    }
-
     pub fn metadata(&self) -> &DictionaryMetadata {
         &self.inner.borrow_view().metadata
     }
@@ -90,7 +76,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         // word entry metas
         let mut entry_metas: Vec<EntryMeta> = vec![];
 
-        let entries = self.search(&token.base)?;
+        let entries = self.search_term(&token.base)?;
         for entry in entries {
             match entry {
                 Entry::Word(inner) => {
@@ -114,7 +100,7 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
             }
         }
 
-        let entries = self.search(&token.text)?;
+        let entries = self.search_term(&token.text)?;
         for entry in entries {
             match entry {
                 Entry::Word(inner) => {
