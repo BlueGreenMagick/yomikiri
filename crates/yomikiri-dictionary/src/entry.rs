@@ -320,6 +320,13 @@ impl Entry {
                 .unwrap_or(""),
         }
     }
+
+    pub fn priority(&self) -> u16 {
+        match self {
+            Entry::Word(word) => word.priority,
+            Entry::Name(_) => 0,
+        }
+    }
 }
 
 impl WordEntry {
@@ -398,6 +405,18 @@ impl Deref for WordEntry {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl From<WordEntry> for Entry {
+    fn from(word: WordEntry) -> Self {
+        Entry::Word(word)
+    }
+}
+
+impl From<NameEntry> for Entry {
+    fn from(name: NameEntry) -> Self {
+        Entry::Name(name)
     }
 }
 

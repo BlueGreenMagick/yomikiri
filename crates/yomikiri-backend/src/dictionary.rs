@@ -1,7 +1,10 @@
+use std::cmp::Ordering;
+
 use anyhow::{Context, Result};
 use yomikiri_dictionary::dictionary::{Dictionary as InnerDictionary, DictionaryMetadata};
-use yomikiri_dictionary::entry::{Entry, NameEntry, Rarity, WordEntry};
+use yomikiri_dictionary::entry::{Entry, Rarity};
 use yomikiri_dictionary::PartOfSpeech;
+use yomikiri_unidic_types::UnidicPos;
 
 use crate::tokenize::InnerToken;
 
@@ -71,37 +74,42 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
 
     /// Finds entries, ordered by what best matches token
     ///
-    /// 0. Name entry -> Word entry
     /// 1. Non-search -> search-only
     /// 2. token.base -> token.text
-    /// 3. Entries whose POS matches token.pos
-    /// 4. Rare -> Non rare
-    /// 5. Entry with higher priority is shown first
+    /// 3. If POS is proper noun, prioritize proper noun
+    /// 4. Entries whose POS matches token.pos
+    /// 5. Rare -> Non rare
+    /// 6. Entry with higher priority is shown first
     pub(crate) fn search_for_token(&self, token: &InnerToken) -> Result<Vec<Entry>> {
         struct EntryMeta {
-            entry: WordEntry,
+            entry: Entry,
             rarity: Rarity,
             from_base: bool,
         }
 
-        let mut name_entries: Vec<NameEntry> = vec![];
         // word entry metas
         let mut entry_metas: Vec<EntryMeta> = vec![];
 
         let entries = self.search(&token.base)?;
         for entry in entries {
             match entry {
-                Entry::Word(entry) => {
-                    let rarity = entry.term_rarity(&token.base)?;
+                Entry::Word(inner) => {
+                    let rarity = inner.term_rarity(&token.base)?;
                     let entry_meta = EntryMeta {
-                        entry,
+                        entry: inner.into(),
                         rarity,
                         from_base: true,
                     };
                     entry_metas.push(entry_meta);
                 }
-                Entry::Name(entry) => {
-                    name_entries.push(entry);
+                Entry::Name(inner) => {
+                    let rarity = Rarity::Normal;
+                    let entry_meta = EntryMeta {
+                        entry: inner.into(),
+                        rarity,
+                        from_base: true,
+                    };
+                    entry_metas.push(entry_meta);
                 }
             }
         }
@@ -109,26 +117,40 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
         let entries = self.search(&token.text)?;
         for entry in entries {
             match entry {
-                Entry::Word(entry) => {
-                    if entry_metas.iter().any(|e| e.entry == entry) {
+                Entry::Word(inner) => {
+                    if entry_metas.iter().any(|e| match &e.entry {
+                        Entry::Word(i) => i.id == inner.id,
+                        _ => false,
+                    }) {
                         continue;
                     }
-                    let rarity = entry.term_rarity(&token.text)?;
+                    let rarity = inner.term_rarity(&token.text)?;
                     let entry_meta = EntryMeta {
-                        entry,
+                        entry: inner.into(),
                         rarity,
                         from_base: false,
                     };
                     entry_metas.push(entry_meta);
                 }
-                Entry::Name(entry) => {
-                    if name_entries.contains(&entry) {
+                Entry::Name(inner) => {
+                    if entry_metas.iter().any(|e| match &e.entry {
+                        Entry::Name(i) => i.kanji == inner.kanji,
+                        _ => false,
+                    }) {
                         continue;
                     }
-                    name_entries.push(entry);
+                    let rarity = Rarity::Normal;
+                    let entry_meta = EntryMeta {
+                        entry: inner.into(),
+                        rarity,
+                        from_base: false,
+                    };
+                    entry_metas.push(entry_meta);
                 }
             }
         }
+
+        let pos = PartOfSpeech::from(&token.pos);
 
         // Sort entries. Less means 'a' comes before 'b'
         entry_metas.sort_by(|a, b| {
@@ -138,21 +160,25 @@ impl<D: AsRef<[u8]> + 'static> Dictionary<D> {
                 .cmp(&b_is_search)
                 .then(a.from_base.cmp(&b.from_base).reverse())
                 .then_with(|| {
-                    let pos = PartOfSpeech::from(&token.pos);
-                    a.entry.has_pos(pos).cmp(&b.entry.has_pos(pos)).reverse()
+                    if token.pos == UnidicPos::Noun(yomikiri_unidic_types::UnidicNounPos2::固有名詞)
+                    {
+                        matches!(a.entry, Entry::Name(_))
+                            .cmp(&matches!(b.entry, Entry::Name(_)))
+                            .reverse()
+                    } else {
+                        Ordering::Equal
+                    }
                 })
+                .then_with(|| a.entry.has_pos(pos).cmp(&b.entry.has_pos(pos)).reverse())
                 .then_with(|| {
                     let a_is_normal = a.rarity == Rarity::Normal;
                     let b_is_normal = a.rarity == Rarity::Normal;
                     a_is_normal.cmp(&b_is_normal).reverse()
                 })
-                .then(a.entry.priority.cmp(&b.entry.priority).reverse())
+                .then(a.entry.priority().cmp(&b.entry.priority()).reverse())
         });
 
-        let mut entries: Vec<Entry> = name_entries.into_iter().map(Entry::Name).collect();
-        for meta in entry_metas {
-            entries.push(Entry::Word(meta.entry));
-        }
+        let entries: Vec<Entry> = entry_metas.into_iter().map(|m| m.entry).collect();
         Ok(entries)
     }
 }
