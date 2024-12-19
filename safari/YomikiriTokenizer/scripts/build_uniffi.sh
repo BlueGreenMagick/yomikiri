@@ -31,9 +31,20 @@ LIB_FILE_PATH="$FRAMEWORK_DIR/rust/libyomikiri_rs.a"
 # Remove file if it exists
 rm -f "$LIB_FILE_PATH"
 
+
+# Link static lib file
+
 # Both iphone and ipad simulator
 if [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
-  ln -s "$TARGET_DIR/aarch64-apple-ios-sim/release/libyomikiri_rs.a" "$LIB_FILE_PATH"
+  AARCH="aarch64-apple-ios-sim"
 else
-  ln -s "$TARGET_DIR/aarch64-apple-ios/release/libyomikiri_rs.a" "$LIB_FILE_PATH"
+  AARCH="aarch64-apple-ios"
 fi
+
+if [ "$CONFIGURATION" = "Debug" ]; then
+  TARGET="debug"
+else
+  TARGET="release"
+fi
+
+ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_rs.a" "$LIB_FILE_PATH"
