@@ -7,6 +7,7 @@ on:
 
 env:
   JMDICT_PATH: crates/yomikiri-dictionary-generator/jmdict/jmdict_english.xml
+  JMNEDICT_PATH: crates/yomikiri-dictionary-generator/jmdict/jmnedict.xml
   DICTIONARY_PATH: crates/yomikiri-dictionary-generator/files/english.yomikiridict
   UNIDIC_OUTPUT_PATH: crates/unidic/output
 
@@ -69,6 +70,12 @@ jobs:
           path: ${{env.JMDICT_PATH}}
           key: jmdict-english-xml-${{steps.version.outputs.VERSION}}
 
+      - name: Cache jmnedict
+        uses: actions/cache@v4
+        with:
+          path: ${{env.JMNEDICT_PATH}}
+          key: jmnedict-xml-${{steps.version.outputs.VERSION}}
+
       - name: Build yomikiri-dictionary-generator crate
         run: cargo build
         working-directory: ./crates/yomikiri-dictionary-generator
@@ -78,7 +85,7 @@ jobs:
         id: cache-yomikiri-dictionary
         with:
           path: ${{env.DICTIONARY_PATH}}
-          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-dictionary-generator', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH) }}
+          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-dictionary-generator', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH, env.JMNEDICT_PATH) }}
 
       - name: Generate yomikiri dictionary
         if: steps.cache-yomikiri-dictionary.outputs.cache-hit != 'true'
