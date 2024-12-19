@@ -37,7 +37,7 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         self.viewModel = viewModel
         self.messageHandler = MessageHandler(additionalMessageHandler: viewModel.additionalMessageHandler)
         let webConfiguration = WKWebViewConfiguration()
-        webConfiguration.setValue(true, forKey: "_allowUniversalAccessFromFileURLs")
+        webConfiguration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: .page, name: self.WEB_MESSAGE_HANDLER_NAME)
         super.init(frame: .zero, configuration: webConfiguration)
         if #available(iOS 16.4, macOS 13.3, *) {
