@@ -26,24 +26,27 @@
   .badges {
     margin: 0.5rem 6px;
     display: flex;
-    gap: 4px;
+    gap: 0.25rem;
   }
 
   .badge {
     width: max-content;
-    font-size: 0.75rem;
-    padding: 2px 6px;
+    padding: 0.125rem 0.5rem;
     border-radius: 3px;
-    color: var(--badge-color);
+    color: white;
+    background-color: var(--badge-color);
     border: 1px solid var(--badge-color);
+    font-size: 0.75rem;
+    font-weight: bold;
     line-height: 1;
   }
 
+  /** HSL(x, 38%, 75%) */
   .common {
-    --badge-color: #8db38d;
+    --badge-color: #a7d7a7;
   }
 
   .name {
-    --badge-color: #b38db3;
+    --badge-color: #d3a7d7;
   }
 </style>
