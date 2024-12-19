@@ -36,8 +36,8 @@ test!(meaning1, "cat", @r#"
 - (Word 2535220) ぬこ
 - (Word 2698030) 猫
 - (Word 2750480) 唐猫
+- (Word 5025511) キャット島
 - (Word 1648200) にゃんにゃん
-- (Word 2222730) にゃーにゃー
 "#);
 
 test!(meaning2, "run", @r#"
@@ -48,10 +48,10 @@ test!(meaning2, "run", @r#"
 - (Word 1442140) 伝線
 - (Word 2403830) 取り付け騒ぎ
 - (Word 2609760) 走
+- (Word 5007980) るん
 - (Word 1281440) 航路
 - (Word 1234190) 競走
 - (Word 1281420) 航程
-- (Word 2859007) 駆け通し
 "#);
 
 test!(meaning3, "felis", @r#"
