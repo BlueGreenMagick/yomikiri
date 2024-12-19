@@ -31,11 +31,12 @@
 
   .badge {
     width: max-content;
-    font-size: 0.6rem;
-    padding: 1px 4px;
+    font-size: 0.75rem;
+    padding: 2px 6px;
     border-radius: 3px;
     color: var(--badge-color);
     border: 1px solid var(--badge-color);
+    line-height: 1;
   }
 
   .common {
