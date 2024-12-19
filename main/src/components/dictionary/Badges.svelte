@@ -7,16 +7,17 @@
   let hasBadges: boolean;
 
   $: isCommon = entry.type === "word" && isCommonEntry(entry);
-  $: hasBadges = isCommon;
+  $: isName = entry.type === "name";
+  $: hasBadges = isCommon || isName;
 </script>
 
 {#if hasBadges}
   <div class="badges">
     {#if isCommon}
-      <div class="badge">common</div>
+      <div class="badge common">common</div>
     {/if}
-    {#if entry.type === "name"}
-      <div class="badge">name</div>
+    {#if isName}
+      <div class="badge name">name</div>
     {/if}
   </div>
 {/if}
@@ -31,9 +32,17 @@
   .badge {
     width: max-content;
     font-size: 0.6rem;
-    color: #8db38d;
     padding: 1px 4px;
-    border: 1px solid #8db38d;
     border-radius: 3px;
+    color: var(--badge-color);
+    border: 1px solid var(--badge-color);
+  }
+
+  .common {
+    --badge-color: #8db38d;
+  }
+
+  .name {
+    --badge-color: #b38db3;
   }
 </style>
