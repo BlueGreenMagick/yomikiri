@@ -42,12 +42,12 @@
 <div class="entryView">
   <div class="header">
     <div class="term Japanese">
-      <span class="mainForm"><RubyText text={mainFormRuby} /></span>
+      <RubyText text={mainFormRuby} />
     </div>
     <div class="icons">
       {#if $ankiEnabledConfig && entry.type === "word"}
         <IconedButton
-          size="2em"
+          size="2rem"
           highlight={$selectedMeaning?.entry === entry}
           on:click={() => {
             onSelectEntryForAnki({
@@ -83,15 +83,13 @@
   .term {
     flex: 1 1 auto;
     min-width: 0;
-    margin: 4px 12px 0 0;
+    margin: 0.5rem 1rem 0 0;
+    font-size: 1.75rem;
+    line-height: 1;
   }
   .icons {
     flex: 0 0 auto;
 
     display: flex;
-  }
-
-  .mainForm {
-    font-size: 1.5rem;
   }
 </style>

@@ -46,6 +46,7 @@
 
   .section-header {
     font-size: 0.875rem;
+    line-height: 1;
     color: var(--text-light);
   }
 

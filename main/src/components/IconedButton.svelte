@@ -1,7 +1,7 @@
 <script lang="ts">
   /* Styles */
   export let size = "2rem";
-  export let padding = "0.3rem";
+  export let padding = "0.25rem";
   export let color = "var(--button-light)";
   export let colorHover = "var(--text)";
 

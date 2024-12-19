@@ -37,10 +37,6 @@
 </div>
 
 <style>
-  .grouped-sense:first-child {
-    margin-top: 0.25rem;
-  }
-
   .grouped-sense {
     margin-top: 0.5rem;
   }
@@ -48,7 +44,8 @@
   .part-of-speech {
     color: var(--text-light);
     font-size: 0.875rem;
-    margin-bottom: 2px;
+    line-height: 1;
+    margin: 0.25rem 0;
     padding: 0 var(--edge-horizontal-padding);
   }
 

@@ -24,7 +24,7 @@
 
 <style>
   .badges {
-    margin: 4px 6px;
+    margin: 0.5rem 6px;
     display: flex;
     gap: 4px;
   }
