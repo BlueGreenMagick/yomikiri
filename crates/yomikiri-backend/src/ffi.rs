@@ -5,6 +5,7 @@ use crate::{utils, SharedBackend};
 
 use anyhow::{Context, Result};
 use flate2::bufread::GzDecoder;
+use memmap2::{Mmap, MmapOptions};
 use yomikiri_dictionary::dictionary::DictionaryWriter;
 use yomikiri_dictionary::{DICT_FILENAME, SCHEMA_VER};
 
@@ -15,7 +16,7 @@ use std::sync::{Arc, Mutex};
 
 #[derive(uniffi::Object)]
 pub struct RustBackend {
-    inner: Mutex<SharedBackend<Vec<u8>>>,
+    inner: Mutex<SharedBackend<Mmap>>,
 }
 
 impl RustBackend {
@@ -199,8 +200,9 @@ pub fn dict_schema_ver() -> u16 {
 
 // TODO: switch to Memmap
 impl Dictionary<Vec<u8>> {
-    pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Vec<u8>>> {
-        let bytes = fs::read(dict_path.as_ref())?;
-        Dictionary::try_new(bytes)
+    pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Mmap>> {
+        let file = File::open(dict_path.as_ref())?;
+        let mmap = unsafe { MmapOptions::new().map(&file)? };
+        Dictionary::try_new(mmap)
     }
 }
