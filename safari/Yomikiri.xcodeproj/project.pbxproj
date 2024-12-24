@@ -270,6 +270,7 @@
 		699EF6702A540BE600ECA9D1 /* Shared (iOS) */ = {
 			isa = PBXGroup;
 			children = (
+				699B7DCC2A52BEA100E506F2 /* YomikiriWebView.swift */,
 				699B7E0B2A53DCE500E506F2 /* Globals.swift */,
 			);
 			path = "Shared (iOS)";
@@ -344,7 +345,6 @@
 				69F2C26029FA4FA80088F503 /* Info.plist */,
 				699B7DC52A52B07C00E506F2 /* OptionsView.swift */,
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
-				699B7DCC2A52BEA100E506F2 /* YomikiriWebView.swift */,
 				69D839962A98D76F00618380 /* MainView.swift */,
 				69D839982A98D90900618380 /* DictionaryView.swift */,
 				6942E5182BA82EE800AB628A /* HelpView.swift */,
