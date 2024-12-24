@@ -26,6 +26,7 @@ struct YomikiriApp: App {
         }
     }
 
+    @MainActor
     class ViewModel: ObservableObject {
         var optionsViewModel = OptionsView.ViewModel()
 

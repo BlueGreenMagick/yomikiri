@@ -61,6 +61,7 @@ struct OptionsView: View {
 }
 
 extension OptionsView {
+    @MainActor
     class ViewModel: ObservableObject {
         @Published var ankiTemplateShown: Bool = false
 
