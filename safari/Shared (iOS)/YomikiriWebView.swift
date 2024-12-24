@@ -103,7 +103,7 @@ extension YomikiriWebView {
 
 extension YomikiriWebView {
     class ViewModel: ObservableObject {
-        var webview: WKWebView?
+        weak var webview: WKWebView?
         let url: URL
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         private var loadCompleteHandlers: [(WKWebView) -> Void] = []
