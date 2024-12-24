@@ -131,8 +131,12 @@ extension YomikiriWebView {
             self.loadStatus = .initial
         }
 
-        func runOnLoadComplete(fn: @escaping (_ webview: WKWebView) -> Void) {
+        func runWhenLoadComplete(fn: @escaping (_ webview: WKWebView) -> Void) {
             loadCompleteHandlers.append(fn)
+
+            if loadStatus == .complete, let webview = webview {
+                fn(webview)
+            }
         }
 
         func getLoadStatus() -> LoadStatus {

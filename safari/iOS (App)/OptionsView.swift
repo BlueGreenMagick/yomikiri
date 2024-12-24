@@ -82,16 +82,9 @@ extension OptionsView {
                 ankiApi.setAnkiInfo(`\(escaped)`);
             }, 50);
             """
-            if webViewModel.getLoadStatus() == .complete {
-                guard let webview = ankiTemplateWebViewModel.webview else {
-                    throw "Webview not initialized"
-                }
+            webViewModel.runWhenLoadComplete(fn: { (webview: WKWebView) in
                 webview.evaluateJavaScript(script)
-            } else {
-                webViewModel.runOnLoadComplete(fn: { (webview: WKWebView) in
-                    webview.evaluateJavaScript(script)
-                })
-            }
+            })
         }
 
         private func makeMessageHandler() -> YomikiriWebView.AdditionalMessageHandler {
