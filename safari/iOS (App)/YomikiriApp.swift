@@ -17,12 +17,16 @@ struct YomikiriApp: App {
     var body: some Scene {
         return WindowGroup {
             MainView()
-                .environmentObject(appState)
-                .alert("Error", isPresented: self.$appErrorHandler.showError, presenting: self.appErrorHandler.errorText) { _ in
+                .environmentObject(self.appState)
+                .alert(
+                    "Error", isPresented: self.$appErrorHandler.showError,
+                    presenting: self.appErrorHandler.errorText
+                ) { _ in
                     Button("OK") {}
                 } message: { text in
                     Text(text)
                 }
+                .onOpenURL(perform: handleOpenUrl)
         }
     }
 
@@ -35,6 +39,18 @@ struct YomikiriApp: App {
             let tabBarAppearance = UITabBarAppearance()
             tabBarAppearance.configureWithDefaultBackground()
             UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        }
+    }
+
+    func handleOpenUrl(url: URL) {
+        if url.isOptions {
+            appState.selectedTab = .settings
+            return
+        }
+        if url.isAnkiInfo {
+            appState.selectedTab = .settings
+            appState.settingsNavigation = .ankiTemplate
+            return
         }
     }
 }
@@ -57,4 +73,16 @@ class ErrorHandler: ObservableObject {
 @MainActor
 class AppState: ObservableObject {
     @Published var selectedTab: MainView.Tabs = .init()
+    @Published var settingsNavigation: OptionsView.Navigation = .init()
+
+    lazy var settingsNavigationIsAnkiTemplate: Binding<Bool> =
+        Binding {
+            self.settingsNavigation == .ankiTemplate
+        } set: { value in
+            if value, self.settingsNavigation != .ankiTemplate {
+                self.settingsNavigation = .ankiTemplate
+            } else if self.settingsNavigation == .ankiTemplate {
+                self.settingsNavigation = .main
+            }
+        }
 }

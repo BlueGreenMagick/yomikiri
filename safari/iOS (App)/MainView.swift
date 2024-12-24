@@ -28,11 +28,6 @@ struct MainView: View {
                 }
                 .tag(Tabs.settings)
         }
-        .onOpenURL { url in
-            if url.isOptions {
-                appState.selectedTab = .settings
-            }
-        }
     }
 
     enum Tabs {
