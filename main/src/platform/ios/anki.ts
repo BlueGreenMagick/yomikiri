@@ -8,30 +8,26 @@ import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
 import { EXTENSION_CONTEXT } from "consts";
 import { YomikiriError } from "lib/error";
-import type { IAnkiAddNotes } from "../common/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
+import type { IAnkiAddNotes } from "@platform/anki";
 
-export class IosAnkiApi implements IAnkiAddNotes {
-  config: Config;
+export * from "../common/anki";
 
-  constructor(config: Config) {
-    this.config = config;
-  }
-
+export namespace IosAnkiApi {
   /**
    * Does not wait for note to actually be added to Anki.
    */
-  async addNote(note: AnkiNote): Promise<boolean> {
+  export async function addNote(note: AnkiNote): Promise<boolean> {
     if (EXTENSION_CONTEXT === "contentScript") {
       return message("addAnkiNote", note);
     }
-    return this._addNote(note);
+    return _addNote(note);
   }
 
-  async _addNote(note: AnkiNote): Promise<boolean> {
+  async function _addNote(note: AnkiNote): Promise<boolean> {
     const cTab = await currentTab();
-
-    const willAutoRedirect = this.config.get("anki.ios_auto_redirect");
+    const config = await Config.instance.get();
+    const willAutoRedirect = config.get("anki.ios_auto_redirect");
     if (willAutoRedirect) {
       if (cTab.id === undefined) {
         throw new YomikiriError("Current tab does not have an id");
@@ -54,5 +50,7 @@ export class IosAnkiApi implements IAnkiAddNotes {
   }
 }
 
+IosAnkiApi satisfies IAnkiAddNotes;
+
+export type IosAnkiApi = typeof IosAnkiApi;
 export const AnkiApi = IosAnkiApi;
-export type AnkiApi = IosAnkiApi;

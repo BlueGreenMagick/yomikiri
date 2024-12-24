@@ -14,7 +14,6 @@ import {
 } from "extension/browserApi";
 import { ExtensionPlatform as Platform } from "@platform";
 import Utils, { exposeGlobals } from "../../lib/utils";
-import type { AnkiNote } from "lib/anki";
 import { Config } from "lib/config";
 import DefaultIcon from "assets/static/images/icon128.png";
 import DisabledIcon from "assets/icon128-20a.png";
@@ -27,16 +26,7 @@ async function initialize(): Promise<void> {
   const config = await Config.instance.get();
   updateStateEnabledIcon(config);
   updateDeferredNoteCountBadge(config);
-
-  if (Platform.IS_DESKTOP) {
-    const ankiApi = new AnkiApi(config) as DesktopAnkiApi;
-    runAddDeferredNoteTaskInBackground(ankiApi);
-  }
-}
-
-async function addAnkiNote(note: AnkiNote): Promise<boolean> {
-  const ankiApi = new AnkiApi(await Config.instance.get());
-  return await ankiApi.addNote(note);
+  runAddDeferredNoteTaskInBackground();
 }
 
 function tabId(_req: void, sender: MessageSender): number | undefined {
@@ -64,14 +54,18 @@ function updateDeferredNoteCountBadge(config: Config) {
   });
 }
 
-/** Check and add Anki notes every 30 seconds */
-function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
-  setInterval(() => {
-    void ankiApi.addDeferredNotes();
-  }, 1000 * 30);
+/**
+ * Check and add Anki notes every 30 seconds in desktop.
+ */
+function runAddDeferredNoteTaskInBackground() {
+  if (Platform.IS_DESKTOP) {
+    setInterval(() => {
+      void (AnkiApi as DesktopAnkiApi).addDeferredNotes();
+    }, 1000 * 30);
+  }
 }
 
-handleMessage("addAnkiNote", addAnkiNote);
+handleMessage("addAnkiNote", (note) => AnkiApi.addNote(note));
 handleMessage("tabId", tabId);
 
 handleBrowserLoad(() => {

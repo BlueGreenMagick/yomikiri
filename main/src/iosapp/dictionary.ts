@@ -2,9 +2,7 @@ import { Backend } from "@platform/backend";
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
 import Utils, { exposeGlobals } from "lib/utils";
-import { IosAppAnkiApi } from "platform/iosapp/anki";
-
-const ankiApi = new IosAppAnkiApi();
+import { AnkiApi } from "platform/iosapp/anki";
 
 const _page = createSvelte();
 
@@ -22,5 +20,5 @@ exposeGlobals({
   Utils,
   config: Config.instance,
   Backend,
-  ankiApi,
+  AnkiApi,
 });

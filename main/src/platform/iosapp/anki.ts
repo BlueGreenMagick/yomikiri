@@ -9,6 +9,8 @@ import {
 } from "../common/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
 
+export * from "../common/anki";
+
 interface Named {
   name: string;
 }
@@ -25,20 +27,11 @@ interface RawAnkiInfo {
   profiles: Named[];
 }
 
-export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
-  ankiInfoP: Promise<AnkiInfo>;
-  ankiInfoResolve: Utils.PromiseResolver<AnkiInfo>;
-  ankiInfoReject: Utils.PromiseRejector;
+export namespace IosAppAnkiApi {
+  const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
+    Utils.createPromise<AnkiInfo>();
 
-  constructor() {
-    const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
-      Utils.createPromise<AnkiInfo>();
-    this.ankiInfoP = ankiInfoP;
-    this.ankiInfoResolve = ankiInfoResolve;
-    this.ankiInfoReject = ankiInfoReject;
-  }
-
-  setAnkiInfo(ankiInfoJson: string): void {
+  export function setAnkiInfo(ankiInfoJson: string): void {
     try {
       const rawAnkiInfo = JSON.parse(ankiInfoJson) as RawAnkiInfo;
       const ankiInfo: AnkiInfo = {
@@ -50,36 +43,39 @@ export class IosAppAnkiApi implements IAnkiOptions, IAnkiAddNotes {
           };
         }),
       };
-      this.ankiInfoResolve(ankiInfo);
+      ankiInfoResolve(ankiInfo);
     } catch (err) {
-      this.ankiInfoReject(err);
+      ankiInfoReject(err);
     }
   }
 
-  async requestAnkiInfo(): Promise<void> {
+  export async function requestAnkiInfo(): Promise<void> {
     const installed = await Platform.messageWebview("ankiInfo", null);
     if (!installed) {
       throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
   }
 
-  async getAnkiInfo(): Promise<AnkiInfo> {
-    return this.ankiInfoP;
+  export async function getAnkiInfo(): Promise<AnkiInfo> {
+    return ankiInfoP;
   }
 
-  async checkConnection(): Promise<void> {
+  export async function checkConnection(): Promise<void> {
     const installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (!installed) {
       throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
   }
 
-  async addNote(note: AnkiNote): Promise<boolean> {
+  export async function addNote(note: AnkiNote): Promise<boolean> {
     const url = iosAnkiMobileURL(note);
     await Platform.messageWebview("openLink", url);
     return true;
   }
 }
 
+IosAppAnkiApi satisfies IAnkiAddNotes;
+IosAppAnkiApi satisfies IAnkiOptions;
+
+export type IosAppAnkiApi = typeof IosAppAnkiApi;
 export const AnkiApi = IosAppAnkiApi;
-export type AnkiApi = IosAppAnkiApi;

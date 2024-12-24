@@ -15,7 +15,6 @@
   import { Toast } from "lib/toast";
   import { newChangeTracker, SingleQueued } from "lib/utils";
   import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
-  import Config from "lib/config";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -24,9 +23,6 @@
   export let noteData: LoadingAnkiNote;
   export let noteAdded: () => void;
   export let onBack: () => void;
-
-  const config = Config.using();
-  const ankiApi = new AnkiApi(config);
 
   let tagField: FieldWatch = {
     name: "Tags",
@@ -48,7 +44,7 @@
 
   async function onAdd() {
     let ankiNote = await resolveAnkiNote(noteData);
-    const added = await ankiApi.addNote(ankiNote);
+    const added = await AnkiApi.addNote(ankiNote);
     if (added) {
       Toast.success("Note added to Anki");
     } else {

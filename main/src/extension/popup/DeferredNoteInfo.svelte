@@ -3,24 +3,21 @@
   import { Config } from "lib/config";
   import IconRefreshOutline from "@icons/refresh-outline.svg";
   import IconTrash from "@icons/trash.svg";
-  import { AnkiApi, type DesktopAnkiApi } from "@platform/anki";
+  import { AnkiApi as RawAnkiApi, type DesktopAnkiApi } from "@platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
   import CancelDeferredNoteDeletion from "components/toast/CancelDeferredNoteDeletion.svelte";
 
-  let addingNotes = false;
-
+  const AnkiApi = RawAnkiApi as DesktopAnkiApi;
   const config = Config.using();
-  const ankiApi = new AnkiApi(config);
   const confDeferredNoteCount = config.store("state.anki.deferred_note_count");
   const confDeferredNoteError = config.store("state.anki.deferred_note_error");
 
+  let addingNotes = false;
   let errorMessage = "Loading error message...";
 
   async function getErrorMessages() {
-    const errors = await (
-      ankiApi as DesktopAnkiApi
-    ).getDeferredNotesErrorMessages();
+    const errors = await AnkiApi.getDeferredNotesErrorMessages();
     errorMessage = errors[0];
   }
 
@@ -31,14 +28,14 @@
 
     try {
       addingNotes = true;
-      await (ankiApi as DesktopAnkiApi).addDeferredNotes();
+      await AnkiApi.addDeferredNotes();
     } finally {
       addingNotes = false;
     }
   }
 
   async function discardDeferredNotes() {
-    const clearJob = await (ankiApi as DesktopAnkiApi).clearDeferredNotes();
+    const clearJob = await AnkiApi.clearDeferredNotes();
 
     let weakToast: WeakRef<Toast>;
     const toast = new Toast("success", CancelDeferredNoteDeletion, {

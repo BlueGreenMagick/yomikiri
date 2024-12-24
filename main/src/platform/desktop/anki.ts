@@ -22,6 +22,8 @@ import {
 } from "lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
 
+export * from "../common/anki";
+
 const ANKI_CONNECT_VER = 6;
 
 interface AnkiConnectSuccess<T> {
@@ -105,33 +107,26 @@ export class InvalidAnkiResponseFormatError extends AnkiError {}
 /** Anki-connect response was an error */
 export class AnkiConnectError extends AnkiError {}
 
-/**
- * Uses Anki-Connect on desktop.
- * Should not be used in content script
- * as Anki-connect allows only calls from trusted origins.
- */
-export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
-  config: Config;
-
-  constructor(config: Config) {
-    this.config = config;
-  }
-
-  private ankiConnectURL(): string {
-    let url = this.config.get("anki.connect_url");
-    const port = this.config.get("anki.connect_port");
+export namespace DesktopAnkiApi {
+  function ankiConnectURL(config: Config): string {
+    let url = config.get("anki.connect_url");
+    const port = config.get("anki.connect_port");
     if (!url.includes("://")) {
       url = "http://" + url;
     }
     return `${url}:${port}`;
   }
 
-  /** Send Anki-connect request */
-  private async request<K extends keyof AnkiConnectRequestMap>(
+  /**
+   * Send Anki-connect request.
+   * Must not be called from content script.
+   */
+  async function request<K extends keyof AnkiConnectRequestMap>(
     action: K,
     params?: First<AnkiConnectRequestMap[K]>,
   ): Promise<Second<AnkiConnectRequestMap[K]>> {
-    const ankiConnectUrl = this.ankiConnectURL();
+    const config = await Config.instance.get();
+    const ankiConnectUrl = ankiConnectURL(config);
     let response;
     try {
       response = await fetch(ankiConnectUrl, {
@@ -172,23 +167,23 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
   }
 
-  async getAnkiInfo(): Promise<AnkiInfo> {
-    return this.fetchAnkiInfo();
+  export async function getAnkiInfo(): Promise<AnkiInfo> {
+    return fetchAnkiInfo();
   }
 
-  async requestAnkiInfo(): Promise<void> {
-    await this.checkConnection();
+  export async function requestAnkiInfo(): Promise<void> {
+    await checkConnection();
   }
 
-  private async fetchAnkiInfo(): Promise<AnkiInfo> {
-    const decks = await this.request("deckNames");
-    const notetypes = await this.request("modelNames");
+  async function fetchAnkiInfo(): Promise<AnkiInfo> {
+    const decks = await request("deckNames");
+    const notetypes = await request("modelNames");
     const ankiInfo: AnkiInfo = {
       decks,
       notetypes: [],
     };
     for (const notetype of notetypes) {
-      const fields = await this.notetypeFields(notetype);
+      const fields = await notetypeFields(notetype);
       const notetypeInfo: NotetypeInfo = {
         name: notetype,
         fields: fields,
@@ -198,25 +193,27 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     return ankiInfo;
   }
 
-  async notetypeFields(noteTypeName: string): Promise<string[]> {
-    return await this.request("modelFieldNames", {
+  export async function notetypeFields(
+    noteTypeName: string,
+  ): Promise<string[]> {
+    return await request("modelFieldNames", {
       modelName: noteTypeName,
     });
   }
 
-  async tags(): Promise<string[]> {
-    return await this.request("getTags");
+  export async function tags(): Promise<string[]> {
+    return await request("getTags");
   }
 
-  async addNote(note: AnkiNote): Promise<boolean> {
+  export async function addNote(note: AnkiNote): Promise<boolean> {
     if (EXTENSION_CONTEXT === "contentScript") {
       return message("addAnkiNote", note);
     } else {
-      return this._addNote(note);
+      return _addNote(note);
     }
   }
 
-  private async _addNote(
+  async function _addNote(
     note: AnkiNote,
     deferrable: boolean = true,
   ): Promise<boolean> {
@@ -225,7 +222,7 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       fields[field.name] = field.value;
     }
     try {
-      await this.request("addNote", {
+      await request("addNote", {
         note: {
           deckName: note.deck,
           modelName: note.notetype,
@@ -238,12 +235,13 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       });
       return true;
     } catch (err: unknown) {
+      const config = await Config.instance.get();
       if (
         deferrable &&
         err instanceof AnkiConnectionError &&
-        this.config.get("anki.defer_notes")
+        config.get("anki.defer_notes")
       ) {
-        await this.deferNote(note);
+        await deferNote(note);
         return false;
       } else {
         console.error(err);
@@ -252,23 +250,23 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
   }
 
-  /** Throws an error if not successfully connected. */
-  async checkConnection(): Promise<void> {
-    const resp = await this.request("requestPermission");
-    if (resp.permission === "granted") {
-      return;
-    } else {
-      throw new AnkiConnectPermissionError();
-    }
-  }
-
-  private async deferNote(note: AnkiNote) {
+  async function deferNote(note: AnkiNote) {
     const existingNotes: AnkiNote[] = await getStorage(
       "deferred-anki-note",
       [],
     );
     existingNotes.push(note);
-    await this.setDeferredNotes(existingNotes);
+    await setDeferredNotes(existingNotes);
+  }
+
+  /** Throws an error if not successfully connected. */
+  export async function checkConnection(): Promise<void> {
+    const resp = await request("requestPermission");
+    if (resp.permission === "granted") {
+      return;
+    } else {
+      throw new AnkiConnectPermissionError();
+    }
   }
 
   /**
@@ -281,37 +279,30 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
    *
    * Returns null if deferred notes are currently being added, and another request is queued.
    */
-  addDeferredNotes = SingleQueued(() => this.processDeferredNotes());
+  export const addDeferredNotes = SingleQueued(_addDeferredNotes);
 
-  /**
-   * Deletes all deferred notes and error messages from storage.
-   * Returns a job object that you can undo.
-   */
-  async clearDeferredNotes(): Promise<ClearDeferredNotesJob> {
-    return ClearDeferredNotesJob.run(this.config);
-  }
+  export type AddDeferredNotesProgress = "loading" | number;
 
-  async getDeferredNotesErrorMessages(): Promise<string[]> {
-    return await getStorage("deferred-anki-note-errors", []);
-  }
-
-  private processDeferredNotes(): PromiseWithProgress<void, number> {
-    const noteCount = this.config.get("state.anki.deferred_note_count");
-
+  function _addDeferredNotes(): PromiseWithProgress<
+    void,
+    AddDeferredNotesProgress
+  > {
     const [innerPromise, resolve, reject] = createPromise<void>();
-    const promise = PromiseWithProgress.fromPromise<void, number>(
-      innerPromise,
-      noteCount,
-    );
-
-    if (noteCount === 0) {
-      resolve();
-      return promise;
-    }
+    const promise: PromiseWithProgress<void, AddDeferredNotesProgress> =
+      PromiseWithProgress.fromPromise(innerPromise, "loading");
 
     (async () => {
+      const config = await Config.instance.get();
+      const noteCount = config.get("state.anki.deferred_note_count");
+
+      if (noteCount === 0) {
+        resolve();
+        return;
+      }
+
+      promise.setProgress(noteCount);
       await setStorage("deferred-anki-note-errors", []);
-      await this.config.set("state.anki.deferred_note_error", false);
+      await config.set("state.anki.deferred_note_error", false);
 
       const deferredNotes = await getStorage("deferred-anki-note", []);
       const errorMessages: string[] = [];
@@ -321,14 +312,14 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
       while (i < deferredNotes.length) {
         const note = deferredNotes[i];
         try {
-          await this._addNote(note, false);
+          await _addNote(note, false);
           deferredNotes.splice(i, 1);
-          await this.setDeferredNotes(deferredNotes);
+          await setDeferredNotes(deferredNotes, config);
         } catch (err: unknown) {
           if (err instanceof AnkiConnectError) {
             errorMessages.push(getErrorMessage(err));
             await setStorage("deferred-anki-note-errors", errorMessages);
-            await this.config.set("state.anki.deferred_note_error", true);
+            await config.set("state.anki.deferred_note_error", true);
             i += 1;
           } else {
             break;
@@ -347,9 +338,25 @@ export class DesktopAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     return promise;
   }
 
-  private async setDeferredNotes(notes: AnkiNote[]) {
+  /**
+   * Deletes all deferred notes and error messages from storage.
+   * Returns a job object that you can undo.
+   */
+  export async function clearDeferredNotes(): Promise<ClearDeferredNotesJob> {
+    const config = await Config.instance.get();
+    return ClearDeferredNotesJob.run(config);
+  }
+
+  export async function getDeferredNotesErrorMessages(): Promise<string[]> {
+    return await getStorage("deferred-anki-note-errors", []);
+  }
+
+  async function setDeferredNotes(notes: AnkiNote[], config?: Config) {
     await setStorage("deferred-anki-note", notes);
-    await this.config.set("state.anki.deferred_note_count", notes.length);
+    if (!config) {
+      config = await Config.instance.get();
+    }
+    await config.set("state.anki.deferred_note_count", notes.length);
   }
 }
 
@@ -390,5 +397,8 @@ export class ClearDeferredNotesJob {
   }
 }
 
+DesktopAnkiApi satisfies IAnkiOptions;
+DesktopAnkiApi satisfies IAnkiAddNotes;
+
+export type DesktopAnkiApi = typeof DesktopAnkiApi;
 export const AnkiApi = DesktopAnkiApi;
-export type AnkiApi = DesktopAnkiApi;

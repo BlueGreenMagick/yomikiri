@@ -5,11 +5,8 @@
     type IosAppAnkiApi,
   } from "@platform/anki";
   import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
-  import Config from "lib/config";
 
-  const config = Config.using();
-  const ankiApi = new AnkiApi(config) as DesktopAnkiApi | IosAppAnkiApi;
-  const ankiInfoP = ankiApi.getAnkiInfo();
+  const ankiInfoP = (AnkiApi as DesktopAnkiApi | IosAppAnkiApi).getAnkiInfo();
 </script>
 
 {#await ankiInfoP}

@@ -2,7 +2,7 @@
   import {
     type DesktopAnkiApi,
     type IosAppAnkiApi,
-    AnkiApi,
+    AnkiApi as PlatformAnkiApi,
   } from "@platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
@@ -15,9 +15,11 @@
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
+  const AnkiApi = PlatformAnkiApi as
+    | typeof DesktopAnkiApi
+    | typeof IosAppAnkiApi;
 
   const config = Config.using();
-  const ankiApi = new AnkiApi(config) as DesktopAnkiApi | IosAppAnkiApi;
   const ankiConnectPortConfig = config.store("anki.connect_port");
   const ankiEnabledConfig = config.store("anki.enabled");
   const ankiIosAutoRedirectConfig = config.store("anki.ios_auto_redirect");
@@ -34,7 +36,7 @@
     ankiTemplateDescriptionError = false;
     ankiTemplateDescription = "";
     try {
-      await ankiApi.requestAnkiInfo();
+      await AnkiApi.requestAnkiInfo();
       ankiTemplateModalHidden = false;
     } catch (err) {
       let errorMsg = Utils.getErrorMessage(err);
@@ -52,9 +54,9 @@
     if ($ankiEnabledConfig) {
       useAnkiDescription = "loading";
       try {
-        await ankiApi.checkConnection();
+        await AnkiApi.checkConnection();
         if (Platform.IS_DESKTOP) {
-          void (ankiApi as DesktopAnkiApi).addDeferredNotes();
+          void (AnkiApi as DesktopAnkiApi).addDeferredNotes();
         }
         useAnkiDescription = "success";
       } catch (err) {
@@ -76,7 +78,7 @@
     }
     const deferredNoteCount = config.get("state.anki.deferred_note_count");
     if (deferredNoteCount <= 0) {
-      void (ankiApi as DesktopAnkiApi).clearDeferredNotes();
+      void (AnkiApi as DesktopAnkiApi).clearDeferredNotes();
       return true;
     }
     const response = confirm(
@@ -84,7 +86,7 @@
     );
     if (response) {
       if (Platform.IS_DESKTOP) {
-        void (ankiApi as DesktopAnkiApi).clearDeferredNotes();
+        void (AnkiApi as DesktopAnkiApi).clearDeferredNotes();
       }
     }
     return response;

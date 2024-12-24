@@ -11,6 +11,7 @@
   import ActionButtons from "./ActionButtons.svelte";
   import { Config } from "lib/config";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
+  import { Platform } from "@platform";
 
   const config = Config.using();
   let previewIsVisible = false;
@@ -46,7 +47,9 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {onShowAnkiPreview}>
       <ActionButtons />
-      <DeferredNoteInfo />
+      {#if Platform.IS_DESKTOP}
+        <DeferredNoteInfo />
+      {/if}
     </Tokenize>
   </div>
   {#if previewIsVisible}

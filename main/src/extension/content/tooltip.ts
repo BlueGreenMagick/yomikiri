@@ -3,12 +3,10 @@ import type { TokenizeResult } from "@platform/backend";
 import Config from "lib/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { Highlighter } from "./highlight";
-import { AnkiApi } from "@platform/anki";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
 
 export class Tooltip {
   config: Config;
-  ankiApi: AnkiApi;
   highlighter: Highlighter;
 
   private _tooltipPageSvelte: TooltipPage | null = null;
@@ -18,7 +16,6 @@ export class Tooltip {
 
   constructor(config: Config, highlighter: Highlighter) {
     this.config = config;
-    this.ankiApi = new AnkiApi(config);
     this.highlighter = highlighter;
   }
 
