@@ -25,7 +25,7 @@ struct WebView: UIViewRepresentable {
     func updateUIView(_ webview: UIYomikiriWebView, context: Context) {}
     
     class ViewModel: ObservableObject {
-        var webview: UIYomikiriWebView?
+        weak var webview: UIYomikiriWebView?
         let url: URL
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         fileprivate let overscroll: Bool
