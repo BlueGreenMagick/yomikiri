@@ -1,14 +1,15 @@
 use std::path::PathBuf;
 use std::sync::LazyLock;
 
+use memmap2::Mmap;
 use yomikiri_dictionary::DICT_FILENAME;
 use yomikiri_rs::dictionary::Dictionary;
 use yomikiri_rs::tokenize::create_tokenizer;
 use yomikiri_rs::SharedBackend;
 
-pub static BACKEND: LazyLock<SharedBackend<Vec<u8>>> = LazyLock::new(|| setup_backend());
+pub static BACKEND: LazyLock<SharedBackend<Mmap>> = LazyLock::new(|| setup_backend());
 
-fn setup_backend() -> SharedBackend<Vec<u8>> {
+fn setup_backend() -> SharedBackend<Mmap> {
     let tokenizer = create_tokenizer();
     let mut base_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     base_dir.push("../yomikiri-dictionary-generator/files");
