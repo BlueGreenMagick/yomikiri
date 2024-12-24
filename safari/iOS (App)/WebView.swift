@@ -16,7 +16,8 @@ struct WebView: UIViewRepresentable {
     typealias AdditionalMessageHandler = UIYomikiriWebView.AdditionalMessageHandler
     
     func makeUIView(context: Context) -> UIYomikiriWebView {
-        let webview = UIYomikiriWebView(viewModel: viewModel.webviewModel)
+        let webview = UIYomikiriWebView(options: viewModel.options)
+        webview.onLoadStatusChange(fn: viewModel.onLoadStatusChange)
         viewModel.webview = webview
         return webview
     }
@@ -25,11 +26,15 @@ struct WebView: UIViewRepresentable {
     
     class ViewModel: ObservableObject {
         var webview: UIYomikiriWebView?
-        let webviewModel: UIYomikiriWebView.ViewModel
         let url: URL
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         fileprivate let overscroll: Bool
-        private var loadCompleteRunnableFunctions: [() -> Void] = []
+        fileprivate let scroll: Bool
+        fileprivate var loadCompleteHandlers: [(UIYomikiriWebView) -> Void] = []
+        
+        var options: UIYomikiriWebView.Options {
+            UIYomikiriWebView.Options(overscroll: overscroll, scroll: scroll, additionalMessageHandler: additionalMessageHandler, url: url)
+        }
         
         /**
          ### Optional arguments
@@ -39,17 +44,29 @@ struct WebView: UIViewRepresentable {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
             self.overscroll = overscroll
-            
-            let webviewOptions = UIYomikiriWebView.ViewModel.Options(overscroll: overscroll, scroll: scroll, additionalMessageHandler: additionalMessageHandler, url: url)
-            self.webviewModel = UIYomikiriWebView.ViewModel(options: webviewOptions)
+            self.scroll = scroll
         }
         
         func runOnLoadComplete(fn: @escaping (_ webview: UIYomikiriWebView) -> Void) {
-            webviewModel.runOnLoadComplete(fn: fn)
+            loadCompleteHandlers.append(fn)
         }
         
         func getLoadStatus() -> LoadStatus {
-            return webviewModel.loadStatus
+            guard let webview = webview else {
+                return .initial
+            }
+            return webview.loadStatus
+        }
+        
+        func onLoadStatusChange(status: LoadStatus) {
+            guard let webview = webview else {
+                return
+            }
+            if status == .complete {
+                for fn in loadCompleteHandlers {
+                    fn(webview)
+                }
+            }
         }
     }
 }

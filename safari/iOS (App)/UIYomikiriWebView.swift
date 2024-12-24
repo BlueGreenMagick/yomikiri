@@ -26,16 +26,31 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
     // return nil if not handled, Optional.some(nil) if returning nil to webview
     public typealias AdditionalMessageHandler = (String, Any) async throws -> String??
 
+    public struct Options {
+        var overscroll: Bool
+        let scroll: Bool
+        let additionalMessageHandler: AdditionalMessageHandler?
+        let url: URL
+    }
+
     public enum LoadStatus {
         case initial, loading, complete, failed
     }
 
     private let messageHandler: MessageHandler
-    private let viewModel: ViewModel
+    private var loadCompleteRunnableFunctions: [(UIYomikiriWebView) -> Void] = []
+    private var loadStatusChangeHandlers: [(LoadStatus) -> Void] = []
+    private(set) var loadStatus: LoadStatus {
+        didSet {
+            for fn in self.loadStatusChangeHandlers {
+                fn(self.loadStatus)
+            }
+        }
+    }
 
-    public init(viewModel: ViewModel) {
-        self.viewModel = viewModel
-        self.messageHandler = MessageHandler(additionalMessageHandler: viewModel.additionalMessageHandler)
+    public init(options: Options) {
+        self.loadStatus = .initial
+        self.messageHandler = MessageHandler(additionalMessageHandler: options.additionalMessageHandler)
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         webConfiguration.userContentController.addScriptMessageHandler(self.messageHandler, contentWorld: .page, name: self.WEB_MESSAGE_HANDLER_NAME)
@@ -44,15 +59,14 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
             self.isInspectable = true
         }
         self.navigationDelegate = self
-        self.viewModel.webview = self
 
-        if !self.viewModel.overscroll {
+        if !options.overscroll {
             self.scrollView.bounces = false
             self.scrollView.alwaysBounceHorizontal = false
         }
-        self.scrollView.isScrollEnabled = self.viewModel.scroll
+        self.scrollView.isScrollEnabled = options.scroll
 
-        let request = URLRequest(url: self.viewModel.url)
+        let request = URLRequest(url: options.url)
         self.load(request)
         configUpdatedHandlers.append { [weak self] (triggeringMessageHandler: MessageHandler?, _: String) in
             guard let self = self else {
@@ -69,18 +83,22 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         }
     }
 
+    func onLoadStatusChange(fn: @escaping (LoadStatus) -> Void) {
+        self.loadStatusChangeHandlers.append(fn)
+    }
+
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {}
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        self.viewModel.loadStatus = .complete
+        self.loadStatus = .complete
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        self.viewModel.loadStatus = .failed
+        self.loadStatus = .failed
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        self.viewModel.loadStatus = .loading
+        self.loadStatus = .loading
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
@@ -206,51 +224,6 @@ class UIYomikiriWebView: WKWebView, WKNavigationDelegate {
         private struct TTSRequest: Decodable {
             var text: String
             var voice: TTSVoice?
-        }
-    }
-
-    public class ViewModel {
-        public struct Options {
-            var overscroll: Bool
-            let scroll: Bool
-            let additionalMessageHandler: AdditionalMessageHandler?
-            let url: URL
-        }
-
-        public weak var webview: UIYomikiriWebView? = nil
-
-        fileprivate let overscroll: Bool
-        fileprivate let scroll: Bool
-        fileprivate let additionalMessageHandler: AdditionalMessageHandler?
-        fileprivate let url: URL
-        fileprivate var loadCompleteRunnableFunctions: [(UIYomikiriWebView) -> Void] = []
-
-        fileprivate(set) var loadStatus: LoadStatus {
-            didSet {
-                if self.loadStatus == .complete {
-                    let functions = self.loadCompleteRunnableFunctions
-                    self.loadCompleteRunnableFunctions = []
-                    for function in functions {
-                        function(self.webview!)
-                    }
-                }
-            }
-        }
-
-        init(options: Options) {
-            self.overscroll = options.overscroll
-            self.scroll = options.scroll
-            self.additionalMessageHandler = options.additionalMessageHandler
-            self.url = options.url
-            self.loadStatus = .initial
-        }
-
-        public func runOnLoadComplete(fn: @escaping (_ webview: UIYomikiriWebView) -> Void) {
-            if self.loadStatus == .complete {
-                fn(self.webview!)
-            } else {
-                self.loadCompleteRunnableFunctions.append(fn)
-            }
         }
     }
 }
