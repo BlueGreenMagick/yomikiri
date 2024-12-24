@@ -14,6 +14,8 @@ struct DictionaryView: View {
 
     var body: some View {
         YomikiriWebView(viewModel: self.viewModel.webViewModel)
+            .scrollable(false)
+            .overscroll(false)
             .background(DictionaryView.BACKGROUND_COLOR)
             .ignoresSafeArea(.keyboard)
     }
@@ -26,7 +28,7 @@ struct DictionaryView: View {
             guard let url = url.withPathComponents([URLQueryItem(name: "context", value: "app")]) else {
                 fatalError("Unable to build url")
             }
-            self.webViewModel = .init(url: url, overscroll: false, scrollable: false)
+            self.webViewModel = .init(url: url)
         }
     }
 }

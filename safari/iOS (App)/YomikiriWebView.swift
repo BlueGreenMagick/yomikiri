@@ -21,17 +21,20 @@ func triggerConfigUpdateHook(coordinator: YomikiriWebView.Coordinator?, configJS
     }
 }
 
-struct YomikiriWebView: UIViewRepresentable {
-    private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
+private let WEB_MESSAGE_HANDLER_NAME = "yomikiri"
 
-    public enum LoadStatus {
+struct YomikiriWebView: UIViewRepresentable {
+    enum LoadStatus {
         case initial, loading, complete, failed
     }
 
     // return nil if not handled, Optional.some(nil) if returning nil to webview
-    public typealias AdditionalMessageHandler = (String, Any) async throws -> String??
+    typealias AdditionalMessageHandler = (String, Any) async throws -> String??
 
     @ObservedObject var viewModel: ViewModel
+
+    var scrollable = true
+    var overscroll = true
 
     func makeUIView(context: Context) -> WKWebView {
         let webview = makeWkWebview(context)
@@ -39,7 +42,9 @@ struct YomikiriWebView: UIViewRepresentable {
         return webview
     }
 
-    func updateUIView(_ webview: WKWebView, context: Context) {}
+    func updateUIView(_ webview: WKWebView, context: Context) {
+        webview.scrollView.isScrollEnabled = scrollable
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -57,11 +62,11 @@ struct YomikiriWebView: UIViewRepresentable {
         }
         webview.navigationDelegate = coordinator
 
-        if !viewModel.overscroll {
+        if !overscroll {
             webview.scrollView.bounces = false
             webview.scrollView.alwaysBounceHorizontal = false
         }
-        webview.scrollView.isScrollEnabled = viewModel.scrollable
+        webview.scrollView.isScrollEnabled = scrollable
 
         let request = URLRequest(url: viewModel.url)
         webview.load(request)
@@ -80,13 +85,27 @@ struct YomikiriWebView: UIViewRepresentable {
         }
         return webview
     }
+}
 
+extension YomikiriWebView {
+    func scrollable(_ value: Bool) -> YomikiriWebView {
+        var view = self
+        view.scrollable = value
+        return view
+    }
+
+    func overscroll(_ value: Bool) -> YomikiriWebView {
+        var view = self
+        view.overscroll = value
+        return view
+    }
+}
+
+extension YomikiriWebView {
     class ViewModel: ObservableObject {
         var webview: WKWebView?
         let url: URL
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
-        fileprivate let overscroll: Bool
-        fileprivate let scrollable: Bool
         private var loadCompleteHandlers: [(WKWebView) -> Void] = []
         private var loadStatusChangeHandlers: [(LoadStatus) -> Void] = []
         fileprivate(set) var loadStatus: LoadStatus {
@@ -106,11 +125,9 @@ struct YomikiriWebView: UIViewRepresentable {
          ### Optional arguments
          - additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
          */
-        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil, overscroll: Bool = true, scrollable: Bool = true) {
+        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil) {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
-            self.overscroll = overscroll
-            self.scrollable = scrollable
             self.loadStatus = .initial
         }
 
