@@ -1,12 +1,11 @@
 import {
   currentTab,
-  message,
+  NonContentScriptFunction,
   setStorage,
   updateTab,
 } from "extension/browserApi";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
-import { EXTENSION_CONTEXT } from "consts";
 import { YomikiriError } from "lib/error";
 import { iosAnkiMobileURL } from "../shared/anki";
 import type { IAnkiAddNotes } from "@platform/anki";
@@ -21,12 +20,7 @@ export namespace IosAnkiApi {
   /**
    * Does not wait for note to actually be added to Anki.
    */
-  export async function addNote(note: AnkiNote): Promise<boolean> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      return message("addAnkiNote", note);
-    }
-    return _addNote(note);
-  }
+  export const addNote = NonContentScriptFunction("addAnkiNote", _addNote);
 
   async function _addNote(note: AnkiNote): Promise<boolean> {
     const cTab = await currentTab();

@@ -65,7 +65,6 @@ function runAddDeferredNoteTaskInBackground() {
   }
 }
 
-handleMessage("addAnkiNote", (note) => AnkiApi.addNote(note));
 handleMessage("tabId", tabId);
 
 handleBrowserLoad(() => {

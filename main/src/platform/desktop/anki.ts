@@ -8,7 +8,7 @@ import Config from "lib/config";
 import type { AnkiNote } from "lib/anki";
 import {
   getStorage,
-  message,
+  NonContentScriptFunction,
   removeStorage,
   setStorage,
 } from "extension/browserApi";
@@ -20,7 +20,6 @@ import {
   type First,
   type Second,
 } from "lib/utils";
-import { EXTENSION_CONTEXT } from "consts";
 
 export * from "../common/anki";
 
@@ -209,13 +208,7 @@ export namespace DesktopAnkiApi {
     return await request("getTags");
   }
 
-  export async function addNote(note: AnkiNote): Promise<boolean> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      return message("addAnkiNote", note);
-    } else {
-      return _addNote(note);
-    }
-  }
+  export const addNote = NonContentScriptFunction("addAnkiNote", _addNote);
 
   async function _addNote(
     note: AnkiNote,
