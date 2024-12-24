@@ -33,6 +33,10 @@ import {
 export * from "../common/backend";
 
 export namespace DesktopBackend {
+  export const IS_DESKTOP = true;
+  export const IS_IOS = false;
+  export const IS_IOSAPP = false;
+
   let _wasm: LazyAsync<BackendWasm> | undefined;
 
   if (EXTENSION_CONTEXT === "background") {

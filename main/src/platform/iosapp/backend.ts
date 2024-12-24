@@ -15,6 +15,10 @@ import {
 export * from "../common/backend";
 
 export namespace IosAppBackend {
+  export const IS_DESKTOP = false;
+  export const IS_IOS = false;
+  export const IS_IOSAPP = true;
+
   export async function tokenize({
     text,
     charAt,

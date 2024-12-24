@@ -14,6 +14,10 @@ import {
 export * from "../common/backend";
 
 export namespace IosBackend {
+  export const IS_DESKTOP = false;
+  export const IS_IOS = true;
+  export const IS_IOSAPP = false;
+
   export const tokenize = NonContentScriptFunction(
     "tokenize",
     ({ text, charAt }) => {
