@@ -26,7 +26,7 @@ struct DictionaryView: View {
             guard let url = url.withPathComponents([URLQueryItem(name: "context", value: "app")]) else {
                 fatalError("Unable to build url")
             }
-            self.webViewModel = .init(url: url, overscroll: false, scroll: false)
+            self.webViewModel = .init(url: url, overscroll: false, scrollable: false)
         }
     }
 }

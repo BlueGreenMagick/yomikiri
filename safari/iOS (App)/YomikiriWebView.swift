@@ -61,7 +61,7 @@ struct YomikiriWebView: UIViewRepresentable {
             webview.scrollView.bounces = false
             webview.scrollView.alwaysBounceHorizontal = false
         }
-        webview.scrollView.isScrollEnabled = viewModel.scroll
+        webview.scrollView.isScrollEnabled = viewModel.scrollable
 
         let request = URLRequest(url: viewModel.url)
         webview.load(request)
@@ -86,7 +86,7 @@ struct YomikiriWebView: UIViewRepresentable {
         let url: URL
         fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         fileprivate let overscroll: Bool
-        fileprivate let scroll: Bool
+        fileprivate let scrollable: Bool
         private var loadCompleteHandlers: [(WKWebView) -> Void] = []
         private var loadStatusChangeHandlers: [(LoadStatus) -> Void] = []
         fileprivate(set) var loadStatus: LoadStatus {
@@ -106,11 +106,11 @@ struct YomikiriWebView: UIViewRepresentable {
          ### Optional arguments
          - additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
          */
-        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil, overscroll: Bool = true, scroll: Bool = true) {
+        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil, overscroll: Bool = true, scrollable: Bool = true) {
             self.url = url
             self.additionalMessageHandler = additionalMessageHandler
             self.overscroll = overscroll
-            self.scroll = scroll
+            self.scrollable = scrollable
             self.loadStatus = .initial
         }
 

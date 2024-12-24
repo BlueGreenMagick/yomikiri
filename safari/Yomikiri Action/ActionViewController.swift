@@ -58,7 +58,7 @@ class ActionViewController: UIViewController {
     }
 
     func createWebView(url: URL) {
-        let viewModel = YomikiriWebView.ViewModel(url: url, additionalMessageHandler: self.makeMessageHandler(), overscroll: false, scroll: false)
+        let viewModel = YomikiriWebView.ViewModel(url: url, additionalMessageHandler: self.makeMessageHandler(), overscroll: false, scrollable: false)
         let contentView = UIHostingController(rootView: YomikiriWebView(viewModel: viewModel))
         self.addChild(contentView)
         self.container.addSubview(contentView.view)
