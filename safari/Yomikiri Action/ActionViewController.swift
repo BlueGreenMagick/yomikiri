@@ -29,7 +29,7 @@ class ActionViewController: UIViewController {
             return
         }
 
-        Task { 
+        Task {
             let searchText = await self.getSearchText(attachments: attachments)
 
             let actionUrl = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
@@ -58,8 +58,8 @@ class ActionViewController: UIViewController {
     }
 
     func createWebView(url: URL) {
-        let viewModel = WebView.ViewModel(url: url, additionalMessageHandler: self.makeMessageHandler(), overscroll: false, scroll: false)
-        let contentView = UIHostingController(rootView: WebView(viewModel: viewModel))
+        let viewModel = YomikiriWebView.ViewModel(url: url, additionalMessageHandler: self.makeMessageHandler(), overscroll: false, scroll: false)
+        let contentView = UIHostingController(rootView: YomikiriWebView(viewModel: viewModel))
         self.addChild(contentView)
         self.container.addSubview(contentView.view)
         contentView.view.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +71,7 @@ class ActionViewController: UIViewController {
         ])
     }
 
-    private func makeMessageHandler() -> UIYomikiriWebView.AdditionalMessageHandler {
+    private func makeMessageHandler() -> YomikiriWebView.AdditionalMessageHandler {
         { [weak self] (key: String, request: Any) in
             guard let self = self else {
                 return nil

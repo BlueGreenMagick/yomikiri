@@ -12,8 +12,6 @@
 		6942E5212BA928AA00AB628A /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6942E5202BA928AA00AB628A /* Platform.swift */; };
 		6942E5232BA9291F00AB628A /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6942E5222BA9291F00AB628A /* Platform.swift */; };
 		6942E5242BA9291F00AB628A /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6942E5222BA9291F00AB628A /* Platform.swift */; };
-		69439D332AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */; };
-		69439D342AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */; };
 		69439D362AB2C0E800691B3E /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
 		69439D622AB2E9AA00691B3E /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
 		69439D652AB2EC9300691B3E /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
@@ -27,11 +25,11 @@
 		697EFFB42BA31F420035360C /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7E0B2A53DCE500E506F2 /* Globals.swift */; };
 		6980386B2A17B70E00C93E3D /* IOSWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386A2A17B70E00C93E3D /* IOSWebExtensionHandler.swift */; };
 		6980386D2A1A429A00C93E3D /* MacWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6980386C2A1A429A00C93E3D /* MacWebExtensionHandler.swift */; };
-		69918A5A2D1A44F600B8B52A /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DCC2A52BEA100E506F2 /* WebView.swift */; };
+		69918A5A2D1A44F600B8B52A /* YomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DCC2A52BEA100E506F2 /* YomikiriWebView.swift */; };
 		699B7D7B2A519B3000E506F2 /* YomikiriTokenizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699B7D752A519ADE00E506F2 /* YomikiriTokenizer.framework */; };
 		699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DC52A52B07C00E506F2 /* OptionsView.swift */; };
 		699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DC82A52B09200E506F2 /* YomikiriApp.swift */; };
-		699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DCC2A52BEA100E506F2 /* WebView.swift */; };
+		699B7DCD2A52BEA100E506F2 /* YomikiriWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699B7DCC2A52BEA100E506F2 /* YomikiriWebView.swift */; };
 		699B7DFA2A52C9D900E506F2 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DEC2A52C9D900E506F2 /* manifest.json */; };
 		699B7DFC2A52C9E500E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7DFB2A52C9E500E506F2 /* res */; };
 		699B7E082A52F00400E506F2 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 699B7E072A52F00400E506F2 /* res */; };
@@ -129,7 +127,6 @@
 		6942E51D2BA88BE000AB628A /* HelpItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpItemView.swift; sourceTree = "<group>"; };
 		6942E5202BA928AA00AB628A /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		6942E5222BA9291F00AB628A /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
-		69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIYomikiriWebView.swift; sourceTree = "<group>"; };
 		69471A1A2A2B7AAE00EB6082 /* Yomikiri (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri (iOS).entitlements"; sourceTree = "<group>"; };
 		69471A1B2A2B7AC100EB6082 /* Yomikiri Extension (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Yomikiri Extension (iOS).entitlements"; sourceTree = "<group>"; };
 		695D33102AB1F211003F9C80 /* Yomikiri Action.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Yomikiri Action.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,7 +141,7 @@
 		699B7D702A519ADE00E506F2 /* YomikiriTokenizer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = YomikiriTokenizer.xcodeproj; path = YomikiriTokenizer/YomikiriTokenizer.xcodeproj; sourceTree = "<group>"; };
 		699B7DC52A52B07C00E506F2 /* OptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsView.swift; sourceTree = "<group>"; };
 		699B7DC82A52B09200E506F2 /* YomikiriApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikiriApp.swift; sourceTree = "<group>"; };
-		699B7DCC2A52BEA100E506F2 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		699B7DCC2A52BEA100E506F2 /* YomikiriWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YomikiriWebView.swift; sourceTree = "<group>"; };
 		699B7DEC2A52C9D900E506F2 /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
 		699B7DFB2A52C9E500E506F2 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
 		699B7DFD2A52DD0500E506F2 /* build_extension.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_extension.sh; sourceTree = "<group>"; };
@@ -347,10 +344,9 @@
 				69F2C26029FA4FA80088F503 /* Info.plist */,
 				699B7DC52A52B07C00E506F2 /* OptionsView.swift */,
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
-				699B7DCC2A52BEA100E506F2 /* WebView.swift */,
+				699B7DCC2A52BEA100E506F2 /* YomikiriWebView.swift */,
 				69D839962A98D76F00618380 /* MainView.swift */,
 				69D839982A98D90900618380 /* DictionaryView.swift */,
-				69439D322AB2BE1E00691B3E /* UIYomikiriWebView.swift */,
 				6942E5182BA82EE800AB628A /* HelpView.swift */,
 				6942E51D2BA88BE000AB628A /* HelpItemView.swift */,
 				6942E5202BA928AA00AB628A /* Platform.swift */,
@@ -649,8 +645,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69439D342AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */,
-				69918A5A2D1A44F600B8B52A /* WebView.swift in Sources */,
+				69918A5A2D1A44F600B8B52A /* YomikiriWebView.swift in Sources */,
 				695D33172AB1F211003F9C80 /* ActionViewController.swift in Sources */,
 				6942E5242BA9291F00AB628A /* Platform.swift in Sources */,
 				69439D362AB2C0E800691B3E /* Globals.swift in Sources */,
@@ -664,12 +659,11 @@
 				6942E5212BA928AA00AB628A /* Platform.swift in Sources */,
 				69D839992A98D90900618380 /* DictionaryView.swift in Sources */,
 				69D839972A98D76F00618380 /* MainView.swift in Sources */,
-				699B7DCD2A52BEA100E506F2 /* WebView.swift in Sources */,
+				699B7DCD2A52BEA100E506F2 /* YomikiriWebView.swift in Sources */,
 				699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */,
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,
 				6942E5192BA82EE800AB628A /* HelpView.swift in Sources */,
 				699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */,
-				69439D332AB2BE1E00691B3E /* UIYomikiriWebView.swift in Sources */,
 				6942E51E2BA88BE000AB628A /* HelpItemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

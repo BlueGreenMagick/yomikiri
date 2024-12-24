@@ -20,12 +20,12 @@ struct OptionsView: View {
         NavigationView {
             VStack {
                 NavigationLink(isActive: self.$viewModel.ankiTemplateShown) {
-                    WebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
+                    YomikiriWebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
                         .navigationTitle("Anki Template")
                         .navigationBarTitleDisplayMode(.inline)
                         .ignoresSafeArea(.keyboard)
                 } label: { EmptyView() }
-                WebView(viewModel: self.viewModel.webViewModel)
+                YomikiriWebView(viewModel: self.viewModel.webViewModel)
                     .ignoresSafeArea(.keyboard)
             }
             .navigationTitle("Settings")
@@ -67,12 +67,12 @@ extension OptionsView {
         static let htmlURL = Bundle.main.url(forResource: "options", withExtension: "html", subdirectory: "res")!
         static let ankiTemplateURL = Bundle.main.url(forResource: "optionsAnkiTemplate", withExtension: "html", subdirectory: "res")!
 
-        var webViewModel: WebView.ViewModel!
-        var ankiTemplateWebViewModel: WebView.ViewModel!
+        var webViewModel: YomikiriWebView.ViewModel!
+        var ankiTemplateWebViewModel: YomikiriWebView.ViewModel!
 
         init() {
-            self.webViewModel = WebView.ViewModel(url: ViewModel.htmlURL, additionalMessageHandler: self.makeMessageHandler())
-            self.ankiTemplateWebViewModel = WebView.ViewModel(url: ViewModel.ankiTemplateURL, additionalMessageHandler: self.makeMessageHandler())
+            self.webViewModel = YomikiriWebView.ViewModel(url: ViewModel.htmlURL, additionalMessageHandler: self.makeMessageHandler())
+            self.ankiTemplateWebViewModel = YomikiriWebView.ViewModel(url: ViewModel.ankiTemplateURL, additionalMessageHandler: self.makeMessageHandler())
         }
 
         func passAnkiInfo(ankiInfo: String) throws {
@@ -88,13 +88,13 @@ extension OptionsView {
                 }
                 webview.evaluateJavaScript(script)
             } else {
-                webViewModel.runOnLoadComplete(fn: { (webview: UIYomikiriWebView) in
+                webViewModel.runOnLoadComplete(fn: { (webview: WKWebView) in
                     webview.evaluateJavaScript(script)
                 })
             }
         }
 
-        private func makeMessageHandler() -> WebView.AdditionalMessageHandler {
+        private func makeMessageHandler() -> YomikiriWebView.AdditionalMessageHandler {
             { [weak self] (key: String, _: Any) in
                 switch key {
                     case "ankiIsInstalled":

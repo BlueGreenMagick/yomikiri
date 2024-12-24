@@ -13,13 +13,13 @@ struct DictionaryView: View {
     static let BACKGROUND_COLOR = Color(red: 0.95, green: 0.95, blue: 0.95)
 
     var body: some View {
-        WebView(viewModel: self.viewModel.webViewModel)
+        YomikiriWebView(viewModel: self.viewModel.webViewModel)
             .background(DictionaryView.BACKGROUND_COLOR)
             .ignoresSafeArea(.keyboard)
     }
 
     class ViewModel: ObservableObject {
-        let webViewModel: WebView.ViewModel
+        let webViewModel: YomikiriWebView.ViewModel
 
         init() {
             let url = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
