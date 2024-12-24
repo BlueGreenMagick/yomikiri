@@ -12,7 +12,6 @@ import UniformTypeIdentifiers
 
 class ActionViewController: UIViewController {
     @IBOutlet var container: UIView!
-    weak var webview: UIYomikiriWebView!
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -30,7 +29,7 @@ class ActionViewController: UIViewController {
             return
         }
 
-        Task { @MainActor in
+        Task { 
             let searchText = await self.getSearchText(attachments: attachments)
 
             let actionUrl = Bundle.main.url(forResource: "dictionary", withExtension: "html", subdirectory: "res")!
@@ -58,17 +57,17 @@ class ActionViewController: UIViewController {
         return searchText
     }
 
-    @MainActor func createWebView(url: URL) {
-        let options = UIYomikiriWebView.Options(overscroll: false, scroll: false, additionalMessageHandler: self.makeMessageHandler(), url: url)
-        let webview = UIYomikiriWebView(options: options)
-        self.webview = webview
-        self.container.addSubview(webview)
-        webview.translatesAutoresizingMaskIntoConstraints = false
+    func createWebView(url: URL) {
+        let viewModel = WebView.ViewModel(url: url, additionalMessageHandler: self.makeMessageHandler(), overscroll: false, scroll: false)
+        let contentView = UIHostingController(rootView: WebView(viewModel: viewModel))
+        self.addChild(contentView)
+        self.container.addSubview(contentView.view)
+        contentView.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            webview.leadingAnchor.constraint(equalTo: self.container.leadingAnchor),
-            webview.trailingAnchor.constraint(equalTo: self.container.trailingAnchor),
-            webview.topAnchor.constraint(equalTo: self.container.topAnchor),
-            webview.bottomAnchor.constraint(equalTo: self.container.bottomAnchor)
+            contentView.view.leadingAnchor.constraint(equalTo: self.container.leadingAnchor),
+            contentView.view.trailingAnchor.constraint(equalTo: self.container.trailingAnchor),
+            contentView.view.topAnchor.constraint(equalTo: self.container.topAnchor),
+            contentView.view.bottomAnchor.constraint(equalTo: self.container.bottomAnchor)
         ])
     }
 
