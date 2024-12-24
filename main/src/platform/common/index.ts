@@ -11,11 +11,13 @@ export type { Platform as DesktopPlatform } from "../desktop";
 export type { Platform as IosPlatform } from "../ios";
 export type { Platform as IosAppPlatform } from "../iosapp";
 
-export interface IPlatform {
+export interface IPlatformConsts {
   IS_DESKTOP: boolean;
   IS_IOS: boolean;
   IS_IOSAPP: boolean;
+}
 
+export interface IPlatform extends IPlatformConsts {
   getConfig(): Promise<StoredCompatConfiguration>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
   subscribeConfig(subscriber: (config: StoredConfiguration) => unknown): void;

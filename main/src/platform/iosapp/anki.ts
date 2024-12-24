@@ -28,6 +28,10 @@ interface RawAnkiInfo {
 }
 
 export namespace IosAppAnkiApi {
+  export const IS_DESKTOP = false;
+  export const IS_IOS = false;
+  export const IS_IOSAPP = true;
+
   const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
     Utils.createPromise<AnkiInfo>();
 

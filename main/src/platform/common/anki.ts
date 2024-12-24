@@ -2,6 +2,7 @@ import type { AnkiNote } from "lib/anki";
 import type { DesktopAnkiApi } from "../desktop/anki";
 import type { IosAnkiApi } from "../ios/anki";
 import type { IosAppAnkiApi } from "../iosapp/anki";
+import type { IPlatformConsts } from ".";
 
 export type { DesktopAnkiApi } from "../desktop/anki";
 export type { IosAnkiApi } from "../ios/anki";
@@ -17,7 +18,7 @@ export interface AnkiInfo {
   notetypes: NotetypeInfo[];
 }
 
-export interface IAnkiOptions {
+export interface IAnkiOptions extends IPlatformConsts {
   /**
    * On desktop, throws an error if anki is not installed or not running
    * On ios app, returns false if ankimobile is not installed.
@@ -29,7 +30,7 @@ export interface IAnkiOptions {
   checkConnection: () => Promise<void>;
 }
 
-export interface IAnkiAddNotes {
+export interface IAnkiAddNotes extends IPlatformConsts {
   /** Returns false if note is deferred */
   addNote: (note: AnkiNote, tabId?: number) => Promise<boolean>;
 }

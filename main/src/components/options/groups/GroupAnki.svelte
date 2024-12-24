@@ -55,8 +55,8 @@
       useAnkiDescription = "loading";
       try {
         await AnkiApi.checkConnection();
-        if (Platform.IS_DESKTOP) {
-          void (AnkiApi as DesktopAnkiApi).addDeferredNotes();
+        if (AnkiApi.IS_DESKTOP) {
+          void AnkiApi.addDeferredNotes();
         }
         useAnkiDescription = "success";
       } catch (err) {
@@ -72,22 +72,20 @@
   });
 
   /** Do action if there are existing deferred anki notes. */
-  function onToggleAnkiDeferNotes(): boolean {
+  function onToggleAnkiDeferNotes(AnkiApi: DesktopAnkiApi): boolean {
     if (!$ankiDeferNotesConfig) {
       return true;
     }
     const deferredNoteCount = config.get("state.anki.deferred_note_count");
     if (deferredNoteCount <= 0) {
-      void (AnkiApi as DesktopAnkiApi).clearDeferredNotes();
+      void AnkiApi.clearDeferredNotes();
       return true;
     }
     const response = confirm(
       `This will discard ${deferredNoteCount} Anki notes that are waiting to be added. Proceed?`,
     );
     if (response) {
-      if (Platform.IS_DESKTOP) {
-        void (AnkiApi as DesktopAnkiApi).clearDeferredNotes();
-      }
+      void AnkiApi.clearDeferredNotes();
     }
     return response;
   }
@@ -140,11 +138,11 @@
     </span>
   </OptionClick>
 
-  {#if Platform.IS_DESKTOP}
+  {#if AnkiApi.IS_DESKTOP}
     <OptionToggle
       bind:value={$ankiDeferNotesConfig}
       title="Add Notes Later"
-      onToggle={onToggleAnkiDeferNotes}
+      onToggle={() => onToggleAnkiDeferNotes(AnkiApi)}
     >
       If Anki is not connected, add notes later in the background when Anki is
       connected.

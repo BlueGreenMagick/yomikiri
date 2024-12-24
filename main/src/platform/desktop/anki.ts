@@ -108,6 +108,10 @@ export class InvalidAnkiResponseFormatError extends AnkiError {}
 export class AnkiConnectError extends AnkiError {}
 
 export namespace DesktopAnkiApi {
+  export const IS_DESKTOP = true;
+  export const IS_IOS = false;
+  export const IS_IOSAPP = false;
+
   function ankiConnectURL(config: Config): string {
     let url = config.get("anki.connect_url");
     const port = config.get("anki.connect_port");
