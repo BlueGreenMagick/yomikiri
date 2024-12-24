@@ -12,10 +12,12 @@ import SwiftUI
 struct YomikiriApp: App {
     @StateObject private var viewModel = ViewModel()
     @StateObject var appErrorHandler = errorHandler
+    @StateObject var appState = AppState()
 
     var body: some Scene {
         return WindowGroup {
             MainView()
+                .environmentObject(appState)
                 .alert("Error", isPresented: self.$appErrorHandler.showError, presenting: self.appErrorHandler.errorText) { _ in
                     Button("OK") {}
                 } message: { text in
@@ -50,3 +52,8 @@ class ErrorHandler: ObservableObject {
 }
 
 @MainActor let errorHandler = ErrorHandler()
+
+@MainActor
+class AppState: ObservableObject {
+    @Published var selectedTab: MainView.Tabs = .init()
+}

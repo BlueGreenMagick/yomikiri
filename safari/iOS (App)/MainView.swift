@@ -8,30 +8,38 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var selectedTab = "Dictionary"
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $appState.selectedTab) {
             HelpView()
                 .tabItem {
                     Label("Help", systemImage: "questionmark.circle")
                 }
-                .tag("Help")
+                .tag(Tabs.help)
             DictionaryView()
                 .tabItem {
                     Label("Dictionary", systemImage: "character.book.closed.fill")
                 }
-                .tag("Dictionary")
+                .tag(Tabs.dictionary)
             OptionsView()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
-                .tag("Settings")
+                .tag(Tabs.settings)
         }
         .onOpenURL { url in
             if url.isOptions {
-                selectedTab = "Settings"
+                appState.selectedTab = .settings
             }
+        }
+    }
+
+    enum Tabs {
+        case help, dictionary, settings
+
+        init() {
+            self = .dictionary
         }
     }
 }
