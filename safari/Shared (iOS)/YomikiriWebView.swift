@@ -72,7 +72,7 @@ struct YomikiriWebView: UIViewRepresentable {
 
         let request = URLRequest(url: viewModel.url)
         webview.load(request)
-        configUpdatedHandlers.append { [weak messageHandler] (source: YomikiriWebView.MessageHandler?, _: String) in
+        configUpdatedHandlers.append { [weak messageHandler, weak webview] (source: YomikiriWebView.MessageHandler?, _: String) in
             guard let handler = messageHandler else {
                 return
             }
@@ -81,7 +81,7 @@ struct YomikiriWebView: UIViewRepresentable {
                 return
             }
 
-            DispatchQueue.main.async { [weak webview] in
+            DispatchQueue.main.async {
                 webview?.evaluateJavaScript("iosConfigUpdated()")
             }
         }
