@@ -45,6 +45,9 @@ struct OptionsView: View {
                                 }
                             }
                         }
+                        .onLoadFail { error in
+                            errorHandler.handle(error)
+                        }
                         .navigationTitle("Anki Template")
                         .navigationBarTitleDisplayMode(.inline)
                         .ignoresSafeArea(.keyboard)

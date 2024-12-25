@@ -36,6 +36,7 @@ struct YomikiriWebView: UIViewRepresentable {
     let loadStatus: Box<LoadStatus> = .init(.initial)
     let extraMessageHandlers: Box<[ExtraMessageHandler]> = .init([])
     let loadCompleteHandlers: Box<[(WKWebView) -> Void]> = .init([])
+    let loadFailHandlers: Box<[(Error) -> Void]> = .init([])
     let webview: WeakBox<WKWebView> = .init(nil)
     var scrollable = true
     var overscroll = true
@@ -113,28 +114,50 @@ extension YomikiriWebView {
         loadCompleteHandlers.value.append(fn)
         return self
     }
+
+    func onLoadFail(_ fn: @escaping (Error) -> Void) -> YomikiriWebView {
+        loadFailHandlers.value.append(fn)
+        return self
+    }
 }
 
 extension YomikiriWebView {
     class Coordinator: NSObject, WKNavigationDelegate {
         let loadStatus: Box<LoadStatus>
         let loadCompleteHandlers: Box<[(WKWebView) -> Void]>
+        let loadFailHandlers: Box<[(Error) -> Void]>
         let webview: WeakBox<WKWebView>
 
         init(_ parent: YomikiriWebView) {
             self.loadStatus = parent.loadStatus
             self.loadCompleteHandlers = parent.loadCompleteHandlers
+            self.loadFailHandlers = parent.loadFailHandlers
             self.webview = parent.webview
         }
 
-        func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {}
-
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             setLoadStatus(.complete)
+            for fn in loadCompleteHandlers.value {
+                fn(webView)
+            }
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
             setLoadStatus(.failed)
+            for fn in loadFailHandlers.value {
+                fn(error)
+            }
+        }
+
+        func webView(
+            _ webView: WKWebView,
+            didFailProvisionalNavigation navigation: WKNavigation!,
+            withError error: any Error
+        ) {
+            setLoadStatus(.failed)
+            for fn in loadFailHandlers.value {
+                fn(error)
+            }
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -155,14 +178,6 @@ extension YomikiriWebView {
 
         private func setLoadStatus(_ newStatus: LoadStatus) {
             loadStatus.value = newStatus
-            guard let webview = webview.value else {
-                return
-            }
-            if newStatus == .complete {
-                for fn in loadCompleteHandlers.value {
-                    fn(webview)
-                }
-            }
         }
     }
 

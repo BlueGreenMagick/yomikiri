@@ -16,6 +16,9 @@ struct DictionaryView: View {
 
     var body: some View {
         YomikiriWebView(url: DictionaryView.URL_DICTIONARY)
+            .onLoadFail { error in
+                errorHandler.handle(error)
+            }
             .scrollable(false)
             .overscroll(false)
             .background(DictionaryView.BACKGROUND_COLOR)
