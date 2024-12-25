@@ -29,7 +29,8 @@ struct OptionsView: View {
         NavigationView {
             VStack {
                 NavigationLink(isActive: self.appState.settingsNavigationIsAnkiTemplate) {
-                    YomikiriWebView(viewModel: self.viewModel.ankiTemplateWebViewModel, additionalMessageHandler: self.viewModel.messageHandler())
+                    YomikiriWebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
+                        .handleExtraMessage(self.viewModel.messageHandler())
                         .navigationTitle("Anki Template")
                         .navigationBarTitleDisplayMode(.inline)
                         .ignoresSafeArea(.keyboard)
@@ -39,7 +40,8 @@ struct OptionsView: View {
                             }
                         }
                 } label: { EmptyView() }
-                YomikiriWebView(viewModel: self.viewModel.webViewModel, additionalMessageHandler: self.viewModel.messageHandler())
+                YomikiriWebView(viewModel: self.viewModel.webViewModel)
+                    .handleExtraMessage(self.viewModel.messageHandler())
                     .ignoresSafeArea(.keyboard)
             }
             .navigationTitle("Settings")
@@ -90,7 +92,7 @@ extension OptionsView {
             })
         }
 
-        func messageHandler() -> YomikiriWebView.AdditionalMessageHandler {
+        func messageHandler() -> YomikiriWebView.ExtraMessageHandler {
             { [weak self] (key: String, _: Any) in
                 switch key {
                     case "ankiIsInstalled":

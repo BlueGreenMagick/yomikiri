@@ -28,12 +28,12 @@ struct YomikiriWebView: UIViewRepresentable {
         case initial, loading, complete, failed
     }
 
-    // return nil if not handled, Optional.some(nil) if returning nil to webview
-    typealias AdditionalMessageHandler = (String, Any) async throws -> String??
+    /** return nil if you want to let other handlers (or default handler) handle it. Return Optional.some(nil) if you want to return nil to webview */
+    typealias ExtraMessageHandler = (String, Any) async throws -> String??
 
     @ObservedObject var viewModel: ViewModel
-    @State var additionalMessageHandler: AdditionalMessageHandler? = nil
 
+    var extraMessageHandlers: Box<[ExtraMessageHandler]> = .init([])
     var scrollable = true
     var overscroll = true
 
@@ -56,7 +56,7 @@ struct YomikiriWebView: UIViewRepresentable {
         viewModel.loadStatus = .initial
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
-        let messageHandler = MessageHandler($additionalMessageHandler)
+        let messageHandler = MessageHandler(extraMessageHandlers)
         webConfiguration.userContentController.addScriptMessageHandler(messageHandler, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
         let webview = WKWebView(frame: .zero, configuration: webConfiguration)
         if #available(iOS 16.4, macOS 13.3, *) {
@@ -101,6 +101,11 @@ extension YomikiriWebView {
         view.overscroll = value
         return view
     }
+
+    func handleExtraMessage(_ fn: @escaping ExtraMessageHandler) -> YomikiriWebView {
+        extraMessageHandlers.value.append(fn)
+        return self
+    }
 }
 
 extension YomikiriWebView {
@@ -122,10 +127,6 @@ extension YomikiriWebView {
             }
         }
 
-        /**
-         ### Optional arguments
-         - additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
-         */
         init(url: URL) {
             self.url = url
             self.loadStatus = .initial
@@ -183,10 +184,10 @@ extension YomikiriWebView {
     }
 
     class MessageHandler: NSObject, WKScriptMessageHandlerWithReply {
-        var additionalMessageHandler: Binding<AdditionalMessageHandler?>
+        var extraMessageHandlers: Box<[ExtraMessageHandler]>
 
-        init(_ additional: Binding<AdditionalMessageHandler?>) {
-            self.additionalMessageHandler = additional
+        init(_ extra: Box<[ExtraMessageHandler]>) {
+            self.extraMessageHandlers = extra
         }
 
         func userContentController(_ controller: WKUserContentController, didReceive: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
@@ -219,7 +220,7 @@ extension YomikiriWebView {
             }
             os_log("%{public}s", "handleMessage: \(key)")
 
-            if let handler = additionalMessageHandler.wrappedValue {
+            for handler in extraMessageHandlers.value {
                 if let resp = try await handler(key, request) {
                     return resp
                 }
