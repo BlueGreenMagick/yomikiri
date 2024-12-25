@@ -31,15 +31,18 @@ struct YomikiriWebView: UIViewRepresentable {
     /** return nil if you want to let other handlers (or default handler) handle it. Return Optional.some(nil) if you want to return nil to webview */
     typealias ExtraMessageHandler = (String, Any) async throws -> String??
 
-    @ObservedObject var viewModel: ViewModel
+    let url: URL
 
-    var extraMessageHandlers: Box<[ExtraMessageHandler]> = .init([])
+    let loadStatus: Box<LoadStatus> = .init(.initial)
+    let extraMessageHandlers: Box<[ExtraMessageHandler]> = .init([])
+    let loadCompleteHandlers: Box<[(WKWebView) -> Void]> = .init([])
+    let webview: WeakBox<WKWebView> = .init(nil)
     var scrollable = true
     var overscroll = true
 
     func makeUIView(context: Context) -> WKWebView {
         let webview = makeWkWebview(context)
-        viewModel.webview = webview
+        self.webview.value = webview
         return webview
     }
 
@@ -53,24 +56,23 @@ struct YomikiriWebView: UIViewRepresentable {
 
     private func makeWkWebview(_ context: Context) -> WKWebView {
         let coordinator = context.coordinator
-        viewModel.loadStatus = .initial
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         let messageHandler = MessageHandler(extraMessageHandlers)
         webConfiguration.userContentController.addScriptMessageHandler(messageHandler, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
         let webview = WKWebView(frame: .zero, configuration: webConfiguration)
+
+        webview.navigationDelegate = coordinator
         if #available(iOS 16.4, macOS 13.3, *) {
             webview.isInspectable = true
         }
-        webview.navigationDelegate = coordinator
-
         if !overscroll {
             webview.scrollView.bounces = false
             webview.scrollView.alwaysBounceHorizontal = false
         }
         webview.scrollView.isScrollEnabled = scrollable
 
-        let request = URLRequest(url: viewModel.url)
+        let request = URLRequest(url: url)
         webview.load(request)
         configUpdatedHandlers.append { [weak messageHandler, weak webview] (source: YomikiriWebView.MessageHandler?, _: String) in
             guard let handler = messageHandler else {
@@ -106,68 +108,37 @@ extension YomikiriWebView {
         extraMessageHandlers.value.append(fn)
         return self
     }
+
+    func onLoadComplete(_ fn: @escaping (WKWebView) -> Void) -> YomikiriWebView {
+        loadCompleteHandlers.value.append(fn)
+        return self
+    }
 }
 
 extension YomikiriWebView {
-    class ViewModel: ObservableObject {
-        weak var webview: WKWebView?
-        let url: URL
-        private var loadCompleteHandlers: [(WKWebView) -> Void] = []
-        private var loadStatusChangeHandlers: [(LoadStatus) -> Void] = []
-        fileprivate(set) var loadStatus: LoadStatus {
-            didSet {
-                for fn in loadStatusChangeHandlers {
-                    fn(loadStatus)
-                }
-                if loadStatus == .complete, let webview = webview {
-                    for fn in loadCompleteHandlers {
-                        fn(webview)
-                    }
-                }
-            }
-        }
-
-        init(url: URL) {
-            self.url = url
-            self.loadStatus = .initial
-        }
-
-        func runWhenLoadComplete(fn: @escaping (_ webview: WKWebView) -> Void) {
-            loadCompleteHandlers.append(fn)
-
-            if loadStatus == .complete, let webview = webview {
-                fn(webview)
-            }
-        }
-
-        func getLoadStatus() -> LoadStatus {
-            return loadStatus
-        }
-
-        func onLoadStatusChange(fn: @escaping (LoadStatus) -> Void) {
-            loadStatusChangeHandlers.append(fn)
-        }
-    }
-
     class Coordinator: NSObject, WKNavigationDelegate {
-        var parent: YomikiriWebView
+        let loadStatus: Box<LoadStatus>
+        let loadCompleteHandlers: Box<[(WKWebView) -> Void]>
+        let webview: WeakBox<WKWebView>
 
         init(_ parent: YomikiriWebView) {
-            self.parent = parent
+            self.loadStatus = parent.loadStatus
+            self.loadCompleteHandlers = parent.loadCompleteHandlers
+            self.webview = parent.webview
         }
 
         func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {}
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            parent.viewModel.loadStatus = .complete
+            setLoadStatus(.complete)
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            parent.viewModel.loadStatus = .failed
+            setLoadStatus(.failed)
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            parent.viewModel.loadStatus = .loading
+            setLoadStatus(.loading)
         }
 
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
@@ -179,6 +150,18 @@ extension YomikiriWebView {
             } else {
                 openUrl(url)
                 return WKNavigationActionPolicy.cancel
+            }
+        }
+
+        private func setLoadStatus(_ newStatus: LoadStatus) {
+            loadStatus.value = newStatus
+            guard let webview = webview.value else {
+                return
+            }
+            if newStatus == .complete {
+                for fn in loadCompleteHandlers.value {
+                    fn(webview)
+                }
             }
         }
     }

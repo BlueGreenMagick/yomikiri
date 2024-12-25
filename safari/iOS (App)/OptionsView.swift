@@ -16,6 +16,8 @@ struct OptionsView: View {
     @EnvironmentObject var appState: AppState
 
     static let BACKGROUND_COLOR = Color(red: 0.95, green: 0.95, blue: 0.95)
+    static let URL_OPTIONS = Bundle.main.url(forResource: "options", withExtension: "html", subdirectory: "res")!
+    static let URL_ANKI_TEMPLATE = Bundle.main.url(forResource: "optionsAnkiTemplate", withExtension: "html", subdirectory: "res")!
 
     enum Navigation {
         case main, ankiTemplate
@@ -29,19 +31,26 @@ struct OptionsView: View {
         NavigationView {
             VStack {
                 NavigationLink(isActive: self.appState.settingsNavigationIsAnkiTemplate) {
-                    YomikiriWebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
-                        .handleExtraMessage(self.viewModel.messageHandler())
+                    YomikiriWebView(url: OptionsView.URL_ANKI_TEMPLATE)
+                        .handleExtraMessage(self.messageHandler())
+                        .onLoadComplete { webview in
+                            Task {
+                                do {
+                                    let ankiInfo = try await getAnkiInfoFromPasteboard()
+                                    let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
+                                    let script = "setTimeout(() => {AnkiApi.setAnkiInfo(`\(escaped)`);}, 0)"
+                                    try await webview.evaluateJavaScript(script)
+                                } catch {
+                                    errorHandler.handle(error)
+                                }
+                            }
+                        }
                         .navigationTitle("Anki Template")
                         .navigationBarTitleDisplayMode(.inline)
                         .ignoresSafeArea(.keyboard)
-                        .onAppear {
-                            Task {
-                                await self.retrieveAndPassAnkiInfo()
-                            }
-                        }
                 } label: { EmptyView() }
-                YomikiriWebView(viewModel: self.viewModel.webViewModel)
-                    .handleExtraMessage(self.viewModel.messageHandler())
+                YomikiriWebView(url: OptionsView.URL_OPTIONS)
+                    .handleExtraMessage(self.messageHandler())
                     .ignoresSafeArea(.keyboard)
             }
             .navigationTitle("Settings")
@@ -60,66 +69,38 @@ struct OptionsView: View {
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
     }
 
-    func retrieveAndPassAnkiInfo() async {
-        do {
-            let ankiInfo = try await getAnkiInfoFromPasteboard()
-            try viewModel.passAnkiInfo(ankiInfo: ankiInfo)
-        } catch {
-            self.errorHandler.handle(error)
+    func messageHandler() -> YomikiriWebView.ExtraMessageHandler {
+        { (key: String, _: Any) in
+            switch key {
+                case "ankiIsInstalled":
+                    let val = ankiIsInstalled()
+                    return try jsonSerialize(obj: val)
+                case "ankiInfo":
+                    let val = requestAnkiInfo()
+                    return try jsonSerialize(obj: val)
+
+                default:
+                    return nil
+            }
         }
+    }
+
+    private func requestAnkiInfo() -> Bool {
+        let url = URL(string: "anki://x-callback-url/infoForAdding?x-success=yomikiri://ankiInfo")!
+        if !ankiIsInstalled() {
+            return false
+        }
+        Task {
+            await UIApplication.shared.open(url)
+        }
+        return true
     }
 }
 
 extension OptionsView {
     @MainActor
     class ViewModel: ObservableObject {
-        static let htmlURL = Bundle.main.url(forResource: "options", withExtension: "html", subdirectory: "res")!
-        static let ankiTemplateURL = Bundle.main.url(forResource: "optionsAnkiTemplate", withExtension: "html", subdirectory: "res")!
-
-        var webViewModel: YomikiriWebView.ViewModel!
-        var ankiTemplateWebViewModel: YomikiriWebView.ViewModel!
-
-        init() {
-            self.webViewModel = YomikiriWebView.ViewModel(url: ViewModel.htmlURL)
-            self.ankiTemplateWebViewModel = YomikiriWebView.ViewModel(url: ViewModel.ankiTemplateURL)
-        }
-
-        func passAnkiInfo(ankiInfo: String) throws {
-            let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
-            let script = "setTimeout(() => {AnkiApi.setAnkiInfo(`\(escaped)`);}, 0)"
-            ankiTemplateWebViewModel.runWhenLoadComplete(fn: { (webview: WKWebView) in
-                webview.evaluateJavaScript(script)
-            })
-        }
-
-        func messageHandler() -> YomikiriWebView.ExtraMessageHandler {
-            { [weak self] (key: String, _: Any) in
-                switch key {
-                    case "ankiIsInstalled":
-                        let val = ankiIsInstalled()
-                        return try jsonSerialize(obj: val)
-                    case "ankiInfo":
-                        if let val = self?.requestAnkiInfo() {
-                            return try jsonSerialize(obj: val)
-                        } else {
-                            return Optional.some(nil)
-                        }
-                    default:
-                        return nil
-                }
-            }
-        }
-
-        private func requestAnkiInfo() -> Bool {
-            let url = URL(string: "anki://x-callback-url/infoForAdding?x-success=yomikiri://ankiInfo")!
-            if !ankiIsInstalled() {
-                return false
-            }
-            Task {
-                await UIApplication.shared.open(url)
-            }
-            return true
-        }
+        init() {}
     }
 }
 
