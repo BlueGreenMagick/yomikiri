@@ -29,7 +29,7 @@ struct OptionsView: View {
         NavigationView {
             VStack {
                 NavigationLink(isActive: self.appState.settingsNavigationIsAnkiTemplate) {
-                    YomikiriWebView(viewModel: self.viewModel.ankiTemplateWebViewModel)
+                    YomikiriWebView(viewModel: self.viewModel.ankiTemplateWebViewModel, additionalMessageHandler: self.viewModel.messageHandler())
                         .navigationTitle("Anki Template")
                         .navigationBarTitleDisplayMode(.inline)
                         .ignoresSafeArea(.keyboard)
@@ -39,7 +39,7 @@ struct OptionsView: View {
                             }
                         }
                 } label: { EmptyView() }
-                YomikiriWebView(viewModel: self.viewModel.webViewModel)
+                YomikiriWebView(viewModel: self.viewModel.webViewModel, additionalMessageHandler: self.viewModel.messageHandler())
                     .ignoresSafeArea(.keyboard)
             }
             .navigationTitle("Settings")
@@ -78,8 +78,8 @@ extension OptionsView {
         var ankiTemplateWebViewModel: YomikiriWebView.ViewModel!
 
         init() {
-            self.webViewModel = YomikiriWebView.ViewModel(url: ViewModel.htmlURL, additionalMessageHandler: self.makeMessageHandler())
-            self.ankiTemplateWebViewModel = YomikiriWebView.ViewModel(url: ViewModel.ankiTemplateURL, additionalMessageHandler: self.makeMessageHandler())
+            self.webViewModel = YomikiriWebView.ViewModel(url: ViewModel.htmlURL)
+            self.ankiTemplateWebViewModel = YomikiriWebView.ViewModel(url: ViewModel.ankiTemplateURL)
         }
 
         func passAnkiInfo(ankiInfo: String) throws {
@@ -90,7 +90,7 @@ extension OptionsView {
             })
         }
 
-        private func makeMessageHandler() -> YomikiriWebView.AdditionalMessageHandler {
+        func messageHandler() -> YomikiriWebView.AdditionalMessageHandler {
             { [weak self] (key: String, _: Any) in
                 switch key {
                     case "ankiIsInstalled":

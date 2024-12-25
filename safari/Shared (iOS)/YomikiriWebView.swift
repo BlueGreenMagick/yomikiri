@@ -11,13 +11,13 @@ import SwiftUI
 import WebKit
 import YomikiriTokenizer
 
-var configUpdatedHandlers: [(_ coordinator: YomikiriWebView.Coordinator?, _ configJSON: String) -> Void] = []
+var configUpdatedHandlers: [(_ messageHandler: YomikiriWebView.MessageHandler?, _ configJSON: String) -> Void] = []
 
 var configMigrated: Bool = false
 
-func triggerConfigUpdateHook(coordinator: YomikiriWebView.Coordinator?, configJSON: String) {
+func triggerConfigUpdateHook(messageHandler: YomikiriWebView.MessageHandler?, configJSON: String) {
     for fn in configUpdatedHandlers {
-        fn(coordinator, configJSON)
+        fn(messageHandler, configJSON)
     }
 }
 
@@ -32,6 +32,7 @@ struct YomikiriWebView: UIViewRepresentable {
     typealias AdditionalMessageHandler = (String, Any) async throws -> String??
 
     @ObservedObject var viewModel: ViewModel
+    @State var additionalMessageHandler: AdditionalMessageHandler? = nil
 
     var scrollable = true
     var overscroll = true
@@ -55,7 +56,8 @@ struct YomikiriWebView: UIViewRepresentable {
         viewModel.loadStatus = .initial
         let webConfiguration = WKWebViewConfiguration()
         webConfiguration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
-        webConfiguration.userContentController.addScriptMessageHandler(coordinator, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
+        let messageHandler = MessageHandler($additionalMessageHandler)
+        webConfiguration.userContentController.addScriptMessageHandler(messageHandler, contentWorld: .page, name: WEB_MESSAGE_HANDLER_NAME)
         let webview = WKWebView(frame: .zero, configuration: webConfiguration)
         if #available(iOS 16.4, macOS 13.3, *) {
             webview.isInspectable = true
@@ -70,12 +72,12 @@ struct YomikiriWebView: UIViewRepresentable {
 
         let request = URLRequest(url: viewModel.url)
         webview.load(request)
-        configUpdatedHandlers.append { [weak coordinator] (triggeringCoordinator: Coordinator?, _: String) in
-            guard let coordinator = coordinator else {
+        configUpdatedHandlers.append { [weak messageHandler] (source: YomikiriWebView.MessageHandler?, _: String) in
+            guard let handler = messageHandler else {
                 return
             }
             // the triggering webview is current webview
-            if coordinator === triggeringCoordinator {
+            if handler === source {
                 return
             }
 
@@ -105,7 +107,6 @@ extension YomikiriWebView {
     class ViewModel: ObservableObject {
         weak var webview: WKWebView?
         let url: URL
-        fileprivate let additionalMessageHandler: AdditionalMessageHandler?
         private var loadCompleteHandlers: [(WKWebView) -> Void] = []
         private var loadStatusChangeHandlers: [(LoadStatus) -> Void] = []
         fileprivate(set) var loadStatus: LoadStatus {
@@ -125,9 +126,8 @@ extension YomikiriWebView {
          ### Optional arguments
          - additionalMessageHandler: return nil if you want to let default message handler handle it. Return Optional(nil) if you want to return nil.
          */
-        init(url: URL, additionalMessageHandler: AdditionalMessageHandler? = nil) {
+        init(url: URL) {
             self.url = url
-            self.additionalMessageHandler = additionalMessageHandler
             self.loadStatus = .initial
         }
 
@@ -148,11 +148,45 @@ extension YomikiriWebView {
         }
     }
 
-    class Coordinator: NSObject, WKScriptMessageHandlerWithReply, WKNavigationDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate {
         var parent: YomikiriWebView
 
         init(_ parent: YomikiriWebView) {
             self.parent = parent
+        }
+
+        func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {}
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            parent.viewModel.loadStatus = .complete
+        }
+
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            parent.viewModel.loadStatus = .failed
+        }
+
+        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            parent.viewModel.loadStatus = .loading
+        }
+
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+            guard let url = navigationAction.request.url else {
+                return WKNavigationActionPolicy.cancel
+            }
+            if url.isFileURL == true {
+                return WKNavigationActionPolicy.allow
+            } else {
+                openUrl(url)
+                return WKNavigationActionPolicy.cancel
+            }
+        }
+    }
+
+    class MessageHandler: NSObject, WKScriptMessageHandlerWithReply {
+        var additionalMessageHandler: Binding<AdditionalMessageHandler?>
+
+        init(_ additional: Binding<AdditionalMessageHandler?>) {
+            self.additionalMessageHandler = additional
         }
 
         func userContentController(_ controller: WKUserContentController, didReceive: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
@@ -185,7 +219,7 @@ extension YomikiriWebView {
             }
             os_log("%{public}s", "handleMessage: \(key)")
 
-            if let handler = parent.viewModel.additionalMessageHandler {
+            if let handler = additionalMessageHandler.wrappedValue {
                 if let resp = try await handler(key, request) {
                     return resp
                 }
@@ -202,7 +236,7 @@ extension YomikiriWebView {
             case "saveConfig":
                 let configJson = request
                 try Storage.config.set(configJson)
-                triggerConfigUpdateHook(coordinator: self, configJSON: configJson)
+                triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
                 return nil
             case "migrateConfig":
                 if configMigrated {
@@ -248,32 +282,6 @@ extension YomikiriWebView {
                 return nil
             default:
                 throw "Unknown key \(key)"
-            }
-        }
-
-        func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {}
-
-        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            parent.viewModel.loadStatus = .complete
-        }
-
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-            parent.viewModel.loadStatus = .failed
-        }
-
-        func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-            parent.viewModel.loadStatus = .loading
-        }
-
-        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
-            guard let url = navigationAction.request.url else {
-                return WKNavigationActionPolicy.cancel
-            }
-            if url.isFileURL == true {
-                return WKNavigationActionPolicy.allow
-            } else {
-                openUrl(url)
-                return WKNavigationActionPolicy.cancel
             }
         }
     }
