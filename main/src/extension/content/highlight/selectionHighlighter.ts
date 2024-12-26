@@ -14,7 +14,10 @@ export class SelectionHighlighter {
   readonly type = "selection";
 
   highlighted = false;
-  ignoreNextSelectionEventFire = 0;
+  /**
+   * Selection data on last highlight.
+   * This property may not be cleared when unhighlighted
+   */
   selectionData: SelectionData | null = null;
 
   constructor(hideTooltip: () => void) {
@@ -22,13 +25,12 @@ export class SelectionHighlighter {
       if (!this.highlighted) {
         return;
       }
-      if (this.ignoreNextSelectionEventFire) {
-        this.ignoreNextSelectionEventFire -= 1;
-        return;
-      }
 
       // Check if selection has not been changed
-      // Firefox emit selectionchange events when Text nodes are normalized
+      //
+      // 1. selectionchange event is fired when selection is first set
+      //
+      // 2. Firefox emit selectionchange events when Text nodes are normalized
       // which cannot be caught by ignoreNextSelectionEventFire
       const selection = document.getSelection();
       if (
@@ -104,10 +106,6 @@ export class SelectionHighlighter {
     const selection = window.getSelection();
     if (selection === null) return;
 
-    if (selection.rangeCount > 0) {
-      selection.removeAllRanges();
-      this.ignoreNextSelectionEventFire += 1;
-    }
     const lastNode = nodes[nodes.length - 1];
     selection.setBaseAndExtent(
       nodes[0],
@@ -115,7 +113,6 @@ export class SelectionHighlighter {
       lastNode,
       lastNode.textContent?.length ?? lastNode.childNodes.length,
     );
-    this.ignoreNextSelectionEventFire += 1;
     if (selection.anchorNode === null || selection.focusNode === null) {
       return;
     }
