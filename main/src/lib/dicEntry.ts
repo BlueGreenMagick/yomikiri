@@ -3,6 +3,7 @@ import ENTITIES from "../assets/dicEntities.json";
 import { extractKanjis } from "./japanese";
 import type {
   Entry,
+  JMSenseMisc,
   PartOfSpeech,
   Rarity,
   Reading,
@@ -258,4 +259,68 @@ function orderRarity(a: Rarity, b: Rarity): number {
     return 0;
   }
   return rarityEnumValue(a) - rarityEnumValue(b);
+}
+
+const MISC_DISPLAY: { [Key in JMSenseMisc]: string } = {
+  abbreviation: "abbreviation",
+  archaic: "archaic",
+  character: "character",
+  children: "children",
+  colloquial: "colloquial",
+  company: "company",
+  creature: "creature",
+  datedTerm: "dated",
+  deity: "deity",
+  derogatory: "derogatory",
+  document: "document",
+  euphemistic: "euphemistic",
+  event: "event",
+  familiar: "familiar",
+  female: "female",
+  fiction: "fiction",
+  formalTerm: "formal",
+  forename: "forename",
+  group: "group",
+  historicalTerm: "historical",
+  honorific: "honorific",
+  humble: "humble",
+  idiomatic: "idiomatic",
+  jocular: "jocular",
+  legend: "legend",
+  mangaSlang: "manga slang",
+  male: "male",
+  mythology: "mythology",
+  internetSlang: "internet slang",
+  object: "object",
+  obsolete: "obsolete",
+  onomatopoeic: "onomatopoeic",
+  organization: "organization",
+  other: "other",
+  person: "person",
+  place: "place",
+  poetical: "poetical",
+  polite: "polite",
+  product: "product",
+  proverb: "proverb",
+  quotation: "quotation",
+  rare: "rare",
+  religion: "religion",
+  sensitive: "sensitive",
+  service: "service",
+  ship: "ship",
+  slang: "slang",
+  railway: "railway",
+  surname: "surname",
+  usuallyKanaAlone: "written using kana",
+  unclassified: "unclassified",
+  vulgar: "vulgar",
+  artwork: "artwork",
+  rudeTerm: "rude term",
+  yojijukugo: "yojijukugo",
+};
+
+/** Returns misc text to be displayed */
+export function miscDisplayText(misc: JMSenseMisc): string {
+  // convert misc that is in camel case, to whitespace separated string
+  return MISC_DISPLAY[misc];
 }

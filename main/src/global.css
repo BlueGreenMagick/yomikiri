@@ -5,6 +5,7 @@
 :host {
   --text: black;
   --text-light: #808080;
+  --text-faint: #b1b1b1;
   --text-success: green;
   --text-warn: red;
   --accent: #ff992a;

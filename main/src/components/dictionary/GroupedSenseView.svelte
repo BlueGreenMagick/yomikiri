@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PartOfSpeech, Sense } from "lib/dicEntry";
+  import { miscDisplayText, type PartOfSpeech, type Sense } from "lib/dicEntry";
   import { Config } from "lib/config";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { GroupedSense } from "@yomikiri/yomikiri-rs";
@@ -30,7 +30,10 @@
           onSelectSense(sense, group.pos);
         }}
       >
-        {idx + 1}. {sense.meanings.join(", ")}
+        {idx + 1}. {sense.meanings.join(", ")}{#if sense.misc.length > 0}<span
+            class="misc"
+            >{sense.misc.map((m) => miscDisplayText(m)).join(", ")}</span
+          >{/if}
       </div>
     {/each}
   </div>
@@ -70,5 +73,12 @@
 
   .meaning:focus-visible {
     outline: none;
+  }
+
+  .misc {
+    color: var(--text-faint);
+    font-size: 0.875rem;
+    user-select: none;
+    margin-left: 0.5rem;
   }
 </style>
