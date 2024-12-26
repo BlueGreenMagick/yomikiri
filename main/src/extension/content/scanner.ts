@@ -254,7 +254,6 @@ function sentenceAfterNode(t: Text): string {
 
 /** Find child `Text` node at (x, y) if it exists. */
 function childTextAt(parent: Element, x: number, y: number): Text | null {
-  parent.normalize(); // normalize splitted Text nodes
   for (const child of parent.childNodes) {
     if (!isTextNode(child)) {
       continue;
