@@ -35,9 +35,12 @@ export class Tooltip {
     tooltip.style.display = "block";
     this._shown = true;
     tooltipPage.setTokenizeResult(tokenizeResult); // eslint-disable-line
+    const rect = this.findRectOfMouse(highlightedRects, mouseX, mouseY);
+    if (rect === null) {
+      return;
+    }
     // fix bug where tooltip height is previous entry's height
     await 0; // eslint-disable-line
-    const rect = this.findRectOfMouse(highlightedRects, mouseX, mouseY);
     this.position(tooltip, rect);
   }
 
@@ -111,7 +114,14 @@ export class Tooltip {
     ) as HTMLIFrameElement | null;
   }
 
-  private findRectOfMouse(rects: Rect[], mouseX: number, mouseY: number): Rect {
+  private findRectOfMouse(
+    rects: Rect[],
+    mouseX: number,
+    mouseY: number,
+  ): Rect | null {
+    if (rects.length === 0) {
+      return null;
+    }
     for (const rect of rects) {
       if (Utils.rectContainsPoint(rect, mouseX, mouseY)) {
         return rect;
