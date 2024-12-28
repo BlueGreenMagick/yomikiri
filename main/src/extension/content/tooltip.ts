@@ -201,6 +201,8 @@ export class Tooltip {
       tooltip.style.top = `${rectTop - VERTICAL_SPACE}px`;
       tooltip.style.transform = "translateY(-100%)";
     }
+
+    this.updateTooltipHeight(tooltip, true);
   }
 
   /**
@@ -222,7 +224,6 @@ export class Tooltip {
         // getBoundingClientRect().height returns floating-precision number
         const rect = content.getBoundingClientRect();
         height = rect.height;
-        console.log("tooltip height change", height);
       }
 
       tooltip.style.height = `${height}px`;
