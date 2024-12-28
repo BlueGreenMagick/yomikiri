@@ -12,7 +12,7 @@
 
 <GroupedOptions title="Appearance">
   <OptionNumber bind:value={$fontSizeConfig} title="Font size" min={9} max={24}>
-    Text size in pixels
+    Text size (px)
   </OptionNumber>
   <OptionText
     bind:value={$japaneseFontConfig}
