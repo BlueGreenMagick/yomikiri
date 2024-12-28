@@ -36,20 +36,20 @@
     "check-format": "pnpm check-format:js && pnpm check-format:rust"
   },
   "devDependencies": {
-    "@eslint/js": "^8.57.0",
-    "@typescript-eslint/parser": "^7.7.0",
+    "@eslint/js": "^8.57.1",
+    "@typescript-eslint/parser": "^7.18.0",
     "commander": "^12.1.0",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-regexp": "^2.5.0",
+    "eslint-plugin-regexp": "^2.7.0",
     "eslint-plugin-svelte": "2.36.0-next.13",
-    "globals": "^15.0.0",
-    "prettier": "^3.2.5",
-    "prettier-plugin-svelte": "^3.2.6",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-svelte": "^3.3.2",
     "svelte-eslint-parser": "0.34.0-next.12",
-    "tsx": "^4.7.2",
-    "typescript-eslint": "^7.7.0",
-    "zx": "^8.1.4"
+    "tsx": "^4.19.2",
+    "typescript-eslint": "^7.18.0",
+    "zx": "^8.3.0"
   },
   "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }
