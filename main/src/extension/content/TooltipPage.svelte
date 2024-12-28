@@ -15,13 +15,5 @@
 </script>
 
 <Page>
-  <div id="main">
-    <Tooltip {onClose} {tokenizeResult} {onUpdateHeight} />
-  </div>
+  <Tooltip {onClose} {tokenizeResult} {onUpdateHeight} />
 </Page>
-
-<style global>
-  #main {
-    max-height: 300px;
-  }
-</style>

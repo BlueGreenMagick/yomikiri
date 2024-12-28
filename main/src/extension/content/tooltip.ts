@@ -39,8 +39,6 @@ export class Tooltip {
     if (rect === null) {
       return;
     }
-    // fix bug where tooltip height is previous entry's height
-    await 0; // eslint-disable-line
     this.position(tooltip, rect);
   }
 
@@ -62,7 +60,6 @@ export class Tooltip {
     iframe.style.position = "absolute";
     iframe.style.maxWidth = "calc(min(500px, 100vw))";
     iframe.style.minWidth = "300px";
-    iframe.style.maxHeight = "300px";
     iframe.style.backgroundColor = "white";
     iframe.style.border = "1px solid black";
     iframe.style.zIndex = `${TOOLTIP_ZINDEX}`;
@@ -70,6 +67,10 @@ export class Tooltip {
     iframe.style.display = "block";
     iframe.style.boxSizing = "content-box";
     document.body.appendChild(iframe);
+
+    this.config.store("general.tooltip_max_height").subscribe((_) => {
+      this.updateTooltipHeight(iframe, true);
+    });
 
     if (!this._resizeObserverAttached) {
       this.attachResizeObserver();
@@ -147,7 +148,7 @@ export class Tooltip {
     const MARGIN = 10;
     // space between highlighted rect and tooltip
     const VERTICAL_SPACE = 10;
-    const MAX_HEIGHT = 300;
+    const MAX_HEIGHT = this.config.get("general.tooltip_max_height");
     const WIDTH = Math.min(500, window.innerWidth - 2 * MARGIN);
     const BOTTOM_ADVANTAGE = 150;
 
@@ -201,22 +202,32 @@ export class Tooltip {
       tooltip.style.transform = "translateY(-100%)";
     }
 
-    this.updateTooltipHeight(tooltip);
+    this.updateTooltipHeight(tooltip, true);
   }
 
-  /** update tooltip height to match content height */
-  private updateTooltipHeight(tooltip: HTMLIFrameElement, max = false) {
-    let height = 300; // MAX_HEIGHT
+  /**
+   * update tooltip height to match content height
+   *
+   * if `wait` is true, update height in next task
+   * to wait for layout in iframe to be recalculated.
+   * if false, executes synchronously.
+   */
+  private updateTooltipHeight(tooltip: HTMLIFrameElement, wait = false) {
+    void (async () => {
+      if (wait) {
+        await Promise.resolve();
+      }
+      let height = this.config.get("general.tooltip_max_height");
 
-    if (!max) {
-      const content = tooltip.contentDocument?.getElementById("main");
+      const content = tooltip.contentDocument?.body.children[0];
       if (content) {
         // getBoundingClientRect().height returns floating-precision number
         const rect = content.getBoundingClientRect();
         height = rect.height;
       }
-    }
-    tooltip.style.height = `${height}px`;
+
+      tooltip.style.height = `${height}px`;
+    })();
   }
 
   private setupEntriesPage(tooltip: HTMLIFrameElement) {

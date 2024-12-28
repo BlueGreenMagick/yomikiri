@@ -6,6 +6,8 @@
 
   const config = Config.using();
 
+  const maxHeight = config.store("general.tooltip_max_height");
+
   let entryP = loadEntry();
 
   async function loadEntry() {
@@ -29,7 +31,7 @@
   });
 </script>
 
-<div>
+<div style:--max-height={`${$maxHeight}px`}>
   {#await entryP then entry}
     {#key updateTick}
       <DicEntriesView entries={[entry]} />
@@ -42,7 +44,7 @@
     position: sticky;
     top: 45px;
     margin-top: 40px;
-    max-height: 300px;
+    max-height: var(--max-height);
     overflow: hidden auto;
     background-color: white;
     border-radius: 4px;

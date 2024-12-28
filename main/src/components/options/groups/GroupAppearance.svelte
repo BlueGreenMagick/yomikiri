@@ -7,6 +7,7 @@
   const config = Config.using();
   const fontSizeConfig = config.store("general.font_size");
   const japaneseFontConfig = config.store("general.font");
+  const maxHeightConfig = config.store("general.tooltip_max_height");
 </script>
 
 <GroupedOptions title="Appearance">
@@ -20,4 +21,12 @@
   >
     For Japanese text only
   </OptionText>
+  <OptionNumber
+    bind:value={$maxHeightConfig}
+    title="Tooltip max height"
+    min={120}
+    max={1200}
+  >
+    Maximum height of tooltip
+  </OptionNumber>
 </GroupedOptions>

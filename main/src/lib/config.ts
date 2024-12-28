@@ -7,7 +7,11 @@ import type { AnkiTemplate } from "./anki";
 import { Disposable, LazyAsync, log } from "./utils";
 import { YomikiriError } from "./error";
 
-/** Incremented each time Configuration interface is modified */
+/**
+ * Incremented each time Config has to be migrated.
+ *
+ * It does not have to be incremented for simple property addition.
+ */
 export const CONFIG_VERSION = 3;
 
 /** Must not be undefined */
@@ -19,6 +23,7 @@ export interface Configuration {
   "state.anki.deferred_note_error": boolean;
   "general.font_size": number;
   "general.font": string;
+  "general.tooltip_max_height": number;
   "anki.connect_port": number;
   "anki.connect_url": string;
   "anki.anki_template": AnkiTemplate | null;
@@ -40,6 +45,7 @@ export const defaultOptions: Configuration = {
   "state.anki.deferred_note_error": false,
   "general.font_size": 14,
   "general.font": "",
+  "general.tooltip_max_height": 300,
   "anki.connect_port": 8765,
   "anki.connect_url": "http://127.0.0.1",
   "anki.anki_template": null,

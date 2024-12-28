@@ -18,6 +18,7 @@
   export let onUpdateHeight: () => void = () => null;
 
   const config = Config.using();
+  const maxHeightConfig = config.store("general.tooltip_max_height");
 
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
@@ -69,7 +70,7 @@
   $: void onTokenizeResultChanged(tokenizeResult);
 </script>
 
-<div class="tooltip">
+<div class="tooltip" style:--max-height={`${$maxHeightConfig}px`}>
   <div class="dictionary-view" class:previewIsVisible>
     <div class="header">
       <ToolbarWithPane
@@ -97,7 +98,7 @@
 
 <style>
   .tooltip {
-    max-height: 300px;
+    max-height: var(--max-height);
   }
 
   .dictionary-view {
