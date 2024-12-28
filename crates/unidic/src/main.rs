@@ -109,10 +109,12 @@ fn download_unidic_original(output_path: &Path) -> Result<()> {
     let mut archive = ZipArchive::new(tmpfile)?;
     for i in 0..archive.len() {
         let mut file = archive.by_index(i)?;
-        let file_name =
-            file.enclosed_name()
-                .and_then(|p| if p.is_dir() { None } else { p.file_name() });
-        let Some(file_name) = file_name else { continue };
+        let Some(file_name) = file.enclosed_name() else {
+            continue;
+        };
+        let Some(file_name) = file_name.file_name() else {
+            continue;
+        };
         let Some(file_name) = file_name.to_str() else {
             continue;
         };
