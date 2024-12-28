@@ -20,9 +20,7 @@
     } else if (max !== null && val > max) {
       val = max;
     }
-    // when input is changed from 0 to invalid value
-    // ensure input is updated to 0
-    if (val === 0 && value === val) {
+    if (element.valueAsNumber !== val) {
       element.valueAsNumber = val;
     }
     value = val;
