@@ -52,7 +52,9 @@
       retryConnectTimeout = null;
     }
     if ($ankiEnabledConfig) {
-      useAnkiDescription = "loading";
+      if (useAnkiDescription === "off") {
+        useAnkiDescription = "loading";
+      }
       try {
         await AnkiApi.checkConnection();
         if (AnkiApi.IS_DESKTOP) {
