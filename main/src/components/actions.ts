@@ -1,5 +1,13 @@
 import { Platform } from "@platform";
 import Config from "lib/config";
+import { YomikiriError } from "lib/error";
+import { Toast } from "lib/toast";
+
+declare global {
+  interface Window {
+    errorHandlersAttached?: boolean;
+  }
+}
 
 /**
  * adds one of .desktop, .ios, .iosapp depending on platform to <html>
@@ -34,4 +42,37 @@ export function setStyle(attached: HTMLElement) {
   void Config.instance.get().then((config) => {
     config.setStyle(doc);
   });
+}
+
+export function handleErrors(attached: HTMLElement) {
+  const frameWindow = attached.ownerDocument.defaultView;
+  let currWindow: Window = window;
+  if (frameWindow === null) {
+    showError("Could not get iframe window");
+    return;
+  } else {
+    currWindow = frameWindow;
+  }
+
+  while (true) {
+    if (!currWindow.errorHandlersAttached) {
+      currWindow.addEventListener("error", (event) => {
+        showError(event.error);
+      });
+      currWindow.addEventListener("unhandledrejection", (event) => {
+        showError(event.reason);
+      });
+      currWindow.errorHandlersAttached = true;
+    }
+    if (currWindow === window || currWindow.parent == currWindow) {
+      break;
+    }
+    currWindow = currWindow.parent;
+  }
+}
+
+function showError(err: unknown) {
+  const error = YomikiriError.from(err);
+  console.error(error);
+  Toast.yomikiriError(error);
 }
