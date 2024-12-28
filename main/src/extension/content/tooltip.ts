@@ -1,4 +1,4 @@
-import Utils, { type Rect } from "lib/utils";
+import Utils, { nextTask, type Rect } from "lib/utils";
 import type { TokenizeResult } from "@platform/backend";
 import Config from "lib/config";
 import TooltipPage from "./TooltipPage.svelte";
@@ -201,8 +201,6 @@ export class Tooltip {
       tooltip.style.top = `${rectTop - VERTICAL_SPACE}px`;
       tooltip.style.transform = "translateY(-100%)";
     }
-
-    this.updateTooltipHeight(tooltip, true);
   }
 
   /**
@@ -215,7 +213,7 @@ export class Tooltip {
   private updateTooltipHeight(tooltip: HTMLIFrameElement, wait = false) {
     void (async () => {
       if (wait) {
-        await Promise.resolve();
+        await nextTask();
       }
       let height = this.config.get("general.tooltip_max_height");
 
@@ -224,6 +222,7 @@ export class Tooltip {
         // getBoundingClientRect().height returns floating-precision number
         const rect = content.getBoundingClientRect();
         height = rect.height;
+        console.log("tooltip height change", height);
       }
 
       tooltip.style.height = `${height}px`;
