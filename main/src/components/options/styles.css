@@ -1,4 +1,5 @@
-body {
+/* Higher specificity than background-color set in global.css */
+html:root {
   background-color: var(--background-alt);
 }
 
