@@ -43,7 +43,7 @@
   }
 
   .reading {
-    font-size: 0.875rem;
+    font-size: 1rem;
     line-height: 1.25;
     padding: 0 var(--edge-horizontal-padding);
   }
