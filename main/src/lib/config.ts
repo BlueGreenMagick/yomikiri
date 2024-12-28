@@ -66,8 +66,6 @@ export type ConfigKeysOfType<T> = {
   [K in keyof Configuration]: Configuration[K] extends T ? K : never;
 }[keyof Configuration];
 
-const STYLE_ELEMENT_ID = "yomikiri-addon-css-styling";
-
 export interface WritableConfig<T> extends Writable<T> {
   /** Deletes the saved config */
   delete: () => void;
@@ -90,10 +88,6 @@ export class Config {
     Platform.subscribeConfig((cfg) => {
       this.storage = cfg;
       this.runSubscribers();
-    });
-
-    this.subscribe(() => {
-      this.updateStyling();
     });
 
     this.initialized = true;
@@ -212,56 +206,6 @@ export class Config {
     }
   }
 
-  /**
-   * Insert or update <style> properties from config,
-   * watch for config changes and auto-update <style>
-   */
-  setStyle(doc: Document | DocumentFragment) {
-    let alreadyExisting = false;
-    for (const docRef of this.documents) {
-      const derefed = docRef.deref();
-      if (derefed === undefined) continue;
-      if (derefed === doc) {
-        alreadyExisting = true;
-        break;
-      }
-    }
-    if (!alreadyExisting) {
-      const ref = new WeakRef(doc);
-      this.documents.push(ref);
-    }
-    this.updateStyling();
-  }
-
-  /** Update <style> for all registered _documents */
-  private updateStyling() {
-    const css = this.generateCss();
-    for (const ref of this.documents) {
-      const node = ref.deref();
-      if (node === undefined) continue;
-      const doc = node.ownerDocument ?? node;
-
-      let styleEl = doc.getElementById(STYLE_ELEMENT_ID);
-      if (styleEl === null) {
-        styleEl = doc.createElement("style");
-        styleEl.id = STYLE_ELEMENT_ID;
-        doc.head.appendChild(styleEl);
-      }
-      styleEl.textContent = css;
-    }
-  }
-
-  generateCss(): string {
-    const fontSize = this.get("general.font_size");
-    const font = this.get("general.font");
-    const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
-
-    return `:root, :host {
---font-size: ${fontSize}px;
---japanese-font: "${escapedFont}";
-    }`;
-  }
-
   async updateVersion() {
     if (this.storage.version !== defaultOptions.version) {
       await this.set("version", defaultOptions.version);
@@ -315,6 +259,31 @@ export class Config {
         set(stored);
       },
     };
+  }
+
+  /** Set CSS variables to `el` when config is changed */
+  setUpdatedStyle(el: HTMLElement) {
+    const ref = new WeakRef(el);
+
+    const unsubscribeFontSize = this.store("general.font_size").subscribe(
+      (size) => {
+        const el = ref.deref();
+        if (el === undefined) {
+          unsubscribeFontSize();
+          return;
+        }
+        el.style.setProperty("--font-size", `${size}px`);
+      },
+    );
+    const unsubscribeFont = this.store("general.font").subscribe((font) => {
+      const el = ref.deref();
+      if (el === undefined) {
+        unsubscribeFont();
+        return;
+      }
+      const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
+      el.style.setProperty("--japanese-font", `"${escapedFont}"`);
+    });
   }
 
   /**

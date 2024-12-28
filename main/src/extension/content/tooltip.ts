@@ -235,7 +235,6 @@ export class Tooltip {
     doc.head.textContent! += `
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 `;
-    this.config.setStyle(doc);
     doc.documentElement.classList.add("yomikiri");
 
     const tooltipPage = new TooltipPage({

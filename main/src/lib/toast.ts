@@ -1,9 +1,9 @@
 import Toasts from "components/toast/Toasts.svelte";
 import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
-import Config from "./config";
 import DetailedToast from "components/toast/DetailedToast.svelte";
 import { YomikiriError } from "./error";
 import { TOASTER_ZINDEX } from "consts";
+import Config from "./config";
 
 type ToastType = "success" | "error" | "loading";
 
@@ -48,7 +48,7 @@ export class Toast<
     const innerContainer = document.createElement("div");
     root.appendChild(innerContainer);
     void Config.instance.get().then((c) => {
-      c.setStyle(root);
+      c.setUpdatedStyle(innerContainer);
     });
     Toast.toasts = new Toasts({ target: innerContainer, props: {} });
     document.body.appendChild(container);
