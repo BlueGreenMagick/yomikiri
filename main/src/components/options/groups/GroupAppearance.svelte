@@ -27,6 +27,6 @@
     min={120}
     max={1200}
   >
-    Maximum height of tooltip
+    Maximum height of dictionary tooltip (px)
   </OptionNumber>
 </GroupedOptions>
