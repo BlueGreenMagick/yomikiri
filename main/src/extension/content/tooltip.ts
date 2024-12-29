@@ -1,4 +1,4 @@
-import Utils, { nextTask, type Rect } from "lib/utils";
+import Utils, { type Rect } from "lib/utils";
 import type { TokenizeResult } from "@platform/backend";
 import Config from "lib/config";
 import TooltipPage from "./TooltipPage.svelte";
@@ -67,10 +67,6 @@ export class Tooltip {
     iframe.style.display = "block";
     iframe.style.boxSizing = "content-box";
     document.body.appendChild(iframe);
-
-    this.config.store("general.tooltip_max_height").subscribe((_) => {
-      this.updateTooltipHeight(iframe, true);
-    });
 
     if (!this._resizeObserverAttached) {
       this.attachResizeObserver();
@@ -152,12 +148,9 @@ export class Tooltip {
     const WIDTH = Math.min(500, window.innerWidth - 2 * MARGIN);
     const BOTTOM_ADVANTAGE = 150;
 
-    // reset tooltipEl style beforehand so tooltip does not affect document size.
-    tooltip.style.left = "0px";
-    tooltip.style.top = "0px";
-    tooltip.style.width = `${WIDTH}px`;
-    tooltip.style.height = "0px";
-    tooltip.style.removeProperty("transform");
+    // hide tooltipEl so tooltip does not affect document size.
+    const prevDisplay = tooltip.style.display;
+    tooltip.style.display = "none";
 
     // calculate frame position
     const rootRect = document.documentElement.getBoundingClientRect();
@@ -197,37 +190,18 @@ export class Tooltip {
 
     if (atBottom) {
       tooltip.style.top = `${rectBottom + VERTICAL_SPACE}px`;
+      tooltip.style.removeProperty("transform");
     } else {
       tooltip.style.top = `${rectTop - VERTICAL_SPACE}px`;
       tooltip.style.transform = "translateY(-100%)";
     }
-
-    this.updateTooltipHeight(tooltip, true);
+    tooltip.style.width = `${WIDTH}px`;
+    tooltip.style.display = prevDisplay;
   }
 
-  /**
-   * update tooltip height to match content height
-   *
-   * if `wait` is true, update height in next task
-   * to wait for layout in iframe to be recalculated.
-   * if false, executes synchronously.
-   */
-  private updateTooltipHeight(tooltip: HTMLIFrameElement, wait = false) {
-    void (async () => {
-      if (wait) {
-        await nextTask();
-      }
-      let height = this.config.get("general.tooltip_max_height");
-
-      const content = tooltip.contentDocument?.body.children[0];
-      if (content) {
-        // getBoundingClientRect().height returns floating-precision number
-        const rect = content.getBoundingClientRect();
-        height = rect.height;
-      }
-
-      tooltip.style.height = `${height}px`;
-    })();
+  /** update tooltip height to match content height */
+  private updateTooltipHeight(tooltip: HTMLIFrameElement, height: number) {
+    tooltip.style.height = `${height}px`;
   }
 
   private setupEntriesPage(tooltip: HTMLIFrameElement) {
@@ -244,10 +218,10 @@ export class Tooltip {
           this.hide();
           this.highlighter.unhighlight();
         },
-        onUpdateHeight: () => {
+        onUpdateHeight: (height: number) => {
           const tooltip = this.getTooltipEl();
           if (tooltip !== null) {
-            this.updateTooltipHeight(tooltip);
+            this.updateTooltipHeight(tooltip, height);
           }
         },
       },

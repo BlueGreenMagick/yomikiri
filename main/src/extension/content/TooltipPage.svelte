@@ -5,7 +5,7 @@
   import { emptyTokenizeResult } from "platform/shared/backend";
 
   export let onClose: () => void;
-  export let onUpdateHeight: () => void = () => null;
+  export let onUpdateHeight: (height: number) => void = (_) => null;
 
   let tokenizeResult = emptyTokenizeResult();
 

@@ -15,11 +15,12 @@
 
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;
-  export let onUpdateHeight: () => void = () => null;
+  export let onUpdateHeight: (height: number) => void = (_) => null;
 
   const config = Config.using();
   const maxHeightConfig = config.store("general.tooltip_max_height");
 
+  let tooltipElem: HTMLDivElement;
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
   let selectedTool: Tools | null = null;
@@ -27,14 +28,14 @@
   async function onBack() {
     previewIsVisible = false;
     await tick();
-    onUpdateHeight();
+    updateHeight();
   }
 
   async function onTokenizeResultChanged(_tokenizeResult: TokenizeResult) {
     previewIsVisible = false;
     selectedTool = null;
     await tick();
-    onUpdateHeight();
+    updateHeight();
   }
 
   async function selectedEntryForAnki(request: SelectedEntryForAnki) {
@@ -52,13 +53,13 @@
     previewNoteData = note;
     previewIsVisible = true;
     await tick();
-    onUpdateHeight();
+    updateHeight();
   }
 
   async function changeSelectedTool(tool: Tools | null): Promise<void> {
     selectedTool = tool;
     await tick();
-    onUpdateHeight();
+    updateHeight();
   }
 
   function noteAdded() {
@@ -66,11 +67,21 @@
     previewIsVisible = false;
   }
 
+  function updateHeight() {
+    const rect = tooltipElem.getBoundingClientRect();
+    console.log("update", rect.height);
+    onUpdateHeight(rect.height);
+  }
+
   $: sentence = tokenizeResult.tokens.map((t) => t.text).join("");
   $: void onTokenizeResultChanged(tokenizeResult);
 </script>
 
-<div class="tooltip" style:--max-height={`${$maxHeightConfig}px`}>
+<div
+  bind:this={tooltipElem}
+  class="tooltip"
+  style:--max-height={`${$maxHeightConfig}px`}
+>
   <div class="dictionary-view" class:previewIsVisible>
     <div class="header">
       <ToolbarWithPane
