@@ -178,14 +178,23 @@ function splitKanjiSegments(text: string): [string[], string[]] {
   return [kanjis, noKanjis];
 }
 
-/** First char of text is hiragana. Return false if text is "" */
+/**
+ * First char of text is hiragana. Return false if text is ""
+ *
+ * Note that characters such as 'ゝ' or '゛' in hiragana unicode range returns false.
+ * Only returns true for common hiraganas.
+ */
 export function isHiragana(text: string): boolean {
   if (text === "") return false;
   const char = text.charCodeAt(0);
   return char >= 12353 && char <= 12438;
 }
 
-/** First char of text is hiragana. Return false if text is "" */
+/**
+ * First char of text is hiragana. Return false if text is ""
+ * Note that characters such as '゠', '・', 'ー', 'ヽ' in katakana unicode range returns false.
+ * Only returns true for common katakanas.
+ */
 export function isKatakana(text: string): boolean {
   if (text === "") return false;
   const char = text.charCodeAt(0);
@@ -203,8 +212,11 @@ export function containsJapaneseContent(text: string): boolean {
 // (u+30a1ァ -> u+3041ぁ) (u+30f6ヶ -> u+3096ゖ)
 // charcode: u+30a1 = 12449, u+30f6 = 12534, (-96)
 /**
- * Convert all katakana in text to hiragana
- * `text` should be NFC normalized
+ * Convert all katakana in text to hiragana.
+ *
+ * `text` should be NFC normalized.
+ *
+ * Note that 'ゝ' and 'ゞ' are not converted.
  */
 export function toHiragana(text: string): string {
   let hiragana = "";
@@ -221,8 +233,10 @@ export function toHiragana(text: string): string {
 
 /**
  * Convert all hiragana in text to katakana.
+ *
  * `text` should be NFC normalized.
  *
+ * Note that 'ヽ' and 'ヾ' are not converted.
  */
 export function toKatakana(text: string): string {
   let katakana = "";

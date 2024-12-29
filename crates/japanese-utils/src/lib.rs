@@ -1,4 +1,5 @@
 // c.f. main/src/lib/japanese.ts for japanese char ranges
+// TODO: `is_hiragana`, `is_katakana`, `to_katakana` implementation is different from japanese.ts
 
 pub trait JapaneseChar {
     /** Character is hiragana or katakana */
