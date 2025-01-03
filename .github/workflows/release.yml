@@ -82,6 +82,7 @@ jobs:
 
       - name: Create Firefox Extension
         run: zip -r "yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip" ./firefox/*
+        working-directory: ./main/build
 
       - name: Create iOS App & Upload to XCode Connect
         run: bundle exec fastlane ios beta
