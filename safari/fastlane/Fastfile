@@ -37,7 +37,11 @@ platform :ios do
       issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
       key_content: ENV['APP_STORE_CONNECT_KEY_CONTENT'],
     )
-    upload_to_testflight
+    upload_to_appstore (
+      skip_screenshots: true,
+      skip_metadata: true,
+      skip_app_version_update: true
+    )
   end
 
   desc "Example: `fastlane set_version ver:0.3.1`"
