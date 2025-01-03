@@ -129,11 +129,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 699B7D6D2A519ADB00E506F2 /* Build configuration list for PBXNativeTarget "YomikiriTokenizer" */;
 			buildPhases = (
-				699B7D7E2A519B5B00E506F2 /* Build Rust UniFFI */,
+				699B7D7E2A519B5B00E506F2 /* Run Script: Build Rust UniFFI */,
 				699B7D612A519ADB00E506F2 /* Headers */,
 				699B7D622A519ADB00E506F2 /* Sources */,
 				699B7D632A519ADB00E506F2 /* Frameworks */,
 				699B7D642A519ADB00E506F2 /* Resources */,
+				6988EB7D2D283E68004DB55E /* Run Script: Set Build Version */,
 			);
 			buildRules = (
 			);
@@ -188,7 +189,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		699B7D7E2A519B5B00E506F2 /* Build Rust UniFFI */ = {
+		6988EB7D2D283E68004DB55E /* Run Script: Set Build Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script: Set Build Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n../scripts/set_build_version.sh\n";
+		};
+		699B7D7E2A519B5B00E506F2 /* Run Script: Build Rust UniFFI */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -197,7 +217,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Build Rust UniFFI";
+			name = "Run Script: Build Rust UniFFI";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -260,7 +280,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -323,7 +342,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -351,7 +369,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -388,7 +405,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				DYLIB_COMPATIBILITY_VERSION = 1;

@@ -391,10 +391,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 695D33222AB1F211003F9C80 /* Build configuration list for PBXNativeTarget "Yomikiri Action" */;
 			buildPhases = (
-				690F8B982AB72EB5005A48CF /* Build Extension */,
+				690F8B982AB72EB5005A48CF /* Run Script: Build Extension */,
 				695D330C2AB1F211003F9C80 /* Sources */,
 				695D330D2AB1F211003F9C80 /* Frameworks */,
 				695D330E2AB1F211003F9C80 /* Resources */,
+				6988EB7C2D283E53004DB55E /* Run Script: Set Build Version */,
 			);
 			buildRules = (
 			);
@@ -414,6 +415,7 @@
 				69F2C25129FA4FA80088F503 /* Resources */,
 				69F2C2A529FA4FA80088F503 /* Embed Foundation Extensions */,
 				697EFFAD2BA2A9E00035360C /* Embed Frameworks */,
+				6988EB782D283B8E004DB55E /* Run Script: Set Build Version */,
 			);
 			buildRules = (
 			);
@@ -434,6 +436,7 @@
 				69F2C26229FA4FA80088F503 /* Frameworks */,
 				69F2C26329FA4FA80088F503 /* Resources */,
 				69F2C2AC29FA4FA80088F503 /* Embed Foundation Extensions */,
+				6988EB7B2D283E48004DB55E /* Run Script: Set Build Version */,
 			);
 			buildRules = (
 			);
@@ -449,10 +452,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 69F2C2A229FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (iOS)" */;
 			buildPhases = (
-				699B7DD12A52C2BA00E506F2 /* Build extension */,
+				699B7DD12A52C2BA00E506F2 /* Run Script: Build extension */,
 				69F2C26D29FA4FA80088F503 /* Sources */,
 				6909CA772A2241150052FEF4 /* Frameworks */,
 				699B7DD32A52C33A00E506F2 /* Resources */,
+				6988EB792D283E12004DB55E /* Run Script: Set Build Version */,
 			);
 			buildRules = (
 			);
@@ -470,6 +474,7 @@
 				69F2C27729FA4FA80088F503 /* Sources */,
 				699B7DD42A52C33E00E506F2 /* Resources */,
 				69F2C27829FA4FA80088F503 /* Frameworks */,
+				6988EB7A2D283E2D004DB55E /* Run Script: Set Build Version */,
 			);
 			buildRules = (
 			);
@@ -602,7 +607,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		690F8B982AB72EB5005A48CF /* Build Extension */ = {
+		690F8B982AB72EB5005A48CF /* Run Script: Build Extension */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -611,7 +616,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Build Extension";
+			name = "Run Script: Build Extension";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -620,7 +625,102 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension.sh\n";
 		};
-		699B7DD12A52C2BA00E506F2 /* Build extension */ = {
+		6988EB782D283B8E004DB55E /* Run Script: Set Build Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script: Set Build Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/set_build_version.sh\n";
+		};
+		6988EB792D283E12004DB55E /* Run Script: Set Build Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script: Set Build Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/set_build_version.sh\n";
+		};
+		6988EB7A2D283E2D004DB55E /* Run Script: Set Build Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script: Set Build Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/set_build_version.sh\n";
+		};
+		6988EB7B2D283E48004DB55E /* Run Script: Set Build Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script: Set Build Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/set_build_version.sh\n";
+		};
+		6988EB7C2D283E53004DB55E /* Run Script: Set Build Version */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script: Set Build Version";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/set_build_version.sh\n";
+		};
+		699B7DD12A52C2BA00E506F2 /* Run Script: Build extension */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -629,7 +729,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Build extension";
+			name = "Run Script: Build extension";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -748,7 +848,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Yomikiri Action/Yomikiri Action.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Yomikiri Action/Info.plist";
@@ -780,7 +879,6 @@
 				CODE_SIGN_ENTITLEMENTS = "Yomikiri Action/Yomikiri Action.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KA5T86QNBS;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -924,7 +1022,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Yomikiri Extension (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
@@ -966,7 +1063,6 @@
 				CODE_SIGN_ENTITLEMENTS = "Yomikiri Extension (iOS).entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KA5T86QNBS;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1015,7 +1111,6 @@
 				CODE_SIGN_ENTITLEMENTS = "Yomikiri (iOS).entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KA5T86QNBS;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1063,7 +1158,6 @@
 				CODE_SIGN_ENTITLEMENTS = "Yomikiri (iOS).entitlements";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KA5T86QNBS;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1108,7 +1202,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Yomikiri.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1141,7 +1234,6 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Yomikiri.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1177,7 +1269,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Yomikiri.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1212,7 +1303,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Yomikiri.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_TEAM = KA5T86QNBS;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
