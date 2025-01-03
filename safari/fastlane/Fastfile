@@ -1,0 +1,59 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    setup_ci if ENV['CI']
+    increment_build_number(xcodeproj: "Yomikiri.xcodeproj")
+    certificates
+    build_app(
+      scheme: "Yomikiri (iOS)",
+      verbose: true,
+      export_options: {
+        provisioningProfiles: {
+          "com.yoonchae.Yomikiri" => "match AppStore com.yoonchae.Yomikiri",
+          "com.yoonchae.Yomikiri.Extension" => "match AppStore com.yoonchae.Yomikiri.Extension",
+          "com.yoonchae.Yomikiri.Yomikiri-Action" => "match AppStore com.yoonchae.Yomikiri.Yomikiri-Action"
+        }
+      }
+      )
+    app_store_connect_api_key(
+      key_id: ENV['APP_STORE_CONNECT_KEY_ID'],
+      issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
+      key_content: ENV['APP_STORE_CONNECT_KEY_CONTENT'],
+    )
+    upload_to_testflight
+  end
+
+  desc "Example: `fastlane set_version ver:0.3.1`"
+  lane :set_version do |opts|
+    increment_version_number_in_xcodeproj(
+      version_number: opts[:ver],
+      xcodeproj: "Yomikiri.xcodeproj"
+    )
+    increment_version_number_in_xcodeproj(
+      version_number: opts[:ver],
+      xcodeproj: "YomikiriTokenizer/YomikiriTokenizer.xcodeproj"
+    )
+  end
+
+  desc "Create or download Xcode signing certificates"
+  lane :certificates do
+    match(readonly: ENV['CI'])
+  end
+end

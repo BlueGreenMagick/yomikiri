@@ -1,0 +1,101 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    name: "Create release"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3.0.0
+        with:
+          version: "next-9"
+
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install cargo
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - name: Install pnpm deps
+        run: pnpm install
+
+      - name: Get version
+        id: version
+        run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Formatting
+        run: pnpm run check-format
+
+      - name: Install wasm-pack
+        run: pnpm add -g wasm-pack
+
+      - name: Build yomikiri-dictionary-generator crate
+        run: cargo build
+        working-directory: ./crates/yomikiri-dictionary-generator
+
+      - name: Download fresh JMDict and JMnedict
+        run: pnpm run fresh
+        working-directory: ./crates/yomikiri-dictionary-generator
+
+      - name: Generate yomikiri dictionary
+        run: pnpm run generate:dictionary
+
+      - name: Build yomikiri-unidic crate
+        run: cargo build
+        working-directory: ./crates/unidic
+
+      - name: Generate unidic files
+        run: pnpm run generate:unidic
+
+      - name: Generate backend
+        run: pnpm run generate:release
+        working-directory: ./crates/yomikiri-backend
+
+      - name: Generate licenses
+        run: pnpm run generate:licenses
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm run test
+
+      - name: Build web
+        run: pnpm run build:chrome && pnpm run build:firefox && pnpm run build:ios
+
+      - name: Create Chrome Extension
+        run: zip -r "yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" ./chrome/*
+        working-directory: ./main/build
+
+      - name: Create Firefox Extension
+        run: zip -r "yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip" ./firefox/*
+
+      - name: Create iOS App & Upload to XCode Connect
+        run: bundle exec fastlane ios beta
+        env:
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_USER: ${{ secrets.APP_STORE_USERNAME }}
+          APP_STORE_TEAM_ID: ${{ secrets.APP_STORE_TEAM_ID }}
+          APP_STORE_ITC_TEAM_ID: ${{ secrets.APP_STORE_ITC_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
+
+      - name: Create Github Release
+        run: # TODO
+

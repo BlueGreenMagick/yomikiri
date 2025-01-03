@@ -1,0 +1,15 @@
+git_url(ENV['MATCH_GIT_URL'])
+
+storage_mode("git")
+
+type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
+
+app_identifier([
+  "com.yoonchae.Yomikiri",
+  "com.yoonchae.Yomikiri.Extension",
+  "com.yoonchae.Yomikiri.Yomikiri-Action"
+])
+
+username(ENV['FASTLANE_USER']) # Your Apple Developer Portal username
+
+verbose(true)

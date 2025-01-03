@@ -39,6 +39,13 @@ build
 coverage
 junit.xml
 
+# Fastlane
+# https://docs.fastlane.tools/best-practices/source-control/
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
 # Misc
 *.crx
 *.pem
