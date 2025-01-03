@@ -85,6 +85,7 @@ jobs:
 
       - name: Create iOS App & Upload to XCode Connect
         run: bundle exec fastlane ios beta
+        working-directory: ./safari
         env:
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
@@ -97,5 +98,4 @@ jobs:
           APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
 
       - name: Create Github Release
-        run: # TODO
-
+        run: echo "TODO"
