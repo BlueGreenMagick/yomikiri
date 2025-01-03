@@ -85,7 +85,7 @@ jobs:
         working-directory: ./main/build
 
       - name: Create iOS App & Upload to XCode Connect
-        run: bundle exec fastlane ios beta
+        run: fastlane ios beta
         working-directory: ./safari
         env:
           MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
