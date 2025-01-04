@@ -13,6 +13,10 @@ jobs:
     timeout-minutes: 10
     name: "Download JMDict"
     steps:
+      - name: Get current date
+        id: date
+        run: echo "DATE=$(date '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
       - name: Download JMDict
         run: curl -O "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz"
 
@@ -25,15 +29,11 @@ jobs:
             "JMdict_e.gz"
             "JMnedict.xml.gz"
 
-      - name: Get current date
-        id: date
-        run: echo $(date '+%Y-%m-%d') >> "$GITHUB_OUTPUT"
-
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
         with:
           prerelease: true
-          tag_name: "jmdict-${{ steps.date.outputs.stdout }}"
+          tag_name: "jmdict-${{ steps.date.outputs.DATE }}"
           files: |
             "JMdict_e.gz"
             "JMnedict.xml.gz"
