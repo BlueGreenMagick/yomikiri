@@ -8,6 +8,10 @@ on:
         required: true
         default: "jmdict-0000-00-00"
 
+permissions:
+  id-token: write
+  attestations: write
+
 jobs:
   download_jmdict:
     runs-on: ubuntu-latest
@@ -20,11 +24,17 @@ jobs:
       - name: Download JMneDict
         run: curl -O "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz"
 
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            "JMdict_e.gz"
+            "JMnedict.xml.gz"
+
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
         with:
           prerelease: true
           tag_name: ${{ github.event.inputs.tag_name }}
           files: |
-            "./JMdict_e.gz"
-            "./JMnedict.xml.gz"
+            "JMdict_e.gz"
+            "JMnedict.xml.gz"

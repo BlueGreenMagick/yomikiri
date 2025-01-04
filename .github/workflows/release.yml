@@ -6,6 +6,10 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  attestations: write
+
 jobs:
   release:
     runs-on: macos-latest
@@ -105,6 +109,12 @@ jobs:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
+
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            "./main/build/yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip"
+            "./main/build/yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip"
 
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
