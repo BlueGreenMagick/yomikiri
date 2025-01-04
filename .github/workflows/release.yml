@@ -114,13 +114,13 @@ jobs:
       - uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            "./main/build/yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip"
-            "./main/build/yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip"
+            ./main/build/yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip
+            ./main/build/yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip
 
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
         with:
           prerelease: true
           files: |
-            "./main/build/yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip"
-            "./main/build/yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip"
+            ./main/build/yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip
+            ./main/build/yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip

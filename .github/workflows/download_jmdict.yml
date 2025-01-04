@@ -24,14 +24,11 @@ jobs:
       - name: Download JMneDict
         run: curl "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz" -o "JMnedict.xml.gz"
 
-      - name: Print files
-        run: ls -l
-
       - uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
-            "JMdict_e.gz"
-            "JMnedict.xml.gz"
+            JMdict_e.gz
+            JMnedict.xml.gz
 
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
@@ -42,5 +39,5 @@ jobs:
           draft: true
           fail_on_unmatched_files: true
           files: |
-            "JMdict_e.gz"
-            "JMnedict.xml.gz"
+            JMdict_e.gz
+            JMnedict.xml.gz
