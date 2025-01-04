@@ -35,7 +35,11 @@ jobs:
         with:
           tag_name: "jmdict-${{ steps.date.outputs.DATE }}"
           name: "JMDict ${{ steps.date.outputs.DATE }}"
-          body: "JMDict dictionary files used in Yomikiri"
+          body: |
+            JMDict dictionary files used in Yomikiri.
+            The files are stored here to make the Yomikiri build reproducible.
+
+            These files are [JMdict](https://www.edrdg.org/wiki/index.php/JMdict-EDICT_Dictionary_Project) and JMnedict dictionary files, which are property of the [Electronic Dictionary Research and Development Group]( https://www.edrdg.org/). You can view the license for these files [here](http://www.edrdg.org/edrdg/licence.html).
           prerelease: true
           fail_on_unmatched_files: true
           files: |
