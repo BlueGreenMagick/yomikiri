@@ -8,7 +8,7 @@ use fs_err::{self as fs, File};
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryWriter;
 
-const GH_DICT_TAG: &'static str = "jmdict-2025-01-04";
+const GH_DICT_TAG: &str = "jmdict-2025-01-04";
 
 struct RawFileMeta {
     source_filename: &'static str,
