@@ -36,7 +36,7 @@ jobs:
           tag_name: "jmdict-${{ steps.date.outputs.DATE }}"
           name: "JMDict ${{ steps.date.outputs.DATE }}"
           body: "JMDict dictionary files used in Yomikiri"
-          draft: true
+          prerelease: true
           fail_on_unmatched_files: true
           files: |
             JMdict_e.gz
