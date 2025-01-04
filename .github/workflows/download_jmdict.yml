@@ -6,7 +6,6 @@ on:
       tag_name:
         description: "Tag name"
         required: true
-        default: "jmdict-0000-00-00"
 
 permissions:
   id-token: write
@@ -30,11 +29,15 @@ jobs:
             "JMdict_e.gz"
             "JMnedict.xml.gz"
 
+      - name: Get current date
+        id: date
+        run: echo $(date '+%Y-%m-%d') >> "$GITHUB_OUTPUT"
+
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
         with:
           prerelease: true
-          tag_name: ${{ github.event.inputs.tag_name }}
+          tag_name: "jmdict-${{ steps.date.outputs.stdout }}"
           files: |
             "JMdict_e.gz"
             "JMnedict.xml.gz"
