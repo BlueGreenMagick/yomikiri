@@ -39,7 +39,8 @@ platform :ios do
     upload_to_app_store(
       skip_screenshots: true,
       skip_metadata: true,
-      skip_app_version_update: true
+      skip_app_version_update: true,
+      precheck_include_in_app_purchases: false
     )
   end
 
