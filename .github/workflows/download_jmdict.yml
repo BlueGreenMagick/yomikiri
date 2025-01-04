@@ -2,10 +2,6 @@ name: Create JMDict
 
 on:
   workflow_dispatch:
-    inputs:
-      tag_name:
-        description: "Tag name"
-        required: true
 
 permissions:
   id-token: write
