@@ -7,8 +7,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write
-  attestations: write
+  id-token: write # attestations
+  attestations: write # attestations
+  contents: write # gh-release
 
 jobs:
   release:

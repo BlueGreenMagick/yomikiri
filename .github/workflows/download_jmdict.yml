@@ -6,6 +6,7 @@ on:
 permissions:
   id-token: write
   attestations: write
+  contents: write # gh-release
 
 jobs:
   download_jmdict:
