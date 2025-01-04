@@ -33,8 +33,11 @@ jobs:
       - name: Create Github Release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
         with:
-          prerelease: true
           tag_name: "jmdict-${{ steps.date.outputs.DATE }}"
+          name: "JMDict ${{ steps.date.outputs.DATE }}"
+          body: "JMDict dictionary files used in Yomikiri"
+          draft: true
+          fail_on_unmatched_files: true
           files: |
             "JMdict_e.gz"
             "JMnedict.xml.gz"
