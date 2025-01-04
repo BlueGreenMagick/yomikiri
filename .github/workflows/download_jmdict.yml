@@ -1,0 +1,30 @@
+name: Create JMDict
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name"
+        required: true
+        default: "jmdict-0000-00-00"
+
+jobs:
+  download_jmdict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: "Download JMDict"
+    steps:
+      - name: Download JMDict
+        run: curl -O "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz"
+
+      - name: Download JMneDict
+        run: curl -O "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz"
+
+      - name: Create Github Release
+        uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
+        with:
+          prerelease: true
+          tag_name: ${{ github.event.inputs.tag_name }}
+          files: |
+            "./JMdict_e.gz"
+            "./JMnedict.xml.gz"
