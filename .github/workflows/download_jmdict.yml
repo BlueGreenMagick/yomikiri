@@ -19,10 +19,13 @@ jobs:
         run: echo "DATE=$(date '+%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
       - name: Download JMDict
-        run: curl -O "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz"
+        run: curl "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz" -o "JMdict_e.gz"
 
       - name: Download JMneDict
-        run: curl -O "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz"
+        run: curl "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz" -o "JMnedict.xml.gz"
+
+      - name: Print files
+        run: ls -l
 
       - uses: actions/attest-build-provenance@v2
         with:
