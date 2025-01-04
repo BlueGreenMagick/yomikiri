@@ -59,10 +59,6 @@ jobs:
         run: cargo build
         working-directory: ./crates/yomikiri-dictionary-generator
 
-      - name: Download fresh JMDict and JMnedict
-        run: pnpm run fresh
-        working-directory: ./crates/yomikiri-dictionary-generator
-
       - name: Generate yomikiri dictionary
         run: pnpm run generate:dictionary
 

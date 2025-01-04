@@ -8,6 +8,8 @@ use fs_err::{self as fs, File};
 use tempfile::NamedTempFile;
 use yomikiri_dictionary::dictionary::DictionaryWriter;
 
+const GH_DICT_TAG: &'static str = "jmdict-2025-01-04";
+
 struct RawFileMeta {
     source_filename: &'static str,
     source_url: &'static str,
@@ -47,6 +49,7 @@ struct DownloadOpts {
     /// Output directory path to downloaded jmdict file
     #[arg(long)]
     outdir: PathBuf,
+
     #[command(flatten)]
     mode: DownloadMode,
     /// Force download jmdict file even if file exists at output path
@@ -55,11 +58,11 @@ struct DownloadOpts {
 }
 
 #[derive(Args, Debug)]
-#[group(required = true, multiple = false)]
+#[group(multiple = false)]
 struct DownloadMode {
-    /// Download jmdict file used in specified version
+    /// Download jmdict file stored in release with the specific tag in the yomikiri repo
     #[arg(short, long)]
-    version: Option<String>,
+    tag: Option<String>,
     /// Download new jmdict file from source website (edrdg.org)
     #[arg(long)]
     new: bool,
@@ -106,14 +109,13 @@ fn run_download(opts: &DownloadOpts) -> Result<()> {
         }
         if opts.mode.new {
             download_dict(meta.source_url, &output_path)?;
-        } else if let Some(version) = opts.mode.version.as_ref() {
+        } else {
+            let tag = opts.mode.tag.as_deref().unwrap_or(GH_DICT_TAG);
             let url = format!(
                 "https://github.com/BlueGreenMagick/yomikiri/releases/download/{}/{}",
-                version, &meta.source_filename
+                tag, &meta.source_filename
             );
             download_dict(&url, &output_path)?;
-        } else {
-            return Err(anyhow!("Unreachable codepath"));
         }
         println!("Downloaded file '{}'", &meta.out_filename);
     }
@@ -169,6 +171,7 @@ fn download_dict(url: &str, output_path: &Path) -> Result<()> {
     let output_dir = output_path
         .parent()
         .context("output_path does not have a parent directory.")?;
+    println!("Downloading file from: {}", url);
     // download jmdict gzip file
     let resp = ureq::get(url)
         .call()
