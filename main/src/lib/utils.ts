@@ -339,6 +339,10 @@ export function logs(): unknown[] {
   return _logs;
 }
 
+export function printLogs() {
+  console.log(_logs.join("\n"));
+}
+
 /** Cannot be called in background */
 export async function nextDocumentPaint(): Promise<void> {
   const [promise, resolve] = createPromise<void>();
