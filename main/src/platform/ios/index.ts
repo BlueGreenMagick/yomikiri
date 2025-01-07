@@ -1,5 +1,5 @@
 import { type StoredConfiguration } from "lib/config";
-import { LazyAsync, handleResponseMessage } from "lib/utils";
+import { LazyAsync, handleResponseMessage, log } from "lib/utils";
 import {
   NonContentScriptFunction,
   currentTab,
@@ -53,6 +53,9 @@ export namespace IosPlatform {
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();
   });
+
+  const iosVersion = getIosVersion();
+  log("ios version: ", iosVersion);
 
   /** Only works in background & page */
   export async function requestToApp<K extends keyof AppMessageMap>(
@@ -156,11 +159,14 @@ export namespace IosPlatform {
     return migrated;
   }
 
-  // workaround to ios 17.5 bug where background script freezes after ~30s of non-stop activity
+  // workaround to ios 17.5+ bug where background script freezes after ~30s of non-stop activity
   // https://github.com/alexkates/content-script-non-responsive-bug/issues/1
-  async function setupIosPeriodicReload() {
+  function setupIosPeriodicReload() {
     if (PLATFORM !== "ios" || EXTENSION_CONTEXT !== "background") return;
-    console.debug("Set up periodic ios reload");
+    if (iosVersion === null) return;
+    if (iosVersion[0] !== 17 || iosVersion[1] < 5) return;
+
+    log("Setting up periodic ios background script reload");
 
     let wakeup = Date.now();
     let last = Date.now();
@@ -173,21 +179,30 @@ export namespace IosPlatform {
       last = curr;
 
       if (curr - wakeup > 25 * 1000) {
-        console.debug("Reloading extension");
+        log("Reloading extension");
         chrome.runtime.reload();
       }
     }
-
-    const iv = setInterval(checkReload, 1000);
-
-    const ver = await requestToApp("iosVersion", null);
-    if (!(ver.major === 17 && ver.minor >= 5)) {
-      clearInterval(iv);
-    }
+    setInterval(checkReload, 1000);
   }
 
   if (EXTENSION_CONTEXT === "background") {
-    void setupIosPeriodicReload();
+    setupIosPeriodicReload();
+  }
+}
+
+/** Returns null if ios version could not be retrieved from user agent. */
+function getIosVersion(): [number, number, number] | null {
+  const match = navigator?.userAgent?.match(/iPhone OS (\d+)_(\d+)(?:_(\d+))?/);
+  if (match === null || match === undefined) {
+    return null;
+  }
+
+  const [_all, major, minor, patch] = match;
+  try {
+    return [parseInt(major), parseInt(minor), parseInt(patch) || 0];
+  } catch {
+    return null;
   }
 }
 

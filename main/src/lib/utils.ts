@@ -331,6 +331,7 @@ export function awaitTime(ms: number): Promise<void> {
 const _logs: unknown[] = [];
 
 export function log(...args: unknown[]): void {
+  console.debug(...args);
   _logs.push(args);
 }
 
