@@ -20,7 +20,7 @@ platform :ios do
   lane :beta do
     setup_ci if ENV['CI']
     certificates
-    ios_sdk_version = sh("xcrun", "--sdk", "iphoneos", "--show-sdk-version")
+    ios_sdk_version = sh('printf "%s" "$(xcrun --sdk iphoneos --show-sdk-version)"')
     build_app(
       scheme: "Yomikiri (iOS)",
       verbose: true,
@@ -63,3 +63,6 @@ platform :ios do
     match(readonly: ENV['CI'])
   end
 end
+
+
+
