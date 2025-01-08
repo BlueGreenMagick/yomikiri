@@ -57,9 +57,12 @@ export function handleErrors(attached: HTMLElement) {
   while (true) {
     if (!currWindow.errorHandlersAttached) {
       currWindow.addEventListener("error", (event) => {
+        // Ignore cross-origin error
+        if (event.error === null) return;
         showError(event.error);
       });
       currWindow.addEventListener("unhandledrejection", (event) => {
+        // Cross-origin rejections do not trigger unhandledrejection
         showError(event.reason);
       });
       currWindow.errorHandlersAttached = true;
