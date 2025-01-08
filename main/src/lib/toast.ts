@@ -39,7 +39,7 @@ export class Toast<
   private static setupToaster(): void {
     const container = document.createElement("div");
     container.style.cssText =
-      "pointerEvents: none !important; background: none !important; border: none !important;";
+      "pointerEvents: none !important; background: none !important; border: none !important; position: fixed !important;";
     container.style.zIndex = `${TOASTER_ZINDEX}`;
 
     container.attachShadow({ mode: "open" });
