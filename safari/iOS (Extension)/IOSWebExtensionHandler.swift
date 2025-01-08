@@ -30,12 +30,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 switch key {
                 case "tokenize":
                     let req: TokenizeRequest = try jsonDeserialize(json: request)
-                    let result = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
-                    jsonResponse = result
+                    jsonResponse = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
                 case "search":
                     let req: SearchRequest = try jsonDeserialize(json: request)
-                    let result = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
-                    jsonResponse = result
+                    jsonResponse = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
                 case "addNote":
                     break
                 case "loadConfig":
@@ -52,8 +50,7 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
                     jsonResponse = try jsonSerialize(obj: iosVersion)
                 case "getDictMetadata":
-                    let metadata = try Backend.get().metadata()
-                    jsonResponse = try jsonSerialize(obj: metadata)
+                    jsonResponse = try Backend.get().metadata()
                 default:
                     return
                 }

@@ -260,8 +260,7 @@ extension YomikiriWebView {
                 let resp = try await Backend.updateDictionary()
                 return try jsonSerialize(obj: resp)
             case "getDictMetadata":
-                let resp = try Backend.get().metadata()
-                return try jsonSerialize(obj: resp)
+                return try Backend.get().metadata()
             case "openLink":
                 let urlString: String = try jsonDeserialize(json: request)
                 guard let url = URL(string: urlString) else {
