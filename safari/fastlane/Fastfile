@@ -20,9 +20,11 @@ platform :ios do
   lane :beta do
     setup_ci if ENV['CI']
     certificates
+    ios_sdk_version = sh("xcrun", "--sdk", "iphoneos", "--show-sdk-version")
     build_app(
       scheme: "Yomikiri (iOS)",
       verbose: true,
+      sdk: "iphoneos#{ios_sdk_version}",
       export_options: {
         provisioningProfiles: {
           "com.yoonchae.Yomikiri" => "match AppStore com.yoonchae.Yomikiri",
