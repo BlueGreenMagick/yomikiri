@@ -456,20 +456,21 @@ export async function currentTab(): Promise<chrome.tabs.Tab> {
   return promise;
 }
 
-/** If `or` is undefined, returns `undefined` if value does not exist. */
+/**
+ * `or = undefined` is returned if storage value is `undefined` of not set.
+ */
 export async function getStorage<K extends StorageKey, V = undefined>(
   key: K,
   or?: V,
 ): Promise<StorageValues[K] | V> {
-  const [promise, resolve] = createPromise<V>();
-  let req: string | Record<string, V> = key;
-  if (or !== undefined) {
-    req = {
-      [key]: or,
-    };
-  }
-  browserStorage().get(req, (obj) => {
-    resolve(obj[key] as V);
+  const [promise, resolve] = createPromise<StorageValues[K] | V>();
+  browserStorage().get(key, (obj) => {
+    const value = obj[key] as StorageValues[K] | undefined;
+    if (or !== undefined && value === undefined) {
+      resolve(or);
+    } else {
+      resolve(value as StorageValues[K]);
+    }
   });
   return promise;
 }
