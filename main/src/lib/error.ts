@@ -10,7 +10,7 @@ export class YomikiriError extends Error {
 
   constructor(message: string, details?: string[]) {
     super();
-    Object.defineProperty(this, "stack", { enumerable: true });
+    Object.defineProperty(this, "stack", { enumerable: true, writable: true });
     this.message = message;
     this.details = details ?? [message];
   }
