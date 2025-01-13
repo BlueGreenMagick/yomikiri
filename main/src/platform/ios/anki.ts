@@ -31,7 +31,7 @@ export namespace IosAnkiApi {
         throw new YomikiriError("Current tab does not have an id");
       }
       await setStorage("x-callback.tabId", cTab.id);
-      await setStorage("x-callback.tabUrl", location.href);
+      await setStorage("x-callback.tabUrl", cTab.url ?? cTab.pendingUrl ?? "");
     }
 
     const ankiLink = iosAnkiMobileURL(

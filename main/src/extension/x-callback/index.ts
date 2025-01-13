@@ -35,7 +35,7 @@ async function getLastTabId(): Promise<number | null> {
     }
   }
 
-  // if no such tab exist, return other tab with identical url.
+  // if no such tab exist, return last tab with identical url.
   // maybe safari has restarted and assigned different id to the tab.
   for (let i = tabs.length - 1; i >= 0; i--) {
     const tab = tabs[i];
