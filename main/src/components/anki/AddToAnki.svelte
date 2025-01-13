@@ -15,6 +15,7 @@
   import { Toast } from "lib/toast";
   import { newChangeTracker, SingleQueued } from "lib/utils";
   import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
+  import { YomikiriError } from "lib/error";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -44,17 +45,21 @@
 
   async function onAdd() {
     let ankiNote = await resolveAnkiNote(noteData);
-    const added = await AnkiApi.addNote(ankiNote);
-    if (added) {
-      Toast.success("Note added to Anki");
-    } else {
-      Toast.success("Note will be added when Anki is connected", "", {
-        icon: HourglassToastIcon,
-        duration: 3000,
-      });
+    let added: boolean;
+    try {
+      added = await AnkiApi.addNote(ankiNote);
+      if (added) {
+        Toast.success("Note added to Anki");
+      } else {
+        Toast.success("Note will be added when Anki is connected", "", {
+          icon: HourglassToastIcon,
+          duration: 3000,
+        });
+      }
+      noteAdded();
+    } catch (err) {
+      Toast.yomikiriError(YomikiriError.from(err));
     }
-
-    noteAdded();
   }
 
   /** muatates: `allLoaded` */
