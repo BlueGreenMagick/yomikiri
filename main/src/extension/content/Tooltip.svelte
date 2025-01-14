@@ -12,6 +12,8 @@
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
   import ToolbarWithPane from "components/dictionary/ToolbarWithPane.svelte";
   import { Config } from "lib/config";
+  import { Toast } from "lib/toast";
+  import { YomikiriError } from "lib/error";
 
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;
@@ -39,6 +41,13 @@
   }
 
   async function selectedEntryForAnki(request: SelectedEntryForAnki) {
+    try {
+      await _selectedEntryForAnki(request);
+    } catch (err) {
+      Toast.yomikiriError(YomikiriError.from(err));
+    }
+  }
+  async function _selectedEntryForAnki(request: SelectedEntryForAnki) {
     const markerData: AnkiBuilderData = {
       tokenized: tokenizeResult,
       entry: request.entry,
@@ -48,8 +57,7 @@
       pageTitle: document.title,
     };
 
-    let note: LoadingAnkiNote;
-    note = buildAnkiNote({ config }, markerData);
+    const note = buildAnkiNote({ config }, markerData);
     previewNoteData = note;
     previewIsVisible = true;
     await tick();
@@ -69,7 +77,6 @@
 
   function updateHeight() {
     const rect = tooltipElem.getBoundingClientRect();
-    console.log("update", rect.height);
     onUpdateHeight(rect.height);
   }
 
