@@ -86,12 +86,12 @@ jobs:
         run: pnpm run build:chrome && pnpm run build:firefox && pnpm run build:ios
 
       - name: Create Chrome Extension
-        run: zip -r "yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" ./chrome/*
-        working-directory: ./main/build
+        run: zip -r "../yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" *
+        working-directory: ./main/build/chrome
 
       - name: Create Firefox Extension
-        run: zip -r "yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip" ./firefox/*
-        working-directory: ./main/build
+        run: zip -r "../yomikiri_firefox_v${{steps.version.outputs.VERSION}}.zip" *
+        working-directory: ./main/build/firefox
 
       - name: Create iOS App & Upload to XCode Connect
         run: fastlane ios beta

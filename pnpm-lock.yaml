@@ -138,9 +138,6 @@ importers:
       '@swc/core':
         specifier: ^1.4.16
         version: 1.5.24
-      '@types/adm-zip':
-        specifier: ^0.5.5
-        version: 0.5.5
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
@@ -165,9 +162,6 @@ importers:
       '@types/postcss-import':
         specifier: ^14.0.3
         version: 14.0.3
-      adm-zip:
-        specifier: ^0.5.12
-        version: 0.5.13
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0
@@ -959,9 +953,6 @@ packages:
   '@tufjs/models@2.0.1':
     resolution: {integrity: sha512-92F7/SFyufn4DXsha9+QfKnN03JGqtMFMXgSHbZOo8JG59WkTni7UzAouNQDf7AuP9OAMxVOPQcqG3sB7w+kkg==}
     engines: {node: ^16.14.0 || >=18.0.0}
-
-  '@types/adm-zip@0.5.5':
-    resolution: {integrity: sha512-YCGstVMjc4LTY5uK9/obvxBya93axZOVOyf2GSUulADzmLhYE45u2nAssCs/fWBs1Ifq5Vat75JTPwd5XZoPJw==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -4748,10 +4739,6 @@ snapshots:
     dependencies:
       '@tufjs/canonical-json': 2.0.0
       minimatch: 9.0.4
-
-  '@types/adm-zip@0.5.5':
-    dependencies:
-      '@types/node': 20.14.1
 
   '@types/babel__core@7.20.5':
     dependencies:

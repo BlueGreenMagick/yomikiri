@@ -6,7 +6,6 @@ import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "../package.json" assert { type: "json" };
-import AdmZip from "adm-zip";
 import { watch } from "chokidar";
 import type { ExecutionContext } from "extension/browserApi";
 
@@ -174,14 +173,6 @@ function cleanDirectory(dir: string) {
   }
 }
 
-async function compressDirectoryTo(dir: string, outfile: string) {
-  const zip = new AdmZip();
-  await zip.addLocalFolderPromise(dir, {
-    filter: (path) => !path.startsWith("."),
-  });
-  await zip.writeZipPromise(outfile, { overwrite: true });
-}
-
 function copyAndWatchFile(
   from: string,
   to: string,
@@ -339,15 +330,6 @@ async function main() {
 
   if (!WATCH) {
     await Promise.all(ctxs.map((ctx) => ctx.dispose()));
-    if (PRODUCTION && (FOR_CHROME || FOR_FIREFOX)) {
-      const compressedFile = path.join(
-        buildOptions.outdir,
-        "..",
-        `yomikiri_${TARGET}_v${VERSION}.zip`,
-      );
-      console.log("Compressing file to: " + compressedFile);
-      await compressDirectoryTo(buildOptions.outdir, compressedFile);
-    }
   } else {
     console.info("esbuild: Watching for changes to code..");
     await Promise.all(ctxs.map((ctx) => ctx.watch()));

@@ -28,7 +28,6 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "@swc/core": "^1.4.16",
-    "@types/adm-zip": "^0.5.5",
     "@types/babel__core": "^7.20.5",
     "@types/chrome": "^0.0.263",
     "@types/ejs": "^3.1.5",
@@ -37,7 +36,6 @@
     "@types/node": "^20.12.7",
     "@types/pako": "^2.0.3",
     "@types/postcss-import": "^14.0.3",
-    "adm-zip": "^0.5.12",
     "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
     "ejs": "^3.1.10",
