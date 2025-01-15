@@ -375,7 +375,7 @@ export function NonContentScriptFunction<K extends keyof MessageMap>(
   messageKey: K,
   fn: SimpleMessageHandlers[K],
 ) {
-  if (EXTENSION_CONTEXT !== "contentScript") {
+  if (EXTENSION_CONTEXT === "background") {
     handleMessage(messageKey, fn);
   }
 
