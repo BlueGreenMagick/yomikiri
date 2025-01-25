@@ -311,7 +311,7 @@ const MISC_DISPLAY: { [Key in JMSenseMisc]: string } = {
   slang: "slang",
   railway: "railway",
   surname: "surname",
-  usuallyKanaAlone: "written using kana",
+  usuallyKanaAlone: "usually kana",
   unclassified: "unclassified",
   vulgar: "vulgar",
   artwork: "artwork",
