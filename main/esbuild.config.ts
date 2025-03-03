@@ -5,7 +5,7 @@ import sveltePlugin from "esbuild-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
-import Package from "../package.json" assert { type: "json" };
+import Package from "../package.json" with { type: "json" };
 import { watch } from "chokidar";
 import type { ExecutionContext } from "extension/browserApi";
 
