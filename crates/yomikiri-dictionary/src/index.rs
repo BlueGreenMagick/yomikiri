@@ -201,7 +201,7 @@ impl<'a, T: EncodableIdx> DictIndexMap<'a, T> {
                 term_ids.push(index);
             }
             debug_assert!((idxs_storage.len() as u64) < (1_u64 << 63));
-            builder.insert(&item.key, 1_u64 << 63 | idxs_storage.len() as u64)?;
+            builder.insert(&item.key, (1_u64 << 63) | idxs_storage.len() as u64)?;
             postcard::to_io(&term_ids, &mut idxs_storage)?;
         }
         builder.finish()?;
