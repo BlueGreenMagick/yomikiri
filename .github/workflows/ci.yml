@@ -15,7 +15,7 @@ jobs:
   test:
     runs-on: macos-latest
     timeout-minutes: 45
-    name: "Lint, Test, Build web extension"
+    name: 'Lint, Test, Build web extension'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,13 +25,13 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3.0.0
         with:
-          version: "next-9"
+          version: 'next-9'
 
       - name: Install node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install cargo
         uses: dtolnay/rust-toolchain@stable
