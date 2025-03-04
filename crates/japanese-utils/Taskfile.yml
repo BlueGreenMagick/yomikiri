@@ -1,0 +1,23 @@
+version: '3'
+
+tasks:
+  format:
+    desc: 'Format files'
+    cmds:
+      - 'cargo fmt'
+      - 'pnpm prettier --write --list-different .'
+
+  check:
+    desc: 'Check files'
+    cmds:
+      - 'cargo check'
+
+  lint:
+    desc: 'Lint files'
+    cmds:
+      - 'cargo clippy -- -D warnings'
+
+  test:
+    desc: 'Run tests'
+    cmds:
+      - 'cargo test'

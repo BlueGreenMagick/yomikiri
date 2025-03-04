@@ -1,5 +1,19 @@
 version: '3'
 
+# Useful for Github Actions log grouping
+output:
+  group:
+    begin: '::group::{{.TASK}}'
+    end: '::endgroup::'
+
+includes:
+  main:
+    taskfile: './main/Taskfile.yml'
+    dir: './main'
+  japanese-utils:
+    taskfile: './crates/japanese-utils/Taskfile.yml'
+    dir: './crates/japanese-utils'
+
 tasks:
   print-version:
     desc: Print version in root package.json
@@ -11,7 +25,7 @@ tasks:
     desc: 'Format files using prettier'
     cmds:
       - 'pnpm prettier --write --list-different .'
-    
+
   format:rust:
     aliases: ['fmt:rust']
     desc: 'Format files using Cargo (Rust)'
@@ -29,16 +43,11 @@ tasks:
       - pnpm prettier --check .
 
   check-format:rust:
-  aliases: ['check-fmt:rust']
+    aliases: ['check-fmt:rust']
     cmds:
       - cargo fmt --check
 
   check-format:
-  aliases: ['check-fmt']
+    aliases: ['check-fmt']
     desc: 'Check if files are formatted'
     deps: [check-format:js, check-format:rust]
-
-includes:
-  main:
-    taskfile: './main/Taskfile.dist.yml'
-    dir: './main'
