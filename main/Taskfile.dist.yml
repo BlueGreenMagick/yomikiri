@@ -1,0 +1,103 @@
+version: '3'
+
+# Useful for Github Actions log grouping
+output:
+  group:
+    begin: '::group::{{.TASK}}'
+    end: '::endgroup::'
+
+tasks:
+  build:shared:
+    internal: true
+    cmds:
+      - 'NODE_ENV={{.NODE_ENV}} TARGET_PLATFORM={{.PLATFORM}} pnpm tsx esbuild.config.ts'
+    requires:
+      vars:
+        - name: 'NODE_ENV'
+          enum: ['production', 'development']
+        - name: 'PLATFORM'
+          enum: ['firefox', 'chrome', 'ios', 'iosapp']
+
+  build:firefox:
+    desc: 'Build for firefox'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'production'
+          PLATFORM: 'firefox'
+
+  build:chrome:
+    desc: 'Build for Chrome'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'production'
+          PLATFORM: 'chrome'
+
+  build:ios:
+    desc: 'Build for ios'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'production'
+          PLATFORM: 'ios'
+
+  build:iosapp:
+    desc: 'Build for iosapp'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'production'
+          PLATFORM: 'iosapp'
+
+  dev:chrome:
+    aliases: ['dev']
+    desc: 'Dev build for Chrome'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          PLATFORM: 'chrome'
+
+  dev:firefox:
+    desc: 'Dev build for firefox'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          PLATFORM: 'firefox'
+
+  dev:ios:
+    desc: 'Dev build for ios'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          PLATFORM: 'ios'
+
+  test:
+    desc: 'Test'
+    cmds:
+      - 'pnpm vitest run'
+
+  lint:ts:
+    cmds:
+      - 'pnpm tsc --noemit'
+
+  lint:svelte:
+    cmds:
+      - 'pnpm svelte-check --compiler-warnings "{{.WARNINGS}}"'
+    vars:
+      WARNINGS: 'a11y-no-static-element-interactions:ignore'
+
+  lint:eslint:
+    cmds:
+      - 'pnpm eslint --cache .'
+
+  lint:
+    deps: ['lint:ts', 'lint:svelte', 'lint:eslint']
+
+  format:
+    aliases: ['fmt']
+    cmds:
+      - 'pnpm -w prettier --write --list-different "$PWD"'

@@ -1,0 +1,44 @@
+version: '3'
+
+tasks:
+  print-version:
+    desc: Print version in root package.json
+    cmds:
+      - tsx './extra/scripts/print-version.ts'
+
+  format:prettier:
+    aliases: ['fmt:prettier']
+    desc: 'Format files using prettier'
+    cmds:
+      - 'pnpm prettier --write --list-different .'
+    
+  format:rust:
+    aliases: ['fmt:rust']
+    desc: 'Format files using Cargo (Rust)'
+    cmds:
+      - 'cargo fmt'
+
+  format:
+    aliases: ['fmt']
+    desc: 'Format all files'
+    deps: ['format:prettier', 'format:rust']
+
+  check-format:prettier:
+    aliases: ['check-fmt:prettier']
+    cmds:
+      - pnpm prettier --check .
+
+  check-format:rust:
+  aliases: ['check-fmt:rust']
+    cmds:
+      - cargo fmt --check
+
+  check-format:
+  aliases: ['check-fmt']
+    desc: 'Check if files are formatted'
+    deps: [check-format:js, check-format:rust]
+
+includes:
+  main:
+    taskfile: './main/Taskfile.dist.yml'
+    dir: './main'
