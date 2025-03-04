@@ -1,0 +1,12 @@
+version: '3'
+
+includes:
+  rust-shared:
+    taskfile: ../../extra/taskfile/Rust-Taskfile.yml
+    flatten: true
+
+tasks:
+  generate:
+    desc: 'Generate unidic artifacts'
+    cmds:
+      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="transformed" --output-dir="output" --resource-dir="../yomikiri-dictionary-generator/files"'

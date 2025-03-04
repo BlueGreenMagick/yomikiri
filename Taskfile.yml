@@ -13,6 +13,24 @@ includes:
   japanese-utils:
     taskfile: './crates/japanese-utils/Taskfile.yml'
     dir: './crates/japanese-utils'
+  jmdict:
+    taskfile: './crates/jmdict/Taskfile.yml'
+    dir: './crates/jmdict'
+  unidic:
+    taskfile: './crates/unidic/Taskfile.yml'
+    dir: './crates/jmdict'
+  unidic-types:
+    taskfile: './crates/unidic-types/Taskfile.yml'
+    dir: './crates/jmdict'
+  yomikiri-backend:
+    taskfile: './crates/yomikiri-backend/Taskfile.yml'
+    dir: './crates/yomikiri-backend'
+  yomikiri-dictionary:
+    taskfile: './crates/yomikiri-dictionary/Taskfile.yml'
+    dir: './crates/yomikiri-dictionary'
+  yomikiri-dictionary-generator:
+    taskfile: './crates/yomikiri-dictionary-generator/Taskfile.yml'
+    dir: './crates/yomikiri-dictionary-generator'
 
 tasks:
   print-version:
