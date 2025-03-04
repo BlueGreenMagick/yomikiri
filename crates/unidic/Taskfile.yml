@@ -9,8 +9,29 @@ includes:
     dir: '../yomikiri-dictionary-generator'
 
 tasks:
+  _generate-unidic:
+    internal: true
+    vars:
+      TRANSFORM_DIR: 'transformed'
+      OUTPUT_DIR: 'output'
+      RESOURCE_DIR: '../yomikiri-dictionary-generator/files'
+    sources:
+      - '../../Cargo.toml'
+      - '../../Cargo.lock'
+      - './Cargo.toml'
+      - './src/**/*'
+      - '{{.RESOURCE_DIR}}/**/*'
+      - exclude: '**/.*'
+    generates:
+      - '{{.TRANSFORM_DIR}}/**/*'
+      - '{{.OUTPUT_DIR}}/**/*'
+    cmds:
+      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
+
   generate:
     desc: 'Generate unidic artifacts'
     deps: ['yomikiri-dictionary-generator:download-and-generate']
-    cmds:
-      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="transformed" --output-dir="output" --resource-dir="../yomikiri-dictionary-generator/files"'
+    task:
+      # Not sure if 'deps' or 'sources' has precedence,
+      # So put the logic into a separate task
+      - task: '_generate-unidic'
