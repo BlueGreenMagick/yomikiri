@@ -4,3 +4,38 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
+
+vars:
+  JMDICT_DIR: 'jmdict'
+  YOMIKIRIDICT_PATH: './files/english.yomikiridict'
+
+tasks:
+  download:
+    desc: Downloads jmdict file if it does not exist at output path
+    cmds:
+      - 'cargo run -- download --outdir="{{.JMDICT_DIR}}"'
+
+  fresh:
+    desc: Force downloads a fresh jmdict file
+    cmds:
+      - 'cargo run -- download --outdir="{{.JMDICT_DIR}} --new"'
+
+  generate:
+    desc: Generate dictionary file from jmdict file
+    sources:
+      - '../../Cargo.toml'
+      - '../../Cargo.lock'
+      - 'Cargo.toml'
+      - 'src/**/*.rs'
+      - '{{.JMDICT_DIR}}/**/*'
+      - exclude: '**/.*'
+    generates:
+      - '{{.YOMIKIRIDICT_PATH}}'
+    cmds:
+      - 'cargo run -- generate --rawdir="./{{.JMDICT_DIR}}" --out="{{.YOMIKIRIDICT_PATH}}"'
+
+  download-and-generate:
+    desc: 'Download jmdict and generate dictionary file'
+    cmds:
+      - task: 'download'
+      - task: 'generate'
