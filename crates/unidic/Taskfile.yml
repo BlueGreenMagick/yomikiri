@@ -26,12 +26,12 @@ tasks:
       - '{{.TRANSFORM_DIR}}/**/*'
       - '{{.OUTPUT_DIR}}/**/*'
     cmds:
-      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
+      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
 
   generate:
     desc: 'Generate unidic artifacts'
     deps: ['yomikiri-dictionary-generator:download-and-generate']
-    task:
+    cmds:
       # Not sure if 'deps' or 'sources' has precedence,
       # So put the logic into a separate task
       - task: '_generate-unidic'

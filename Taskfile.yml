@@ -12,10 +12,10 @@ includes:
     dir: './crates/jmdict'
   unidic:
     taskfile: './crates/unidic/Taskfile.yml'
-    dir: './crates/jmdict'
+    dir: './crates/unidic'
   unidic-types:
     taskfile: './crates/unidic-types/Taskfile.yml'
-    dir: './crates/jmdict'
+    dir: './crates/unidic-types'
   yomikiri-backend:
     taskfile: './crates/yomikiri-backend/Taskfile.yml'
     dir: './crates/yomikiri-backend'
