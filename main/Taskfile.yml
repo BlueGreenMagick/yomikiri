@@ -1,11 +1,5 @@
 version: '3'
 
-# Useful for Github Actions log grouping
-output:
-  group:
-    begin: '::group::{{.TASK}}'
-    end: '::endgroup::'
-
 tasks:
   build:shared:
     internal: true
