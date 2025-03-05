@@ -15,7 +15,7 @@ tasks:
   lint:
     desc: 'Lint files'
     cmds:
-      - 'tsc --noemit'
+      - 'pnpm tsc --noemit'
       - 'eslint --cache .'
       - task: 'lint:rust'
 
@@ -23,6 +23,9 @@ tasks:
     cmds:
       - cargo clippy
     dir: './rust'
+
+  test:
+    silent: true
 
   format:
     aliases: ['fmt']

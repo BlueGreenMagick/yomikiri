@@ -30,11 +30,47 @@ includes:
     taskfile: './extra/generate-license/Taskfile.yml'
     dir: './extra/generate-license'
 
+vars:
+  # All Taskfiles should have 'check', 'lint', 'test' commands
+  INCLUDES:
+    - main
+    - japanese-utils
+    - jmdict
+    - unidic
+    - unidic-types
+    - yomikiri-backend
+    - yomikiri-dictionary
+    - yomikiri-dictionary-generator
+    - generate-license
+
 tasks:
   print-version:
     desc: Print version in root package.json
     cmds:
       - tsx './extra/scripts/print-version.ts'
+
+  check:
+    desc: Check files
+    cmds:
+      - for: { var: INCLUDES }
+        task: '{{.ITEM}}:check'
+
+  lint:
+    desc: Lint files
+    cmds:
+      - for: { var: INCLUDES }
+        task: '{{.ITEM}}:lint'
+
+  test:
+    desc: Test files
+    cmds:
+      - for: { var: INCLUDES }
+        task: '{{.ITEM}}:test'
+
+  format:
+    aliases: ['fmt']
+    desc: 'Format all files'
+    deps: ['format:prettier', 'format:rust']
 
   format:prettier:
     aliases: ['fmt:prettier']
@@ -47,11 +83,6 @@ tasks:
     desc: 'Format files using Cargo (Rust)'
     cmds:
       - 'cargo fmt'
-
-  format:
-    aliases: ['fmt']
-    desc: 'Format all files'
-    deps: ['format:prettier', 'format:rust']
 
   check-format:prettier:
     aliases: ['check-fmt:prettier']

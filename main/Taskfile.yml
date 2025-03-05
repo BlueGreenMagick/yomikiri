@@ -74,22 +74,22 @@ tasks:
     cmds:
       - 'pnpm vitest run'
 
-  lint:ts:
+  check:
+    deps: ['check:ts', 'check:svelte']
+
+  check:ts:
     cmds:
       - 'pnpm tsc --noemit'
 
-  lint:svelte:
+  check:svelte:
     cmds:
       - 'pnpm svelte-check --compiler-warnings "{{.WARNINGS}}"'
     vars:
       WARNINGS: 'a11y-no-static-element-interactions:ignore'
 
-  lint:eslint:
+  lint:
     cmds:
       - 'pnpm eslint --cache .'
-
-  lint:
-    deps: ['lint:ts', 'lint:svelte', 'lint:eslint']
 
   format:
     aliases: ['fmt']
