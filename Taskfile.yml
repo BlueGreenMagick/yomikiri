@@ -17,6 +17,7 @@ includes:
     taskfile: './crates/unidic-types/Taskfile.yml'
     dir: './crates/unidic-types'
   yomikiri-backend:
+    aliases: [backend]
     taskfile: './crates/yomikiri-backend/Taskfile.yml'
     dir: './crates/yomikiri-backend'
   yomikiri-dictionary:
