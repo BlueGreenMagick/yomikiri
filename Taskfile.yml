@@ -26,6 +26,9 @@ includes:
   yomikiri-dictionary-generator:
     taskfile: './crates/yomikiri-dictionary-generator/Taskfile.yml'
     dir: './crates/yomikiri-dictionary-generator'
+  generate-license:
+    taskfile: './extra/generate-license/Taskfile.yml'
+    dir: './extra/generate-license'
 
 tasks:
   print-version:
