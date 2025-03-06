@@ -43,7 +43,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=$(task --silent print-version)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(pnpm task --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Hash root Cargo.toml and Cargo.lock
         id: cargo-hash
@@ -53,7 +53,7 @@ jobs:
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
 
       - name: Formatting
-        run: task check-format
+        run: pnpm task check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
@@ -84,10 +84,10 @@ jobs:
           key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./crates/dictionary-generator/src/**/*', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH, env.JMNEDICT_PATH) }}
 
       - name: Lint
-        run: task lint
+        run: pnpm task lint
 
       - name: Test
-        run: task test
+        run: pnpm task test
 
       - name: Build
-        run: task build:all
+        run: pnpm task build:all

@@ -22,9 +22,9 @@ echo "$PATH"
 # EXTENSION_DIR="$PROJECT_DIR/../main"
 
 if [ "$CONFIGURATION" = "Debug" ]; then
-  task dev:ios
+  pnpm task dev:ios
 else
-  task build:ios
+  pnpm task build:ios
   # Update build version
 fi
 

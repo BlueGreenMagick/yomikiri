@@ -58,6 +58,6 @@ else
 fi
 
 # Build yomikiri backend
-task backend:generate:ios $RELEASE_FLAG
+pnpm task backend:generate:ios $RELEASE_FLAG
 
 ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_rs.a" "$LIB_FILE_PATH"

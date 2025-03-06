@@ -10,6 +10,7 @@
   "scripts": {},
   "devDependencies": {
     "@eslint/js": "^8.57.1",
+    "@go-task/cli": "^3.41.0",
     "@typescript-eslint/parser": "^7.18.0",
     "commander": "^12.1.0",
     "eslint": "^8.57.1",
