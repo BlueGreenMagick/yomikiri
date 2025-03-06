@@ -98,3 +98,60 @@ tasks:
     aliases: ['check-fmt']
     desc: 'Check if files are formatted'
     deps: [check-format:js, check-format:rust]
+
+  build:all:
+    run: once
+    cmds:
+      - task: 'build:chrome'
+      - task: 'build:firefox'
+      - task: 'build:ios'
+
+  build:chrome:
+    run: once
+    deps:
+      - task: 'backend:generate:wasm'
+        vars:
+          RELEASE: '1'
+      - 'generate-license:generate'
+    cmds:
+      - task: 'main:build:firefox'
+
+  build:firefox:
+    run: once
+    deps:
+      - task: 'backend:generate:wasm'
+        vars:
+          RELEASE: '1'
+      - 'generate-license:generate'
+    cmds:
+      - task: 'main:build:firefox'
+
+  build:ios:
+    run: once
+    deps:
+      - task: 'backend:generate:ios'
+        vars:
+          RELEASE: '1'
+      - 'generate-license:generate'
+    cmds:
+      - task: 'main:build:ios'
+      - task: 'main:build:iosapp'
+
+  dev:chrome:
+    aliases: ['dev']
+    run: once
+    deps:
+      - task: 'backend:generate:wasm'
+        vars:
+          RELEASE: ''
+    cmds:
+      - task: 'main:dev:firefox'
+
+  dev:firefox:
+    run: once
+    deps:
+      - task: 'backend:generate:wasm'
+        vars:
+          RELEASE: ''
+    cmds:
+      - task: 'main:dev:firefox'

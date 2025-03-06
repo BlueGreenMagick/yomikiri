@@ -30,6 +30,7 @@ tasks:
 
   generate:
     desc: 'Generate unidic artifacts'
+    run: once
     deps: ['yomikiri-dictionary-generator:download-and-generate']
     cmds:
       # Not sure if 'deps' or 'sources' has precedence,

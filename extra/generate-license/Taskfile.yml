@@ -3,6 +3,7 @@ version: '3'
 tasks:
   generate:
     desc: 'Generate licenses text'
+    run: once
     cmds:
       - 'tsx index.ts > res/THIRD_PARTY.txt'
 

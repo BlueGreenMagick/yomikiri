@@ -47,6 +47,7 @@ tasks:
   generate:wasm:
     desc: Build wasm backend
     run: once
+    deps: [unidic:generate]
     cmds:
       - task: _clean-dir-if-release
         vars:
@@ -64,6 +65,7 @@ tasks:
   generate:ios:
     desc: Build for ios
     run: once
+    deps: [unidic:generate]
     cmds:
       - task: _clean-dir-if-release
         vars:
@@ -104,6 +106,7 @@ tasks:
     requires:
       vars: [TARGET]
     run: when_changed
+    deps: [unidic:generate]
     vars:
       FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
       FLAG_TARGET: '{{if .TARGET}}--target {{.TARGET}}{{end}}'
