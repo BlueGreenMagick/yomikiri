@@ -63,7 +63,6 @@ After modification, run `task format` to fix formatting, `task lint` to check fo
 It is recommended that you install [Taskfile](https://taskfile.dev/installation) globally.
 If you do, you can run `task` instead of `pnpm task`.
 
-
 ### Chrome
 
 Run `pnpm task dev:chrome` or `pnpm task dev` for short.
