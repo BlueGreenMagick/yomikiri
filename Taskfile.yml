@@ -97,7 +97,7 @@ tasks:
   check-format:
     aliases: ['check-fmt']
     desc: 'Check if files are formatted'
-    deps: [check-format:js, check-format:rust]
+    deps: [check-format:prettier, check-format:rust]
 
   build:all:
     run: once
