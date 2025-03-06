@@ -47,7 +47,7 @@ tasks:
   print-version:
     desc: Print version in root package.json
     cmds:
-      - tsx './extra/scripts/print-version.ts'
+      - pnpm tsx './extra/scripts/print-version.ts'
 
   check:
     desc: Check files

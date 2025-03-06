@@ -43,7 +43,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(task --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Hash root Cargo.toml and Cargo.lock
         id: cargo-hash

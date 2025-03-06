@@ -47,7 +47,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(task run --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Formatting
         run: pnpm run check-format
