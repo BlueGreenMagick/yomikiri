@@ -53,7 +53,7 @@ jobs:
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
 
       - name: Formatting
-        run: pnpm run check-format
+        run: task check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack

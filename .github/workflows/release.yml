@@ -50,16 +50,16 @@ jobs:
         run: echo "VERSION=$(task run --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Formatting
-        run: pnpm run check-format
+        run: task check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
       - name: Lint
-        run: pnpm run lint
+        run: task lint
 
       - name: Test
-        run: pnpm run test
+        run: task test
 
       - name: Build
         run: task build:all
