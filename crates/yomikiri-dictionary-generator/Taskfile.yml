@@ -36,7 +36,7 @@ tasks:
       - 'cargo run -- generate --rawdir="./{{.JMDICT_DIR}}" --out="{{.YOMIKIRIDICT_PATH}}"'
 
   download-and-generate:
-    desc: 'Download jmdict and generate dictionary file'
+    desc: 'Generate dictionary file. Download JMDICT if it does not exist.'
     cmds:
       - task: 'download'
       - task: 'generate'

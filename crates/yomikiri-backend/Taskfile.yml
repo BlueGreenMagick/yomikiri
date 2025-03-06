@@ -6,10 +6,13 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
-    excludes: [check, lint]
+    excludes: [check, lint, test]
   unidic:
     taskfile: ../unidic/Taskfile.yml
     dir: ../unidic
+  yomikiri-dictionary-generator:
+    taskfile: ../yomikiri-dictionary-generator/Taskfile.yml
+    dir: ../yomikiri-dictionary-generator
 
 vars:
   RELEASE: '{{.RELEASE | default ""}}'
@@ -40,6 +43,13 @@ tasks:
     desc: 'Lint files'
     cmds:
       - 'cargo clippy --target {{.TARGET_WASM}} --target {{.TARGET_IOS}} -- -D warnings'
+
+  test:
+    desc: 'Test files'
+    # Tests depend on unidic and jmdict files
+    deps: [unidic:generate, yomikiri-dictionary-generator:download-and-generate]
+    cmds:
+      - 'cargo test'
 
   generate:
     cmds:
