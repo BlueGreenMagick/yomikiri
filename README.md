@@ -48,6 +48,7 @@ task build:extensions
 The desktop browser extensions are built into `/main/build/`.
 
 To build for ios,
+
 ```sh
 # Add target to compile rust for ios
 rustup target add aarch64-apple-ios
@@ -58,6 +59,7 @@ Then open `/safari/Yomikiri.xcodeproj` on XCode, and build.
 ## Development
 
 Run `task dev` to develop on Chrome.
+
 ```sh
 task dev
 ```
@@ -80,6 +82,7 @@ Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.
 ### IOS
 
 Add the relevant targets:
+
 ```sh
 # Add target to compile rust for ios
 rustup target add aarch64-apple-ios
@@ -87,5 +90,5 @@ rustup target add aarch64-apple-ios
 rustup target add aarch64-apple-ios-sim
 ```
 
-Open `/safari/Yomikiri.xcodeproj` on XCode, and build. 
+Open `/safari/Yomikiri.xcodeproj` on XCode, and build.
 Building automatically builds rust crates and bundles web files in `./main`.
