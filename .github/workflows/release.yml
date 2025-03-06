@@ -55,35 +55,14 @@ jobs:
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
-      - name: Build yomikiri-dictionary-generator crate
-        run: cargo build
-        working-directory: ./crates/yomikiri-dictionary-generator
-
-      - name: Generate yomikiri dictionary
-        run: pnpm run generate:dictionary
-
-      - name: Build yomikiri-unidic crate
-        run: cargo build
-        working-directory: ./crates/unidic
-
-      - name: Generate unidic files
-        run: pnpm run generate:unidic
-
-      - name: Generate backend
-        run: pnpm run generate:release
-        working-directory: ./crates/yomikiri-backend
-
-      - name: Generate licenses
-        run: pnpm run generate:licenses
-
       - name: Lint
         run: pnpm run lint
 
       - name: Test
         run: pnpm run test
 
-      - name: Build web
-        run: pnpm run build:chrome && pnpm run build:firefox && pnpm run build:ios
+      - name: Build
+        run: task build:all
 
       - name: Create Chrome Extension
         run: zip -r "../yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" *
