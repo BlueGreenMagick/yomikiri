@@ -1,5 +1,7 @@
 version: '3'
 
+run: 'when_changed'
+
 includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
@@ -46,7 +48,6 @@ tasks:
 
   generate:wasm:
     desc: Build wasm backend
-    run: once
     deps: [unidic:generate]
     cmds:
       - task: _clean-dir-if-release
@@ -56,7 +57,6 @@ tasks:
 
   generate:release:wasm:
     desc: Build wasm backend for release
-    run: once
     cmds:
       - task: generate:wasm
         vars:
@@ -64,7 +64,6 @@ tasks:
 
   generate:ios:
     desc: Build for ios
-    run: once
     deps: [unidic:generate]
     cmds:
       - task: _clean-dir-if-release
@@ -80,7 +79,6 @@ tasks:
 
   generate:release:ios:
     desc: Build ios for release
-    run: once
     cmds:
       - task: generate:ios
         vars:
@@ -105,7 +103,6 @@ tasks:
     internal: true
     requires:
       vars: [TARGET]
-    run: when_changed
     deps: [unidic:generate]
     vars:
       FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
@@ -113,12 +110,18 @@ tasks:
     cmds:
       - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
 
+  # Builds uniffi bindings for ios
+  # Separates `_uniffi:ios` because that task requires LIB dylib to be built already
   uniffi:ios:
-    run: when_changed
     deps:
       - task: '_build:lib'
         vars:
           TARGET: ''
+    cmds:
+      - task: '_uniffi:ios'
+
+  _uniffi:ios:
+    internal: true
     vars:
       RELEASE_SEG: '{{if .RELEASE}}release{{else}}debug{{end}}'
       LIB_DIR: '../../target/{{.RELEASE_SEG}}'
@@ -132,7 +135,7 @@ tasks:
           elif [ -f "{{.SO_PATH}}" ]; then
             echo "{{.SO_PATH}}"
           else
-            echo "__ERROR_COULD_NOT_FIND_BUILT_LIB_FILE"
+            echo "{{.LIB_DIR}}/__ERROR_COULD_NOT_FIND_BUILT_LIB_FILE"
           fi
     sources:
       - '{{.ROOT_PROJECT_TOML}}'

@@ -69,6 +69,14 @@ tasks:
           NODE_ENV: 'development'
           PLATFORM: 'ios'
 
+  dev:iosapp:
+    desc: 'Dev build for iosapp'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          PLATFORM: 'iosapp'
+
   test:
     desc: 'Test'
     cmds:

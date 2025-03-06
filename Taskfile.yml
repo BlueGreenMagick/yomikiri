@@ -155,3 +155,11 @@ tasks:
           RELEASE: ''
     cmds:
       - task: 'main:dev:firefox'
+
+  dev:ios:
+    run: once
+    deps:
+      - task: 'backend:generate:ios'
+    cmds:
+      - task: 'main:dev:ios'
+      - task: 'main:dev:iosapp'
