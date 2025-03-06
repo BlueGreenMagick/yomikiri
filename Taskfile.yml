@@ -106,7 +106,15 @@ tasks:
       - task: 'build:firefox'
       - task: 'build:ios'
 
+  build:extensions:
+    desc: 'Build Chrome and Firefox web extensions'
+    run: once
+    cmds:
+      - task: 'build:chrome'
+      - task: 'build:firefox'
+
   build:chrome:
+    desc: 'Build Chrome web extension'
     run: once
     deps:
       - task: 'backend:generate:wasm'
@@ -117,6 +125,7 @@ tasks:
       - task: 'main:build:firefox'
 
   build:firefox:
+    desc: 'Build Firefox web extension'
     run: once
     deps:
       - task: 'backend:generate:wasm'
@@ -138,6 +147,7 @@ tasks:
       - task: 'main:build:iosapp'
 
   dev:chrome:
+    desc: 'Dev build for Chrome'
     aliases: ['dev']
     run: once
     deps:
@@ -148,6 +158,7 @@ tasks:
       - task: 'main:dev:firefox'
 
   dev:firefox:
+    desc: 'Dev build for Firefox'
     run: once
     deps:
       - task: 'backend:generate:wasm'
