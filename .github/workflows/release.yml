@@ -55,14 +55,14 @@ jobs:
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
+      - name: Build
+        run: pnpm task build:all RELEASE=1
+
       - name: Lint
         run: pnpm task lint
 
       - name: Test
         run: pnpm task test
-
-      - name: Build
-        run: pnpm task build:all RELEASE=1
 
       - name: Create Chrome Extension
         run: zip -r "../yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" *
