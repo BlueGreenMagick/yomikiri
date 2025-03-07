@@ -378,7 +378,7 @@ exports[`'$なかなかに強いです' > 'sentence (span)' 1`] = `"<span class=
 
 exports[`'$なかなかに強いです' > 'sentence' 1`] = `"なかなかに強いです"`;
 
-exports[`'$なかなかに強いです' > 'translated-sentence' 1`] = `"It's quite strong"`;
+exports[`'$なかなかに強いです' > 'translated-sentence' 1`] = `"translation: なかなかに強いです"`;
 
 exports[`'$なかなかに強いです' > 'url' 1`] = `"https://yomikiri.test/"`;
 
@@ -602,7 +602,7 @@ exports[`'Special character is escaped: 図＄書<->' > 'sentence (span)' 1`] = 
 
 exports[`'Special character is escaped: 図＄書<->' > 'sentence' 1`] = `"図書&lt;-&gt;"`;
 
-exports[`'Special character is escaped: 図＄書<->' > 'translated-sentence' 1`] = `"Books<->"`;
+exports[`'Special character is escaped: 図＄書<->' > 'translated-sentence' 1`] = `"translation: 図書<->"`;
 
 exports[`'Special character is escaped: 図＄書<->' > 'url' 1`] = `"https://yomikiri.test/"`;
 
@@ -1044,7 +1044,7 @@ exports[`'Unicode normalization: 彼か＄゙学生' > 'sentence (span)' 1`] = `
 
 exports[`'Unicode normalization: 彼か＄゙学生' > 'sentence' 1`] = `"彼が学生"`;
 
-exports[`'Unicode normalization: 彼か＄゙学生' > 'translated-sentence' 1`] = `"he is a student"`;
+exports[`'Unicode normalization: 彼か＄゙学生' > 'translated-sentence' 1`] = `"translation: 彼が学生"`;
 
 exports[`'Unicode normalization: 彼か＄゙学生' > 'url' 1`] = `"https://yomikiri.test/"`;
 
@@ -1368,7 +1368,7 @@ exports[`'春の茶が飲＄みたいです' > 'sentence (span)' 1`] = `"春の�
 
 exports[`'春の茶が飲＄みたいです' > 'sentence' 1`] = `"春の茶が飲みたいです"`;
 
-exports[`'春の茶が飲＄みたいです' > 'translated-sentence' 1`] = `"I want to drink spring tea"`;
+exports[`'春の茶が飲＄みたいです' > 'translated-sentence' 1`] = `"translation: 春の茶が飲みたいです"`;
 
 exports[`'春の茶が飲＄みたいです' > 'url' 1`] = `"https://yomikiri.test/"`;
 
@@ -1718,7 +1718,7 @@ exports[`'＄読みたい' > 'sentence (span)' 1`] = `"<span class="yomi-word">�
 
 exports[`'＄読みたい' > 'sentence' 1`] = `"読みたい"`;
 
-exports[`'＄読みたい' > 'translated-sentence' 1`] = `"I want to read it"`;
+exports[`'＄読みたい' > 'translated-sentence' 1`] = `"translation: 読みたい"`;
 
 exports[`'＄読みたい' > 'url' 1`] = `"https://yomikiri.test/"`;
 
