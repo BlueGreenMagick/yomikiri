@@ -1,0 +1,6 @@
+version: '3'
+
+includes:
+  rust-shared:
+    taskfile: ../../extra/taskfile/Rust-Taskfile.yml
+    flatten: true

@@ -3,7 +3,7 @@ name: Create Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ jobs:
   release:
     runs-on: macos-latest
     timeout-minutes: 45
-    name: "Create release"
+    name: 'Create release'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,12 +25,12 @@ jobs:
       - name: Use xcode 16.1
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
-          xcode-version: "16.1"
+          xcode-version: '16.1'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3.0.0
         with:
-          version: "next-9"
+          version: 'next-9'
 
       - name: Install node
         uses: actions/setup-node@v4
@@ -47,43 +47,22 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(pnpm task run --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Formatting
-        run: pnpm run check-format
+        run: pnpm task check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
-      - name: Build yomikiri-dictionary-generator crate
-        run: cargo build
-        working-directory: ./crates/yomikiri-dictionary-generator
-
-      - name: Generate yomikiri dictionary
-        run: pnpm run generate:dictionary
-
-      - name: Build yomikiri-unidic crate
-        run: cargo build
-        working-directory: ./crates/unidic
-
-      - name: Generate unidic files
-        run: pnpm run generate:unidic
-
-      - name: Generate backend
-        run: pnpm run generate:release
-        working-directory: ./crates/yomikiri-backend
-
-      - name: Generate licenses
-        run: pnpm run generate:licenses
+      - name: Build
+        run: pnpm task build:all RELEASE=1
 
       - name: Lint
-        run: pnpm run lint
+        run: pnpm task lint
 
       - name: Test
-        run: pnpm run test
-
-      - name: Build web
-        run: pnpm run build:chrome && pnpm run build:firefox && pnpm run build:ios
+        run: pnpm task test
 
       - name: Create Chrome Extension
         run: zip -r "../yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" *

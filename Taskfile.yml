@@ -1,0 +1,168 @@
+# Optional Arguments:
+# - `RELEASE=1`: Sets task to be run for release
+version: '3'
+
+includes:
+  main:
+    taskfile: './main/Taskfile.yml'
+    dir: './main'
+  japanese-utils:
+    taskfile: './crates/japanese-utils/Taskfile.yml'
+    dir: './crates/japanese-utils'
+  jmdict:
+    taskfile: './crates/jmdict/Taskfile.yml'
+    dir: './crates/jmdict'
+  unidic:
+    taskfile: './crates/unidic/Taskfile.yml'
+    dir: './crates/unidic'
+  unidic-types:
+    taskfile: './crates/unidic-types/Taskfile.yml'
+    dir: './crates/unidic-types'
+  yomikiri-backend:
+    aliases: [backend]
+    taskfile: './crates/yomikiri-backend/Taskfile.yml'
+    dir: './crates/yomikiri-backend'
+  yomikiri-dictionary:
+    taskfile: './crates/yomikiri-dictionary/Taskfile.yml'
+    dir: './crates/yomikiri-dictionary'
+  yomikiri-dictionary-generator:
+    taskfile: './crates/yomikiri-dictionary-generator/Taskfile.yml'
+    dir: './crates/yomikiri-dictionary-generator'
+  generate-license:
+    taskfile: './extra/generate-license/Taskfile.yml'
+    dir: './extra/generate-license'
+
+run: when_changed
+
+vars:
+  # All Taskfiles should have 'check', 'lint', 'test' commands
+  INCLUDES:
+    - main
+    - japanese-utils
+    - jmdict
+    - unidic
+    - unidic-types
+    - yomikiri-backend
+    - yomikiri-dictionary
+    - yomikiri-dictionary-generator
+    - generate-license
+
+tasks:
+  print-version:
+    desc: Print version in root package.json
+    cmds:
+      - pnpm tsx './extra/scripts/print-version.ts'
+
+  check:
+    desc: Check files
+    cmds:
+      - for: { var: INCLUDES }
+        task: '{{.ITEM}}:check'
+
+  lint:
+    desc: Lint files
+    cmds:
+      - for: { var: INCLUDES }
+        task: '{{.ITEM}}:lint'
+
+  test:
+    desc: Test files
+    cmds:
+      - for: { var: INCLUDES }
+        task: '{{.ITEM}}:test'
+
+  format:
+    aliases: ['fmt']
+    desc: 'Format all files'
+    deps: ['format:prettier', 'format:rust']
+
+  format:prettier:
+    aliases: ['fmt:prettier']
+    desc: 'Format files using prettier'
+    cmds:
+      - 'pnpm prettier --write --list-different .'
+
+  format:rust:
+    aliases: ['fmt:rust']
+    desc: 'Format files using Cargo (Rust)'
+    cmds:
+      - 'cargo fmt'
+
+  check-format:prettier:
+    aliases: ['check-fmt:prettier']
+    cmds:
+      - pnpm prettier --check .
+
+  check-format:rust:
+    aliases: ['check-fmt:rust']
+    cmds:
+      - cargo fmt --check
+
+  check-format:
+    aliases: ['check-fmt']
+    desc: 'Check if files are formatted'
+    deps: [check-format:prettier, check-format:rust]
+
+  build:all:
+    run: once
+    cmds:
+      - task: 'build:chrome'
+      - task: 'build:firefox'
+      - task: 'build:ios'
+
+  build:extensions:
+    desc: 'Build Chrome and Firefox web extensions'
+    cmds:
+      - task: 'build:chrome'
+      - task: 'build:firefox'
+
+  build:chrome:
+    desc: 'Build Chrome web extension'
+    cmds:
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:build:chrome
+
+  build:firefox:
+    desc: 'Build Firefox web extension'
+    cmds:
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:build:chrome
+
+  # Called from XCode build script
+  build:ios:
+    cmds:
+      - task: _build:shared
+      - task: backend:generate:ios
+      - task: 'main:build:ios'
+      - task: 'main:build:iosapp'
+
+  dev:chrome:
+    desc: 'Dev build for Chrome'
+    aliases: ['dev']
+    cmds:
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:dev:chrome
+
+  dev:firefox:
+    desc: 'Dev build for Firefox'
+    cmds:
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:dev:firefox
+
+  dev:ios:
+    cmds:
+      - task: _build:shared
+      - task: backend:generate:ios
+      - task: main:dev:ios
+      - task: main:dev:iosapp
+
+  _build:shared:
+    internal: true
+    cmds:
+      - task: yomikiri-dictionary-generator:download-and-generate
+      - task: unidic:generate
+      - task: generate-license:generate

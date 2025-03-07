@@ -28,6 +28,14 @@ PROJECT_ROOT="$PROJECT_DIR/../.."
 TARGET_DIR="$PROJECT_ROOT/target"
 LIB_FILE_PATH="$FRAMEWORK_DIR/rust/libyomikiri_rs.a"
 
+# Import paths from bash and zsh, so .bashrc and zshrc paths are added.
+if output=$(bash -lic 'echo $PATH'); then
+  PATH="$output:$PATH"
+fi
+if output=$(zsh -lic 'echo $PATH'); then
+  PATH="$output:$PATH"
+fi
+
 # Remove file if it exists
 rm -f "$LIB_FILE_PATH"
 
@@ -43,8 +51,13 @@ fi
 
 if [ "$CONFIGURATION" = "Debug" ]; then
   TARGET="debug"
+  RELEASE_FLAG=""
 else
   TARGET="release"
+  RELEASE_FLAG="RELEASE=1"
 fi
+
+# Build yomikiri backend
+pnpm task backend:generate:ios $RELEASE_FLAG
 
 ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_rs.a" "$LIB_FILE_PATH"

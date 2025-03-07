@@ -12,7 +12,7 @@ jobs:
   download_jmdict:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    name: "Download JMDict"
+    name: 'Download JMDict'
     steps:
       - name: Get current date
         id: date
@@ -33,8 +33,8 @@ jobs:
       - name: Create Github Release
         uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.0.9
         with:
-          tag_name: "jmdict-${{ steps.date.outputs.DATE }}"
-          name: "JMDict ${{ steps.date.outputs.DATE }}"
+          tag_name: 'jmdict-${{ steps.date.outputs.DATE }}'
+          name: 'JMDict ${{ steps.date.outputs.DATE }}'
           body: |
             JMDict dictionary files used in Yomikiri.
             The files are stored here to make the Yomikiri build reproducible.

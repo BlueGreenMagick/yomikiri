@@ -22,10 +22,9 @@ echo "$PATH"
 # EXTENSION_DIR="$PROJECT_DIR/../main"
 
 if [ "$CONFIGURATION" = "Debug" ]; then
-  pnpm run -w "dev:ios"
+  pnpm task build:ios
 else
-# pnpm run -w "construct:all"
-  pnpm run -w "build:ios"
+  pnpm task build:ios RELEASE=1
   # Update build version
 fi
 

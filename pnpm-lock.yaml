@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: ^8.57.1
         version: 8.57.1
+      '@go-task/cli':
+        specifier: ^3.41.0
+        version: 3.41.0
       '@typescript-eslint/parser':
         specifier: ^7.18.0
         version: 7.18.0(eslint@8.57.1)(typescript@5.4.5)
@@ -581,6 +584,13 @@ packages:
   '@fluent/syntax@0.19.0':
     resolution: {integrity: sha512-5D2qVpZrgpjtqU4eNOcWGp1gnUCgjfM+vKGE2y03kKN6z5EBhtx0qdRFbg8QuNNj8wXNoX93KJoYb+NqoxswmQ==}
     engines: {node: '>=14.0.0', npm: '>=7.0.0'}
+
+  '@go-task/cli@3.41.0':
+    resolution: {integrity: sha512-ZFbFjFtwmbGMZBW7PNi5jVZdJPlK96fLBNnftyg9FwiJ/n7WtIqxJ3968vYI69JL3hN5sdY3X/dM7GtWxRRKmg==}
+
+  '@go-task/go-npm@0.2.0':
+    resolution: {integrity: sha512-vQbdtBvesHm8EUFHX8QKg4rbBodmu9VsAXH1ozpbiN5jdTMOYHTCMM31EurAYmY+rNNtxJQ4JGy6t383RPlqbw==}
+    hasBin: true
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -4342,6 +4352,12 @@ snapshots:
   '@eslint/js@8.57.1': {}
 
   '@fluent/syntax@0.19.0': {}
+
+  '@go-task/cli@3.41.0':
+    dependencies:
+      '@go-task/go-npm': 0.2.0
+
+  '@go-task/go-npm@0.2.0': {}
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:

@@ -1,0 +1,104 @@
+version: '3'
+
+tasks:
+  build:shared:
+    internal: true
+    requires:
+      vars:
+        - name: 'PLATFORM'
+          enum: ['firefox', 'chrome', 'ios', 'iosapp']
+    vars:
+      NODE_ENV: '{{if .RELEASE}}production{{else}}development{{end}}'
+      WATCH: '{{.WATCH | default ""}}'
+    cmds:
+      - 'NODE_ENV={{.NODE_ENV}} TARGET_PLATFORM={{.PLATFORM}} WATCH={{.WATCH}} pnpm tsx esbuild.config.ts'
+
+  build:firefox:
+    desc: 'Build for firefox'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'firefox'
+
+  build:chrome:
+    desc: 'Build for Chrome'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'chrome'
+
+  build:ios:
+    desc: 'Build for ios'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'ios'
+
+  build:iosapp:
+    desc: 'Build for iosapp'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'iosapp'
+
+  dev:chrome:
+    aliases: ['dev']
+    desc: 'Dev build for Chrome'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'chrome'
+          WATCH: '1'
+
+  dev:firefox:
+    desc: 'Dev build for firefox'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          WATCH: '1'
+
+  dev:ios:
+    desc: 'Dev build for ios'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          WATCH: '1'
+
+  dev:iosapp:
+    desc: 'Dev build for iosapp'
+    deps:
+      - task: 'build:shared'
+        vars:
+          NODE_ENV: 'development'
+          WATCH: '1'
+
+  test:
+    desc: 'Test'
+    cmds:
+      - 'pnpm vitest run'
+
+  check:
+    cmds:
+      - task: check:ts
+      - task: check:svelte
+
+  check:ts:
+    cmds:
+      - 'pnpm tsc --noemit'
+
+  check:svelte:
+    vars:
+      WARNINGS: 'a11y-no-static-element-interactions:ignore'
+    cmds:
+      - 'pnpm svelte-check --compiler-warnings "{{.WARNINGS}}"'
+
+  lint:
+    cmds:
+      - 'pnpm eslint --cache .'
+
+  format:
+    aliases: ['fmt']
+    cmds:
+      - 'pnpm -w prettier --write --list-different "$PWD"'

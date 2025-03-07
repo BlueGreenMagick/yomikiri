@@ -37,69 +37,55 @@ Please note that we do not support building the project on Windows. You may want
 To build for all targets, run the following commands. If you only need to build for desktop browser extension, go to later section instead.
 
 ```sh
-# Add target to compile rust for ios
-rustup target add aarch64-apple-ios
+# Install Taskfile if not already installed.
+npm install -g @go-task/cli
 # install node dependencies
 pnpm install
-# Download files, build crates, and generate necessary files for release
-pnpm generate:release
+# Build chrome, firefox web extensions, and get mostly there with the ios app
+pnpm task build:extensions RELEASE=1
 ```
 
-To build for ios simulator, also add target:
-`rustup target add aarch64-apple-ios-sim`.
+The desktop browser extensions are built into `/main/build/`.
 
-Then run `pnpm build:chrome`, `pnpm build:firefox`, which builds desktop browser extensions into `./main/build/`.
-
-To build ios app, open `/safari/Yomikiri.xcodeproj` on XCode, and build.
-
-### Desktop browser extensions only
-
-If you only need to build for desktop browser extensions only, you can run below command.
+To build for ios,
 
 ```sh
-pnpm install
-pnpm generate:release:web
+# Add target to compile rust for ios
+rustup target add aarch64-apple-ios
 ```
+
+Then open `/safari/Yomikiri.xcodeproj` on XCode, and build.
 
 ## Development
 
-Steps to build for development is slightly different, as it skips some optimizations for faster build.
+After modification, run `task format` to fix formatting, `task lint` to check for lint errors, and `task test` to run tests. These commands are universal, and are defined in repo root, and all sub packages and crates where relevant.
 
-Run following commands to generate necessary files:
-
-```sh
-rustup target add aarch64-apple-ios
-rustup target add aarch64-apple-ios-sim
-# Create yomikiri dictionary files from JMDict.
-# Must be run when 'yomikiri-dictionary' crate is modified
-pnpm generate:dictionary
-# Downloads and customizes UniDic tokenizer dictionary.
-# Must be run when dictionary or 'unidic' crate is modified
-pnpm generate:unidic
-# Generates wasm and lib for backend.
-# Must be run when dictionary, unidic, or 'yomikiri-backend' crate is modified.
-pnpm generate:backend
-# Collects licenses of dependencies. Only need to be run once.
-pnpm generate:licenses
-```
-
-If you don't need to build for ios app, you can skip adding rustup target, and run `generate:backend-wasm` instead of `generate:backend`.
-
-After modification, run `pnpm format` to fix formatting, `pnpm lint` to check for lint errors, and `pnpm test` to run tests. These commands are universal, and are defined in repo root, and all sub packages and crates where relevant.
+It is recommended that you install [Taskfile](https://taskfile.dev/installation) globally.
+If you do, you can run `task` instead of `pnpm task`.
 
 ### Chrome
 
-Run `pnpm dev:chrome`.
+Run `pnpm task dev:chrome` or `pnpm task dev` for short.
 
 In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/main/build/chrome`.
 
 ### Firefox
 
-Run `pnpm dev:firefox`.
+Run `pnpm task dev:firefox`.
 
 In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab.
 Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.
 
 ### IOS
 
-Open `/safari/Yomikiri.xcodeproj` on XCode, and build. Building automatically bundles web files in `./main`, but does not generate dictionary, unidic, or backend files.
+Add the relevant targets:
+
+```sh
+# Add target to compile rust for ios
+rustup target add aarch64-apple-ios
+# (Optional) If you want to build for ios simulator, add below target
+rustup target add aarch64-apple-ios-sim
+```
+
+Open `/safari/Yomikiri.xcodeproj` on XCode, and build.
+Building automatically builds rust crates and bundles web files in `./main`.

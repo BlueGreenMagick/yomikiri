@@ -15,7 +15,7 @@ jobs:
   test:
     runs-on: macos-latest
     timeout-minutes: 45
-    name: "Lint, Test, Build web extension"
+    name: 'Lint, Test, Build web extension'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,13 +25,13 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3.0.0
         with:
-          version: "next-9"
+          version: 'next-9'
 
       - name: Install node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install cargo
         uses: dtolnay/rust-toolchain@stable
@@ -43,7 +43,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=$(pnpm run --silent print-version)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(pnpm task --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Hash root Cargo.toml and Cargo.lock
         id: cargo-hash
@@ -53,7 +53,7 @@ jobs:
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
 
       - name: Formatting
-        run: pnpm run check-format
+        run: pnpm task check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
@@ -76,50 +76,18 @@ jobs:
           path: ${{env.JMNEDICT_PATH}}
           key: jmnedict-xml-${{steps.version.outputs.VERSION}}
 
-      - name: Build yomikiri-dictionary-generator crate
-        run: cargo build
-        working-directory: ./crates/yomikiri-dictionary-generator
-
       - name: Cache yomikiri dictionary
         uses: actions/cache@v4
         id: cache-yomikiri-dictionary
         with:
           path: ${{env.DICTIONARY_PATH}}
-          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-dictionary-generator', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH, env.JMNEDICT_PATH) }}
+          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./crates/dictionary-generator/src/**/*', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH, env.JMNEDICT_PATH) }}
 
-      - name: Generate yomikiri dictionary
-        if: steps.cache-yomikiri-dictionary.outputs.cache-hit != 'true'
-        run: pnpm run generate:dictionary
-
-      - name: Build yomikiri-unidic crate
-        run: cargo build
-        working-directory: ./crates/unidic
-
-      - name: Cache unidic output
-        uses: actions/cache@v4
-        id: cache-unidic
-        with:
-          path: ${{env.UNIDIC_OUTPUT_PATH}}
-          key: unidic-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./target/debug/yomikiri-unidic', './crates/unidic/Cargo.toml', env.DICTIONARY_PATH, './crates/unidic/original/**') }}
-
-      - name: Generate unidic files
-        if: steps.cache-unidic.outputs.cache-hit != 'true'
-        run: pnpm run generate:unidic
-
-      - name: Generate backend wasm
-        run: pnpm run generate:backend-wasm
-
-      - name: Generate backend ios
-        run: pnpm run generate:backend-ios
-
-      - name: Generate licenses
-        run: pnpm run generate:licenses
+      - name: Build
+        run: pnpm task build:all
 
       - name: Lint
-        run: pnpm run lint
+        run: pnpm task lint
 
       - name: Test
-        run: pnpm run test
-
-      - name: Build web
-        run: pnpm run build:chrome && pnpm run build:firefox && pnpm run build:ios
+        run: pnpm task test

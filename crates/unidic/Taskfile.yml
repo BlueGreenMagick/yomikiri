@@ -1,0 +1,28 @@
+version: '3'
+
+includes:
+  rust-shared:
+    taskfile: ../../extra/taskfile/Rust-Taskfile.yml
+    flatten: true
+
+run: when_changed
+
+tasks:
+  generate:
+    internal: true
+    vars:
+      TRANSFORM_DIR: 'transformed'
+      OUTPUT_DIR: 'output'
+      RESOURCE_DIR: '../yomikiri-dictionary-generator/files'
+    sources:
+      - '../../Cargo.toml'
+      - '../../Cargo.lock'
+      - './Cargo.toml'
+      - './src/**/*'
+      - '{{.RESOURCE_DIR}}/**/*'
+      - exclude: '**/.*'
+    generates:
+      - '{{.TRANSFORM_DIR}}/**/*'
+      - '{{.OUTPUT_DIR}}/**/*'
+    cmds:
+      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'

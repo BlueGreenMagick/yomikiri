@@ -1,0 +1,40 @@
+version: '3'
+
+tasks:
+  generate:
+    desc: 'Generate licenses text'
+    run: once
+    cmds:
+      - 'pnpm tsx index.ts > res/THIRD_PARTY.txt'
+
+  check:
+    desc: 'Check files'
+    cmds:
+      - 'cargo check'
+    dir: './rust'
+
+  lint:
+    desc: 'Lint files'
+    cmds:
+      - 'pnpm tsc --noemit'
+      - 'pnpm eslint --cache .'
+      - task: 'lint:rust'
+
+  lint:rust:
+    cmds:
+      - cargo clippy
+    dir: './rust'
+
+  test:
+    silent: true
+
+  format:
+    aliases: ['fmt']
+    cmds:
+      - 'pnpm -w prettier --write --list-different "$PWD"'
+      - task: 'format:rust'
+
+  format:rust:
+    cmds:
+      - cargo fmt
+    dir: './rust'
