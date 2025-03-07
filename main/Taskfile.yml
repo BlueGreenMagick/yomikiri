@@ -79,6 +79,11 @@ tasks:
     cmds:
       - 'pnpm vitest run'
 
+  update-test-snapshot:
+    desc: Update test snapshot
+    cmds:
+      - 'pnpm vitest run -u'
+
   check:
     cmds:
       - task: check:ts
