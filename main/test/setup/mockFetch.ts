@@ -3,7 +3,6 @@
 
   This module must be imported before any other imports.
 */
-import "platform/desktop/fetch.ts";
 
 import { vi } from "vitest";
 import initWasm, { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
