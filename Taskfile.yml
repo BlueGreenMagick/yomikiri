@@ -1,3 +1,5 @@
+# Optional Arguments:
+# - `RELEASE=1`: Sets task to be run for release
 version: '3'
 
 includes:
@@ -128,8 +130,8 @@ tasks:
       - task: backend:generate:wasm
       - task: main:build:chrome
 
+  # Called from XCode build script
   build:ios:
-    desc: 'Build ios app (requires final manual build in XCode)'
     cmds:
       - task: _build:shared
       - task: backend:generate:ios

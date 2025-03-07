@@ -10,7 +10,7 @@ import { watch } from "chokidar";
 import type { ExecutionContext } from "extension/browserApi";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
-const DEVELOPMENT = !PRODUCTION;
+const WATCH = !!process.env.WATCH;
 
 const TARGET = process.env.TARGET_PLATFORM;
 
@@ -29,8 +29,6 @@ const FOR_SAFARI_DESKTOP = TARGET === "safari_desktop";
 const FOR_DESKTOP = ["chrome", "firefox", "safari_desktop"].includes(TARGET);
 const FOR_IOS = TARGET === "ios";
 const FOR_IOSAPP = TARGET === "iosapp";
-
-const WATCH = DEVELOPMENT && !FOR_IOS && !FOR_IOSAPP;
 
 /** Package */
 const VERSION = Package.version;
@@ -139,7 +137,7 @@ function generateBuildOptions(): BuildOptions {
     logLevel: "info",
     // minify: PRODUCTION,
     // keepNames: PRODUCTION,
-    sourcemap: DEVELOPMENT ? "inline" : false,
+    sourcemap: PRODUCTION ? false : "inline",
     conditions: ["svelte"],
     assetNames: "res/assets/[name]-[hash]",
     // make file import URL absolute path
@@ -236,7 +234,7 @@ function getbuildEntries(): BuildEntry[] {
           : "page",
       });
     }
-    if (DEVELOPMENT) {
+    if (!PRODUCTION) {
       entries.push({
         in: "src/iosapp/dictionary.ts",
         out: "res/dictionary",
@@ -288,7 +286,7 @@ function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
         "./res/options.html",
       ]);
     }
-    if (DEVELOPMENT) {
+    if (!PRODUCTION) {
       filesToCopy.push(["src/iosapp/dictionary.html", "./res/dictionary.html"]);
     }
   } else {

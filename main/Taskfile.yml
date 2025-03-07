@@ -5,19 +5,19 @@ tasks:
     internal: true
     requires:
       vars:
-        - name: 'NODE_ENV'
-          enum: ['production', 'development']
         - name: 'PLATFORM'
           enum: ['firefox', 'chrome', 'ios', 'iosapp']
+    vars:
+      NODE_ENV: '{{if .RELEASE}}production{{else}}development{{end}}'
+      WATCH: '{{.WATCH | default ""}}'
     cmds:
-      - 'NODE_ENV={{.NODE_ENV}} TARGET_PLATFORM={{.PLATFORM}} pnpm tsx esbuild.config.ts'
+      - 'NODE_ENV={{.NODE_ENV}} TARGET_PLATFORM={{.PLATFORM}} WATCH={{.WATCH}} pnpm tsx esbuild.config.ts'
 
   build:firefox:
     desc: 'Build for firefox'
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'production'
           PLATFORM: 'firefox'
 
   build:chrome:
@@ -25,7 +25,6 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'production'
           PLATFORM: 'chrome'
 
   build:ios:
@@ -33,7 +32,6 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'production'
           PLATFORM: 'ios'
 
   build:iosapp:
@@ -41,7 +39,6 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'production'
           PLATFORM: 'iosapp'
 
   dev:chrome:
@@ -50,8 +47,8 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'development'
           PLATFORM: 'chrome'
+          WATCH: '1'
 
   dev:firefox:
     desc: 'Dev build for firefox'
@@ -59,7 +56,7 @@ tasks:
       - task: 'build:shared'
         vars:
           NODE_ENV: 'development'
-          PLATFORM: 'firefox'
+          WATCH: '1'
 
   dev:ios:
     desc: 'Dev build for ios'
@@ -67,7 +64,7 @@ tasks:
       - task: 'build:shared'
         vars:
           NODE_ENV: 'development'
-          PLATFORM: 'ios'
+          WATCH: '1'
 
   dev:iosapp:
     desc: 'Dev build for iosapp'
@@ -75,7 +72,7 @@ tasks:
       - task: 'build:shared'
         vars:
           NODE_ENV: 'development'
-          PLATFORM: 'iosapp'
+          WATCH: '1'
 
   test:
     desc: 'Test'

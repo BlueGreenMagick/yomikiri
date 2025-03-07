@@ -62,7 +62,7 @@ jobs:
         run: pnpm task test
 
       - name: Build
-        run: pnpm task build:all
+        run: pnpm task build:all RELEASE=1
 
       - name: Create Chrome Extension
         run: zip -r "../yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" *

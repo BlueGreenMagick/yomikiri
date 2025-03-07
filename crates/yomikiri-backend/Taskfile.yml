@@ -9,8 +9,6 @@ includes:
     excludes: [check, lint, test]
 
 vars:
-  RELEASE: '{{.RELEASE | default ""}}'
-
   PROJECT_ROOT: '../../'
   ROOT_CARGO_TOML: '../../Cargo.toml'
   ROOT_CARGO_LOCK: '../../Cargo.lock'
@@ -154,7 +152,7 @@ tasks:
     cmds:
       - task: 'rm -rf {{.WASM_DIR}} {{.SWIFT_DIR}} {{.APPLE_PROJECT_RUST_DIR}}'
 
-  # Cleans dir if `{{.RELEASE}}` is set and not falsey(empty)
+  # Cleans dir if `{{.RELEASE}}` is set
   _clean-dir-if-release:
     internal: true
     requires:

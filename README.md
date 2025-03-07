@@ -42,7 +42,7 @@ npm install -g @go-task/cli
 # install node dependencies
 pnpm install
 # Build chrome, firefox web extensions, and get mostly there with the ios app
-pnpm task build:extensions
+pnpm task build:extensions RELEASE=1
 ```
 
 The desktop browser extensions are built into `/main/build/`.
