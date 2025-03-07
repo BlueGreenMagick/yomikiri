@@ -5,7 +5,7 @@ tasks:
     desc: 'Generate licenses text'
     run: once
     cmds:
-      - 'tsx index.ts > res/THIRD_PARTY.txt'
+      - 'pnpm tsx index.ts > res/THIRD_PARTY.txt'
 
   check:
     desc: 'Check files'
@@ -17,7 +17,7 @@ tasks:
     desc: 'Lint files'
     cmds:
       - 'pnpm tsc --noemit'
-      - 'eslint --cache .'
+      - 'pnpm eslint --cache .'
       - task: 'lint:rust'
 
   lint:rust:
