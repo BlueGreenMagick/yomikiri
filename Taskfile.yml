@@ -30,6 +30,8 @@ includes:
     taskfile: './extra/generate-license/Taskfile.yml'
     dir: './extra/generate-license'
 
+run: when_changed
+
 vars:
   # All Taskfiles should have 'check', 'lint', 'test' commands
   INCLUDES:
@@ -108,69 +110,57 @@ tasks:
 
   build:extensions:
     desc: 'Build Chrome and Firefox web extensions'
-    run: once
     cmds:
       - task: 'build:chrome'
       - task: 'build:firefox'
 
   build:chrome:
     desc: 'Build Chrome web extension'
-    run: once
-    deps:
-      - task: 'backend:generate:wasm'
-        vars:
-          RELEASE: '1'
-      - 'generate-license:generate'
     cmds:
-      - task: 'main:build:firefox'
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:build:chrome
 
   build:firefox:
     desc: 'Build Firefox web extension'
-    run: once
-    deps:
-      - task: 'backend:generate:wasm'
-        vars:
-          RELEASE: '1'
-      - 'generate-license:generate'
     cmds:
-      - task: 'main:build:firefox'
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:build:chrome
 
   build:ios:
-    run: once
-    deps:
-      - task: 'backend:generate:ios'
-        vars:
-          RELEASE: '1'
-      - 'generate-license:generate'
+    desc: 'Build ios app (requires final manual build in XCode)'
     cmds:
+      - task: _build:shared
+      - task: backend:generate:ios
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
 
   dev:chrome:
     desc: 'Dev build for Chrome'
     aliases: ['dev']
-    run: once
-    deps:
-      - task: 'backend:generate:wasm'
-        vars:
-          RELEASE: ''
     cmds:
-      - task: 'main:dev:firefox'
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:dev:chrome
 
   dev:firefox:
     desc: 'Dev build for Firefox'
-    run: once
-    deps:
-      - task: 'backend:generate:wasm'
-        vars:
-          RELEASE: ''
     cmds:
-      - task: 'main:dev:firefox'
+      - task: _build:shared
+      - task: backend:generate:wasm
+      - task: main:dev:firefox
 
   dev:ios:
-    run: once
-    deps:
-      - task: 'backend:generate:ios'
     cmds:
-      - task: 'main:dev:ios'
-      - task: 'main:dev:iosapp'
+      - task: _build:shared
+      - task: backend:generate:ios
+      - task: main:dev:ios
+      - task: main:dev:iosapp
+
+  _build:shared:
+    internal: true
+    cmds:
+      - task: yomikiri-dictionary-generator:download-and-generate
+      - task: unidic:generate
+      - task: generate-license:generate
