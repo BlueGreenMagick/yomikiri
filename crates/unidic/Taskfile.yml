@@ -4,12 +4,11 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
-  yomikiri-dictionary-generator:
-    taskfile: '../yomikiri-dictionary-generator/Taskfile.yml'
-    dir: '../yomikiri-dictionary-generator'
+
+run: when_changed
 
 tasks:
-  _generate-unidic:
+  generate:
     internal: true
     vars:
       TRANSFORM_DIR: 'transformed'
@@ -27,12 +26,3 @@ tasks:
       - '{{.OUTPUT_DIR}}/**/*'
     cmds:
       - 'cargo run -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
-
-  generate:
-    desc: 'Generate unidic artifacts'
-    run: once
-    deps: ['yomikiri-dictionary-generator:download-and-generate']
-    cmds:
-      # Not sure if 'deps' or 'sources' has precedence,
-      # So put the logic into a separate task
-      - task: '_generate-unidic'

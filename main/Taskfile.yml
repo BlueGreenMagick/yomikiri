@@ -83,7 +83,9 @@ tasks:
       - 'pnpm vitest run'
 
   check:
-    deps: ['check:ts', 'check:svelte']
+    cmds:
+      - task: check:ts
+      - task: check:svelte
 
   check:ts:
     cmds:

@@ -7,12 +7,6 @@ includes:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
     excludes: [check, lint, test]
-  unidic:
-    taskfile: ../unidic/Taskfile.yml
-    dir: ../unidic
-  yomikiri-dictionary-generator:
-    taskfile: ../yomikiri-dictionary-generator/Taskfile.yml
-    dir: ../yomikiri-dictionary-generator
 
 vars:
   RELEASE: '{{.RELEASE | default ""}}'
@@ -46,8 +40,6 @@ tasks:
 
   test:
     desc: 'Test files'
-    # Tests depend on unidic and jmdict files
-    deps: [unidic:generate, yomikiri-dictionary-generator:download-and-generate]
     cmds:
       - 'cargo test'
 
@@ -58,7 +50,6 @@ tasks:
 
   generate:wasm:
     desc: Build wasm backend
-    deps: [unidic:generate]
     cmds:
       - task: _clean-dir-if-release
         vars:
@@ -74,7 +65,6 @@ tasks:
 
   generate:ios:
     desc: Build for ios
-    deps: [unidic:generate]
     cmds:
       - task: _clean-dir-if-release
         vars:
@@ -113,7 +103,6 @@ tasks:
     internal: true
     requires:
       vars: [TARGET]
-    deps: [unidic:generate]
     vars:
       FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
       FLAG_TARGET: '{{if .TARGET}}--target {{.TARGET}}{{end}}'
