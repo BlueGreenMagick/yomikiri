@@ -68,10 +68,11 @@ tasks:
         vars:
           DIR: '{{.SWIFT_DIR}}'
       - task: uniffi:ios
-      - task: _clean-dir-if-release
+      - task: _clean-dir
         vars:
           DIR: '{{.APPLE_PROJECT_RUST_DIR}}'
-      - 'cp -r {{.SWIFT_DIR}}/* {{.APPLE_PROJECT_RUST_DIR}}/'
+      - 'mkdir "{{.APPLE_PROJECT_RUST_DIR}}"'
+      - 'cp -r {{.SWIFT_DIR}}/* "{{.APPLE_PROJECT_RUST_DIR}}/"'
       - task: '{{if .TARGET_IOS_INSTALLED}}build:lib:ios{{else}}_void{{end}}'
       - task: '{{if .TARGET_IOS_SIM_INSTALLED}}build:lib:ios-sim{{else}}_void{{end}}'
 
