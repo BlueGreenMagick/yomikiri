@@ -20,4 +20,4 @@ pub struct SharedBackend<D: AsRef<[u8]> + 'static> {
 }
 
 #[cfg(uniffi)]
-uniffi::include_scaffolding!("uniffi_yomikiri");
+uniffi::setup_scaffolding!();
