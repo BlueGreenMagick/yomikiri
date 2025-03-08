@@ -68,9 +68,7 @@ tasks:
         vars:
           DIR: '{{.SWIFT_DIR}}'
       - task: uniffi:ios
-      - task: _clean-dir
-        vars:
-          DIR: '{{.APPLE_PROJECT_RUST_DIR}}'
+      - 'rm -rf "{{.APPLE_PROJECT_RUST_DIR}}"'
       - 'mkdir "{{.APPLE_PROJECT_RUST_DIR}}"'
       - 'cp -r {{.SWIFT_DIR}}/* "{{.APPLE_PROJECT_RUST_DIR}}/"'
       - task: '{{if .TARGET_IOS_INSTALLED}}build:lib:ios{{else}}_void{{end}}'
@@ -150,8 +148,9 @@ tasks:
           --library "{{.LIB_PATH}}" --out-dir "{{.SWIFT_DIR}}"
 
   clean:
+    desc: Remove build artifacts created by taskfile.
     cmds:
-      - task: 'rm -rf {{.WASM_DIR}} {{.SWIFT_DIR}} {{.APPLE_PROJECT_RUST_DIR}}'
+      - 'rm -rf {{.WASM_DIR}} {{.SWIFT_DIR}} {{.APPLE_PROJECT_RUST_DIR}}'
 
   # Cleans dir if `{{.RELEASE}}` is set
   _clean-dir-if-release:

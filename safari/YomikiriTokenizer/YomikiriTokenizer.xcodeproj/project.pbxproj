@@ -12,7 +12,7 @@
 		6946AA2F2BA1879100668ACB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6946AA2E2BA1879100668ACB /* Error.swift */; };
 		6946AA322BA191B400668ACB /* files in Resources */ = {isa = PBXBuildFile; fileRef = 6946AA312BA191B400668ACB /* files */; };
 		697EFFB32BA2D2E00035360C /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 697EFFB22BA2D2E00035360C /* Storage.swift */; };
-		699235B42D7BF53500BFF427 /* yomikiri_rsFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 699235B22D7BF53500BFF427 /* yomikiri_rsFFI.h */; };
+		699235B42D7BF53500BFF427 /* yomikiri_rsFFI.h in Headers */ = {isa = PBXBuildFile; fileRef = 699235B22D7BF53500BFF427 /* yomikiri_rsFFI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		699235B52D7BF53500BFF427 /* yomikiri_rs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 699235B12D7BF53500BFF427 /* yomikiri_rs.swift */; };
 		699B7D6A2A519ADB00E506F2 /* YomikiriTokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 699B7D692A519ADB00E506F2 /* YomikiriTokenizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69ADFB4F2C6223EF004D7FAF /* yomikiri_dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ADFB462C621AA2004D7FAF /* yomikiri_dictionary.swift */; };

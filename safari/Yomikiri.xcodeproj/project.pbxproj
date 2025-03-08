@@ -391,7 +391,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 695D33222AB1F211003F9C80 /* Build configuration list for PBXNativeTarget "Yomikiri Action" */;
 			buildPhases = (
-				690F8B982AB72EB5005A48CF /* Run Script: Build Extension */,
 				695D330C2AB1F211003F9C80 /* Sources */,
 				695D330D2AB1F211003F9C80 /* Frameworks */,
 				695D330E2AB1F211003F9C80 /* Resources */,
@@ -452,7 +451,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 69F2C2A229FA4FA80088F503 /* Build configuration list for PBXNativeTarget "Yomikiri Extension (iOS)" */;
 			buildPhases = (
-				699B7DD12A52C2BA00E506F2 /* Run Script: Build extension */,
 				69F2C26D29FA4FA80088F503 /* Sources */,
 				6909CA772A2241150052FEF4 /* Frameworks */,
 				699B7DD32A52C33A00E506F2 /* Resources */,
@@ -607,24 +605,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		690F8B982AB72EB5005A48CF /* Run Script: Build Extension */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script: Build Extension";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension.sh\n";
-		};
 		6988EB782D283B8E004DB55E /* Run Script: Set Build Version */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -719,24 +699,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/set_build_version.sh\n";
-		};
-		699B7DD12A52C2BA00E506F2 /* Run Script: Build extension */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script: Build extension";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nscripts/build_extension.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
