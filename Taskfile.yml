@@ -138,7 +138,7 @@ tasks:
   build:ios:
     cmds:
       - task: _build:shared
-      - task: backend:generate:ios
+      - task: backend-uniffi:generate
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
 
@@ -160,7 +160,7 @@ tasks:
   dev:ios:
     cmds:
       - task: _build:shared
-      - task: backend:generate:ios
+      - task: backend-uniffi:generate
       - task: main:dev:ios
       - task: main:dev:iosapp
 
