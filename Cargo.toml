@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "crates/yomikiri-backend",
+  "crates/yomikiri-backend-uniffi",
   "crates/jmdict",
   "crates/yomikiri-dictionary",
   "crates/unidic",
@@ -68,3 +69,4 @@ japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }
 yomikiri-jmdict = { path = "./crates/jmdict" }
 yomikiri-unidic-types = { path = "./crates/unidic-types" }
+yomikiri-rs = { path = "./crates/yomikiri-backend" }

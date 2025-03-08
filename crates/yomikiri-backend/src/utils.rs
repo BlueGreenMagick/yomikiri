@@ -11,15 +11,6 @@ pub fn setup_logger() {
     wasm_logger::init(wasm_logger::Config::default());
 }
 
-#[cfg(apple)]
-pub fn setup_logger() {
-    let logger = oslog::OsLogger::new("com.yoonchae.Yomikiri.Extension")
-        .level_filter(log::LevelFilter::Debug);
-    if logger.init().is_err() {
-        log::warn!("os_log was already initialized");
-    }
-}
-
 #[cfg(not(any(wasm, apple)))]
 pub fn setup_logger() {
     eprintln!("No logger configurable for targets not wasm nor apple")

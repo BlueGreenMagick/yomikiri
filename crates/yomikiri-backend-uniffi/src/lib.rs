@@ -1,11 +1,14 @@
-use crate::dictionary::Dictionary;
-use crate::error::{FFIResult, ToUniFFIResult};
-use crate::tokenize::create_tokenizer;
-use crate::{utils, SharedBackend};
+use yomikiri_rs::dictionary::Dictionary;
+use yomikiri_rs::error::{FFIResult, ToUniFFIResult};
+use yomikiri_rs::tokenize::create_tokenizer;
+use yomikiri_rs::SharedBackend;
 
 use anyhow::{Context, Result};
 use flate2::bufread::GzDecoder;
 use memmap2::{Mmap, MmapOptions};
+use serde_json;
+use uniffi;
+use ureq;
 use yomikiri_dictionary::dictionary::DictionaryWriter;
 use yomikiri_dictionary::{DICT_FILENAME, SCHEMA_VER};
 
@@ -14,6 +17,25 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
+/// `cfg_apple! { ... }` to compile only for apple platforms
+///
+/// `cfg_apple! { else ... }` to compile only for non-apple platforms
+macro_rules! cfg_apple {
+  (else $($item:item)*) => {
+    $(
+      #[cfg(not(any(target_os = "macos", target_os = "ios")))]
+      $item
+    )*
+  };
+
+  ($($item:item)*) => {
+    $(
+      #[cfg(any(target_os = "macos", target_os = "ios"))]
+      $item
+    )*
+  };
+}
+
 #[derive(uniffi::Object)]
 pub struct RustBackend {
     inner: Mutex<SharedBackend<Mmap>>,
@@ -21,9 +43,9 @@ pub struct RustBackend {
 
 impl RustBackend {
     pub(crate) fn try_from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Arc<RustBackend>> {
-        utils::setup_logger();
+        setup_logger();
         let tokenizer = create_tokenizer();
-        let dictionary = Dictionary::from_paths(dict_path)?;
+        let dictionary = create_dictionary_from_path(dict_path)?;
         let inner = SharedBackend {
             tokenizer,
             dictionary,
@@ -198,11 +220,26 @@ pub fn dict_schema_ver() -> u16 {
     SCHEMA_VER
 }
 
-// TODO: switch to Memmap
-impl Dictionary<Vec<u8>> {
-    pub fn from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Mmap>> {
-        let file = File::open(dict_path.as_ref())?;
-        let mmap = unsafe { MmapOptions::new().map(&file)? };
-        Dictionary::try_new(mmap)
-    }
+fn create_dictionary_from_path<P: AsRef<Path>>(dict_path: P) -> Result<Dictionary<Mmap>> {
+    let file = File::open(dict_path.as_ref())?;
+    let mmap = unsafe { MmapOptions::new().map(&file)? };
+    Dictionary::try_new(mmap)
 }
+
+cfg_apple! {
+  pub fn setup_logger() {
+    let logger = oslog::OsLogger::new("com.yoonchae.Yomikiri.Extension")
+        .level_filter(log::LevelFilter::Debug);
+    if logger.init().is_err() {
+        log::warn!("os_log was already initialized");
+    }
+  }
+}
+
+cfg_apple! { else
+  pub fn setup_logger() {
+    eprintln!("No logger configurable for targets not wasm nor apple")
+  }
+}
+
+uniffi::setup_scaffolding!();

@@ -6,8 +6,6 @@ pub mod tokenize;
 mod unidic;
 mod utils;
 
-#[cfg(uniffi)]
-mod ffi;
 #[cfg(wasm)]
 mod wasm;
 
