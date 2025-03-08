@@ -8,7 +8,6 @@ license = "MIT"
 
 [features]
 wasm = ["dep:wasm-bindgen", "yomikiri-jmdict/wasm"]
-uniffi = ["dep:uniffi"]
 
 [dependencies]
 yomikiri-jmdict = { workspace = true }
@@ -23,7 +22,6 @@ log = { workspace = true }
 fst = { workspace = true }
 ouroboros = { workspace = true }
 chrono = { version = "0.4", features = ["alloc"] }
-uniffi = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true, optional = true }
 tsify-next = { workspace = true }
 postcard = { workspace = true }

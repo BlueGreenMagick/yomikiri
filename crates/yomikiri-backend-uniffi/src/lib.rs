@@ -1,5 +1,6 @@
+use crate::error::{FFIResult, ToUniFFIResult};
+
 use yomikiri_rs::dictionary::Dictionary;
-use yomikiri_rs::error::{FFIResult, ToUniFFIResult};
 use yomikiri_rs::tokenize::create_tokenizer;
 use yomikiri_rs::SharedBackend;
 
@@ -16,6 +17,8 @@ use fs_err::{self as fs, File};
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+
+mod error;
 
 /// `cfg_apple! { ... }` to compile only for apple platforms
 ///

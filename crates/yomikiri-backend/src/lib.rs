@@ -16,6 +16,3 @@ pub struct SharedBackend<D: AsRef<[u8]> + 'static> {
     pub tokenizer: Tokenizer,
     pub dictionary: Dictionary<D>,
 }
-
-#[cfg(uniffi)]
-uniffi::setup_scaffolding!();

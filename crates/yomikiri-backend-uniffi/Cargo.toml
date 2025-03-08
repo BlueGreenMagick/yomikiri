@@ -21,12 +21,12 @@ path = "uniffi-bindgen.rs"
 uniffi-bindgen = []
 
 [dependencies]
-yomikiri-dictionary = { workspace = true, features = ["uniffi"] }
+yomikiri-dictionary = { workspace = true }
 log = { workspace = true }
 serde_json = { workspace = true }
 flate2 = { workspace = true }
 anyhow = { workspace = true }
-yomikiri-rs = { workspace = true, features = ["uniffi"] }
+yomikiri-rs = { workspace = true }
 uniffi = { workspace = true }
 ureq = { workspace = true }
 fs-err = { workspace = true }
