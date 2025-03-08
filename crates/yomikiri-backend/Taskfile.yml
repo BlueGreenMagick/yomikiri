@@ -13,28 +13,19 @@ vars:
   ROOT_CARGO_TOML: '../../Cargo.toml'
   ROOT_CARGO_LOCK: '../../Cargo.lock'
   WASM_DIR: './pkg'
-  SWIFT_DIR: './swift'
-  APPLE_PROJECT_RUST_DIR: '../../safari/YomikiriTokenizer/rust'
 
   TARGET_WASM: 'wasm32-unknown-unknown'
-  TARGET_IOS: 'aarch64-apple-ios'
-  TARGET_IOS_SIM: 'aarch64-apple-ios-sim'
-
-  INSTALLED_TARGETS:
-    sh: rustup show
-  TARGET_IOS_INSTALLED: '{{if contains .TARGET_IOS .INSTALLED_TARGETS}}1{{end}}'
-  TARGET_IOS_SIM_INSTALLED: '{{if contains .TARGET_IOS_SIM .INSTALLED_TARGETS}}1{{end}}'
 
 tasks:
   check:
     desc: 'Check files'
     cmds:
-      - 'cargo check --target {{.TARGET_WASM}} --target {{.TARGET_IOS}}'
+      - 'cargo check --target {{.TARGET_WASM}}'
 
   lint:
     desc: 'Lint files'
     cmds:
-      - 'cargo clippy --target {{.TARGET_WASM}} --target {{.TARGET_IOS}} -- -D warnings'
+      - 'cargo clippy --target {{.TARGET_WASM}} -- -D warnings'
 
   test:
     desc: 'Test files'
@@ -44,7 +35,6 @@ tasks:
   generate:
     cmds:
       - task: 'generate:wasm'
-      - task: 'generate:ios'
 
   generate:wasm:
     desc: Build wasm backend
@@ -61,40 +51,6 @@ tasks:
         vars:
           RELEASE: '1'
 
-  generate:ios:
-    desc: Build for ios
-    cmds:
-      - task: _clean-dir-if-release
-        vars:
-          DIR: '{{.SWIFT_DIR}}'
-      - task: uniffi:ios
-      - 'rm -rf "{{.APPLE_PROJECT_RUST_DIR}}"'
-      - 'mkdir "{{.APPLE_PROJECT_RUST_DIR}}"'
-      - 'cp -r {{.SWIFT_DIR}}/* "{{.APPLE_PROJECT_RUST_DIR}}/"'
-      - task: '{{if .TARGET_IOS_INSTALLED}}build:lib:ios{{else}}_void{{end}}'
-      - task: '{{if .TARGET_IOS_SIM_INSTALLED}}build:lib:ios-sim{{else}}_void{{end}}'
-
-  generate:release:ios:
-    desc: Build ios for release
-    cmds:
-      - task: generate:ios
-        vars:
-          RELEASE: '1'
-
-  build:lib:ios-sim:
-    run: when_changed
-    cmds:
-      - task: _build:lib
-        vars:
-          TARGET: '{{.TARGET_IOS_SIM}}'
-
-  build:lib:ios:
-    run: when_changed
-    cmds:
-      - task: _build:lib
-        vars:
-          TARGET: '{{.TARGET_IOS}}'
-
   # Rust lib build skip is delegated to cargo
   _build:lib:
     internal: true
@@ -106,51 +62,10 @@ tasks:
     cmds:
       - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
 
-  # Builds uniffi bindings for ios
-  # Separates `_uniffi:ios` because that task requires LIB dylib to be built already
-  uniffi:ios:
-    deps:
-      - task: '_build:lib'
-        vars:
-          TARGET: ''
-    cmds:
-      - task: '_uniffi:ios'
-
-  _uniffi:ios:
-    internal: true
-    vars:
-      RELEASE_SEG: '{{if .RELEASE}}release{{else}}debug{{end}}'
-      LIB_DIR: '../../target/{{.RELEASE_SEG}}'
-      SO_PATH: '{{.LIB_DIR}}/libyomikiri_rs.so'
-      DYLIB_PATH: '{{.LIB_DIR}}/libyomikiri_rs.dylib'
-      # Lib may be .so on linux and .dylib on macos
-      LIB_PATH:
-        sh: |
-          if [ -f "{{.DYLIB_PATH}}" ]; then
-            echo "{{.DYLIB_PATH}}"
-          elif [ -f "{{.SO_PATH}}" ]; then
-            echo "{{.SO_PATH}}"
-          else
-            echo "{{.LIB_DIR}}/__ERROR_COULD_NOT_FIND_BUILT_LIB_FILE"
-          fi
-    sources:
-      - '{{.ROOT_PROJECT_TOML}}'
-      - '{{.ROOT_PROJECT_LOCK}}'
-      - '{{.LIB_PATH}}'
-      - './src/**/*'
-      - './Cargo.toml'
-    generates:
-      - '{{.SWIFT_DIR}}/**/*'
-    cmds:
-      - |
-        cargo run --features "uniffi/cli uniffi-bindgen"  \
-          --bin uniffi-bindgen generate --language swift  \
-          --library "{{.LIB_PATH}}" --out-dir "{{.SWIFT_DIR}}"
-
   clean:
     desc: Remove build artifacts created by taskfile.
     cmds:
-      - 'rm -rf {{.WASM_DIR}} {{.SWIFT_DIR}} {{.APPLE_PROJECT_RUST_DIR}}'
+      - 'rm -rf {{.WASM_DIR}}'
 
   # Cleans dir if `{{.RELEASE}}` is set
   _clean-dir-if-release:

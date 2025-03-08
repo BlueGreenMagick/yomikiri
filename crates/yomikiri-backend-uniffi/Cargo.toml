@@ -10,6 +10,9 @@ license = "MIT"
 [lib]
 crate-type = ["cdylib", "rlib", "staticlib"]
 
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"
 
 [features]
 # uniffi/cli is always enabled when calling uniffi-bindgen
