@@ -74,8 +74,8 @@ tasks:
     vars:
       RELEASE_SEG: '{{if .RELEASE}}release{{else}}debug{{end}}'
       LIB_DIR: '../../target/{{.RELEASE_SEG}}'
-      SO_PATH: '{{.LIB_DIR}}/libyomikiri_rs.so'
-      DYLIB_PATH: '{{.LIB_DIR}}/libyomikiri_rs.dylib'
+      SO_PATH: '{{.LIB_DIR}}/libyomikiri_backend_uniffi.so'
+      DYLIB_PATH: '{{.LIB_DIR}}/libyomikiri_backend_uniffi.dylib'
       # Lib may be .so on linux and .dylib on macos
       LIB_PATH:
         sh: |

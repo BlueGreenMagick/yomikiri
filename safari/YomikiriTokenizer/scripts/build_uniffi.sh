@@ -50,4 +50,4 @@ fi
 # Build yomikiri backend and web
 pnpm task build:ios $RELEASE_FLAG
 
-ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_rs.a" "$LIB_FILE_PATH"
+ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_backend_uniffi.a" "$LIB_FILE_PATH"
