@@ -47,22 +47,22 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "VERSION=$(pnpm task run --silent print-version)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(task run --silent print-version)" >> "$GITHUB_OUTPUT"
 
       - name: Formatting
-        run: pnpm task check-format
+        run: task check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
       - name: Build
-        run: pnpm task build:all RELEASE=1
+        run: task build:all RELEASE=1
 
       - name: Lint
-        run: pnpm task lint
+        run: task lint
 
       - name: Test
-        run: pnpm task test
+        run: task test
 
       - name: Create Chrome Extension
         run: zip -r "../yomikiri_chrome_v${{steps.version.outputs.VERSION}}.zip" *

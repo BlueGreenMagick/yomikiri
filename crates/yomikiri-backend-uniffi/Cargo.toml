@@ -1,0 +1,46 @@
+
+[package]
+name = "yomikiri-backend-uniffi"
+version = "0.1.0"
+authors = ["BlueGreenMagick <bluegreenmagick@gmail.com>"]
+edition = "2021"
+description = "Yomikiri Backend with uniffi bindings"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib", "staticlib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"
+
+[features]
+# uniffi/cli is always enabled when calling uniffi-bindgen
+# but the the lint tool does not know that
+# So we set below feature to skip type checking code that uses uniffi/cli
+uniffi-bindgen = []
+
+[dependencies]
+yomikiri-dictionary = { workspace = true }
+log = { workspace = true }
+serde_json = { workspace = true }
+flate2 = { workspace = true }
+anyhow = { workspace = true }
+yomikiri-rs = { workspace = true }
+uniffi = { workspace = true }
+ureq = { workspace = true }
+fs-err = { workspace = true }
+memmap2 = { workspace = true }
+
+[target.'cfg(any(target_os="macos", target_os="ios"))'.dependencies]
+oslog = { version = "0.2" }
+
+[build-dependencies]
+cfg_aliases = { workspace = true }
+uniffi = { workspace = true, features = ["build"] }
+
+[dev-dependencies]
+insta = { workspace = true }
+
+[lints.clippy]
+needless_borrows_for_generic_args = "allow"

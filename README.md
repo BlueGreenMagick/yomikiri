@@ -32,17 +32,15 @@ Yomikiri is available for Chrome, Firefox, and iOS.
 
 Please note that we do not support building the project on Windows. You may want to use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to build the project. The build system has only been tested on MacOS 14 (ARM) however, and may not quite work on Linux.
 
-[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust & cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) must be installed.
+[NodeJS](https://nodejs.org/en/download), [pnpm](https://pnpm.io/installation), [Rust & cargo](https://www.rust-lang.org/tools/install), [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/), [Taskfile](https://taskfile.dev/installation/) must be installed.
 
 To build for all targets, run the following commands. If you only need to build for desktop browser extension, go to later section instead.
 
 ```sh
-# Install Taskfile if not already installed.
-npm install -g @go-task/cli
 # install node dependencies
 pnpm install
 # Build chrome, firefox web extensions, and get mostly there with the ios app
-pnpm task build:extensions RELEASE=1
+task build:extensions RELEASE=1
 ```
 
 The desktop browser extensions are built into `/main/build/`.
@@ -60,18 +58,15 @@ Then open `/safari/Yomikiri.xcodeproj` on XCode, and build.
 
 After modification, run `task format` to fix formatting, `task lint` to check for lint errors, and `task test` to run tests. These commands are universal, and are defined in repo root, and all sub packages and crates where relevant.
 
-It is recommended that you install [Taskfile](https://taskfile.dev/installation) globally.
-If you do, you can run `task` instead of `pnpm task`.
-
 ### Chrome
 
-Run `pnpm task dev:chrome` or `pnpm task dev` for short.
+Run `task dev:chrome` or `task dev` for short.
 
 In Chrome, go to `chrome://extensions/`, toggle developer mode. Press 'Load unpacked' and open `/main/build/chrome`.
 
 ### Firefox
 
-Run `pnpm task dev:firefox`.
+Run `task dev:firefox`.
 
 In Firefox, type `about:debugging` in the url bar to open debugging menu. Switch to 'This Firefox' tab.
 Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.

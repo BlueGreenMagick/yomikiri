@@ -6,8 +6,6 @@ pub mod tokenize;
 mod unidic;
 mod utils;
 
-#[cfg(uniffi)]
-mod ffi;
 #[cfg(wasm)]
 mod wasm;
 
@@ -18,6 +16,3 @@ pub struct SharedBackend<D: AsRef<[u8]> + 'static> {
     pub tokenizer: Tokenizer,
     pub dictionary: Dictionary<D>,
 }
-
-#[cfg(uniffi)]
-uniffi::include_scaffolding!("uniffi_yomikiri");

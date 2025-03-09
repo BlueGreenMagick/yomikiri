@@ -27,3 +27,7 @@ tasks:
     desc: 'Run tests'
     cmds:
       - 'cargo test'
+
+  # Empty task used for `task:{{if}}some_task{{else}}_void{{end}}`
+  _void:
+    internal: true

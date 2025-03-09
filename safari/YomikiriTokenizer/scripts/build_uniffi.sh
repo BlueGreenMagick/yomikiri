@@ -3,22 +3,12 @@
 # Exit if fail
 set -e
 
-
 # Skip script when previewing / testing swift code
-# if [ "${ENABLE_PREVIEWS}" = "YES" ] || [ "${CONFIGURATION}" = "Test" ]; then
-#   echo "Skipping scripts when building for previews"
-#   exit 0
-# fi
+if [ "${ENABLE_PREVIEWS}" = "YES" ] || [ "${CONFIGURATION}" = "Test" ]; then
+  echo "Skipping scripts when building for previews"
+  exit 0
+fi
 
-# Import paths from bash and zsh, so .bashrc and zshrc paths are added.
-# if output=$(bash -lic 'echo $PATH'); then
-#   PATH="$output:$PATH"
-# fi
-# if output=$(zsh -lic 'echo $PATH'); then
-#   PATH="$output:$PATH"
-# fi
-
-# echo "$PATH"
 
 # If not called from XCode, (but called from terminal) current directory is the project dir.
 PROJECT_DIR=${PROJECT_DIR:-'.'}
@@ -57,7 +47,7 @@ else
   RELEASE_FLAG="RELEASE=1"
 fi
 
-# Build yomikiri backend
-pnpm task backend:generate:ios $RELEASE_FLAG
+# Build yomikiri backend and web
+task build:ios $RELEASE_FLAG
 
-ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_rs.a" "$LIB_FILE_PATH"
+ln -s "$TARGET_DIR/$AARCH/$TARGET/libyomikiri_backend_uniffi.a" "$LIB_FILE_PATH"

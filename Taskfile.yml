@@ -22,6 +22,10 @@ includes:
     aliases: [backend]
     taskfile: './crates/yomikiri-backend/Taskfile.yml'
     dir: './crates/yomikiri-backend'
+  yomikiri-backend-uniffi:
+    aliases: [backend-uniffi]
+    taskfile: './crates/yomikiri-backend-uniffi/Taskfile.yml'
+    dir: './crates/yomikiri-backend-uniffi'
   yomikiri-dictionary:
     taskfile: './crates/yomikiri-dictionary/Taskfile.yml'
     dir: './crates/yomikiri-dictionary'
@@ -134,7 +138,7 @@ tasks:
   build:ios:
     cmds:
       - task: _build:shared
-      - task: backend:generate:ios
+      - task: backend-uniffi:generate
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
 
@@ -156,7 +160,7 @@ tasks:
   dev:ios:
     cmds:
       - task: _build:shared
-      - task: backend:generate:ios
+      - task: backend-uniffi:generate
       - task: main:dev:ios
       - task: main:dev:iosapp
 

@@ -15,6 +15,3 @@ pub use error::{Error, Result};
 pub const SCHEMA_VER: u16 = 4;
 
 pub const DICT_FILENAME: &str = "english.yomikiridict";
-
-#[cfg(feature = "uniffi")]
-uniffi::setup_scaffolding!();
