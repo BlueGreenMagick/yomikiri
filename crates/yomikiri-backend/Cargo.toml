@@ -10,6 +10,19 @@ license = "MIT"
 [lib]
 crate-type = ["cdylib", "rlib", "staticlib"]
 
+[features]
+default = ["wasm"]
+wasm = [
+  "yomikiri-dictionary/wasm",
+  "serde-wasm-bindgen",
+  "wasm-bindgen",
+  "wasm-logger",
+  "web-sys",
+  "js-sys",
+  "console_error_panic_hook",
+  "tsify-next",
+]
+
 
 [dependencies]
 lindera-tokenizer = { workspace = true }
@@ -29,21 +42,18 @@ anyhow = { workspace = true }
 regex = { workspace = true }
 japanese-utils = { workspace = true }
 
-[target.'cfg(target_family="wasm")'.dependencies]
-serde-wasm-bindgen = { version = "0.6" }
-wasm-bindgen = { workspace = true }
-wasm-logger = "0.2"
-web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
-js-sys = "0.3"
-console_error_panic_hook = { version = "0.1" }
-tsify-next = { workspace = true }
-
-[target.'cfg(target_family="wasm")'.dependencies.yomikiri-dictionary]
-path = "../yomikiri-dictionary"
-features = ["wasm"]
-
-[build-dependencies]
-cfg_aliases = { workspace = true }
+# feature="wasm" dependencies
+serde-wasm-bindgen = { version = "0.6", optional = true }
+wasm-bindgen = { workspace = true, optional = true }
+wasm-logger = { version = "0.2", optional = true }
+web-sys = { version = "0.3", features = [
+  "Window",
+  "Performance",
+  "console",
+], optional = true }
+js-sys = { version = "0.3", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+tsify-next = { workspace = true, optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
@@ -52,7 +62,7 @@ memmap2 = { workspace = true }
 fs-err = { workspace = true }
 
 [lints.rust]
-unexpected_cfgs = { level = "allow", check-cfg = ['cfg(wasm)'] }
+unexpected_cfgs = { level = "allow" }
 
 [lints.clippy]
 needless_borrows_for_generic_args = "allow"

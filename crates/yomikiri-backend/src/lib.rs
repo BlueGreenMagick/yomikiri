@@ -6,7 +6,7 @@ pub mod tokenize;
 mod unidic;
 mod utils;
 
-#[cfg(wasm)]
+#[cfg(feature = "wasm")]
 mod wasm;
 
 use crate::dictionary::Dictionary;

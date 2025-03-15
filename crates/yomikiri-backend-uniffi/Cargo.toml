@@ -26,7 +26,7 @@ log = { workspace = true }
 serde_json = { workspace = true }
 flate2 = { workspace = true }
 anyhow = { workspace = true }
-yomikiri-rs = { workspace = true }
+yomikiri-rs = { workspace = true, default-features = false }
 uniffi = { workspace = true }
 ureq = { workspace = true }
 fs-err = { workspace = true }
@@ -36,7 +36,6 @@ memmap2 = { workspace = true }
 oslog = { version = "0.2" }
 
 [build-dependencies]
-cfg_aliases = { workspace = true }
 uniffi = { workspace = true, features = ["build"] }
 
 [dev-dependencies]

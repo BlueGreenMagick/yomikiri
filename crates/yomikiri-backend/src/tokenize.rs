@@ -18,11 +18,11 @@ use yomikiri_unidic_types::{
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[cfg(wasm)]
+#[cfg(feature = "wasm")]
 use tsify_next::Tsify;
 
-#[cfg_attr(wasm, derive(Tsify))]
-#[cfg_attr(wasm, tsify(into_wasm_abi))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Serialize)]
 pub struct Token {
     /// NFC normalized
@@ -66,8 +66,8 @@ pub struct TokenDetails {
     pub conjugation: UnidicConjugationForm,
 }
 
-#[cfg_attr(wasm, derive(Tsify))]
-#[cfg_attr(wasm, tsify(into_wasm_abi))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, Serialize)]
 pub struct GrammarInfo {
     pub name: String,
@@ -85,8 +85,8 @@ impl From<&GrammarRule> for GrammarInfo {
     }
 }
 
-#[cfg_attr(wasm, derive(Tsify))]
-#[cfg_attr(wasm, tsify(into_wasm_abi))]
+#[cfg_attr(feature = "wasm", derive(Tsify))]
+#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Default, Serialize)]
 pub struct TokenizeResult {
     pub tokens: Vec<Token>,

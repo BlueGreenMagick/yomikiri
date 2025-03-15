@@ -31,7 +31,6 @@ lindera-unidic-builder = { git = "https://github.com/BlueGreenMagick/lindera.git
 
 anyhow = "1"
 byteorder = "1"
-cfg_aliases = "0.2"
 chrono = { version = "0.4", features = ["alloc"] }
 clap = { version = "4.5", features = ["derive"] }
 csv = "1.2"

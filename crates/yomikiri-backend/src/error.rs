@@ -1,14 +1,14 @@
 use serde::Serialize;
 use std::fmt;
 
-#[cfg(wasm)]
+#[cfg(feature = "wasm")]
 use wasm_bindgen::prelude::*;
 
-#[cfg(wasm)]
+#[cfg(feature = "wasm")]
 pub type WasmResult<T> = Result<T, BackendError>;
 
 #[derive(Debug, Serialize)]
-#[cfg_attr(wasm, wasm_bindgen(getter_with_clone))]
+#[cfg_attr(feature = "wasm", wasm_bindgen(getter_with_clone))]
 pub struct BackendError {
     pub message: String,
     pub details: Vec<String>,
