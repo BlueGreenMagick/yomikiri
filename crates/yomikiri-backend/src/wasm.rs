@@ -43,6 +43,11 @@ impl Backend {
         Ok(Backend { inner })
     }
 
+    pub fn run(&mut self, command: &str, args: &str) -> WasmResult<String> {
+        let result = self.inner.run(command, args)?;
+        Ok(result)
+    }
+
     pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> WasmResult<TokenizeResult> {
         let result = self
             .inner

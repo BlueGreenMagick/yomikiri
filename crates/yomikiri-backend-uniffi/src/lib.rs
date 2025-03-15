@@ -66,6 +66,11 @@ impl RustBackend {
         Self::_new(dict_path).uniffi()
     }
 
+    pub fn run(&self, command: String, args: String) -> FFIResult<String> {
+        let mut backend = self.inner.lock().unwrap();
+        backend.run(&command, &args).uniffi()
+    }
+
     pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<String> {
         self._tokenize(sentence, char_at).uniffi()
     }

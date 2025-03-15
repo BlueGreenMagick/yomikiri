@@ -229,6 +229,9 @@ extension YomikiriWebView {
         /// Returns JSON string or nil
         private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
+            case let cmd where cmd.hasPrefix("run:"):
+                let command = String(cmd.dropFirst("run:".count))
+                return try Backend.get().run(command: command, args: request)
             case "loadConfig":
                 let configJson = try Storage.config.get()
                 return configJson

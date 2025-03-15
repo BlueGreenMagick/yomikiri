@@ -28,6 +28,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             var jsonResponse = "null"
             do {
                 switch key {
+                // TODO: Remove 'run:' prefix and move to default instead
+                case let cmd where cmd.hasPrefix("run:"):
+                    let command = String(cmd.dropFirst("run:".count))
+                    jsonResponse = try Backend.get().run(command: command, args: request)
                 case "tokenize":
                     let req: TokenizeRequest = try jsonDeserialize(json: request)
                     jsonResponse = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
