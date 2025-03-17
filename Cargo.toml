@@ -63,6 +63,7 @@ lazy-regex = "3.3"
 postcard = { version = "1.0", features = ["use-std"] }
 memchr = "2"
 memmap2 = "0.9"
+schemars = "1.0.0-alpha.17"
 
 japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }

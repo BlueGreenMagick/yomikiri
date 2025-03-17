@@ -1,17 +1,26 @@
+use crate::tokenize::TokenizeResult;
 use crate::SharedBackend;
 use anyhow::{anyhow, Result};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 struct SearchArgs {
     query: String,
     char_idx: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 struct TokenizeArgs {
     sentence: String,
     char_idx: usize,
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+pub struct RunArgTypes {
+    search: SearchArgs,
+    tokenize: TokenizeArgs,
+    metadata: (),
 }
 
 impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {

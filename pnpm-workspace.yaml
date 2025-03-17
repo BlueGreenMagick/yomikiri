@@ -6,6 +6,7 @@ packages:
   - 'crates/unidic'
   - 'crates/unidic-types'
   - 'crates/yomikiri-backend'
+  - 'crates/yomikiri-backend/bindings'
   - 'crates/yomikiri-backend/pkg'
   - 'crates/yomikiri-dictionary-generator'
   - 'crates/yomikiri-dictionary-generator/files'

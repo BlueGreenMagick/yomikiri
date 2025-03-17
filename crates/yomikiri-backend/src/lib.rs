@@ -1,7 +1,7 @@
 pub mod dictionary;
 pub mod error;
 pub mod grammar;
-mod run;
+pub mod run;
 pub mod search;
 pub mod tokenize;
 mod unidic;

@@ -10,6 +10,11 @@ license = "MIT"
 [lib]
 crate-type = ["cdylib", "rlib", "staticlib"]
 
+[[bin]]
+name = "schemar"
+path = "bin/schemar.rs"
+
+
 [features]
 default = ["wasm"]
 wasm = [
@@ -41,6 +46,7 @@ fst = { workspace = true }
 anyhow = { workspace = true }
 regex = { workspace = true }
 japanese-utils = { workspace = true }
+schemars = { workspace = true }
 
 # feature="wasm" dependencies
 serde-wasm-bindgen = { version = "0.6", optional = true }

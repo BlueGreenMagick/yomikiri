@@ -51,6 +51,12 @@ tasks:
         vars:
           RELEASE: '1'
 
+  generate:tsbinding:
+    desc: Generate Typescript bindings for rust types
+    cmds:
+      - 'cargo run --bin schemar'
+      - 'cat ./bindings/generated.schema.json | pnpm json2ts --additionalProperties=false > ./bindings/generated.d.ts'
+
   # Rust lib build skip is delegated to cargo
   _build:lib:
     internal: true

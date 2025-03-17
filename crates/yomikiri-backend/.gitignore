@@ -2,3 +2,4 @@ experiment
 pkg
 swift
 .vscode
+bindings/generated.*
