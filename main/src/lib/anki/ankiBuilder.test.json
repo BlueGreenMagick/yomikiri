@@ -37,97 +37,99 @@
     "entries": [
       {
         "type": "word",
-        "id": 1456360,
-        "kanjis": [
-          { "kanji": "読む", "rarity": "normal" },
-          { "kanji": "讀む", "rarity": "search" },
-          { "kanji": "訓む", "rarity": "search" }
-        ],
-        "readings": [
-          {
-            "reading": "よむ",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["verb"],
-            "senses": [
-              {
-                "meanings": ["to read"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["to recite (e.g. a sutra)", "to chant"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": [
-                  "to predict",
-                  "to guess",
-                  "to forecast",
-                  "to read (someone's thoughts)",
-                  "to see (e.g. into someone's heart)",
-                  "to divine"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["to pronounce", "to read (e.g. a kanji)"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": [
-                  "to decipher",
-                  "to read (a meter, graph, music, etc.)",
-                  "to tell (the time)"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["to count", "to estimate"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["now mostly used in idioms"],
-                "dialects": []
-              },
-              {
-                "meanings": [
-                  "to read (a kanji) with its native Japanese reading"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["also written as 訓む"],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 163
+        "entry": {
+          "id": 1456360,
+          "kanjis": [
+            { "kanji": "読む", "rarity": "normal" },
+            { "kanji": "讀む", "rarity": "search" },
+            { "kanji": "訓む", "rarity": "search" }
+          ],
+          "readings": [
+            {
+              "reading": "よむ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["verb"],
+              "senses": [
+                {
+                  "meanings": ["to read"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["to recite (e.g. a sutra)", "to chant"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to predict",
+                    "to guess",
+                    "to forecast",
+                    "to read (someone's thoughts)",
+                    "to see (e.g. into someone's heart)",
+                    "to divine"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["to pronounce", "to read (e.g. a kanji)"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to decipher",
+                    "to read (a meter, graph, music, etc.)",
+                    "to tell (the time)"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["to count", "to estimate"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["now mostly used in idioms"],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to read (a kanji) with its native Japanese reading"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["also written as 訓む"],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 163
+        }
       }
     ],
     "grammars": [
@@ -141,23 +143,34 @@
   "春の茶が飲＄みたいです": {
     "tokens": [
       {
-        "text": "春",
+        "text": "春の",
         "start": 0,
-        "children": [],
-        "pos": "名詞",
-        "pos2": "普通名詞",
-        "base": "春",
-        "reading": "はる",
-        "conjugation": "*"
-      },
-      {
-        "text": "の",
-        "start": 1,
-        "children": [],
-        "pos": "助詞",
-        "pos2": "格助詞",
-        "base": "の",
-        "reading": "の",
+        "children": [
+          {
+            "text": "春",
+            "start": 0,
+            "children": [],
+            "pos": "名詞",
+            "pos2": "普通名詞",
+            "base": "春",
+            "reading": "ハル",
+            "conjugation": "*"
+          },
+          {
+            "text": "の",
+            "start": 1,
+            "children": [],
+            "pos": "助詞",
+            "pos2": "格助詞",
+            "base": "の",
+            "reading": "ノ",
+            "conjugation": "*"
+          }
+        ],
+        "pos": "exp",
+        "pos2": "*",
+        "base": "春の",
+        "reading": "はるの",
         "conjugation": "*"
       },
       {
@@ -222,85 +235,107 @@
         "conjugation": "*"
       }
     ],
-    "tokenIdx": 4,
+    "tokenIdx": 3,
     "entries": [
       {
         "type": "word",
-        "id": 1169870,
-        "kanjis": [
-          { "kanji": "飲む", "rarity": "normal" },
-          { "kanji": "呑む", "rarity": "normal" },
-          { "kanji": "飮む", "rarity": "outdated" }
-        ],
-        "readings": [
-          {
-            "reading": "のむ",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["verb"],
-            "senses": [
-              {
-                "meanings": [
-                  "to drink",
-                  "to gulp",
-                  "to swallow",
-                  "to take (medicine)"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["呑む often means swallowing whole, gulping, etc."],
-                "dialects": []
-              },
-              {
-                "meanings": ["to smoke (tobacco)"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["also written 喫む"],
-                "dialects": []
-              },
-              {
-                "meanings": ["to engulf", "to overwhelm"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["to keep down", "to suppress"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["to accept (e.g. demand, condition)"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["to make light of", "to conceal"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 155
+        "entry": {
+          "id": 1169870,
+          "kanjis": [
+            { "kanji": "飲む", "rarity": "normal" },
+            { "kanji": "呑む", "rarity": "normal" },
+            { "kanji": "飮む", "rarity": "search" }
+          ],
+          "readings": [
+            {
+              "reading": "のむ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["verb"],
+              "senses": [
+                {
+                  "meanings": ["to drink", "to swallow", "to take (medicine)"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["呑む refers to swallowing whole or gulping down"],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["to smoke (tobacco)"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["to swallow up", "to engulf"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["usu. in the passive"],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to suppress (one's anger, bitter feelings, etc.)",
+                    "to keep down",
+                    "to hold back",
+                    "to swallow (one's tears)",
+                    "to catch (one's breath)"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to accept (a demand, conditions, etc.)",
+                    "to agree to"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to make light of (someone)",
+                    "to think nothing of",
+                    "to overwhelm",
+                    "to overawe"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "to carry (a concealed dagger, etc.)",
+                    "to conceal (up one's sleeve, etc.)"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 155
+        }
       }
     ],
     "grammars": [
@@ -374,82 +409,84 @@
     "entries": [
       {
         "type": "word",
-        "id": 1599420,
-        "kanjis": [
-          { "kanji": "中々", "rarity": "normal" },
-          { "kanji": "中中", "rarity": "normal" },
-          { "kanji": "仲々", "rarity": "rare" },
-          { "kanji": "仲仲", "rarity": "rare" },
-          { "kanji": "却々", "rarity": "rare" },
-          { "kanji": "却却", "rarity": "rare" }
-        ],
-        "readings": [
-          {
-            "reading": "なかなか",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["adverb", "na-adjective"],
-            "senses": [
-              {
-                "meanings": [
-                  "very",
-                  "considerably",
-                  "easily",
-                  "readily",
-                  "fairly",
-                  "quite",
-                  "highly",
-                  "rather"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": ["usuallyKanaAlone"],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          },
-          {
-            "pos": ["adverb"],
-            "senses": [
-              {
-                "meanings": ["by no means", "not readily"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": ["usuallyKanaAlone"],
-                "info": ["with a verb in the negative"],
-                "dialects": []
-              }
-            ]
-          },
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["middle", "half-way point"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["excellent", "wonderful", "very good"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": ["usuallyKanaAlone"],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 125
+        "entry": {
+          "id": 1599420,
+          "kanjis": [
+            { "kanji": "中々", "rarity": "normal" },
+            { "kanji": "中中", "rarity": "normal" },
+            { "kanji": "仲々", "rarity": "rare" },
+            { "kanji": "仲仲", "rarity": "rare" },
+            { "kanji": "却々", "rarity": "rare" },
+            { "kanji": "却却", "rarity": "rare" }
+          ],
+          "readings": [
+            {
+              "reading": "なかなか",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["adverb", "na-adjective"],
+              "senses": [
+                {
+                  "meanings": [
+                    "very",
+                    "considerably",
+                    "easily",
+                    "readily",
+                    "fairly",
+                    "quite",
+                    "highly",
+                    "rather"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": ["usuallyKanaAlone"],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            },
+            {
+              "pos": ["adverb"],
+              "senses": [
+                {
+                  "meanings": ["by no means", "not readily"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": ["usuallyKanaAlone"],
+                  "info": ["with a verb in the negative"],
+                  "dialects": []
+                }
+              ]
+            },
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["middle", "half-way point"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["excellent", "wonderful", "very good"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": ["usuallyKanaAlone"],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 125
+        }
       }
     ],
     "grammars": []
@@ -481,38 +518,87 @@
     "entries": [
       {
         "type": "word",
-        "id": 1370410,
-        "kanjis": [{ "kanji": "図書", "rarity": "normal" }],
-        "readings": [
-          {
-            "reading": "としょ",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          },
-          {
-            "reading": "ずしょ",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "outdated"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["books"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 166
+        "entry": {
+          "id": 1370410,
+          "kanjis": [{ "kanji": "図書", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "としょ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            },
+            {
+              "reading": "ずしょ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "outdated"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["books"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 166
+        }
+      },
+      {
+        "type": "word",
+        "entry": {
+          "id": 5423087,
+          "kanjis": [{ "kanji": "図書", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "としょ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["Tosho"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": ["unclassified"],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 0
+        }
+      },
+      {
+        "type": "name",
+        "entry": {
+          "kanji": "図書",
+          "groups": [
+            {
+              "types": ["place", "surname"],
+              "items": [{ "id": 5423085, "reading": "ずしょ" }]
+            },
+            {
+              "types": ["surname"],
+              "items": [{ "id": 5423086, "reading": "づしょ" }]
+            }
+          ]
+        }
       }
     ],
     "grammars": []
@@ -554,354 +640,368 @@
     "entries": [
       {
         "type": "word",
-        "id": 2028930,
-        "kanjis": [],
-        "readings": [
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          },
-          {
-            "reading": "ヶ",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "search"
-          },
-          {
-            "reading": "ケ",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "search"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["particle"],
-            "senses": [
-              {
-                "meanings": ["indicates the subject of a sentence"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["indicates possession"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [
-                  "literary in modern Japanese; usu. written as ヶ in place names"
-                ],
-                "dialects": []
-              },
-              {
-                "meanings": ["and"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": [
-                  "used after an introductory remark or explanation"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": [
-                  "regardless of ...",
-                  "whether ... (or not)",
-                  "no matter ..."
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["after the volitional or -まい form of a verb"],
-                "dialects": []
-              },
-              {
-                "meanings": ["indicates a desire or hope"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["softens a statement"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["at sentence end"],
-                "dialects": []
-              },
-              {
-                "meanings": ["indicates doubt"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["at sentence end"],
-                "dialects": []
-              },
-              {
-                "meanings": ["indicates scorn"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": ["after a noun at the end of an interjection"],
-                "dialects": []
-              }
-            ]
-          },
-          {
-            "pos": ["conjunction", "particle"],
-            "senses": [
-              {
-                "meanings": [
-                  "but",
-                  "however",
-                  "(and) yet",
-                  "though",
-                  "although",
-                  "while"
-                ],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 100
+        "entry": {
+          "id": 2028930,
+          "kanjis": [],
+          "readings": [
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            },
+            {
+              "reading": "ヶ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "search"
+            },
+            {
+              "reading": "ケ",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "search"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["particle"],
+              "senses": [
+                {
+                  "meanings": ["indicates the subject of a sentence"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["indicates possession"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [
+                    "literary in modern Japanese; usu. written as ヶ in place names"
+                  ],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["and"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "used after an introductory remark or explanation"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": [
+                    "regardless of ...",
+                    "whether ... (or not)",
+                    "no matter ..."
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["after the volitional or -まい form of a verb"],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["indicates a desire or hope"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["softens a statement"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["at sentence end"],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["indicates doubt"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["at sentence end"],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["indicates scorn"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": ["after a noun at the end of an interjection"],
+                  "dialects": []
+                }
+              ]
+            },
+            {
+              "pos": ["conjunction", "particle"],
+              "senses": [
+                {
+                  "meanings": [
+                    "but",
+                    "however",
+                    "(and) yet",
+                    "though",
+                    "although",
+                    "while"
+                  ],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 100
+        }
       },
       {
         "type": "word",
-        "id": 1202270,
-        "kanjis": [
-          { "kanji": "絵", "rarity": "normal" },
-          { "kanji": "画", "rarity": "normal" }
-        ],
-        "readings": [
-          {
-            "reading": "え",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          },
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": ["画"],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["picture", "drawing", "painting", "sketch"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["image (TV, film, etc.)", "picture", "footage"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 148
+        "entry": {
+          "id": 1202270,
+          "kanjis": [
+            { "kanji": "絵", "rarity": "normal" },
+            { "kanji": "画", "rarity": "normal" }
+          ],
+          "readings": [
+            {
+              "reading": "え",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            },
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": ["画"],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["picture", "drawing", "painting", "sketch"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["image (TV, film, etc.)", "picture", "footage"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 148
+        }
       },
       {
         "type": "word",
-        "id": 1197760,
-        "kanjis": [{ "kanji": "蛾", "rarity": "normal" }],
-        "readings": [
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          },
-          {
-            "reading": "ガ",
-            "nokanji": true,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["moth"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 15
+        "entry": {
+          "id": 1197760,
+          "kanjis": [{ "kanji": "蛾", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            },
+            {
+              "reading": "ガ",
+              "nokanji": true,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["moth"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 15
+        }
       },
       {
         "type": "word",
-        "id": 2220800,
-        "kanjis": [{ "kanji": "我", "rarity": "normal" }],
-        "readings": [
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["obstinacy"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              },
-              {
-                "meanings": ["atman", "the self", "the ego"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 0
+        "entry": {
+          "id": 2220800,
+          "kanjis": [{ "kanji": "我", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["obstinacy"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                },
+                {
+                  "meanings": ["atman", "the self", "the ego"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 0
+        }
       },
       {
         "type": "word",
-        "id": 2224630,
-        "kanjis": [{ "kanji": "雅", "rarity": "normal" }],
-        "readings": [
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun", "na-adjective"],
-            "senses": [
-              {
-                "meanings": ["elegance", "grace"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          },
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["festal song (genre of the Shi Jing)"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 0
+        "entry": {
+          "id": 2224630,
+          "kanjis": [{ "kanji": "雅", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun", "na-adjective"],
+              "senses": [
+                {
+                  "meanings": ["elegance", "grace"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            },
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["festal song (genre of the Shi Jing)"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 0
+        }
       },
       {
         "type": "word",
-        "id": 2232110,
-        "kanjis": [{ "kanji": "賀", "rarity": "normal" }],
-        "readings": [
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["congratulation", "celebration"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 0
+        "entry": {
+          "id": 2232110,
+          "kanjis": [{ "kanji": "賀", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["congratulation", "celebration"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 0
+        }
       },
       {
         "type": "word",
-        "id": 2834041,
-        "kanjis": [{ "kanji": "駕", "rarity": "normal" }],
-        "readings": [
-          {
-            "reading": "が",
-            "nokanji": false,
-            "toKanji": [],
-            "rarity": "normal"
-          }
-        ],
-        "groupedSenses": [
-          {
-            "pos": ["noun"],
-            "senses": [
-              {
-                "meanings": ["vehicle", "horse-drawn carriage"],
-                "toKanji": [],
-                "toReading": [],
-                "misc": [],
-                "info": [],
-                "dialects": []
-              }
-            ]
-          }
-        ],
-        "priority": 0
+        "entry": {
+          "id": 2834041,
+          "kanjis": [{ "kanji": "駕", "rarity": "normal" }],
+          "readings": [
+            {
+              "reading": "が",
+              "nokanji": false,
+              "toKanji": [],
+              "rarity": "normal"
+            }
+          ],
+          "groupedSenses": [
+            {
+              "pos": ["noun"],
+              "senses": [
+                {
+                  "meanings": ["vehicle", "horse-drawn carriage"],
+                  "toKanji": [],
+                  "toReading": [],
+                  "misc": [],
+                  "info": [],
+                  "dialects": []
+                }
+              ]
+            }
+          ],
+          "priority": 0
+        }
       }
     ],
     "grammars": [

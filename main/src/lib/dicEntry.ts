@@ -8,7 +8,7 @@ import type {
   Rarity,
   Reading,
   WordEntry,
-} from "@yomikiri/yomikiri-rs";
+} from "@yomikiri/backend-bindings";
 import { YomikiriError } from "./error";
 export type {
   WordEntry,
@@ -16,19 +16,20 @@ export type {
   Reading,
   Sense,
   PartOfSpeech,
-} from "@yomikiri/yomikiri-rs";
+  NameEntry,
+} from "@yomikiri/backend-bindings";
 
 export type DictionaryResult = WordEntry[];
 
 export function getMainForm(entry: Entry): string {
   if (entry.type === "word") {
-    return getWordEntryMainForm(entry);
+    return getWordEntryMainForm(entry.entry);
   } else {
-    return entry.kanji;
+    return entry.entry.kanji;
   }
 }
 
-function getWordEntryMainForm(entry: WordEntry): string {
+export function getWordEntryMainForm(entry: WordEntry): string {
   if (entry.kanjis.length > 0) {
     if (entry.kanjis[0].rarity === "normal") {
       return entry.kanjis[0].kanji;
@@ -44,9 +45,9 @@ function getWordEntryMainForm(entry: WordEntry): string {
 
 export function getMainReading(entry: Entry, mainForm: string): string {
   if (entry.type === "word") {
-    return getReadingForForm(entry, mainForm, false).reading;
+    return getReadingForForm(entry.entry, mainForm, false).reading;
   } else {
-    for (const group of entry.groups) {
+    for (const group of entry.entry.groups) {
       for (const item of group.items) {
         return item.reading;
       }
@@ -57,7 +58,7 @@ export function getMainReading(entry: Entry, mainForm: string): string {
 
 /** if `nokanji` is true, include readings that aren't true readings of kanji */
 export function getReadingForForm(
-  entry: Entry.word,
+  entry: WordEntry,
   form: string,
   nokanji = true,
 ): Reading {
@@ -68,7 +69,7 @@ export function getReadingForForm(
     }
   }
   console.error(
-    `WordEntry ${getMainForm(entry)} has no reading for form: ${form}`,
+    `WordEntry ${getWordEntryMainForm(entry)} has no reading for form: ${form}`,
   );
   return entry.readings[0];
 }
@@ -155,7 +156,7 @@ export function getValidEntriesForSurface(
       continue;
     }
 
-    for (const kanjiForm of entry.kanjis) {
+    for (const kanjiForm of entry.entry.kanjis) {
       let containsAll = true;
       for (const kanji of kanjis) {
         if (!kanjiForm.kanji.includes(kanji)) {
@@ -192,13 +193,11 @@ export interface EntryOtherForms {
  * Returns non-search forms and readings
  * Returns null if there are no other forms or readings in entry
  */
-export function getOtherFormsInEntry(
-  entry: Entry.word,
-): EntryOtherForms | null {
+export function getOtherFormsInEntry(entry: WordEntry): EntryOtherForms | null {
   const writings: Writing[] = [];
   const readings: Reading[] = [];
 
-  const mainForm = getMainForm(entry);
+  const mainForm = getWordEntryMainForm(entry);
   const mainReading = getReadingForForm(entry, mainForm);
 
   for (const kanji of entry.kanjis) {

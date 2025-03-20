@@ -6,7 +6,7 @@
   let isCommon: boolean;
   let hasBadges: boolean;
 
-  $: isCommon = entry.type === "word" && isCommonEntry(entry);
+  $: isCommon = entry.type === "word" && isCommonEntry(entry.entry);
   $: isName = entry.type === "name";
   $: hasBadges = isCommon || isName;
 </script>

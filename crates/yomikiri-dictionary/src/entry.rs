@@ -25,7 +25,7 @@ use crate::{Error, Result};
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[cfg_attr(feature = "wasm", tsify(namespace, into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, JsonSchema)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type", content = "entry", rename_all = "camelCase")]
 pub enum Entry {
     Name(NameEntry),
     Word(WordEntry),
@@ -36,7 +36,6 @@ pub enum Entry {
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, JsonSchema)]
-#[serde(transparent)]
 pub struct WordEntry(WordEntryInner);
 
 #[cfg_attr(feature = "wasm", derive(Tsify))]

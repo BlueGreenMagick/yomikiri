@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   export interface SelectedEntryForAnki {
-    entry: Entry.word;
+    entry: WordEntry;
     selected?: SelectedMeaning | undefined;
   }
 </script>
@@ -16,6 +16,7 @@
   import IconedButton from "components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
+  import type { WordEntry } from "@yomikiri/yomikiri-rs";
 
   export let entry: Entry;
   export let model: DicEntriesModel;
@@ -48,10 +49,10 @@
       {#if $ankiEnabledConfig && entry.type === "word"}
         <IconedButton
           size="2rem"
-          highlight={$selectedMeaning?.entry === entry}
+          highlight={$selectedMeaning?.entry === entry.entry}
           on:click={() => {
             onSelectEntryForAnki({
-              entry,
+              entry: entry.entry,
               selected: $selectedMeaning ?? undefined,
             });
           }}
@@ -63,9 +64,9 @@
   </div>
   <Badges {entry} />
   {#if entry.type == "word"}
-    <DicWordEntryContent {entry} {model} />
+    <DicWordEntryContent entry={entry.entry} {model} />
   {:else}
-    <DicNameEntryContent {entry} />
+    <DicNameEntryContent entry={entry.entry} />
   {/if}
 </div>
 
