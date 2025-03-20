@@ -1,10 +1,10 @@
 import { NonContentScriptFunction } from "extension/browserApi";
 import { IosPlatform } from ".";
 import type {
-  TokenizeRequest,
   TokenizeResult,
-  SearchRequest,
   IBackend,
+  TokenizeArgs,
+  SearchArgs,
 } from "../common/backend";
 import {
   cleanTokenizeResult,
@@ -38,7 +38,7 @@ export namespace IosBackend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    const req: TokenizeRequest = { text, charAt };
+    const req: TokenizeArgs = { sentence: text, char_idx: charAt };
     const result = await IosPlatform.requestToApp("tokenize", req);
     cleanTokenizeResult(result);
     return result;
@@ -64,7 +64,7 @@ export namespace IosBackend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
     }
 
-    const req: SearchRequest = { term, charAt };
+    const req: SearchArgs = { query: term, char_idx: charAt };
     const result = await IosPlatform.requestToApp("search", req);
     cleanTokenizeResult(result);
     return result;
@@ -73,7 +73,7 @@ export namespace IosBackend {
   export const getDictMetadata = NonContentScriptFunction(
     "getDictMetadata",
     () => {
-      return IosPlatform.requestToApp("getDictMetadata", null);
+      return IosPlatform.requestToApp("metadata", null);
     },
   );
 }

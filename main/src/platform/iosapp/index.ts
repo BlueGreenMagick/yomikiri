@@ -11,18 +11,13 @@ import type {
   TTSRequest,
 } from "../common";
 import { type StoredConfiguration } from "lib/config";
-import type {
-  TokenizeResult,
-  SearchRequest,
-  TokenizeRequest,
-} from "../common/backend";
 import { getTranslation } from "../common/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "lib/compat";
 import { YomikiriError } from "lib/error";
-import type { DictionaryMetadata } from "@yomikiri/yomikiri-rs";
+import type { RunMessageMap } from "platform/shared/backend";
 
 export * from "../common";
 
@@ -42,7 +37,7 @@ declare global {
   }
 }
 
-export interface MessageWebviewMap {
+export interface MessageWebviewMap extends RunMessageMap {
   ankiIsInstalled: [null, boolean];
   // returns false if anki is not installed
   ankiInfo: [null, boolean];
@@ -53,14 +48,11 @@ export interface MessageWebviewMap {
    * If config was already migrated elsewhere, returns false.
    */
   migrateConfig: [null, boolean];
-  tokenize: [TokenizeRequest, TokenizeResult];
-  searchTerm: [SearchRequest, TokenizeResult];
   versionInfo: [null, VersionInfo];
   updateDict: [null, boolean];
   ttsVoices: [null, TTSVoice[]];
   openLink: [string, null];
   tts: [TTSRequest, null];
-  getDictMetadata: [null, DictionaryMetadata];
 
   // action extension
   close: [null, void];

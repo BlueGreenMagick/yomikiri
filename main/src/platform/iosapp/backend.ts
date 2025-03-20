@@ -6,6 +6,8 @@ import type {
   TokenizeResult,
   SearchRequest,
   DictionaryMetadata,
+  SearchArgs,
+  TokenizeArgs,
 } from "../common/backend";
 import {
   cleanTokenizeResult,
@@ -32,7 +34,7 @@ export namespace IosAppBackend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    const req: TokenizeRequest = { text, charAt: charAt };
+    const req: TokenizeArgs = { sentence: text, char_idx: charAt };
     const result = await IosAppPlatform.messageWebview("tokenize", req);
     cleanTokenizeResult(result);
     return result;
@@ -51,8 +53,8 @@ export namespace IosAppBackend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
     }
 
-    const req: SearchRequest = { term, charAt };
-    const result = await IosAppPlatform.messageWebview("searchTerm", req);
+    const req: SearchArgs = { query: term, char_idx: charAt };
+    const result = await IosAppPlatform.messageWebview("search", req);
     cleanTokenizeResult(result);
     return result;
   }
@@ -65,7 +67,7 @@ export namespace IosAppBackend {
   }
 
   export function getDictMetadata(): Promise<DictionaryMetadata> {
-    return IosAppPlatform.messageWebview("getDictMetadata", null);
+    return IosAppPlatform.messageWebview("metadata", null);
   }
 }
 

@@ -10,29 +10,21 @@ import {
   updateTab,
 } from "extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
-import type {
-  SearchRequest,
-  TokenizeRequest,
-  TokenizeResult,
-  DictionaryMetadata,
-} from "../common/backend";
 import { getTranslation } from "../common/translate";
 import { migrateConfigObject } from "lib/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import { YomikiriError } from "lib/error";
+import type { RunMessageMap } from "platform/shared/backend";
 
 export * from "../common";
 
 /** Type map for messages sent with `requestToApp()`*/
-export interface AppMessageMap {
-  tokenize: [TokenizeRequest, TokenizeResult];
+export interface AppMessageMap extends RunMessageMap {
   loadConfig: [null, StoredConfiguration];
   saveConfig: [StoredConfiguration, null];
-  search: [SearchRequest, TokenizeResult];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];
-  getDictMetadata: [null, DictionaryMetadata];
 }
 
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];

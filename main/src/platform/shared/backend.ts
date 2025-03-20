@@ -1,6 +1,11 @@
+import type { RunArgTypes, RunReturnTypes } from "@yomikiri/backend-bindings";
 import type { TokenizeResult } from "@yomikiri/yomikiri-rs";
 import { getValidEntriesForSurface } from "lib/dicEntry";
 import { toHiragana } from "lib/japanese";
+
+export type RunMessageMap = {
+  [K in keyof RunArgTypes]: [RunArgTypes[K], RunReturnTypes[K]];
+};
 
 export function cleanTokenizeResult(res: TokenizeResult) {
   res.tokens.forEach((token) => {

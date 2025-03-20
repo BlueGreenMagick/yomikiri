@@ -28,16 +28,6 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             var jsonResponse = "null"
             do {
                 switch key {
-                // TODO: Remove 'run:' prefix and move to default instead
-                case let cmd where cmd.hasPrefix("run:"):
-                    let command = String(cmd.dropFirst("run:".count))
-                    jsonResponse = try Backend.get().run(command: command, args: request)
-                case "tokenize":
-                    let req: TokenizeRequest = try jsonDeserialize(json: request)
-                    jsonResponse = try Backend.get().tokenize(sentence: req.text, charAt: req.charAt)
-                case "search":
-                    let req: SearchRequest = try jsonDeserialize(json: request)
-                    jsonResponse = try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
                 case "addNote":
                     break
                 case "loadConfig":
@@ -53,10 +43,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     let ver = ProcessInfo.processInfo.operatingSystemVersion
                     let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
                     jsonResponse = try jsonSerialize(obj: iosVersion)
-                case "getDictMetadata":
-                    jsonResponse = try Backend.get().metadata()
                 default:
-                    return
+                    jsonResponse = try Backend.get().run(command: key, args: request)
+                    
                 }
                 realResponse = ["success": true, "resp": jsonResponse]
             } catch let error as BackendError {
