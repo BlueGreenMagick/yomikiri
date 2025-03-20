@@ -11,8 +11,8 @@ license = "MIT"
 crate-type = ["cdylib", "rlib", "staticlib"]
 
 [[bin]]
-name = "schemar"
-path = "bin/schemar.rs"
+name = "schemars"
+path = "bin/schemars.rs"
 
 
 [features]

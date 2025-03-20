@@ -16,6 +16,7 @@ serde = { workspace = true }
 log = { workspace = true }
 polonius-the-crab = { workspace = true }
 lazy-regex = { workspace = true }
+schemars = { workspace = true }
 
 tsify-next = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true, optional = true }

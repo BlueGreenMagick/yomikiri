@@ -27,6 +27,7 @@ tsify-next = { workspace = true }
 postcard = { workspace = true }
 unicode-normalization = { workspace = true }
 memchr = { workspace = true }
+schemars = { workspace = true }
 
 [target.'cfg(target_family="wasm")'.dependencies.chrono]
 version = "0.4"

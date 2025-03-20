@@ -3,6 +3,7 @@ use crate::SharedBackend;
 use anyhow::{anyhow, Result};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use yomikiri_dictionary::dictionary::DictionaryMetadata;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 struct SearchArgs {
@@ -17,10 +18,23 @@ struct TokenizeArgs {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
+pub struct RunArgAndReturnTypes {
+    arg: RunArgTypes,
+    ret: RunReturnTypes,
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
 pub struct RunArgTypes {
     search: SearchArgs,
     tokenize: TokenizeArgs,
     metadata: (),
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+pub struct RunReturnTypes {
+    search: TokenizeResult,
+    tokenize: TokenizeResult,
+    metadata: DictionaryMetadata,
 }
 
 impl<D: AsRef<[u8]> + 'static> SharedBackend<D> {

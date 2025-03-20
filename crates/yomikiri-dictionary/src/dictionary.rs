@@ -1,6 +1,7 @@
 use std::io::{BufRead, Write};
 
 use ouroboros::self_referencing;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
@@ -24,7 +25,7 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     pub view: DictionaryView<'this>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[cfg_attr(feature = "wasm", derive(Tsify))]
 #[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 pub struct DictionaryMetadata {
