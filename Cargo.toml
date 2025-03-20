@@ -2,6 +2,7 @@
 members = [
   "crates/yomikiri-backend",
   "crates/yomikiri-backend-uniffi",
+  "crates/yomikiri-backend-wasm",
   "crates/jmdict",
   "crates/yomikiri-dictionary",
   "crates/unidic",

@@ -1,6 +1,6 @@
 import type { AnkiBuilderData } from "lib/anki";
 import type { TokenizeResult } from "@platform/backend";
-import type { Entry, WordEntry } from "@yomikiri/yomikiri-rs";
+import type { WordEntry } from "@platform/backend";
 
 const tokenized: TokenizeResult = {
   tokens: [

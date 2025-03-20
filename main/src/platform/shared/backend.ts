@@ -1,5 +1,8 @@
-import type { RunArgTypes, RunReturnTypes } from "@yomikiri/backend-bindings";
-import type { TokenizeResult } from "@yomikiri/yomikiri-rs";
+import type {
+  RunArgTypes,
+  RunReturnTypes,
+  TokenizeResult,
+} from "@yomikiri/backend-bindings";
 import { getValidEntriesForSurface } from "lib/dicEntry";
 import { toHiragana } from "lib/japanese";
 

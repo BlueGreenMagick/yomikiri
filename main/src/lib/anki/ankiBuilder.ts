@@ -16,7 +16,7 @@ import type {
 } from "./template";
 import { YomikiriError } from "lib/error";
 import type { SelectedMeaning } from "components/dictionary/dicEntriesModel";
-import type { WordEntry } from "@yomikiri/yomikiri-rs";
+import type { WordEntry } from "@platform/backend";
 
 export interface LoadingAnkiNote {
   deck: string;

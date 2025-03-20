@@ -57,9 +57,9 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
 
-  crates/yomikiri-backend/bindings: {}
+  crates/yomikiri-backend-wasm/pkg: {}
 
-  crates/yomikiri-backend/pkg: {}
+  crates/yomikiri-backend/bindings: {}
 
   crates/yomikiri-dictionary-generator/files: {}
 
@@ -110,9 +110,9 @@ importers:
       '@yomikiri/generate-license':
         specifier: workspace:*
         version: link:../extra/generate-license
-      '@yomikiri/yomikiri-rs':
+      '@yomikiri/yomikiri-backend-wasm':
         specifier: workspace:*
-        version: link:../crates/yomikiri-backend/pkg
+        version: link:../crates/yomikiri-backend-wasm/pkg
       idb:
         specifier: ^8.0.0
         version: 8.0.0

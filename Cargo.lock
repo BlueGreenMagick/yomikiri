@@ -3032,9 +3032,31 @@ dependencies = [
  "log",
  "memmap2",
  "oslog",
+ "serde",
  "serde_json",
  "uniffi",
  "ureq",
+ "yomikiri-dictionary",
+ "yomikiri-rs",
+]
+
+[[package]]
+name = "yomikiri-backend-wasm"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "console_error_panic_hook",
+ "flate2",
+ "js-sys",
+ "log",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "tsify-next",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "wasm-logger",
+ "web-sys",
  "yomikiri-dictionary",
  "yomikiri-rs",
 ]
@@ -3104,13 +3126,11 @@ name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "console_error_panic_hook",
  "flate2",
  "fs-err",
  "fst",
  "insta",
  "japanese-utils",
- "js-sys",
  "lindera-core",
  "lindera-dictionary",
  "lindera-tokenizer",
@@ -3119,16 +3139,11 @@ dependencies = [
  "regex",
  "schemars",
  "serde",
- "serde-wasm-bindgen",
  "serde_json",
  "thiserror 1.0.69",
- "tsify-next",
  "unicode-normalization",
  "unicode-segmentation",
- "wasm-bindgen",
  "wasm-bindgen-test",
- "wasm-logger",
- "web-sys",
  "yomikiri-dictionary",
  "yomikiri-unidic-types",
 ]

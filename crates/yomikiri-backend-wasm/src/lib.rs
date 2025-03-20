@@ -1,25 +1,26 @@
-use crate::dictionary::Dictionary;
-use crate::error::WasmResult;
-use crate::tokenize::{create_tokenizer, TokenizeResult};
-use crate::utils;
-use crate::SharedBackend;
+mod error;
+
+use error::WasmResult;
+use serde::Serialize;
+use tsify_next::Tsify;
+use yomikiri_rs::dictionary::Dictionary;
+use yomikiri_rs::tokenize::create_tokenizer;
+use yomikiri_rs::SharedBackend;
 
 use anyhow::Context;
 use flate2::bufread::GzDecoder;
 use js_sys::Uint8Array;
 use log::debug;
-use serde::Serialize;
 use std::io::BufReader;
-use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
-use yomikiri_dictionary::dictionary::{DictionaryMetadata, DictionaryWriter};
+use yomikiri_dictionary::dictionary::DictionaryWriter;
 use yomikiri_dictionary::SCHEMA_VER;
 
 #[derive(Serialize, Tsify)]
 #[tsify(into_wasm_abi)]
 pub struct DictUpdateResult {
     #[serde(with = "serde_wasm_bindgen::preserve")]
-    dict_bytes: Uint8Array,
+    pub dict_bytes: Uint8Array,
 }
 
 #[wasm_bindgen]
@@ -31,8 +32,8 @@ pub struct Backend {
 impl Backend {
     #[wasm_bindgen(constructor)]
     pub fn new(dict_bytes: &Uint8Array) -> WasmResult<Backend> {
-        utils::set_panic_hook();
-        utils::setup_logger();
+        set_panic_hook();
+        setup_logger();
         let tokenizer = create_tokenizer();
         let dictionary =
             Dictionary::try_new(dict_bytes.to_vec()).context("Failed to create dictionary")?;
@@ -45,23 +46,6 @@ impl Backend {
 
     pub fn run(&mut self, command: &str, args: &str) -> WasmResult<String> {
         let result = self.inner.run(command, args)?;
-        Ok(result)
-    }
-
-    pub fn tokenize(&mut self, sentence: &str, char_at: usize) -> WasmResult<TokenizeResult> {
-        let result = self
-            .inner
-            .tokenize(sentence, char_at)
-            .context("Error occured while tokenizing sentence")?;
-        Ok(result)
-    }
-
-    /// dictionary search
-    pub fn search(&mut self, term: &str, char_at: usize) -> WasmResult<TokenizeResult> {
-        let result = self
-            .inner
-            .search(term, char_at)
-            .context("Error occured while searching")?;
         Ok(result)
     }
 
@@ -108,14 +92,17 @@ impl Backend {
         self.inner.dictionary = dict;
         Ok(result)
     }
-
-    pub fn metadata(&self) -> WasmResult<DictionaryMetadata> {
-        let metadata = self.inner.dictionary.metadata();
-        Ok(metadata.clone())
-    }
 }
 
 #[wasm_bindgen]
 pub fn dict_schema_ver() -> u16 {
     SCHEMA_VER
+}
+
+pub fn set_panic_hook() {
+    console_error_panic_hook::set_once();
+}
+
+pub fn setup_logger() {
+    wasm_logger::init(wasm_logger::Config::default());
 }

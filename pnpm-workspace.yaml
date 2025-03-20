@@ -7,7 +7,7 @@ packages:
   - 'crates/unidic-types'
   - 'crates/yomikiri-backend'
   - 'crates/yomikiri-backend/bindings'
-  - 'crates/yomikiri-backend/pkg'
+  - 'crates/yomikiri-backend-wasm/pkg'
   - 'crates/yomikiri-dictionary-generator'
   - 'crates/yomikiri-dictionary-generator/files'
   - 'extra/generate-license'

@@ -11,24 +11,25 @@ vars:
   PROJECT_ROOT: '../../'
   ROOT_CARGO_TOML: '../../Cargo.toml'
   ROOT_CARGO_LOCK: '../../Cargo.lock'
+  WASM_DIR: './pkg'
+
+  TARGET_WASM: 'wasm32-unknown-unknown'
 
 tasks:
-  generate:tsbinding:
-    desc: Generate Typescript bindings for rust types
+  generate:
+    desc: Build wasm backend
     cmds:
-      - 'cargo run --bin schemars'
-      - 'cat ./bindings/generated.schema.json | pnpm json2ts --additionalProperties=false > ./bindings/generated.d.ts'
+      - task: _clean-dir-if-release
+        vars:
+          DIR: '{{.WASM_DIR}}'
+      - 'wasm-pack build {{if not .RELEASE}}--dev{{end}} -d "{{.WASM_DIR}}" --scope yomikiri --target web'
 
-  # Rust lib build skip is delegated to cargo
-  _build:lib:
-    internal: true
-    requires:
-      vars: [TARGET]
-    vars:
-      FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
-      FLAG_TARGET: '{{if .TARGET}}--target {{.TARGET}}{{end}}'
+  generate:release:
+    desc: Build wasm backend for release
     cmds:
-      - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
+      - task: generate:wasm
+        vars:
+          RELEASE: '1'
 
   clean:
     desc: Remove build artifacts created by taskfile.

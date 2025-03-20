@@ -13,7 +13,7 @@ declare module "*.yomikiriindex" {
   export default url;
 }
 
-declare module "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm" {
+declare module "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm" {
   const url: string;
   export default url;
 }

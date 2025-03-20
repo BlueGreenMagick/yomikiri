@@ -16,7 +16,7 @@
   import IconedButton from "components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
-  import type { WordEntry } from "@yomikiri/yomikiri-rs";
+  import type { WordEntry } from "@platform/backend";
 
   export let entry: Entry;
   export let model: DicEntriesModel;

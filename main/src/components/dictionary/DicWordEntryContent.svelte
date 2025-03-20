@@ -8,7 +8,7 @@
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
-  import type { WordEntry } from "@yomikiri/yomikiri-rs";
+  import type { WordEntry } from "@platform/backend";
 
   export let entry: WordEntry;
   export let model: DicEntriesModel;

@@ -1,14 +1,9 @@
 pub mod dictionary;
-pub mod error;
 pub mod grammar;
 pub mod run;
 pub mod search;
 pub mod tokenize;
 mod unidic;
-mod utils;
-
-#[cfg(feature = "wasm")]
-mod wasm;
 
 use crate::dictionary::Dictionary;
 use lindera_tokenizer::tokenizer::Tokenizer;
