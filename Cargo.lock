@@ -3081,9 +3081,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 1.0.69",
- "tsify-next",
  "unicode-normalization",
- "wasm-bindgen",
  "yomikiri-jmdict",
  "yomikiri-unidic-types",
 ]
@@ -3117,8 +3115,6 @@ dependencies = [
  "schemars",
  "serde",
  "thiserror 1.0.69",
- "tsify-next",
- "wasm-bindgen",
 ]
 
 [[package]]

@@ -14,9 +14,6 @@ use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
 use crate::meaning::{create_meaning_indexes, MeaningIdx};
 use crate::{Result, WordEntry};
 
-#[cfg(feature = "wasm")]
-use tsify_next::Tsify;
-
 #[self_referencing]
 pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     source: Box<D>,
@@ -26,8 +23,6 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 pub struct DictionaryMetadata {
     jmdict_creation_date: Option<String>,
     jmnedict_creation_date: Option<String>,

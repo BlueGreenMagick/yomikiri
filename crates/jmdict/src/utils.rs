@@ -31,7 +31,6 @@ macro_rules! jm_entity_enum {
         $( $key:pat $(if $guard:expr)? )? => $variant:ident
       ),+,
   ) => {
-      #[cfg_attr(feature = "wasm", derive(::tsify_next::Tsify))]
       #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, ::schemars::JsonSchema)]
       #[serde(rename_all = "camelCase")]
       $( #[$enum_attrs] )*
