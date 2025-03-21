@@ -19,6 +19,9 @@ opt-level = "z"
 
 [workspace.lints.clippy]
 needless_borrows_for_generic_args = "allow"
+# Used to signal that the crate is used in the file
+# e.g. `use serde_json`
+single_component_path_imports = "allow"
 
 [profile.dev.package]
 insta.opt-level = 3

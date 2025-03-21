@@ -42,5 +42,5 @@ uniffi = { workspace = true, features = ["build"] }
 [dev-dependencies]
 insta = { workspace = true }
 
-[lints.clippy]
-needless_borrows_for_generic_args = "allow"
+[lints]
+workspace = true
