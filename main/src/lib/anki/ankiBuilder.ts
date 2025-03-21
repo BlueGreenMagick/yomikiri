@@ -1,11 +1,6 @@
 import type { Token, TokenizeResult } from "@platform/backend";
 import Config from "../config";
-import {
-  getMainForm,
-  getReadingForForm,
-  getWordEntryMainForm,
-  type Entry,
-} from "../dicEntry";
+import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
 import { Platform } from "@platform";
 import Utils, { escapeHTML } from "../utils";
