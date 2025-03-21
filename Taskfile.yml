@@ -51,6 +51,8 @@ vars:
     - unidic
     - unidic-types
     - yomikiri-backend
+    - yomikiri-backend-wasm
+    - yomikiri-backend-uniffi
     - yomikiri-dictionary
     - yomikiri-dictionary-generator
     - generate-license
