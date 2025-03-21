@@ -128,6 +128,7 @@ tasks:
     desc: 'Build Chrome web extension'
     cmds:
       - task: _build:shared
+      - task: backend:tsbinding
       - task: backend-wasm:generate
       - task: main:build:chrome
 
@@ -135,6 +136,7 @@ tasks:
     desc: 'Build Firefox web extension'
     cmds:
       - task: _build:shared
+      - task: backend:tsbinding
       - task: backend-wasm:generate
       - task: main:build:chrome
 
@@ -142,6 +144,7 @@ tasks:
   build:ios:
     cmds:
       - task: _build:shared
+      - task: backend:tsbinding
       - task: backend-uniffi:generate
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
@@ -151,6 +154,7 @@ tasks:
     aliases: ['dev']
     cmds:
       - task: _build:shared
+      - task: backend:tsbinding
       - task: backend-wasm:generate
       - task: main:dev:chrome
 
@@ -158,12 +162,14 @@ tasks:
     desc: 'Dev build for Firefox'
     cmds:
       - task: _build:shared
+      - task: backend:tsbinding
       - task: backend-wasm:generate
       - task: main:dev:firefox
 
   dev:ios:
     cmds:
       - task: _build:shared
+      - task: backend:tsbinding
       - task: backend-uniffi:generate
       - task: main:dev:ios
       - task: main:dev:iosapp
