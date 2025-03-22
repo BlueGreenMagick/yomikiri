@@ -9,35 +9,43 @@ vars:
   PROJECT_ROOT: '../..'
   JMDICT_DIR: '{{.PROJECT_ROOT}}/generated/jmdict'
   YOMIKIRIDICT_PATH: '{{.PROJECT_ROOT}}/generated/dictionary-files/english.yomikiridict'
+  CRATE_BINARY: '{{.PROJECT_ROOT}}/target/release/yomikiri-dictionary-generator'
 
 tasks:
   download:
     # Build-skipping is done within rust script
     desc: Downloads jmdict file if it does not exist at output path
+    deps:
+      - _build
     cmds:
-      - 'cargo run --release -- download --outdir="{{.JMDICT_DIR}}"'
+      - '{{.CRATE_BINARY}} download --outdir="{{.JMDICT_DIR}}"'
 
   fresh:
     desc: Force downloads a fresh jmdict file
+    deps:
+      - _build
     cmds:
-      - 'cargo run --release -- download --outdir="{{.JMDICT_DIR}} --new"'
+      - '{{.CRATE_BINARY}} download --outdir="{{.JMDICT_DIR}} --new"'
 
   generate:
     desc: Generate dictionary file from jmdict file
+    deps:
+      - _build
     sources:
-      - '../../Cargo.toml'
-      - '../../Cargo.lock'
-      - 'Cargo.toml'
-      - 'src/**/*.rs'
+      - '{{.CRATE_BINARY}}'
       - '{{.JMDICT_DIR}}/**/*'
       - exclude: '**/.*'
     generates:
       - '{{.YOMIKIRIDICT_PATH}}'
     cmds:
-      - 'cargo run --release -- generate --rawdir="./{{.JMDICT_DIR}}" --out="{{.YOMIKIRIDICT_PATH}}"'
+      - '{{.CRATE_BINARY}} generate --rawdir="./{{.JMDICT_DIR}}" --out="{{.YOMIKIRIDICT_PATH}}"'
 
   download-and-generate:
     desc: 'Generate dictionary file. Download JMDICT if it does not exist.'
     cmds:
       - task: 'download'
       - task: 'generate'
+
+  _build:
+    cmds:
+      - 'cargo build --release'

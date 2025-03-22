@@ -13,15 +13,12 @@ vars:
   ORIGINAL_DIR: '{{.ROOT}}/generated/unidic-original'
   TRANSFORM_DIR: '{{.ROOT}}/generated/unidic-transformed'
   OUTPUT_DIR: '{{.ROOT}}/generated/unidic-output'
+  CRATE_BINARY: '{{.ROOT}}/target/release/yomikiri-unidic'
 
 tasks:
   generate:
-    internal: true
     sources:
-      - '../../Cargo.toml'
-      - '../../Cargo.lock'
-      - './Cargo.toml'
-      - './src/**/*'
+      - '{{.CRATE_BINARY}}'
       - '{{.DICTIONARY_FILES_DIR}}/**/*'
       - '{{.ORIGINAL_DIR}}/**/*'
       - exclude: '**/.*'
@@ -29,4 +26,8 @@ tasks:
       - '{{.TRANSFORM_DIR}}/**/*'
       - '{{.OUTPUT_DIR}}/**/*'
     cmds:
-      - 'cargo run --release -- --clean --unidic-dir="{{.ORIGINAL_DIR}}" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.DICTIONARY_FILES_DIR}}"'
+      - '"{{.CRATE_BINARY}}" --clean --unidic-dir="{{.ORIGINAL_DIR}}" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.DICTIONARY_FILES_DIR}}"'
+
+  _build:
+    cmds:
+      - 'cargo build --release'
