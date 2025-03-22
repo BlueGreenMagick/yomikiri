@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { type Entry } from "lib/dicEntry";
+  import { type NameEntry } from "lib/dicEntry";
   import DicNameGroupedSense from "./DicNameGroupedSense.svelte";
 
-  export let entry: Entry.name;
+  export let entry: NameEntry;
 </script>
 
 <div class="entry-content">

@@ -574,6 +574,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dyn-clone"
+version = "1.0.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c7a8fb8a9fbf66c1f703fe16184d10ca0ee9d23be5b4436400408ba54a95005"
+
+[[package]]
 name = "either"
 version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1770,6 +1776,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ref-cast"
+version = "1.0.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4a0ae411dbe946a674d89546582cea4ba2bb8defac896622d6496f14c23ba5cf"
+dependencies = [
+ "ref-cast-impl",
+]
+
+[[package]]
+name = "ref-cast-impl"
+version = "1.0.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1165225c21bff1f3bbce98f5a1f889949bc902d3575308cc7b0de30b4f6d27c7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.92",
+]
+
+[[package]]
 name = "regex"
 version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1931,6 +1957,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 dependencies = [
  "winapi-util",
+]
+
+[[package]]
+name = "schemars"
+version = "1.0.0-alpha.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "88ef2a6523400a2228db974a8ddc9e1d3deaa04f51bddd7832ef8d7e531bafcc"
+dependencies = [
+ "dyn-clone",
+ "ref-cast",
+ "schemars_derive",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "schemars_derive"
+version = "1.0.0-alpha.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6d4e1945a3c9e58edaa708449b026519f7f4197185e1b5dbc689615c1ad724d"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde_derive_internals",
+ "syn 2.0.92",
 ]
 
 [[package]]
@@ -2981,9 +3032,31 @@ dependencies = [
  "log",
  "memmap2",
  "oslog",
+ "serde",
  "serde_json",
  "uniffi",
  "ureq",
+ "yomikiri-dictionary",
+ "yomikiri-rs",
+]
+
+[[package]]
+name = "yomikiri-backend-wasm"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "console_error_panic_hook",
+ "flate2",
+ "js-sys",
+ "log",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "tsify-next",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "wasm-logger",
+ "web-sys",
  "yomikiri-dictionary",
  "yomikiri-rs",
 ]
@@ -3004,12 +3077,11 @@ dependencies = [
  "memchr",
  "ouroboros",
  "postcard",
+ "schemars",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
- "tsify-next",
  "unicode-normalization",
- "wasm-bindgen",
  "yomikiri-jmdict",
  "yomikiri-unidic-types",
 ]
@@ -3040,10 +3112,9 @@ dependencies = [
  "log",
  "polonius-the-crab",
  "quick-xml",
+ "schemars",
  "serde",
  "thiserror 1.0.69",
- "tsify-next",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -3051,30 +3122,24 @@ name = "yomikiri-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "console_error_panic_hook",
  "flate2",
  "fs-err",
  "fst",
  "insta",
  "japanese-utils",
- "js-sys",
  "lindera-core",
  "lindera-dictionary",
  "lindera-tokenizer",
  "log",
  "memmap2",
  "regex",
+ "schemars",
  "serde",
- "serde-wasm-bindgen",
  "serde_json",
  "thiserror 1.0.69",
- "tsify-next",
  "unicode-normalization",
  "unicode-segmentation",
- "wasm-bindgen",
  "wasm-bindgen-test",
- "wasm-logger",
- "web-sys",
  "yomikiri-dictionary",
  "yomikiri-unidic-types",
 ]

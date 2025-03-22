@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { GrammarInfo } from "@yomikiri/yomikiri-rs";
+  import type { GrammarInfo } from "@platform/backend";
 
   export let grammars: GrammarInfo[];
   export let shown: boolean;

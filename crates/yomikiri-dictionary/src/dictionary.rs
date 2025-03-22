@@ -1,6 +1,7 @@
 use std::io::{BufRead, Write};
 
 use ouroboros::self_referencing;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use yomikiri_jmdict::{JMDictParser, JMneDictParser};
 
@@ -13,9 +14,6 @@ use crate::jmnedict::{parse_jmnedict_entry, NameEntriesBuilder};
 use crate::meaning::{create_meaning_indexes, MeaningIdx};
 use crate::{Result, WordEntry};
 
-#[cfg(feature = "wasm")]
-use tsify_next::Tsify;
-
 #[self_referencing]
 pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     source: Box<D>,
@@ -24,9 +22,7 @@ pub struct Dictionary<D: AsRef<[u8]> + 'static> {
     pub view: DictionaryView<'this>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 pub struct DictionaryMetadata {
     jmdict_creation_date: Option<String>,
     jmnedict_creation_date: Option<String>,

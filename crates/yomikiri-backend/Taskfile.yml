@@ -6,80 +6,44 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
-    excludes: [check, lint, test]
 
 vars:
   PROJECT_ROOT: '../../'
   ROOT_CARGO_TOML: '../../Cargo.toml'
   ROOT_CARGO_LOCK: '../../Cargo.lock'
-  WASM_DIR: './pkg'
-
-  TARGET_WASM: 'wasm32-unknown-unknown'
+  ROOT_PNPM_LOCK: '{{.PROJECT_ROOT}}/pnpm-lock.yaml'
+  SCHEMA_JSON: './bindings/generated.schema.json'
+  TS_BINDING: './bindings/generated.d.ts'
+  SCHEMARS_BINARY: '{{.PROJECT_ROOT}}/target/debug/schemars'
 
 tasks:
-  check:
-    desc: 'Check files'
+  tsbinding:
+    desc: Generate Typescript bindings for rust types
     cmds:
-      - 'cargo check --target {{.TARGET_WASM}}'
-
-  lint:
-    desc: 'Lint files'
-    cmds:
-      - 'cargo clippy --target {{.TARGET_WASM}} -- -D warnings'
-
-  test:
-    desc: 'Test files'
-    cmds:
-      - 'cargo test'
-
-  generate:
-    cmds:
-      - task: 'generate:wasm'
-
-  generate:wasm:
-    desc: Build wasm backend
-    cmds:
-      - task: _clean-dir-if-release
-        vars:
-          DIR: '{{.WASM_DIR}}'
-      - 'wasm-pack build {{if not .RELEASE}}--dev{{end}} -d "{{.WASM_DIR}}" --scope yomikiri --target web'
-
-  generate:release:wasm:
-    desc: Build wasm backend for release
-    cmds:
-      - task: generate:wasm
-        vars:
-          RELEASE: '1'
-
-  # Rust lib build skip is delegated to cargo
-  _build:lib:
-    internal: true
-    requires:
-      vars: [TARGET]
-    vars:
-      FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
-      FLAG_TARGET: '{{if .TARGET}}--target {{.TARGET}}{{end}}'
-    cmds:
-      - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
+      - cargo build --bin schemars
+      - task: rs_to_schema
+      - task: schema_to_ts
 
   clean:
     desc: Remove build artifacts created by taskfile.
     cmds:
-      - 'rm -rf {{.WASM_DIR}}'
+      - 'rm -rf {{.SCHEMA_JSON}} {{.TS_BINDING}}'
 
-  # Cleans dir if `{{.RELEASE}}` is set
-  _clean-dir-if-release:
-    internal: true
-    requires:
-      vars: [DIR]
+  rs_to_schema:
+    sources:
+      - '{{.SCHEMARS_BINARY}}'
+    generates:
+      - '{{.SCHEMA_JSON}}'
     cmds:
-      - task: '{{if .RELEASE}}_clean-dir{{else}}_void{{end}}'
-        vars:
-          DIR: '{{.DIR}}'
+      - '{{.SCHEMARS_BINARY}}'
 
-  _clean-dir:
-    internal: true
-    requires:
-      vars: [DIR]
+  schema_to_ts:
+    sources:
+      - '{{.SCHEMA_JSON}}'
+      - '{{.ROOT_PNPM_LOCK}}'
+    generates:
+      - '{{.TS_BINDING}}'
     cmds:
-      - 'rm -rf {{.DIR}}'
+      # --use-stderr outputs all outputs by pnpm to stderr, which is printed to terminal instead of being written to file
+      # we use piping because json2ts is executed on workspace root
+      - 'cat "{{.SCHEMA_JSON}}" | pnpm --use-stderr exec json2ts --additionalProperties=false > {{.TS_BINDING}}'

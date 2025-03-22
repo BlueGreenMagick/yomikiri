@@ -1,6 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import type { Sense } from "lib/dicEntry";
-import type { PartOfSpeech, WordEntry } from "@yomikiri/yomikiri-rs";
+import type { PartOfSpeech, WordEntry } from "@platform/backend";
 
 export interface SelectedMeaning {
   entry: WordEntry;

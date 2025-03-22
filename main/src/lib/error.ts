@@ -1,4 +1,4 @@
-import { BackendError } from "@yomikiri/yomikiri-rs";
+import { BackendError } from "@yomikiri/yomikiri-backend-wasm";
 
 /**
  * Immutable error type with chain of cause.

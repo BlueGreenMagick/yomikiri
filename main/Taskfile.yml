@@ -79,6 +79,10 @@ tasks:
     cmds:
       - 'pnpm vitest run'
 
+  update-test-data:
+    cmds:
+      - UPDATE=1 pnpm vitest --run ankiBuilder
+
   update-test-snapshot:
     desc: Update test snapshot
     cmds:

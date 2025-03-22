@@ -7,6 +7,7 @@ use anyhow::{anyhow, Context, Result};
 use japanese_utils::JapaneseString;
 use lindera_core::mode::Mode;
 use lindera_tokenizer::tokenizer::Tokenizer;
+use schemars::JsonSchema;
 use serde::Serialize;
 use std::borrow::Cow;
 use unicode_normalization::{is_nfc, UnicodeNormalization};
@@ -18,12 +19,7 @@ use yomikiri_unidic_types::{
     UnidicParticlePos2, UnidicPos, UnidicSuffixPos2, UnidicVerbPos2,
 };
 
-#[cfg(feature = "wasm")]
-use tsify_next::Tsify;
-
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, JsonSchema)]
 pub struct Token {
     /// NFC normalized
     pub text: String,
@@ -66,9 +62,7 @@ pub struct TokenDetails {
     pub conjugation: UnidicConjugationForm,
 }
 
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, JsonSchema)]
 pub struct GrammarInfo {
     pub name: String,
     pub short: String,
@@ -85,9 +79,7 @@ impl From<&GrammarRule> for GrammarInfo {
     }
 }
 
-#[cfg_attr(feature = "wasm", derive(Tsify))]
-#[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Serialize, JsonSchema)]
 pub struct TokenizeResult {
     pub tokens: Vec<Token>,
     /// selected token index

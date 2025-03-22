@@ -7,22 +7,10 @@ edition = "2021"
 description = "Rust library used in Yomikiri"
 license = "MIT"
 
-[lib]
-crate-type = ["cdylib", "rlib", "staticlib"]
 
-[features]
-default = ["wasm"]
-wasm = [
-  "yomikiri-dictionary/wasm",
-  "serde-wasm-bindgen",
-  "wasm-bindgen",
-  "wasm-logger",
-  "web-sys",
-  "js-sys",
-  "console_error_panic_hook",
-  "tsify-next",
-]
-
+[[bin]]
+name = "schemars"
+path = "bin/schemars.rs"
 
 [dependencies]
 lindera-tokenizer = { workspace = true }
@@ -41,28 +29,13 @@ fst = { workspace = true }
 anyhow = { workspace = true }
 regex = { workspace = true }
 japanese-utils = { workspace = true }
-
-# feature="wasm" dependencies
-serde-wasm-bindgen = { version = "0.6", optional = true }
-wasm-bindgen = { workspace = true, optional = true }
-wasm-logger = { version = "0.2", optional = true }
-web-sys = { version = "0.3", features = [
-  "Window",
-  "Performance",
-  "console",
-], optional = true }
-js-sys = { version = "0.3", optional = true }
-console_error_panic_hook = { version = "0.1", optional = true }
-tsify-next = { workspace = true, optional = true }
+schemars = { workspace = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
 insta = { workspace = true }
 memmap2 = { workspace = true }
 fs-err = { workspace = true }
-
-[lints.rust]
-unexpected_cfgs = { level = "allow" }
 
 [lints.clippy]
 needless_borrows_for_generic_args = "allow"

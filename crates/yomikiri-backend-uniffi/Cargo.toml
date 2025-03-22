@@ -31,6 +31,7 @@ uniffi = { workspace = true }
 ureq = { workspace = true }
 fs-err = { workspace = true }
 memmap2 = { workspace = true }
+serde = { workspace = true }
 
 [target.'cfg(any(target_os="macos", target_os="ios"))'.dependencies]
 oslog = { version = "0.2" }
@@ -41,5 +42,5 @@ uniffi = { workspace = true, features = ["build"] }
 [dev-dependencies]
 insta = { workspace = true }
 
-[lints.clippy]
-needless_borrows_for_generic_args = "allow"
+[lints]
+workspace = true

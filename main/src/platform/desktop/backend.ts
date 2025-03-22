@@ -1,5 +1,13 @@
-import type { IBackend, TokenizeResult } from "../common/backend";
-import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-rs";
+import type {
+  IBackend,
+  RunArgTypes,
+  RunReturnTypes,
+  TokenizeResult,
+} from "../common/backend";
+import {
+  Backend as BackendWasm,
+  dict_schema_ver,
+} from "@yomikiri/yomikiri-backend-wasm";
 import {
   BackgroundFunction,
   createConnection,
@@ -55,6 +63,15 @@ export namespace DesktopBackend {
     return wasm;
   }
 
+  function _run<C extends keyof RunArgTypes>(
+    wasm: BackendWasm,
+    cmd: C,
+    args: RunArgTypes[C],
+  ): RunReturnTypes[C] {
+    const jsonResult = wasm.run(cmd, JSON.stringify(args));
+    return JSON.parse(jsonResult) as RunReturnTypes[C];
+  }
+
   export const tokenize = BackgroundFunction(
     "tokenize",
     async ({ text, charAt }) => {
@@ -78,7 +95,11 @@ export namespace DesktopBackend {
 
     const codePointAt = Utils.toCodePointIndex(text, charAt);
 
-    const result = wasm.tokenize(text, codePointAt);
+    const args = {
+      sentence: text,
+      char_idx: codePointAt,
+    };
+    const result = _run(wasm, "tokenize", args);
     cleanTokenizeResult(result);
     return result;
   }
@@ -104,7 +125,11 @@ export namespace DesktopBackend {
     }
 
     const codePointAt = Utils.toCodePointIndex(term, charAt);
-    const result = wasm.search(term, codePointAt);
+    const args = {
+      query: term,
+      char_idx: codePointAt,
+    };
+    const result = _run(wasm, "search", args);
     cleanTokenizeResult(result);
     return result;
   }
@@ -113,7 +138,7 @@ export namespace DesktopBackend {
     "getDictMetadata",
     async () => {
       const wasm = await _wasm!.get();
-      return wasm.metadata();
+      return _run(wasm, "metadata", null);
     },
   );
 

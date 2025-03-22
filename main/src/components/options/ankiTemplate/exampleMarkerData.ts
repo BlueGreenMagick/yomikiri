@@ -1,6 +1,6 @@
 import type { AnkiBuilderData } from "lib/anki";
 import type { TokenizeResult } from "@platform/backend";
-import type { Entry } from "@yomikiri/yomikiri-rs";
+import type { WordEntry } from "@platform/backend";
 
 const tokenized: TokenizeResult = {
   tokens: [
@@ -80,78 +80,80 @@ const tokenized: TokenizeResult = {
   entries: [
     {
       type: "word",
-      id: 1533580,
-      kanjis: [
-        {
-          kanji: "面白い",
-          rarity: "normal",
-        },
-      ],
-      readings: [
-        {
-          reading: "おもしろい",
-          nokanji: false,
-          rarity: "normal",
-          toKanji: [],
-        },
-      ],
-      groupedSenses: [
-        {
-          pos: ["adjective"],
-          senses: [
-            {
-              toKanji: [],
-              toReading: [],
-              misc: [],
-              info: [],
-              dialects: [],
-              meanings: [
-                "interesting",
-                "fascinating",
-                "intriguing",
-                "enthralling",
-              ],
-            },
-            {
-              toKanji: [],
-              toReading: [],
-              misc: [],
-              info: [],
-              dialects: [],
-              meanings: ["amusing", "funny", "comical"],
-            },
-            {
-              toKanji: [],
-              toReading: [],
-              misc: [],
-              info: [],
-              dialects: [],
-              meanings: [
-                "enjoyable",
-                "fun",
-                "entertaining",
-                "pleasant",
-                "agreeable",
-              ],
-            },
-            {
-              toKanji: [],
-              toReading: [],
-              misc: [],
-              info: ["usu. in the negative"],
-              dialects: [],
-              meanings: [
-                "good",
-                "satisfactory",
-                "favourable",
-                "desirable",
-                "encouraging",
-              ],
-            },
-          ],
-        },
-      ],
-      priority: 156,
+      entry: {
+        id: 1533580,
+        kanjis: [
+          {
+            kanji: "面白い",
+            rarity: "normal",
+          },
+        ],
+        readings: [
+          {
+            reading: "おもしろい",
+            nokanji: false,
+            rarity: "normal",
+            toKanji: [],
+          },
+        ],
+        groupedSenses: [
+          {
+            pos: ["adjective"],
+            senses: [
+              {
+                toKanji: [],
+                toReading: [],
+                misc: [],
+                info: [],
+                dialects: [],
+                meanings: [
+                  "interesting",
+                  "fascinating",
+                  "intriguing",
+                  "enthralling",
+                ],
+              },
+              {
+                toKanji: [],
+                toReading: [],
+                misc: [],
+                info: [],
+                dialects: [],
+                meanings: ["amusing", "funny", "comical"],
+              },
+              {
+                toKanji: [],
+                toReading: [],
+                misc: [],
+                info: [],
+                dialects: [],
+                meanings: [
+                  "enjoyable",
+                  "fun",
+                  "entertaining",
+                  "pleasant",
+                  "agreeable",
+                ],
+              },
+              {
+                toKanji: [],
+                toReading: [],
+                misc: [],
+                info: ["usu. in the negative"],
+                dialects: [],
+                meanings: [
+                  "good",
+                  "satisfactory",
+                  "favourable",
+                  "desirable",
+                  "encouraging",
+                ],
+              },
+            ],
+          },
+        ],
+        priority: 156,
+      },
     },
   ],
   grammars: [],
@@ -159,7 +161,7 @@ const tokenized: TokenizeResult = {
 
 export const exampleMarkerData: AnkiBuilderData = {
   tokenized,
-  entry: tokenized.entries[0] as Entry & { type: "word" },
+  entry: tokenized.entries[0].entry as WordEntry,
   sentence: tokenized.tokens.map((tok) => tok.text).join(""),
   url: "https://yomikiri.example/",
   pageTitle: "Yomikiri Examples",

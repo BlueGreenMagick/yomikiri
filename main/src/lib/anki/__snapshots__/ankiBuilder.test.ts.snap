@@ -1088,12 +1088,13 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (div) (item-full <= 2)' 
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
-      <div class="yomi-meaning">to drink, to gulp</div>
+      <div class="yomi-meaning">to drink, to swallow</div>
       <div class="yomi-meaning">to smoke (tobacco)</div>
-      <div class="yomi-meaning">to engulf, to overwhelm</div>
-      <div class="yomi-meaning">to keep down, to suppress</div>
-      <div class="yomi-meaning">to accept (e.g. demand, condition)</div>
-      <div class="yomi-meaning">to make light of, to conceal</div>
+      <div class="yomi-meaning">to swallow up, to engulf</div>
+      <div class="yomi-meaning">to suppress (one's anger, bitter feelings, etc.), to keep down</div>
+      <div class="yomi-meaning">to accept (a demand, conditions, etc.), to agree to</div>
+      <div class="yomi-meaning">to make light of (someone), to think nothing of</div>
+      <div class="yomi-meaning">to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</div>
     </div>
   </div>
 </div>"
@@ -1104,12 +1105,13 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (div) (pos) (item-full <
   <div class="yomi-group">
     <div class="yomi-pos">(verb)</div>
     <div class="yomi-meanings">
-      <div class="yomi-meaning">to drink, to gulp</div>
+      <div class="yomi-meaning">to drink, to swallow</div>
       <div class="yomi-meaning">to smoke (tobacco)</div>
-      <div class="yomi-meaning">to engulf, to overwhelm</div>
-      <div class="yomi-meaning">to keep down, to suppress</div>
-      <div class="yomi-meaning">to accept (e.g. demand, condition)</div>
-      <div class="yomi-meaning">to make light of, to conceal</div>
+      <div class="yomi-meaning">to swallow up, to engulf</div>
+      <div class="yomi-meaning">to suppress (one's anger, bitter feelings, etc.), to keep down</div>
+      <div class="yomi-meaning">to accept (a demand, conditions, etc.), to agree to</div>
+      <div class="yomi-meaning">to make light of (someone), to think nothing of</div>
+      <div class="yomi-meaning">to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</div>
     </div>
   </div>
 </div>"
@@ -1120,12 +1122,13 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (div) (pos)' 1`] = `
   <div class="yomi-group">
     <div class="yomi-pos">(verb)</div>
     <div class="yomi-meanings">
-      <div class="yomi-meaning">to drink, to gulp, to swallow, to take (medicine)</div>
+      <div class="yomi-meaning">to drink, to swallow, to take (medicine)</div>
       <div class="yomi-meaning">to smoke (tobacco)</div>
-      <div class="yomi-meaning">to engulf, to overwhelm</div>
-      <div class="yomi-meaning">to keep down, to suppress</div>
-      <div class="yomi-meaning">to accept (e.g. demand, condition)</div>
-      <div class="yomi-meaning">to make light of, to conceal</div>
+      <div class="yomi-meaning">to swallow up, to engulf</div>
+      <div class="yomi-meaning">to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath)</div>
+      <div class="yomi-meaning">to accept (a demand, conditions, etc.), to agree to</div>
+      <div class="yomi-meaning">to make light of (someone), to think nothing of, to overwhelm, to overawe</div>
+      <div class="yomi-meaning">to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</div>
     </div>
   </div>
 </div>"
@@ -1135,12 +1138,13 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (div)' 1`] = `
 "<div class="yomi-entry">
   <div class="yomi-group">
     <div class="yomi-meanings">
-      <div class="yomi-meaning">to drink, to gulp, to swallow, to take (medicine)</div>
+      <div class="yomi-meaning">to drink, to swallow, to take (medicine)</div>
       <div class="yomi-meaning">to smoke (tobacco)</div>
-      <div class="yomi-meaning">to engulf, to overwhelm</div>
-      <div class="yomi-meaning">to keep down, to suppress</div>
-      <div class="yomi-meaning">to accept (e.g. demand, condition)</div>
-      <div class="yomi-meaning">to make light of, to conceal</div>
+      <div class="yomi-meaning">to swallow up, to engulf</div>
+      <div class="yomi-meaning">to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath)</div>
+      <div class="yomi-meaning">to accept (a demand, conditions, etc.), to agree to</div>
+      <div class="yomi-meaning">to make light of (someone), to think nothing of, to overwhelm, to overawe</div>
+      <div class="yomi-meaning">to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</div>
     </div>
   </div>
 </div>"
@@ -1148,90 +1152,97 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (div)' 1`] = `
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (item-full <= 2)' 1`] = `
 "<ol>
-  <li>to drink, to gulp</li>
+  <li>to drink, to swallow</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ol>"
 `;
 
-exports[`'春の茶が飲＄みたいです' > 'meaning (line) (item-full <= 2)' 1`] = `"to drink, to gulp; to smoke (tobacco); to engulf, to overwhelm; to keep down, to suppress; to accept (e.g. demand, condition); to make light of, to conceal"`;
+exports[`'春の茶が飲＄みたいです' > 'meaning (line) (item-full <= 2)' 1`] = `"to drink, to swallow; to smoke (tobacco); to swallow up, to engulf; to suppress (one's anger, bitter feelings, etc.), to keep down; to accept (a demand, conditions, etc.), to agree to; to make light of (someone), to think nothing of; to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)"`;
 
-exports[`'春の茶が飲＄みたいです' > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(verb) to drink, to gulp; to smoke (tobacco); to engulf, to overwhelm; to keep down, to suppress; to accept (e.g. demand, condition); to make light of, to conceal"`;
+exports[`'春の茶が飲＄みたいです' > 'meaning (line) (pos) (item-full <= 2)' 1`] = `"(verb) to drink, to swallow; to smoke (tobacco); to swallow up, to engulf; to suppress (one's anger, bitter feelings, etc.), to keep down; to accept (a demand, conditions, etc.), to agree to; to make light of (someone), to think nothing of; to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)"`;
 
-exports[`'春の茶が飲＄みたいです' > 'meaning (line) (pos)' 1`] = `"(verb) to drink, to gulp, to swallow, to take (medicine); to smoke (tobacco); to engulf, to overwhelm; to keep down, to suppress; to accept (e.g. demand, condition); to make light of, to conceal"`;
+exports[`'春の茶が飲＄みたいです' > 'meaning (line) (pos)' 1`] = `"(verb) to drink, to swallow, to take (medicine); to smoke (tobacco); to swallow up, to engulf; to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath); to accept (a demand, conditions, etc.), to agree to; to make light of (someone), to think nothing of, to overwhelm, to overawe; to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)"`;
 
-exports[`'春の茶が飲＄みたいです' > 'meaning (line)' 1`] = `"to drink, to gulp, to swallow, to take (medicine); to smoke (tobacco); to engulf, to overwhelm; to keep down, to suppress; to accept (e.g. demand, condition); to make light of, to conceal"`;
+exports[`'春の茶が飲＄みたいです' > 'meaning (line)' 1`] = `"to drink, to swallow, to take (medicine); to smoke (tobacco); to swallow up, to engulf; to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath); to accept (a demand, conditions, etc.), to agree to; to make light of (someone), to think nothing of, to overwhelm, to overawe; to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)"`;
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (pos) (item-full <= 2)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ol>
-  <li>to drink, to gulp</li>
+  <li>to drink, to swallow</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ol>"
 `;
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (pos)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ol>
-  <li>to drink, to gulp, to swallow, to take (medicine)</li>
+  <li>to drink, to swallow, to take (medicine)</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath)</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of, to overwhelm, to overawe</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ol>"
 `;
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (unnumbered) (item-full <= 2)' 1`] = `
 "<ul>
-  <li>to drink, to gulp</li>
+  <li>to drink, to swallow</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ul>"
 `;
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (unnumbered) (pos) (item-full…' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ul>
-  <li>to drink, to gulp</li>
+  <li>to drink, to swallow</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ul>"
 `;
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (unnumbered) (pos)' 1`] = `
 "<div class="yomi-pos">(verb)</div>
 <ul>
-  <li>to drink, to gulp, to swallow, to take (medicine)</li>
+  <li>to drink, to swallow, to take (medicine)</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath)</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of, to overwhelm, to overawe</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ul>"
 `;
 
 exports[`'春の茶が飲＄みたいです' > 'meaning (unnumbered)' 1`] = `
 "<ul>
-  <li>to drink, to gulp, to swallow, to take (medicine)</li>
+  <li>to drink, to swallow, to take (medicine)</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath)</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of, to overwhelm, to overawe</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ul>"
 `;
 
@@ -1241,15 +1252,18 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (yomichan) (item-full <=
     <li>
       <ul>
         <li>to drink</li>
-        <li>to gulp</li>
+        <li>to swallow</li>
         <li>to smoke (tobacco)</li>
+        <li>to swallow up</li>
         <li>to engulf</li>
-        <li>to overwhelm</li>
+        <li>to suppress (one's anger, bitter feelings, etc.)</li>
         <li>to keep down</li>
-        <li>to suppress</li>
-        <li>to accept (e.g. demand, condition)</li>
-        <li>to make light of</li>
-        <li>to conceal</li>
+        <li>to accept (a demand, conditions, etc.)</li>
+        <li>to agree to</li>
+        <li>to make light of (someone)</li>
+        <li>to think nothing of</li>
+        <li>to carry (a concealed dagger, etc.)</li>
+        <li>to conceal (up one's sleeve, etc.)</li>
       </ul>
     </li>
   </ol>
@@ -1263,15 +1277,18 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (yomichan) (pos) (item-f
       <i>(verb)</i>
       <ul>
         <li>to drink</li>
-        <li>to gulp</li>
+        <li>to swallow</li>
         <li>to smoke (tobacco)</li>
+        <li>to swallow up</li>
         <li>to engulf</li>
-        <li>to overwhelm</li>
+        <li>to suppress (one's anger, bitter feelings, etc.)</li>
         <li>to keep down</li>
-        <li>to suppress</li>
-        <li>to accept (e.g. demand, condition)</li>
-        <li>to make light of</li>
-        <li>to conceal</li>
+        <li>to accept (a demand, conditions, etc.)</li>
+        <li>to agree to</li>
+        <li>to make light of (someone)</li>
+        <li>to think nothing of</li>
+        <li>to carry (a concealed dagger, etc.)</li>
+        <li>to conceal (up one's sleeve, etc.)</li>
       </ul>
     </li>
   </ol>
@@ -1285,17 +1302,24 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (yomichan) (pos)' 1`] = 
       <i>(verb)</i>
       <ul>
         <li>to drink</li>
-        <li>to gulp</li>
         <li>to swallow</li>
         <li>to take (medicine)</li>
         <li>to smoke (tobacco)</li>
+        <li>to swallow up</li>
         <li>to engulf</li>
-        <li>to overwhelm</li>
+        <li>to suppress (one's anger, bitter feelings, etc.)</li>
         <li>to keep down</li>
-        <li>to suppress</li>
-        <li>to accept (e.g. demand, condition)</li>
-        <li>to make light of</li>
-        <li>to conceal</li>
+        <li>to hold back</li>
+        <li>to swallow (one's tears)</li>
+        <li>to catch (one's breath)</li>
+        <li>to accept (a demand, conditions, etc.)</li>
+        <li>to agree to</li>
+        <li>to make light of (someone)</li>
+        <li>to think nothing of</li>
+        <li>to overwhelm</li>
+        <li>to overawe</li>
+        <li>to carry (a concealed dagger, etc.)</li>
+        <li>to conceal (up one's sleeve, etc.)</li>
       </ul>
     </li>
   </ol>
@@ -1308,17 +1332,24 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (yomichan)' 1`] = `
     <li>
       <ul>
         <li>to drink</li>
-        <li>to gulp</li>
         <li>to swallow</li>
         <li>to take (medicine)</li>
         <li>to smoke (tobacco)</li>
+        <li>to swallow up</li>
         <li>to engulf</li>
-        <li>to overwhelm</li>
+        <li>to suppress (one's anger, bitter feelings, etc.)</li>
         <li>to keep down</li>
-        <li>to suppress</li>
-        <li>to accept (e.g. demand, condition)</li>
-        <li>to make light of</li>
-        <li>to conceal</li>
+        <li>to hold back</li>
+        <li>to swallow (one's tears)</li>
+        <li>to catch (one's breath)</li>
+        <li>to accept (a demand, conditions, etc.)</li>
+        <li>to agree to</li>
+        <li>to make light of (someone)</li>
+        <li>to think nothing of</li>
+        <li>to overwhelm</li>
+        <li>to overawe</li>
+        <li>to carry (a concealed dagger, etc.)</li>
+        <li>to conceal (up one's sleeve, etc.)</li>
       </ul>
     </li>
   </ol>
@@ -1327,12 +1358,13 @@ exports[`'春の茶が飲＄みたいです' > 'meaning (yomichan)' 1`] = `
 
 exports[`'春の茶が飲＄みたいです' > 'meaning' 1`] = `
 "<ol>
-  <li>to drink, to gulp, to swallow, to take (medicine)</li>
+  <li>to drink, to swallow, to take (medicine)</li>
   <li>to smoke (tobacco)</li>
-  <li>to engulf, to overwhelm</li>
-  <li>to keep down, to suppress</li>
-  <li>to accept (e.g. demand, condition)</li>
-  <li>to make light of, to conceal</li>
+  <li>to swallow up, to engulf</li>
+  <li>to suppress (one's anger, bitter feelings, etc.), to keep down, to hold back, to swallow (one's tears), to catch (one's breath)</li>
+  <li>to accept (a demand, conditions, etc.), to agree to</li>
+  <li>to make light of (someone), to think nothing of, to overwhelm, to overawe</li>
+  <li>to carry (a concealed dagger, etc.), to conceal (up one's sleeve, etc.)</li>
 </ol>"
 `;
 
@@ -1396,13 +1428,13 @@ exports[`'春の茶が飲＄みたいです' > 'word (main-dict)' 1`] = `"飲む
 
 exports[`'春の茶が飲＄みたいです' > 'word' 1`] = `"飲みたいです"`;
 
-exports[`'春の茶が飲＄みたいです' > (single) 'meaning (item-single <= 2)' 1`] = `"to drink, to gulp"`;
+exports[`'春の茶が飲＄みたいです' > (single) 'meaning (item-single <= 2)' 1`] = `"to drink, to swallow"`;
 
-exports[`'春の茶が飲＄みたいです' > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(verb) to drink, to gulp"`;
+exports[`'春の茶が飲＄みたいです' > (single) 'meaning (pos) (item-single <= 2)' 1`] = `"(verb) to drink, to swallow"`;
 
-exports[`'春の茶が飲＄みたいです' > (single) 'meaning (pos)' 1`] = `"(verb) to drink, to gulp, to swallow, to take (medicine)"`;
+exports[`'春の茶が飲＄みたいです' > (single) 'meaning (pos)' 1`] = `"(verb) to drink, to swallow, to take (medicine)"`;
 
-exports[`'春の茶が飲＄みたいです' > (single) 'meaning' 1`] = `"to drink, to gulp, to swallow, to take (medicine)"`;
+exports[`'春の茶が飲＄みたいです' > (single) 'meaning' 1`] = `"to drink, to swallow, to take (medicine)"`;
 
 exports[`'＄読みたい' > '-' 1`] = `""`;
 

@@ -4,10 +4,10 @@
   These functions are separated into its own module
   in order to replace(mock) them during tests.
 */
-import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
+import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
 import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
-import initWasm from "@yomikiri/yomikiri-rs";
-import { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
+import initWasm from "@yomikiri/yomikiri-backend-wasm";
+import { Backend as BackendWasm } from "@yomikiri/yomikiri-backend-wasm";
 import { loadSavedDictionary } from "./dictionary";
 
 export async function loadWasm(): Promise<typeof BackendWasm> {

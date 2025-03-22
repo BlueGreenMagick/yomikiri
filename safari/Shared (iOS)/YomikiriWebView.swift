@@ -244,12 +244,6 @@ extension YomikiriWebView {
                     configMigrated = true
                     return "true"
                 }
-            case "tokenize":
-                let req: TokenizeRequest = try jsonDeserialize(json: request)
-                return try Backend.get().tokenize(sentence: req.text, charAt: req.charAt ?? 0)
-            case "searchTerm":
-                let req: SearchRequest = try jsonDeserialize(json: request)
-                return try Backend.get().search(term: req.term, charAt: req.charAt ?? 0)
             case "versionInfo":
                 let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
                 let versionInfo = [
@@ -259,8 +253,6 @@ extension YomikiriWebView {
             case "updateDict":
                 let resp = try await Backend.updateDictionary()
                 return try jsonSerialize(obj: resp)
-            case "getDictMetadata":
-                return try Backend.get().metadata()
             case "openLink":
                 let urlString: String = try jsonDeserialize(json: request)
                 guard let url = URL(string: urlString) else {
@@ -279,7 +271,7 @@ extension YomikiriWebView {
                 try ttsSpeak(voice: req.voice, text: req.text)
                 return nil
             default:
-                throw "Unknown key \(key)"
+                return try Backend.get().run(command: key, args: request)
             }
         }
     }

@@ -57,10 +57,6 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/*.js", "**/*.cjs"],
-    ...tseslint.configs.disableTypeChecked,
-  },
-  {
     rules: {
       "@typescript-eslint/no-namespace": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
@@ -82,9 +78,6 @@ export default tseslint.config(
         },
       ],
       "@typescript-eslint/no-unnecessary-condition": "off",
-      "no-constant-condition": "off",
-      "no-inner-declarations": "off",
-      "svelte/no-inner-declarations": "off",
       "@typescript-eslint/dot-notation": "off",
       "@typescript-eslint/no-misused-promises": [
         "error",
@@ -94,7 +87,14 @@ export default tseslint.config(
           },
         },
       ],
+      "no-constant-condition": "off",
+      "no-inner-declarations": "off",
+      "svelte/no-inner-declarations": "off",
     },
+  },
+  {
+    files: ["**/*.js", "**/*.cjs"],
+    ...tseslint.configs.disableTypeChecked,
   },
   {
     ignores: ["main/build/**/*"],

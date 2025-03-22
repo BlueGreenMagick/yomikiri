@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     getOtherFormsInEntry,
-    type Entry,
     type EntryOtherForms,
     type PartOfSpeech,
     type Sense,
@@ -9,8 +8,9 @@
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
+  import type { WordEntry } from "@platform/backend";
 
-  export let entry: Entry.word;
+  export let entry: WordEntry;
   export let model: DicEntriesModel;
 
   let otherForms: EntryOtherForms | null;

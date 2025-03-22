@@ -1,0 +1,33 @@
+
+[package]
+name = "yomikiri-backend-wasm"
+version = "0.1.0"
+authors = ["BlueGreenMagick <bluegreenmagick@gmail.com>"]
+edition = "2021"
+description = "Yomikiri Backend with wasm bindings"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+yomikiri-dictionary = { workspace = true }
+serde_json = { workspace = true }
+yomikiri-rs = { workspace = true }
+wasm-logger = { version = "0.2" }
+web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
+js-sys = { version = "0.3" }
+console_error_panic_hook = { version = "0.1" }
+anyhow = { workspace = true }
+wasm-bindgen = { workspace = true }
+log = { workspace = true }
+serde = { workspace = true }
+flate2 = { workspace = true }
+serde-wasm-bindgen = { version = "0.6" }
+tsify-next = { workspace = true }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[lints]
+workspace = true

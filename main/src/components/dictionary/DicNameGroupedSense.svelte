@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { GroupedNameItem } from "@yomikiri/yomikiri-rs";
+  import type { GroupedNameItem } from "@platform/backend";
 
   export let group: GroupedNameItem;
 

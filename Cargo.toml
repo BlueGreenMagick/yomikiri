@@ -2,6 +2,7 @@
 members = [
   "crates/yomikiri-backend",
   "crates/yomikiri-backend-uniffi",
+  "crates/yomikiri-backend-wasm",
   "crates/jmdict",
   "crates/yomikiri-dictionary",
   "crates/unidic",
@@ -18,6 +19,9 @@ opt-level = "z"
 
 [workspace.lints.clippy]
 needless_borrows_for_generic_args = "allow"
+# Used to signal that the crate is used in the file
+# e.g. `use serde_json`
+single_component_path_imports = "allow"
 
 [profile.dev.package]
 insta.opt-level = 3
@@ -63,6 +67,7 @@ lazy-regex = "3.3"
 postcard = { version = "1.0", features = ["use-std"] }
 memchr = "2"
 memmap2 = "0.9"
+schemars = "1.0.0-alpha.17"
 
 japanese-utils = { path = "./crates/japanese-utils" }
 yomikiri-dictionary = { path = "./crates/yomikiri-dictionary" }

@@ -5,9 +5,11 @@
 */
 
 import { vi } from "vitest";
-import initWasm, { Backend as BackendWasm } from "@yomikiri/yomikiri-rs";
+import initWasm, {
+  Backend as BackendWasm,
+} from "@yomikiri/yomikiri-backend-wasm";
 import fs from "node:fs/promises";
-import wasm from "@yomikiri/yomikiri-rs/yomikiri_rs_bg.wasm";
+import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
 import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
 
 /* Mock load process of backend wasm */
