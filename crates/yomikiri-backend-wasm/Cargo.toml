@@ -12,10 +12,8 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 yomikiri-dictionary = { workspace = true }
-serde_json = { workspace = true }
 yomikiri-rs = { workspace = true }
 wasm-logger = { version = "0.2" }
-web-sys = { version = "0.3", features = ["Window", "Performance", "console"] }
 js-sys = { version = "0.3" }
 console_error_panic_hook = { version = "0.1" }
 anyhow = { workspace = true }

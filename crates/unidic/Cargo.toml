@@ -8,11 +8,9 @@ license = "MIT"
 [dependencies]
 lindera-unidic-builder = { workspace = true }
 lindera-core = { workspace = true }
-yomikiri-jmdict = { workspace = true }
 yomikiri-dictionary = { workspace = true }
 yomikiri-unidic-types = { workspace = true }
 csv = { workspace = true }
-walkdir = { workspace = true }
 ureq = { workspace = true }
 tempfile = { workspace = true }
 zip = { workspace = true }
