@@ -13,7 +13,7 @@ pub static DICTIONARY: LazyLock<Dictionary<Vec<u8>>> =
 
 pub fn setup_dictionary() -> Result<Dictionary<Vec<u8>>> {
     let mut base_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    base_dir.push("../yomikiri-dictionary-generator/files");
+    base_dir.push("../../generated/dictionary-files");
     let dict_path = base_dir.join(DICT_FILENAME);
     let bytes = fs::read(&dict_path)?;
     let dictionary = Dictionary::try_decode(bytes)?;
