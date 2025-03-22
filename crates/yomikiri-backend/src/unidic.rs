@@ -7,7 +7,8 @@ use std::borrow::Cow;
 
 macro_rules! const_data {
     ($name: ident, $filename: literal) => {
-        const $name: &'static [u8] = include_bytes!(concat!("../../unidic/output/", $filename));
+        const $name: &'static [u8] =
+            include_bytes!(concat!("../../../generated/unidic-output/", $filename));
     };
 }
 

@@ -7,22 +7,26 @@ includes:
 
 run: when_changed
 
+vars:
+  ROOT: '../..'
+  DICTIONARY_FILES_DIR: '{{.ROOT}}/generated/dictionary-files'
+  ORIGINAL_DIR: '{{.ROOT}}/generated/unidic-original'
+  TRANSFORM_DIR: '{{.ROOT}}/generated/unidic-transformed'
+  OUTPUT_DIR: '{{.ROOT}}/generated/unidic-output'
+
 tasks:
   generate:
     internal: true
-    vars:
-      TRANSFORM_DIR: 'transformed'
-      OUTPUT_DIR: 'output'
-      RESOURCE_DIR: '../yomikiri-dictionary-generator/files'
     sources:
       - '../../Cargo.toml'
       - '../../Cargo.lock'
       - './Cargo.toml'
       - './src/**/*'
-      - '{{.RESOURCE_DIR}}/**/*'
+      - '{{.DICTIONARY_FILES_DIR}}/**/*'
+      - '{{.ORIGINAL_DIR}}/**/*'
       - exclude: '**/.*'
     generates:
       - '{{.TRANSFORM_DIR}}/**/*'
       - '{{.OUTPUT_DIR}}/**/*'
     cmds:
-      - 'cargo run --release -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
+      - 'cargo run --release -- --clean --unidic-dir="{{.ORIGINAL_DIR}}" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.DICTIONARY_FILES_DIR}}"'

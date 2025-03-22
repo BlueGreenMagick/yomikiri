@@ -6,8 +6,9 @@ includes:
     flatten: true
 
 vars:
-  JMDICT_DIR: 'jmdict'
-  YOMIKIRIDICT_PATH: './files/english.yomikiridict'
+  PROJECT_ROOT: '../..'
+  JMDICT_DIR: '{{.PROJECT_ROOT}}/generated/jmdict'
+  YOMIKIRIDICT_PATH: '{{.PROJECT_ROOT}}/generated/dictionary-files/english.yomikiridict'
 
 tasks:
   download:

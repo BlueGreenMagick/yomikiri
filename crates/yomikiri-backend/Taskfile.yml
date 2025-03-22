@@ -8,7 +8,7 @@ includes:
     flatten: true
 
 vars:
-  PROJECT_ROOT: '../../'
+  PROJECT_ROOT: '../..'
   ROOT_CARGO_TOML: '../../Cargo.toml'
   ROOT_CARGO_LOCK: '../../Cargo.lock'
   ROOT_PNPM_LOCK: '{{.PROJECT_ROOT}}/pnpm-lock.yaml'
