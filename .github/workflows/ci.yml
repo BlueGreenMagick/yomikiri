@@ -66,30 +66,11 @@ jobs:
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
 
-      - name: Cache unidic
+      - name: Cache generated/
         uses: actions/cache@v4
         with:
-          path: crates/unidic/original
-          key: unidic-2.1.2
-
-      - name: Cache jmdict
-        uses: actions/cache@v4
-        with:
-          path: ${{env.JMDICT_PATH}}
-          key: jmdict-english-xml-${{steps.version.outputs.VERSION}}
-
-      - name: Cache jmnedict
-        uses: actions/cache@v4
-        with:
-          path: ${{env.JMNEDICT_PATH}}
-          key: jmnedict-xml-${{steps.version.outputs.VERSION}}
-
-      - name: Cache yomikiri dictionary
-        uses: actions/cache@v4
-        id: cache-yomikiri-dictionary
-        with:
-          path: ${{env.DICTIONARY_PATH}}
-          key: yomikiridict-${{ steps.cargo-hash.outputs.HASH }}-${{ hashFiles('./crates/dictionary-generator/src/**/*', './crates/dictionary-generator/Cargo.toml', env.JMDICT_PATH, env.JMNEDICT_PATH) }}
+          path: generated/
+          key: generated
 
       - name: Build
         run: task build:all
