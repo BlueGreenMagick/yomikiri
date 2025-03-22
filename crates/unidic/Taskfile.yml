@@ -25,4 +25,4 @@ tasks:
       - '{{.TRANSFORM_DIR}}/**/*'
       - '{{.OUTPUT_DIR}}/**/*'
     cmds:
-      - 'cargo run -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
+      - 'cargo run --release -- --clean --unidic-dir="original" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.RESOURCE_DIR}}"'
