@@ -38,6 +38,7 @@ jobs:
         with:
           toolchain: 1.85.0
           targets: aarch64-apple-ios
+          components: clippy, rustfmt
 
       - name: Install Task
         uses: arduino/setup-task@v2
