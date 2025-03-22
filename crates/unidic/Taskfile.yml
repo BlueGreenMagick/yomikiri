@@ -17,6 +17,15 @@ vars:
 
 tasks:
   generate:
+    cmds:
+      - task: _build
+      - task: _generate
+
+  _build:
+    cmds:
+      - 'cargo build --release'
+
+  _generate:
     sources:
       - '{{.CRATE_BINARY}}'
       - '{{.DICTIONARY_FILES_DIR}}/**/*'
@@ -27,7 +36,3 @@ tasks:
       - '{{.OUTPUT_DIR}}/**/*'
     cmds:
       - '"{{.CRATE_BINARY}}" --clean --unidic-dir="{{.ORIGINAL_DIR}}" --transform-dir="{{.TRANSFORM_DIR}}" --output-dir="{{.OUTPUT_DIR}}" --resource-dir="{{.DICTIONARY_FILES_DIR}}"'
-
-  _build:
-    cmds:
-      - 'cargo build --release'

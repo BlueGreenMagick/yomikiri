@@ -15,30 +15,21 @@ tasks:
   download:
     # Build-skipping is done within rust script
     desc: Downloads jmdict file if it does not exist at output path
-    deps:
-      - _build
     cmds:
+      - task: _build
       - '{{.CRATE_BINARY}} download --outdir="{{.JMDICT_DIR}}"'
 
   fresh:
     desc: Force downloads a fresh jmdict file
-    deps:
-      - _build
     cmds:
+      - task: _build
       - '{{.CRATE_BINARY}} download --outdir="{{.JMDICT_DIR}} --new"'
 
   generate:
     desc: Generate dictionary file from jmdict file
-    deps:
-      - _build
-    sources:
-      - '{{.CRATE_BINARY}}'
-      - '{{.JMDICT_DIR}}/**/*'
-      - exclude: '**/.*'
-    generates:
-      - '{{.YOMIKIRIDICT_PATH}}'
     cmds:
-      - '{{.CRATE_BINARY}} generate --rawdir="./{{.JMDICT_DIR}}" --out="{{.YOMIKIRIDICT_PATH}}"'
+      - task: _build
+      - task: _generate
 
   download-and-generate:
     desc: 'Generate dictionary file. Download JMDICT if it does not exist.'
@@ -49,3 +40,13 @@ tasks:
   _build:
     cmds:
       - 'cargo build --release'
+
+  _generate:
+    sources:
+      - '{{.CRATE_BINARY}}'
+      - '{{.JMDICT_DIR}}/**/*'
+      - exclude: '**/.*'
+    generates:
+      - '{{.YOMIKIRIDICT_PATH}}'
+    cmds:
+      - '{{.CRATE_BINARY}} generate --rawdir="./{{.JMDICT_DIR}}" --out="{{.YOMIKIRIDICT_PATH}}"'
