@@ -4,11 +4,10 @@
 
 # Downloaded & Generated files
 /main/build
-/crates/yomikiri-dictionary/pkg
-/crates/yomikiri-backend/pkg
-/crates/unidic/original
-/crates/unidic/transformed
-/crates/unidic/output
+/generated
+/crates/yomikiri-backend-wasm/pkg
+/crates/yomikiri-backend/bindings
+
 pnpm-lock.yaml
 Cargo.lock
 
