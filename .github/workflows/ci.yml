@@ -5,12 +5,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  JMDICT_PATH: crates/yomikiri-dictionary-generator/jmdict/jmdict_english.xml
-  JMNEDICT_PATH: crates/yomikiri-dictionary-generator/jmdict/jmnedict.xml
-  DICTIONARY_PATH: crates/yomikiri-dictionary-generator/files/english.yomikiridict
-  UNIDIC_OUTPUT_PATH: crates/unidic/output
-
 jobs:
   test:
     runs-on: macos-14
