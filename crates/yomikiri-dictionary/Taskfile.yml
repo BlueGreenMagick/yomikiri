@@ -4,13 +4,3 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
-    excludes: [check, lint]
-
-tasks:
-  check:
-    cmds:
-      - cargo check
-
-  lint:
-    cmds:
-      - cargo clippy

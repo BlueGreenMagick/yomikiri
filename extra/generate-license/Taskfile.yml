@@ -22,7 +22,7 @@ tasks:
 
   lint:rust:
     cmds:
-      - cargo clippy
+      - cargo clippy -- -D warnings
     dir: './rust'
 
   test:
