@@ -10,7 +10,7 @@
 </Page>
 
 <style global>
-  @import "../components/options/styles.css";
+  @import "../../../components/options/styles.css";
 
   #main {
     overflow-x: hidden;

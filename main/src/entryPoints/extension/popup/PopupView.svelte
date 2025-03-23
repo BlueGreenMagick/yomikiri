@@ -7,7 +7,7 @@
   } from "lib/anki";
   import Tokenize from "components/dictionary/Tokenize.svelte";
   import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
-  import AddToAnki from "../../components/anki/AddToAnki.svelte";
+  import AddToAnki from "components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import { Config } from "lib/config";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";

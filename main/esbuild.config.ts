@@ -236,7 +236,7 @@ function getbuildEntries(): BuildEntry[] {
     }
     if (!PRODUCTION) {
       entries.push({
-        in: "src/iosapp/dictionary.ts",
+        in: "src/entryPoints/iosapp/dictionary/index.ts",
         out: "res/dictionary",
         context: "page",
       });
@@ -245,7 +245,7 @@ function getbuildEntries(): BuildEntry[] {
     const segments = ["options", "optionsAnkiTemplate", "dictionary"];
     for (const seg of segments) {
       entries.push({
-        in: `src/iosapp/${seg}.ts`,
+        in: `src/entryPoints/iosapp/${seg}/index.ts`,
         out: `res/${seg}`,
         context: "page",
       });
@@ -290,15 +290,24 @@ function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
       ]);
     }
     if (!PRODUCTION) {
-      filesToCopy.push(["src/iosapp/dictionary.html", "./res/dictionary.html"]);
+      filesToCopy.push([
+        "src/entryPoints/iosapp/dictionary/index.html",
+        "./res/dictionary.html",
+      ]);
     }
   } else {
-    filesToCopy.push(["src/iosapp/options.html", "./res/options.html"]);
     filesToCopy.push([
-      "src/iosapp/optionsAnkiTemplate.html",
+      "src/entryPoints/iosapp/options/index.html",
+      "./res/options.html",
+    ]);
+    filesToCopy.push([
+      "src/entryPoints/iosapp/optionsAnkiTemplate/index.html",
       "./res/optionsAnkiTemplate.html",
     ]);
-    filesToCopy.push(["src/iosapp/dictionary.html", "./res/dictionary.html"]);
+    filesToCopy.push([
+      "src/entryPoints/iosapp/dictionary/index.html",
+      "./res/dictionary.html",
+    ]);
   }
   // static assets
   filesToCopy.push(["src/assets/static/", "./res/assets/static"]);

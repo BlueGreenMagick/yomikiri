@@ -5,7 +5,7 @@
     type AnkiBuilderData,
     buildAnkiNote,
   } from "lib/anki";
-  import AddToAnki from "../../components/anki/AddToAnki.svelte";
+  import AddToAnki from "components/anki/AddToAnki.svelte";
   import { tick } from "svelte";
   import { type Tools } from "components/dictionary/Toolbar.svelte";
   import type { TokenizeResult } from "@platform/backend";
