@@ -3,7 +3,7 @@ import {
   NonContentScriptFunction,
   setStorage,
   updateTab,
-} from "extension/browserApi";
+} from "lib/extension/browserApi";
 import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
 import { YomikiriError } from "lib/error";

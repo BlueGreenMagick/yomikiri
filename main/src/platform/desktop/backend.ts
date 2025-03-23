@@ -15,7 +15,7 @@ import {
   handleConnection,
   removeStorage,
   setStorage,
-} from "extension/browserApi";
+} from "lib/extension/browserApi";
 
 import Utils, {
   LazyAsync,

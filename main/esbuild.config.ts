@@ -7,7 +7,7 @@ import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "../package.json" with { type: "json" };
 import { watch } from "chokidar";
-import type { ExecutionContext } from "extension/browserApi";
+import type { ExecutionContext } from "lib/extension/browserApi";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const WATCH = !!process.env.WATCH;
