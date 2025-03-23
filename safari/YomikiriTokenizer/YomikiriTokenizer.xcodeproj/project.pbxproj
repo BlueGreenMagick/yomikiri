@@ -24,7 +24,7 @@
 		69330AC62C770DA20036D053 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		6946AA2C2BA1848000668ACB /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
 		6946AA2E2BA1879100668ACB /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		6946AA312BA191B400668ACB /* files */ = {isa = PBXFileReference; lastKnownFileType = folder; name = files; path = "../../crates/yomikiri-dictionary-generator/files"; sourceTree = "<group>"; };
+		6946AA312BA191B400668ACB /* dictionary-files */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dictionary-files; path = "../../generated/dictionary-files"; sourceTree = "<group>"; };
 		697EFFB22BA2D2E00035360C /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		699235B92D7C84F700BFF427 /* yomikiri_backend_uniffi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = yomikiri_backend_uniffi.swift; sourceTree = "<group>"; };
 		699235BA2D7C84F700BFF427 /* yomikiri_backend_uniffiFFI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yomikiri_backend_uniffiFFI.h; sourceTree = "<group>"; };

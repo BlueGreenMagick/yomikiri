@@ -50,7 +50,7 @@ func getBundledDictUrl() throws -> URL {
     guard let resourceDir = bundle.resourceURL else {
         throw YomikiriTokenizerError.BaseResourceNotFound
     }
-    let dir = resourceDir.appendingPathComponent("files")
+    let dir = resourceDir.appendingPathComponent("dictionary-files")
     return dictionaryUrlInDir(dir)
 }
 
