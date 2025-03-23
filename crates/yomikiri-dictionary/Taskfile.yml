@@ -10,9 +10,7 @@ tasks:
   check:
     cmds:
       - cargo check
-      - cargo check --target wasm32-unknown-unknown
 
   lint:
     cmds:
       - cargo clippy
-      - cargo clippy  --target wasm32-unknown-unknown

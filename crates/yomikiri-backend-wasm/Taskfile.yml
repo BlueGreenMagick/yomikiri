@@ -13,8 +13,6 @@ vars:
   ROOT_CARGO_LOCK: '../../Cargo.lock'
   WASM_DIR: './pkg'
 
-  TARGET_WASM: 'wasm32-unknown-unknown'
-
 tasks:
   generate:
     desc: Build wasm backend
