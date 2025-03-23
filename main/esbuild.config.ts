@@ -225,7 +225,7 @@ function getbuildEntries(): BuildEntry[] {
 
     for (const seg of segments) {
       entries.push({
-        in: `src/extension/${seg}/index.ts`,
+        in: `src/entryPoints/extension/${seg}/index.ts`,
         out: `res/${seg}`,
         context:
           seg === "content" ? "contentScript"
@@ -274,15 +274,18 @@ function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
   const filesToCopy: [string, string][] = [];
   if (!FOR_IOSAPP) {
     // html
-    filesToCopy.push(["src/extension/popup/index.html", "./res/popup.html"]);
+    filesToCopy.push([
+      "src/entryPoints/extension/popup/index.html",
+      "./res/popup.html",
+    ]);
     if (FOR_IOS) {
       filesToCopy.push([
-        "src/extension/x-callback/index.html",
+        "src/entryPoints/extension/x-callback/index.html",
         "./res/x-callback.html",
       ]);
     } else {
       filesToCopy.push([
-        "src/extension/options/index.html",
+        "src/entryPoints/extension/options/index.html",
         "./res/options.html",
       ]);
     }

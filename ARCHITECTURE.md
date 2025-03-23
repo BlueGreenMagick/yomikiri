@@ -1,8 +1,6 @@
 `/main`: Contains the main frontend code.
 
-- `/main/src/iosapp`: Code for ios app webview.
-- `/main/src/extension`: Code used in extension context. Code outside this directory are considered code that can also be called in `iosapp` and should not import code in this directory.
-  Each subdirectories are different entry points.
+- `/main/src/extension`: Stores entry points.
 - `/main/src/platform`: Platform-specific code.
 - `/main/src/assets/static`: Assets that have to be manually copied into bundle (with esbuild plugin). Assets not in `static` directories are automatically bundled by esbuild if they are imported into the code.
 
