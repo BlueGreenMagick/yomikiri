@@ -7,17 +7,22 @@ import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "../package.json" with { type: "json" };
 import { watch } from "chokidar";
-import type { ExecutionContext } from "lib/extension/browserApi";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const WATCH = !!process.env.WATCH;
 
-const TARGET = process.env.TARGET_PLATFORM;
+const TARGET_PLATFORMS = [
+  "chrome",
+  "firefox",
+  "safari_desktop",
+  "ios",
+  "iosapp",
+] as const;
+type TargetPlatforms = (typeof TARGET_PLATFORMS)[number];
 
-if (
-  TARGET === undefined ||
-  !["chrome", "firefox", "safari_desktop", "ios", "iosapp"].includes(TARGET)
-) {
+const TARGET = process.env.TARGET_PLATFORM as TargetPlatforms;
+
+if (TARGET === undefined || !TARGET_PLATFORMS.includes(TARGET)) {
   throw new Error(
     `TARGET_PLATFORM env variable must be set to one of chrome/firefox/safari_desktop/ios/iosapp, but is set to: ${TARGET}`,
   );
@@ -32,6 +37,77 @@ const FOR_IOSAPP = TARGET === "iosapp";
 
 /** Package */
 const VERSION = Package.version;
+
+interface EntryPoints {
+  extension: EntryPointGroup;
+  iosapp: EntryPointGroup;
+}
+
+type EntryPointGroup = {
+  [name: string]: EntryPointConfig;
+};
+
+interface EntryPointConfig {
+  html?: boolean;
+  /** default: `true` for `extension` group */
+  ios?: boolean;
+  /** default: `true` for `extension` group*/
+  desktop?: boolean;
+  /** Extension context. default: `"page"` */
+  context?: "page" | "contentScript" | "background" | "popup";
+}
+
+type EntryPointId = [keyof EntryPoints, string];
+
+const ENTRY_POINTS: EntryPoints = {
+  extension: {
+    background: {
+      context: "background",
+    },
+    content: {
+      context: "contentScript",
+    },
+    options: {
+      ios: false,
+    },
+    popup: {},
+    "x-callback": {
+      desktop: false,
+    },
+  },
+  iosapp: {
+    dictionary: {},
+    options: {},
+    optionsAnkiTemplate: {},
+  },
+};
+
+function entryPointsForTarget(): EntryPointId[] {
+  const entryPoints: [keyof EntryPoints, string][] = [];
+  if (FOR_DESKTOP) {
+    const grp = ENTRY_POINTS["extension"];
+    for (const name in grp) {
+      const opts = grp[name];
+      if (opts.desktop ?? true) {
+        entryPoints.push(["extension", name]);
+      }
+    }
+  } else if (FOR_IOS) {
+    const grp = ENTRY_POINTS["extension"];
+    for (const name in grp) {
+      const opts = grp[name];
+      if (opts.ios ?? true) {
+        entryPoints.push(["extension", name]);
+      }
+    }
+  } else if (FOR_IOSAPP) {
+    const grp = ENTRY_POINTS["iosapp"];
+    for (const name in grp) {
+      entryPoints.push(["iosapp", name]);
+    }
+  }
+  return entryPoints;
+}
 
 const platformAliasPlugin: Plugin = {
   name: "platformAliasPlugin",
@@ -117,53 +193,66 @@ const svelteConfiguredPlugin: Plugin = sveltePlugin({
   include: /\.(?:svelte|svg)$/,
 });
 
-function generateBuildOptions(): BuildOptions {
-  const plugins = [platformAliasPlugin, svelteConfiguredPlugin];
-  if (!FOR_IOSAPP) {
-    plugins.push(buildManifestPlugin);
-  }
+/** For each entrypoint, add code to set up `YOMIKIRI_ENV` global variable. */
+const entryPointEnvPlugin: Plugin = {
+  name: "entryPointEnvPlugin",
+  setup(build) {
+    const entryPoints = entryPointsForTarget();
+    const pathsMap = entryPoints.reduce<Map<string, EntryPointId>>(
+      (map, [group, name]) => {
+        const baseDir = build.initialOptions.absWorkingDir ?? "";
+        const resolved = path.resolve(
+          baseDir,
+          `src/entryPoints/${group}/${name}/index.ts`,
+        );
+        map.set(resolved, [group, name]);
+        return map;
+      },
+      new Map(),
+    );
 
-  const buildOptions: BuildOptions = {
-    outdir: `build/${TARGET}`,
-    target: [
-      "es2017",
-      ...(FOR_IOS || FOR_IOSAPP ? ["safari15.4"] : []),
-      ...(FOR_CHROME ? ["chrome99"] : []),
-      ...(FOR_FIREFOX ? ["firefox55"] : []),
-      ...(FOR_SAFARI_DESKTOP ? ["safari14.1"] : []),
-    ],
-    format: "iife",
-    bundle: true,
-    logLevel: "info",
-    // minify: PRODUCTION,
-    // keepNames: PRODUCTION,
-    sourcemap: PRODUCTION ? false : "inline",
-    conditions: ["svelte"],
-    assetNames: "res/assets/[name]-[hash]",
-    // make file import URL absolute path
-    // relative path is incorrect from background pages
-    publicPath: "/",
-    define: {
-      __APP_VERSION__: `"${VERSION}"`,
-      __APP_PLATFORM__: `"${TARGET!}"`,
-      "import.meta.vitest": "undefined",
-      __EXTENSION_CONTEXT__: "<<Modified in fn esbuildContext()>>",
-    },
-    loader: {
-      ".wasm": "file",
-      ".json.gz": "file",
-      ".svg": "text",
-      ".png": "file",
-      ".yomikiridict": "file",
-      ".yomikiriindex": "file",
-      ".txt": "text",
-      ".chunk": "file",
-    },
-    plugins,
-  };
+    build.onLoad({ filter: /\.ts/ }, async (args) => {
+      const pathsMapObj = pathsMap.get(args.path);
+      if (pathsMapObj === undefined) {
+        return;
+      }
+      const [groupName, name] = pathsMapObj;
 
-  return buildOptions;
-}
+      const textContent = await fs.promises.readFile(args.path, "utf8");
+      const envImport = `import "$entryPointEnv/${groupName}/${name}"\n${textContent}`;
+      return {
+        contents: envImport,
+        loader: "ts",
+      };
+    });
+
+    build.onResolve({ filter: /\$entryPointEnv\/.+/ }, (args) => {
+      return {
+        path: args.path,
+        namespace: "entryPointEnv-generate",
+      };
+    });
+
+    build.onLoad(
+      { filter: /.*/, namespace: "entryPointEnv-generate" },
+      (args) => {
+        const [_, groupName, name] = args.path.split("/");
+        const opts = ENTRY_POINTS[groupName as keyof EntryPoints][name];
+
+        const extensionContext = opts.context ?? "page";
+        const script = `
+        self.YOMIKIRI_ENV = {
+          EXTENSION_CONTEXT: "${extensionContext}",
+          APP_PLATFORM: "${TARGET}"
+        };`;
+        return {
+          contents: script,
+          loader: "ts",
+        };
+      },
+    );
+  },
+};
 
 function cleanDirectory(dir: string) {
   if (fs.existsSync(dir)) {
@@ -206,108 +295,21 @@ function copyAndWatchFile(
   });
 }
 
-interface BuildEntry {
-  in: string;
-  out: string;
-  context: ExecutionContext;
-}
-
-function getbuildEntries(): BuildEntry[] {
-  const entries: BuildEntry[] = [];
-
-  if (!FOR_IOSAPP) {
-    const segments: string[] = ["content", "background", "popup"];
-    if (FOR_IOS) {
-      segments.push("x-callback");
-    } else {
-      segments.push("options");
-    }
-
-    for (const seg of segments) {
-      entries.push({
-        in: `src/entryPoints/extension/${seg}/index.ts`,
-        out: `res/${seg}`,
-        context:
-          seg === "content" ? "contentScript"
-          : seg === "background" ? "background"
-          : seg === "popup" ? "popup"
-          : "page",
-      });
-    }
-    if (!PRODUCTION) {
-      entries.push({
-        in: "src/entryPoints/iosapp/dictionary/index.ts",
-        out: "res/dictionary",
-        context: "page",
-      });
-    }
-  } else {
-    const segments = ["options", "optionsAnkiTemplate", "dictionary"];
-    for (const seg of segments) {
-      entries.push({
-        in: `src/entryPoints/iosapp/${seg}/index.ts`,
-        out: `res/${seg}`,
-        context: "page",
-      });
-    }
-  }
-
-  return entries;
-}
-
-async function esbuildContext(
-  entry: BuildEntry,
-  buildOptions: esbuild.BuildOptions,
-) {
-  const clonedOptions = {
-    ...buildOptions,
-  };
-  clonedOptions.entryPoints = [{ in: entry.in, out: entry.out }];
-  clonedOptions.define = {
-    ...(clonedOptions.define ?? {}),
-    __EXTENSION_CONTEXT__: `"${entry.context}"`,
-  };
-  return esbuild.context(clonedOptions);
-}
-
 function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
   const filesToCopy: [string, string][] = [];
-  if (!FOR_IOSAPP) {
-    // html
-    filesToCopy.push([
-      "src/entryPoints/extension/popup/index.html",
-      "./res/popup.html",
-    ]);
-    if (FOR_IOS) {
+  // html files
+  const entryPoints = entryPointsForTarget();
+  for (const [group, name] of entryPoints) {
+    const extensionContext = ENTRY_POINTS[group][name].context ?? "page";
+    const hasHTML =
+      extensionContext !== "contentScript" && extensionContext !== "background";
+
+    if (hasHTML) {
       filesToCopy.push([
-        "src/entryPoints/extension/x-callback/index.html",
-        "./res/x-callback.html",
-      ]);
-    } else {
-      filesToCopy.push([
-        "src/entryPoints/extension/options/index.html",
-        "./res/options.html",
+        `src/entryPoints/${group}/${name}/index.html`,
+        `./res/${name}.html`,
       ]);
     }
-    if (!PRODUCTION) {
-      filesToCopy.push([
-        "src/entryPoints/iosapp/dictionary/index.html",
-        "./res/dictionary.html",
-      ]);
-    }
-  } else {
-    filesToCopy.push([
-      "src/entryPoints/iosapp/options/index.html",
-      "./res/options.html",
-    ]);
-    filesToCopy.push([
-      "src/entryPoints/iosapp/optionsAnkiTemplate/index.html",
-      "./res/optionsAnkiTemplate.html",
-    ]);
-    filesToCopy.push([
-      "src/entryPoints/iosapp/dictionary/index.html",
-      "./res/dictionary.html",
-    ]);
   }
   // static assets
   filesToCopy.push(["src/assets/static/", "./res/assets/static"]);
@@ -322,27 +324,64 @@ function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
 }
 
 async function main() {
-  const buildOptions = generateBuildOptions();
-  if (buildOptions.outdir === undefined) {
-    throw new Error("esbuild outdir must be set!");
-  }
+  const outdir = `build/${TARGET}`;
+  const entryPointIds = entryPointsForTarget();
 
-  cleanDirectory(buildOptions.outdir);
+  const buildOptions: BuildOptions = {
+    outdir,
+    entryPoints: entryPointIds.map(([group, name]) => ({
+      in: `src/entryPoints/${group}/${name}/index.ts`,
+      out: `res/${name}`,
+    })),
+    target: [
+      "es2017",
+      ...(FOR_IOS || FOR_IOSAPP ? ["safari15.4"] : []),
+      ...(FOR_CHROME ? ["chrome99"] : []),
+      ...(FOR_FIREFOX ? ["firefox55"] : []),
+      ...(FOR_SAFARI_DESKTOP ? ["safari14.1"] : []),
+    ],
+    format: "iife",
+    bundle: true,
+    logLevel: "info",
+    // minify: PRODUCTION,
+    // keepNames: PRODUCTION,
+    sourcemap: PRODUCTION ? false : "inline",
+    conditions: ["svelte"],
+    assetNames: "res/assets/[name]-[hash]",
+    // make file import URL absolute path
+    // relative path is incorrect from background pages
+    publicPath: "/",
+    define: {
+      __APP_VERSION__: `"${VERSION}"`,
+      "import.meta.vitest": "undefined",
+    },
+    loader: {
+      ".wasm": "file",
+      ".json.gz": "file",
+      ".svg": "text",
+      ".png": "file",
+      ".yomikiridict": "file",
+      ".yomikiriindex": "file",
+      ".txt": "text",
+      ".chunk": "file",
+    },
+    plugins: [
+      entryPointEnvPlugin,
+      platformAliasPlugin,
+      svelteConfiguredPlugin,
+      ...(!FOR_IOSAPP ? [buildManifestPlugin] : []),
+    ],
+  };
 
-  const entries = getbuildEntries();
+  cleanDirectory(outdir);
 
-  const ctxsP = entries.map((entry) => esbuildContext(entry, buildOptions));
-  const ctxs = await Promise.all(ctxsP);
-
-  await Promise.all(ctxs.map((ctx) => ctx.rebuild()));
-
+  const context = await esbuild.context(buildOptions);
+  await context.rebuild();
   copyAndWatchAdditionalFiles(buildOptions);
 
-  if (!WATCH) {
-    await Promise.all(ctxs.map((ctx) => ctx.dispose()));
-  } else {
+  if (WATCH) {
     console.info("esbuild: Watching for changes to code..");
-    await Promise.all(ctxs.map((ctx) => ctx.watch()));
+    await context.watch();
   }
 }
 

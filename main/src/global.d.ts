@@ -38,15 +38,12 @@ declare module "*.chunk" {
 }
 
 declare const __APP_VERSION__: string;
-declare const __APP_PLATFORM__:
-  | "chrome"
-  | "firefox"
-  | "safari_desktop"
-  | "ios"
-  | "iosapp";
 
-declare const __EXTENSION_CONTEXT__:
-  | "contentScript"
-  | "background"
-  | "page"
-  | "popup";
+interface YomikiriEnv {
+  EXTENSION_CONTEXT: "page" | "contentScript" | "popup" | "background";
+  APP_PLATFORM: "chrome" | "firefox" | "safari_desktop" | "ios" | "iosapp";
+}
+
+interface Window {
+  YOMIKIRI_ENV: YomikiriEnv;
+}
