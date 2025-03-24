@@ -134,50 +134,6 @@ const platformAliasPlugin: Plugin = {
   },
 };
 
-const buildManifestPlugin: Plugin = {
-  name: "buildManifestPlugin",
-  setup(build) {
-    const outdir = build.initialOptions.outdir;
-    if (outdir === undefined) {
-      throw new Error("outdir must be set to build manifest!");
-    }
-
-    let watching = false;
-
-    build.onStart(() => {
-      const raw = fs.readFileSync("./src/manifest.json.ejs", {
-        encoding: "utf-8",
-      });
-      const rendered = ejs.render(raw, {
-        version: VERSION,
-        chrome: FOR_CHROME,
-        firefox: FOR_FIREFOX,
-        safari_desktop: FOR_SAFARI_DESKTOP,
-        desktop: FOR_DESKTOP,
-        ios: FOR_IOS,
-        v2: FOR_FIREFOX || FOR_SAFARI_DESKTOP,
-      });
-
-      if (!fs.existsSync(outdir)) {
-        fs.mkdirSync(outdir, { recursive: true });
-      }
-      const outPath = path.join(outdir, "manifest.json");
-      fs.writeFileSync(outPath, rendered);
-      watching = false;
-    });
-
-    build.onResolve({ filter: /./ }, (_args) => {
-      if (!watching) {
-        watching = true;
-        return {
-          watchFiles: ["./src/manifest.json.ejs", "../../package.json"],
-        };
-      }
-      return;
-    });
-  },
-};
-
 const svelteConfiguredPlugin: Plugin = sveltePlugin({
   preprocess: sveltePreprocess({
     postcss: {
@@ -406,6 +362,23 @@ async function main() {
       to: `./res/${name}.html`,
     }));
   staticAssets.push({ from: "src/assets/static/", to: "./res/assets/static" });
+  if (!FOR_IOSAPP) {
+    staticAssets.push({
+      from: "src/manifest.json.ejs",
+      to: "manifest.json",
+      transform: (raw) => {
+        return ejs.render(raw, {
+          version: VERSION,
+          chrome: FOR_CHROME,
+          firefox: FOR_FIREFOX,
+          safari_desktop: FOR_SAFARI_DESKTOP,
+          desktop: FOR_DESKTOP,
+          ios: FOR_IOS,
+          v2: FOR_FIREFOX || FOR_SAFARI_DESKTOP,
+        });
+      },
+    });
+  }
 
   const buildOptions: BuildOptions = {
     outdir,
@@ -449,7 +422,6 @@ async function main() {
       entryPointEnvPlugin,
       platformAliasPlugin,
       svelteConfiguredPlugin,
-      ...(!FOR_IOSAPP ? [buildManifestPlugin] : []),
       additionalAssets({
         assets: staticAssets,
         watch: WATCH,
