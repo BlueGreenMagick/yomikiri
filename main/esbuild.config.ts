@@ -439,6 +439,7 @@ async function main() {
     await context.watch();
   } else {
     await context.rebuild();
+    await context.dispose();
   }
 }
 
