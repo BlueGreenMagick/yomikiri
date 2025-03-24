@@ -6,7 +6,10 @@ import sveltePreprocess from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "../package.json" with { type: "json" };
-import { watch } from "chokidar";
+import {
+  watch as chokidarWatch,
+  type Matcher as ChokidarMatcher,
+} from "chokidar";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const WATCH = !!process.env.WATCH;
@@ -259,50 +262,40 @@ function cleanDirectory(dir: string) {
     fs.rmdirSync(dir, { recursive: true });
   }
 }
-
-function copyAndWatchFile(
-  from: string,
-  to: string,
-  opts: { watch?: boolean } = {},
-) {
-  const isDir = fs.lstatSync(from).isDirectory();
-  const watcher = watch(from, {
-    // ignore dotfiles
-    ignored: /(^|[/\\])\../,
-  });
-  watcher.on("all", (event, p) => {
-    let dest: string;
-    if (isDir) {
-      const rel = path.relative(from, p);
-      dest = path.resolve(to, rel);
-    } else {
-      dest = to;
-    }
-    if (event === "addDir") {
-      fs.mkdirSync(dest, { recursive: true });
-    } else if (event === "unlinkDir") {
-      fs.rmdirSync(dest);
-    } else if (event === "unlink") {
-      fs.rmSync(dest);
-    } else {
-      fs.copyFileSync(p, dest);
-    }
-  });
-  watcher.on("ready", () => {
-    if (!opts.watch) {
-      void watcher.close();
-    }
-  });
-}
-
 interface Asset {
   from: string;
   to: string;
+  /** Transform asset contents */
+  transform?: (source: string) => string;
+  /**
+   * Encoding used for reading asset to pass to transform.
+   * Not relevant if `transform` is not provided.
+   * Default: utf-8
+   */
+  encoding?: BufferEncoding;
 }
 
 interface AdditionalAssetsPluginOpts {
   assets: Asset[];
   watch?: boolean;
+  ignored?: ChokidarMatcher | ChokidarMatcher[];
+}
+
+type AsyncFunc<I extends unknown[], R> = (...args: I) => Promise<R>;
+/**
+ * Returns a function that calls the `inner` function().
+ * It waits for previous invokations of the function to finish
+ * before running.
+ */
+function Queued<I extends unknown[], R>(
+  inner: AsyncFunc<I, R>,
+): AsyncFunc<I, R> {
+  let queue = Promise.resolve() as Promise<R>;
+
+  return async (...args) => {
+    queue = queue.catch(() => {}).then(() => inner(...args));
+    return await queue;
+  };
 }
 
 function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
@@ -312,7 +305,7 @@ function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
       let initialRun = true;
 
       const assets = opts.assets;
-      const watch = opts.watch ?? false;
+      const enableWatch = opts.watch ?? false;
       const outDir = build.initialOptions.outdir;
       if (outDir === undefined) {
         throw new Error("esbuild.options.outDir is not specified");
@@ -320,19 +313,82 @@ function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
 
       build.onEnd((_) => {
         if (!initialRun) return;
-
         initialRun = false;
-        for (const { from, to } of assets) {
-          const src = path.resolve(
-            build.initialOptions.absWorkingDir ?? "",
-            from,
-          );
+
+        const srcBaseDir = build.initialOptions.absWorkingDir ?? "";
+
+        const absoluteAssets = assets.map(({ from, to, ...misc }) => {
+          const src = path.resolve(srcBaseDir, from);
           const dest = path.resolve(outDir, to);
-          copyAndWatchFile(src, dest, { watch });
-        }
+          return { from: src, to: dest, ...misc };
+        });
+        const sources = absoluteAssets.map(({ from }) => from);
+
+        const watcher = chokidarWatch(sources, {
+          ...(opts.ignored !== undefined ? { ignored: opts.ignored } : {}),
+        });
+
+        // Make sure its callback is run only when previous callback finishes running. Single queued.
+        watcher.on(
+          "all",
+          Queued(async (event, p) => {
+            const asset = matchAssetEntry(absoluteAssets, p);
+            const rel = path.relative(asset.from, p);
+            const dest = path.resolve(asset.to, rel);
+
+            if (event === "addDir") {
+              await fs.promises.mkdir(dest);
+            } else if (event === "unlinkDir") {
+              await fs.promises.rmdir(dest);
+            } else if (event === "unlink") {
+              await fs.promises.rm(dest);
+            } else if (event === "add" || event === "change") {
+              if (asset.transform) {
+                const source = await fs.promises.readFile(p, {
+                  encoding: asset.encoding,
+                });
+                const transformed = asset.transform(source.toString());
+                await fs.promises.writeFile(dest, transformed);
+              } else {
+                await fs.promises.copyFile(p, dest);
+              }
+            }
+          }),
+        );
+
+        watcher.on("error", (err) => {
+          console.error(
+            // eslint-disable-next-line
+            `[additional-assets] error occured with chokidar: ${err}`,
+          );
+        });
+
+        watcher.on("ready", async () => {
+          if (enableWatch) {
+            console.log(
+              "[additional-assets] Watching changes to additional assets...",
+            );
+          } else {
+            await watcher.close();
+          }
+        });
       });
     },
   };
+
+  /** Find first asset entry that matches path. Throw error if none matched. */
+  function matchAssetEntry(absoluteAssets: Asset[], p: string): Asset {
+    for (const asset of absoluteAssets) {
+      const { from } = asset;
+      const relative = path.relative(from, p);
+      if (!relative.startsWith("..") && !path.isAbsolute(relative)) {
+        return asset;
+      }
+    }
+    throw new Error(
+      `[additional-assets] Could not match the modified file's path to any asset entry: ${p}`,
+    );
+  }
 }
 
 async function main() {
@@ -397,6 +453,7 @@ async function main() {
       additionalAssets({
         assets: staticAssets,
         watch: WATCH,
+        ignored: /(^|[/\\])\../,
       }),
     ],
   };
