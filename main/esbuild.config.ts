@@ -311,7 +311,12 @@ function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
                 const transformed = asset.transform(source.toString());
                 await fs.promises.writeFile(dest, transformed);
               } else {
-                await fs.promises.copyFile(p, dest);
+                await fs.promises.copyFile(
+                  p,
+                  dest,
+                  // create copy-on-write reflink if such mechanism is supported in OS
+                  fs.constants.COPYFILE_FICLONE,
+                );
               }
             }
           }),
