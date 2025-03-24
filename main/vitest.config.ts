@@ -34,8 +34,6 @@ export default defineConfig({
   plugins: [tsconfigPathsPlugin(), svelteConfiguredPlugin],
   define: {
     __APP_VERSION__: `"${Package.version}"`,
-    __APP_PLATFORM__: '"chrome"',
-    __EXTENSION_CONTEXT__: '"background"',
   },
   assetsInclude: [
     "**/*.wasm",
