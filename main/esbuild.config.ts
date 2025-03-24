@@ -267,7 +267,7 @@ function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
         throw new Error("esbuild.options.outDir is not specified");
       }
 
-      build.onEnd((_) => {
+      build.onEnd(async (_) => {
         if (!initialRun) return;
         initialRun = false;
 
@@ -279,6 +279,11 @@ function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
           return { from: src, to: dest, ...misc };
         });
         const sources = absoluteAssets.map(({ from }) => from);
+
+        for (const { to } of absoluteAssets) {
+          const parent = path.resolve(to, "..");
+          await fs.promises.mkdir(parent, { recursive: true });
+        }
 
         const watcher = chokidarWatch(sources, {
           ...(opts.ignored !== undefined ? { ignored: opts.ignored } : {}),
