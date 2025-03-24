@@ -295,37 +295,61 @@ function copyAndWatchFile(
   });
 }
 
-function copyAndWatchAdditionalFiles(buildOptions: esbuild.BuildOptions) {
-  const filesToCopy: [string, string][] = [];
-  // html files
-  const entryPoints = entryPointsForTarget();
-  for (const [group, name] of entryPoints) {
-    const extensionContext = ENTRY_POINTS[group][name].context ?? "page";
-    const hasHTML =
-      extensionContext !== "contentScript" && extensionContext !== "background";
+interface Asset {
+  from: string;
+  to: string;
+}
 
-    if (hasHTML) {
-      filesToCopy.push([
-        `src/entryPoints/${group}/${name}/index.html`,
-        `./res/${name}.html`,
-      ]);
-    }
-  }
-  // static assets
-  filesToCopy.push(["src/assets/static/", "./res/assets/static"]);
+interface AdditionalAssetsPluginOpts {
+  assets: Asset[];
+  watch?: boolean;
+}
 
-  for (const [from, to] of filesToCopy) {
-    const dest = path.resolve(buildOptions.outdir!, to);
-    copyAndWatchFile(from, dest, { watch: WATCH });
-  }
-  console.log(
-    `Copied and watching changes to ${filesToCopy.length} file entries`,
-  );
+function additionalAssets(opts: AdditionalAssetsPluginOpts): Plugin {
+  return {
+    name: "additionalAssets",
+    setup(build) {
+      let initialRun = true;
+
+      const assets = opts.assets;
+      const watch = opts.watch ?? false;
+      const outDir = build.initialOptions.outdir;
+      if (outDir === undefined) {
+        throw new Error("esbuild.options.outDir is not specified");
+      }
+
+      build.onEnd((_) => {
+        if (!initialRun) return;
+
+        initialRun = false;
+        for (const { from, to } of assets) {
+          const src = path.resolve(
+            build.initialOptions.absWorkingDir ?? "",
+            from,
+          );
+          const dest = path.resolve(outDir, to);
+          copyAndWatchFile(src, dest, { watch });
+        }
+      });
+    },
+  };
 }
 
 async function main() {
   const outdir = `build/${TARGET}`;
   const entryPointIds = entryPointsForTarget();
+
+  const staticAssets: Asset[] = entryPointIds
+    .filter(([group, name]) => {
+      return !["contentScript", "background"].includes(
+        ENTRY_POINTS[group][name].context ?? "page",
+      );
+    })
+    .map(([group, name]) => ({
+      from: `src/entryPoints/${group}/${name}/index.html`,
+      to: `./res/${name}.html`,
+    }));
+  staticAssets.push({ from: "src/assets/static/", to: "./res/assets/static" });
 
   const buildOptions: BuildOptions = {
     outdir,
@@ -370,18 +394,22 @@ async function main() {
       platformAliasPlugin,
       svelteConfiguredPlugin,
       ...(!FOR_IOSAPP ? [buildManifestPlugin] : []),
+      additionalAssets({
+        assets: staticAssets,
+        watch: WATCH,
+      }),
     ],
   };
 
   cleanDirectory(outdir);
 
   const context = await esbuild.context(buildOptions);
-  await context.rebuild();
-  copyAndWatchAdditionalFiles(buildOptions);
 
   if (WATCH) {
     console.info("esbuild: Watching for changes to code..");
     await context.watch();
+  } else {
+    await context.rebuild();
   }
 }
 
