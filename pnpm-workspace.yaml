@@ -1,6 +1,6 @@
 packages:
   - 'main'
   - 'generated'
-  - 'crates/yomikiri-backend/bindings'
+  - 'generated/backend-bindings'
   - 'generated/yomikiri-backend-wasm'
   - 'extra/generate-license'

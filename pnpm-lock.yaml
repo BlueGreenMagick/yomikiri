@@ -57,10 +57,6 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
 
-  crates/yomikiri-backend-wasm/pkg: {}
-
-  crates/yomikiri-backend/bindings: {}
-
   extra/generate-license:
     devDependencies:
       '@types/node':
@@ -99,20 +95,21 @@ importers:
 
   generated: {}
 
+  generated/backend-bindings: {}
+
+  generated/yomikiri-backend-wasm: {}
+
   main:
     dependencies:
       '@yomikiri/backend-bindings':
         specifier: workspace:*
-        version: link:../crates/yomikiri-backend/bindings
-      '@yomikiri/generate-license':
-        specifier: workspace:*
-        version: link:../extra/generate-license
+        version: link:../generated/backend-bindings
       '@yomikiri/generated':
         specifier: workspace:*
         version: link:../generated
       '@yomikiri/yomikiri-backend-wasm':
         specifier: workspace:*
-        version: link:../crates/yomikiri-backend-wasm/pkg
+        version: link:../generated/yomikiri-backend-wasm
       idb:
         specifier: ^8.0.0
         version: 8.0.0

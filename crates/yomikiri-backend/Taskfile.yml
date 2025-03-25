@@ -12,9 +12,13 @@ vars:
   ROOT_CARGO_TOML: '../../Cargo.toml'
   ROOT_CARGO_LOCK: '../../Cargo.lock'
   ROOT_PNPM_LOCK: '{{.PROJECT_ROOT}}/pnpm-lock.yaml'
-  SCHEMA_JSON: './bindings/generated.schema.json'
-  TS_BINDING: './bindings/generated.d.ts'
   SCHEMARS_BINARY: '{{.PROJECT_ROOT}}/target/debug/schemars'
+
+  PACKAGE_JSON_SRC: './bin/bindings-package.json'
+  OUTPUT_DIR: '{{.PROJECT_ROOT}}/generated/backend-bindings'
+  SCHEMA_JSON: '{{.OUTPUT_DIR}}/generated.schema.json'
+  TS_BINDING: '{{.OUTPUT_DIR}}/generated.d.ts'
+  PACKAGE_JSON_DEST: '{{.OUTPUT_DIR}}/package.json'
 
 tasks:
   tsbinding:
@@ -23,11 +27,21 @@ tasks:
       - cargo build --bin schemars
       - task: rs_to_schema
       - task: schema_to_ts
+      # Must come after rs_to_schema as the dest folder must be generated first
+      - task: copy_package_json
 
   clean:
     desc: Remove build artifacts created by taskfile.
     cmds:
-      - 'rm -rf {{.SCHEMA_JSON}} {{.TS_BINDING}}'
+      - 'rm -rf {{.OUTPUT_DIR}}'
+
+  copy_package_json:
+    sources:
+      - '{{.PACKAGE_JSON_SRC}}'
+    generates:
+      - '{{.PACKAGE_JSON_DEST}}'
+    cmds:
+      - cp -f "{{.PACKAGE_JSON_SRC}}" "{{.PACKAGE_JSON_DEST}}"
 
   rs_to_schema:
     sources:
@@ -35,7 +49,7 @@ tasks:
     generates:
       - '{{.SCHEMA_JSON}}'
     cmds:
-      - '{{.SCHEMARS_BINARY}}'
+      - '{{.SCHEMARS_BINARY}} "{{.SCHEMA_JSON}}"'
 
   schema_to_ts:
     sources:

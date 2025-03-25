@@ -2,9 +2,7 @@
   "name": "@yomikiri/backend-bindings",
   "version": "0.1.0",
   "license": "MIT",
-  "files": [
-    "generated.d.ts"
-  ],
+  "files": ["generated.d.ts"],
   "types": "generated.d.ts",
   "sideEffects": false
 }

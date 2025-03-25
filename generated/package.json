@@ -2,6 +2,7 @@
   "name": "@yomikiri/generated",
   "version": "0.0.1",
   "files": [
+    "backend-bindings/generated.d.ts",
     "dictionary-files/english.yomikiridict",
     "license/THIRD_PARTY.txt"
   ],
