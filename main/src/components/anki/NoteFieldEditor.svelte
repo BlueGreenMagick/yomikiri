@@ -9,14 +9,14 @@
   This component should be re-created for new `field` object.
 -->
 <script lang="ts">
-  import type { LoadingField } from "lib/anki";
+  import type { LoadingField } from "@/lib/anki";
   import {
     PromiseWithProgress,
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
     newChangeTracker,
-  } from "lib/utils";
+  } from "@/lib/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
 

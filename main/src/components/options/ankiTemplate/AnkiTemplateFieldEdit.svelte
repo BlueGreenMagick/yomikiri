@@ -10,14 +10,14 @@
     type LoadingField,
     buildAnkiField,
     type AnkiTemplateField,
-  } from "lib/anki";
+  } from "@/lib/anki";
 
-  import Select from "components/Select.svelte";
-  import NoteFieldEditor from "components/anki/NoteFieldEditor.svelte";
-  import IconedButton from "components/IconedButton.svelte";
+  import Select from "@/components/Select.svelte";
+  import NoteFieldEditor from "@/components/anki/NoteFieldEditor.svelte";
+  import IconedButton from "@/components/IconedButton.svelte";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
-  import Config from "lib/config";
+  import Config from "@/lib/config";
 
   const config = Config.using();
   export let fieldTemplate: AnkiTemplateField;

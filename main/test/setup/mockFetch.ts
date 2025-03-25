@@ -15,11 +15,11 @@ import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
 /* Mock load process of backend wasm */
 
 vi.mock(
-  "platform/desktop/fetch.ts",
+  "@/platform/desktop/fetch.ts",
   async (
     importOriginal,
-  ): Promise<typeof import("platform/desktop/fetch.ts")> => {
-    const module: typeof import("platform/desktop/fetch.ts") =
+  ): Promise<typeof import("@/platform/desktop/fetch.ts")> => {
+    const module: typeof import("@/platform/desktop/fetch.ts") =
       await importOriginal();
     return {
       ...module,

@@ -4,7 +4,7 @@ Terminology for messaging:
 - RequestMessage: message frame containing actual request
 */
 
-import type { AnkiNote } from "lib/anki";
+import type { AnkiNote } from "@/lib/anki";
 import type {
   DictionaryMetadata,
   SearchRequest,
@@ -13,7 +13,7 @@ import type {
 } from "#platform/backend";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../../platform/common/translate";
-import type { TTSRequest, TTSVoice } from "platform/common";
+import type { TTSRequest, TTSVoice } from "@/platform/common";
 import {
   createPromise,
   handleResponseMessage,
@@ -23,10 +23,10 @@ import {
   type PromiseResolver,
   type First,
   type Second,
-} from "lib/utils";
+} from "@/lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
-import { YomikiriError } from "lib/error";
-import type { StoredCompatConfiguration } from "lib/compat";
+import { YomikiriError } from "@/lib/error";
+import type { StoredCompatConfiguration } from "@/lib/compat";
 
 /**
  * Type map for messages between extension processes

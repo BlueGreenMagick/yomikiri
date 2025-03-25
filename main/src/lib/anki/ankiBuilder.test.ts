@@ -15,7 +15,10 @@ import {
 } from "./ankiBuilder";
 import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
-import { DesktopBackend, type TokenizeResult } from "platform/desktop/backend";
+import {
+  DesktopBackend,
+  type TokenizeResult,
+} from "@/platform/desktop/backend";
 import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
 
 import fs from "node:fs";

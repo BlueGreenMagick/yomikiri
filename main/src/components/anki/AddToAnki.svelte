@@ -8,14 +8,14 @@
     type LoadingAnkiNote,
     resolveAnkiNote,
     waitForNoteToLoad,
-  } from "lib/anki";
+  } from "@/lib/anki";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
-  import TextButton from "components/TextButton.svelte";
+  import TextButton from "@/components/TextButton.svelte";
   import { AnkiApi } from "#platform/anki";
-  import { Toast } from "lib/toast";
-  import { newChangeTracker, SingleQueued } from "lib/utils";
-  import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";
-  import { YomikiriError } from "lib/error";
+  import { Toast } from "@/lib/toast";
+  import { newChangeTracker, SingleQueued } from "@/lib/utils";
+  import HourglassToastIcon from "@/components/toast/HourglassToastIcon.svelte";
+  import { YomikiriError } from "@/lib/error";
 
   interface FieldWatch extends Field {
     _value: string;

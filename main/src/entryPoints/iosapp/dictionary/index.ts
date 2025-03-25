@@ -1,9 +1,9 @@
 import { Backend } from "#platform/backend";
 import DictionaryPage from "./DictionaryPage.svelte";
-import Config from "lib/config";
-import Utils, { exposeGlobals } from "lib/utils";
-import { AnkiApi } from "platform/iosapp/anki";
-import { Platform } from "platform/iosapp";
+import Config from "@/lib/config";
+import Utils, { exposeGlobals } from "@/lib/utils";
+import { AnkiApi } from "@/platform/iosapp/anki";
+import { Platform } from "@/platform/iosapp";
 
 const _page = createSvelte();
 

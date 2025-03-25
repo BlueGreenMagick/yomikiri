@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RubyString } from "lib/japanese";
+  import { RubyString } from "@/lib/japanese";
 
   export let text: RubyString;
 </script>

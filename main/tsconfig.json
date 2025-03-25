@@ -31,6 +31,7 @@
       "#icons/*": ["../node_modules/ionicons/dist/svg/*"],
       "#platform": ["platform/common/index"],
       "#platform/*": ["platform/common/*"],
+      "@/*": ["./*"]
     },
     "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]
   },

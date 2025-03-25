@@ -5,7 +5,7 @@ import type {
 import type { DesktopBackend } from "../desktop/backend";
 import type { IosBackend } from "../ios/backend";
 import type { IosAppBackend } from "../iosapp/backend";
-import type { IPlatformConsts } from "platform/ios";
+import type { IPlatformConsts } from "@/platform/ios";
 
 export type { DesktopBackend } from "../desktop/backend";
 export type { IosBackend } from "../ios/backend";

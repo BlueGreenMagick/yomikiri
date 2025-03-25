@@ -4,12 +4,12 @@
     type LoadingAnkiNote,
     type AnkiBuilderData,
     buildAnkiNote,
-  } from "lib/anki";
-  import Tokenize from "components/dictionary/Tokenize.svelte";
-  import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
-  import AddToAnki from "components/anki/AddToAnki.svelte";
+  } from "@/lib/anki";
+  import Tokenize from "@/components/dictionary/Tokenize.svelte";
+  import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
+  import AddToAnki from "@/components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import { Config } from "lib/config";
+  import { Config } from "@/lib/config";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
   import { Platform } from "#platform";
 

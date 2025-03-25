@@ -6,15 +6,15 @@ import {
   japaneseTtsVoices,
   setStorage,
   speakJapanese,
-} from "lib/extension/browserApi";
+} from "@/lib/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../common";
-import { type StoredConfiguration } from "lib/config";
+import { type StoredConfiguration } from "@/lib/config";
 import { getTranslation } from "../common/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
-} from "lib/compat";
-import { LazyAsync } from "lib/utils";
+} from "@/lib/compat";
+import { LazyAsync } from "@/lib/utils";
 import { deleteSavedDictionary } from "./dictionary";
 
 export * from "../common";

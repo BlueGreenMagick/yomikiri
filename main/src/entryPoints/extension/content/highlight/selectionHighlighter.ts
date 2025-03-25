@@ -1,5 +1,5 @@
-import Utils from "lib/utils";
-import type { Rect } from "lib/utils";
+import Utils from "@/lib/utils";
+import type { Rect } from "@/lib/utils";
 
 interface SelectionData {
   anchorNode: Node;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { EntryOtherForms } from "lib/dicEntry";
+  import type { EntryOtherForms } from "@/lib/dicEntry";
 
   export let otherForms: EntryOtherForms;
 

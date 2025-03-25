@@ -6,8 +6,8 @@ import {
   getTabs,
   currentTab,
   getStorage,
-} from "lib/extension/browserApi";
-import { YomikiriError } from "lib/error";
+} from "@/lib/extension/browserApi";
+import { YomikiriError } from "@/lib/error";
 
 /**
  * Used for x-callback-url as x-success value to return back to current page.

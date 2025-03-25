@@ -6,14 +6,14 @@
 </script>
 
 <script lang="ts">
-  import { type Entry, getMainForm, getMainReading } from "lib/dicEntry";
+  import { type Entry, getMainForm, getMainReading } from "@/lib/dicEntry";
   import IconAddCircleOutline from "#icons/add-circle-outline.svg";
-  import { RubyString } from "lib/japanese";
-  import { Config } from "lib/config";
+  import { RubyString } from "@/lib/japanese";
+  import { Config } from "@/lib/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel, SelectedMeaning } from "./dicEntriesModel";
   import RubyText from "../RubyText.svelte";
-  import IconedButton from "components/IconedButton.svelte";
+  import IconedButton from "@/components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
   import type { WordEntry } from "#platform/backend";

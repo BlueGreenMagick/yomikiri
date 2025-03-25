@@ -1,7 +1,7 @@
-import { type Configuration } from "lib/config";
+import { type Configuration } from "@/lib/config";
 import type { Configuration_1 } from "./v1";
 import type { Configuration_2 } from "./v2";
-import type { AnkiNote } from "lib/anki";
+import type { AnkiNote } from "@/lib/anki";
 
 export interface DeprecatedConfiguration {
   /** Deprecated in conf v3+ */

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import LoadAnkiTemplate from "components/options/ankiTemplate/LoadAnkiTemplate.svelte";
-  import Page from "components/Page.svelte";
+  import LoadAnkiTemplate from "@/components/options/ankiTemplate/LoadAnkiTemplate.svelte";
+  import Page from "@/components/Page.svelte";
 </script>
 
 <Page>

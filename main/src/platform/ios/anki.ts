@@ -3,10 +3,10 @@ import {
   NonContentScriptFunction,
   setStorage,
   updateTab,
-} from "lib/extension/browserApi";
-import type { AnkiNote } from "lib/anki";
-import Config from "lib/config";
-import { YomikiriError } from "lib/error";
+} from "@/lib/extension/browserApi";
+import type { AnkiNote } from "@/lib/anki";
+import Config from "@/lib/config";
+import { YomikiriError } from "@/lib/error";
 import { iosAnkiMobileURL } from "../shared/anki";
 import type { IAnkiAddNotes } from "#platform/anki";
 

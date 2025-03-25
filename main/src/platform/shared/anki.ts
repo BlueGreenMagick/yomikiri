@@ -1,5 +1,5 @@
-import type { AnkiNote } from "lib/anki";
-import { generateUrlParams } from "lib/utils";
+import type { AnkiNote } from "@/lib/anki";
+import { generateUrlParams } from "@/lib/utils";
 
 export function iosAnkiMobileURL(note: AnkiNote, successUrl?: string): string {
   const fields: Record<string, string> = {};

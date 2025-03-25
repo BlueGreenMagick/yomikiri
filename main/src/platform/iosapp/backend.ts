@@ -1,4 +1,4 @@
-import { PromiseWithProgress } from "lib/utils";
+import { PromiseWithProgress } from "@/lib/utils";
 import { IosAppPlatform } from ".";
 import type {
   IBackend,
@@ -12,7 +12,7 @@ import type {
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,
-} from "platform/shared/backend";
+} from "@/platform/shared/backend";
 
 export * from "../common/backend";
 

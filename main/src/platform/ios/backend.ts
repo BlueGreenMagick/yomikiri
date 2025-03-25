@@ -1,4 +1,4 @@
-import { NonContentScriptFunction } from "lib/extension/browserApi";
+import { NonContentScriptFunction } from "@/lib/extension/browserApi";
 import { IosPlatform } from ".";
 import type {
   TokenizeResult,
@@ -9,7 +9,7 @@ import type {
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,
-} from "platform/shared/backend";
+} from "@/platform/shared/backend";
 
 export * from "../common/backend";
 

@@ -15,21 +15,21 @@ import {
   handleConnection,
   removeStorage,
   setStorage,
-} from "lib/extension/browserApi";
+} from "@/lib/extension/browserApi";
 
 import Utils, {
   LazyAsync,
   PromiseWithProgress,
   createPromise,
   nextTask,
-} from "lib/utils";
+} from "@/lib/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
-import { YomikiriError } from "lib/error";
+import { YomikiriError } from "@/lib/error";
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,
-} from "platform/shared/backend";
+} from "@/platform/shared/backend";
 import {
   idbHasFile,
   idbReadFile,

@@ -1,19 +1,19 @@
 <script lang="ts">
-  import DicEntriesView from "components/dictionary/DicEntriesView.svelte";
+  import DicEntriesView from "@/components/dictionary/DicEntriesView.svelte";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,
     buildAnkiNote,
-  } from "lib/anki";
-  import AddToAnki from "components/anki/AddToAnki.svelte";
+  } from "@/lib/anki";
+  import AddToAnki from "@/components/anki/AddToAnki.svelte";
   import { tick } from "svelte";
-  import { type Tools } from "components/dictionary/Toolbar.svelte";
+  import { type Tools } from "@/components/dictionary/Toolbar.svelte";
   import type { TokenizeResult } from "#platform/backend";
-  import type { SelectedEntryForAnki } from "components/dictionary/DicEntryView.svelte";
-  import ToolbarWithPane from "components/dictionary/ToolbarWithPane.svelte";
-  import { Config } from "lib/config";
-  import { Toast } from "lib/toast";
-  import { YomikiriError } from "lib/error";
+  import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
+  import ToolbarWithPane from "@/components/dictionary/ToolbarWithPane.svelte";
+  import { Config } from "@/lib/config";
+  import { Toast } from "@/lib/toast";
+  import { YomikiriError } from "@/lib/error";
 
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;

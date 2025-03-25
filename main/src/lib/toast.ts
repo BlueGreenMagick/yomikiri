@@ -1,6 +1,6 @@
-import Toasts from "components/toast/Toasts.svelte";
+import Toasts from "@/components/toast/Toasts.svelte";
 import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
-import DetailedToast from "components/toast/DetailedToast.svelte";
+import DetailedToast from "@/components/toast/DetailedToast.svelte";
 import { YomikiriError } from "./error";
 import { TOASTER_ZINDEX } from "consts";
 import Config from "./config";

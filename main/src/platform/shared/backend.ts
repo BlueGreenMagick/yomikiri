@@ -3,8 +3,8 @@ import type {
   RunReturnTypes,
   TokenizeResult,
 } from "@yomikiri/backend-bindings";
-import { getValidEntriesForSurface } from "lib/dicEntry";
-import { toHiragana } from "lib/japanese";
+import { getValidEntriesForSurface } from "@/lib/dicEntry";
+import { toHiragana } from "@/lib/japanese";
 
 export type RunMessageMap = {
   [K in keyof RunArgTypes]: [RunArgTypes[K], RunReturnTypes[K]];

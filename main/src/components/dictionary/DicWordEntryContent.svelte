@@ -4,7 +4,7 @@
     type EntryOtherForms,
     type PartOfSpeech,
     type Sense,
-  } from "lib/dicEntry";
+  } from "@/lib/dicEntry";
   import GroupedSenseView from "./GroupedSenseView.svelte";
   import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";

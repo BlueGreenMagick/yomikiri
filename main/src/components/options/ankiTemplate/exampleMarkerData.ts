@@ -1,4 +1,4 @@
-import type { AnkiBuilderData } from "lib/anki";
+import type { AnkiBuilderData } from "@/lib/anki";
 import type { TokenizeResult } from "#platform/backend";
 import type { WordEntry } from "#platform/backend";
 

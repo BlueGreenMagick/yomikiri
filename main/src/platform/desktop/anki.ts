@@ -4,14 +4,14 @@ import type {
   IAnkiOptions,
   NotetypeInfo,
 } from "../common/anki";
-import Config from "lib/config";
-import type { AnkiNote } from "lib/anki";
+import Config from "@/lib/config";
+import type { AnkiNote } from "@/lib/anki";
 import {
   getStorage,
   NonContentScriptFunction,
   removeStorage,
   setStorage,
-} from "lib/extension/browserApi";
+} from "@/lib/extension/browserApi";
 import {
   PromiseWithProgress,
   SingleQueued,
@@ -19,7 +19,7 @@ import {
   getErrorMessage,
   type First,
   type Second,
-} from "lib/utils";
+} from "@/lib/utils";
 
 export * from "../common/anki";
 

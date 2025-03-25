@@ -9,8 +9,8 @@
   import OptionNumber from "../items/OptionNumber.svelte";
   import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
-  import Utils, { SingleQueued } from "lib/utils";
-  import Config from "lib/config";
+  import Utils, { SingleQueued } from "@/lib/utils";
+  import Config from "@/lib/config";
   import { Platform } from "#platform";
 
   const ANKIMOBILE_URL =
