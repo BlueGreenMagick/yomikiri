@@ -1,16 +1,25 @@
 version: '3'
 
+run: when_changed
+
 vars:
-  PROJECT_ROOT: ../../
+  PROJECT_ROOT: '../..'
   GENERATED_DIR: '{{.PROJECT_ROOT}}/generated'
   GENERATED_LICENSE_DIR: '{{.GENERATED_DIR}}/license'
+  LICENSE_FILE: '{{.GENERATED_LICENSE_DIR}}/THIRD_PARTY.txt'
 
 tasks:
   generate:
     desc: 'Generate licenses text'
-    run: once
+    sources:
+      - '{{.PROJECT_ROOT}}/pnpm-lock.yaml'
+      - '{{.PROJECT_ROOT}}/Cargo.toml'
+      - '{{.LICENSE_FILE}}'
+      - 'exclude:**/.*'
+    generates:
+      - '{{.LICENSE_FILE}}'
     cmds:
-      - 'pnpm tsx index.ts > "{{.GENERATED_LICENSE_DIR}}/THIRD_PARTY.txt"'
+      - 'pnpm tsx index.ts > "{{.LICENSE_FILE}}"'
 
   check:
     desc: 'Check files'
