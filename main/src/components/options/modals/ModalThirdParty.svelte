@@ -1,6 +1,6 @@
 <script lang="ts">
   import Modal from "../Modal.svelte";
-  import licensesDisclaimer from "@yomikiri/generate-license/res/THIRD_PARTY.txt";
+  import licensesDisclaimer from "@yomikiri/generated/license/THIRD_PARTY.txt";
 
   export let onClose: () => void;
 </script>

@@ -2,7 +2,8 @@
   "name": "@yomikiri/generated",
   "version": "0.0.1",
   "files": [
-    "./dictionary-files/english.yomikiridict"
+    "dictionary-files/english.yomikiridict",
+    "license/THIRD_PARTY.txt"
   ],
   "exports": {
     "./*": "./*"

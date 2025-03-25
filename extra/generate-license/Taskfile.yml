@@ -1,11 +1,16 @@
 version: '3'
 
+vars:
+  PROJECT_ROOT: ../../
+  GENERATED_DIR: '{{.PROJECT_ROOT}}/generated'
+  GENERATED_LICENSE_DIR: '{{.GENERATED_DIR}}/license'
+
 tasks:
   generate:
     desc: 'Generate licenses text'
     run: once
     cmds:
-      - 'pnpm tsx index.ts > res/THIRD_PARTY.txt'
+      - 'pnpm tsx index.ts > "{{.GENERATED_LICENSE_DIR}}/THIRD_PARTY.txt"'
 
   check:
     desc: 'Check files'

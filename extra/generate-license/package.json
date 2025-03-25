@@ -5,9 +5,6 @@
   "license": "MIT",
   "type": "module",
   "scripts": {},
-  "files": [
-    "res/THIRD_PARTY.txt"
-  ],
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@types/which": "^3.0.3",
