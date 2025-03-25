@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@yomikiri/backend-bindings": "workspace:*",
-    "@yomikiri/dictionary-files": "workspace:*",
+    "@yomikiri/generated": "workspace:*",
     "@yomikiri/generate-license": "workspace:*",
     "@yomikiri/yomikiri-backend-wasm": "workspace:*",
     "idb": "^8.0.0",

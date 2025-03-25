@@ -97,19 +97,19 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
 
-  generated/dictionary-files: {}
+  generated: {}
 
   main:
     dependencies:
       '@yomikiri/backend-bindings':
         specifier: workspace:*
         version: link:../crates/yomikiri-backend/bindings
-      '@yomikiri/dictionary-files':
-        specifier: workspace:*
-        version: link:../generated/dictionary-files
       '@yomikiri/generate-license':
         specifier: workspace:*
         version: link:../extra/generate-license
+      '@yomikiri/generated':
+        specifier: workspace:*
+        version: link:../generated
       '@yomikiri/yomikiri-backend-wasm':
         specifier: workspace:*
         version: link:../crates/yomikiri-backend-wasm/pkg

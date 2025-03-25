@@ -5,7 +5,7 @@
   in order to replace(mock) them during tests.
 */
 import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
-import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
+import ENYomikiridict from "@yomikiri/generated/dictionary-files/english.yomikiridict";
 import initWasm from "@yomikiri/yomikiri-backend-wasm";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-backend-wasm";
 import { loadSavedDictionary } from "./dictionary";

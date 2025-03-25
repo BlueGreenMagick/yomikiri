@@ -10,7 +10,7 @@ import initWasm, {
 } from "@yomikiri/yomikiri-backend-wasm";
 import fs from "node:fs/promises";
 import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
-import ENYomikiridict from "@yomikiri/dictionary-files/english.yomikiridict";
+import ENYomikiridict from "@yomikiri/generated/dictionary-files/english.yomikiridict";
 
 /* Mock load process of backend wasm */
 
