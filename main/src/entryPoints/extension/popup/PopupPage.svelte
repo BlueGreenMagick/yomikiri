@@ -2,7 +2,7 @@
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
   import Page from "components/Page.svelte";
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
 </script>
 
 <Page>

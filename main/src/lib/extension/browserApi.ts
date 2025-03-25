@@ -10,7 +10,7 @@ import type {
   SearchRequest,
   TokenizeRequest,
   TokenizeResult,
-} from "@platform/backend";
+} from "#platform/backend";
 import type { StoredConfiguration } from "../config";
 import type { TranslateResult } from "../../platform/common/translate";
 import type { TTSRequest, TTSVoice } from "platform/common";

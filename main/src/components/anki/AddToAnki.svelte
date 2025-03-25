@@ -11,7 +11,7 @@
   } from "lib/anki";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "components/TextButton.svelte";
-  import { AnkiApi } from "@platform/anki";
+  import { AnkiApi } from "#platform/anki";
   import { Toast } from "lib/toast";
   import { newChangeTracker, SingleQueued } from "lib/utils";
   import HourglassToastIcon from "components/toast/HourglassToastIcon.svelte";

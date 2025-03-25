@@ -1,6 +1,6 @@
 <script lang="ts">
-  import IconEye from "@icons/eye.svg";
-  import IconOptions from "@icons/options.svg";
+  import IconEye from "#icons/eye.svg";
+  import IconOptions from "#icons/options.svg";
   import {
     type AnkiTemplateFieldContent,
     ANKI_TEMPLATE_FIELD_TYPES,

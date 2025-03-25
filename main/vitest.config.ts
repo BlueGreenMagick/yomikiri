@@ -44,9 +44,9 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@platform": fullpath("platform/desktop"),
+      "#platform": fullpath("platform/desktop"),
       "~": fullpath("."),
-      "@icons": fullpath("../node_modules/ionicons/dist/svg"),
+      "#icons": fullpath("../node_modules/ionicons/dist/svg"),
     },
   },
   build: {

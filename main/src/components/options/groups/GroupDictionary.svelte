@@ -5,7 +5,7 @@
     Backend as PlatformBackend,
     type DesktopBackend,
     type IosAppBackend,
-  } from "@platform/backend";
+  } from "#platform/backend";
   import { YomikiriError } from "lib/error";
 
   type DictState =

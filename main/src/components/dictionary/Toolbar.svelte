@@ -3,9 +3,9 @@
 </script>
 
 <script lang="ts">
-  import IconSchool from "@icons/school.svg";
-  import IconLanguage from "@icons/language.svg";
-  import IconClose from "@icons/close.svg";
+  import IconSchool from "#icons/school.svg";
+  import IconLanguage from "#icons/language.svg";
+  import IconClose from "#icons/close.svg";
 
   export let onClose: () => void;
   export let selectedTool: Tools = null;

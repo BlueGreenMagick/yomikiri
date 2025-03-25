@@ -1,4 +1,4 @@
-import { Platform } from "@platform";
+import { Platform } from "#platform";
 import Config from "lib/config";
 import { YomikiriError } from "lib/error";
 import { Toast } from "lib/toast";

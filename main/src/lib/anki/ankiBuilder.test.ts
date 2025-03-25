@@ -21,7 +21,7 @@ import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
 import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
-import type { WordEntry } from "@platform/backend";
+import type { WordEntry } from "#platform/backend";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //

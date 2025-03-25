@@ -2,7 +2,7 @@
   import { miscDisplayText, type PartOfSpeech, type Sense } from "lib/dicEntry";
   import { Config } from "lib/config";
   import type { DicEntriesModel } from "./dicEntriesModel";
-  import type { GroupedSense } from "@platform/backend";
+  import type { GroupedSense } from "#platform/backend";
 
   export let model: DicEntriesModel;
   export let group: GroupedSense;

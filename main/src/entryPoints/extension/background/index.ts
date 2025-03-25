@@ -4,7 +4,7 @@
  * loaded on desktop / ios
  */
 
-import { Backend } from "@platform/backend";
+import { Backend } from "#platform/backend";
 import {
   handleBrowserLoad,
   handleMessage,
@@ -12,13 +12,13 @@ import {
   setBadge,
   type MessageSender,
 } from "lib/extension/browserApi";
-import { ExtensionPlatform as Platform } from "@platform";
+import { ExtensionPlatform as Platform } from "#platform";
 import Utils, { exposeGlobals } from "../../../lib/utils";
 import { Config } from "lib/config";
 import DefaultIcon from "assets/static/images/icon128.png";
 import DisabledIcon from "assets/icon128-20a.png";
 import { derived } from "svelte/store";
-import { AnkiApi, type DesktopAnkiApi } from "@platform/anki";
+import { AnkiApi, type DesktopAnkiApi } from "#platform/anki";
 
 const _initialized: Promise<void> = initialize();
 

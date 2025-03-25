@@ -1,6 +1,6 @@
 <script lang="ts">
   import Tooltip from "./Tooltip.svelte";
-  import type { TokenizeResult } from "@platform/backend";
+  import type { TokenizeResult } from "#platform/backend";
   import Page from "components/Page.svelte";
   import { emptyTokenizeResult } from "platform/shared/backend";
 

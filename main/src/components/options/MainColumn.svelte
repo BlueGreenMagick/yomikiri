@@ -3,7 +3,7 @@
   import GroupAnki from "./groups/GroupAnki.svelte";
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
 </script>
 
 <div>

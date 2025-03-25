@@ -7,7 +7,7 @@
 
 <script lang="ts">
   import { type Entry, getMainForm, getMainReading } from "lib/dicEntry";
-  import IconAddCircleOutline from "@icons/add-circle-outline.svg";
+  import IconAddCircleOutline from "#icons/add-circle-outline.svg";
   import { RubyString } from "lib/japanese";
   import { Config } from "lib/config";
   import Badges from "./Badges.svelte";
@@ -16,7 +16,7 @@
   import IconedButton from "components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
-  import type { WordEntry } from "@platform/backend";
+  import type { WordEntry } from "#platform/backend";
 
   export let entry: Entry;
   export let model: DicEntriesModel;

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import IconSettings from "@icons/settings.svg";
-  import IconPower from "@icons/power.svg";
+  import IconSettings from "#icons/settings.svg";
+  import IconPower from "#icons/power.svg";
   import Config from "lib/config";
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
 
   const config = Config.using();
 

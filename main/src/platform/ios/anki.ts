@@ -8,7 +8,7 @@ import type { AnkiNote } from "lib/anki";
 import Config from "lib/config";
 import { YomikiriError } from "lib/error";
 import { iosAnkiMobileURL } from "../shared/anki";
-import type { IAnkiAddNotes } from "@platform/anki";
+import type { IAnkiAddNotes } from "#platform/anki";
 
 export * from "../common/anki";
 

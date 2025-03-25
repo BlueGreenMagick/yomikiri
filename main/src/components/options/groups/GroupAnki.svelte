@@ -3,7 +3,7 @@
     type DesktopAnkiApi,
     type IosAppAnkiApi,
     AnkiApi as PlatformAnkiApi,
-  } from "@platform/anki";
+  } from "#platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
@@ -11,7 +11,7 @@
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "lib/utils";
   import Config from "lib/config";
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Platform, type TranslateResult } from "@platform";
+  import { Platform, type TranslateResult } from "#platform";
   import Utils from "lib/utils";
 
   export let sentence: string;

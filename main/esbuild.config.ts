@@ -124,7 +124,7 @@ const platformAliasPlugin: Plugin = {
       } else {
         replacement = "platform/desktop$1";
       }
-      const replaced = args.path.replace(/^@platform($|\/)/, replacement);
+      const replaced = args.path.replace(/^#platform($|\/)/, replacement);
       if (args.path === replaced) {
         return;
       }

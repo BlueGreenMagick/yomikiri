@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import ModalThirdParty from "../modals/ModalThirdParty.svelte";

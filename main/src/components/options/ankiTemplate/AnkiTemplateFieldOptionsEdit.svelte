@@ -3,7 +3,7 @@
   import OptionSelect from "components/options/items/OptionSelect.svelte";
   import OptionToggle from "components/options/items/OptionToggle.svelte";
   import type { AnkiTemplateField } from "lib/anki";
-  import IconAddCircleOutline from "@icons/add-circle-outline.svg";
+  import IconAddCircleOutline from "#icons/add-circle-outline.svg";
 
   export let template: AnkiTemplateField;
 </script>

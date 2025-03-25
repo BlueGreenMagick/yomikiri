@@ -1,5 +1,5 @@
 <script lang="ts">
-  import IconClose from "@icons/close.svg";
+  import IconClose from "#icons/close.svg";
 
   export let onClose: () => void;
 

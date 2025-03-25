@@ -1,4 +1,4 @@
-import { Backend } from "@platform/backend";
+import { Backend } from "#platform/backend";
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "lib/config";
 import Utils, { exposeGlobals } from "lib/utils";

@@ -2,7 +2,7 @@
   import DicEntriesView from "../dictionary/DicEntriesView.svelte";
   import { Config } from "lib/config";
   import { onMount } from "svelte";
-  import { Backend } from "@platform/backend";
+  import { Backend } from "#platform/backend";
 
   const config = Config.using();
 

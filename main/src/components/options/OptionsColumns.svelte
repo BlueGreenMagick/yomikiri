@@ -1,7 +1,7 @@
 <script lang="ts">
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
 </script>
 
 <div class="container">

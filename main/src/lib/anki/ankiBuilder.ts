@@ -1,8 +1,8 @@
-import type { Token, TokenizeResult } from "@platform/backend";
+import type { Token, TokenizeResult } from "#platform/backend";
 import Config from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
-import { Platform } from "@platform";
+import { Platform } from "#platform";
 import Utils, { escapeHTML } from "../utils";
 import type {
   AnkiTemplateField,
@@ -11,7 +11,7 @@ import type {
 } from "./template";
 import { YomikiriError } from "lib/error";
 import type { SelectedMeaning } from "components/dictionary/dicEntriesModel";
-import type { WordEntry } from "@platform/backend";
+import type { WordEntry } from "#platform/backend";
 
 export interface LoadingAnkiNote {
   deck: string;

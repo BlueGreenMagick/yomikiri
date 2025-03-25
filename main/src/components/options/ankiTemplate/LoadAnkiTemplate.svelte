@@ -3,7 +3,7 @@
     AnkiApi,
     type DesktopAnkiApi,
     type IosAppAnkiApi,
-  } from "@platform/anki";
+  } from "#platform/anki";
   import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
 
   const ankiInfoP = (AnkiApi as DesktopAnkiApi | IosAppAnkiApi).getAnkiInfo();

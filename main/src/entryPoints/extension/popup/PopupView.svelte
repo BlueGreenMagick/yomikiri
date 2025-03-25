@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { TokenizeResult } from "@platform/backend";
+  import type { TokenizeResult } from "#platform/backend";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,
@@ -11,7 +11,7 @@
   import ActionButtons from "./ActionButtons.svelte";
   import { Config } from "lib/config";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
-  import { Platform } from "@platform";
+  import { Platform } from "#platform";
 
   const config = Config.using();
   let previewIsVisible = false;

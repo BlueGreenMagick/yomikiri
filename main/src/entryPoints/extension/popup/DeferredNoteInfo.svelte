@@ -1,9 +1,9 @@
 <script lang="ts">
   import IconedButton from "components/IconedButton.svelte";
   import { Config } from "lib/config";
-  import IconRefreshOutline from "@icons/refresh-outline.svg";
-  import IconTrash from "@icons/trash.svg";
-  import { AnkiApi as RawAnkiApi, type DesktopAnkiApi } from "@platform/anki";
+  import IconRefreshOutline from "#icons/refresh-outline.svg";
+  import IconTrash from "#icons/trash.svg";
+  import { AnkiApi as RawAnkiApi, type DesktopAnkiApi } from "#platform/anki";
   import { Toast } from "lib/toast";
   import TrashToastIcon from "components/toast/TrashToastIcon.svelte";
   import CancelDeferredNoteDeletion from "components/toast/CancelDeferredNoteDeletion.svelte";

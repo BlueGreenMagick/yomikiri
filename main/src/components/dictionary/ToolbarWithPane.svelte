@@ -2,7 +2,7 @@
   import Toolbar, { type Tools } from "./Toolbar.svelte";
   import GrammarPane from "./GrammarPane.svelte";
   import TranslatePane from "./TranslatePane.svelte";
-  import type { GrammarInfo } from "@platform/backend";
+  import type { GrammarInfo } from "#platform/backend";
 
   export let onClose: () => void;
   export let selectedTool: Tools | null;
