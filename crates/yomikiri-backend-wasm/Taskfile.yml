@@ -10,8 +10,12 @@ includes:
 vars:
   PROJECT_ROOT: '../../'
   ROOT_CARGO_TOML: '../../Cargo.toml'
-  ROOT_CARGO_LOCK: '../../Cargo.lock'
-  WASM_DIR: './pkg'
+  ROOTCARGO_LOCK: '../../Cargo.lock'
+  WASM_DEBUG_TARGET_DIR: '{{.PROJECT_ROOT}}/target/wasm32-unknown-unknown/debug'
+  WASM_DEBUG_RLIB: '{{.WASM_DEBUG_TARGET_DIR}}/libyomikiri_backend_wasm.rlib'
+  WASM_DEBUG_D: '{{.WASM_DEBUG_TARGET_DIR}}/libyomikiri_backend_wasm.d'
+  WASM_OUT_DIR: './pkg'
+  FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
 tasks:
   generate:
@@ -19,20 +23,33 @@ tasks:
     cmds:
       - task: _clean-dir-if-release
         vars:
-          DIR: '{{.WASM_DIR}}'
-      - 'wasm-pack build {{if not .RELEASE}}--dev{{end}} -d "{{.WASM_DIR}}" --scope yomikiri --target web'
-
-  generate:release:
-    desc: Build wasm backend for release
-    cmds:
-      - task: generate:wasm
-        vars:
-          RELEASE: '1'
+          DIR: '{{.WASM_OUT_DIR}}'
+          FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
+      - task: '{{if .RELEASE}}_build:release{{else}}_build:dev{{end}}'
 
   clean:
     desc: Remove build artifacts created by taskfile.
     cmds:
-      - 'rm -rf {{.WASM_DIR}}'
+      - 'rm -rf {{.WASM_OUT_DIR}}'
+
+  _build:release:
+    cmds:
+      - 'wasm-pack build -d "{{.WASM_OUT_DIR}}" --scope yomikiri --target web'
+
+  _build:dev:
+    cmds:
+      - 'cargo build --target wasm32-unknown-unknown'
+      - task: _build:wasm:dev
+
+  _build:wasm:dev:
+    sources:
+      - '{{.WASM_DEBUG_RLIB}}'
+      - '{{.WASM_DEBUG_D}}'
+    generates:
+      - '{{.WASM_OUT_DIR}}/**'
+      - exclude: '**/.*'
+    cmds:
+      - 'wasm-pack build {{if not .RELEASE}}--dev{{end}} -d "{{.WASM_OUT_DIR}}" --scope yomikiri --target web'
 
   # Cleans dir if `{{.RELEASE}}` is set
   _clean-dir-if-release:
