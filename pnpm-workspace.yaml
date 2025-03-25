@@ -2,5 +2,5 @@ packages:
   - 'main'
   - 'generated'
   - 'crates/yomikiri-backend/bindings'
-  - 'crates/yomikiri-backend-wasm/pkg'
+  - 'generated/yomikiri-backend-wasm'
   - 'extra/generate-license'

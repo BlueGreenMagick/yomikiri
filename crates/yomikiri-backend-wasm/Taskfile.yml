@@ -14,7 +14,7 @@ vars:
   WASM_DEBUG_TARGET_DIR: '{{.PROJECT_ROOT}}/target/wasm32-unknown-unknown/debug'
   WASM_DEBUG_RLIB: '{{.WASM_DEBUG_TARGET_DIR}}/libyomikiri_backend_wasm.rlib'
   WASM_DEBUG_D: '{{.WASM_DEBUG_TARGET_DIR}}/libyomikiri_backend_wasm.d'
-  WASM_OUT_DIR: './pkg'
+  WASM_OUT_DIR: '{{.PROJECT_ROOT}}/generated/yomikiri-backend-wasm'
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
 tasks:
