@@ -19,6 +19,7 @@ tasks:
     generates:
       - '{{.LICENSE_FILE}}'
     cmds:
+      - mkdir -p "{{.GENERATED_LICENSE_DIR}}"
       - 'pnpm tsx index.ts > "{{.LICENSE_FILE}}"'
 
   check:
