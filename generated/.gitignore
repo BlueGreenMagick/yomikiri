@@ -1,7 +1,2 @@
-/dictionary-files/**/*
-!/dictionary-files/package.json
-
-/jmdict/
-/unidic-original/
-/unidic-transformed/
-/unidic-output/
+*
+!package.json
