@@ -7,17 +7,32 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
 fun YomikiriWebView(modifier: Modifier = Modifier) {
-    AndroidView(factory={
-        WebView(it).apply {
-            val webView = this
+    var webView: WebView? = remember { null }
 
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    BackHandler {
+        if (webView?.canGoBack() == true) {
+            webView?.goBack()
+        } else {
+            backDispatcher?.onBackPressed()
+        }
+    }
+
+    AndroidView(factory = {
+        WebView(it).apply {
+            val wv = this
+            webView = wv
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -42,16 +57,23 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
 
             CookieManager.getInstance().apply {
                 setAcceptCookie(true)
-                setAcceptThirdPartyCookies(webView, true)
+                setAcceptThirdPartyCookies(wv, true)
             }
 
             webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
                     return false
                 }
             }
         }
-    }, update={
+    }, update = {
         it.loadUrl("https://www.google.com")
-    }, modifier=modifier.fillMaxSize())
+    }, onRelease = {
+        webView = null
+    },
+        modifier = modifier.fillMaxSize()
+    )
 }
