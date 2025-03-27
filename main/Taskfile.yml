@@ -6,7 +6,7 @@ tasks:
     requires:
       vars:
         - name: 'PLATFORM'
-          enum: ['firefox', 'chrome', 'ios', 'iosapp']
+          enum: ['firefox', 'chrome', 'ios', 'iosapp', 'android']
     vars:
       NODE_ENV: '{{if .RELEASE}}production{{else}}development{{end}}'
       WATCH: '{{.WATCH | default ""}}'
@@ -41,6 +41,13 @@ tasks:
         vars:
           PLATFORM: 'iosapp'
 
+  build:android:
+    desc: 'Build for android'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'android'
+
   dev:chrome:
     aliases: ['dev']
     desc: 'Dev build for Chrome'
@@ -55,7 +62,7 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'development'
+          PLATFORM: 'firefox'
           WATCH: '1'
 
   dev:ios:
@@ -63,7 +70,7 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'development'
+          PLATFORM: 'ios'
           WATCH: '1'
 
   dev:iosapp:
@@ -71,7 +78,15 @@ tasks:
     deps:
       - task: 'build:shared'
         vars:
-          NODE_ENV: 'development'
+          PLATFORM: 'iosapp'
+          WATCH: '1'
+
+  dev:android:
+    desc: 'Dev build for android'
+    deps:
+      - task: 'build:shared'
+        vars:
+          PLATFORM: 'android'
           WATCH: '1'
 
   test:
