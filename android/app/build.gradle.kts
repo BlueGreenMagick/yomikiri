@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -37,10 +39,11 @@ android {
     buildFeatures {
         compose = true
     }
+
+    project.tasks.preBuild.dependsOn("task_build")
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -57,4 +60,12 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+tasks.register<Exec>("task_build") {
+    setWorkingDir("$projectDir/../..")
+    // Runs shell command indirectly in /bin/bash because...
+    // Android Studio launched from MacOS Dock does not source PATH variable
+    // https://issuetracker.google.com/issues/216364005
+    commandLine("/bin/bash", "-c", "task build:android")
 }

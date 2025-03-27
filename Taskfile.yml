@@ -56,6 +56,10 @@ vars:
     - yomikiri-dictionary
     - yomikiri-dictionary-generator
     - generate-license
+  ANDROID_MAIN_BUILD_DIR: 'main/build/android'
+  ANDROID_GENERATED_MAIN_DIR: 'android/app/src/main/res/raw/generated/main'
+  IS_MAC:
+    sh: '[ "$(uname)" = "Darwin" ] && echo 1 || echo ""'
 
 tasks:
   print-version:
@@ -151,6 +155,15 @@ tasks:
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
 
+  # Called from Android Studio gradle script
+  build:android:
+    cmds:
+      #- task: _build:shared
+      #- task: backend:tsbinding
+      #- task: backend-uniffi:generate
+      - task: 'main:build:android'
+      - task: '_android_setup'
+
   dev:chrome:
     desc: 'Dev build for Chrome'
     aliases: ['dev']
@@ -182,3 +195,11 @@ tasks:
       - task: yomikiri-dictionary-generator:download-and-generate
       - task: unidic:generate
       - task: generate-license:generate
+
+  # Copy over generated files to android project
+  _android_setup:
+    internal: true
+    cmds:
+      # Use clone-on-write copy if available
+      - 'mkdir -p "{{.ANDROID_GENERATED_MAIN_DIR}}"'
+      - 'cp -r {{if .IS_MAC}}-c{{else}}--reflink=auto{{end}} "{{.ANDROID_MAIN_BUILD_DIR}}/" "{{.ANDROID_GENERATED_MAIN_DIR}}/"'
