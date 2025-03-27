@@ -20,6 +20,7 @@ const TARGET_PLATFORMS = [
   "safari_desktop",
   "ios",
   "iosapp",
+  "android",
 ] as const;
 type TargetPlatforms = (typeof TARGET_PLATFORMS)[number];
 
@@ -44,6 +45,7 @@ const VERSION = Package.version;
 interface EntryPoints {
   extension: EntryPointGroup;
   iosapp: EntryPointGroup;
+  android: EntryPointGroup;
 }
 
 type EntryPointGroup = {
@@ -83,6 +85,9 @@ const ENTRY_POINTS: EntryPoints = {
     options: {},
     optionsAnkiTemplate: {},
   },
+  android: {
+    website: {},
+  },
 };
 
 function entryPointsForTarget(): EntryPointId[] {
@@ -121,8 +126,10 @@ const platformAliasPlugin: Plugin = {
         replacement = "@/platform/ios$1";
       } else if (FOR_IOSAPP) {
         replacement = "@/platform/iosapp$1";
-      } else {
+      } else if (FOR_DESKTOP) {
         replacement = "@/platform/desktop$1";
+      } else {
+        throw new Error("Unknown platform");
       }
       const replaced = args.path.replace(/^#platform($|\/)/, replacement);
       if (args.path === replaced) {
