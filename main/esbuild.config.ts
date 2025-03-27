@@ -38,6 +38,7 @@ const FOR_SAFARI_DESKTOP = TARGET === "safari_desktop";
 const FOR_DESKTOP = ["chrome", "firefox", "safari_desktop"].includes(TARGET);
 const FOR_IOS = TARGET === "ios";
 const FOR_IOSAPP = TARGET === "iosapp";
+const FOR_ANDROID = TARGET === "android";
 
 /** Package */
 const VERSION = Package.version;
@@ -113,6 +114,11 @@ function entryPointsForTarget(): EntryPointId[] {
     for (const name in grp) {
       entryPoints.push(["iosapp", name]);
     }
+  } else if (FOR_ANDROID) {
+    const grp = ENTRY_POINTS["android"];
+    for (const name in grp) {
+      entryPoints.push(["android", name]);
+    }
   }
   return entryPoints;
 }
@@ -128,6 +134,8 @@ const platformAliasPlugin: Plugin = {
         replacement = "@/platform/iosapp$1";
       } else if (FOR_DESKTOP) {
         replacement = "@/platform/desktop$1";
+      } else if (FOR_ANDROID) {
+        replacement = "@/platform/android$1";
       } else {
         throw new Error("Unknown platform");
       }
@@ -379,7 +387,7 @@ async function main() {
       to: `./res/${name}.html`,
     }));
   staticAssets.push({ from: "src/assets/static/", to: "./res/assets/static" });
-  if (!FOR_IOSAPP) {
+  if (!FOR_IOSAPP && !FOR_ANDROID) {
     staticAssets.push({
       from: "src/manifest.json.ejs",
       to: "manifest.json",
