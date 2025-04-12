@@ -57,7 +57,7 @@ vars:
     - yomikiri-dictionary-generator
     - generate-license
   ANDROID_MAIN_BUILD_DIR: 'main/build/android'
-  ANDROID_GENERATED_MAIN_DIR: 'android/app/src/main/res/raw/generated/main'
+  ANDROID_GENERATED_MAIN_DIR: 'android/app/src/main/assets/main'
   IS_MAC:
     sh: '[ "$(uname)" = "Darwin" ] && echo 1 || echo ""'
 
