@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
+import android.webkit.ValueCallback
 import android.webkit.WebResourceError
+import androidx.webkit.WebViewCompat
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
@@ -18,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.webkit.WebViewFeature
 import java.io.IOException
 
 private const val TAG = "YomikiriWebView"
@@ -70,60 +73,14 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 setAcceptThirdPartyCookies(wv, true)
             }
 
-            webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): Boolean {
-                    if (view == null || request?.url == null) {
-                        return false
-                    }
-                    Log.d(TAG, "shouldOverrideUrlLoading: ${request.url}")
-                    return false
-                }
-
-                /*
-                    Not invoked for
-                    javascript:, blob:, file:///android_asset/, file:///android_res/
-                */
-                override fun shouldInterceptRequest(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): WebResourceResponse? {
-                    if (view == null || request?.url == null) {
-                        return null
-                    }
-
-                    val url = request.url
-
-                    if (request.url.scheme != URL_SCHEME) {
-                        return null
-                    }
-
-                    Log.d(TAG, "shouldInterceptRequest: ${url.toString()}")
-                    val path = url.path
-                    if (url.authority == "main" && path != null) {
-                        Log.d(TAG, "pass resource: ${path.toString()}")
-                        try {
-                            return WebResourceResponse(
-                                "application/javascript",
-                                "UTF-8",
-                                context.assets.open("main${path}")
-                            )
-                        } catch (ex: IOException) {
-                            return WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", null, null)
-                        }
-                    }
-                    return null
-                }
-
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    Log.d(TAG, "onPageFinished: ${url?.toString()}")
-                    Log.d(TAG, "inject script into view")
-                    if (view != null) {
-                        injectScript(view)
-                    }
-                }
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+                WebViewCompat.addDocumentStartJavaScript(
+                    this,
+                    "console.log('hello world!')",
+                    setOf("*")
+                )
+            } else {
+                Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
             }
         }
     }, update = {
