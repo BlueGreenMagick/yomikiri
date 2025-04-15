@@ -87,7 +87,7 @@ const ENTRY_POINTS: EntryPoints = {
     optionsAnkiTemplate: {},
   },
   android: {
-    website: {},
+    content: {},
   },
 };
 

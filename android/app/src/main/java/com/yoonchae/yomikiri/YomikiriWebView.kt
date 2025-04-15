@@ -74,9 +74,12 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
             }
 
             if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+                val textContent = context.assets.open("main/res/content.js").bufferedReader().use {
+                    it.readText()
+                }
                 WebViewCompat.addDocumentStartJavaScript(
                     this,
-                    "console.log('hello world!')",
+                    textContent,
                     setOf("*")
                 )
             } else {
