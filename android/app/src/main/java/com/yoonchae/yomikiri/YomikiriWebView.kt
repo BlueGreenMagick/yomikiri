@@ -1,18 +1,12 @@
 package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
-import android.webkit.ValueCallback
-import android.webkit.WebResourceError
 import androidx.webkit.WebViewCompat
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,6 +78,13 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 )
             } else {
                 Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
+            }
+
+
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), {
+                    _, message, _, _, _ -> Log.d(TAG, "Received message: ${message.data}")
+                })
             }
         }
     }, update = {
