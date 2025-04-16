@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
+import android.webkit.WebResourceRequest
 import androidx.webkit.WebViewCompat
 import android.webkit.WebSettings
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,6 +64,7 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 mediaPlaybackRequiresUserGesture = false
                 setGeolocationEnabled(true)
                 offscreenPreRaster = true // should only be true if this webview is visible
+                supportMultipleWindows()
             }
 
             CookieManager.getInstance().apply {
@@ -82,6 +85,15 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
             }
 
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    return false
+                }
+            }
+
 
             if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
                 WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), {
@@ -93,15 +105,15 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                     } else {
                         val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
                         val responseObj = "Success!"
-                        val parsedResponse = SuccessfulResponseMessage(msg.id, Json.encodeToString(responseObj))
-                        val jsonResponse = Json.encodeToString(parsedResponse)
+                        val response = SuccessfulResponseMessage(msg.id, Json.encodeToString(responseObj))
+                        val jsonResponse = Json.encodeToString(response)
                         replyProxy.postMessage(jsonResponse)
                     }
                 })
             }
         }
     }, update = {
-        it.loadUrl("https://www.google.com")
+        it.loadUrl("https://syosetu.com")
     }, onRelease = {
         webView = null
     },
