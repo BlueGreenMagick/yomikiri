@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewFeature
 import java.io.IOException
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 private const val TAG = "YomikiriWebView"
 private const val URL_SCHEME = "yomikiri"
@@ -83,7 +85,18 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
 
             if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
                 WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), {
-                    _, message, _, _, _ -> Log.d(TAG, "Received message: ${message.data}")
+                    _, message, _, _, replyProxy ->
+                    Log.d(TAG, "Received message: ${message.data}")
+                    val jsonMessage = message.data
+                    if (jsonMessage == null) {
+                        Log.e(TAG, "No message was passed from webview")
+                    } else {
+                        val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
+                        val responseObj = "Success!"
+                        val parsedResponse = SuccessfulResponseMessage(msg.id, Json.encodeToString(responseObj))
+                        val jsonResponse = Json.encodeToString(parsedResponse)
+                        replyProxy.postMessage(jsonResponse)
+                    }
                 })
             }
         }
@@ -96,12 +109,11 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
     )
 }
 
-fun injectScript(view: WebView) {
-    view.evaluateJavascript("""
-        (() => {
-        const script = document.createElement('script');
-        script.src = '${SCRIPT_URL}';
-        document.head.appendChild(script);
-        })()
-    """, {})
-}
+@Serializable
+data class RequestMessage(val id: Int, val key: String, val request: String)
+
+@Serializable
+data class SuccessfulResponseMessage(val id: Int, val resp: String, val success: Boolean = true)
+
+@Serializable
+data class FailedResponseMessage(val id: Int, val error: String, val success: Boolean = false)
