@@ -15,6 +15,7 @@ export interface IPlatformConsts {
   IS_DESKTOP: boolean;
   IS_IOS: boolean;
   IS_IOSAPP: boolean;
+  IS_ANDROID: boolean;
 }
 
 export interface IPlatform extends IPlatformConsts {

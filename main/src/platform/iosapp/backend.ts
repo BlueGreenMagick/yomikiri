@@ -20,6 +20,7 @@ export namespace IosAppBackend {
   export const IS_DESKTOP = false;
   export const IS_IOS = false;
   export const IS_IOSAPP = true;
+  export const IS_ANDROID = false;
 
   export async function tokenize({
     text,

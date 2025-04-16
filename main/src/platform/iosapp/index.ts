@@ -69,6 +69,7 @@ export namespace IosAppPlatform {
   export const IS_DESKTOP = false;
   export const IS_IOS = false;
   export const IS_IOSAPP = true;
+  export const IS_ANDROID = false;
 
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {
     return await migrateConfigInner();

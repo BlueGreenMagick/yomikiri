@@ -23,6 +23,7 @@ export namespace DesktopPlatform {
   export const IS_DESKTOP = true;
   export const IS_IOS = false;
   export const IS_IOSAPP = false;
+  export const IS_ANDROID = false;
 
   // config migration is done only once even if requested multiple times
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {

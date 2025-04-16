@@ -17,6 +17,7 @@ export namespace IosBackend {
   export const IS_DESKTOP = false;
   export const IS_IOS = true;
   export const IS_IOSAPP = false;
+  export const IS_ANDROID = false;
 
   export const tokenize = NonContentScriptFunction(
     "tokenize",

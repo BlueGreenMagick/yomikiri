@@ -110,6 +110,7 @@ export namespace DesktopAnkiApi {
   export const IS_DESKTOP = true;
   export const IS_IOS = false;
   export const IS_IOSAPP = false;
+  export const IS_ANDROID = false;
 
   function ankiConnectURL(config: Config): string {
     let url = config.get("anki.connect_url");
