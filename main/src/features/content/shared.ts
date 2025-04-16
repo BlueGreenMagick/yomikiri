@@ -1,5 +1,5 @@
 import { Highlighter } from "./highlight";
-import { Tooltip } from "entryPoints/extension/content/tooltip";
+import { Tooltip } from "./tooltip";
 import Utils from "@/lib/utils";
 import { Config } from "@/lib/config";
 
