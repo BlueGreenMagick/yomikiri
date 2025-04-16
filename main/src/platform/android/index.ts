@@ -37,9 +37,9 @@ export namespace AndroidPlatform {
     return migrateConfigObject({});
   }
 
+  /** TODO */
   export async function saveConfig(_config: StoredConfiguration) {
     await Promise.resolve();
-    throw new Error("Unimplemented");
   }
 
   export function openOptionsPage(): void {

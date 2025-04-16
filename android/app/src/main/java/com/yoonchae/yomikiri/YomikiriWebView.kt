@@ -17,11 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewFeature
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.IOException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-private const val TAG = "YomikiriWebView"
+private const val TAG = "YomikiriWebViewLog"
 private const val URL_SCHEME = "yomikiri"
 private const val SCRIPT_URL = "${URL_SCHEME}://main/res/website.js"
 
@@ -107,6 +109,7 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                         val responseObj = "Success!"
                         val response = SuccessfulResponseMessage(msg.id, Json.encodeToString(responseObj))
                         val jsonResponse = Json.encodeToString(response)
+                        Log.d(TAG, "Sent: $jsonResponse")
                         replyProxy.postMessage(jsonResponse)
                     }
                 })
@@ -125,7 +128,19 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
 data class RequestMessage(val id: Int, val key: String, val request: String)
 
 @Serializable
-data class SuccessfulResponseMessage(val id: Int, val resp: String, val success: Boolean = true)
+@ExperimentalSerializationApi
+data class SuccessfulResponseMessage(
+    val id: Int,
+    val resp: String,
+    @EncodeDefault
+    val success: Boolean = true
+)
 
 @Serializable
-data class FailedResponseMessage(val id: Int, val error: String, val success: Boolean = false)
+@ExperimentalSerializationApi
+data class FailedResponseMessage(
+    val id: Int,
+    val error: String,
+    @EncodeDefault
+    val success: Boolean = false
+)

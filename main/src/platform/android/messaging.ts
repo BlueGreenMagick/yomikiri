@@ -12,7 +12,7 @@ declare global {
 }
 
 type PostMessageFn = (message: string) => void;
-type OnReceiveMessageFn = (message: string) => void;
+type OnReceiveMessageFn = (event: { data: string }) => void;
 interface AndroidMessagingInterface {
   postMessage: PostMessageFn;
   onmessage?: OnReceiveMessageFn;
@@ -58,7 +58,8 @@ const responseHandlers = new Map<
   [(response: unknown) => void, (error: YomikiriError) => void]
 >();
 
-messagingInterface.onmessage = (message) => {
+messagingInterface.onmessage = (event) => {
+  const message = event.data;
   const response = JSON.parse(message) as ResponseMessage;
   if (!responseHandlers.has(response.id)) {
     console.error(
