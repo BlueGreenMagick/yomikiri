@@ -67,6 +67,7 @@ messagingInterface.onmessage = (message) => {
     );
   }
   const [onSuccess, onError] = responseHandlers.get(response.id)!;
+  responseHandlers.delete(response.id);
   if (response.success) {
     onSuccess(JSON.parse(response.resp));
   } else {
