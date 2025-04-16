@@ -12,6 +12,8 @@ import type {
 import type { StoredConfiguration } from "@/lib/config";
 import { getTranslation } from "#platform/translate";
 
+export * from "../common";
+
 export namespace AndroidPlatform {
   export const IS_DESKTOP = false;
   export const IS_IOS = false;
