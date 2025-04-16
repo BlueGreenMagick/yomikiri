@@ -14,24 +14,21 @@ ${TAG_NAME}.unknown {
 }
 `;
 
+const STYLE_ID = "yomikiri-wrap-css";
+
 export class WrapHighlighter {
   readonly type = "wrap";
 
   highlighted = false;
 
-  /** Adds <style> to document head */
-  constructor() {
-    const style = document.createElement("style");
-    style.textContent = HIGHLIGHT_CSS;
-    document.head.appendChild(style);
-  }
-
   /** May modify range */
   highlightNodes(nodes: Node[]) {
+    this.ensureStyleTag();
     this._highlightNodes(nodes, false);
   }
 
   highlightRed(nodes: Node[]) {
+    this.ensureStyleTag();
     this._highlightNodes(nodes, true);
   }
 
@@ -79,6 +76,17 @@ export class WrapHighlighter {
     }
 
     return rects;
+  }
+
+  /** Adds <style> to document head */
+  private ensureStyleTag() {
+    const existing = document.getElementById(STYLE_ID);
+    if (existing !== null) return;
+
+    const style = document.createElement("style");
+    style.id;
+    style.textContent = HIGHLIGHT_CSS;
+    document.head.appendChild(style);
   }
 
   private _highlightNodes(nodes: Node[], unknown: boolean) {
