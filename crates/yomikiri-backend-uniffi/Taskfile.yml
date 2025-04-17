@@ -11,10 +11,20 @@ vars:
   PROJECT_ROOT: ../../
   SWIFT_DIR: ./swift
   APPLE_PROJECT_RUST_DIR: ../../safari/YomikiriTokenizer/rust
+  KOTLIN_DIR: '{{.PROJECT_ROOT}}/generated/backend-kotlin-bindings'
+  ANDROID_LIB_DIR: '{{.PROJECT_ROOT}}/generated/backend-android-lib'
+
+  FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
   IOS_TARGETS:
     - aarch64-apple-ios
     - aarch64-apple-ios-sim
+
+  ANDROID_TARGETS:
+    - aarch64-linux-android
+    - armv7-linux-androideabi
+    - i686-linux-android
+    - x86_64-linux-android
 
   INSTALLED_TARGETS:
     sh: rustup show
@@ -36,13 +46,25 @@ tasks:
         vars:
           FLAG_TARGET: '{{range $i, $val := .IOS_TARGETS}}--target {{$val}} {{end}}'
 
+  build:android:
+    deps: [_clean-if-release]
+    vars:
+      FLAG_TARGET: '{{range $i, $val := .ANDROID_TARGETS}}--target {{$val}} {{end}}'
+    cmds:
+      - task: generate:uniffi
+        vars:
+          LANGUAGE: kotlin
+          OUT_DIR: '{{.KOTLIN_DIR}}'
+      - task: _rustup_install_targets
+        vars:
+          TARGETS_VAR: ANDROID_TARGETS
+      - 'cargo ndk -o "{{.ANDROID_LIB_DIR}}" --manifest-path ./Cargo.toml {{.FLAG_TARGET}} build {{.FLAG_RELEASE}}'
+
   # Rust lib build skip is delegated to cargo
   _build:lib:
     internal: true
     requires:
       vars: [FLAG_TARGET]
-    vars:
-      FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
     cmds:
       - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
 
@@ -91,15 +113,14 @@ tasks:
         '
 
   # Cleans dir if `{{.RELEASE}}` is set
-  _clean-dir-if-release:
+  # Cleans dir if `{{.RELEASE}}` is set
+  _clean-if-release:
     internal: true
-    requires:
-      vars: [DIR]
     cmds:
-      - '{{if .RELEASE}}rm -rf {{.DIR}}{{end}}'
+      - task: '{{if .RELEASE}}clean{{else}}_void{{end}}'
 
   clean:
-    - 'rm -rf {{.SWIFT_DIR}} {{.APPLE_PROJECT_RUST_DIR}}'
+    - 'rm -rf "{{.SWIFT_DIR}}" "{{.APPLE_PROJECT_RUST_DIR}}" "{{.KOTLIN_DIR}}", "{{.ANDROID_LIB_DIR}}"'
 
   _rustup_install_targets:
     internal: true

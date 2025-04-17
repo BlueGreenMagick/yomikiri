@@ -56,6 +56,12 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.anki.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.jna) {
+        artifact {
+            type = "aar"
+        }
+    }
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

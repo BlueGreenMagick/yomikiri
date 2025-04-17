@@ -66,5 +66,15 @@ Press 'Load Temporary Add-on...' and open `/main/build/firefox/manifest.json`.
 
 ### IOS
 
-Open `/safari/Yomikiri.xcodeproj` on XCode, and build.
+Open `/safari/Yomikiri.xcodeproj` on XCode, and run the build.
 Building automatically builds rust crates and bundles web files in `./main`.
+
+### Android
+
+To build for Android, you need to install [cargo-ndk](https://github.com/bbqsrc/cargo-ndk#installation) first:
+
+```sh
+cargo install cargo-ndk
+```
+
+Then open the Android project in Android Studio and run the build. This automatically builds rust crates and bundles necessary web files.

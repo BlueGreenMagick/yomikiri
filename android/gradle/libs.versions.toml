@@ -11,6 +11,7 @@ composeBom = "2024.04.01"
 ankiAndroid = "api-v1.1.0"
 androidx-webkit = "1.13.0"
 serialization-json = "1.8.0"
+jna = "5.16.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +31,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-webkit = { group = "androidx.webkit", name="webkit", version.ref = "androidx-webkit" }
 anki-android = { group = "com.github.ankidroid", name = "Anki-Android", version.ref = "ankiAndroid" }
 kotlinx-serialization-json = { group ="org.jetbrains.kotlinx", name="kotlinx-serialization-json", version.ref = "serialization-json" }
+jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
