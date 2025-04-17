@@ -12,65 +12,57 @@ vars:
   SWIFT_DIR: ./swift
   APPLE_PROJECT_RUST_DIR: ../../safari/YomikiriTokenizer/rust
 
-  TARGET_IOS: aarch64-apple-ios
-  TARGET_IOS_SIM: aarch64-apple-ios-sim
+  IOS_TARGETS:
+    - aarch64-apple-ios
+    - aarch64-apple-ios-sim
 
   INSTALLED_TARGETS:
     sh: rustup show
-  TARGET_IOS_INSTALLED: '{{if contains .TARGET_IOS .INSTALLED_TARGETS}}1{{end}}'
-  TARGET_IOS_SIM_INSTALLED: '{{if contains .TARGET_IOS_SIM .INSTALLED_TARGETS}}1{{end}}'
 
 tasks:
-  generate:
-    desc: Build
+  build:ios:
+    deps: [_clean-if-release]
     cmds:
-      - task: _clean-dir-if-release
+      - task: generate:uniffi
         vars:
-          DIR: '{{.SWIFT_DIR}}'
-      - task: uniffi:ios
-      - 'rm -rf "{{.APPLE_PROJECT_RUST_DIR}}"'
-      - 'mkdir "{{.APPLE_PROJECT_RUST_DIR}}"'
+          LANGUAGE: swift
+          OUT_DIR: '{{.SWIFT_DIR}}'
+      - 'mkdir -p "{{.APPLE_PROJECT_RUST_DIR}}"'
       - 'cp -r {{.SWIFT_DIR}}/* "{{.APPLE_PROJECT_RUST_DIR}}/"'
-      - task: '{{if .TARGET_IOS_INSTALLED}}build:lib:ios{{else}}_void{{end}}'
-      - task: '{{if .TARGET_IOS_SIM_INSTALLED}}build:lib:ios-sim{{else}}_void{{end}}'
-
-  build:lib:ios-sim:
-    run: when_changed
-    cmds:
+      - task: _rustup_install_targets
+        vars:
+          TARGETS_VAR: IOS_TARGETS
       - task: _build:lib
         vars:
-          TARGET: '{{.TARGET_IOS_SIM}}'
-
-  build:lib:ios:
-    run: when_changed
-    cmds:
-      - task: _build:lib
-        vars:
-          TARGET: '{{.TARGET_IOS}}'
+          FLAG_TARGET: '{{range $i, $val := .IOS_TARGETS}}--target {{$val}} {{end}}'
 
   # Rust lib build skip is delegated to cargo
   _build:lib:
     internal: true
     requires:
-      vars: [TARGET]
+      vars: [FLAG_TARGET]
     vars:
       FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
-      FLAG_TARGET: '{{if .TARGET}}--target {{.TARGET}}{{end}}'
     cmds:
       - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
 
-  # Builds uniffi bindings for ios
-  # Separates `_uniffi:ios` because that task requires LIB dylib to be built already
-  uniffi:ios:
+  generate:uniffi:
+    requires:
+      vars: [LANGUAGE, OUT_DIR]
     deps:
-      - task: '_build:lib'
+      - task: _build:lib
         vars:
-          TARGET: ''
+          FLAG_TARGET: ''
     cmds:
-      - task: '_uniffi:ios'
+      - task: _generate:uniffi
+        vars:
+          LANGUAGE: '{{.LANGUAGE}}'
+          OUT_DIR: '{{.OUT_DIR}}'
 
-  _uniffi:ios:
+  _generate:uniffi:
     internal: true
+    requires:
+      vars: [LANGUAGE, OUT_DIR]
     vars:
       RELEASE_SEG: '{{if .RELEASE}}release{{else}}debug{{end}}'
       LIB_DIR: '../../target/{{.RELEASE_SEG}}'
@@ -87,18 +79,15 @@ tasks:
             echo "{{.LIB_DIR}}/__ERROR_COULD_NOT_FIND_BUILT_LIB_FILE"
           fi
     sources:
-      - '{{.ROOT_PROJECT_TOML}}'
-      - '{{.ROOT_PROJECT_LOCK}}'
       - '{{.LIB_PATH}}'
-      - './src/**/*'
       - './Cargo.toml'
     generates:
-      - '{{.SWIFT_DIR}}/**/*'
+      - '{{.OUT_DIR}}/**/*'
     cmds:
       - '
         cargo run --features "uniffi/cli uniffi-bindgen"
-        --bin uniffi-bindgen generate --language swift
-        --library "{{.LIB_PATH}}" --out-dir "{{.SWIFT_DIR}}"
+        --bin uniffi-bindgen generate --language "{{.LANGUAGE}}"
+        --library "{{.LIB_PATH}}" --out-dir "{{.OUT_DIR}}"
         '
 
   # Cleans dir if `{{.RELEASE}}` is set
@@ -111,3 +100,21 @@ tasks:
 
   clean:
     - 'rm -rf {{.SWIFT_DIR}} {{.APPLE_PROJECT_RUST_DIR}}'
+
+  _rustup_install_targets:
+    internal: true
+    requires:
+      vars: [TARGETS_VAR]
+    cmds:
+      - for:
+          var: '{{.TARGETS_VAR}}'
+        task: '{{if contains .ITEM .INSTALLED_TARGETS}}_void{{else}}_rustup_install{{end}}'
+        vars:
+          TARGET: '{{.ITEM}}'
+
+  _rustup_install:
+    internal: true
+    requires:
+      vars: [TARGET]
+    cmds:
+      - 'rustup target add {{.TARGET}}'

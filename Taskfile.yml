@@ -151,7 +151,7 @@ tasks:
     cmds:
       - task: _build:shared
       - task: backend:tsbinding
-      - task: backend-uniffi:generate
+      - task: backend-uniffi:build:ios
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
 
@@ -185,7 +185,7 @@ tasks:
     cmds:
       - task: _build:shared
       - task: backend:tsbinding
-      - task: backend-uniffi:generate
+      - task: backend-uniffi:build:ios
       - task: main:dev:ios
       - task: main:dev:iosapp
 
