@@ -32,11 +32,11 @@ impl From<anyhow::Error> for BackendError {
 
 #[uniffi::export]
 impl BackendError {
-    fn get_message(&self) -> String {
+    fn retrieve_message(&self) -> String {
         self.message.to_string()
     }
 
-    fn get_details(&self) -> Vec<String> {
+    fn retrieve_details(&self) -> Vec<String> {
         self.details.to_owned()
     }
 
