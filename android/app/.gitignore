@@ -1,5 +1,6 @@
 /build
 /src/main/res/raw/generated
 /src/main/assets/main/
+/src/main/assets/dictionary/
 /src/main/jniLibs/
 /src/main/java/com/yoonchae/yomikiri/backend/

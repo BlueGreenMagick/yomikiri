@@ -56,12 +56,16 @@ vars:
     - yomikiri-dictionary
     - yomikiri-dictionary-generator
     - generate-license
+
+  YOMIKIRIDICT_SRC_DIR: 'generated/dictionary-files/'
+
   ANDROID_MAIN_SRC_DIR: 'main/build/android'
   ANDROID_MAIN_DEST_DIR: 'android/app/src/main/assets/main'
   ANDROID_BACKEND_LIB_SRC_DIR: 'generated/backend-android-lib'
   ANDROID_BACKEND_LIB_DEST_DIR: 'android/app/src/main/jniLibs'
   ANDROID_BACKEND_KOTLIN_SRC_DIR: 'generated/backend-kotlin-bindings'
   ANDROID_BACKEND_KOTLIN_DEST_DIR: 'android/app/src/main/java/com/yoonchae/yomikiri/backend'
+  ANDROID_YOMIKIRIDICT_DEST_DIR: 'android/app/src/main/assets/dictionary'
 
   IS_MAC:
     sh: '[ "$(uname)" = "Darwin" ] && echo 1 || echo ""'
@@ -213,4 +217,6 @@ tasks:
       - 'mkdir -p "{{.ANDROID_BACKEND_LIB_DEST_DIR}}"'
       - 'cp -r {{.FLAG_CP}} "{{.ANDROID_BACKEND_LIB_SRC_DIR}}/" "{{.ANDROID_BACKEND_LIB_DEST_DIR}}/"'
       - 'mkdir -p "{{.ANDROID_BACKEND_KOTLIN_DEST_DIR}}"'
-      - 'cp -r {{.FLAG_CP}} "{{.ANDROID_BACKEND_KOTLIN_SRC_DIR}}" "{{.ANDROID_BACKEND_KOTLIN_DEST_DIR}}"'
+      - 'cp -r {{.FLAG_CP}} "{{.ANDROID_BACKEND_KOTLIN_SRC_DIR}}/" "{{.ANDROID_BACKEND_KOTLIN_DEST_DIR}}/"'
+      - 'mkdir -p "{{.ANDROID_YOMIKIRIDICT_DEST_DIR}}"'
+      - 'cp -r {{.FLAG_CP}} "{{.YOMIKIRIDICT_SRC_DIR}}/" "{{.ANDROID_YOMIKIRIDICT_DEST_DIR}}/"'

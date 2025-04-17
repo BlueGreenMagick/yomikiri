@@ -1,6 +1,7 @@
 package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -22,6 +23,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.IOException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import uniffi.yomikiri_backend_uniffi.BackendException
+import uniffi.yomikiri_backend_uniffi.RustBackend
+import java.io.File
 
 private const val TAG = "YomikiriWebViewLog"
 private const val URL_SCHEME = "yomikiri"
@@ -96,6 +100,8 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 }
             }
 
+            val backend = initializeBackend(context)
+            Log.d("MessageDelegate", "Initialized Backend")
 
             if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
                 WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), {
@@ -106,9 +112,16 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                         Log.e(TAG, "No message was passed from webview")
                     } else {
                         val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
-                        val responseObj = "Success!"
-                        val response = SuccessfulResponseMessage(msg.id, Json.encodeToString(responseObj))
-                        val jsonResponse = Json.encodeToString(response)
+
+                        val jsonResponse = try {
+                            val result = backend.run(msg.key, msg.request)
+                            val response = SuccessfulResponseMessage(msg.id, result)
+                            Json.encodeToString(response)
+                        } catch (e: BackendException) {
+                            val response = FailedResponseMessage(msg.id, e.json())
+                            Json.encodeToString(response)
+                        }
+
                         Log.d(TAG, "Sent: $jsonResponse")
                         replyProxy.postMessage(jsonResponse)
                     }
@@ -144,3 +157,26 @@ data class FailedResponseMessage(
     @EncodeDefault
     val success: Boolean = false
 )
+
+
+fun initializeBackend(context: Context): RustBackend {
+    val assetManager = context.assets
+    val inputStream = assetManager.open("dictionary/english.yomikiridict")
+    val dictDir = File(context.filesDir, "dict").apply { mkdirs() }
+    val outputFile = File(dictDir, "english.yomikiridict")
+
+    // TODO Copy only when needed!
+    inputStream.use { input ->
+        outputFile.outputStream().use { output ->
+            input.copyTo(output)
+        }
+    }
+    Log.d(TAG, "Copied file to directory")
+
+    try {
+        return RustBackend(outputFile.path)
+    }  catch (e: BackendException) {
+        Log.e(TAG, "Failed to initialize backend: ${e.json()}")
+        throw e
+    }
+}
