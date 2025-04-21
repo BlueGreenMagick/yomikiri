@@ -2,6 +2,7 @@ package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.edit
 import androidx.webkit.WebViewFeature
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -29,8 +31,8 @@ import java.io.File
 import com.yoonchae.yomikiri.BuildConfig
 
 private const val TAG = "YomikiriWebViewLog"
-private const val URL_SCHEME = "yomikiri"
-private const val SCRIPT_URL = "${URL_SCHEME}://main/res/website.js"
+private const val CONFIG_FILE_NAME = "config"
+
 
 @Composable
 fun YomikiriWebView(modifier: Modifier = Modifier) {
@@ -120,6 +122,18 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                                 "versionInfo" -> {
                                     val value = BuildConfig.VERSION_NAME
                                     builder.success(value)
+                                }
+                                "loadConfig" -> {
+                                    val preferences = context.getSharedPreferences(CONFIG_FILE_NAME, Context.MODE_PRIVATE)
+                                    val value = preferences.getString("config", "{}")
+                                    builder.success(value)
+                                }
+                                "saveConfig" -> {
+                                    val preferences = context.getSharedPreferences(CONFIG_FILE_NAME, Context.MODE_PRIVATE)
+                                    preferences.edit {
+                                        putString("config", msg.request)
+                                    }
+                                    builder.success(Unit)
                                 }
                                 else -> {
                                     val value = backend.run(msg.key, msg.request)
