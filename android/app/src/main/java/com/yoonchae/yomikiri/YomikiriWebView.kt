@@ -26,6 +26,7 @@ import kotlinx.serialization.json.Json
 import uniffi.yomikiri_backend_uniffi.BackendException
 import uniffi.yomikiri_backend_uniffi.RustBackend
 import java.io.File
+import com.yoonchae.yomikiri.BuildConfig
 
 private const val TAG = "YomikiriWebViewLog"
 private const val URL_SCHEME = "yomikiri"
@@ -112,18 +113,27 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                         Log.e(TAG, "No message was passed from webview")
                     } else {
                         val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
+                        val builder = ResponseBuilder(msg.id)
 
-                        val jsonResponse = try {
-                            val result = backend.run(msg.key, msg.request)
-                            val response = SuccessfulResponseMessage(msg.id, result)
-                            Json.encodeToString(response)
+                        val response = try {
+                            when (msg.key) {
+                                "versionInfo" -> {
+                                    val value = BuildConfig.VERSION_NAME
+                                    builder.success(value)
+                                }
+                                else -> {
+                                    val value = backend.run(msg.key, msg.request)
+                                    builder.success(value)
+                                }
+                            }
                         } catch (e: BackendException) {
-                            val response = FailedResponseMessage(msg.id, e.json())
-                            Json.encodeToString(response)
+                            builder.fail(e.json())
+                        } catch (e: Exception){
+                            builder.fail(e.message ?: "Unknown error")
                         }
 
-                        Log.d(TAG, "Sent: $jsonResponse")
-                        replyProxy.postMessage(jsonResponse)
+                        Log.d(TAG, "Sent: $response")
+                        replyProxy.postMessage(response)
                     }
                 })
             }
@@ -140,24 +150,37 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
 @Serializable
 data class RequestMessage(val id: Int, val key: String, val request: String)
 
-@Serializable
-@ExperimentalSerializationApi
-data class SuccessfulResponseMessage(
-    val id: Int,
-    val resp: String,
-    @EncodeDefault
-    val success: Boolean = true
-)
+class ResponseBuilder(val id: Int) {
+    @Serializable
+    @ExperimentalSerializationApi
+    data class SuccessfulResponseMessage(
+        val id: Int,
+        val resp: String,
+        @EncodeDefault
+        val success: Boolean = true
+    )
 
-@Serializable
-@ExperimentalSerializationApi
-data class FailedResponseMessage(
-    val id: Int,
-    val error: String,
-    @EncodeDefault
-    val success: Boolean = false
-)
+    @Serializable
+    @ExperimentalSerializationApi
+    data class FailedResponseMessage(
+        val id: Int,
+        val error: String,
+        @EncodeDefault
+        val success: Boolean = false
+    )
 
+    @OptIn(ExperimentalSerializationApi::class)
+    inline fun <reified T> success(resp: T): String {
+        val msg = SuccessfulResponseMessage(id, Json.encodeToString(resp))
+        return Json.encodeToString(msg)
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    inline fun <reified T> fail(err: T): String {
+        val msg = FailedResponseMessage(id, Json.encodeToString(err))
+        return Json.encodeToString(msg)
+    }
+}
 
 fun initializeBackend(context: Context): RustBackend {
     val assetManager = context.assets
