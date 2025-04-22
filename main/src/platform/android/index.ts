@@ -11,6 +11,7 @@ import type {
 } from "../common";
 import type { StoredConfiguration } from "@/lib/config";
 import { getTranslation } from "../common/translate";
+import { sendMessage } from "./messaging";
 
 export * from "../common";
 
@@ -22,8 +23,7 @@ export namespace AndroidPlatform {
 
   /** TODO */
   export async function getConfig(): Promise<StoredCompatConfiguration> {
-    await Promise.resolve();
-    return {};
+    return await sendMessage("loadConfig", null);
   }
 
   /** TODO */
@@ -37,9 +37,8 @@ export namespace AndroidPlatform {
     return migrateConfigObject({});
   }
 
-  /** TODO */
-  export async function saveConfig(_config: StoredConfiguration) {
-    await Promise.resolve();
+  export async function saveConfig(config: StoredConfiguration): Promise<void> {
+    await sendMessage("storeConfig", config);
   }
 
   export function openOptionsPage(): void {
@@ -47,8 +46,8 @@ export namespace AndroidPlatform {
   }
 
   export async function versionInfo(): Promise<VersionInfo> {
-    await Promise.resolve();
-    throw new Error("Unimplemented");
+    const version = await sendMessage("versionInfo", null);
+    return { version };
   }
 
   export async function japaneseTTSVoices(): Promise<TTSVoice[]> {

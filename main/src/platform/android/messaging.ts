@@ -1,6 +1,8 @@
 import { YomikiriError } from "@/lib/error";
 import { createPromise } from "@/lib/utils";
 import type { RunMessageMap } from "../shared/backend";
+import type { StoredConfiguration } from "@/lib/config";
+import type { StoredCompatConfiguration } from "@/lib/compat";
 
 /** Secret key used in android message handler */
 declare const __ANDROID_MESSAGE_SECRET_KEY: string;
@@ -29,7 +31,11 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
   delete window["__yomikiriInterface"];
 }
 
-export interface AndroidMessageMap extends RunMessageMap {}
+export interface AndroidMessageMap extends RunMessageMap {
+  storeConfig: [StoredConfiguration, null];
+  loadConfig: [null, StoredCompatConfiguration];
+  versionInfo: [null, string];
+}
 
 export type MessageRequest<K extends keyof AndroidMessageMap> =
   AndroidMessageMap[K][0];
