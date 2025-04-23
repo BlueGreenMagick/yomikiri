@@ -2,7 +2,7 @@ package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -15,28 +15,47 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.edit
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.webkit.WebViewFeature
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
-import java.io.IOException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import uniffi.yomikiri_backend_uniffi.BackendException
 import uniffi.yomikiri_backend_uniffi.RustBackend
 import java.io.File
 import com.yoonchae.yomikiri.BuildConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 private const val TAG = "YomikiriWebViewLog"
 private const val CONFIG_FILE_NAME = "config"
 
+private object SettingsKey {
+    val URL = stringPreferencesKey("url")
+}
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name=CONFIG_FILE_NAME)
 
 @Composable
 fun YomikiriWebView(modifier: Modifier = Modifier) {
     var webView: WebView? = remember { null }
+
     Log.d(TAG, "render")
 
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -101,6 +120,17 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 ): Boolean {
                     return false
                 }
+
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    if (url != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            context.dataStore.edit { settings ->
+                                settings[SettingsKey.URL] = url
+                            }
+                        }
+                    }
+                    super.onPageStarted(view, url, favicon)
+                }
             }
 
             val backend = initializeBackend(context)
@@ -151,9 +181,16 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                     }
                 })
             }
+            val storedUrl = context.dataStore.data.map { preferences ->
+                preferences[SettingsKey.URL] ?: "https://syosetu.com"
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                storedUrl.collect { value ->
+                    wv.loadUrl(value)
+                }
+            }
         }
     }, update = {
-        it.loadUrl("https://syosetu.com")
     }, onRelease = {
         webView = null
     },

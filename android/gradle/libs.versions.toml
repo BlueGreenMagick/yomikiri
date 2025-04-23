@@ -10,6 +10,7 @@ activityCompose = "1.10.1"
 composeBom = "2024.04.01"
 ankiAndroid = "api-v1.1.0"
 androidx-webkit = "1.13.0"
+androidx-datastore-preferences = "1.1.4"
 serialization-json = "1.8.0"
 jna = "5.16.0"
 
@@ -29,6 +30,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-webkit = { group = "androidx.webkit", name="webkit", version.ref = "androidx-webkit" }
+androidx-datastore-preferences = {group="androidx.datastore", name="datastore-preferences", version.ref = "androidx-datastore-preferences"}
 anki-android = { group = "com.github.ankidroid", name = "Anki-Android", version.ref = "ankiAndroid" }
 kotlinx-serialization-json = { group ="org.jetbrains.kotlinx", name="kotlinx-serialization-json", version.ref = "serialization-json" }
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
