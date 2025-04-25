@@ -167,7 +167,7 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                                 }
                                 else -> {
                                     val value = backend.run(msg.key, msg.request)
-                                    builder.success(value)
+                                    builder.jsonSuccess(value)
                                 }
                             }
                         } catch (e: BackendException) {
@@ -223,6 +223,12 @@ class ResponseBuilder(val id: Int) {
     @OptIn(ExperimentalSerializationApi::class)
     inline fun <reified T> success(resp: T): String {
         val msg = SuccessfulResponseMessage(id, Json.encodeToString(resp))
+        return Json.encodeToString(msg)
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    fun jsonSuccess(json: String): String {
+        val msg = SuccessfulResponseMessage(id, json)
         return Json.encodeToString(msg)
     }
 
