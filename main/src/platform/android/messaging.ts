@@ -32,7 +32,7 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
 }
 
 export interface AndroidMessageMap extends RunMessageMap {
-  storeConfig: [StoredConfiguration, null];
+  saveConfig: [StoredConfiguration, null];
   loadConfig: [null, StoredCompatConfiguration];
   versionInfo: [null, string];
 }

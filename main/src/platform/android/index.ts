@@ -38,7 +38,7 @@ export namespace AndroidPlatform {
   }
 
   export async function saveConfig(config: StoredConfiguration): Promise<void> {
-    await sendMessage("storeConfig", config);
+    await sendMessage("saveConfig", config);
   }
 
   export function openOptionsPage(): void {
