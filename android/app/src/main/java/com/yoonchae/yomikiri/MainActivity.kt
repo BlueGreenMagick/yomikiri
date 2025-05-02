@@ -12,9 +12,9 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
-
 
 
 class MainActivity : ComponentActivity() {
@@ -41,7 +41,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainView(modifier: Modifier = Modifier) {
-    YomikiriWebView(modifier = modifier)
+    val storage = Storage(context= LocalContext.current)
+    YomikiriWebView(storage, modifier = modifier)
 }
 
 @Preview(showBackground = true)

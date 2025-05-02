@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
-import androidx.webkit.WebViewCompat
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -15,20 +14,14 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.edit
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -36,24 +29,11 @@ import kotlinx.serialization.json.Json
 import uniffi.yomikiri_backend_uniffi.BackendException
 import uniffi.yomikiri_backend_uniffi.RustBackend
 import java.io.File
-import com.yoonchae.yomikiri.BuildConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 private const val TAG = "YomikiriWebViewLog"
-private const val CONFIG_FILE_NAME = "config"
-
-private object SettingsKey {
-    val URL = stringPreferencesKey("url")
-}
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name=CONFIG_FILE_NAME)
 
 @Composable
-fun YomikiriWebView(modifier: Modifier = Modifier) {
+fun YomikiriWebView(storage: Storage, modifier: Modifier = Modifier) {
     var webView: WebView? = remember { null }
 
     Log.d(TAG, "render")
@@ -124,9 +104,7 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     if (url != null) {
                         CoroutineScope(Dispatchers.IO).launch {
-                            context.dataStore.edit { settings ->
-                                settings[SettingsKey.URL] = url
-                            }
+                            storage.savedURL.set(url)
                         }
                     }
                     super.onPageStarted(view, url, favicon)
@@ -136,6 +114,37 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
             val backend = initializeBackend(context)
             Log.d("MessageDelegate", "Initialized Backend")
 
+
+            suspend fun handleWebMessage(jsonMessage: String): String {
+                val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
+                val builder = ResponseBuilder(msg.id)
+
+                return try {
+                    when (msg.key) {
+                        "versionInfo" -> {
+                            val value = BuildConfig.VERSION_NAME
+                            builder.success(value)
+                        }
+                        "loadConfig" -> {
+                            val value = storage.config.getJson()
+                            builder.success(value)
+                        }
+                        "saveConfig" -> {
+                            storage.config.setJson(msg.request)
+                            builder.success(Unit)
+                        }
+                        else -> {
+                            val value = backend.run(msg.key, msg.request)
+                            builder.jsonSuccess(value)
+                        }
+                    }
+                } catch (e: BackendException) {
+                    builder.fail(e.json())
+                } catch (e: Exception){
+                    builder.fail(e.message ?: "Unknown error")
+                }
+            }
+
             if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
                 WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), {
                     _, message, _, _, replyProxy ->
@@ -144,50 +153,18 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
                     if (jsonMessage == null) {
                         Log.e(TAG, "No message was passed from webview")
                     } else {
-                        val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
-                        val builder = ResponseBuilder(msg.id)
-
-                        val response = try {
-                            when (msg.key) {
-                                "versionInfo" -> {
-                                    val value = BuildConfig.VERSION_NAME
-                                    builder.success(value)
-                                }
-                                "loadConfig" -> {
-                                    val preferences = context.getSharedPreferences(CONFIG_FILE_NAME, Context.MODE_PRIVATE)
-                                    val value = preferences.getString("config", "{}")
-                                    builder.success(value)
-                                }
-                                "saveConfig" -> {
-                                    val preferences = context.getSharedPreferences(CONFIG_FILE_NAME, Context.MODE_PRIVATE)
-                                    preferences.edit {
-                                        putString("config", msg.request)
-                                    }
-                                    builder.success(Unit)
-                                }
-                                else -> {
-                                    val value = backend.run(msg.key, msg.request)
-                                    builder.jsonSuccess(value)
-                                }
-                            }
-                        } catch (e: BackendException) {
-                            builder.fail(e.json())
-                        } catch (e: Exception){
-                            builder.fail(e.message ?: "Unknown error")
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val response = handleWebMessage(jsonMessage)
+                            Log.d(TAG, "Sent: $response")
+                            replyProxy.postMessage(response)
                         }
-
-                        Log.d(TAG, "Sent: $response")
-                        replyProxy.postMessage(response)
                     }
                 })
             }
-            val storedUrl = context.dataStore.data.map { preferences ->
-                preferences[SettingsKey.URL] ?: "https://syosetu.com"
-            }
+
             CoroutineScope(Dispatchers.Main).launch {
-                storedUrl.collect { value ->
-                    wv.loadUrl(value)
-                }
+                val storedUrl = storage.savedURL.get()
+                wv.loadUrl(storedUrl)
             }
         }
     }, update = {
