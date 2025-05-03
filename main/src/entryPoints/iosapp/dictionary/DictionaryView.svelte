@@ -1,12 +1,12 @@
 <script lang="ts">
   import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
   import Tokenize from "@/components/dictionary/Tokenize.svelte";
-  import AddToAnki from "@/components/anki/AddToAnki.svelte";
   import type { TokenizeResult } from "@/platform/iosapp/backend";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,
     buildAnkiNote,
+    AddToAnki,
   } from "@/features/anki";
   import { Config } from "@/features/config";
   import { Platform } from "@/platform/iosapp";

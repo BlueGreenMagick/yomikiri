@@ -13,3 +13,6 @@ export type {
   Field,
 } from "./ankiBuilder";
 export * from "./template";
+
+export { default as AddToAnki } from "./AddToAnki.svelte";
+export { default as NoteFieldEditor } from "./NoteFieldEditor.svelte";

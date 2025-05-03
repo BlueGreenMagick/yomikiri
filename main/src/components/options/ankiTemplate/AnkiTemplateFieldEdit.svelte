@@ -10,10 +10,10 @@
     type LoadingField,
     buildAnkiField,
     type AnkiTemplateField,
+    NoteFieldEditor,
   } from "@/features/anki";
 
   import Select from "@/components/Select.svelte";
-  import NoteFieldEditor from "@/components/anki/NoteFieldEditor.svelte";
   import IconedButton from "@/components/IconedButton.svelte";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
