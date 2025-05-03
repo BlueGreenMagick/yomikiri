@@ -8,7 +8,7 @@
     type AnkiBuilderData,
     buildAnkiNote,
   } from "@/features/anki";
-  import { Config } from "@/lib/config";
+  import { Config } from "@/features/config";
   import { Platform } from "@/platform/iosapp";
 
   export let context: "app" | "action";

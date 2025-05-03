@@ -9,7 +9,7 @@
   import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
   import AddToAnki from "@/components/anki/AddToAnki.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import { Config } from "@/lib/config";
+  import { Config } from "@/features/config";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
   import { Platform } from "#platform";
 

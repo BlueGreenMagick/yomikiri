@@ -1,5 +1,5 @@
 import { test, expect, describe } from "vitest";
-import { RubyString, toHiragana, toKatakana } from "./japanese";
+import { RubyString, toHiragana, toKatakana } from "../features/japanese";
 
 describe("RubyString", () => {
   test("generate", () => {

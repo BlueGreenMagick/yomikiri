@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Config } from "@/lib/config";
+  import { Config } from "@/features/config";
   import { platformClass, setStyle, handleErrors } from "./actions";
 
   async function initialize(): Promise<void> {

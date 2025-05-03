@@ -22,10 +22,10 @@ import Utils, {
   PromiseWithProgress,
   createPromise,
   nextTask,
-} from "@/lib/utils";
+} from "@/features/utils";
 import { loadDictionary, loadWasm } from "./fetch";
 import { EXTENSION_CONTEXT } from "consts";
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,

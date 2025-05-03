@@ -5,10 +5,10 @@ import {
   nodesOfToken,
   textNodeAtPos,
 } from "./scanner";
-import { SingleQueued, isTouchScreen } from "@/lib/utils";
-import { containsJapaneseContent } from "@/lib/japanese";
+import { SingleQueued, isTouchScreen } from "@/features/utils";
+import { containsJapaneseContent } from "@/features/japanese";
 import { Backend } from "#platform/backend";
-import Config from "@/lib/config";
+import Config from "@/features/config";
 
 export function handleMouseMove(ev: MouseEvent) {
   void handleMouseMoveInner(ev);

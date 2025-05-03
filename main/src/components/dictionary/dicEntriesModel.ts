@@ -1,5 +1,5 @@
 import { writable, type Writable } from "svelte/store";
-import type { Sense } from "@/lib/dicEntry";
+import type { Sense } from "@/features/dicEntry";
 import type { PartOfSpeech, WordEntry } from "#platform/backend";
 
 export interface SelectedMeaning {

@@ -1,8 +1,8 @@
-import Utils, { exposeGlobals } from "@/lib/utils";
+import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { Platform } from "#platform";
 import { Backend } from "#platform/backend";
-import { Config } from "@/lib/config";
+import { Config } from "@/features/config";
 import { highlighter, lazyTooltip } from "@/features/content/shared";
 import { setupListeners } from "@/features/content";
 

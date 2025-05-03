@@ -1,4 +1,4 @@
-import { PromiseWithProgress } from "@/lib/utils";
+import { PromiseWithProgress } from "@/features/utils";
 import { IosAppPlatform } from ".";
 import type {
   IBackend,

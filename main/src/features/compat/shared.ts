@@ -1,4 +1,4 @@
-import { type Configuration } from "@/lib/config";
+import { type Configuration } from "@/features/config";
 import type { Configuration_1 } from "./v1";
 import type { Configuration_2 } from "./v2";
 import type { AnkiNote } from "@/features/anki";

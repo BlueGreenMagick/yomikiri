@@ -1,7 +1,7 @@
 import { Highlighter } from "./highlight";
 import { Tooltip } from "./tooltip";
-import Utils from "@/lib/utils";
-import { Config } from "@/lib/config";
+import Utils from "@/features/utils";
+import { Config } from "@/features/config";
 
 Config.instance.onInitialize(handleStateEnabledChange);
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RubyString } from "@/lib/japanese";
+  import { RubyString } from "@/features/japanese";
   import type { Token } from "#platform/backend";
   import RubyText from "../RubyText.svelte";
 

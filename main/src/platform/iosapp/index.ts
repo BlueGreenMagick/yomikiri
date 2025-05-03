@@ -2,7 +2,7 @@ import Utils, {
   handleResponseMessage,
   LazyAsync,
   type ResponseMessage,
-} from "@/lib/utils";
+} from "@/features/utils";
 import type {
   IPlatform,
   TTSVoice,
@@ -10,13 +10,13 @@ import type {
   VersionInfo,
   TTSRequest,
 } from "../common";
-import { type StoredConfiguration } from "@/lib/config";
+import { type StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../common/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "@/features/compat";
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 
 export * from "../common";

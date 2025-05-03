@@ -1,4 +1,4 @@
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 
 export interface AnkiTemplate {
   deck: string;

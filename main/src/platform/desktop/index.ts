@@ -8,13 +8,13 @@ import {
   speakJapanese,
 } from "@/features/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../common";
-import { type StoredConfiguration } from "@/lib/config";
+import { type StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../common/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
 } from "@/features/compat";
-import { LazyAsync } from "@/lib/utils";
+import { LazyAsync } from "@/features/utils";
 import { deleteSavedDictionary } from "./dictionary";
 
 export * from "../common";

@@ -4,7 +4,7 @@ import type {
   IAnkiOptions,
   NotetypeInfo,
 } from "../common/anki";
-import Config from "@/lib/config";
+import Config from "@/features/config";
 import type { AnkiNote } from "@/features/anki";
 import {
   getStorage,
@@ -19,7 +19,7 @@ import {
   getErrorMessage,
   type First,
   type Second,
-} from "@/lib/utils";
+} from "@/features/utils";
 
 export * from "../common/anki";
 

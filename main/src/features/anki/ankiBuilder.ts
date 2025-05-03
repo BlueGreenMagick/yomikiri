@@ -1,15 +1,15 @@
 import type { Token, TokenizeResult } from "#platform/backend";
-import Config from "../../lib/config";
-import { getReadingForForm, getWordEntryMainForm } from "../../lib/dicEntry";
-import { RubyString } from "../../lib/japanese";
+import Config from "../config";
+import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
+import { RubyString } from "../japanese";
 import { Platform } from "#platform";
-import Utils, { escapeHTML } from "../../lib/utils";
+import Utils, { escapeHTML } from "@/features/utils";
 import type {
   AnkiTemplateField,
   AnkiTemplateFieldContent,
   AnkiTemplateFieldTypes,
 } from "./template";
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 import type { SelectedMeaning } from "@/components/dictionary/dicEntriesModel";
 import type { WordEntry } from "#platform/backend";
 

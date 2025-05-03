@@ -12,10 +12,10 @@
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "@/components/TextButton.svelte";
   import { AnkiApi } from "#platform/anki";
-  import { Toast } from "@/lib/toast";
-  import { newChangeTracker, SingleQueued } from "@/lib/utils";
+  import { Toast } from "@/features/toast";
+  import { newChangeTracker, SingleQueued } from "@/features/utils";
   import HourglassToastIcon from "@/components/toast/HourglassToastIcon.svelte";
-  import { YomikiriError } from "@/lib/error";
+  import { YomikiriError } from "@/features/error";
 
   interface FieldWatch extends Field {
     _value: string;

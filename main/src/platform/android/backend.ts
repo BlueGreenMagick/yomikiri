@@ -11,7 +11,7 @@ import type {
 } from "../desktop/backend";
 import { cleanTokenizeResult, emptyTokenizeResult } from "../shared/backend";
 import { sendMessage } from "./messaging";
-import type { PromiseWithProgress } from "@/lib/utils";
+import type { PromiseWithProgress } from "@/features/utils";
 
 export * from "../common/backend";
 

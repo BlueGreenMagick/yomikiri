@@ -3,8 +3,8 @@
     miscDisplayText,
     type PartOfSpeech,
     type Sense,
-  } from "@/lib/dicEntry";
-  import { Config } from "@/lib/config";
+  } from "@/features/dicEntry";
+  import { Config } from "@/features/config";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { GroupedSense } from "#platform/backend";
 

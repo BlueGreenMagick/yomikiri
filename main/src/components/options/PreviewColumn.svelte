@@ -1,6 +1,6 @@
 <script lang="ts">
   import DicEntriesView from "../dictionary/DicEntriesView.svelte";
-  import { Config } from "@/lib/config";
+  import { Config } from "@/features/config";
   import { onMount } from "svelte";
   import { Backend } from "#platform/backend";
 

@@ -1,9 +1,9 @@
-import type { StoredConfiguration } from "@/lib/config";
+import type { StoredConfiguration } from "@/features/config";
 import type { TranslateResult } from "./translate";
 import type { Platform as DesktopPlatform } from "../desktop";
 import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
-import type { PromiseOrValue } from "@/lib/utils";
+import type { PromiseOrValue } from "@/features/utils";
 import type { StoredCompatConfiguration } from "@/features/compat";
 
 export type { TranslateResult } from "./translate";

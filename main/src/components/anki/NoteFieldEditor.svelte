@@ -16,7 +16,7 @@
     getErrorMessage,
     isAppleDevice,
     newChangeTracker,
-  } from "@/lib/utils";
+  } from "@/features/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
 

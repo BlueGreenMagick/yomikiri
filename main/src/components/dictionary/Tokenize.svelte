@@ -1,6 +1,6 @@
 <script lang="ts">
   import { type TokenizeResult, Backend } from "#platform/backend";
-  import Utils from "@/lib/utils";
+  import Utils from "@/features/utils";
   import IconSearch from "#icons/search.svg";
   import IconCloseCircle from "#icons/close-circle.svg";
   import SentenceView from "./SentenceView.svelte";

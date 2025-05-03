@@ -1,5 +1,5 @@
-import { type StoredConfiguration } from "@/lib/config";
-import { LazyAsync, handleResponseMessage, log } from "@/lib/utils";
+import { type StoredConfiguration } from "@/features/config";
+import { LazyAsync, handleResponseMessage, log } from "@/features/utils";
 import {
   NonContentScriptFunction,
   currentTab,
@@ -13,7 +13,7 @@ import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
 import { getTranslation } from "../common/translate";
 import { migrateConfigObject } from "@/features/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 
 export * from "../common";

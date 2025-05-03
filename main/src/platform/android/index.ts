@@ -9,7 +9,7 @@ import type {
   TTSVoice,
   VersionInfo,
 } from "../common";
-import type { StoredConfiguration } from "@/lib/config";
+import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../common/translate";
 import { sendMessage } from "./messaging";
 

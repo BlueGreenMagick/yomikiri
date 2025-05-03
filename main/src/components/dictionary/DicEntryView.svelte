@@ -6,10 +6,10 @@
 </script>
 
 <script lang="ts">
-  import { type Entry, getMainForm, getMainReading } from "@/lib/dicEntry";
+  import { type Entry, getMainForm, getMainReading } from "@/features/dicEntry";
   import IconAddCircleOutline from "#icons/add-circle-outline.svg";
-  import { RubyString } from "@/lib/japanese";
-  import { Config } from "@/lib/config";
+  import { RubyString } from "@/features/japanese";
+  import { Config } from "@/features/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel, SelectedMeaning } from "./dicEntriesModel";
   import RubyText from "../RubyText.svelte";

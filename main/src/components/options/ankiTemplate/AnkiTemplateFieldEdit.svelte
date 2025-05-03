@@ -17,7 +17,7 @@
   import IconedButton from "@/components/IconedButton.svelte";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
-  import Config from "@/lib/config";
+  import Config from "@/features/config";
 
   const config = Config.using();
   export let fieldTemplate: AnkiTemplateField;

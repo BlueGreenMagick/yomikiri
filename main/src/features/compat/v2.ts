@@ -1,4 +1,4 @@
-import type { Configuration } from "@/lib/config";
+import type { Configuration } from "@/features/config";
 import {
   type AnkiTemplate,
   type AnkiTemplateField,
@@ -10,7 +10,7 @@ import {
 } from "@/features/anki";
 import type { StoredConfig } from "./shared";
 import type { Configuration_1_Conf } from "./v1";
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 
 /** v0.2.0-dev */
 export type Configuration_2_Conf = Configuration_1_Conf;

@@ -1,4 +1,4 @@
-import type { Rect } from "@/lib/utils";
+import type { Rect } from "@/features/utils";
 import { SelectionHighlighter } from "./selectionHighlighter";
 import { WrapHighlighter } from "./wrapHighlighter";
 import { Platform } from "#platform";

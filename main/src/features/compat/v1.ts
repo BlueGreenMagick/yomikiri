@@ -1,4 +1,4 @@
-import { type Configuration } from "@/lib/config";
+import { type Configuration } from "@/features/config";
 import type { DeprecatedConfiguration, StoredConfig } from "./shared";
 import type { Configuration_2 } from "./v2";
 

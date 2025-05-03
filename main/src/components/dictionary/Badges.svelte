@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Entry, isCommonEntry } from "@/lib/dicEntry";
+  import { type Entry, isCommonEntry } from "@/features/dicEntry";
 
   export let entry: Entry;
 

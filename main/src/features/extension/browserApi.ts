@@ -11,7 +11,7 @@ import type {
   TokenizeRequest,
   TokenizeResult,
 } from "#platform/backend";
-import type { StoredConfiguration } from "@/lib/config";
+import type { StoredConfiguration } from "@/features/config";
 import type { TranslateResult } from "@/platform/common/translate";
 import type { TTSRequest, TTSVoice } from "@/platform/common";
 import {
@@ -23,9 +23,9 @@ import {
   type PromiseResolver,
   type First,
   type Second,
-} from "@/lib/utils";
+} from "@/features/utils";
 import { EXTENSION_CONTEXT } from "consts";
-import { YomikiriError } from "@/lib/error";
+import { YomikiriError } from "@/features/error";
 import type { StoredCompatConfiguration } from "@/features/compat";
 
 /**

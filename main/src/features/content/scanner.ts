@@ -1,4 +1,4 @@
-import Utils, { isElementNode, isTextNode } from "@/lib/utils";
+import Utils, { isElementNode, isTextNode } from "@/features/utils";
 
 export interface CharAtString {
   text: string;

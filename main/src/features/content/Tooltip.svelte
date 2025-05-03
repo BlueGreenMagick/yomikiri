@@ -11,9 +11,9 @@
   import type { TokenizeResult } from "#platform/backend";
   import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
   import ToolbarWithPane from "@/components/dictionary/ToolbarWithPane.svelte";
-  import { Config } from "@/lib/config";
-  import { Toast } from "@/lib/toast";
-  import { YomikiriError } from "@/lib/error";
+  import { Config } from "@/features/config";
+  import { Toast } from "@/features/toast";
+  import { YomikiriError } from "@/features/error";
 
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;

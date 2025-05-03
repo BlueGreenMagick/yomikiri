@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Entry } from "@/lib/dicEntry";
+  import type { Entry } from "@/features/dicEntry";
   import DicEntryView, {
     type SelectedEntryForAnki,
   } from "./DicEntryView.svelte";

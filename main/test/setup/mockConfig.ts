@@ -1,4 +1,4 @@
-import { CONFIG_VERSION, type StoredConfiguration } from "@/lib/config";
+import { CONFIG_VERSION, type StoredConfiguration } from "@/features/config";
 import { DesktopPlatform } from "@/platform/desktop";
 
 type ConfigSubscriber = (config: StoredConfiguration) => void;

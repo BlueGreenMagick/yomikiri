@@ -1,7 +1,7 @@
 import { Platform } from "#platform";
-import Config from "@/lib/config";
-import { YomikiriError } from "@/lib/error";
-import { Toast } from "@/lib/toast";
+import Config from "@/features/config";
+import { YomikiriError } from "@/features/error";
+import { Toast } from "@/features/toast";
 
 declare global {
   interface Window {
