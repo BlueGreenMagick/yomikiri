@@ -1,6 +1,6 @@
 /* desktop only */
 
-import OptionsPage from "@/components/options/OptionsPage.svelte";
+import { OptionsPage } from "@/components/options";
 import { Platform } from "@/platform/desktop";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";

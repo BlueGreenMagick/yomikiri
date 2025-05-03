@@ -1,7 +1,7 @@
 <script lang="ts">
-  import OptionNumber from "@/components/options/items/OptionNumber.svelte";
-  import OptionSelect from "@/components/options/items/OptionSelect.svelte";
-  import OptionToggle from "@/components/options/items/OptionToggle.svelte";
+  import OptionNumber from "../items/OptionNumber.svelte";
+  import OptionSelect from "../items/OptionSelect.svelte";
+  import OptionToggle from "../items/OptionToggle.svelte";
   import type { AnkiTemplateField } from "@/features/anki";
   import IconAddCircleOutline from "#icons/add-circle-outline.svg";
 
