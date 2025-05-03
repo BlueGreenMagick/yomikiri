@@ -1,6 +1,6 @@
 <script lang="ts">
   import OptionBase from "./OptionBase.svelte";
-  import ToggleSwitch from "../../../features/components/ToggleSwitch.svelte";
+  import ToggleSwitch from "@/features/components/ToggleSwitch.svelte";
 
   export let value: boolean;
   export let title: string;

@@ -1,6 +1,6 @@
 /* desktop only */
 
-import { OptionsPage } from "@/components/options";
+import { OptionsPage } from "@/features/options";
 import { Platform } from "@/platform/desktop";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";

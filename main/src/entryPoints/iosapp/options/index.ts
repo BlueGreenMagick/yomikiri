@@ -1,4 +1,4 @@
-import { OptionsPage } from "@/components/options";
+import { OptionsPage } from "@/features/options";
 import { Platform } from "@/platform/iosapp";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";

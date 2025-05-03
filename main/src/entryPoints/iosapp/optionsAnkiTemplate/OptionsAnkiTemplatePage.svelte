@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { LoadAnkiTemplate } from "@/components/options";
+  import { LoadAnkiTemplate } from "@/features/options";
   import Page from "@/features/components/Page.svelte";
 </script>
 
