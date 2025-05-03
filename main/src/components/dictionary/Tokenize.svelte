@@ -5,7 +5,7 @@
   import IconCloseCircle from "#icons/close-circle.svg";
   import SentenceView from "./SentenceView.svelte";
   import DicEntriesView from "./DicEntriesView.svelte";
-  import TextButton from "../TextButton.svelte";
+  import TextButton from "../../features/components/TextButton.svelte";
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools } from "./Toolbar.svelte";
   import type { SelectedEntryForAnki } from "./DicEntryView.svelte";

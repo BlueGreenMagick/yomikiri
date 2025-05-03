@@ -1,5 +1,5 @@
 <script lang="ts">
-  import TextButton from "@/components/TextButton.svelte";
+  import TextButton from "@/features/components/TextButton.svelte";
   import { Toast } from "./toast";
 
   export let message: string;

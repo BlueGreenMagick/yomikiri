@@ -12,8 +12,8 @@
   import { Config } from "@/features/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel, SelectedMeaning } from "./dicEntriesModel";
-  import RubyText from "../RubyText.svelte";
-  import IconedButton from "@/components/IconedButton.svelte";
+  import RubyText from "../../features/components/RubyText.svelte";
+  import IconedButton from "@/features/components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
   import type { WordEntry } from "#platform/backend";

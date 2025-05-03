@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Config } from "@/features/config";
-  import { platformClass, setStyle, handleErrors } from "./actions";
+  import { platformClass, setStyle, handleErrors } from "../../components/actions";
 
   async function initialize(): Promise<void> {
     // Config must be initialized before rendering svelte components,

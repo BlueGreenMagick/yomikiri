@@ -13,8 +13,8 @@
     NoteFieldEditor,
   } from "@/features/anki";
 
-  import Select from "@/components/Select.svelte";
-  import IconedButton from "@/components/IconedButton.svelte";
+  import Select from "@/features/components/Select.svelte";
+  import IconedButton from "@/features/components/IconedButton.svelte";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
   import Config from "@/features/config";

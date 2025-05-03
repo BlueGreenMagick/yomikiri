@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string">
-  import Select from "@/components/Select.svelte";
+  import Select from "@/features/components/Select.svelte";
   import OptionBase from "./OptionBase.svelte";
 
   export let options: (T | [T, string])[];

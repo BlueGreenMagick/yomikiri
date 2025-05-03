@@ -10,7 +10,7 @@
     waitForNoteToLoad,
   } from "./ankiBuilder";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
-  import TextButton from "@/components/TextButton.svelte";
+  import TextButton from "@/features/components/TextButton.svelte";
   import { AnkiApi } from "#platform/anki";
   import { Toast } from "@/features/toast";
   import { newChangeTracker, SingleQueued } from "@/features/utils";

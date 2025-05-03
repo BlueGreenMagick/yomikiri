@@ -1,5 +1,5 @@
 <script lang="ts">
-  import IconedButton from "@/components/IconedButton.svelte";
+  import IconedButton from "@/features/components/IconedButton.svelte";
   import { Config } from "@/features/config";
   import IconRefreshOutline from "#icons/refresh-outline.svg";
   import IconTrash from "#icons/trash.svg";

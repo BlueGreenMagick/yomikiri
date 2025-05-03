@@ -1,6 +1,6 @@
 <script lang="ts">
   import DictionaryView from "./DictionaryView.svelte";
-  import Page from "@/components/Page.svelte";
+  import Page from "@/features/components/Page.svelte";
 
   export let context: "app" | "action";
   export let searchText = "";
