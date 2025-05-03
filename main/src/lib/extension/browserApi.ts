@@ -26,7 +26,7 @@ import {
 } from "@/lib/utils";
 import { EXTENSION_CONTEXT } from "consts";
 import { YomikiriError } from "@/lib/error";
-import type { StoredCompatConfiguration } from "@/lib/compat";
+import type { StoredCompatConfiguration } from "@/features/compat";
 
 /**
  * Type map for messages between extension processes

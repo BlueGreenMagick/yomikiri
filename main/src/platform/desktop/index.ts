@@ -13,7 +13,7 @@ import { getTranslation } from "../common/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
-} from "@/lib/compat";
+} from "@/features/compat";
 import { LazyAsync } from "@/lib/utils";
 import { deleteSavedDictionary } from "./dictionary";
 

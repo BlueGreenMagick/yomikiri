@@ -2,7 +2,7 @@ import { YomikiriError } from "@/lib/error";
 import { createPromise } from "@/lib/utils";
 import type { RunMessageMap } from "../shared/backend";
 import type { StoredConfiguration } from "@/lib/config";
-import type { StoredCompatConfiguration } from "@/lib/compat";
+import type { StoredCompatConfiguration } from "@/features/compat";
 
 /** Secret key used in android message handler */
 declare const __ANDROID_MESSAGE_SECRET_KEY: string;

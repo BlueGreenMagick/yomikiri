@@ -15,7 +15,7 @@ import { getTranslation } from "../common/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
-} from "@/lib/compat";
+} from "@/features/compat";
 import { YomikiriError } from "@/lib/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 

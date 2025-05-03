@@ -1,7 +1,7 @@
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
-} from "@/lib/compat";
+} from "@/features/compat";
 import type {
   IPlatform,
   TranslateResult,

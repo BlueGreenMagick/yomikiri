@@ -4,7 +4,7 @@ import type { Platform as DesktopPlatform } from "../desktop";
 import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "@/lib/utils";
-import type { StoredCompatConfiguration } from "@/lib/compat";
+import type { StoredCompatConfiguration } from "@/features/compat";
 
 export type { TranslateResult } from "./translate";
 export type { Platform as DesktopPlatform } from "../desktop";

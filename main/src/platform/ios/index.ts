@@ -11,7 +11,7 @@ import {
 } from "@/lib/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
 import { getTranslation } from "../common/translate";
-import { migrateConfigObject } from "@/lib/compat";
+import { migrateConfigObject } from "@/features/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import { YomikiriError } from "@/lib/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
