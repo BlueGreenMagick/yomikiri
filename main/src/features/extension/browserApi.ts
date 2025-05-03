@@ -11,8 +11,8 @@ import type {
   TokenizeRequest,
   TokenizeResult,
 } from "#platform/backend";
-import type { StoredConfiguration } from "../config";
-import type { TranslateResult } from "../../platform/common/translate";
+import type { StoredConfiguration } from "@/lib/config";
+import type { TranslateResult } from "@/platform/common/translate";
 import type { TTSRequest, TTSVoice } from "@/platform/common";
 import {
   createPromise,

@@ -11,7 +11,7 @@ import {
   setActionIcon,
   setBadge,
   type MessageSender,
-} from "@/lib/extension/browserApi";
+} from "@/features/extension/browserApi";
 import { ExtensionPlatform as Platform } from "#platform";
 import Utils, { exposeGlobals } from "../../../lib/utils";
 import { Config } from "@/lib/config";

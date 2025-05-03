@@ -6,7 +6,7 @@ import {
   japaneseTtsVoices,
   setStorage,
   speakJapanese,
-} from "@/lib/extension/browserApi";
+} from "@/features/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../common";
 import { type StoredConfiguration } from "@/lib/config";
 import { getTranslation } from "../common/translate";

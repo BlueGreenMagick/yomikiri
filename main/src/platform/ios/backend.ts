@@ -1,4 +1,4 @@
-import { NonContentScriptFunction } from "@/lib/extension/browserApi";
+import { NonContentScriptFunction } from "@/features/extension/browserApi";
 import { IosPlatform } from ".";
 import type {
   TokenizeResult,

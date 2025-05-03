@@ -8,7 +8,7 @@ import {
   handleStorageChange,
   setStorage,
   updateTab,
-} from "@/lib/extension/browserApi";
+} from "@/features/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
 import { getTranslation } from "../common/translate";
 import { migrateConfigObject } from "@/features/compat";

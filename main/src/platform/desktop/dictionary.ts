@@ -1,4 +1,4 @@
-import { getStorage, removeStorage } from "@/lib/extension/browserApi";
+import { getStorage, removeStorage } from "@/features/extension/browserApi";
 import { idbDeleteFiles, idbReadFile } from "./idb";
 
 /**

@@ -11,7 +11,7 @@ import {
   NonContentScriptFunction,
   removeStorage,
   setStorage,
-} from "@/lib/extension/browserApi";
+} from "@/features/extension/browserApi";
 import {
   PromiseWithProgress,
   SingleQueued,

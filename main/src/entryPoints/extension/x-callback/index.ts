@@ -6,7 +6,7 @@ import {
   getTabs,
   currentTab,
   getStorage,
-} from "@/lib/extension/browserApi";
+} from "@/features/extension/browserApi";
 import { YomikiriError } from "@/lib/error";
 
 /**
