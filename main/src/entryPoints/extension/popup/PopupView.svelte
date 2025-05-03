@@ -4,7 +4,7 @@
     type LoadingAnkiNote,
     type AnkiBuilderData,
     buildAnkiNote,
-  } from "@/lib/anki";
+  } from "@/features/anki";
   import Tokenize from "@/components/dictionary/Tokenize.svelte";
   import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
   import AddToAnki from "@/components/anki/AddToAnki.svelte";

@@ -8,7 +8,7 @@
     type LoadingAnkiNote,
     resolveAnkiNote,
     waitForNoteToLoad,
-  } from "@/lib/anki";
+  } from "@/features/anki";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "@/components/TextButton.svelte";
   import { AnkiApi } from "#platform/anki";

@@ -3,7 +3,7 @@
     newAnkiTemplateField,
     type AnkiTemplate,
     type AnkiTemplateField,
-  } from "@/lib/anki";
+  } from "@/features/anki";
   import type { AnkiInfo } from "@/platform/common/anki";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
   import Config from "@/lib/config";

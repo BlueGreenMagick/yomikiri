@@ -1,4 +1,4 @@
-import type { AnkiNote } from "@/lib/anki";
+import type { AnkiNote } from "@/features/anki";
 import type { DesktopAnkiApi } from "../desktop/anki";
 import type { IosAnkiApi } from "../ios/anki";
 import type { IosAppAnkiApi } from "../iosapp/anki";

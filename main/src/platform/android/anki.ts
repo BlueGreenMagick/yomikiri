@@ -1,4 +1,4 @@
-import type { AnkiNote } from "@/lib/anki";
+import type { AnkiNote } from "@/features/anki";
 import type { AnkiInfo } from "./anki";
 import type { IAnkiAddNotes } from "./anki";
 import type { IAnkiOptions } from "./anki";

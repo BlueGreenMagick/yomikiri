@@ -1,6 +1,6 @@
 import Utils from "@/lib/utils";
 import { Platform } from ".";
-import type { AnkiNote } from "@/lib/anki";
+import type { AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/lib/error";
 import {
   type AnkiInfo,

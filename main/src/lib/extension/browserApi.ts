@@ -4,7 +4,7 @@ Terminology for messaging:
 - RequestMessage: message frame containing actual request
 */
 
-import type { AnkiNote } from "@/lib/anki";
+import type { AnkiNote } from "@/features/anki";
 import type {
   DictionaryMetadata,
   SearchRequest,

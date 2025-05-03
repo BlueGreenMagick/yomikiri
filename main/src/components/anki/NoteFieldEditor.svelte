@@ -9,7 +9,7 @@
   This component should be re-created for new `field` object.
 -->
 <script lang="ts">
-  import type { LoadingField } from "@/lib/anki";
+  import type { LoadingField } from "@/features/anki";
   import {
     PromiseWithProgress,
     escapeHTML,

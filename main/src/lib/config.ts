@@ -3,7 +3,7 @@ import { VERSION } from "consts";
 import type { TTSVoice } from "../platform/common";
 import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
-import type { AnkiTemplate } from "./anki";
+import type { AnkiTemplate } from "../features/anki";
 import { Disposable, LazyAsync, log } from "./utils";
 import { YomikiriError } from "./error";
 

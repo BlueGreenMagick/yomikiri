@@ -5,7 +5,7 @@ import type {
   NotetypeInfo,
 } from "../common/anki";
 import Config from "@/lib/config";
-import type { AnkiNote } from "@/lib/anki";
+import type { AnkiNote } from "@/features/anki";
 import {
   getStorage,
   NonContentScriptFunction,

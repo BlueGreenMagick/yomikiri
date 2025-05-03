@@ -7,7 +7,7 @@
     type LoadingAnkiNote,
     type AnkiBuilderData,
     buildAnkiNote,
-  } from "@/lib/anki";
+  } from "@/features/anki";
   import { Config } from "@/lib/config";
   import { Platform } from "@/platform/iosapp";
 

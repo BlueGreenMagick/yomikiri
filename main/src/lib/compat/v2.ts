@@ -7,7 +7,7 @@ import {
   type AnkiTemplateFieldWordOptions,
   type AnkiNote,
   newAnkiTemplateField,
-} from "@/lib/anki";
+} from "@/features/anki";
 import type { StoredConfig } from "./shared";
 import type { Configuration_1_Conf } from "./v1";
 import { YomikiriError } from "@/lib/error";

@@ -13,7 +13,7 @@ import {
   type AnkiBuilderContext,
   type AnkiBuilderData,
 } from "./ankiBuilder";
-import { Config } from "../config";
+import { Config } from "../../lib/config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
 import {
   DesktopBackend,

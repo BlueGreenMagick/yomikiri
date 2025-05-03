@@ -10,7 +10,7 @@
     type LoadingField,
     buildAnkiField,
     type AnkiTemplateField,
-  } from "@/lib/anki";
+  } from "@/features/anki";
 
   import Select from "@/components/Select.svelte";
   import NoteFieldEditor from "@/components/anki/NoteFieldEditor.svelte";

@@ -1,9 +1,9 @@
 import type { Token, TokenizeResult } from "#platform/backend";
-import Config from "../config";
-import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
-import { RubyString } from "../japanese";
+import Config from "../../lib/config";
+import { getReadingForForm, getWordEntryMainForm } from "../../lib/dicEntry";
+import { RubyString } from "../../lib/japanese";
 import { Platform } from "#platform";
-import Utils, { escapeHTML } from "../utils";
+import Utils, { escapeHTML } from "../../lib/utils";
 import type {
   AnkiTemplateField,
   AnkiTemplateFieldContent,
