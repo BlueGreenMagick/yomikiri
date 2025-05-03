@@ -1,22 +1,15 @@
-<script lang="ts" context="module">
-  export interface SelectedEntryForAnki {
-    entry: WordEntry;
-    selected?: SelectedMeaning | undefined;
-  }
-</script>
-
 <script lang="ts">
   import { type Entry, getMainForm, getMainReading } from "@/features/dicEntry";
   import IconAddCircleOutline from "#icons/add-circle-outline.svg";
   import { RubyString } from "@/features/japanese";
   import { Config } from "@/features/config";
   import Badges from "./Badges.svelte";
-  import type { DicEntriesModel, SelectedMeaning } from "./dicEntriesModel";
+  import type { DicEntriesModel } from "./dicEntriesModel";
   import RubyText from "../../features/components/RubyText.svelte";
   import IconedButton from "@/features/components/IconedButton.svelte";
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
-  import type { WordEntry } from "#platform/backend";
+  import type { SelectedEntryForAnki } from "./types";
 
   export let entry: Entry;
   export let model: DicEntriesModel;

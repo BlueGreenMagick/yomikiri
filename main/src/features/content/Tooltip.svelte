@@ -1,5 +1,4 @@
 <script lang="ts">
-  import DicEntriesView from "@/components/dictionary/DicEntriesView.svelte";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,
@@ -7,10 +6,13 @@
     AddToAnki,
   } from "@/features/anki";
   import { tick } from "svelte";
-  import { type Tools } from "@/components/dictionary/Toolbar.svelte";
+  import {
+    type Tools,
+    type SelectedEntryForAnki,
+    ToolbarWithPane,
+    DicEntriesView,
+  } from "@/components/dictionary";
   import type { TokenizeResult } from "#platform/backend";
-  import type { SelectedEntryForAnki } from "@/components/dictionary/DicEntryView.svelte";
-  import ToolbarWithPane from "@/components/dictionary/ToolbarWithPane.svelte";
   import { Config } from "@/features/config";
   import { Toast } from "@/features/toast";
   import { YomikiriError } from "@/features/error";

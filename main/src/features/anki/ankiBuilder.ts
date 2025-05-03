@@ -10,7 +10,7 @@ import type {
   AnkiTemplateFieldTypes,
 } from "./template";
 import { YomikiriError } from "@/features/error";
-import type { SelectedMeaning } from "@/components/dictionary/dicEntriesModel";
+import type { SelectedMeaning } from "@/components/dictionary";
 import type { WordEntry } from "#platform/backend";
 
 export interface LoadingAnkiNote {

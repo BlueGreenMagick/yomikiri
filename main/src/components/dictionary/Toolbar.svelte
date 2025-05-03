@@ -1,11 +1,8 @@
-<script lang="ts" context="module">
-  export type Tools = "translate" | "grammar" | null;
-</script>
-
 <script lang="ts">
   import IconSchool from "#icons/school.svg";
   import IconLanguage from "#icons/language.svg";
   import IconClose from "#icons/close.svg";
+  import type { Tools } from "./types";
 
   export let onClose: () => void;
   export let selectedTool: Tools = null;

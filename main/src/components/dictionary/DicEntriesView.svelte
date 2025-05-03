@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { Entry } from "@/features/dicEntry";
-  import DicEntryView, {
-    type SelectedEntryForAnki,
-  } from "./DicEntryView.svelte";
+  import DicEntryView from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
+  import type { SelectedEntryForAnki } from "./types";
 
   export let entries: Entry[];
   export let onSelectEntryForAnki: (

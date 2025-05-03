@@ -7,8 +7,7 @@
   import DicEntriesView from "./DicEntriesView.svelte";
   import TextButton from "../../features/components/TextButton.svelte";
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
-  import type { Tools } from "./Toolbar.svelte";
-  import type { SelectedEntryForAnki } from "./DicEntryView.svelte";
+  import type { Tools, SelectedEntryForAnki } from "./types";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
 
   export let searchText = "";
