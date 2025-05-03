@@ -14,7 +14,7 @@
   import { AnkiApi } from "#platform/anki";
   import { Toast } from "@/features/toast";
   import { newChangeTracker, SingleQueued } from "@/features/utils";
-  import HourglassToastIcon from "@/components/toast/HourglassToastIcon.svelte";
+  import { HourglassToastIcon } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
 
   interface FieldWatch extends Field {

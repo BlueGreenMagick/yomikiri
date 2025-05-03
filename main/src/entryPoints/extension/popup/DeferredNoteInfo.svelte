@@ -4,9 +4,11 @@
   import IconRefreshOutline from "#icons/refresh-outline.svg";
   import IconTrash from "#icons/trash.svg";
   import { AnkiApi as RawAnkiApi, type DesktopAnkiApi } from "#platform/anki";
-  import { Toast } from "@/features/toast";
-  import TrashToastIcon from "@/components/toast/TrashToastIcon.svelte";
-  import CancelDeferredNoteDeletion from "@/components/toast/CancelDeferredNoteDeletion.svelte";
+  import {
+    Toast,
+    TrashToastIcon,
+    CancelDeferredNoteDeletion,
+  } from "@/features/toast";
 
   const AnkiApi = RawAnkiApi as DesktopAnkiApi;
   const config = Config.using();
