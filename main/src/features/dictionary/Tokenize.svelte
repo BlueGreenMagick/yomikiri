@@ -34,6 +34,10 @@
     selectedTool = tool;
   }
 
+  function onSelectEntryForAnki(selected: SelectedEntryForAnki) {
+    onShowAnkiPreview(selected, tokenizeResult);
+  }
+
   $: void search(searchText, selectedCharAt);
 </script>
 
@@ -75,12 +79,7 @@
       {changeSelectedTool}
     />
     <div class="entries">
-      <DicEntriesView
-        entries={tokenizeResult.entries}
-        onSelectEntryForAnki={(selected) => {
-          onShowAnkiPreview(selected, tokenizeResult);
-        }}
-      />
+      <DicEntriesView entries={tokenizeResult.entries} {onSelectEntryForAnki} />
     </div>
   {:else}
     <slot />
