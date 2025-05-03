@@ -5,7 +5,7 @@
     type AnkiBuilderData,
     buildAnkiNote,
   } from "@/features/anki";
-  import { Tokenize, type SelectedEntryForAnki } from "@/components/dictionary";
+  import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
   import { AddToAnki } from "@/features/anki";
   import ActionButtons from "./ActionButtons.svelte";
   import { Config } from "@/features/config";

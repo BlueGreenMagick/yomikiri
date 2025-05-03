@@ -11,7 +11,7 @@
     type SelectedEntryForAnki,
     ToolbarWithPane,
     DicEntriesView,
-  } from "@/components/dictionary";
+  } from "@/features/dictionary";
   import type { TokenizeResult } from "#platform/backend";
   import { Config } from "@/features/config";
   import { Toast } from "@/features/toast";

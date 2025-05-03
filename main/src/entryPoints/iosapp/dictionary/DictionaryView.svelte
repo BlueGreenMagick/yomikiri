@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tokenize, type SelectedEntryForAnki } from "@/components/dictionary";
+  import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
   import type { TokenizeResult } from "@/platform/iosapp/backend";
   import {
     type LoadingAnkiNote,
