@@ -1,4 +1,4 @@
-import Utils from "@/features/utils";
+import Utils, { Hook } from "@/features/utils";
 import type { Rect } from "@/features/utils";
 import type { IHighlighter } from "./types";
 
@@ -21,7 +21,9 @@ export class SelectionHighlighter implements IHighlighter {
    */
   selectionData: SelectionData | null = null;
 
-  constructor(hideTooltip: () => void) {
+  readonly onUnhighlight = new Hook();
+
+  constructor() {
     document.addEventListener("selectionchange", (_ev) => {
       if (!this.highlighted) {
         return;
@@ -46,9 +48,15 @@ export class SelectionHighlighter implements IHighlighter {
       }
 
       this.revertSelectionColor();
-      hideTooltip();
-      this.highlighted = false;
+      this.setHighlight(false);
     });
+  }
+
+  private setHighlight(value: boolean) {
+    this.highlighted = value;
+    if (!value) {
+      this.onUnhighlight.call();
+    }
   }
 
   /** May modify range */
@@ -68,7 +76,7 @@ export class SelectionHighlighter implements IHighlighter {
     const selection = document.getSelection();
     // re-sync state if out of sync
     if (selection === null || selection.rangeCount === 0) {
-      this.highlighted = false;
+      this.setHighlight(false);
       return false;
     }
 
@@ -90,7 +98,7 @@ export class SelectionHighlighter implements IHighlighter {
     if (selection === null) return;
     selection.removeAllRanges();
     this.revertSelectionColor();
-    this.highlighted = false;
+    this.setHighlight(false);
   }
 
   highlightedRects(): Rect[] {
@@ -122,7 +130,7 @@ export class SelectionHighlighter implements IHighlighter {
       focusNode: selection.focusNode,
       focusOffset: selection.focusOffset,
     };
-    this.highlighted = true;
+    this.setHighlight(true);
   }
 
   private changeSelectionColor(color: string) {

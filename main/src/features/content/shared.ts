@@ -5,10 +5,12 @@ import { Config } from "@/features/config";
 
 Config.instance.onInitialize(handleStateEnabledChange);
 
-export const highlighter = new Highlighter(() => {
+export const highlighter = new Highlighter();
+export const lazyTooltip = new Utils.LazyAsync(createTooltip);
+
+highlighter.onUnhighlight.listen(() => {
   lazyTooltip.getIfInitialized()?.hide();
 });
-export const lazyTooltip = new Utils.LazyAsync(createTooltip);
 
 async function createTooltip() {
   const config = await Config.instance.get();

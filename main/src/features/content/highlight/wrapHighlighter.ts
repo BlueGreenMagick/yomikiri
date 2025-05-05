@@ -1,4 +1,4 @@
-import type { Rect } from "@/features/utils";
+import { Hook, type Rect } from "@/features/utils";
 import type { IHighlighter } from "./types";
 
 const TAG_NAME = "yomikirihl";
@@ -22,6 +22,8 @@ export class WrapHighlighter implements IHighlighter {
 
   highlighted = false;
 
+  readonly onUnhighlight = new Hook();
+
   /** May modify range */
   highlightNodes(nodes: Node[]) {
     this.ensureStyleTag();
@@ -39,6 +41,7 @@ export class WrapHighlighter implements IHighlighter {
       this.unhighlightElement(node);
     }
     this.highlighted = false;
+    this.onUnhighlight.call();
   }
 
   isHighlighted(node: Text, _charIdx = 0): boolean {
