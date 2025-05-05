@@ -17,5 +17,5 @@
 <div use:platformClass use:setStyle use:handleErrors style="display: none;" />
 
 <style global>
-  @import "../global.css";
+  @import "../../global.css";
 </style>
