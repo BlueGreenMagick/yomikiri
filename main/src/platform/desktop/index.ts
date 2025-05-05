@@ -9,7 +9,7 @@ import {
 } from "@/features/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../common";
 import { type StoredConfiguration } from "@/features/config";
-import { getTranslation } from "../common/translate";
+import { getTranslation } from "../shared/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,

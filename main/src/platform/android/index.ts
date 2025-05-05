@@ -10,7 +10,7 @@ import type {
   VersionInfo,
 } from "../common";
 import type { StoredConfiguration } from "@/features/config";
-import { getTranslation } from "../common/translate";
+import { getTranslation } from "../shared/translate";
 import { sendMessage } from "./messaging";
 
 export * from "../common";

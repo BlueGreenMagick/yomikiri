@@ -1,12 +1,12 @@
 import type { StoredConfiguration } from "@/features/config";
-import type { TranslateResult } from "./translate";
+import type { TranslateResult } from "../shared/translate";
 import type { Platform as DesktopPlatform } from "../desktop";
 import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "@/features/utils";
 import type { StoredCompatConfiguration } from "@/features/compat";
 
-export type { TranslateResult } from "./translate";
+export type { TranslateResult } from "../shared/translate";
 export type { Platform as DesktopPlatform } from "../desktop";
 export type { Platform as IosPlatform } from "../ios";
 export type { Platform as IosAppPlatform } from "../iosapp";

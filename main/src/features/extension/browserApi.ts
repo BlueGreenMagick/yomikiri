@@ -12,7 +12,7 @@ import type {
   TokenizeResult,
 } from "#platform/backend";
 import type { StoredConfiguration } from "@/features/config";
-import type { TranslateResult } from "@/platform/common/translate";
+import type { TranslateResult } from "@/platform/shared/translate";
 import type { TTSRequest, TTSVoice } from "@/platform/common";
 import {
   createPromise,

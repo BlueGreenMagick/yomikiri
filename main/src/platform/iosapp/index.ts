@@ -11,7 +11,7 @@ import type {
   TTSRequest,
 } from "../common";
 import { type StoredConfiguration } from "@/features/config";
-import { getTranslation } from "../common/translate";
+import { getTranslation } from "../shared/translate";
 import {
   migrateConfigObject,
   type StoredCompatConfiguration,
