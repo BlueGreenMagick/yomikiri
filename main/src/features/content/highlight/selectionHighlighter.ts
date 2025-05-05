@@ -46,8 +46,8 @@ export class SelectionHighlighter implements IHighlighter {
       }
 
       this.revertSelectionColor();
-      this.highlighted = false;
       hideTooltip();
+      this.highlighted = false;
     });
   }
 
@@ -66,11 +66,8 @@ export class SelectionHighlighter implements IHighlighter {
   isHighlighted(node: Text, charIdx = 0): boolean {
     if (!this.highlighted) return false;
     const selection = document.getSelection();
-    if (selection === null) {
-      this.highlighted = false;
-      return false;
-    }
-    if (selection.rangeCount === 0) {
+    // re-sync state if out of sync
+    if (selection === null || selection.rangeCount === 0) {
       this.highlighted = false;
       return false;
     }
@@ -89,11 +86,11 @@ export class SelectionHighlighter implements IHighlighter {
     if (!this.highlighted) {
       return;
     }
-    this.highlighted = false;
     const selection = document.getSelection();
     if (selection === null) return;
     selection.removeAllRanges();
     this.revertSelectionColor();
+    this.highlighted = false;
   }
 
   highlightedRects(): Rect[] {
@@ -117,7 +114,6 @@ export class SelectionHighlighter implements IHighlighter {
     if (selection.anchorNode === null || selection.focusNode === null) {
       return;
     }
-    this.highlighted = true;
     nodes[0].parentNode?.normalize();
     lastNode.parentNode?.normalize();
     this.selectionData = {
@@ -126,6 +122,7 @@ export class SelectionHighlighter implements IHighlighter {
       focusNode: selection.focusNode,
       focusOffset: selection.focusOffset,
     };
+    this.highlighted = true;
   }
 
   private changeSelectionColor(color: string) {
