@@ -3,8 +3,7 @@ import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { Platform } from "#platform";
 import { Backend } from "#platform/backend";
 import { Config } from "@/features/config";
-import { highlighter, lazyTooltip } from "@/features/content/shared";
-import { setupListeners } from "@/features/content";
+import { TooltipController } from "@/features/content";
 
 declare global {
   interface Window {
@@ -34,9 +33,8 @@ function initialize() {
     Utils,
     Backend,
     config: Config.instance,
-    highlighter,
-    tooltip: lazyTooltip,
+    tooltipController: TooltipController,
   });
 
-  setupListeners();
+  return new TooltipController();
 }
