@@ -40,6 +40,8 @@ export class Tooltip {
   }
 
   hide() {
+    if (!this.visible) return;
+
     const tooltip = this.getTooltipEl();
     if (tooltip === null) {
       return;
@@ -50,6 +52,8 @@ export class Tooltip {
   }
 
   move(highlightedRects: Rect[]) {
+    if (!this.visible) return;
+
     const tooltipEl = this.getTooltipEl();
     if (!tooltipEl) return;
     this.position(tooltipEl, highlightedRects[0]);
