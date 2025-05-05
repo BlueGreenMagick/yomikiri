@@ -9,10 +9,8 @@ export class Tooltip {
   config: Config;
   highlighter: Highlighter;
 
+  visible = false;
   private _tooltipPageSvelte: TooltipPage | null = null;
-  private _shown = false;
-  private _resizeObserverAttached = false;
-  private _repositionRequested = false;
 
   constructor(config: Config, highlighter: Highlighter) {
     this.config = config;
@@ -33,7 +31,7 @@ export class Tooltip {
     }
     tooltip.contentDocument?.scrollingElement?.scrollTo(0, 0);
     tooltip.style.display = "block";
-    this._shown = true;
+    this.visible = true;
     tooltipPage.setTokenizeResult(tokenizeResult); // eslint-disable-line
     const rect = this.findRectOfMouse(highlightedRects, mouseX, mouseY);
     if (rect === null) {
@@ -49,7 +47,13 @@ export class Tooltip {
     }
     tooltip.style.display = "none";
     tooltip.contentWindow?.getSelection()?.empty();
-    this._shown = false;
+    this.visible = false;
+  }
+
+  move(highlightedRects: Rect[]) {
+    const tooltipEl = this.getTooltipEl();
+    if (!tooltipEl) return;
+    this.position(tooltipEl, highlightedRects[0]);
   }
 
   private async createTooltipIframe(): Promise<
@@ -68,11 +72,6 @@ export class Tooltip {
     iframe.style.boxSizing = "content-box";
     document.body.appendChild(iframe);
 
-    if (!this._resizeObserverAttached) {
-      this.attachResizeObserver();
-      this._resizeObserverAttached = true;
-    }
-
     const iframeDoc = iframe.contentDocument!;
     if (iframeDoc.readyState === "complete") {
       const tooltipPage = this.setupEntriesPage(iframe);
@@ -86,23 +85,6 @@ export class Tooltip {
       });
       return promise;
     }
-  }
-
-  /** add ResizeObserver to document and change position on document resize */
-  private attachResizeObserver() {
-    const resizeObserver = new ResizeObserver((_) => {
-      if (!this._shown || this._repositionRequested) return;
-      this._repositionRequested = true;
-      requestAnimationFrame(() => {
-        this._repositionRequested = false;
-        if (!this._shown) return;
-        const tooltipEl = this.getTooltipEl();
-        if (!tooltipEl) return;
-        const rects = this.highlighter.highlightedRects();
-        this.position(tooltipEl, rects[0]);
-      });
-    });
-    resizeObserver.observe(document.documentElement);
   }
 
   private getTooltipEl(): HTMLIFrameElement | null {
