@@ -1,20 +1,19 @@
-import Utils, { type Rect } from "@/features/utils";
+import Utils, { Hook, type Rect } from "@/features/utils";
 import type { TokenizeResult } from "#platform/backend";
 import Config from "@/features/config";
 import TooltipPage from "./TooltipPage.svelte";
-import { Highlighter } from "./highlight";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
 
 export class Tooltip {
   config: Config;
-  highlighter: Highlighter;
 
   visible = false;
+  onCloseClicked = new Hook();
+
   private _tooltipPageSvelte: TooltipPage | null = null;
 
-  constructor(config: Config, highlighter: Highlighter) {
+  constructor(config: Config) {
     this.config = config;
-    this.highlighter = highlighter;
   }
 
   async show(
@@ -198,7 +197,7 @@ export class Tooltip {
       props: {
         onClose: () => {
           this.hide();
-          this.highlighter.unhighlight();
+          this.onCloseClicked.call();
         },
         onUpdateHeight: (height: number) => {
           const tooltip = this.getTooltipEl();

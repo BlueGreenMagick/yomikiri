@@ -12,7 +12,11 @@ export const lazyTooltip = new Utils.LazyAsync(createTooltip);
 
 async function createTooltip() {
   const config = await Config.instance.get();
-  const tooltip = new Tooltip(config, highlighter);
+  const tooltip = new Tooltip(config);
+
+  tooltip.onCloseClicked.listen(() => {
+    highlighter.unhighlight();
+  });
 
   // add ResizeObserver to document and change position on document resize
   let repositionRequested = false;
