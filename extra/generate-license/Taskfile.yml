@@ -32,7 +32,7 @@ tasks:
     desc: 'Lint files'
     cmds:
       - 'pnpm tsc --noemit'
-      - 'pnpm eslint --cache .'
+      - 'pnpm eslint .'
       - task: 'lint:rust'
 
   lint:rust:

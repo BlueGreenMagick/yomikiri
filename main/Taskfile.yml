@@ -120,7 +120,7 @@ tasks:
 
   lint:
     cmds:
-      - 'pnpm eslint --cache .'
+      - 'pnpm eslint .'
 
   format:
     aliases: ['fmt']
