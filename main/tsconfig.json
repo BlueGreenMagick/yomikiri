@@ -33,7 +33,9 @@
       "#platform/*": ["platform/types/*"],
       "@/*": ["./*"]
     },
-    "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]
+    "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"],
+    "allowJs": true,
+    "checkJs": true
   },
   "include": ["src/**/*", "test/**/*", "esbuild.config.ts", "vitest.config.ts"]
 }
