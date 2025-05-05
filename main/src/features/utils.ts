@@ -500,11 +500,12 @@ export class Disposable {
 export class Hook<I extends Array<unknown> = [], O = void> {
   private fns: ((...args: I) => O)[] = [];
 
+  // ensures that listeners added or removed during hook call() doesn't cause some listeners to not be called.
   listen(fn: (...args: I) => O): Disposable {
-    this.fns.push(fn);
+    this.fns = [...this.fns, fn];
     return new Disposable(() => {
       const idx = this.fns.indexOf(fn);
-      this.fns.splice(idx, 1);
+      this.fns = [...this.fns.slice(0, idx), ...this.fns.slice(idx + 1)];
     });
   }
 
@@ -521,10 +522,10 @@ export class AsyncHook<I extends Array<unknown> = [], O = void> {
   private fns: ((...args: I) => Promise<O>)[] = [];
 
   listen(fn: (...args: I) => Promise<O>): Disposable {
-    this.fns.push(fn);
+    this.fns = [...this.fns, fn];
     return new Disposable(() => {
       const idx = this.fns.indexOf(fn);
-      this.fns.splice(idx, 1);
+      this.fns = [...this.fns.slice(0, idx), ...this.fns.slice(idx + 1)];
     });
   }
 
