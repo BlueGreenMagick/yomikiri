@@ -1,5 +1,6 @@
 import Utils from "@/features/utils";
 import type { Rect } from "@/features/utils";
+import type { IHighlighter } from "./types";
 
 interface SelectionData {
   anchorNode: Node;
@@ -10,7 +11,7 @@ interface SelectionData {
 
 const STYLE_ID = "yomikiri-selection-css";
 
-export class SelectionHighlighter {
+export class SelectionHighlighter implements IHighlighter {
   readonly type = "selection";
 
   highlighted = false;

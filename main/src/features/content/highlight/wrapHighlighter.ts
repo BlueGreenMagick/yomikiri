@@ -1,4 +1,5 @@
 import type { Rect } from "@/features/utils";
+import type { IHighlighter } from "./types";
 
 const TAG_NAME = "yomikirihl";
 const HIGHLIGHT_CSS = `${TAG_NAME} {
@@ -16,7 +17,7 @@ ${TAG_NAME}.unknown {
 
 const STYLE_ID = "yomikiri-wrap-css";
 
-export class WrapHighlighter {
+export class WrapHighlighter implements IHighlighter {
   readonly type = "wrap";
 
   highlighted = false;
