@@ -29,8 +29,8 @@
     "resolveJsonModule": true,
     "paths": {
       "#icons/*": ["../node_modules/ionicons/dist/svg/*"],
-      "#platform": ["platform/common/index"],
-      "#platform/*": ["platform/common/*"],
+      "#platform": ["platform/types/index"],
+      "#platform/*": ["platform/types/*"],
       "@/*": ["./*"]
     },
     "types": ["vitest/importMeta", "chrome", "firefox-webext-browser"]

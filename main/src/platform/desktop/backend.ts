@@ -3,7 +3,7 @@ import type {
   RunArgTypes,
   RunReturnTypes,
   TokenizeResult,
-} from "../common/backend";
+} from "../types/backend";
 import {
   Backend as BackendWasm,
   dict_schema_ver,
@@ -38,7 +38,7 @@ import {
   type FileName,
 } from "./idb";
 
-export * from "../common/backend";
+export * from "../types/backend";
 
 export namespace DesktopBackend {
   export const IS_DESKTOP = true;

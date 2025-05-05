@@ -8,9 +8,9 @@ import type { AnkiNote } from "@/features/anki";
 import Config from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { iosAnkiMobileURL } from "../shared/anki";
-import type { IAnkiAddNotes } from "#platform/anki";
+import type { IAnkiAddNotes } from "../types/anki";
 
-export * from "../common/anki";
+export * from "../types/anki";
 
 export namespace IosAnkiApi {
   export const IS_DESKTOP = false;

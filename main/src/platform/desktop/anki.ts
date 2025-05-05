@@ -3,7 +3,7 @@ import type {
   IAnkiAddNotes,
   IAnkiOptions,
   NotetypeInfo,
-} from "../common/anki";
+} from "../types/anki";
 import Config from "@/features/config";
 import type { AnkiNote } from "@/features/anki";
 import {
@@ -21,7 +21,7 @@ import {
   type Second,
 } from "@/features/utils";
 
-export * from "../common/anki";
+export * from "../types/anki";
 
 const ANKI_CONNECT_VER = 6;
 

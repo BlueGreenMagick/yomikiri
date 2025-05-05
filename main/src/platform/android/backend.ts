@@ -13,7 +13,7 @@ import { cleanTokenizeResult, emptyTokenizeResult } from "../shared/backend";
 import { sendMessage } from "./messaging";
 import type { PromiseWithProgress } from "@/features/utils";
 
-export * from "../common/backend";
+export * from "../types/backend";
 
 export namespace AndroidBackend {
   export const IS_DESKTOP = false;

@@ -8,12 +8,12 @@ import type {
   TTSRequest,
   TTSVoice,
   VersionInfo,
-} from "../common";
+} from "../types";
 import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import { sendMessage } from "./messaging";
 
-export * from "../common";
+export * from "../types";
 
 export namespace AndroidPlatform {
   export const IS_DESKTOP = false;

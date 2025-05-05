@@ -3,7 +3,7 @@ import type { AnkiInfo } from "./anki";
 import type { IAnkiAddNotes } from "./anki";
 import type { IAnkiOptions } from "./anki";
 
-export * from "../common/anki";
+export * from "../types/anki";
 
 export namespace AndroidAnkiApi {
   export const IS_DESKTOP = false;

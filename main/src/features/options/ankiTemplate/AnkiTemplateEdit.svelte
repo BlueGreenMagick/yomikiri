@@ -4,7 +4,7 @@
     type AnkiTemplate,
     type AnkiTemplateField,
   } from "@/features/anki";
-  import type { AnkiInfo } from "@/platform/common/anki";
+  import type { AnkiInfo } from "#platform/anki";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
   import Config from "@/features/config";
 

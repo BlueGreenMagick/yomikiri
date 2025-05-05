@@ -9,14 +9,14 @@ import {
   setStorage,
   updateTab,
 } from "@/features/extension/browserApi";
-import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../common";
+import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../types";
 import { getTranslation } from "../shared/translate";
 import { migrateConfigObject } from "@/features/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 
-export * from "../common";
+export * from "../types";
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap extends RunMessageMap {

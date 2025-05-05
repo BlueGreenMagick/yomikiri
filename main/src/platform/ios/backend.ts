@@ -5,13 +5,13 @@ import type {
   IBackend,
   TokenizeArgs,
   SearchArgs,
-} from "../common/backend";
+} from "../types/backend";
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,
 } from "@/platform/shared/backend";
 
-export * from "../common/backend";
+export * from "../types/backend";
 
 export namespace IosBackend {
   export const IS_DESKTOP = false;

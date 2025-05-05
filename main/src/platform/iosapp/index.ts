@@ -9,7 +9,7 @@ import type {
   TranslateResult,
   VersionInfo,
   TTSRequest,
-} from "../common";
+} from "../types";
 import { type StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import {
@@ -19,7 +19,7 @@ import {
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 
-export * from "../common";
+export * from "../types";
 
 declare global {
   interface Window {

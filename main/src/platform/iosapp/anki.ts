@@ -6,10 +6,10 @@ import {
   type AnkiInfo,
   type IAnkiAddNotes,
   type IAnkiOptions,
-} from "../common/anki";
+} from "../types/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
 
-export * from "../common/anki";
+export * from "../types/anki";
 
 interface Named {
   name: string;

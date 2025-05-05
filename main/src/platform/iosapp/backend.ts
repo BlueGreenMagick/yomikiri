@@ -8,13 +8,13 @@ import type {
   DictionaryMetadata,
   SearchArgs,
   TokenizeArgs,
-} from "../common/backend";
+} from "../types/backend";
 import {
   cleanTokenizeResult,
   emptyTokenizeResult,
 } from "@/platform/shared/backend";
 
-export * from "../common/backend";
+export * from "../types/backend";
 
 export namespace IosAppBackend {
   export const IS_DESKTOP = false;

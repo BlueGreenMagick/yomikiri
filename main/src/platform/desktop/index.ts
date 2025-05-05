@@ -7,7 +7,7 @@ import {
   setStorage,
   speakJapanese,
 } from "@/features/extension/browserApi";
-import type { IPlatform, TTSVoice, VersionInfo } from "../common";
+import type { IPlatform, TTSVoice, VersionInfo } from "../types";
 import { type StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import {
@@ -17,7 +17,7 @@ import {
 import { LazyAsync } from "@/features/utils";
 import { deleteSavedDictionary } from "./dictionary";
 
-export * from "../common";
+export * from "../types";
 
 export namespace DesktopPlatform {
   export const IS_DESKTOP = true;

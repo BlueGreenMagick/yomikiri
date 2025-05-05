@@ -13,7 +13,7 @@ import type {
 } from "#platform/backend";
 import type { StoredConfiguration } from "@/features/config";
 import type { TranslateResult } from "@/platform/shared/translate";
-import type { TTSRequest, TTSVoice } from "@/platform/common";
+import type { TTSRequest, TTSVoice } from "@/platform/types";
 import {
   createPromise,
   handleResponseMessage,
