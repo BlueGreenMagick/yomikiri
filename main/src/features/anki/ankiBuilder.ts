@@ -6,7 +6,7 @@ import type {
 import Config from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
-import { Platform } from "#platform";
+import type { Platform } from "#platform";
 import Utils, { escapeHTML } from "@/features/utils";
 import type {
   AnkiTemplateField,
@@ -39,6 +39,7 @@ export interface LoadingField {
 
 export interface AnkiBuilderContext {
   config: Config;
+  platform: Platform;
 }
 
 /** This data is saved in the history */
@@ -394,8 +395,8 @@ addBuilder("sentence", (opts, data) => {
   return sentence.trim();
 });
 
-addBuilder("translated-sentence", (_opts, data) => {
-  const translatePromise = Platform.translate(data.sentence);
+addBuilder("translated-sentence", (_opts, data, ctx) => {
+  const translatePromise = ctx.platform.translate(data.sentence);
   const promise = Utils.PromiseWithProgress.fromPromise(
     translatePromise.then((result) => result.translated.trim()),
     "Translating Sentence...",
