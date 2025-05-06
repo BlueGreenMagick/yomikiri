@@ -33,7 +33,7 @@ export class TooltipController {
   }
 
   private async createTooltip() {
-    const config = await Config.instance.get();
+    const config = await this.lazyConfig.get();
     const tooltip = new Tooltip(config);
 
     tooltip.onCloseClicked.listen(() => {
