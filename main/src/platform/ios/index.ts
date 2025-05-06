@@ -36,19 +36,28 @@ interface IosVersion {
   patch: number;
 }
 
-export namespace IosPlatform {
-  export const type = "ios";
+export class _IosPlatform implements IPlatform {
+  readonly type = "ios";
 
   // config migration is done only once even if requested multiple times
-  const configMigration = new LazyAsync<StoredConfiguration>(async () => {
-    return await migrateConfigInner();
-  });
+  private readonly configMigration = new LazyAsync<StoredConfiguration>(
+    async () => {
+      return await this.migrateConfigInner();
+    },
+  );
 
-  const iosVersion = getIosVersion();
-  log("ios version: ", iosVersion);
+  private iosVersion = getIosVersion();
+
+  constructor() {
+    log("ios version: ", this.iosVersion);
+
+    if (EXTENSION_CONTEXT === "background") {
+      this.setupIosPeriodicReload();
+    }
+  }
 
   /** Only works in background & page */
-  export async function requestToApp<K extends keyof AppMessageMap>(
+  async requestToApp<K extends keyof AppMessageMap>(
     key: K,
     request: AppRequest<K>,
   ): Promise<AppResponse<K>> {
@@ -62,26 +71,24 @@ export namespace IosPlatform {
     return JSON.parse(jsonResponse) as AppResponse<K>;
   }
 
-  export const getConfig = NonContentScriptFunction("loadConfig", () => {
-    return updateConfig();
+  readonly getConfig = NonContentScriptFunction("loadConfig", () => {
+    return this.updateConfig();
   });
 
   /**
    * Listens to web config changes,
    * which may occur when a new script loads and app config is fetched
    */
-  export function subscribeConfig(
-    subscriber: (config: StoredConfiguration) => void,
-  ): void {
+  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     handleStorageChange("config", (change) => {
       subscriber(change.newValue as StoredConfiguration);
     });
   }
 
   // App config is the source of truth
-  async function updateConfig(): Promise<StoredConfiguration> {
+  async updateConfig(): Promise<StoredConfiguration> {
     const webConfigP = getStorage("config", {});
-    const appConfigP = requestToApp("loadConfig", null);
+    const appConfigP = this.requestToApp("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
       await setStorage("config", appConfig);
@@ -89,15 +96,15 @@ export namespace IosPlatform {
     return appConfig;
   }
 
-  export const saveConfig = NonContentScriptFunction(
+  readonly saveConfig = NonContentScriptFunction(
     "saveConfig",
     async (config) => {
-      await requestToApp("saveConfig", config);
+      await this.requestToApp("saveConfig", config);
       await setStorage("config", config);
     },
   );
 
-  export async function openOptionsPage() {
+  async openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
     if (EXTENSION_CONTEXT !== "popup") {
       location.href = OPTIONS_URL;
@@ -111,50 +118,47 @@ export namespace IosPlatform {
     }
   }
 
-  export function versionInfo(): VersionInfo {
+  versionInfo(): VersionInfo {
     const manifest = extensionManifest();
     return {
       version: manifest.version,
     };
   }
 
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await requestToApp("ttsVoices", null);
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return await this.requestToApp("ttsVoices", null);
   }
 
-  export const playTTS = NonContentScriptFunction("tts", async (req) => {
-    await requestToApp("tts", req);
+  readonly playTTS = NonContentScriptFunction("tts", async (req) => {
+    await this.requestToApp("tts", req);
   });
 
-  export const translate = NonContentScriptFunction(
-    "translate",
-    getTranslation,
-  );
+  readonly translate = NonContentScriptFunction("translate", getTranslation);
 
-  export function openExternalLink(url: string): void {
+  openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  export const migrateConfig = NonContentScriptFunction(
+  readonly migrateConfig = NonContentScriptFunction(
     "migrateConfig",
     async () => {
-      return await configMigration.get();
+      return await this.configMigration.get();
     },
   );
 
-  async function migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await getConfig();
+  private async migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await this.getConfig();
     const migrated = migrateConfigObject(configObject);
-    await saveConfig(migrated);
+    await this.saveConfig(migrated);
     return migrated;
   }
 
   // workaround to ios 17.5+ bug where background script freezes after ~30s of non-stop activity
   // https://github.com/alexkates/content-script-non-responsive-bug/issues/1
-  function setupIosPeriodicReload() {
+  setupIosPeriodicReload() {
     if (PLATFORM !== "ios" || EXTENSION_CONTEXT !== "background") return;
-    if (iosVersion === null) return;
-    if (iosVersion[0] !== 17 || iosVersion[1] < 5) return;
+    if (this.iosVersion === null) return;
+    if (this.iosVersion[0] !== 17 || this.iosVersion[1] < 5) return;
 
     log("Setting up periodic ios background script reload");
 
@@ -175,10 +179,6 @@ export namespace IosPlatform {
     }
     setInterval(checkReload, 1000);
   }
-
-  if (EXTENSION_CONTEXT === "background") {
-    setupIosPeriodicReload();
-  }
 }
 
 /** Returns null if ios version could not be retrieved from user agent. */
@@ -196,6 +196,7 @@ function getIosVersion(): [number, number, number] | null {
   }
 }
 
-IosPlatform satisfies IPlatform;
+export const IosPlatform = new _IosPlatform();
+export type IosPlatform = typeof IosPlatform;
 export const Platform = IosPlatform;
 export const ExtensionPlatform = Platform;
