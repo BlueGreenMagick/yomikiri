@@ -3,18 +3,23 @@
   import GroupAnki from "./groups/GroupAnki.svelte";
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
-  import { Platform } from "#platform";
-  import type { AppCtx } from "../ctx";
+  import {
+    isDesktopCtx,
+    isIosAppCtx,
+    type AppCtx,
+    type DesktopCtx,
+    type IosAppCtx,
+  } from "../ctx";
 
-  export let ctx: AppCtx;
+  export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 </script>
 
 <div>
   <GroupAppearance {ctx} />
   <GroupAnki {ctx} />
   <!-- eslint-disable-next-line -->
-  {#if Platform.type === "desktop" || Platform.type === "iosapp"}
-    <GroupDictionary />
+  {#if isDesktopCtx(ctx) || isIosAppCtx(ctx)}
+    <GroupDictionary {ctx} />
   {/if}
-  <GroupAbout />
+  <GroupAbout {ctx} />
 </div>

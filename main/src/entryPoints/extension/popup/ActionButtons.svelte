@@ -1,7 +1,6 @@
 <script lang="ts">
   import IconSettings from "#icons/settings.svg";
   import IconPower from "#icons/power.svg";
-  import { Platform } from "#platform";
   import type { AppCtx } from "@/features/ctx";
 
   export let ctx: AppCtx;
@@ -9,7 +8,7 @@
   let stateEnabledConfig = ctx.config.store("state.enabled");
 
   async function openSettings() {
-    await Platform.openOptionsPage();
+    await ctx.platform.openOptionsPage();
   }
 
   function toggleEnable() {

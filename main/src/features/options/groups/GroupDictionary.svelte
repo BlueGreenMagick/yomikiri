@@ -1,12 +1,8 @@
 <script lang="ts">
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import {
-    type DesktopBackend,
-    type IosAppBackend,
-  } from "@/platform/types/backend";
   import { YomikiriError } from "@/features/error";
-  import { Platform } from "#platform";
+  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
 
   type DictState =
     | "loading"
@@ -15,7 +11,9 @@
     | "downloaded"
     | "error";
 
-  const Backend = Platform.backend as DesktopBackend | IosAppBackend;
+  export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
+
+  const Backend = ctx.platform.backend;
 
   let state: DictState = "loading";
   let dictDescription = "Loading...";

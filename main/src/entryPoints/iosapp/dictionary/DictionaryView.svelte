@@ -7,10 +7,9 @@
     buildAnkiNote,
     AddToAnki,
   } from "@/features/anki";
-  import { Platform } from "@/platform/iosapp";
-  import type { AppCtx } from "@/features/ctx";
+  import type { AppCtx, IosAppCtx } from "@/features/ctx";
 
-  export let ctx: AppCtx;
+  export let ctx: AppCtx<IosAppCtx>;
   export let context: "app" | "action";
   export let searchText: string;
 
@@ -53,7 +52,7 @@
       showCloseButton={context === "action"}
       {onShowAnkiPreview}
       onClose={async () => {
-        await Platform.messageWebview("close", null);
+        await ctx.platform.messageWebview("close", null);
       }}
     >
       <div class="placeholder-container">
@@ -62,7 +61,7 @@
     </Tokenize>
   </div>
   {#if previewIsVisible}
-    <AddToAnki noteData={previewNoteData} {onBack} {noteAdded} />
+    <AddToAnki {ctx} noteData={previewNoteData} {onBack} {noteAdded} />
   {/if}
 </div>
 

@@ -3,7 +3,8 @@ import type { TokenizeResult } from "@yomikiri/backend-bindings";
 import Config from "@/features/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
-import { Platform, type DesktopPlatform, type IosPlatform } from "#platform";
+import { Platform } from "#platform";
+import type { AppCtx, DesktopCtx, IosCtx } from "../ctx";
 
 export class Tooltip {
   config: Config;
@@ -197,12 +198,12 @@ export class Tooltip {
 `;
     doc.documentElement.classList.add("yomikiri");
 
-    const initialize = async () => {
+    const initialize = async (): Promise<AppCtx<DesktopCtx | IosCtx>> => {
       await Promise.resolve();
       return {
         config: this.config,
-        platform: Platform as DesktopPlatform | IosPlatform,
-      };
+        platform: Platform,
+      } as AppCtx<DesktopCtx | IosCtx>;
     };
 
     const tooltipPage = new TooltipPage({

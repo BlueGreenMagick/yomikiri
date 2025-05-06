@@ -3,9 +3,9 @@ import { IosAppPlatform } from "@/platform/iosapp";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import { Backend } from "@/platform/iosapp/backend";
-import type { AppCtx } from "@/features/ctx";
+import type { AppCtx, IosAppCtx } from "@/features/ctx";
 
-async function initialize(): Promise<AppCtx> {
+async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const config = await Config.instance.get();
   const platform = IosAppPlatform;
   return { config, platform };

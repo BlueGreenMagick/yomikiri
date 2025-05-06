@@ -1,12 +1,11 @@
 <script lang="ts">
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import { Platform } from "#platform";
   import PageSetup from "@/features/components/PageSetup.svelte";
-  import type { AppCtx } from "@/features/ctx";
+  import type { AppCtx, DesktopCtx, IosCtx } from "@/features/ctx";
   import LoadingPage from "@/features/components/LoadingPage.svelte";
 
-  export let initialize: () => Promise<AppCtx>;
+  export let initialize: () => Promise<AppCtx<DesktopCtx | IosCtx>>;
 </script>
 
 {#await initialize()}
@@ -14,7 +13,7 @@
 {:then ctx}
   <PageSetup {ctx} />
   <div id="main">
-    {#if Platform.type === "ios"}
+    {#if ctx.platform.type === "ios"}
       <ActionButtons {ctx} />
     {:else}
       <PopupView {ctx} />

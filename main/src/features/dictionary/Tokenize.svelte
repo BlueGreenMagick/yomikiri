@@ -10,7 +10,6 @@
   import type { Tools, SelectedEntryForAnki } from "./types";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
   import type { AppCtx } from "../ctx";
-  import { Platform } from "#platform";
 
   export let ctx: AppCtx;
   export let searchText = "";
@@ -30,7 +29,7 @@
   const search = Utils.SingleQueued(_search);
   async function _search(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
-    tokenizeResult = await Platform.backend.search({
+    tokenizeResult = await ctx.platform.backend.search({
       term: searchText,
       charAt,
     });

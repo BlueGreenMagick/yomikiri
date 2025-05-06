@@ -2,7 +2,6 @@
   import { DicEntriesView } from "@/features/dictionary";
   import { onMount } from "svelte";
   import type { AppCtx } from "../ctx";
-  import { Platform } from "#platform";
 
   export let ctx: AppCtx;
 
@@ -11,7 +10,7 @@
   let entryP = loadEntry();
 
   async function loadEntry() {
-    const result = await Platform.backend.search({ term: "読む" });
+    const result = await ctx.platform.backend.search({ term: "読む" });
     return result.entries[0];
   }
 

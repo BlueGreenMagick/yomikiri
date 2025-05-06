@@ -112,7 +112,7 @@
   </div>
   {#if previewIsVisible}
     <div class="anki-preview">
-      <AddToAnki noteData={previewNoteData} {onBack} {noteAdded} />
+      <AddToAnki {ctx} noteData={previewNoteData} {onBack} {noteAdded} />
     </div>
   {/if}
 </div>

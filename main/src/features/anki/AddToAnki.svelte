@@ -15,12 +15,13 @@
   import { newChangeTracker, SingleQueued } from "@/features/utils";
   import { HourglassToastIcon } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
-  import { Platform } from "#platform";
+  import type { AppCtx } from "../ctx";
 
   interface FieldWatch extends Field {
     _value: string;
   }
 
+  export let ctx: AppCtx;
   export let noteData: LoadingAnkiNote;
   export let noteAdded: () => void;
   export let onBack: () => void;
@@ -47,7 +48,7 @@
     let ankiNote = await resolveAnkiNote(noteData);
     let added: boolean;
     try {
-      added = await Platform.anki.addNote(ankiNote);
+      added = await ctx.platform.anki.addNote(ankiNote);
       if (added) {
         Toast.success("Note added to Anki");
       } else {

@@ -1,13 +1,13 @@
-import { Platform, type DesktopPlatform, type IosPlatform } from "#platform";
+import { Platform } from "#platform";
 import PopupPage from "./PopupPage.svelte";
 import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
-import type { AppCtx } from "@/features/ctx";
+import type { AppCtx, DesktopCtx, IosCtx } from "@/features/ctx";
 
-async function initialize(): Promise<AppCtx> {
+async function initialize(): Promise<AppCtx<IosCtx | DesktopCtx>> {
   const config = await Config.instance.get();
-  const platform = Platform as DesktopPlatform | IosPlatform;
-  return { config, platform };
+  const platform = Platform;
+  return { config, platform } as AppCtx<IosCtx | DesktopCtx>;
 }
 
 const page = new PopupPage({

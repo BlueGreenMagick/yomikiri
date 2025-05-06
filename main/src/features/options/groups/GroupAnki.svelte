@@ -6,18 +6,19 @@
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "@/features/utils";
   import {
-    Platform,
-    type DesktopPlatform,
-    type IosAppPlatform,
-  } from "#platform";
-  import type { AppCtx } from "@/features/ctx";
+    isDesktopCtx,
+    isIosAppCtx,
+    type AppCtx,
+    type DesktopCtx,
+    type IosAppCtx,
+  } from "@/features/ctx";
   import type { DesktopAnkiApi } from "@/platform/types/anki";
 
-  export let ctx: AppCtx;
+  export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
-  const AnkiApi = (Platform as DesktopPlatform | IosAppPlatform).anki;
+  const AnkiApi = ctx.platform.anki;
 
   const config = ctx.config;
   const ankiConnectPortConfig = config.store("anki.connect_port");
@@ -102,7 +103,7 @@
     {:else if useAnkiDescription === "success"}
       <span class="success">Successfully connected to Anki.</span>
     {:else if useAnkiDescription === "error"}
-      {#if Platform.type === "desktop"}
+      {#if isDesktopCtx(ctx)}
         <span class="warning">{useAnkiError}</span>
         <a href="https://apps.ankiweb.net/">(Anki)</a>
         <a href="https://ankiweb.net/shared/info/2055492159">(AnkiConnect)</a>
@@ -112,7 +113,7 @@
         </span>
       {/if}
     {:else if useAnkiDescription === "off"}
-      {#if Platform.type === "desktop"}
+      {#if isDesktopCtx(ctx)}
         <a href="https://apps.ankiweb.net/">Anki</a> is a flashcard software.
       {:else}
         <a href={ANKIMOBILE_URL}>AnkiMobile</a> is a flashcard app.
@@ -120,7 +121,7 @@
     {/if}
   </OptionToggle>
 
-  {#if Platform.type === "desktop"}
+  {#if isDesktopCtx(ctx)}
     <OptionNumber
       bind:value={$ankiConnectPortConfig}
       title="AnkiConnect port number"
@@ -151,7 +152,7 @@
     </OptionToggle>
   {/if}
 
-  {#if Platform.type === "iosapp"}
+  {#if isIosAppCtx(ctx)}
     <OptionToggle
       bind:value={$ankiIosAutoRedirectConfig}
       title="Reopen Safari after adding Anki note"
@@ -162,7 +163,7 @@
     </OptionToggle>
   {/if}
 </GroupedOptions>
-{#if !ankiTemplateModalHidden && Platform.type === "desktop"}
+{#if !ankiTemplateModalHidden && isDesktopCtx(ctx)}
   <ModalAnkiTemplate
     {ctx}
     onClose={() => {
