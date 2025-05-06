@@ -15,57 +15,56 @@ import { sendMessage } from "./messaging";
 
 export * from "../types";
 
-export namespace AndroidPlatform {
-  export const type = "android";
+export class _AndroidPlatform implements IPlatform {
+  readonly type = "android";
 
   /** TODO */
-  export async function getConfig(): Promise<StoredCompatConfiguration> {
+  async getConfig(): Promise<StoredCompatConfiguration> {
     return await sendMessage("loadConfig", null);
   }
 
   /** TODO */
-  export function subscribeConfig(
-    _subscriber: (config: StoredConfiguration) => void,
-  ): void {}
+  subscribeConfig(_subscriber: (config: StoredConfiguration) => void): void {}
 
   /** TODO */
-  export async function migrateConfig(): Promise<StoredConfiguration> {
+  async migrateConfig(): Promise<StoredConfiguration> {
     await Promise.resolve();
     return migrateConfigObject({});
   }
 
-  export async function saveConfig(config: StoredConfiguration): Promise<void> {
+  async saveConfig(config: StoredConfiguration): Promise<void> {
     await sendMessage("saveConfig", config);
   }
 
-  export function openOptionsPage(): void {
+  openOptionsPage(): void {
     throw new Error("Unimplemented");
   }
 
-  export async function versionInfo(): Promise<VersionInfo> {
+  async versionInfo(): Promise<VersionInfo> {
     const version = await sendMessage("versionInfo", null);
     return { version };
   }
 
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
 
-  export async function playTTS(_req: TTSRequest): Promise<void> {
+  async playTTS(_req: TTSRequest): Promise<void> {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
 
-  export async function translate(text: string): Promise<TranslateResult> {
+  async translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
   }
 
-  export function openExternalLink(_url: string): void {
+  openExternalLink(_url: string): void {
     throw new Error("Unimplemented");
   }
 }
 
-AndroidPlatform satisfies IPlatform;
+export const AndroidPlatform = new _AndroidPlatform();
+export type AndroidPlatform = typeof AndroidPlatform;
 export const Platform = AndroidPlatform;
 export const PagePlatform = AndroidPlatform;
