@@ -26,10 +26,10 @@ export interface RawAnkiInfo {
   profiles: Named[];
 }
 
-export namespace IosAppAnkiApi {
-  export const type = "iosapp";
+export class _IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+  readonly type = "iosapp";
 
-  export async function requestAnkiInfo(): Promise<void> {
+  async requestAnkiInfo(): Promise<void> {
     const installed = await Platform.messageWebview("ankiInfo", null);
     if (!installed) {
       throw new YomikiriError(`AnkiMobile app is not installed.`);
@@ -37,7 +37,7 @@ export namespace IosAppAnkiApi {
   }
 
   /** Can only be called in anki template options page */
-  export async function getAnkiInfo(): Promise<AnkiInfo> {
+  async getAnkiInfo(): Promise<AnkiInfo> {
     const rawAnkiInfo = await Platform.messageWebview("ankiInfoData", null);
     const ankiInfo: AnkiInfo = {
       decks: rawAnkiInfo.decks.map((named) => named.name),
@@ -51,22 +51,20 @@ export namespace IosAppAnkiApi {
     return ankiInfo;
   }
 
-  export async function checkConnection(): Promise<void> {
+  async checkConnection(): Promise<void> {
     const installed = await Platform.messageWebview("ankiIsInstalled", null);
     if (!installed) {
       throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
   }
 
-  export async function addNote(note: AnkiNote): Promise<boolean> {
+  async addNote(note: AnkiNote): Promise<boolean> {
     const url = iosAnkiMobileURL(note);
     await Platform.messageWebview("openLink", url);
     return true;
   }
 }
 
-IosAppAnkiApi satisfies IAnkiAddNotes;
-IosAppAnkiApi satisfies IAnkiOptions;
-
+export const IosAppAnkiApi = new _IosAppAnkiApi();
 export type IosAppAnkiApi = typeof IosAppAnkiApi;
 export const AnkiApi = IosAppAnkiApi;
