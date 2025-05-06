@@ -13,7 +13,7 @@ import { LazyAsync } from "@/features/utils";
 
 export * from "../types/anki";
 
-class _IosAnkiApi implements IAnkiAddNotes {
+export class _IosAnkiApi implements IAnkiAddNotes {
   readonly type = "ios";
   readonly lazyConfig: LazyAsync<Config>;
 

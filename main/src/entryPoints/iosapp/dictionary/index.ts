@@ -2,7 +2,6 @@ import { Backend } from "#platform/backend";
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { AnkiApi } from "@/platform/iosapp/anki";
 import { Platform } from "@/platform/iosapp";
 import type { AppContext } from "@/features/context";
 
@@ -30,5 +29,4 @@ exposeGlobals({
   Utils,
   config: Config.instance,
   Backend,
-  AnkiApi,
 });

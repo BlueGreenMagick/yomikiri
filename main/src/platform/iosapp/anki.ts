@@ -1,11 +1,7 @@
 import { Platform } from ".";
-import type { AnkiNote } from "@/features/anki";
+import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
-import {
-  type AnkiInfo,
-  type IAnkiAddNotes,
-  type IAnkiOptions,
-} from "../types/anki";
+import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
 
 export * from "../types/anki";

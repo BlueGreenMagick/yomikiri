@@ -18,7 +18,6 @@ import { Config } from "@/features/config";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import DisabledIcon from "@/assets/icon128-20a.png";
 import { derived } from "svelte/store";
-import { AnkiApi, type DesktopAnkiApi } from "#platform/anki";
 
 const _initialized: Promise<void> = initialize();
 
@@ -58,9 +57,10 @@ function updateDeferredNoteCountBadge(config: Config) {
  * Check and add Anki notes every 30 seconds in desktop.
  */
 function runAddDeferredNoteTaskInBackground() {
-  if (AnkiApi.type === "desktop") {
+  if (Platform.type === "desktop") {
+    const ankiApi = Platform.anki;
     setInterval(() => {
-      void (AnkiApi as DesktopAnkiApi).addDeferredNotes();
+      void ankiApi.addDeferredNotes();
     }, 1000 * 30);
   }
 }
@@ -74,7 +74,6 @@ handleBrowserLoad(() => {
 exposeGlobals({
   Platform,
   Utils,
-  AnkiApi,
   Backend,
   config: Config.instance,
 });

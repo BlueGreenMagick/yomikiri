@@ -2,17 +2,18 @@
   import IconedButton from "@/features/components/IconedButton.svelte";
   import IconRefreshOutline from "#icons/refresh-outline.svg";
   import IconTrash from "#icons/trash.svg";
-  import { AnkiApi as RawAnkiApi, type DesktopAnkiApi } from "#platform/anki";
   import {
     Toast,
     TrashToastIcon,
     CancelDeferredNoteDeletion,
   } from "@/features/toast";
   import type { AppContext } from "@/features/context";
+  import { Platform } from "#platform";
+  import type { DesktopPlatform } from "@/platform/desktop";
 
   export let ctx: AppContext;
 
-  const AnkiApi = RawAnkiApi as DesktopAnkiApi;
+  const AnkiApi = (Platform as DesktopPlatform).anki;
   const confDeferredNoteCount = ctx.config.store(
     "state.anki.deferred_note_count",
   );

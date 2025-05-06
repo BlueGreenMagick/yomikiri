@@ -18,7 +18,7 @@ import {
 } from "@/features/compat";
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
-import type { RawAnkiInfo } from "./anki";
+import { _IosAppAnkiApi, IosAppAnkiApi, type RawAnkiInfo } from "./anki";
 
 export * from "../types";
 
@@ -68,6 +68,7 @@ export type WebviewResponse<K extends keyof MessageWebviewMap> =
 
 export class _IosAppPlatform implements IPlatform {
   readonly type = "iosapp";
+  readonly anki = IosAppAnkiApi;
 
   private readonly _configSubscribers: ((
     config: StoredConfiguration,
@@ -174,6 +175,8 @@ export class _IosAppPlatform implements IPlatform {
 }
 
 export const IosAppPlatform = new _IosAppPlatform();
-export type IosAppPlatform = typeof IosAppPlatform;
 export const Platform = IosAppPlatform;
 export const PagePlatform = Platform;
+
+export type IosAppPlatform = typeof IosAppPlatform;
+export type Platform = IosAppPlatform;

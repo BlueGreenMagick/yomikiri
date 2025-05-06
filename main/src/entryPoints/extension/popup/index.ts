@@ -3,7 +3,6 @@ import PopupPage from "./PopupPage.svelte";
 import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { Backend } from "#platform/backend";
-import { AnkiApi } from "#platform/anki";
 import type { AppContext } from "@/features/context";
 
 async function initialize(): Promise<AppContext> {
@@ -21,6 +20,5 @@ exposeGlobals({
   Utils,
   Backend,
   config: Config.instance,
-  AnkiApi,
   page,
 });

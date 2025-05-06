@@ -1,25 +1,23 @@
 <script lang="ts">
-  import {
-    type DesktopAnkiApi,
-    type IosAppAnkiApi,
-    AnkiApi as PlatformAnkiApi,
-  } from "#platform/anki";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
   import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "@/features/utils";
-  import { Platform } from "#platform";
+  import {
+    Platform,
+    type DesktopPlatform,
+    type IosAppPlatform,
+  } from "#platform";
   import type { AppContext } from "@/features/context";
+  import type { _DesktopAnkiApi } from "@/platform/desktop/anki";
 
   export let ctx: AppContext;
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
-  const AnkiApi = PlatformAnkiApi as
-    | typeof DesktopAnkiApi
-    | typeof IosAppAnkiApi;
+  const AnkiApi = (Platform as DesktopPlatform | IosAppPlatform).anki;
 
   const config = ctx.config;
   const ankiConnectPortConfig = config.store("anki.connect_port");
@@ -76,7 +74,7 @@
   });
 
   /** Do action if there are existing deferred anki notes. */
-  function onToggleAnkiDeferNotes(AnkiApi: DesktopAnkiApi): boolean {
+  function onToggleAnkiDeferNotes(AnkiApi: _DesktopAnkiApi): boolean {
     if (!$ankiDeferNotesConfig) {
       return true;
     }

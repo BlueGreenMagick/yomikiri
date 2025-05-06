@@ -3,20 +3,11 @@ import type { DesktopAnkiApi } from "../desktop/anki";
 import type { IosAnkiApi } from "../ios/anki";
 import type { IosAppAnkiApi } from "../iosapp/anki";
 import type { IPlatformConsts } from ".";
+import type { AnkiInfo } from "@/features/anki/ankiInfo";
 
 export type { DesktopAnkiApi } from "../desktop/anki";
 export type { IosAnkiApi } from "../ios/anki";
 export type { IosAppAnkiApi } from "../iosapp/anki";
-
-export interface NotetypeInfo {
-  name: string;
-  fields: string[];
-}
-
-export interface AnkiInfo {
-  decks: string[];
-  notetypes: NotetypeInfo[];
-}
 
 export interface IAnkiOptions extends IPlatformConsts {
   /**

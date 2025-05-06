@@ -1,11 +1,6 @@
-import type {
-  AnkiInfo,
-  IAnkiAddNotes,
-  IAnkiOptions,
-  NotetypeInfo,
-} from "../types/anki";
+import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { Config } from "@/features/config";
-import type { AnkiNote } from "@/features/anki";
+import type { AnkiInfo, AnkiNote, NotetypeInfo } from "@/features/anki";
 import {
   getStorage,
   NonContentScriptFunction,
@@ -109,7 +104,7 @@ export class AnkiConnectError extends AnkiError {}
 
 type AddDeferredNotesProgress = "loading" | number;
 
-class _DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
+export class _DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   readonly type = "desktop";
   readonly lazyConfig: LazyAsync<Config>;
 

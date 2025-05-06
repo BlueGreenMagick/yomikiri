@@ -1,15 +1,17 @@
 <script lang="ts">
-  import {
-    AnkiApi,
-    type DesktopAnkiApi,
-    type IosAppAnkiApi,
-  } from "#platform/anki";
   import type { AppContext } from "@/features/context";
   import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
+  import {
+    Platform,
+    type DesktopPlatform,
+    type IosAppPlatform,
+  } from "#platform";
 
   export let ctx: AppContext;
 
-  const ankiInfoP = (AnkiApi as DesktopAnkiApi | IosAppAnkiApi).getAnkiInfo();
+  const ankiInfoP = (
+    Platform as DesktopPlatform | IosAppPlatform
+  ).anki.getAnkiInfo();
 </script>
 
 {#await ankiInfoP}

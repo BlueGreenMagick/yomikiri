@@ -15,6 +15,7 @@ import { migrateConfigObject } from "@/features/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
+import { IosAnkiApi } from "./anki";
 
 export * from "../types";
 
@@ -38,6 +39,7 @@ interface IosVersion {
 
 export class _IosPlatform implements IPlatform {
   readonly type = "ios";
+  readonly anki = IosAnkiApi;
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(
@@ -197,6 +199,8 @@ function getIosVersion(): [number, number, number] | null {
 }
 
 export const IosPlatform = new _IosPlatform();
-export type IosPlatform = typeof IosPlatform;
 export const Platform = IosPlatform;
 export const ExtensionPlatform = Platform;
+
+export type IosPlatform = typeof IosPlatform;
+export type Platform = IosPlatform;

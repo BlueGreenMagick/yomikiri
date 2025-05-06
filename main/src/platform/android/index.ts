@@ -12,11 +12,13 @@ import type {
 import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import { sendMessage } from "./messaging";
+import { AndroidAnkiApi } from "./anki";
 
 export * from "../types";
 
 export class _AndroidPlatform implements IPlatform {
   readonly type = "android";
+  readonly anki = AndroidAnkiApi;
 
   /** TODO */
   async getConfig(): Promise<StoredCompatConfiguration> {
@@ -65,6 +67,8 @@ export class _AndroidPlatform implements IPlatform {
 }
 
 export const AndroidPlatform = new _AndroidPlatform();
-export type AndroidPlatform = typeof AndroidPlatform;
 export const Platform = AndroidPlatform;
 export const PagePlatform = AndroidPlatform;
+
+export type AndroidPlatform = typeof AndroidPlatform;
+export type Platform = AndroidPlatform;

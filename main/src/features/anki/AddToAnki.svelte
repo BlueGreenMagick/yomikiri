@@ -11,11 +11,11 @@
   } from "./ankiBuilder";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "@/features/components/TextButton.svelte";
-  import { AnkiApi } from "#platform/anki";
   import { Toast } from "@/features/toast";
   import { newChangeTracker, SingleQueued } from "@/features/utils";
   import { HourglassToastIcon } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
+  import { Platform } from "#platform";
 
   interface FieldWatch extends Field {
     _value: string;
@@ -47,7 +47,7 @@
     let ankiNote = await resolveAnkiNote(noteData);
     let added: boolean;
     try {
-      added = await AnkiApi.addNote(ankiNote);
+      added = await Platform.anki.addNote(ankiNote);
       if (added) {
         Toast.success("Note added to Anki");
       } else {

@@ -16,11 +16,13 @@ import {
 } from "@/features/compat";
 import { LazyAsync } from "@/features/utils";
 import { deleteSavedDictionary } from "./dictionary";
+import { DesktopAnkiApi } from "./anki";
 
 export * from "../types";
 
 export class _DesktopPlatform implements IPlatform {
   readonly type = "desktop";
+  readonly anki = DesktopAnkiApi;
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(
@@ -94,7 +96,9 @@ export class _DesktopPlatform implements IPlatform {
 }
 
 export const DesktopPlatform = new _DesktopPlatform();
-export type DesktopPlatform = typeof DesktopPlatform;
 export const Platform = DesktopPlatform;
 export const ExtensionPlatform = Platform;
 export const PagePlatform = Platform;
+
+export type DesktopPlatform = typeof DesktopPlatform;
+export type Platform = DesktopPlatform;

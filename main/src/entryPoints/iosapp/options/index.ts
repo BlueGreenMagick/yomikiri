@@ -2,7 +2,6 @@ import { OptionsPage } from "@/features/options";
 import { Platform } from "@/platform/iosapp";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
-import { AnkiApi } from "@/platform/iosapp/anki";
 import { Backend } from "@/platform/iosapp/backend";
 import type { AppContext } from "@/features/context";
 
@@ -19,7 +18,6 @@ const page = new OptionsPage({
 exposeGlobals({
   Platform,
   Utils,
-  AnkiApi,
   Backend,
   config: Config.instance,
   page,

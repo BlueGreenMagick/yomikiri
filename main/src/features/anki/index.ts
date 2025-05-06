@@ -12,6 +12,7 @@ export type {
   LoadingField,
   Field,
 } from "./ankiBuilder";
+export type { AnkiInfo, NotetypeInfo } from "./ankiInfo";
 export * from "./template";
 
 export { default as AddToAnki } from "./AddToAnki.svelte";
