@@ -15,13 +15,10 @@ import type { PromiseWithProgress } from "@/features/utils";
 
 export * from "../types/backend";
 
-export namespace AndroidBackend {
-  export const type = "android";
+export class _AndroidBackend implements IBackend {
+  readonly type = "android";
 
-  export async function tokenize({
-    text,
-    charAt,
-  }: TokenizeRequest): Promise<TokenizeResult> {
+  async tokenize({ text, charAt }: TokenizeRequest): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (text === "") {
@@ -37,10 +34,7 @@ export namespace AndroidBackend {
     return result;
   }
 
-  export async function search({
-    term,
-    charAt,
-  }: SearchRequest): Promise<TokenizeResult> {
+  async search({ term, charAt }: SearchRequest): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (term === "") {
@@ -56,15 +50,16 @@ export namespace AndroidBackend {
     return result;
   }
 
-  export function getDictMetadata(): Promise<DictionaryMetadata> {
+  getDictMetadata(): Promise<DictionaryMetadata> {
     return sendMessage("metadata", null);
   }
 
   /** TODO */
-  export function updateDictionary(): PromiseWithProgress<boolean, string> {
+  updateDictionary(): PromiseWithProgress<boolean, string> {
     throw new Error("Unimplemented");
   }
 }
 
-AndroidBackend satisfies IBackend;
+const AndroidBackend = new _AndroidBackend();
+export type AndroidBackend = typeof AndroidBackend;
 export const Backend = AndroidBackend;
