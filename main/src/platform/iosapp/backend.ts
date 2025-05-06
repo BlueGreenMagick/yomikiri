@@ -16,13 +16,10 @@ import {
 
 export * from "../types/backend";
 
-export namespace IosAppBackend {
-  export const type = "iosapp";
+export class IosAppBackend implements IBackend {
+  readonly type = "iosapp";
 
-  export async function tokenize({
-    text,
-    charAt,
-  }: TokenizeRequest): Promise<TokenizeResult> {
+  async tokenize({ text, charAt }: TokenizeRequest): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (text === "") {
@@ -38,10 +35,7 @@ export namespace IosAppBackend {
     return result;
   }
 
-  export async function search({
-    term,
-    charAt,
-  }: SearchRequest): Promise<TokenizeResult> {
+  async search({ term, charAt }: SearchRequest): Promise<TokenizeResult> {
     charAt = charAt ?? 0;
 
     if (term === "") {
@@ -57,18 +51,16 @@ export namespace IosAppBackend {
     return result;
   }
 
-  export function updateDictionary(): PromiseWithProgress<boolean, string> {
+  updateDictionary(): PromiseWithProgress<boolean, string> {
     return PromiseWithProgress.fromPromise(
       IosAppPlatform.messageWebview("updateDict", null),
       "Updating dictionary... This may take up to a minute.",
     );
   }
 
-  export function getDictMetadata(): Promise<DictionaryMetadata> {
+  getDictMetadata(): Promise<DictionaryMetadata> {
     return IosAppPlatform.messageWebview("metadata", null);
   }
 }
-
-IosAppBackend satisfies IBackend;
 
 export const Backend = IosAppBackend;
