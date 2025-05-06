@@ -1,5 +1,4 @@
 import { PromiseWithProgress } from "@/features/utils";
-import { IosAppPlatform } from ".";
 import type {
   IBackend,
   TokenizeRequest,
@@ -13,6 +12,7 @@ import {
   cleanTokenizeResult,
   emptyTokenizeResult,
 } from "@/platform/shared/backend";
+import { sendMessage } from "./messaging";
 
 export * from "../types/backend";
 
@@ -30,7 +30,7 @@ export class IosAppBackend implements IBackend {
     }
 
     const req: TokenizeArgs = { sentence: text, char_idx: charAt };
-    const result = await IosAppPlatform.messageWebview("tokenize", req);
+    const result = await sendMessage("tokenize", req);
     cleanTokenizeResult(result);
     return result;
   }
@@ -46,19 +46,19 @@ export class IosAppBackend implements IBackend {
     }
 
     const req: SearchArgs = { query: term, char_idx: charAt };
-    const result = await IosAppPlatform.messageWebview("search", req);
+    const result = await sendMessage("search", req);
     cleanTokenizeResult(result);
     return result;
   }
 
   updateDictionary(): PromiseWithProgress<boolean, string> {
     return PromiseWithProgress.fromPromise(
-      IosAppPlatform.messageWebview("updateDict", null),
+      sendMessage("updateDict", null),
       "Updating dictionary... This may take up to a minute.",
     );
   }
 
   getDictMetadata(): Promise<DictionaryMetadata> {
-    return IosAppPlatform.messageWebview("metadata", null);
+    return sendMessage("metadata", null);
   }
 }

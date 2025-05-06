@@ -52,7 +52,7 @@
       showCloseButton={context === "action"}
       {onShowAnkiPreview}
       onClose={async () => {
-        await ctx.platform.messageWebview("close", null);
+        await ctx.platform.closeWindow();
       }}
     >
       <div class="placeholder-container">

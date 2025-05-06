@@ -1,8 +1,8 @@
-import { Platform } from ".";
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
 import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
+import { sendMessage } from "./messaging";
 
 export * from "../types/anki";
 
@@ -26,7 +26,7 @@ export class IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   readonly type = "iosapp";
 
   async requestAnkiInfo(): Promise<void> {
-    const installed = await Platform.messageWebview("ankiInfo", null);
+    const installed = await sendMessage("ankiInfo", null);
     if (!installed) {
       throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
@@ -34,7 +34,7 @@ export class IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
 
   /** Can only be called in anki template options page */
   async getAnkiInfo(): Promise<AnkiInfo> {
-    const rawAnkiInfo = await Platform.messageWebview("ankiInfoData", null);
+    const rawAnkiInfo = await sendMessage("ankiInfoData", null);
     const ankiInfo: AnkiInfo = {
       decks: rawAnkiInfo.decks.map((named) => named.name),
       notetypes: rawAnkiInfo.notetypes.map((rawNotetype) => {
@@ -48,7 +48,7 @@ export class IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   }
 
   async checkConnection(): Promise<void> {
-    const installed = await Platform.messageWebview("ankiIsInstalled", null);
+    const installed = await sendMessage("ankiIsInstalled", null);
     if (!installed) {
       throw new YomikiriError(`AnkiMobile app is not installed.`);
     }
@@ -56,7 +56,7 @@ export class IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
 
   async addNote(note: AnkiNote): Promise<boolean> {
     const url = iosAnkiMobileURL(note);
-    await Platform.messageWebview("openLink", url);
+    await sendMessage("openLink", url);
     return true;
   }
 }

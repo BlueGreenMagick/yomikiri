@@ -1,8 +1,4 @@
-import Utils, {
-  handleResponseMessage,
-  LazyAsync,
-  type ResponseMessage,
-} from "@/features/utils";
+import Utils, { LazyAsync } from "@/features/utils";
 import type {
   IPlatform,
   TTSVoice,
@@ -20,22 +16,13 @@ import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { IosAppAnkiApi, type RawAnkiInfo } from "./anki";
 import { IosAppBackend } from "./backend";
+import { sendMessage } from "./messaging";
 
 export * from "../types";
 
 declare global {
   interface Window {
     iosConfigUpdated: () => Promise<void>;
-    webkit: {
-      messageHandlers: {
-        yomikiri: {
-          postMessage: (message: {
-            key: string;
-            request: string;
-          }) => Promise<ResponseMessage<string>>;
-        };
-      };
-    };
   }
 }
 
@@ -92,23 +79,8 @@ export class _IosAppPlatform implements IPlatform {
     };
   }
 
-  /** Message to app inside app's WKWebview */
-  async messageWebview<K extends keyof MessageWebviewMap>(
-    key: K,
-    request: WebviewRequest<K>,
-  ): Promise<WebviewResponse<K>> {
-    const message = {
-      key,
-      request: JSON.stringify(request),
-    };
-    const response =
-      await window.webkit.messageHandlers.yomikiri.postMessage(message);
-    const jsonResponse = handleResponseMessage(response);
-    return JSON.parse(jsonResponse) as WebviewResponse<K>;
-  }
-
   async getConfig(): Promise<StoredCompatConfiguration> {
-    const config = await this.messageWebview("loadConfig", null);
+    const config = await sendMessage("loadConfig", null);
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
@@ -125,7 +97,7 @@ export class _IosAppPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration) {
-    await this.messageWebview("saveConfig", config);
+    await sendMessage("saveConfig", config);
 
     // trigger update for this execution context
     for (const subscriber of this._configSubscribers) {
@@ -138,16 +110,16 @@ export class _IosAppPlatform implements IPlatform {
   }
 
   async versionInfo(): Promise<VersionInfo> {
-    return await this.messageWebview("versionInfo", null);
+    return await sendMessage("versionInfo", null);
   }
 
   async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await this.messageWebview("ttsVoices", null);
+    return await sendMessage("ttsVoices", null);
   }
 
   async playTTS({ text, voice }: TTSRequest): Promise<void> {
     const req: TTSRequest = { text, voice };
-    await this.messageWebview("tts", req);
+    await sendMessage("tts", req);
   }
 
   async translate(text: string): Promise<TranslateResult> {
@@ -156,7 +128,7 @@ export class _IosAppPlatform implements IPlatform {
 
   /** Currently only works in options page */
   openExternalLink(url: string): void {
-    this.messageWebview("openLink", url).catch((err: unknown) => {
+    sendMessage("openLink", url).catch((err: unknown) => {
       console.error(err);
     });
   }
@@ -165,14 +137,18 @@ export class _IosAppPlatform implements IPlatform {
     return await this.configMigration.get();
   }
 
-  async migrateConfigInner(): Promise<StoredConfiguration> {
+  private async migrateConfigInner(): Promise<StoredConfiguration> {
     const configObject = await this.getConfig();
     const migrated = migrateConfigObject(configObject);
-    const continueMigration = await this.messageWebview("migrateConfig", null);
+    const continueMigration = await sendMessage("migrateConfig", null);
     if (continueMigration) {
       await this.saveConfig(migrated);
     }
     return migrated;
+  }
+
+  closeWindow(): Promise<void> {
+    return sendMessage("close", null);
   }
 }
 
