@@ -1,4 +1,3 @@
-import Utils from "@/features/utils";
 import { Platform } from ".";
 import type { AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
@@ -11,17 +10,17 @@ import { iosAnkiMobileURL } from "../shared/anki";
 
 export * from "../types/anki";
 
-interface Named {
+export interface Named {
   name: string;
 }
 
-interface RawNotetypeInfo {
+export interface RawNotetypeInfo {
   name: string;
   kind: "normal" | "cloze";
   fields: Named[];
 }
 
-interface RawAnkiInfo {
+export interface RawAnkiInfo {
   decks: Named[];
   notetypes: RawNotetypeInfo[];
   profiles: Named[];
@@ -30,27 +29,6 @@ interface RawAnkiInfo {
 export namespace IosAppAnkiApi {
   export const type = "iosapp";
 
-  const [ankiInfoP, ankiInfoResolve, ankiInfoReject] =
-    Utils.createPromise<AnkiInfo>();
-
-  export function setAnkiInfo(ankiInfoJson: string): void {
-    try {
-      const rawAnkiInfo = JSON.parse(ankiInfoJson) as RawAnkiInfo;
-      const ankiInfo: AnkiInfo = {
-        decks: rawAnkiInfo.decks.map((named) => named.name),
-        notetypes: rawAnkiInfo.notetypes.map((rawNotetype) => {
-          return {
-            name: rawNotetype.name,
-            fields: rawNotetype.fields.map((named) => named.name),
-          };
-        }),
-      };
-      ankiInfoResolve(ankiInfo);
-    } catch (err) {
-      ankiInfoReject(err);
-    }
-  }
-
   export async function requestAnkiInfo(): Promise<void> {
     const installed = await Platform.messageWebview("ankiInfo", null);
     if (!installed) {
@@ -58,8 +36,19 @@ export namespace IosAppAnkiApi {
     }
   }
 
+  /** Can only be called in anki template options page */
   export async function getAnkiInfo(): Promise<AnkiInfo> {
-    return ankiInfoP;
+    const rawAnkiInfo = await Platform.messageWebview("ankiInfoData", null);
+    const ankiInfo: AnkiInfo = {
+      decks: rawAnkiInfo.decks.map((named) => named.name),
+      notetypes: rawAnkiInfo.notetypes.map((rawNotetype) => {
+        return {
+          name: rawNotetype.name,
+          fields: rawNotetype.fields.map((named) => named.name),
+        };
+      }),
+    };
+    return ankiInfo;
   }
 
   export async function checkConnection(): Promise<void> {

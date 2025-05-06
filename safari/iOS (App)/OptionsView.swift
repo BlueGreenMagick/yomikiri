@@ -33,18 +33,6 @@ struct OptionsView: View {
                 NavigationLink(isActive: self.appState.settingsNavigationIsAnkiTemplate) {
                     YomikiriWebView(url: OptionsView.URL_ANKI_TEMPLATE)
                         .handleExtraMessage(self.messageHandler())
-                        .onLoadComplete { webview in
-                            Task {
-                                do {
-                                    let ankiInfo = try await getAnkiInfoFromPasteboard()
-                                    let escaped = ankiInfo.replacingOccurrences(of: "`", with: "\\`")
-                                    let script = "setTimeout(() => {AnkiApi.setAnkiInfo(`\(escaped)`);}, 0)"
-                                    try await webview.evaluateJavaScript(script)
-                                } catch {
-                                    errorHandler.handle(error)
-                                }
-                            }
-                        }
                         .onLoadFail { error in
                             errorHandler.handle(error)
                         }
@@ -81,7 +69,9 @@ struct OptionsView: View {
                 case "ankiInfo":
                     let val = requestAnkiInfo()
                     return try jsonSerialize(obj: val)
-
+                case "ankiInfoData":
+                    let json = try await getAnkiInfoFromPasteboard()
+                    return json
                 default:
                     return nil
             }
