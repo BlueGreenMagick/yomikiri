@@ -5,6 +5,7 @@ import type { Platform as IosPlatform } from "../ios";
 import type { Platform as IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "@/features/utils";
 import type { StoredCompatConfiguration } from "@/features/compat";
+import type { AndroidPlatform } from "../android";
 
 export type { TranslateResult } from "../shared/translate";
 export type { Platform as DesktopPlatform } from "../desktop";
@@ -60,7 +61,8 @@ export interface TTSRequest {
 export declare const Platform:
   | typeof DesktopPlatform
   | typeof IosPlatform
-  | typeof IosAppPlatform;
+  | typeof IosAppPlatform
+  | typeof AndroidPlatform;
 
 export declare const ExtensionPlatform:
   | typeof DesktopPlatform
