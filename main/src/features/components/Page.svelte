@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Config } from "@/features/config";
-  import { platformClass, setStyle, handleErrors } from "./actions";
+  import PageSetup from "./PageSetup.svelte";
 
   async function initialize(): Promise<void> {
     // Config must be initialized before rendering svelte components,
@@ -14,8 +14,4 @@
 {:then}
   <slot />
 {/await}
-<div use:platformClass use:setStyle use:handleErrors style="display: none;" />
-
-<style global>
-  @import "../../global.css";
-</style>
+<PageSetup />
