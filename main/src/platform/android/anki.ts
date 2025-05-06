@@ -5,36 +5,34 @@ import type { IAnkiOptions } from "./anki";
 
 export * from "../types/anki";
 
-export namespace AndroidAnkiApi {
-  export const type = "android";
+export class _AndroidAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+  readonly type = "android";
 
-  export function setAnkiInfo(_ankiInfoJson: string): void {
+  setAnkiInfo(_ankiInfoJson: string): void {
     throw new Error("Unimplemented");
   }
 
-  export async function requestAnkiInfo(): Promise<void> {
+  async requestAnkiInfo(): Promise<void> {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
 
-  export async function getAnkiInfo(): Promise<AnkiInfo> {
+  async getAnkiInfo(): Promise<AnkiInfo> {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
 
-  export async function checkConnection(): Promise<void> {
+  async checkConnection(): Promise<void> {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
 
-  export async function addNote(_note: AnkiNote): Promise<boolean> {
+  async addNote(_note: AnkiNote): Promise<boolean> {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
 }
 
-AndroidAnkiApi satisfies IAnkiAddNotes;
-AndroidAnkiApi satisfies IAnkiOptions;
-
+export const AndroidAnkiApi = new _AndroidAnkiApi();
 export type AndroidAnkiApi = typeof AndroidAnkiApi;
 export const AnkiApi = AndroidAnkiApi;
