@@ -8,21 +8,30 @@ import type { AnkiNote } from "@/features/anki";
 import Config from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { iosAnkiMobileURL } from "../shared/anki";
-import type { IAnkiAddNotes } from "../types/anki";
+import { type IAnkiAddNotes } from "../types/anki";
+import { LazyAsync } from "@/features/utils";
 
 export * from "../types/anki";
 
-export namespace IosAnkiApi {
-  export const type = "ios";
+class _IosAnkiApi implements IAnkiAddNotes {
+  readonly type = "ios";
+  readonly lazyConfig: LazyAsync<Config>;
+
+  constructor(lazyConfig: LazyAsync<Config>) {
+    this.lazyConfig = lazyConfig;
+  }
 
   /**
    * Does not wait for note to actually be added to Anki.
    */
-  export const addNote = NonContentScriptFunction("addAnkiNote", _addNote);
+  readonly addNote = NonContentScriptFunction(
+    "addAnkiNote",
+    this._addNote.bind(this),
+  );
 
-  async function _addNote(note: AnkiNote): Promise<boolean> {
+  private async _addNote(note: AnkiNote): Promise<boolean> {
     const cTab = await currentTab();
-    const config = await Config.instance.get();
+    const config = await this.lazyConfig.get();
     const willAutoRedirect = config.get("anki.ios_auto_redirect");
     if (willAutoRedirect) {
       if (cTab.id === undefined) {
@@ -46,7 +55,8 @@ export namespace IosAnkiApi {
   }
 }
 
-IosAnkiApi satisfies IAnkiAddNotes;
-
-export type IosAnkiApi = typeof IosAnkiApi;
+export const IosAnkiApi = new _IosAnkiApi(
+  new LazyAsync(() => Config.instance.get()),
+);
 export const AnkiApi = IosAnkiApi;
+export type IosAnkiApi = typeof IosAnkiApi;
