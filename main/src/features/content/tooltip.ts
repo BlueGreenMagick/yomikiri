@@ -3,6 +3,7 @@ import type { TokenizeResult } from "@yomikiri/backend-bindings";
 import Config from "@/features/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
+import { Platform, type DesktopPlatform, type IosPlatform } from "#platform";
 
 export class Tooltip {
   config: Config;
@@ -198,7 +199,10 @@ export class Tooltip {
 
     const initialize = async () => {
       await Promise.resolve();
-      return { config: this.config };
+      return {
+        config: this.config,
+        platform: Platform as DesktopPlatform | IosPlatform,
+      };
     };
 
     const tooltipPage = new TooltipPage({

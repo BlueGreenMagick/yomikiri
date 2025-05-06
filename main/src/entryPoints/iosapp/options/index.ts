@@ -1,5 +1,5 @@
 import { OptionsPage } from "@/features/options";
-import { Platform } from "@/platform/iosapp";
+import { IosAppPlatform } from "@/platform/iosapp";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import { Backend } from "@/platform/iosapp/backend";
@@ -7,7 +7,8 @@ import type { AppCtx } from "@/features/ctx";
 
 async function initialize(): Promise<AppCtx> {
   const config = await Config.instance.get();
-  return { config };
+  const platform = IosAppPlatform;
+  return { config, platform };
 }
 
 const page = new OptionsPage({
@@ -16,7 +17,7 @@ const page = new OptionsPage({
 });
 
 exposeGlobals({
-  Platform,
+  Platform: IosAppPlatform,
   Utils,
   Backend,
   config: Config.instance,

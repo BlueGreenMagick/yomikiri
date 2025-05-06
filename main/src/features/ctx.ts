@@ -1,14 +1,23 @@
 import type Config from "./config";
-import type { Platform } from "#platform";
+import type {
+  DesktopPlatform,
+  IosAppPlatform,
+  IosPlatform,
+  Platform,
+} from "#platform";
 
 export interface ConfigCtx {
   config: Config;
 }
 
-export interface PlatformCtx {
-  platform: typeof Platform;
+export interface PlatformCtx<P = typeof Platform> {
+  platform: P;
 }
 
-type EmptyCtx = Record<never, never>;
+export type DesktopCtx = PlatformCtx<DesktopPlatform>;
+export type IosCtx = PlatformCtx<IosPlatform>;
+export type IosAppCtx = PlatformCtx<IosAppPlatform>;
 
-export type AppCtx<T = EmptyCtx> = ConfigCtx & T;
+export type EmptyCtx = Record<never, never>;
+
+export type AppCtx<T = EmptyCtx> = ConfigCtx & PlatformCtx & T;

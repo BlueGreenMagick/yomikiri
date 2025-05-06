@@ -1,15 +1,17 @@
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { Platform } from "@/platform/iosapp";
+import { IosAppPlatform } from "@/platform/iosapp";
 import type { AppCtx } from "@/features/ctx";
 
 const _page = createSvelte();
 
 async function initialize(): Promise<AppCtx> {
   const config = await Config.instance.get();
+  const platform = IosAppPlatform;
   return {
     config,
+    platform,
   };
 }
 
@@ -24,7 +26,7 @@ function createSvelte(): DictionaryPage {
 }
 
 exposeGlobals({
-  Platform,
+  Platform: IosAppPlatform,
   Utils,
   config: Config.instance,
 });

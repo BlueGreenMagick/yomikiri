@@ -1,14 +1,16 @@
 /* desktop only */
 
 import { OptionsPage } from "@/features/options";
-import { Platform } from "@/platform/desktop";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import type { AppCtx } from "@/features/ctx";
+import { DesktopPlatform } from "@/platform/desktop";
 
 async function initialize(): Promise<AppCtx> {
+  const platform = DesktopPlatform;
   const config = await Config.instance.get();
-  return { config };
+
+  return { config, platform };
 }
 
 const page = new OptionsPage({
@@ -17,7 +19,7 @@ const page = new OptionsPage({
 });
 
 exposeGlobals({
-  Platform,
+  Platform: DesktopPlatform,
   Utils,
   config: Config.instance,
   page,

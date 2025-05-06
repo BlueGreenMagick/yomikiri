@@ -1,4 +1,4 @@
-import { Platform } from "@/platform/iosapp";
+import { IosAppPlatform } from "@/platform/iosapp";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
@@ -6,7 +6,8 @@ import type { AppCtx } from "@/features/ctx";
 
 async function initialize(): Promise<AppCtx> {
   const config = await Config.instance.get();
-  return { config };
+  const platform = IosAppPlatform;
+  return { config, platform };
 }
 
 const page = new OptionsAnkiTemplatePage({
@@ -15,7 +16,7 @@ const page = new OptionsAnkiTemplatePage({
 });
 
 exposeGlobals({
-  Platform,
+  Platform: IosAppPlatform,
   config: Config.instance,
   page,
   Utils,
