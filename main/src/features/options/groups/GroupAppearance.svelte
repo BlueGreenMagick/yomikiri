@@ -2,9 +2,11 @@
   import OptionNumber from "../items/OptionNumber.svelte";
   import OptionText from "../items/OptionText.svelte";
   import GroupedOptions from "../GroupedOptions.svelte";
-  import Config from "@/features/config";
+  import type { AppContext } from "@/features/context";
 
-  const config = Config.using();
+  export let ctx: AppContext;
+
+  const config = ctx.config;
   const fontSizeConfig = config.store("general.font_size");
   const japaneseFontConfig = config.store("general.font");
   const maxHeightConfig = config.store("general.tooltip_max_height");

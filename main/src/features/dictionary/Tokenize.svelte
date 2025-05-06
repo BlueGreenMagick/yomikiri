@@ -9,7 +9,9 @@
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools, SelectedEntryForAnki } from "./types";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
+  import type { AppContext } from "../context";
 
+  export let ctx: AppContext;
   export let searchText = "";
   export let showCloseButton = false;
   export let onShowAnkiPreview: (
@@ -79,7 +81,11 @@
       {changeSelectedTool}
     />
     <div class="entries">
-      <DicEntriesView entries={tokenizeResult.entries} {onSelectEntryForAnki} />
+      <DicEntriesView
+        {ctx}
+        entries={tokenizeResult.entries}
+        {onSelectEntryForAnki}
+      />
     </div>
   {:else}
     <slot />

@@ -1,19 +1,28 @@
 <script lang="ts">
   import PopupView from "./PopupView.svelte";
   import ActionButtons from "./ActionButtons.svelte";
-  import Page from "@/features/components/Page.svelte";
   import { Platform } from "#platform";
+  import PageSetup from "@/features/components/PageSetup.svelte";
+  import type { AppContext } from "@/features/context";
+  import LoadingPage from "@/features/components/LoadingPage.svelte";
+
+  export let initialize: () => Promise<AppContext>;
 </script>
 
-<Page>
+{#await initialize()}
+  <LoadingPage />
+{:then ctx}
+  <PageSetup {ctx} />
   <div id="main">
     {#if Platform.type === "ios"}
-      <ActionButtons />
+      <ActionButtons {ctx} />
     {:else}
-      <PopupView />
+      <PopupView {ctx} />
     {/if}
   </div>
-</Page>
+{:catch e}
+  {e}
+{/await}
 
 <style global>
   /** 

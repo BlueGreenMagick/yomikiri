@@ -4,11 +4,14 @@
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
   import { Platform } from "#platform";
+  import type { AppContext } from "../context";
+
+  export let ctx: AppContext;
 </script>
 
 <div>
-  <GroupAppearance />
-  <GroupAnki />
+  <GroupAppearance {ctx} />
+  <GroupAnki {ctx} />
   <!-- eslint-disable-next-line -->
   {#if Platform.type === "desktop" || Platform.type === "iosapp"}
     <GroupDictionary />

@@ -196,9 +196,15 @@ export class Tooltip {
 `;
     doc.documentElement.classList.add("yomikiri");
 
+    const initialize = async () => {
+      await Promise.resolve();
+      return { config: this.config };
+    };
+
     const tooltipPage = new TooltipPage({
       target: doc.body,
       props: {
+        initialize,
         onClose: () => {
           this.hide();
           this.onCloseClicked.call();

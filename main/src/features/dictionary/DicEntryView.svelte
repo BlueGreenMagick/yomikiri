@@ -2,7 +2,6 @@
   import { type Entry, getMainForm, getMainReading } from "@/features/dicEntry";
   import IconAddCircleOutline from "#icons/add-circle-outline.svg";
   import { RubyString } from "@/features/japanese";
-  import { Config } from "@/features/config";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import RubyText from "../../features/components/RubyText.svelte";
@@ -10,16 +9,17 @@
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
   import type { SelectedEntryForAnki } from "./types";
+  import type { AppContext } from "../context";
 
+  export let ctx: AppContext;
   export let entry: Entry;
   export let model: DicEntriesModel;
   export let onSelectEntryForAnki: (
     selected: SelectedEntryForAnki,
   ) => void = () => null;
 
-  const config = Config.using();
   const selectedMeaning = model.selectedMeaning;
-  const ankiEnabledConfig = config.store("anki.enabled");
+  const ankiEnabledConfig = ctx.config.store("anki.enabled");
 
   function generateMainFormRuby(entry: Entry): RubyString {
     let mainForm = getMainForm(entry);
@@ -57,7 +57,7 @@
   </div>
   <Badges {entry} />
   {#if entry.type == "word"}
-    <DicWordEntryContent entry={entry.entry} {model} />
+    <DicWordEntryContent {ctx} entry={entry.entry} {model} />
   {:else}
     <DicNameEntryContent entry={entry.entry} />
   {/if}

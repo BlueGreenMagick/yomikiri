@@ -1,12 +1,12 @@
 <script lang="ts">
   import IconSettings from "#icons/settings.svg";
   import IconPower from "#icons/power.svg";
-  import Config from "@/features/config";
   import { Platform } from "#platform";
+  import type { AppContext } from "@/features/context";
 
-  const config = Config.using();
+  export let ctx: AppContext;
 
-  let stateEnabledConfig = config.store("state.enabled");
+  let stateEnabledConfig = ctx.config.store("state.enabled");
 
   async function openSettings() {
     await Platform.openOptionsPage();

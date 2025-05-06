@@ -1,12 +1,12 @@
 <script lang="ts">
   import { DicEntriesView } from "@/features/dictionary";
-  import { Config } from "@/features/config";
   import { onMount } from "svelte";
   import { Backend } from "#platform/backend";
+  import type { AppContext } from "../context";
 
-  const config = Config.using();
+  export let ctx: AppContext;
 
-  const maxHeight = config.store("general.tooltip_max_height");
+  const maxHeight = ctx.config.store("general.tooltip_max_height");
 
   let entryP = loadEntry();
 
@@ -23,7 +23,7 @@
   }
 
   onMount(() => {
-    const configSubscriber = config.subscribe(update);
+    const configSubscriber = ctx.config.subscribe(update);
 
     return () => {
       configSubscriber.dispose();
@@ -34,7 +34,7 @@
 <div style:--max-height={`${$maxHeight}px`}>
   {#await entryP then entry}
     {#key updateTick}
-      <DicEntriesView entries={[entry]} />
+      <DicEntriesView {ctx} entries={[entry]} />
     {/key}
   {/await}
 </div>

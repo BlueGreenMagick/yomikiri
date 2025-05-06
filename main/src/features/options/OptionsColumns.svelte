@@ -2,14 +2,17 @@
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
   import { Platform } from "#platform";
+  import type { AppContext } from "../context";
+
+  export let ctx: AppContext;
 </script>
 
 <div class="container">
   <div id="main-column">
-    <MainColumn />
+    <MainColumn {ctx} />
   </div>
   {#if Platform.type === "desktop"}
-    <div id="preview-column"><PreviewColumn /></div>
+    <div id="preview-column"><PreviewColumn {ctx} /></div>
   {/if}
 </div>
 

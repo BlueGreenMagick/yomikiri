@@ -1,9 +1,12 @@
 <script lang="ts">
   import Tooltip from "./Tooltip.svelte";
   import type { TokenizeResult } from "#platform/backend";
-  import Page from "@/features/components/Page.svelte";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
+  import type { AppContext } from "../context";
+  import PageSetup from "../components/PageSetup.svelte";
+  import LoadingPage from "../components/LoadingPage.svelte";
 
+  export let initialize: () => Promise<AppContext>;
   export let onClose: () => void;
   export let onUpdateHeight: (height: number) => void = (_) => null;
 
@@ -14,6 +17,11 @@
   }
 </script>
 
-<Page>
-  <Tooltip {onClose} {tokenizeResult} {onUpdateHeight} />
-</Page>
+{#await initialize()}
+  <LoadingPage />
+{:then ctx}
+  <PageSetup {ctx} />
+  <Tooltip {ctx} {onClose} {tokenizeResult} {onUpdateHeight} />
+{:catch}
+  Error!
+{/await}

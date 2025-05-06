@@ -10,8 +10,10 @@
   import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "@/features/utils";
-  import Config from "@/features/config";
   import { Platform } from "#platform";
+  import type { AppContext } from "@/features/context";
+
+  export let ctx: AppContext;
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
@@ -19,7 +21,7 @@
     | typeof DesktopAnkiApi
     | typeof IosAppAnkiApi;
 
-  const config = Config.using();
+  const config = ctx.config;
   const ankiConnectPortConfig = config.store("anki.connect_port");
   const ankiEnabledConfig = config.store("anki.enabled");
   const ankiIosAutoRedirectConfig = config.store("anki.ios_auto_redirect");
@@ -164,6 +166,7 @@
 </GroupedOptions>
 {#if !ankiTemplateModalHidden && Platform.type === "desktop"}
   <ModalAnkiTemplate
+    {ctx}
     onClose={() => {
       ankiTemplateModalHidden = true;
     }}

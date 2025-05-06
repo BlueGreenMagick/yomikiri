@@ -1,16 +1,22 @@
 <script lang="ts">
+  import type { AppContext } from "@/features/context";
   import DictionaryView from "./DictionaryView.svelte";
-  import Page from "@/features/components/Page.svelte";
+  import PageSetup from "@/features/components/PageSetup.svelte";
+  import LoadingPage from "@/features/components/LoadingPage.svelte";
 
+  export let initialize: () => Promise<AppContext>;
   export let context: "app" | "action";
   export let searchText = "";
 </script>
 
-<Page>
+{#await initialize()}
+  <LoadingPage />
+{:then ctx}
+  <PageSetup {ctx} />
   <div id="main">
-    <DictionaryView {context} {searchText} />
+    <DictionaryView {ctx} {context} {searchText} />
   </div>
-</Page>
+{/await}
 
 <style global>
   html,

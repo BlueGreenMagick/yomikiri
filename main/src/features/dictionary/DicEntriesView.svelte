@@ -3,7 +3,9 @@
   import DicEntryView from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
   import type { SelectedEntryForAnki } from "./types";
+  import type { AppContext } from "../context";
 
+  export let ctx: AppContext;
   export let entries: Entry[];
   export let onSelectEntryForAnki: (
     selected: SelectedEntryForAnki,
@@ -24,7 +26,7 @@
 
 <div id="yomikiri-entries" on:mousedown={onMouseDown}>
   {#each entries as entry (entry)}
-    <DicEntryView {entry} {model} {onSelectEntryForAnki} />
+    <DicEntryView {ctx} {entry} {model} {onSelectEntryForAnki} />
   {/each}
 </div>
 

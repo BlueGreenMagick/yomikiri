@@ -37,11 +37,9 @@ export function platformClass(attached: HTMLElement) {
   }
 }
 
-export function setStyle(attached: HTMLElement) {
+export function setStyle(attached: HTMLElement, config: Config) {
   const el = attached.ownerDocument.documentElement;
-  void Config.instance.get().then((config) => {
-    config.setUpdatedStyle(el);
-  });
+  config.setUpdatedStyle(el);
 }
 
 export function handleErrors(attached: HTMLElement) {

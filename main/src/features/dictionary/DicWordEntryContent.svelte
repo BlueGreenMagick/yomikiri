@@ -9,7 +9,9 @@
   import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { WordEntry } from "#platform/backend";
+  import type { AppContext } from "../context";
 
+  export let ctx: AppContext;
   export let entry: WordEntry;
   export let model: DicEntriesModel;
 
@@ -25,7 +27,7 @@
 <div class="entry-content">
   <div class="groups">
     {#each entry.groupedSenses as group}
-      <GroupedSenseView {group} {model} {onSelectSense} />
+      <GroupedSenseView {ctx} {group} {model} {onSelectSense} />
     {/each}
   </div>
   {#if otherForms !== null}

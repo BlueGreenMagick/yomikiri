@@ -1,6 +1,5 @@
 <script lang="ts">
   import IconedButton from "@/features/components/IconedButton.svelte";
-  import { Config } from "@/features/config";
   import IconRefreshOutline from "#icons/refresh-outline.svg";
   import IconTrash from "#icons/trash.svg";
   import { AnkiApi as RawAnkiApi, type DesktopAnkiApi } from "#platform/anki";
@@ -9,11 +8,17 @@
     TrashToastIcon,
     CancelDeferredNoteDeletion,
   } from "@/features/toast";
+  import type { AppContext } from "@/features/context";
+
+  export let ctx: AppContext;
 
   const AnkiApi = RawAnkiApi as DesktopAnkiApi;
-  const config = Config.using();
-  const confDeferredNoteCount = config.store("state.anki.deferred_note_count");
-  const confDeferredNoteError = config.store("state.anki.deferred_note_error");
+  const confDeferredNoteCount = ctx.config.store(
+    "state.anki.deferred_note_count",
+  );
+  const confDeferredNoteError = ctx.config.store(
+    "state.anki.deferred_note_error",
+  );
 
   let addingNotes = false;
   let errorMessage = "Loading error message...";

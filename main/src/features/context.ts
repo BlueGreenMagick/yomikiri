@@ -11,4 +11,4 @@ export interface PlatformContext {
 
 type EmptyContext = Record<never, never>;
 
-export type AppContext<T = EmptyContext> = ConfigContext & PlatformContext & T;
+export type AppContext<T = EmptyContext> = ConfigContext & T;

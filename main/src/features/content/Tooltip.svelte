@@ -13,16 +13,16 @@
     DicEntriesView,
   } from "@/features/dictionary";
   import type { TokenizeResult } from "#platform/backend";
-  import { Config } from "@/features/config";
   import { Toast } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
+  import type { AppContext } from "../context";
 
+  export let ctx: AppContext;
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;
   export let onUpdateHeight: (height: number) => void = (_) => null;
 
-  const config = Config.using();
-  const maxHeightConfig = config.store("general.tooltip_max_height");
+  const maxHeightConfig = ctx.config.store("general.tooltip_max_height");
 
   let tooltipElem: HTMLDivElement;
   let previewIsVisible = false;
@@ -59,7 +59,7 @@
       pageTitle: document.title,
     };
 
-    const note = buildAnkiNote({ config }, markerData);
+    const note = buildAnkiNote({ config: ctx.config }, markerData);
     previewNoteData = note;
     previewIsVisible = true;
     await tick();
@@ -104,6 +104,7 @@
     </div>
     <div class="scrollable">
       <DicEntriesView
+        {ctx}
         entries={tokenizeResult.entries}
         onSelectEntryForAnki={selectedEntryForAnki}
       />

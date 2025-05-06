@@ -6,9 +6,9 @@
   } from "@/features/anki";
   import type { AnkiInfo } from "#platform/anki";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
-  import Config from "@/features/config";
+  import type { AppContext } from "@/features/context";
 
-  const config = Config.using();
+  export let ctx: AppContext;
   export let ankiInfo: AnkiInfo;
 
   let deckNames: string[];
@@ -29,7 +29,7 @@
   function initialize() {
     deckNames = ankiInfo.decks;
     notetypeNames = ankiInfo.notetypes.map((nt) => nt.name);
-    let template = config.get("anki.anki_template");
+    let template = ctx.config.get("anki.anki_template");
     if (template === null) {
       selectedDeck = deckNames[0];
       selectedNotetype = notetypeNames[0];
@@ -76,7 +76,7 @@
       const field = fieldTemplates[fieldName];
       template.fields.push(field);
     }
-    await config.set("anki.anki_template", template);
+    await ctx.config.set("anki.anki_template", template);
   }
 
   $: ankiInfo, initialize();
@@ -130,7 +130,10 @@
   </div>
   <div class="fields group">
     {#each fieldNames as fieldName (fieldName)}
-      <AnkiTemplateFieldEdit bind:fieldTemplate={fieldTemplates[fieldName]} />
+      <AnkiTemplateFieldEdit
+        {ctx}
+        bind:fieldTemplate={fieldTemplates[fieldName]}
+      />
     {/each}
   </div>
   <div class="tags-container group">

@@ -7,13 +7,12 @@
     buildAnkiNote,
     AddToAnki,
   } from "@/features/anki";
-  import { Config } from "@/features/config";
   import { Platform } from "@/platform/iosapp";
+  import type { AppContext } from "@/features/context";
 
+  export let ctx: AppContext;
   export let context: "app" | "action";
   export let searchText: string;
-
-  const config = Config.using();
 
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
@@ -31,7 +30,7 @@
       pageTitle: "",
     };
 
-    let note = buildAnkiNote({ config }, markerData);
+    let note = buildAnkiNote({ config: ctx.config }, markerData);
 
     previewNoteData = note;
     previewIsVisible = true;
@@ -49,6 +48,7 @@
 <div class="dictionary-view">
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize
+      {ctx}
       bind:searchText
       showCloseButton={context === "action"}
       {onShowAnkiPreview}

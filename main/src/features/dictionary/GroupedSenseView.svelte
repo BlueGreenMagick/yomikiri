@@ -4,17 +4,18 @@
     type PartOfSpeech,
     type Sense,
   } from "@/features/dicEntry";
-  import { Config } from "@/features/config";
+
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { GroupedSense } from "#platform/backend";
+  import type { AppContext } from "../context";
 
+  export let ctx: AppContext;
   export let model: DicEntriesModel;
   export let group: GroupedSense;
   export let onSelectSense: (sense: Sense, poss: PartOfSpeech[]) => void;
 
-  const config = Config.using();
   const selectedSense = model.selectedMeaning;
-  const ankiEnabledConfig = config.store("anki.enabled");
+  const ankiEnabledConfig = ctx.config.store("anki.enabled");
 
   let posText: string;
 

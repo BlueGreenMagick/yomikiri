@@ -8,11 +8,12 @@
   import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
   import { AddToAnki } from "@/features/anki";
   import ActionButtons from "./ActionButtons.svelte";
-  import { Config } from "@/features/config";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
   import { Platform } from "#platform";
+  import type { AppContext } from "@/features/context";
 
-  const config = Config.using();
+  export let ctx: AppContext;
+
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
 
@@ -28,7 +29,7 @@
       url: "",
       pageTitle: "",
     };
-    let note = buildAnkiNote({ config }, markerData);
+    let note = buildAnkiNote({ config: ctx.config }, markerData);
     previewNoteData = note;
     previewIsVisible = true;
   }
@@ -44,10 +45,10 @@
 
 <div class="popup">
   <div class="tokenize-container" class:previewIsVisible>
-    <Tokenize {onShowAnkiPreview}>
-      <ActionButtons />
+    <Tokenize {ctx} {onShowAnkiPreview}>
+      <ActionButtons {ctx} />
       {#if Platform.type === "desktop"}
-        <DeferredNoteInfo />
+        <DeferredNoteInfo {ctx} />
       {/if}
     </Tokenize>
   </div>

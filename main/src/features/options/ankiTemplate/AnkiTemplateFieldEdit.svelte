@@ -17,9 +17,9 @@
   import IconedButton from "@/features/components/IconedButton.svelte";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
-  import Config from "@/features/config";
+  import type { AppContext } from "@/features/context";
 
-  const config = Config.using();
+  export let ctx: AppContext;
   export let fieldTemplate: AnkiTemplateField;
 
   let content: AnkiTemplateFieldContent;
@@ -43,8 +43,11 @@
   }
 
   function createPreviewField(): LoadingField | Field {
-    const ctx = { config };
-    return buildAnkiField(ctx, exampleMarkerData, fieldTemplate);
+    return buildAnkiField(
+      { config: ctx.config },
+      exampleMarkerData,
+      fieldTemplate,
+    );
   }
 
   function onTypeChange(_ev: unknown) {
