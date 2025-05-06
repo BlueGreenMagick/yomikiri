@@ -104,7 +104,7 @@ export class AnkiConnectError extends AnkiError {}
 
 type AddDeferredNotesProgress = "loading" | number;
 
-export class _DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
+export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   readonly type = "desktop";
   readonly lazyConfig: LazyAsync<Config>;
 
@@ -394,9 +394,3 @@ export class ClearDeferredNotesJob {
     });
   }
 }
-
-export const DesktopAnkiApi = new _DesktopAnkiApi(
-  new LazyAsync(() => Config.instance.get()),
-);
-export const AnkiApi = DesktopAnkiApi;
-export type DesktopAnkiApi = typeof DesktopAnkiApi;

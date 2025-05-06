@@ -22,7 +22,7 @@ export interface RawAnkiInfo {
   profiles: Named[];
 }
 
-export class _IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+export class IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   readonly type = "iosapp";
 
   async requestAnkiInfo(): Promise<void> {
@@ -60,7 +60,3 @@ export class _IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     return true;
   }
 }
-
-export const IosAppAnkiApi = new _IosAppAnkiApi();
-export type IosAppAnkiApi = typeof IosAppAnkiApi;
-export const AnkiApi = IosAppAnkiApi;

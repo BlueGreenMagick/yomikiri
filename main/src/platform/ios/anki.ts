@@ -13,7 +13,7 @@ import { LazyAsync } from "@/features/utils";
 
 export * from "../types/anki";
 
-export class _IosAnkiApi implements IAnkiAddNotes {
+export class IosAnkiApi implements IAnkiAddNotes {
   readonly type = "ios";
   readonly lazyConfig: LazyAsync<Config>;
 
@@ -54,9 +54,3 @@ export class _IosAnkiApi implements IAnkiAddNotes {
     return true;
   }
 }
-
-export const IosAnkiApi = new _IosAnkiApi(
-  new LazyAsync(() => Config.instance.get()),
-);
-export const AnkiApi = IosAnkiApi;
-export type IosAnkiApi = typeof IosAnkiApi;

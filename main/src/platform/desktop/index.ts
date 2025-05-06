@@ -8,7 +8,7 @@ import {
   speakJapanese,
 } from "@/features/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../types";
-import { type StoredConfiguration } from "@/features/config";
+import Config, { type StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import {
   migrateConfigObject,
@@ -23,7 +23,7 @@ export * from "../types";
 
 export class _DesktopPlatform implements IPlatform {
   readonly type = "desktop";
-  readonly anki = DesktopAnkiApi;
+  readonly anki: DesktopAnkiApi;
   readonly backend = DesktopBackend;
 
   // config migration is done only once even if requested multiple times
@@ -32,6 +32,10 @@ export class _DesktopPlatform implements IPlatform {
       return await this.migrateConfigInner();
     },
   );
+
+  constructor(private lazyConfig: LazyAsync<Config>) {
+    this.anki = new DesktopAnkiApi(this.lazyConfig);
+  }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
     return await getStorage("config", {});
@@ -97,7 +101,7 @@ export class _DesktopPlatform implements IPlatform {
   }
 }
 
-export const DesktopPlatform = new _DesktopPlatform();
+export const DesktopPlatform = new _DesktopPlatform(Config.instance);
 export const Platform = DesktopPlatform;
 export const ExtensionPlatform = Platform;
 export const PagePlatform = Platform;

@@ -11,7 +11,7 @@
     type IosAppPlatform,
   } from "#platform";
   import type { AppContext } from "@/features/context";
-  import type { _DesktopAnkiApi } from "@/platform/desktop/anki";
+  import type { DesktopAnkiApi } from "@/platform/types/anki";
 
   export let ctx: AppContext;
 
@@ -74,7 +74,7 @@
   });
 
   /** Do action if there are existing deferred anki notes. */
-  function onToggleAnkiDeferNotes(AnkiApi: _DesktopAnkiApi): boolean {
+  function onToggleAnkiDeferNotes(AnkiApi: DesktopAnkiApi): boolean {
     if (!$ankiDeferNotesConfig) {
       return true;
     }

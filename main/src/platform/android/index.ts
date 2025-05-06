@@ -19,7 +19,7 @@ export * from "../types";
 
 export class _AndroidPlatform implements IPlatform {
   readonly type = "android";
-  readonly anki = AndroidAnkiApi;
+  readonly anki = new AndroidAnkiApi();
   readonly backend = AndroidBackend;
 
   /** TODO */

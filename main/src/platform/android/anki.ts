@@ -4,7 +4,7 @@ import type { IAnkiOptions } from "./anki";
 
 export * from "../types/anki";
 
-export class _AndroidAnkiApi implements IAnkiAddNotes, IAnkiOptions {
+export class AndroidAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   readonly type = "android";
 
   setAnkiInfo(_ankiInfoJson: string): void {
@@ -31,7 +31,3 @@ export class _AndroidAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     throw new Error("Unimplemented");
   }
 }
-
-export const AndroidAnkiApi = new _AndroidAnkiApi();
-export type AndroidAnkiApi = typeof AndroidAnkiApi;
-export const AnkiApi = AndroidAnkiApi;
