@@ -2,11 +2,7 @@
   import IconedButton from "@/features/components/IconedButton.svelte";
   import IconRefreshOutline from "#icons/refresh-outline.svg";
   import IconTrash from "#icons/trash.svg";
-  import {
-    Toast,
-    TrashToastIcon,
-    CancelDeferredNoteDeletion,
-  } from "@/features/toast";
+  import { TrashToastIcon, CancelDeferredNoteDeletion } from "@/features/toast";
   import type { AppCtx, DesktopCtx } from "@/features/ctx";
 
   export let ctx: AppCtx<DesktopCtx>;
@@ -43,19 +39,17 @@
   async function discardDeferredNotes() {
     const clearJob = await AnkiApi.clearDeferredNotes();
 
-    let weakToast: WeakRef<Toast>;
-    const toast = new Toast("success", CancelDeferredNoteDeletion, {
+    const toast = ctx.toast.custom("success", CancelDeferredNoteDeletion, {
       duration: 4000,
       icon: TrashToastIcon,
       props: {
         count: clearJob.notes.length,
         onCancel: async () => {
           await clearJob.undo();
-          weakToast.deref()?.dismiss();
+          toast.dismiss();
         },
       },
     });
-    weakToast = new WeakRef(toast);
   }
 
   $: if ($confDeferredNoteError) void getErrorMessages();

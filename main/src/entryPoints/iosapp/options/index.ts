@@ -4,11 +4,13 @@ import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import { Backend } from "@/platform/iosapp/backend";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
+import { Toast } from "@/features/toast";
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const config = await Config.instance.get();
   const platform = IosAppPlatform;
-  return { config, platform, platformType: platform.type };
+  const toast = new Toast();
+  return { config, platform, platformType: platform.type, toast };
 }
 
 const page = new OptionsPage({

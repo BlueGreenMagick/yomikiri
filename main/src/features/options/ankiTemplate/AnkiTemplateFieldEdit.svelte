@@ -43,11 +43,7 @@
   }
 
   function createPreviewField(): LoadingField | Field {
-    return buildAnkiField(
-      { config: ctx.config },
-      exampleMarkerData,
-      fieldTemplate,
-    );
+    return buildAnkiField(ctx, exampleMarkerData, fieldTemplate);
   }
 
   function onTypeChange(_ev: unknown) {

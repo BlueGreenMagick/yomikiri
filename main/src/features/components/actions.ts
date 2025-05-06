@@ -1,5 +1,4 @@
 import { YomikiriError } from "@/features/error";
-import { Toast } from "@/features/toast";
 import type { AppCtx } from "../ctx";
 
 declare global {
@@ -41,11 +40,11 @@ export function setStyle(attached: HTMLElement, ctx: AppCtx) {
   ctx.config.setUpdatedStyle(el);
 }
 
-export function handleErrors(attached: HTMLElement) {
+export function handleErrors(attached: HTMLElement, ctx: AppCtx) {
   const frameWindow = attached.ownerDocument.defaultView;
   let currWindow: Window = window;
   if (frameWindow === null) {
-    showError("Could not get iframe window");
+    showError(ctx, "Could not get iframe window");
     return;
   } else {
     currWindow = frameWindow;
@@ -56,11 +55,11 @@ export function handleErrors(attached: HTMLElement) {
       currWindow.addEventListener("error", (event) => {
         // Ignore cross-origin error
         if (event.error === null) return;
-        showError(event.error);
+        showError(ctx, event.error);
       });
       currWindow.addEventListener("unhandledrejection", (event) => {
         // Cross-origin rejections do not trigger unhandledrejection
-        showError(event.reason);
+        showError(ctx, event.reason);
       });
       currWindow.errorHandlersAttached = true;
     }
@@ -71,8 +70,8 @@ export function handleErrors(attached: HTMLElement) {
   }
 }
 
-function showError(err: unknown) {
+function showError(ctx: AppCtx, err: unknown) {
   const error = YomikiriError.from(err);
   console.error(error);
-  Toast.yomikiriError(error);
+  ctx.toast.yomikiriError(error);
 }

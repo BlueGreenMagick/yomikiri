@@ -7,36 +7,17 @@ import Config from "../config";
 
 type ToastType = "success" | "error" | "loading";
 
-export class Toast<
-  T extends Record<string, unknown> = Record<string, unknown>,
-> {
-  static toasts?: Toasts;
-  id: string;
-  type: ToastType;
-  message: Renderable<T>;
-  opts: Partial<ToastOptions>;
+export class Toast {
+  toasts?: Toasts;
 
-  constructor(
-    type: ToastType,
-    message: Renderable<T>,
-    opts: Partial<ToastOptions> = {},
-  ) {
-    Toast.maybeSetupToaster();
-    this.type = type;
-    this.message = message;
-    this.opts = {
-      ...opts,
-      props: {
-        ...opts.props,
-        toast: this,
-      },
-    };
-
-    this.id = createToast(type, message, this.opts);
+  private maybeSetupToaster() {
+    if (this.toasts === undefined) {
+      this.setupToaster();
+    }
   }
 
   /** Setup toaster in shadowDOM so it is not affected by existing document style */
-  private static setupToaster(): void {
+  private setupToaster(): void {
     const container = document.createElement("div");
     container.style.cssText =
       "pointerEvents: none !important; background: none !important; border: none !important; position: fixed !important;";
@@ -50,53 +31,83 @@ export class Toast<
     void Config.instance.get().then((c) => {
       c.setUpdatedStyle(innerContainer);
     });
-    Toast.toasts = new Toasts({ target: innerContainer, props: {} });
+    this.toasts = new Toasts({ target: innerContainer, props: {} });
     document.body.appendChild(container);
   }
 
-  private static maybeSetupToaster() {
-    if (Toast.toasts === undefined) {
-      Toast.setupToaster();
-    }
-  }
-
-  static success(
+  success(
     message: string,
     details?: string,
     opts: ToastOptions = {},
-  ): Toast {
-    return new Toast("success", DetailedToast, {
+  ): ToastItem {
+    this.maybeSetupToaster();
+    return new ToastItem("success", DetailedToast, {
       ...opts,
       props: { message, details, ...opts.props },
     });
   }
 
-  static error(
-    message: string,
-    details?: string,
-    opts: ToastOptions = {},
-  ): Toast {
-    return new Toast("error", DetailedToast, {
+  error(message: string, details?: string, opts: ToastOptions = {}): ToastItem {
+    this.maybeSetupToaster();
+    return new ToastItem("error", DetailedToast, {
       ...opts,
       props: { message, details, ...opts.props },
     });
   }
 
-  static yomikiriError(err: YomikiriError) {
-    return new Toast("error", DetailedToast, {
+  loading(
+    message: string,
+    details?: string,
+    opts: ToastOptions = {},
+  ): ToastItem {
+    this.maybeSetupToaster();
+    return new ToastItem("error", DetailedToast, {
+      ...opts,
+      props: { message, details, ...opts.props },
+    });
+  }
+
+  yomikiriError(err: YomikiriError) {
+    this.maybeSetupToaster();
+    return new ToastItem("error", DetailedToast, {
       props: { message: err.message, details: err.details.slice(1).join("\n") },
     });
   }
 
-  static loading(
-    message: string,
-    details?: string,
-    opts: ToastOptions = {},
-  ): Toast {
-    return new Toast("error", DetailedToast, {
+  custom<T extends Record<string, unknown> = Record<string, unknown>>(
+    type: ToastType,
+    message: Renderable<T>,
+    opts: Partial<ToastOptions> = {},
+  ) {
+    this.maybeSetupToaster();
+    return new ToastItem(type, message, opts);
+  }
+}
+/** Do not directly call the constructor. Toasts should be created from ToastFactory instead. */
+export class ToastItem<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
+  id: string;
+  type: ToastType;
+  message: Renderable<T>;
+  opts: Partial<ToastOptions>;
+
+  constructor(
+    type: ToastType,
+    message: Renderable<T>,
+    opts: Partial<ToastOptions> = {},
+  ) {
+    this.type = type;
+    this.message = message;
+    this.opts = {
       ...opts,
-      props: { message, details, ...opts.props },
-    });
+      props: {
+        ...opts.props,
+        toast: this,
+      },
+    };
+
+    this.id = createToast(type, message, this.opts);
   }
 
   update({

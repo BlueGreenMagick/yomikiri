@@ -5,12 +5,14 @@ import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import type { AppCtx, DesktopCtx } from "@/features/ctx";
 import { DesktopPlatform } from "@/platform/desktop";
+import { Toast } from "@/features/toast";
 
 async function initialize(): Promise<AppCtx<DesktopCtx>> {
   const platform = DesktopPlatform;
   const config = await Config.instance.get();
+  const toast = new Toast();
 
-  return { config, platform, platformType: platform.type };
+  return { config, platform, platformType: platform.type, toast };
 }
 
 const page = new OptionsPage({

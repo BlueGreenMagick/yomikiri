@@ -11,7 +11,6 @@
   } from "./ankiBuilder";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "@/features/components/TextButton.svelte";
-  import { Toast } from "@/features/toast";
   import { newChangeTracker, SingleQueued } from "@/features/utils";
   import { HourglassToastIcon } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
@@ -50,16 +49,16 @@
     try {
       added = await ctx.platform.anki.addNote(ankiNote);
       if (added) {
-        Toast.success("Note added to Anki");
+        ctx.toast.success("Note added to Anki");
       } else {
-        Toast.success("Note will be added when Anki is connected", "", {
+        ctx.toast.success("Note will be added when Anki is connected", "", {
           icon: HourglassToastIcon,
           duration: 3000,
         });
       }
       noteAdded();
     } catch (err) {
-      Toast.yomikiriError(YomikiriError.from(err));
+      ctx.toast.yomikiriError(YomikiriError.from(err));
     }
   }
 

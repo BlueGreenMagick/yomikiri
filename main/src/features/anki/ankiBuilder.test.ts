@@ -33,6 +33,7 @@ const REGENERATE_JSON = !!process.env.UPDATE;
 const config = await Config.instance.get();
 const ctx: AnkiBuilderContext = {
   config,
+  platform: DesktopPlatform,
 };
 
 interface TestCase {

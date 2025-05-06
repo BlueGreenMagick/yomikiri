@@ -1,10 +1,10 @@
 <script lang="ts">
   import TextButton from "@/features/components/TextButton.svelte";
-  import { Toast } from "./toast";
+  import { ToastItem } from "./toast";
 
   export let message: string;
   export let details: string | undefined;
-  export let toast: Toast;
+  export let toast: ToastItem;
 
   let detailsHidden = true;
 

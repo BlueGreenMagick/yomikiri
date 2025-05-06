@@ -5,6 +5,7 @@ import type {
   IosPlatform,
   Platform,
 } from "#platform";
+import type { Toast } from "./toast/toast";
 
 export interface ConfigCtx {
   config: Config;
@@ -21,6 +22,10 @@ export type IosAppCtx = PlatformCtx<IosAppPlatform>;
 
 export type AnyPlatformCtx = DesktopCtx | IosCtx | IosAppCtx;
 
+export interface ToastCtx {
+  toast: Toast;
+}
+
 export type EmptyCtx = Record<never, never>;
 
-export type AppCtx<T = EmptyCtx> = ConfigCtx & AnyPlatformCtx & T;
+export type AppCtx<T = EmptyCtx> = ConfigCtx & AnyPlatformCtx & ToastCtx & T;

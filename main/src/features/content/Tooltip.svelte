@@ -13,7 +13,6 @@
     DicEntriesView,
   } from "@/features/dictionary";
   import type { TokenizeResult } from "@yomikiri/backend-bindings";
-  import { Toast } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
   import type { AppCtx } from "../ctx";
 
@@ -46,7 +45,7 @@
     try {
       await _selectedEntryForAnki(request);
     } catch (err) {
-      Toast.yomikiriError(YomikiriError.from(err));
+      ctx.toast.yomikiriError(YomikiriError.from(err));
     }
   }
   async function _selectedEntryForAnki(request: SelectedEntryForAnki) {
@@ -59,7 +58,7 @@
       pageTitle: document.title,
     };
 
-    const note = buildAnkiNote({ config: ctx.config }, markerData);
+    const note = buildAnkiNote(ctx, markerData);
     previewNoteData = note;
     previewIsVisible = true;
     await tick();

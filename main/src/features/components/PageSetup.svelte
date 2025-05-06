@@ -8,7 +8,7 @@
 <div
   use:platformClass={ctx}
   use:setStyle={ctx}
-  use:handleErrors
+  use:handleErrors={ctx}
   style="display: none;"
 />
 

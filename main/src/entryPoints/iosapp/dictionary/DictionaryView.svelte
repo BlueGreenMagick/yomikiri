@@ -29,7 +29,7 @@
       pageTitle: "",
     };
 
-    let note = buildAnkiNote({ config: ctx.config }, markerData);
+    let note = buildAnkiNote(ctx, markerData);
 
     previewNoteData = note;
     previewIsVisible = true;

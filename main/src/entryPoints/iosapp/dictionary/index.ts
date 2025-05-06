@@ -3,16 +3,20 @@ import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { IosAppPlatform } from "@/platform/iosapp";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
+import { Toast } from "@/features/toast";
 
 const _page = createSvelte();
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
-  const config = await Config.instance.get();
   const platform = IosAppPlatform;
+  const config = await Config.instance.get();
+  const toast = new Toast();
+
   return {
     config,
     platform,
     platformType: platform.type,
+    toast,
   };
 }
 
