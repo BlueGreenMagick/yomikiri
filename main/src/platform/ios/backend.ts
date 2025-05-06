@@ -1,5 +1,4 @@
 import { NonContentScriptFunction } from "@/features/extension/browserApi";
-import { IosPlatform } from ".";
 import type {
   TokenizeResult,
   IBackend,
@@ -10,6 +9,7 @@ import {
   cleanTokenizeResult,
   emptyTokenizeResult,
 } from "@/platform/shared/backend";
+import { sendMessage } from "./messaging";
 
 export * from "../types/backend";
 
@@ -37,7 +37,7 @@ export class IosBackend implements IBackend {
     }
 
     const req: TokenizeArgs = { sentence: text, char_idx: charAt };
-    const result = await IosPlatform.requestToApp("tokenize", req);
+    const result = await sendMessage("tokenize", req);
     cleanTokenizeResult(result);
     return result;
   }
@@ -63,12 +63,12 @@ export class IosBackend implements IBackend {
     }
 
     const req: SearchArgs = { query: term, char_idx: charAt };
-    const result = await IosPlatform.requestToApp("search", req);
+    const result = await sendMessage("search", req);
     cleanTokenizeResult(result);
     return result;
   }
 
   readonly getDictMetadata = NonContentScriptFunction("getDictMetadata", () => {
-    return IosPlatform.requestToApp("metadata", null);
+    return sendMessage("metadata", null);
   });
 }

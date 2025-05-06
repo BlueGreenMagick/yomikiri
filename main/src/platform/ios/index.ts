@@ -1,5 +1,5 @@
 import Config, { type StoredConfiguration } from "@/features/config";
-import { LazyAsync, handleResponseMessage, log } from "@/features/utils";
+import { LazyAsync, log } from "@/features/utils";
 import {
   NonContentScriptFunction,
   currentTab,
@@ -17,6 +17,7 @@ import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { IosAnkiApi } from "./anki";
 import { IosBackend } from "./backend";
+import { sendMessage } from "./messaging";
 
 export * from "../types";
 
@@ -61,21 +62,6 @@ export class _IosPlatform implements IPlatform {
     }
   }
 
-  /** Only works in background & page */
-  async requestToApp<K extends keyof AppMessageMap>(
-    key: K,
-    request: AppRequest<K>,
-  ): Promise<AppResponse<K>> {
-    // eslint-disable-next-line
-    const resp = await browser.runtime.sendNativeMessage("_", {
-      key,
-      request: JSON.stringify(request),
-    });
-    // eslint-disable-next-line
-    const jsonResponse = handleResponseMessage<string>(resp);
-    return JSON.parse(jsonResponse) as AppResponse<K>;
-  }
-
   readonly getConfig = NonContentScriptFunction("loadConfig", () => {
     return this.updateConfig();
   });
@@ -93,7 +79,7 @@ export class _IosPlatform implements IPlatform {
   // App config is the source of truth
   async updateConfig(): Promise<StoredConfiguration> {
     const webConfigP = getStorage("config", {});
-    const appConfigP = this.requestToApp("loadConfig", null);
+    const appConfigP = sendMessage("loadConfig", null);
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
       await setStorage("config", appConfig);
@@ -104,7 +90,7 @@ export class _IosPlatform implements IPlatform {
   readonly saveConfig = NonContentScriptFunction(
     "saveConfig",
     async (config) => {
-      await this.requestToApp("saveConfig", config);
+      await sendMessage("saveConfig", config);
       await setStorage("config", config);
     },
   );
@@ -131,11 +117,11 @@ export class _IosPlatform implements IPlatform {
   }
 
   async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await this.requestToApp("ttsVoices", null);
+    return await sendMessage("ttsVoices", null);
   }
 
   readonly playTTS = NonContentScriptFunction("tts", async (req) => {
-    await this.requestToApp("tts", req);
+    await sendMessage("tts", req);
   });
 
   readonly translate = NonContentScriptFunction("translate", getTranslation);
