@@ -114,10 +114,7 @@ export class TooltipController {
     }
   }
 
-  @SingleQueued
-  private async trigger(x: number, y: number): Promise<boolean | null> {
-    return this._trigger(x, y);
-  }
+  readonly trigger = SingleQueued(this._trigger.bind(this));
 
   private async _trigger(x: number, y: number): Promise<boolean> {
     const charLoc = charLocationAtPos(x, y);
