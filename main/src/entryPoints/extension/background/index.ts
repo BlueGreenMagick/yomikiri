@@ -58,7 +58,7 @@ function updateDeferredNoteCountBadge(config: Config) {
  * Check and add Anki notes every 30 seconds in desktop.
  */
 function runAddDeferredNoteTaskInBackground() {
-  if (AnkiApi.IS_DESKTOP) {
+  if (AnkiApi.type === "desktop") {
     setInterval(() => {
       void (AnkiApi as DesktopAnkiApi).addDeferredNotes();
     }, 1000 * 30);

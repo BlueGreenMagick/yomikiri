@@ -8,7 +8,7 @@
   <div id="main-column">
     <MainColumn />
   </div>
-  {#if Platform.IS_DESKTOP}
+  {#if Platform.type === "desktop"}
     <div id="preview-column"><PreviewColumn /></div>
   {/if}
 </div>

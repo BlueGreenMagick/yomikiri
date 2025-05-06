@@ -13,10 +13,7 @@ import type { IAnkiAddNotes } from "../types/anki";
 export * from "../types/anki";
 
 export namespace IosAnkiApi {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = true;
-  export const IS_IOSAPP = false;
-  export const IS_ANDROID = false;
+  export const type = "ios";
 
   /**
    * Does not wait for note to actually be added to Anki.

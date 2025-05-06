@@ -5,7 +5,7 @@ import { Platform } from "#platform";
 function getHighlighter():
   | typeof SelectionHighlighter
   | typeof WrapHighlighter {
-  if (Platform.IS_DESKTOP) {
+  if (Platform.type === "desktop") {
     return SelectionHighlighter;
   } else {
     return WrapHighlighter;

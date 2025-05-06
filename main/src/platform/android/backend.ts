@@ -16,10 +16,7 @@ import type { PromiseWithProgress } from "@/features/utils";
 export * from "../types/backend";
 
 export namespace AndroidBackend {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = false;
-  export const IS_IOSAPP = false;
-  export const IS_ANDROID = true;
+  export const type = "android";
 
   export async function tokenize({
     text,

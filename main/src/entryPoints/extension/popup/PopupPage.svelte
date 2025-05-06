@@ -7,7 +7,7 @@
 
 <Page>
   <div id="main">
-    {#if Platform.IS_IOS}
+    {#if Platform.type === "ios"}
       <ActionButtons />
     {:else}
       <PopupView />

@@ -41,10 +41,7 @@ import {
 export * from "../types/backend";
 
 export namespace DesktopBackend {
-  export const IS_DESKTOP = true;
-  export const IS_IOS = false;
-  export const IS_IOSAPP = false;
-  export const IS_ANDROID = false;
+  export const type = "desktop";
 
   let _wasm: LazyAsync<BackendWasm> | undefined;
 

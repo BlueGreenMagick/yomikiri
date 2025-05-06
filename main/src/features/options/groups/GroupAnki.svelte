@@ -57,7 +57,7 @@
       }
       try {
         await AnkiApi.checkConnection();
-        if (AnkiApi.IS_DESKTOP) {
+        if (AnkiApi.type === "desktop") {
           void AnkiApi.addDeferredNotes();
         }
         useAnkiDescription = "success";
@@ -102,7 +102,7 @@
     {:else if useAnkiDescription === "success"}
       <span class="success">Successfully connected to Anki.</span>
     {:else if useAnkiDescription === "error"}
-      {#if Platform.IS_DESKTOP}
+      {#if Platform.type === "desktop"}
         <span class="warning">{useAnkiError}</span>
         <a href="https://apps.ankiweb.net/">(Anki)</a>
         <a href="https://ankiweb.net/shared/info/2055492159">(AnkiConnect)</a>
@@ -112,7 +112,7 @@
         </span>
       {/if}
     {:else if useAnkiDescription === "off"}
-      {#if Platform.IS_DESKTOP}
+      {#if Platform.type === "desktop"}
         <a href="https://apps.ankiweb.net/">Anki</a> is a flashcard software.
       {:else}
         <a href={ANKIMOBILE_URL}>AnkiMobile</a> is a flashcard app.
@@ -120,7 +120,7 @@
     {/if}
   </OptionToggle>
 
-  {#if Platform.IS_DESKTOP}
+  {#if Platform.type === "desktop"}
     <OptionNumber
       bind:value={$ankiConnectPortConfig}
       title="AnkiConnect port number"
@@ -140,7 +140,7 @@
     </span>
   </OptionClick>
 
-  {#if AnkiApi.IS_DESKTOP}
+  {#if AnkiApi.type === "desktop"}
     <OptionToggle
       bind:value={$ankiDeferNotesConfig}
       title="Add Notes Later"
@@ -151,7 +151,7 @@
     </OptionToggle>
   {/if}
 
-  {#if Platform.IS_IOSAPP}
+  {#if Platform.type === "iosapp"}
     <OptionToggle
       bind:value={$ankiIosAutoRedirectConfig}
       title="Reopen Safari after adding Anki note"
@@ -162,7 +162,7 @@
     </OptionToggle>
   {/if}
 </GroupedOptions>
-{#if !ankiTemplateModalHidden && Platform.IS_DESKTOP}
+{#if !ankiTemplateModalHidden && Platform.type === "desktop"}
   <ModalAnkiTemplate
     onClose={() => {
       ankiTemplateModalHidden = true;

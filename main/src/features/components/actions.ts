@@ -20,17 +20,17 @@ declare global {
 export function platformClass(attached: HTMLElement) {
   const node = attached.ownerDocument.documentElement;
   if (!node) return;
-  if (Platform.IS_DESKTOP) {
+  if (Platform.type === "desktop") {
     node.classList.add("desktop");
   }
-  if (Platform.IS_IOS) {
+  if (Platform.type === "ios") {
     node.classList.add("ios");
   }
-  if (Platform.IS_IOSAPP) {
+  if (Platform.type === "iosapp") {
     node.classList.add("iosapp");
   }
 
-  if (Platform.IS_IOS || Platform.IS_IOSAPP) {
+  if (Platform.type === "ios" || Platform.type === "iosapp") {
     attached.ownerDocument.body.addEventListener("touchstart", () => {
       return;
     });

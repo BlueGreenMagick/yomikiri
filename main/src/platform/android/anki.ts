@@ -6,10 +6,7 @@ import type { IAnkiOptions } from "./anki";
 export * from "../types/anki";
 
 export namespace AndroidAnkiApi {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = false;
-  export const IS_IOSAPP = false;
-  export const IS_ANDROID = true;
+  export const type = "android";
 
   export function setAnkiInfo(_ankiInfoJson: string): void {
     throw new Error("Unimplemented");

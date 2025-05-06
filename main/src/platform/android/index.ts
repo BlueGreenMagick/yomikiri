@@ -16,10 +16,7 @@ import { sendMessage } from "./messaging";
 export * from "../types";
 
 export namespace AndroidPlatform {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = false;
-  export const IS_IOSAPP = false;
-  export const IS_ANDROID = true;
+  export const type = "android";
 
   /** TODO */
   export async function getConfig(): Promise<StoredCompatConfiguration> {

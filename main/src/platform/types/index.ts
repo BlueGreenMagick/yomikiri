@@ -12,10 +12,7 @@ export type { Platform as IosPlatform } from "../ios";
 export type { Platform as IosAppPlatform } from "../iosapp";
 
 export interface IPlatformConsts {
-  IS_DESKTOP: boolean;
-  IS_IOS: boolean;
-  IS_IOSAPP: boolean;
-  IS_ANDROID: boolean;
+  readonly type: "desktop" | "ios" | "iosapp" | "android";
 }
 
 export interface IPlatform extends IPlatformConsts {

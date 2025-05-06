@@ -37,10 +37,7 @@ interface IosVersion {
 }
 
 export namespace IosPlatform {
-  export const IS_DESKTOP = false;
-  export const IS_IOS = true;
-  export const IS_IOSAPP = false;
-  export const IS_ANDROID = false;
+  export const type = "ios";
 
   // config migration is done only once even if requested multiple times
   const configMigration = new LazyAsync<StoredConfiguration>(async () => {

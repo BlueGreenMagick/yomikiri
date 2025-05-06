@@ -46,7 +46,7 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {onShowAnkiPreview}>
       <ActionButtons />
-      {#if Platform.IS_DESKTOP}
+      {#if Platform.type === "desktop"}
         <DeferredNoteInfo />
       {/if}
     </Tokenize>
