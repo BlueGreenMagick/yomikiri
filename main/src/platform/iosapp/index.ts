@@ -66,17 +66,31 @@ export type WebviewRequest<K extends keyof MessageWebviewMap> =
 export type WebviewResponse<K extends keyof MessageWebviewMap> =
   MessageWebviewMap[K][1];
 
-const _configSubscribers: ((config: StoredConfiguration) => void)[] = [];
+export class _IosAppPlatform implements IPlatform {
+  readonly type = "iosapp";
 
-export namespace IosAppPlatform {
-  export const type = "iosapp";
+  private readonly _configSubscribers: ((
+    config: StoredConfiguration,
+  ) => void)[] = [];
 
-  const configMigration = new LazyAsync<StoredConfiguration>(async () => {
-    return await migrateConfigInner();
-  });
+  private readonly configMigration = new LazyAsync<StoredConfiguration>(
+    async () => {
+      return await this.migrateConfigInner();
+    },
+  );
+
+  constructor() {
+    window.iosConfigUpdated = async () => {
+      const config = (await this.getConfig()) as StoredConfiguration;
+      for (const subscriber of this._configSubscribers) {
+        // TODO: migrate config for iosapp
+        subscriber(config);
+      }
+    };
+  }
 
   /** Message to app inside app's WKWebview */
-  export async function messageWebview<K extends keyof MessageWebviewMap>(
+  async messageWebview<K extends keyof MessageWebviewMap>(
     key: K,
     request: WebviewRequest<K>,
   ): Promise<WebviewResponse<K>> {
@@ -90,8 +104,8 @@ export namespace IosAppPlatform {
     return JSON.parse(jsonResponse) as WebviewResponse<K>;
   }
 
-  export async function getConfig(): Promise<StoredCompatConfiguration> {
-    const config = await messageWebview("loadConfig", null);
+  async getConfig(): Promise<StoredCompatConfiguration> {
+    const config = await this.messageWebview("loadConfig", null);
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
@@ -103,72 +117,63 @@ export namespace IosAppPlatform {
   }
 
   /** Does nothiing in iosapp */
-  export function subscribeConfig(
-    subscriber: (config: StoredConfiguration) => void,
-  ): void {
-    _configSubscribers.push(subscriber);
+  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+    this._configSubscribers.push(subscriber);
   }
 
-  export async function saveConfig(config: StoredConfiguration) {
-    await messageWebview("saveConfig", config);
+  async saveConfig(config: StoredConfiguration) {
+    await this.messageWebview("saveConfig", config);
 
     // trigger update for this execution context
-    for (const subscriber of _configSubscribers) {
+    for (const subscriber of this._configSubscribers) {
       subscriber(config);
     }
   }
 
-  export function openOptionsPage(): void {
+  openOptionsPage(): void {
     throw new YomikiriError("Not implemented for iosapp");
   }
 
-  export async function versionInfo(): Promise<VersionInfo> {
-    return await messageWebview("versionInfo", null);
+  async versionInfo(): Promise<VersionInfo> {
+    return await this.messageWebview("versionInfo", null);
   }
 
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await messageWebview("ttsVoices", null);
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
+    return await this.messageWebview("ttsVoices", null);
   }
 
-  export async function playTTS({ text, voice }: TTSRequest): Promise<void> {
+  async playTTS({ text, voice }: TTSRequest): Promise<void> {
     const req: TTSRequest = { text, voice };
-    await messageWebview("tts", req);
+    await this.messageWebview("tts", req);
   }
 
-  export async function translate(text: string): Promise<TranslateResult> {
+  async translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
   }
 
   /** Currently only works in options page */
-  export function openExternalLink(url: string): void {
-    messageWebview("openLink", url).catch((err: unknown) => {
+  openExternalLink(url: string): void {
+    this.messageWebview("openLink", url).catch((err: unknown) => {
       console.error(err);
     });
   }
 
-  export async function migrateConfig(): Promise<StoredConfiguration> {
-    return await configMigration.get();
+  async migrateConfig(): Promise<StoredConfiguration> {
+    return await this.configMigration.get();
   }
 
-  async function migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await getConfig();
+  async migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await this.getConfig();
     const migrated = migrateConfigObject(configObject);
-    const continueMigration = await messageWebview("migrateConfig", null);
+    const continueMigration = await this.messageWebview("migrateConfig", null);
     if (continueMigration) {
-      await saveConfig(migrated);
+      await this.saveConfig(migrated);
     }
     return migrated;
   }
 }
 
-window.iosConfigUpdated = async () => {
-  const config = (await IosAppPlatform.getConfig()) as StoredConfiguration;
-  for (const subscriber of _configSubscribers) {
-    // TODO: migrate config for iosapp
-    subscriber(config);
-  }
-};
-
-IosAppPlatform satisfies IPlatform;
+export const IosAppPlatform = new _IosAppPlatform();
+export type IosAppPlatform = typeof IosAppPlatform;
 export const Platform = IosAppPlatform;
 export const PagePlatform = Platform;
