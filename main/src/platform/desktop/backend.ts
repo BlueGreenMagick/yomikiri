@@ -40,16 +40,45 @@ import {
 
 export * from "../types/backend";
 
-export namespace DesktopBackend {
-  export const type = "desktop";
+export class _DesktopBackend implements IBackend {
+  readonly type = "desktop";
 
-  let _wasm: LazyAsync<BackendWasm> | undefined;
+  private _wasm: LazyAsync<BackendWasm> | undefined;
 
-  if (EXTENSION_CONTEXT === "background") {
-    _wasm = new LazyAsync(() => initializeWasm());
+  constructor() {
+    if (EXTENSION_CONTEXT === "background") {
+      this._wasm = new LazyAsync(() => this.initializeWasm());
+
+      handleConnection("updateDictionary", (port) => {
+        const progress = this.updateDictionary();
+        progress.progress.subscribe((prg) => {
+          const message: ConnectionMessageProgress = {
+            status: "progress",
+            message: prg,
+          };
+          port.postMessage(message);
+        });
+
+        progress
+          .then((data) => {
+            const message: ConnectionMessageSuccess<boolean> = {
+              status: "success",
+              message: data,
+            };
+            port.postMessage(message);
+          })
+          .catch((error: unknown) => {
+            const message: ConnectionMessageError = {
+              status: "error",
+              message: YomikiriError.from(error),
+            };
+            port.postMessage(message);
+          });
+      });
+    }
   }
 
-  async function initializeWasm(): Promise<BackendWasm> {
+  private async initializeWasm(): Promise<BackendWasm> {
     Utils.bench("start");
     const BackendWasmConstructor = await loadWasm();
     // Must be called after loadWasm()
@@ -61,7 +90,7 @@ export namespace DesktopBackend {
     return wasm;
   }
 
-  function _run<C extends keyof RunArgTypes>(
+  private _run<C extends keyof RunArgTypes>(
     wasm: BackendWasm,
     cmd: C,
     args: RunArgTypes[C],
@@ -70,14 +99,14 @@ export namespace DesktopBackend {
     return JSON.parse(jsonResult) as RunReturnTypes[C];
   }
 
-  export const tokenize = BackgroundFunction(
+  readonly tokenize = BackgroundFunction(
     "tokenize",
     async ({ text, charAt }) => {
-      return _tokenize(await _wasm!.get(), text, charAt);
+      return this._tokenize(await this._wasm!.get(), text, charAt);
     },
   );
 
-  function _tokenize(
+  private _tokenize(
     wasm: BackendWasm,
     text: string,
     charAt?: number,
@@ -97,23 +126,19 @@ export namespace DesktopBackend {
       sentence: text,
       char_idx: codePointAt,
     };
-    const result = _run(wasm, "tokenize", args);
+    const result = this._run(wasm, "tokenize", args);
     cleanTokenizeResult(result);
     return result;
   }
 
-  export const search = BackgroundFunction(
+  readonly search = BackgroundFunction(
     "searchTerm",
     async ({ term, charAt }) => {
-      return _search(await _wasm!.get(), term, charAt);
+      return this._search(await this._wasm!.get(), term, charAt);
     },
   );
 
-  function _search(
-    wasm: BackendWasm,
-    term: string,
-    charAt?: number,
-  ): TokenizeResult {
+  _search(wasm: BackendWasm, term: string, charAt?: number): TokenizeResult {
     charAt = charAt ?? 0;
     if (term === "") {
       return emptyTokenizeResult();
@@ -127,24 +152,21 @@ export namespace DesktopBackend {
       query: term,
       char_idx: codePointAt,
     };
-    const result = _run(wasm, "search", args);
+    const result = this._run(wasm, "search", args);
     cleanTokenizeResult(result);
     return result;
   }
 
-  export const getDictMetadata = BackgroundFunction(
-    "getDictMetadata",
-    async () => {
-      const wasm = await _wasm!.get();
-      return _run(wasm, "metadata", null);
-    },
-  );
+  readonly getDictMetadata = BackgroundFunction("getDictMetadata", async () => {
+    const wasm = await this._wasm!.get();
+    return this._run(wasm, "metadata", null);
+  });
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
-  export function updateDictionary(): PromiseWithProgress<boolean, string> {
+  updateDictionary(): PromiseWithProgress<boolean, string> {
     if (EXTENSION_CONTEXT === "background") {
       const prom = PromiseWithProgress.fromPromise(
-        _updateDictionary(progressFn),
+        this._updateDictionary(progressFn),
         "Updating dictionary...",
       );
 
@@ -185,10 +207,10 @@ export namespace DesktopBackend {
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
-  async function _updateDictionary(
+  async _updateDictionary(
     progressFn: (msg: string) => unknown,
   ): Promise<boolean> {
-    const wasm = await _wasm!.get();
+    const wasm = await this._wasm!.get();
     progressFn("Downloading JMdict file...");
     const jmdict_bytes = await fetchDictionaryFile(
       "JMdict_e.gz",
@@ -211,35 +233,6 @@ export namespace DesktopBackend {
     await setStorage("dict.schema_ver", dictSchemaVer);
     return true;
   }
-}
-
-if (EXTENSION_CONTEXT === "background") {
-  handleConnection("updateDictionary", (port) => {
-    const progress = DesktopBackend.updateDictionary();
-    progress.progress.subscribe((prg) => {
-      const message: ConnectionMessageProgress = {
-        status: "progress",
-        message: prg,
-      };
-      port.postMessage(message);
-    });
-
-    progress
-      .then((data) => {
-        const message: ConnectionMessageSuccess<boolean> = {
-          status: "success",
-          message: data,
-        };
-        port.postMessage(message);
-      })
-      .catch((error: unknown) => {
-        const message: ConnectionMessageError = {
-          status: "error",
-          message: YomikiriError.from(error),
-        };
-        port.postMessage(message);
-      });
-  });
 }
 
 type ConnectionMessage<T> =
@@ -299,6 +292,6 @@ async function saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
   await idbWriteFiles([["yomikiri-dictionary", dict_bytes]]);
 }
 
-DesktopBackend satisfies IBackend;
-
+export const DesktopBackend = new _DesktopBackend();
+export type DesktopBackend = typeof DesktopBackend;
 export const Backend = DesktopBackend;
