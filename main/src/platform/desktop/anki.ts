@@ -4,7 +4,7 @@ import type {
   IAnkiOptions,
   NotetypeInfo,
 } from "../types/anki";
-import Config from "@/features/config";
+import { Config } from "@/features/config";
 import type { AnkiNote } from "@/features/anki";
 import {
   getStorage,
@@ -13,6 +13,7 @@ import {
   setStorage,
 } from "@/features/extension/browserApi";
 import {
+  LazyAsync,
   PromiseWithProgress,
   SingleQueued,
   createPromise,
@@ -106,27 +107,25 @@ export class InvalidAnkiResponseFormatError extends AnkiError {}
 /** Anki-connect response was an error */
 export class AnkiConnectError extends AnkiError {}
 
-export namespace DesktopAnkiApi {
-  export const type = "desktop";
+type AddDeferredNotesProgress = "loading" | number;
 
-  function ankiConnectURL(config: Config): string {
-    let url = config.get("anki.connect_url");
-    const port = config.get("anki.connect_port");
-    if (!url.includes("://")) {
-      url = "http://" + url;
-    }
-    return `${url}:${port}`;
+class _DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
+  readonly type = "desktop";
+  readonly lazyConfig: LazyAsync<Config>;
+
+  constructor(lazyConfig: LazyAsync<Config>) {
+    this.lazyConfig = lazyConfig;
   }
 
   /**
    * Send Anki-connect request.
    * Must not be called from content script.
    */
-  async function request<K extends keyof AnkiConnectRequestMap>(
+  private async request<K extends keyof AnkiConnectRequestMap>(
     action: K,
     params?: First<AnkiConnectRequestMap[K]>,
   ): Promise<Second<AnkiConnectRequestMap[K]>> {
-    const config = await Config.instance.get();
+    const config = await this.lazyConfig.get();
     const ankiConnectUrl = ankiConnectURL(config);
     let response;
     try {
@@ -168,23 +167,23 @@ export namespace DesktopAnkiApi {
     }
   }
 
-  export async function getAnkiInfo(): Promise<AnkiInfo> {
-    return fetchAnkiInfo();
+  getAnkiInfo(): Promise<AnkiInfo> {
+    return this.fetchAnkiInfo();
   }
 
-  export async function requestAnkiInfo(): Promise<void> {
-    await checkConnection();
+  async requestAnkiInfo(): Promise<void> {
+    await this.checkConnection();
   }
 
-  async function fetchAnkiInfo(): Promise<AnkiInfo> {
-    const decks = await request("deckNames");
-    const notetypes = await request("modelNames");
+  private async fetchAnkiInfo(): Promise<AnkiInfo> {
+    const decks = await this.request("deckNames");
+    const notetypes = await this.request("modelNames");
     const ankiInfo: AnkiInfo = {
       decks,
       notetypes: [],
     };
     for (const notetype of notetypes) {
-      const fields = await notetypeFields(notetype);
+      const fields = await this.notetypeFields(notetype);
       const notetypeInfo: NotetypeInfo = {
         name: notetype,
         fields: fields,
@@ -194,21 +193,22 @@ export namespace DesktopAnkiApi {
     return ankiInfo;
   }
 
-  export async function notetypeFields(
-    noteTypeName: string,
-  ): Promise<string[]> {
-    return await request("modelFieldNames", {
+  async notetypeFields(noteTypeName: string): Promise<string[]> {
+    return await this.request("modelFieldNames", {
       modelName: noteTypeName,
     });
   }
 
-  export async function tags(): Promise<string[]> {
-    return await request("getTags");
+  async tags(): Promise<string[]> {
+    return await this.request("getTags");
   }
 
-  export const addNote = NonContentScriptFunction("addAnkiNote", _addNote);
+  readonly addNote = NonContentScriptFunction(
+    "addAnkiNote",
+    this._addNote.bind(this),
+  );
 
-  async function _addNote(
+  private async _addNote(
     note: AnkiNote,
     deferrable: boolean = true,
   ): Promise<boolean> {
@@ -217,7 +217,7 @@ export namespace DesktopAnkiApi {
       fields[field.name] = field.value;
     }
     try {
-      await request("addNote", {
+      await this.request("addNote", {
         note: {
           deckName: note.deck,
           modelName: note.notetype,
@@ -230,13 +230,13 @@ export namespace DesktopAnkiApi {
       });
       return true;
     } catch (err: unknown) {
-      const config = await Config.instance.get();
+      const config = await this.lazyConfig.get();
       if (
         deferrable &&
         err instanceof AnkiConnectionError &&
         config.get("anki.defer_notes")
       ) {
-        await deferNote(note);
+        await this.deferNote(note);
         return false;
       } else {
         console.error(err);
@@ -245,18 +245,18 @@ export namespace DesktopAnkiApi {
     }
   }
 
-  async function deferNote(note: AnkiNote) {
+  private async deferNote(note: AnkiNote) {
     const existingNotes: AnkiNote[] = await getStorage(
       "deferred-anki-note",
       [],
     );
     existingNotes.push(note);
-    await setDeferredNotes(existingNotes);
+    await this.setDeferredNotes(existingNotes);
   }
 
   /** Throws an error if not successfully connected. */
-  export async function checkConnection(): Promise<void> {
-    const resp = await request("requestPermission");
+  async checkConnection(): Promise<void> {
+    const resp = await this.request("requestPermission");
     if (resp.permission === "granted") {
       return;
     } else {
@@ -274,11 +274,9 @@ export namespace DesktopAnkiApi {
    *
    * Returns null if deferred notes are currently being added, and another request is queued.
    */
-  export const addDeferredNotes = SingleQueued(_addDeferredNotes);
+  readonly addDeferredNotes = SingleQueued(this._addDeferredNotes.bind(this));
 
-  export type AddDeferredNotesProgress = "loading" | number;
-
-  function _addDeferredNotes(): PromiseWithProgress<
+  private _addDeferredNotes(): PromiseWithProgress<
     void,
     AddDeferredNotesProgress
   > {
@@ -287,7 +285,7 @@ export namespace DesktopAnkiApi {
       PromiseWithProgress.fromPromise(innerPromise, "loading");
 
     (async () => {
-      const config = await Config.instance.get();
+      const config = await this.lazyConfig.get();
       const noteCount = config.get("state.anki.deferred_note_count");
 
       if (noteCount === 0) {
@@ -307,9 +305,9 @@ export namespace DesktopAnkiApi {
       while (i < deferredNotes.length) {
         const note = deferredNotes[i];
         try {
-          await _addNote(note, false);
+          await this._addNote(note, false);
           deferredNotes.splice(i, 1);
-          await setDeferredNotes(deferredNotes, config);
+          await this.setDeferredNotes(deferredNotes, config);
         } catch (err: unknown) {
           if (err instanceof AnkiConnectError) {
             errorMessages.push(getErrorMessage(err));
@@ -337,22 +335,32 @@ export namespace DesktopAnkiApi {
    * Deletes all deferred notes and error messages from storage.
    * Returns a job object that you can undo.
    */
-  export async function clearDeferredNotes(): Promise<ClearDeferredNotesJob> {
-    const config = await Config.instance.get();
+
+  async clearDeferredNotes(): Promise<ClearDeferredNotesJob> {
+    const config = await this.lazyConfig.get();
     return ClearDeferredNotesJob.run(config);
   }
 
-  export async function getDeferredNotesErrorMessages(): Promise<string[]> {
+  async getDeferredNotesErrorMessages(): Promise<string[]> {
     return await getStorage("deferred-anki-note-errors", []);
   }
 
-  async function setDeferredNotes(notes: AnkiNote[], config?: Config) {
+  private async setDeferredNotes(notes: AnkiNote[], config?: Config) {
     await setStorage("deferred-anki-note", notes);
     if (!config) {
-      config = await Config.instance.get();
+      config = await this.lazyConfig.get();
     }
     await config.set("state.anki.deferred_note_count", notes.length);
   }
+}
+
+function ankiConnectURL(config: Config): string {
+  let url = config.get("anki.connect_url");
+  const port = config.get("anki.connect_port");
+  if (!url.includes("://")) {
+    url = "http://" + url;
+  }
+  return `${url}:${port}`;
 }
 
 /**
@@ -392,8 +400,8 @@ export class ClearDeferredNotesJob {
   }
 }
 
-DesktopAnkiApi satisfies IAnkiOptions;
-DesktopAnkiApi satisfies IAnkiAddNotes;
-
-export type DesktopAnkiApi = typeof DesktopAnkiApi;
+export const DesktopAnkiApi = new _DesktopAnkiApi(
+  new LazyAsync(() => Config.instance.get()),
+);
 export const AnkiApi = DesktopAnkiApi;
+export type DesktopAnkiApi = typeof DesktopAnkiApi;
