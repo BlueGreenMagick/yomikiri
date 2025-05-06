@@ -15,9 +15,7 @@
     | "downloaded"
     | "error";
 
-  const Backend = Platform.backend as
-    | typeof DesktopBackend
-    | typeof IosAppBackend;
+  const Backend = Platform.backend as DesktopBackend | IosAppBackend;
 
   let state: DictState = "loading";
   let dictDescription = "Loading...";

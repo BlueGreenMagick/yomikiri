@@ -41,7 +41,7 @@ interface IosVersion {
 export class _IosPlatform implements IPlatform {
   readonly type = "ios";
   readonly anki: IosAnkiApi;
-  readonly backend = IosBackend;
+  readonly backend = new IosBackend();
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(

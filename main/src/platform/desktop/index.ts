@@ -24,7 +24,7 @@ export * from "../types";
 export class _DesktopPlatform implements IPlatform {
   readonly type = "desktop";
   readonly anki: DesktopAnkiApi;
-  readonly backend = DesktopBackend;
+  readonly backend = new DesktopBackend();
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(
@@ -101,7 +101,9 @@ export class _DesktopPlatform implements IPlatform {
   }
 }
 
-export const DesktopPlatform = new _DesktopPlatform(Config.instance);
+export const DesktopPlatform = new _DesktopPlatform(
+  new LazyAsync(() => Config.instance.get()),
+);
 export const Platform = DesktopPlatform;
 export const ExtensionPlatform = Platform;
 export const PagePlatform = Platform;

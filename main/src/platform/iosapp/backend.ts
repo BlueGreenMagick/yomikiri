@@ -16,7 +16,7 @@ import {
 
 export * from "../types/backend";
 
-export class _IosAppBackend implements IBackend {
+export class IosAppBackend implements IBackend {
   readonly type = "iosapp";
 
   async tokenize({ text, charAt }: TokenizeRequest): Promise<TokenizeResult> {
@@ -62,7 +62,3 @@ export class _IosAppBackend implements IBackend {
     return IosAppPlatform.messageWebview("metadata", null);
   }
 }
-
-export const IosAppBackend = new _IosAppBackend();
-export const Backend = IosAppBackend;
-export type IosAppBackend = typeof Backend;

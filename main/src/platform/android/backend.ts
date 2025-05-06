@@ -15,7 +15,7 @@ import type { PromiseWithProgress } from "@/features/utils";
 
 export * from "../types/backend";
 
-export class _AndroidBackend implements IBackend {
+export class AndroidBackend implements IBackend {
   readonly type = "android";
 
   async tokenize({ text, charAt }: TokenizeRequest): Promise<TokenizeResult> {
@@ -59,7 +59,3 @@ export class _AndroidBackend implements IBackend {
     throw new Error("Unimplemented");
   }
 }
-
-export const AndroidBackend = new _AndroidBackend();
-export type AndroidBackend = typeof AndroidBackend;
-export const Backend = AndroidBackend;

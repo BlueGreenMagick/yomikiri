@@ -40,7 +40,7 @@ import {
 
 export * from "../types/backend";
 
-export class _DesktopBackend implements IBackend {
+export class DesktopBackend implements IBackend {
   readonly type = "desktop";
 
   private _wasm: LazyAsync<BackendWasm> | undefined;
@@ -291,7 +291,3 @@ async function fetchDictionaryFile(
 async function saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
   await idbWriteFiles([["yomikiri-dictionary", dict_bytes]]);
 }
-
-export const DesktopBackend = new _DesktopBackend();
-export type DesktopBackend = typeof DesktopBackend;
-export const Backend = DesktopBackend;

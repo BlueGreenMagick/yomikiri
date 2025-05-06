@@ -70,7 +70,7 @@ export type WebviewResponse<K extends keyof MessageWebviewMap> =
 export class _IosAppPlatform implements IPlatform {
   readonly type = "iosapp";
   readonly anki = new IosAppAnkiApi();
-  readonly backend = IosAppBackend;
+  readonly backend = new IosAppBackend();
 
   private readonly _configSubscribers: ((
     config: StoredConfiguration,

@@ -15,16 +15,14 @@ import {
 } from "./ankiBuilder";
 import { Config } from "../config";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
-import {
-  DesktopBackend,
-  type TokenizeResult,
-} from "@/platform/desktop/backend";
+import type { TokenizeResult } from "@yomikiri/backend-bindings";
 import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
 
 import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
 import type { WordEntry } from "@yomikiri/backend-bindings";
+import { DesktopPlatform } from "@/platform/desktop";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
@@ -127,7 +125,7 @@ test.skipIf(!REGENERATE_JSON)("Re-generate tokenize() result", async () => {
 
   const results: { [label: string]: TokenizeResult } = {};
   for (const test of tests) {
-    const tokenizeResult = await DesktopBackend.tokenize({
+    const tokenizeResult = await DesktopPlatform.backend.tokenize({
       text: test.sentence,
       charAt: test.idx,
     });

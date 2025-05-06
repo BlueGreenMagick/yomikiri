@@ -13,7 +13,7 @@ import {
 
 export * from "../types/backend";
 
-export class _IosBackend implements IBackend {
+export class IosBackend implements IBackend {
   readonly type = "ios";
 
   readonly tokenize = NonContentScriptFunction(
@@ -72,7 +72,3 @@ export class _IosBackend implements IBackend {
     return IosPlatform.requestToApp("metadata", null);
   });
 }
-
-export const IosBackend = new _IosBackend();
-export type IosBackend = typeof IosBackend;
-export const Backend = IosBackend;

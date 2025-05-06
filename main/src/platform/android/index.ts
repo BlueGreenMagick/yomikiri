@@ -20,7 +20,7 @@ export * from "../types";
 export class _AndroidPlatform implements IPlatform {
   readonly type = "android";
   readonly anki = new AndroidAnkiApi();
-  readonly backend = AndroidBackend;
+  readonly backend = new AndroidBackend();
 
   /** TODO */
   async getConfig(): Promise<StoredCompatConfiguration> {
