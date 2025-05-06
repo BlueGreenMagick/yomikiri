@@ -13,12 +13,14 @@ import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import { sendMessage } from "./messaging";
 import { AndroidAnkiApi } from "./anki";
+import { AndroidBackend } from "./backend";
 
 export * from "../types";
 
 export class _AndroidPlatform implements IPlatform {
   readonly type = "android";
   readonly anki = AndroidAnkiApi;
+  readonly backend = AndroidBackend;
 
   /** TODO */
   async getConfig(): Promise<StoredCompatConfiguration> {

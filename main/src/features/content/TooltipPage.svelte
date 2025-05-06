@@ -1,6 +1,6 @@
 <script lang="ts">
   import Tooltip from "./Tooltip.svelte";
-  import type { TokenizeResult } from "#platform/backend";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
   import type { AppContext } from "../context";
   import PageSetup from "../components/PageSetup.svelte";

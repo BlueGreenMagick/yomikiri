@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type TokenizeResult, Backend } from "#platform/backend";
+  import { type TokenizeResult } from "@yomikiri/backend-bindings";
   import Utils from "@/features/utils";
   import IconSearch from "#icons/search.svg";
   import IconCloseCircle from "#icons/close-circle.svg";
@@ -10,6 +10,7 @@
   import type { Tools, SelectedEntryForAnki } from "./types";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
   import type { AppContext } from "../context";
+  import { Platform } from "#platform";
 
   export let ctx: AppContext;
   export let searchText = "";
@@ -29,7 +30,10 @@
   const search = Utils.SingleQueued(_search);
   async function _search(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
-    tokenizeResult = await Backend.search({ term: searchText, charAt });
+    tokenizeResult = await Platform.backend.search({
+      term: searchText,
+      charAt,
+    });
   }
 
   function changeSelectedTool(tool: Tools | null) {

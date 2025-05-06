@@ -17,12 +17,14 @@ import {
 import { LazyAsync } from "@/features/utils";
 import { deleteSavedDictionary } from "./dictionary";
 import { DesktopAnkiApi } from "./anki";
+import { DesktopBackend } from "./backend";
 
 export * from "../types";
 
 export class _DesktopPlatform implements IPlatform {
   readonly type = "desktop";
   readonly anki = DesktopAnkiApi;
+  readonly backend = DesktopBackend;
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(

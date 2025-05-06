@@ -2,7 +2,6 @@ import { ExtensionPlatform as Platform } from "#platform";
 import PopupPage from "./PopupPage.svelte";
 import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { Backend } from "#platform/backend";
 import type { AppContext } from "@/features/context";
 
 async function initialize(): Promise<AppContext> {
@@ -18,7 +17,6 @@ const page = new PopupPage({
 exposeGlobals({
   Platform,
   Utils,
-  Backend,
   config: Config.instance,
   page,
 });

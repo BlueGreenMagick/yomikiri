@@ -12,7 +12,7 @@
     ToolbarWithPane,
     DicEntriesView,
   } from "@/features/dictionary";
-  import type { TokenizeResult } from "#platform/backend";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { Toast } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
   import type { AppContext } from "../context";

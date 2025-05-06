@@ -1,6 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import type { Sense } from "@/features/dicEntry";
-import type { PartOfSpeech, WordEntry } from "#platform/backend";
+import type { PartOfSpeech, WordEntry } from "@yomikiri/backend-bindings";
 
 export interface SelectedMeaning {
   entry: WordEntry;

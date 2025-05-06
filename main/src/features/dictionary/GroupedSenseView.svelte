@@ -6,7 +6,7 @@
   } from "@/features/dicEntry";
 
   import type { DicEntriesModel } from "./dicEntriesModel";
-  import type { GroupedSense } from "#platform/backend";
+  import type { GroupedSense } from "@yomikiri/backend-bindings";
   import type { AppContext } from "../context";
 
   export let ctx: AppContext;

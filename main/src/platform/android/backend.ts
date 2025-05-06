@@ -60,6 +60,6 @@ export class _AndroidBackend implements IBackend {
   }
 }
 
-const AndroidBackend = new _AndroidBackend();
+export const AndroidBackend = new _AndroidBackend();
 export type AndroidBackend = typeof AndroidBackend;
 export const Backend = AndroidBackend;

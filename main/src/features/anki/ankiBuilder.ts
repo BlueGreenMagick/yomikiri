@@ -1,4 +1,8 @@
-import type { Token, TokenizeResult } from "#platform/backend";
+import type {
+  Token,
+  TokenizeResult,
+  WordEntry,
+} from "@yomikiri/backend-bindings";
 import Config from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
@@ -11,7 +15,6 @@ import type {
 } from "./template";
 import { YomikiriError } from "@/features/error";
 import type { SelectedMeaning } from "@/features/dictionary";
-import type { WordEntry } from "#platform/backend";
 
 export interface LoadingAnkiNote {
   deck: string;

@@ -2,11 +2,11 @@
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
   import {
-    Backend as PlatformBackend,
     type DesktopBackend,
     type IosAppBackend,
-  } from "#platform/backend";
+  } from "@/platform/types/backend";
   import { YomikiriError } from "@/features/error";
+  import { Platform } from "#platform";
 
   type DictState =
     | "loading"
@@ -15,7 +15,7 @@
     | "downloaded"
     | "error";
 
-  const Backend = PlatformBackend as
+  const Backend = Platform.backend as
     | typeof DesktopBackend
     | typeof IosAppBackend;
 

@@ -2,7 +2,7 @@
   import Toolbar from "./Toolbar.svelte";
   import GrammarPane from "./GrammarPane.svelte";
   import TranslatePane from "./TranslatePane.svelte";
-  import type { GrammarInfo } from "#platform/backend";
+  import type { GrammarInfo } from "@yomikiri/backend-bindings";
   import type { Tools } from "./types";
 
   export let onClose: () => void;

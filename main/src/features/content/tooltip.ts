@@ -1,5 +1,5 @@
 import Utils, { Hook, type Rect } from "@/features/utils";
-import type { TokenizeResult } from "#platform/backend";
+import type { TokenizeResult } from "@yomikiri/backend-bindings";
 import Config from "@/features/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";

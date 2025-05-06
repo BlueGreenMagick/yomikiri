@@ -19,6 +19,7 @@ import {
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { _IosAppAnkiApi, IosAppAnkiApi, type RawAnkiInfo } from "./anki";
+import { IosAppBackend } from "./backend";
 
 export * from "../types";
 
@@ -69,6 +70,7 @@ export type WebviewResponse<K extends keyof MessageWebviewMap> =
 export class _IosAppPlatform implements IPlatform {
   readonly type = "iosapp";
   readonly anki = IosAppAnkiApi;
+  readonly backend = IosAppBackend;
 
   private readonly _configSubscribers: ((
     config: StoredConfiguration,

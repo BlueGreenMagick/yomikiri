@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { TokenizeResult } from "#platform/backend";
+  import type { TokenizeResult } from "@/platform/types/backend";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,

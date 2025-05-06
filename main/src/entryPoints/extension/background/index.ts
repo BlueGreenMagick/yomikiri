@@ -4,7 +4,6 @@
  * loaded on desktop / ios
  */
 
-import { Backend } from "#platform/backend";
 import {
   handleBrowserLoad,
   handleMessage,
@@ -74,6 +73,5 @@ handleBrowserLoad(() => {
 exposeGlobals({
   Platform,
   Utils,
-  Backend,
   config: Config.instance,
 });

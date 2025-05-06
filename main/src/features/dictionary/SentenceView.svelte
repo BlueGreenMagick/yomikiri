@@ -1,6 +1,6 @@
 <script lang="ts">
   import { RubyString } from "@/features/japanese";
-  import type { Token } from "#platform/backend";
+  import type { Token } from "@yomikiri/backend-bindings";
   import RubyText from "../../features/components/RubyText.svelte";
 
   export let tokens: Token[];

@@ -1,4 +1,4 @@
-import { Backend } from "#platform/backend";
+import { Platform } from "#platform";
 import Config from "../config";
 import { containsJapaneseContent } from "../japanese";
 import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
@@ -136,7 +136,7 @@ export class ContentScriptController {
       return false;
     }
 
-    const result = await Backend.tokenize({
+    const result = await Platform.backend.tokenize({
       text: scannedSentence.text,
       charAt: scannedSentence.charAt,
     });

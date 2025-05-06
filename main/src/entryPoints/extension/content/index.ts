@@ -1,7 +1,6 @@
 import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { Platform } from "#platform";
-import { Backend } from "#platform/backend";
 import { Config } from "@/features/config";
 import { ContentScriptController } from "@/features/content";
 
@@ -31,7 +30,6 @@ function initialize() {
   exposeGlobals({
     Platform,
     Utils,
-    Backend,
     config: Config.instance,
     contentScriptController: ContentScriptController,
   });

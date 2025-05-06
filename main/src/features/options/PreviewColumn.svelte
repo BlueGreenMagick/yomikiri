@@ -1,8 +1,8 @@
 <script lang="ts">
   import { DicEntriesView } from "@/features/dictionary";
   import { onMount } from "svelte";
-  import { Backend } from "#platform/backend";
   import type { AppContext } from "../context";
+  import { Platform } from "#platform";
 
   export let ctx: AppContext;
 
@@ -11,7 +11,7 @@
   let entryP = loadEntry();
 
   async function loadEntry() {
-    const result = await Backend.search({ term: "読む" });
+    const result = await Platform.backend.search({ term: "読む" });
     return result.entries[0];
   }
 

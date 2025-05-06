@@ -1,4 +1,3 @@
-import { Backend } from "#platform/backend";
 import DictionaryPage from "./DictionaryPage.svelte";
 import Config from "@/features/config";
 import Utils, { exposeGlobals } from "@/features/utils";
@@ -28,5 +27,4 @@ exposeGlobals({
   Platform,
   Utils,
   config: Config.instance,
-  Backend,
 });
