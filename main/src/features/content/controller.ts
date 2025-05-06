@@ -14,8 +14,10 @@ import { Tooltip } from "./tooltip";
 export class TooltipController {
   highlighter: Highlighter;
   lazyTooltip: LazyAsync<Tooltip>;
+  lazyConfig: LazyAsync<Config>;
 
-  constructor() {
+  constructor(lazyConfig: LazyAsync<Config> = Config.instance) {
+    this.lazyConfig = lazyConfig;
     this.highlighter = new Highlighter();
     this.lazyTooltip = new LazyAsync(() => this.createTooltip());
 
@@ -23,7 +25,7 @@ export class TooltipController {
       this.lazyTooltip.getIfInitialized()?.hide();
     });
 
-    Config.instance.onInitialize((config) => {
+    this.lazyConfig.onInitialize((config) => {
       this.handleStateEnabledChange(config);
     });
 
@@ -78,13 +80,13 @@ export class TooltipController {
     if (!ev.shiftKey) return;
 
     if (
-      !Config.instance.initialized &&
+      !this.lazyConfig.initialized &&
       !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
     ) {
       return;
     }
 
-    const config = await Config.instance.get();
+    const config = await this.lazyConfig.get();
     if (!config.get("state.enabled")) return;
 
     this.trigger(ev.clientX, ev.clientY).catch((err: unknown) => {
@@ -96,13 +98,13 @@ export class TooltipController {
     if (!isTouchScreen) return;
 
     if (
-      !Config.instance.initialized &&
+      !this.lazyConfig.initialized &&
       !fastCheckIfTooltipMayShow(ev.clientX, ev.clientY)
     ) {
       return;
     }
 
-    const config = await Config.instance.get();
+    const config = await this.lazyConfig.get();
     if (!config.get("state.enabled")) return;
 
     const triggered = await this.trigger(ev.clientX, ev.clientY);
