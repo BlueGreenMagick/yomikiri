@@ -11,7 +11,7 @@ import {
 } from "./scanner";
 import { Tooltip } from "./tooltip";
 
-export class TooltipController {
+export class ContentScriptController {
   highlighter: Highlighter;
   lazyTooltip: LazyAsync<Tooltip>;
   lazyConfig: LazyAsync<Config>;

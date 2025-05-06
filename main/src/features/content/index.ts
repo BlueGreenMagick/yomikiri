@@ -1,1 +1,1 @@
-export { TooltipController } from "./controller";
+export { ContentScriptController } from "./controller";

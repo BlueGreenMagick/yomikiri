@@ -3,7 +3,7 @@ import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { Platform } from "#platform";
 import { Backend } from "#platform/backend";
 import { Config } from "@/features/config";
-import { TooltipController } from "@/features/content";
+import { ContentScriptController } from "@/features/content";
 
 declare global {
   interface Window {
@@ -33,8 +33,8 @@ function initialize() {
     Utils,
     Backend,
     config: Config.instance,
-    tooltipController: TooltipController,
+    contentScriptController: ContentScriptController,
   });
 
-  return new TooltipController();
+  return new ContentScriptController();
 }

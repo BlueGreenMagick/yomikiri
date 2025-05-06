@@ -1,5 +1,5 @@
 import { TOOLTIP_IFRAME_ID } from "@/consts";
-import { TooltipController } from "@/features/content";
+import { ContentScriptController } from "@/features/content";
 
 function initialize() {
   // don't run inside yomikiri tooltip iframe
@@ -7,7 +7,7 @@ function initialize() {
     return;
   }
 
-  const _controller = new TooltipController();
+  const _controller = new ContentScriptController();
 }
 
 initialize();
