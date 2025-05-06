@@ -1,6 +1,7 @@
 # Ignore non-js files
 *.rs
 /safari/
+/android/
 
 # Downloaded & Generated files
 /main/build
