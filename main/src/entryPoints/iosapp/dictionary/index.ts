@@ -12,6 +12,7 @@ async function initialize(): Promise<AppCtx<IosAppCtx>> {
   return {
     config,
     platform,
+    platformType: platform.type,
   };
 }
 

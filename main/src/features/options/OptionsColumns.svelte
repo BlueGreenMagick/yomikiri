@@ -1,12 +1,7 @@
 <script lang="ts">
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
-  import {
-    isDesktopCtx,
-    type AppCtx,
-    type DesktopCtx,
-    type IosAppCtx,
-  } from "../ctx";
+  import type { AppCtx, DesktopCtx, IosAppCtx } from "../ctx";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 </script>
@@ -15,7 +10,7 @@
   <div id="main-column">
     <MainColumn {ctx} />
   </div>
-  {#if isDesktopCtx(ctx)}
+  {#if ctx.platformType === "desktop"}
     <div id="preview-column"><PreviewColumn {ctx} /></div>
   {/if}
 </div>

@@ -10,7 +10,7 @@ async function initialize(): Promise<AppCtx<DesktopCtx>> {
   const platform = DesktopPlatform;
   const config = await Config.instance.get();
 
-  return { config, platform };
+  return { config, platform, platformType: platform.type };
 }
 
 const page = new OptionsPage({

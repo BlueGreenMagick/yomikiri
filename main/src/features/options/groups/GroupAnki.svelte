@@ -5,13 +5,7 @@
   import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "@/features/utils";
-  import {
-    isDesktopCtx,
-    isIosAppCtx,
-    type AppCtx,
-    type DesktopCtx,
-    type IosAppCtx,
-  } from "@/features/ctx";
+  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
   import type { DesktopAnkiApi } from "@/platform/types/anki";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
@@ -103,7 +97,7 @@
     {:else if useAnkiDescription === "success"}
       <span class="success">Successfully connected to Anki.</span>
     {:else if useAnkiDescription === "error"}
-      {#if isDesktopCtx(ctx)}
+      {#if ctx.platformType === "desktop"}
         <span class="warning">{useAnkiError}</span>
         <a href="https://apps.ankiweb.net/">(Anki)</a>
         <a href="https://ankiweb.net/shared/info/2055492159">(AnkiConnect)</a>
@@ -113,7 +107,7 @@
         </span>
       {/if}
     {:else if useAnkiDescription === "off"}
-      {#if isDesktopCtx(ctx)}
+      {#if ctx.platformType === "desktop"}
         <a href="https://apps.ankiweb.net/">Anki</a> is a flashcard software.
       {:else}
         <a href={ANKIMOBILE_URL}>AnkiMobile</a> is a flashcard app.
@@ -121,7 +115,7 @@
     {/if}
   </OptionToggle>
 
-  {#if isDesktopCtx(ctx)}
+  {#if ctx.platformType === "desktop"}
     <OptionNumber
       bind:value={$ankiConnectPortConfig}
       title="AnkiConnect port number"
@@ -152,7 +146,7 @@
     </OptionToggle>
   {/if}
 
-  {#if isIosAppCtx(ctx)}
+  {#if ctx.platformType === "iosapp"}
     <OptionToggle
       bind:value={$ankiIosAutoRedirectConfig}
       title="Reopen Safari after adding Anki note"
@@ -163,7 +157,7 @@
     </OptionToggle>
   {/if}
 </GroupedOptions>
-{#if !ankiTemplateModalHidden && isDesktopCtx(ctx)}
+{#if !ankiTemplateModalHidden && ctx.platformType === "desktop"}
   <ModalAnkiTemplate
     {ctx}
     onClose={() => {

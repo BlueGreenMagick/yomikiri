@@ -7,7 +7,7 @@ import type { AppCtx } from "@/features/ctx";
 async function initialize(): Promise<AppCtx> {
   const config = await Config.instance.get();
   const platform = IosAppPlatform;
-  return { config, platform };
+  return { config, platform, platformType: platform.type };
 }
 
 const page = new OptionsAnkiTemplatePage({

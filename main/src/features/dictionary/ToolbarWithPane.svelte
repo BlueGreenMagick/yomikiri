@@ -4,7 +4,9 @@
   import TranslatePane from "./TranslatePane.svelte";
   import type { GrammarInfo } from "@yomikiri/backend-bindings";
   import type { Tools } from "./types";
+  import type { AppCtx } from "../ctx";
 
+  export let ctx: AppCtx;
   export let onClose: () => void;
   export let selectedTool: Tools | null;
   export let grammars: GrammarInfo[] = [];
@@ -31,7 +33,7 @@
     {changeSelectedTool}
   />
   <div class="tools-pane" class:hidden={selectedTool === null}>
-    <TranslatePane {sentence} shown={selectedTool === "translate"} />
+    <TranslatePane {ctx} {sentence} shown={selectedTool === "translate"} />
     <GrammarPane {grammars} shown={selectedTool === "grammar"} />
   </div>
 </div>

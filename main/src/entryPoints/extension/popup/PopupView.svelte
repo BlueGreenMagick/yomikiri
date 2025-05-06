@@ -9,12 +9,7 @@
   import { AddToAnki } from "@/features/anki";
   import ActionButtons from "./ActionButtons.svelte";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
-  import {
-    isDesktopCtx,
-    type AppCtx,
-    type DesktopCtx,
-    type IosCtx,
-  } from "@/features/ctx";
+  import type { AppCtx, DesktopCtx, IosCtx } from "@/features/ctx";
 
   export let ctx: AppCtx<DesktopCtx | IosCtx>;
 
@@ -51,7 +46,7 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {ctx} {onShowAnkiPreview}>
       <ActionButtons {ctx} />
-      {#if isDesktopCtx(ctx)}
+      {#if ctx.platformType === "desktop"}
         <DeferredNoteInfo {ctx} />
       {/if}
     </Tokenize>

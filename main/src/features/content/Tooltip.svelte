@@ -94,6 +94,7 @@
   <div class="dictionary-view" class:previewIsVisible>
     <div class="header">
       <ToolbarWithPane
+        {ctx}
         {onClose}
         grammars={tokenizeResult.grammars}
         {sentence}

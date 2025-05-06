@@ -12,6 +12,7 @@ export interface ConfigCtx {
 
 type PlatformCtx<P extends typeof Platform> = {
   platform: P;
+  platformType: P["type"];
 };
 
 export type DesktopCtx = PlatformCtx<DesktopPlatform>;
@@ -23,15 +24,3 @@ export type AnyPlatformCtx = DesktopCtx | IosCtx | IosAppCtx;
 export type EmptyCtx = Record<never, never>;
 
 export type AppCtx<T = EmptyCtx> = ConfigCtx & AnyPlatformCtx & T;
-
-export function isDesktopCtx(ctx: AnyPlatformCtx): ctx is DesktopCtx {
-  return ctx.platform.type === "desktop";
-}
-
-export function isIosCtx(ctx: AnyPlatformCtx): ctx is IosCtx {
-  return ctx.platform.type === "ios";
-}
-
-export function isIosAppCtx(ctx: AnyPlatformCtx): ctx is IosAppCtx {
-  return ctx.platform.type === "iosapp";
-}

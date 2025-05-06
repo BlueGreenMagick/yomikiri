@@ -8,7 +8,7 @@ import type { AppCtx, IosAppCtx } from "@/features/ctx";
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const config = await Config.instance.get();
   const platform = IosAppPlatform;
-  return { config, platform };
+  return { config, platform, platformType: platform.type };
 }
 
 const page = new OptionsPage({

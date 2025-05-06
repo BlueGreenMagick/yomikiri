@@ -76,6 +76,7 @@
       <SentenceView tokens={tokenizeResult.tokens} bind:selectedCharAt />
     </div>
     <ToolbarWithPane
+      {ctx}
       {onClose}
       {selectedTool}
       grammars={tokenizeResult.grammars}
