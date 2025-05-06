@@ -13,17 +13,17 @@ import {
 
 export * from "../types/backend";
 
-export namespace IosBackend {
-  export const type = "ios";
+export class _IosBackend implements IBackend {
+  readonly type = "ios";
 
-  export const tokenize = NonContentScriptFunction(
+  readonly tokenize = NonContentScriptFunction(
     "tokenize",
     ({ text, charAt }) => {
-      return _tokenize(text, charAt);
+      return this._tokenize(text, charAt);
     },
   );
 
-  async function _tokenize(
+  private async _tokenize(
     text: string,
     charAt?: number,
   ): Promise<TokenizeResult> {
@@ -42,14 +42,14 @@ export namespace IosBackend {
     return result;
   }
 
-  export const search = NonContentScriptFunction(
+  readonly search = NonContentScriptFunction(
     "searchTerm",
     ({ term, charAt }) => {
-      return _search(term, charAt);
+      return this._search(term, charAt);
     },
   );
 
-  async function _search(
+  private async _search(
     term: string,
     charAt?: number,
   ): Promise<TokenizeResult> {
@@ -68,14 +68,11 @@ export namespace IosBackend {
     return result;
   }
 
-  export const getDictMetadata = NonContentScriptFunction(
-    "getDictMetadata",
-    () => {
-      return IosPlatform.requestToApp("metadata", null);
-    },
-  );
+  readonly getDictMetadata = NonContentScriptFunction("getDictMetadata", () => {
+    return IosPlatform.requestToApp("metadata", null);
+  });
 }
 
-IosBackend satisfies IBackend;
-
+export const IosBackend = new _IosBackend();
+export type IosBackend = typeof IosBackend;
 export const Backend = IosBackend;
