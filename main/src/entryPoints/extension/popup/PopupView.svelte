@@ -10,9 +10,9 @@
   import ActionButtons from "./ActionButtons.svelte";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
   import { Platform } from "#platform";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;

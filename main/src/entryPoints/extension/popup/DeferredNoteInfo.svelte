@@ -7,11 +7,11 @@
     TrashToastIcon,
     CancelDeferredNoteDeletion,
   } from "@/features/toast";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
   import { Platform } from "#platform";
   import type { DesktopPlatform } from "@/platform/desktop";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   const AnkiApi = (Platform as DesktopPlatform).anki;
   const confDeferredNoteCount = ctx.config.store(

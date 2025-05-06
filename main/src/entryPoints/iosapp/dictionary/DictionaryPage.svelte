@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
   import DictionaryView from "./DictionaryView.svelte";
   import PageSetup from "@/features/components/PageSetup.svelte";
   import LoadingPage from "@/features/components/LoadingPage.svelte";
 
-  export let initialize: () => Promise<AppContext>;
+  export let initialize: () => Promise<AppCtx>;
   export let context: "app" | "action";
   export let searchText = "";
 </script>

@@ -4,9 +4,9 @@
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
   import { Platform } from "#platform";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 </script>
 
 <div>

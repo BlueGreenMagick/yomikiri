@@ -3,9 +3,9 @@
   import DicEntryView from "./DicEntryView.svelte";
   import { DicEntriesModel } from "./dicEntriesModel";
   import type { SelectedEntryForAnki } from "./types";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let entries: Entry[];
   export let onSelectEntryForAnki: (
     selected: SelectedEntryForAnki,

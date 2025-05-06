@@ -3,10 +3,10 @@
   import ActionButtons from "./ActionButtons.svelte";
   import { Platform } from "#platform";
   import PageSetup from "@/features/components/PageSetup.svelte";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
   import LoadingPage from "@/features/components/LoadingPage.svelte";
 
-  export let initialize: () => Promise<AppContext>;
+  export let initialize: () => Promise<AppCtx>;
 </script>
 
 {#await initialize()}

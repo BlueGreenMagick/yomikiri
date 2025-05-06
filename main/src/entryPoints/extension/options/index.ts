@@ -4,9 +4,9 @@ import { OptionsPage } from "@/features/options";
 import { Platform } from "@/platform/desktop";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
-import type { AppContext } from "@/features/context";
+import type { AppCtx } from "@/features/ctx";
 
-async function initialize(): Promise<AppContext> {
+async function initialize(): Promise<AppCtx> {
   const config = await Config.instance.get();
   return { config };
 }

@@ -8,9 +8,9 @@
     AddToAnki,
   } from "@/features/anki";
   import { Platform } from "@/platform/iosapp";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let context: "app" | "action";
   export let searchText: string;
 

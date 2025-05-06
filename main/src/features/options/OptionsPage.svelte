@@ -1,10 +1,10 @@
 <script lang="ts">
   import LoadingPage from "../components/LoadingPage.svelte";
   import PageSetup from "../components/PageSetup.svelte";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
   import OptionsColumns from "./OptionsColumns.svelte";
 
-  export let initialize: () => Promise<AppContext>;
+  export let initialize: () => Promise<AppCtx>;
 </script>
 
 {#await initialize()}

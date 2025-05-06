@@ -9,9 +9,9 @@
   import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { WordEntry } from "@yomikiri/backend-bindings";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let entry: WordEntry;
   export let model: DicEntriesModel;
 

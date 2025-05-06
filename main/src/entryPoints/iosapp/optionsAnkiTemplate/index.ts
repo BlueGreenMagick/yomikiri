@@ -2,9 +2,9 @@ import { Platform } from "@/platform/iosapp";
 import Utils, { exposeGlobals } from "@/features/utils";
 import Config from "@/features/config";
 import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
-import type { AppContext } from "@/features/context";
+import type { AppCtx } from "@/features/ctx";
 
-async function initialize(): Promise<AppContext> {
+async function initialize(): Promise<AppCtx> {
   const config = await Config.instance.get();
   return { config };
 }

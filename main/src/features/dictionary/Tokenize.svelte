@@ -9,10 +9,10 @@
   import ToolbarWithPane from "./ToolbarWithPane.svelte";
   import type { Tools, SelectedEntryForAnki } from "./types";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
   import { Platform } from "#platform";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let searchText = "";
   export let showCloseButton = false;
   export let onShowAnkiPreview: (

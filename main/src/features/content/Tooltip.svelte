@@ -15,9 +15,9 @@
   import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { Toast } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let tokenizeResult: TokenizeResult;
   export let onClose: () => void;
   export let onUpdateHeight: (height: number) => void = (_) => null;

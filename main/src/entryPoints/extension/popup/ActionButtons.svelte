@@ -2,9 +2,9 @@
   import IconSettings from "#icons/settings.svg";
   import IconPower from "#icons/power.svg";
   import { Platform } from "#platform";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   let stateEnabledConfig = ctx.config.store("state.enabled");
 

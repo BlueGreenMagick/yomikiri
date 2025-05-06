@@ -7,9 +7,9 @@
 
   import type { DicEntriesModel } from "./dicEntriesModel";
   import type { GroupedSense } from "@yomikiri/backend-bindings";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let model: DicEntriesModel;
   export let group: GroupedSense;
   export let onSelectSense: (sense: Sense, poss: PartOfSpeech[]) => void;

@@ -10,10 +10,10 @@
     type DesktopPlatform,
     type IosAppPlatform,
   } from "#platform";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
   import type { DesktopAnkiApi } from "@/platform/types/anki";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";

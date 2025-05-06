@@ -6,9 +6,9 @@
   } from "@/features/anki";
   import type { AnkiInfo } from "@/features/anki";
   import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let ankiInfo: AnkiInfo;
 
   let deckNames: string[];

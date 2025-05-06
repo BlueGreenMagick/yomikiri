@@ -2,11 +2,11 @@
   import Tooltip from "./Tooltip.svelte";
   import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
   import PageSetup from "../components/PageSetup.svelte";
   import LoadingPage from "../components/LoadingPage.svelte";
 
-  export let initialize: () => Promise<AppContext>;
+  export let initialize: () => Promise<AppCtx>;
   export let onClose: () => void;
   export let onUpdateHeight: (height: number) => void = (_) => null;
 

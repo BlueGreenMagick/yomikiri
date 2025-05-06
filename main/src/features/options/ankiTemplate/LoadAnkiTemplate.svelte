@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
   import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
   import {
     Platform,
@@ -7,7 +7,7 @@
     type IosAppPlatform,
   } from "#platform";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   const ankiInfoP = (
     Platform as DesktopPlatform | IosAppPlatform

@@ -1,10 +1,10 @@
 <script lang="ts">
   import { LoadAnkiTemplate } from "@/features/options";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
   import PageSetup from "@/features/components/PageSetup.svelte";
   import LoadingPage from "@/features/components/LoadingPage.svelte";
 
-  export let initialize: () => Promise<AppContext>;
+  export let initialize: () => Promise<AppCtx>;
 </script>
 
 {#await initialize()}

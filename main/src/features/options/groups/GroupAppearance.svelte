@@ -2,9 +2,9 @@
   import OptionNumber from "../items/OptionNumber.svelte";
   import OptionText from "../items/OptionText.svelte";
   import GroupedOptions from "../GroupedOptions.svelte";
-  import type { AppContext } from "@/features/context";
+  import type { AppCtx } from "@/features/ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   const config = ctx.config;
   const fontSizeConfig = config.store("general.font_size");

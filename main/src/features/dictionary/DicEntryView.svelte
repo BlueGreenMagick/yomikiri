@@ -9,9 +9,9 @@
   import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
   import type { SelectedEntryForAnki } from "./types";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
   export let entry: Entry;
   export let model: DicEntriesModel;
   export let onSelectEntryForAnki: (

@@ -1,10 +1,10 @@
 <script lang="ts">
   import { DicEntriesView } from "@/features/dictionary";
   import { onMount } from "svelte";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
   import { Platform } from "#platform";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 
   const maxHeight = ctx.config.store("general.tooltip_max_height");
 

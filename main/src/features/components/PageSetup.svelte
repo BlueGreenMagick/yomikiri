@@ -1,8 +1,8 @@
 <script lang="ts">
   import { handleErrors, platformClass, setStyle } from "./actions";
-  import type { AppContext } from "../context";
+  import type { AppCtx } from "../ctx";
 
-  export let ctx: AppContext;
+  export let ctx: AppCtx;
 </script>
 
 <div
