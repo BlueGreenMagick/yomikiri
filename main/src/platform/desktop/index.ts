@@ -19,37 +19,37 @@ import { deleteSavedDictionary } from "./dictionary";
 
 export * from "../types";
 
-export namespace DesktopPlatform {
-  export const type = "desktop";
+export class _DesktopPlatform implements IPlatform {
+  readonly type = "desktop";
 
   // config migration is done only once even if requested multiple times
-  const configMigration = new LazyAsync<StoredConfiguration>(async () => {
-    return await migrateConfigInner();
-  });
+  private readonly configMigration = new LazyAsync<StoredConfiguration>(
+    async () => {
+      return await this.migrateConfigInner();
+    },
+  );
 
-  export async function getConfig(): Promise<StoredCompatConfiguration> {
+  async getConfig(): Promise<StoredCompatConfiguration> {
     return await getStorage("config", {});
   }
 
   /** subscriber is called when config is changed. */
-  export function subscribeConfig(
-    subscriber: (config: StoredConfiguration) => void,
-  ): void {
+  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
     handleStorageChange("config", (change) => {
       subscriber(change.newValue as StoredConfiguration);
     });
   }
 
-  export function saveConfig(config: StoredConfiguration): Promise<void> {
+  saveConfig(config: StoredConfiguration): Promise<void> {
     console.debug("config saved");
     return setStorage("config", config);
   }
 
-  export function openOptionsPage(): Promise<void> {
+  openOptionsPage(): Promise<void> {
     return chrome.runtime.openOptionsPage();
   }
 
-  export function versionInfo(): VersionInfo {
+  versionInfo(): VersionInfo {
     const manifest = extensionManifest();
     return {
       version: manifest.version,
@@ -57,47 +57,44 @@ export namespace DesktopPlatform {
   }
 
   /** This function is and only should be called in options page */
-  export async function japaneseTTSVoices(): Promise<TTSVoice[]> {
+  async japaneseTTSVoices(): Promise<TTSVoice[]> {
     return japaneseTtsVoices();
   }
 
-  export const playTTS = NonContentScriptFunction(
+  readonly playTTS = NonContentScriptFunction(
     "tts",
     async ({ text, voice }) => {
       await speakJapanese(text, voice);
     },
   );
 
-  export const translate = NonContentScriptFunction(
-    "translate",
-    getTranslation,
-  );
+  readonly translate = NonContentScriptFunction("translate", getTranslation);
 
-  export function openExternalLink(url: string): void {
+  openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  export const migrateConfig = NonContentScriptFunction(
+  readonly migrateConfig = NonContentScriptFunction(
     "migrateConfig",
     async () => {
-      return await configMigration.get();
+      return await this.configMigration.get();
     },
   );
 
-  async function migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await getConfig();
+  async migrateConfigInner(): Promise<StoredConfiguration> {
+    const configObject = await this.getConfig();
     const migrated = migrateConfigObject(configObject);
-    await saveConfig(migrated);
+    await this.saveConfig(migrated);
     return migrated;
   }
 
-  export async function deleteDictionary() {
+  async deleteDictionary() {
     return deleteSavedDictionary();
   }
 }
 
-DesktopPlatform satisfies IPlatform;
-
+export const DesktopPlatform = new _DesktopPlatform();
+export type DesktopPlatform = typeof DesktopPlatform;
 export const Platform = DesktopPlatform;
 export const ExtensionPlatform = Platform;
 export const PagePlatform = Platform;
