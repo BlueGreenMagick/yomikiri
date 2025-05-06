@@ -9,7 +9,7 @@ import Package from "../package.json" with { type: "json" };
 const svelteConfiguredPlugin = svelte({
   preprocess: sveltePreprocess({
     postcss: {
-      plugins: [postCssImport()],
+      plugins: [postCssImport({ path: ["src"] })],
     },
   }),
   compilerOptions: { css: true },

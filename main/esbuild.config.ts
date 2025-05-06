@@ -152,7 +152,7 @@ const platformAliasPlugin: Plugin = {
 const svelteConfiguredPlugin: Plugin = sveltePlugin({
   preprocess: sveltePreprocess({
     postcss: {
-      plugins: [postCssImport()],
+      plugins: [postCssImport({ path: ["src"] })],
     },
   }),
   compilerOptions: { css: true },
