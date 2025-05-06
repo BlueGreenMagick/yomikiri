@@ -71,20 +71,23 @@ export interface WritableConfig<T> extends Writable<T> {
 }
 
 export class Config {
-  private storage: StoredConfiguration;
   private stores: Map<ConfigKey, WritableConfig<Configuration[ConfigKey]>>;
 
   initialized = false;
   subscribers: (() => void)[] = [];
   documents: WeakRef<Document | DocumentFragment>[] = [];
 
-  static instance: LazyAsync<Config> = new LazyAsync(() => Config.initialize());
+  static instance: LazyAsync<Config> = new LazyAsync(() =>
+    Config.initialize(Platform),
+  );
 
-  private constructor(storage: StoredConfiguration) {
-    this.storage = storage;
+  private constructor(
+    private platform: Platform,
+    private storage: StoredConfiguration,
+  ) {
     this.stores = new Map();
 
-    Platform.subscribeConfig((cfg) => {
+    platform.subscribeConfig((cfg) => {
       this.storage = cfg;
       this.runSubscribers();
     });
@@ -93,10 +96,10 @@ export class Config {
     this.runSubscribers();
   }
 
-  private static async initialize(): Promise<Config> {
-    const stored = await Platform.getConfig();
-    const storage = await migrateIfNeeded(stored);
-    const config = new Config(storage);
+  private static async initialize(platform: Platform): Promise<Config> {
+    const stored = await platform.getConfig();
+    const storage = await migrateIfNeeded(platform, stored);
+    const config = new Config(platform, storage);
     await config.updateVersion();
     return config;
   }
@@ -170,7 +173,7 @@ export class Config {
   }
 
   async save(): Promise<void> {
-    await Platform.saveConfig(this.storage);
+    await this.platform.saveConfig(this.storage);
   }
 
   defaultValue<K extends keyof Configuration>(key: K): Configuration[K] {
@@ -292,7 +295,7 @@ export class Config {
    */
   async setupTTSVoice(): Promise<void> {
     if (this.get("tts.voice") !== null) return;
-    const voices = await Platform.japaneseTTSVoices();
+    const voices = await this.platform.japaneseTTSVoices();
     if (voices.length === 0) return;
     // reverse order sort
     voices.sort((a, b) => b.quality - a.quality);
@@ -302,13 +305,14 @@ export class Config {
 }
 
 export async function migrateIfNeeded(
+  platform: Platform,
   configObject: StoredCompatConfiguration,
 ): Promise<StoredConfiguration> {
   if (configObject.config_version === CONFIG_VERSION) {
     return configObject as StoredConfiguration;
   }
 
-  return await Platform.migrateConfig();
+  return await platform.migrateConfig();
 }
 
 export default Config;
