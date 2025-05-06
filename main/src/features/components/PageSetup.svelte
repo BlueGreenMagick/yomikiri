@@ -6,8 +6,8 @@
 </script>
 
 <div
-  use:platformClass
-  use:setStyle={ctx.config}
+  use:platformClass={ctx}
+  use:setStyle={ctx}
   use:handleErrors
   style="display: none;"
 />

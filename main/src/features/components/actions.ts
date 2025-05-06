@@ -1,7 +1,6 @@
-import { Platform } from "#platform";
-import Config from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { Toast } from "@/features/toast";
+import type { AppCtx } from "../ctx";
 
 declare global {
   interface Window {
@@ -17,29 +16,29 @@ declare global {
  * so that :active works as intended when hovered on
  * https://developer.mozilla.org/en-US/docs/Web/CSS/:active#browser_compatibility
  */
-export function platformClass(attached: HTMLElement) {
+export function platformClass(attached: HTMLElement, ctx: AppCtx) {
   const node = attached.ownerDocument.documentElement;
   if (!node) return;
-  if (Platform.type === "desktop") {
+  if (ctx.platformType === "desktop") {
     node.classList.add("desktop");
   }
-  if (Platform.type === "ios") {
+  if (ctx.platformType === "ios") {
     node.classList.add("ios");
   }
-  if (Platform.type === "iosapp") {
+  if (ctx.platformType === "iosapp") {
     node.classList.add("iosapp");
   }
 
-  if (Platform.type === "ios" || Platform.type === "iosapp") {
+  if (ctx.platformType === "ios" || ctx.platformType === "iosapp") {
     attached.ownerDocument.body.addEventListener("touchstart", () => {
       return;
     });
   }
 }
 
-export function setStyle(attached: HTMLElement, config: Config) {
+export function setStyle(attached: HTMLElement, ctx: AppCtx) {
   const el = attached.ownerDocument.documentElement;
-  config.setUpdatedStyle(el);
+  ctx.config.setUpdatedStyle(el);
 }
 
 export function handleErrors(attached: HTMLElement) {

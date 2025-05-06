@@ -1,6 +1,6 @@
 import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
-import { Platform } from "#platform";
+import { Platform, type DesktopPlatform, type IosPlatform } from "#platform";
 import { Config } from "@/features/config";
 import { ContentScriptController } from "@/features/content";
 
@@ -27,6 +27,7 @@ function maybeInitialize() {
 }
 
 function initialize() {
+  const platform = Platform as DesktopPlatform | IosPlatform;
   exposeGlobals({
     Platform,
     Utils,
@@ -34,5 +35,5 @@ function initialize() {
     contentScriptController: ContentScriptController,
   });
 
-  return new ContentScriptController();
+  return new ContentScriptController(platform, Config.instance);
 }

@@ -1,16 +1,6 @@
-import { SelectionHighlighter } from "./selectionHighlighter";
-import { WrapHighlighter } from "./wrapHighlighter";
-import { Platform } from "#platform";
+import type { SelectionHighlighter } from "./selectionHighlighter";
+import type { WrapHighlighter } from "./wrapHighlighter";
 
-function getHighlighter():
-  | typeof SelectionHighlighter
-  | typeof WrapHighlighter {
-  if (Platform.type === "desktop") {
-    return SelectionHighlighter;
-  } else {
-    return WrapHighlighter;
-  }
-}
-
-export const Highlighter = getHighlighter();
-export type Highlighter = SelectionHighlighter | WrapHighlighter;
+export { SelectionHighlighter } from "./selectionHighlighter";
+export { WrapHighlighter } from "./wrapHighlighter";
+export type Highlighter = WrapHighlighter | SelectionHighlighter;

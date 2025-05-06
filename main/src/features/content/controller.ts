@@ -1,8 +1,13 @@
-import { Platform } from "#platform";
+import type { DesktopPlatform, IosPlatform } from "#platform";
+import type { AndroidPlatform } from "@/platform/android";
 import Config from "../config";
 import { containsJapaneseContent } from "../japanese";
 import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
-import { Highlighter } from "./highlight";
+import {
+  type Highlighter,
+  SelectionHighlighter,
+  WrapHighlighter,
+} from "./highlight";
 import {
   charLocationAtPos,
   nodesOfToken,
@@ -14,11 +19,12 @@ import { Tooltip } from "./tooltip";
 export class ContentScriptController {
   highlighter: Highlighter;
   lazyTooltip: LazyAsync<Tooltip>;
-  lazyConfig: LazyAsync<Config>;
 
-  constructor(lazyConfig: LazyAsync<Config> = Config.instance) {
-    this.lazyConfig = lazyConfig;
-    this.highlighter = new Highlighter();
+  constructor(
+    private platform: DesktopPlatform | IosPlatform | AndroidPlatform,
+    private lazyConfig: LazyAsync<Config>,
+  ) {
+    this.highlighter = this.createHighlighter();
     this.lazyTooltip = new LazyAsync(() => this.createTooltip());
 
     this.highlighter.onUnhighlight.listen(() => {
@@ -30,6 +36,14 @@ export class ContentScriptController {
     });
 
     this.attachEventListeners();
+  }
+
+  private createHighlighter(): Highlighter {
+    if (this.platform.type === "desktop") {
+      return new SelectionHighlighter();
+    } else {
+      return new WrapHighlighter();
+    }
   }
 
   private async createTooltip() {
@@ -136,7 +150,7 @@ export class ContentScriptController {
       return false;
     }
 
-    const result = await Platform.backend.tokenize({
+    const result = await this.platform.backend.tokenize({
       text: scannedSentence.text,
       charAt: scannedSentence.charAt,
     });

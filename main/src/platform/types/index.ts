@@ -70,3 +70,5 @@ export declare const ExtensionPlatform:
 export declare const PagePlatform:
   | typeof DesktopPlatform
   | typeof IosAppPlatform;
+
+export type Platform = typeof Platform;
