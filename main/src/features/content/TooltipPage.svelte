@@ -6,7 +6,7 @@
   import PageSetup from "../components/PageSetup.svelte";
   import LoadingPage from "../components/LoadingPage.svelte";
 
-  export let initialize: () => Promise<AppCtx>;
+  export let initialize: () => Promise<AppCtx> | AppCtx;
   export let onClose: () => void;
   export let onUpdateHeight: (height: number) => void = (_) => null;
 

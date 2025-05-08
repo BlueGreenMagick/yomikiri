@@ -15,6 +15,8 @@ import {
   textNodeAtPos,
 } from "./scanner";
 import { Tooltip } from "./tooltip";
+import { Toast } from "../toast";
+import type { AndroidCtx, AppCtx, DesktopCtx, IosCtx } from "../ctx";
 
 export class ContentScriptController {
   highlighter: Highlighter;
@@ -47,8 +49,8 @@ export class ContentScriptController {
   }
 
   private async createTooltip() {
-    const config = await this.lazyConfig.get();
-    const tooltip = new Tooltip(config);
+    const ctx = await this.createCtx();
+    const tooltip = new Tooltip(ctx);
 
     tooltip.onCloseClicked.listen(() => {
       this.highlighter.unhighlight();
@@ -69,6 +71,34 @@ export class ContentScriptController {
     resizeObserver.observe(document.documentElement);
 
     return tooltip;
+  }
+
+  private async createCtx(): Promise<AppCtx<DesktopCtx | IosCtx | AndroidCtx>> {
+    const config = await this.lazyConfig.get();
+    const toast = new Toast(this.lazyConfig);
+    const platform = this.platform;
+    if (platform.type === "desktop") {
+      return {
+        platformType: platform.type,
+        platform: platform,
+        config,
+        toast,
+      };
+    } else if (platform.type === "ios") {
+      return {
+        platformType: platform.type,
+        platform: platform,
+        config,
+        toast,
+      };
+    } else {
+      return {
+        platformType: platform.type,
+        platform: platform,
+        config,
+        toast,
+      };
+    }
   }
 
   private handleStateEnabledChange(config: Config) {

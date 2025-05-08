@@ -1,22 +1,19 @@
-import Utils, { Hook, LazyAsync, type Rect } from "@/features/utils";
+import Utils, { Hook, type Rect } from "@/features/utils";
 import type { TokenizeResult } from "@yomikiri/backend-bindings";
-import Config from "@/features/config";
 import TooltipPage from "./TooltipPage.svelte";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
-import { Platform, type DesktopPlatform, type IosPlatform } from "#platform";
-import type { AppCtx, DesktopCtx, IosCtx } from "../ctx";
-import { Toast } from "../toast";
+import type { AndroidCtx, AppCtx, DesktopCtx, IosCtx } from "../ctx";
 
 export class Tooltip {
-  config: Config;
+  ctx: AppCtx<DesktopCtx | IosCtx | AndroidCtx>;
 
   visible = false;
   onCloseClicked = new Hook();
 
   private _tooltipPageSvelte: TooltipPage | null = null;
 
-  constructor(config: Config) {
-    this.config = config;
+  constructor(ctx: AppCtx<DesktopCtx | IosCtx | AndroidCtx>) {
+    this.ctx = ctx;
   }
 
   async show(
@@ -132,7 +129,7 @@ export class Tooltip {
     const MARGIN = 10;
     // space between highlighted rect and tooltip
     const VERTICAL_SPACE = 10;
-    const MAX_HEIGHT = this.config.get("general.tooltip_max_height");
+    const MAX_HEIGHT = this.ctx.config.get("general.tooltip_max_height");
     const WIDTH = Math.min(500, window.innerWidth - 2 * MARGIN);
     const BOTTOM_ADVANTAGE = 150;
 
@@ -199,32 +196,10 @@ export class Tooltip {
 `;
     doc.documentElement.classList.add("yomikiri");
 
-    const initialize = async (): Promise<AppCtx<DesktopCtx | IosCtx>> => {
-      await Promise.resolve();
-      const platform = Platform as DesktopPlatform | IosPlatform;
-      const config = this.config;
-      const toast = new Toast(new LazyAsync(() => this.config));
-      if (platform.type === "desktop") {
-        return {
-          config,
-          platformType: platform.type,
-          platform,
-          toast,
-        };
-      } else {
-        return {
-          config,
-          platformType: platform.type,
-          platform,
-          toast,
-        };
-      }
-    };
-
     const tooltipPage = new TooltipPage({
       target: doc.body,
       props: {
-        initialize,
+        initialize: () => this.ctx,
         onClose: () => {
           this.hide();
           this.onCloseClicked.call();

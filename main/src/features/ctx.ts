@@ -6,6 +6,7 @@ import type {
   Platform,
 } from "#platform";
 import type { Toast } from "./toast/toast";
+import type { AndroidPlatform } from "@/platform/android";
 
 export interface ConfigCtx {
   config: Config;
@@ -19,8 +20,9 @@ type PlatformCtx<P extends typeof Platform> = {
 export type DesktopCtx = PlatformCtx<DesktopPlatform>;
 export type IosCtx = PlatformCtx<IosPlatform>;
 export type IosAppCtx = PlatformCtx<IosAppPlatform>;
+export type AndroidCtx = PlatformCtx<AndroidPlatform>;
 
-export type AnyPlatformCtx = DesktopCtx | IosCtx | IosAppCtx;
+export type AnyPlatformCtx = DesktopCtx | IosCtx | IosAppCtx | AndroidCtx;
 
 export interface ToastCtx {
   toast: Toast;
