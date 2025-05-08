@@ -1,9 +1,7 @@
 import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
-import { IosPlatform } from "@/platform/ios";
-import { Config } from "@/features/config";
 import { ContentScriptController } from "@/features/content";
-import type { IosCtx } from "@/features/ctx";
+import { createIosCtx } from "@/platform/ios/ctx";
 
 declare global {
   interface Window {
@@ -28,18 +26,14 @@ function maybeInitialize() {
 }
 
 function initialize() {
-  const platform = IosPlatform;
-  const ctx: IosCtx = {
-    platform,
-    platformType: platform.type,
-  };
+  const ctx = createIosCtx();
 
   exposeGlobals({
-    Platform: platform,
+    Platform: ctx.platform,
     Utils,
-    config: Config.instance,
+    config: ctx.lazyConfig,
     contentScriptController: ContentScriptController,
   });
 
-  return new ContentScriptController(ctx, Config.instance);
+  return new ContentScriptController(ctx);
 }

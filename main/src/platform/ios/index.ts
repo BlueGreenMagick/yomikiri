@@ -1,4 +1,4 @@
-import Config, { type StoredConfiguration } from "@/features/config";
+import type { StoredConfiguration } from "@/features/config";
 import { LazyAsync, log } from "@/features/utils";
 import {
   NonContentScriptFunction,
@@ -15,8 +15,6 @@ import { migrateConfigObject } from "@/features/compat";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
-import { IosAnkiApi } from "./anki";
-import { IosBackend } from "./backend";
 import { sendMessage } from "./messaging";
 
 export * from "../types";
@@ -39,10 +37,8 @@ interface IosVersion {
   patch: number;
 }
 
-export class _IosPlatform implements IPlatform {
+export class IosPlatform implements IPlatform {
   readonly type = "ios";
-  readonly anki: IosAnkiApi;
-  readonly backend = new IosBackend();
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(
@@ -53,9 +49,8 @@ export class _IosPlatform implements IPlatform {
 
   private iosVersion = getIosVersion();
 
-  constructor(private lazyConfig: LazyAsync<Config>) {
+  constructor() {
     log("ios version: ", this.iosVersion);
-    this.anki = new IosAnkiApi(this.lazyConfig);
 
     if (EXTENSION_CONTEXT === "background") {
       this.setupIosPeriodicReload();
@@ -186,10 +181,3 @@ function getIosVersion(): [number, number, number] | null {
     return null;
   }
 }
-
-export const IosPlatform = new _IosPlatform(Config.instance);
-export const Platform = IosPlatform;
-export const ExtensionPlatform = Platform;
-
-export type IosPlatform = typeof IosPlatform;
-export type Platform = IosPlatform;

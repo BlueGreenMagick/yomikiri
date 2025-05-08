@@ -12,16 +12,9 @@ import type {
 import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import { sendMessage } from "./messaging";
-import { AndroidAnkiApi } from "./anki";
-import { AndroidBackend } from "./backend";
 
-export * from "../types";
-
-export class _AndroidPlatform implements IPlatform {
+export class AndroidPlatform implements IPlatform {
   readonly type = "android";
-  readonly anki = new AndroidAnkiApi();
-  readonly backend = new AndroidBackend();
-
   /** TODO */
   async getConfig(): Promise<StoredCompatConfiguration> {
     return await sendMessage("loadConfig", null);
@@ -67,10 +60,3 @@ export class _AndroidPlatform implements IPlatform {
     throw new Error("Unimplemented");
   }
 }
-
-export const AndroidPlatform = new _AndroidPlatform();
-export const Platform = AndroidPlatform;
-export const PagePlatform = AndroidPlatform;
-
-export type AndroidPlatform = typeof AndroidPlatform;
-export type Platform = AndroidPlatform;

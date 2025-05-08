@@ -38,8 +38,6 @@ import {
   type FileName,
 } from "./idb";
 
-export * from "../types/backend";
-
 export class DesktopBackend implements IBackend {
   readonly type = "desktop";
 

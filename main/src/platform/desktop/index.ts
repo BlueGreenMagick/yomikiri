@@ -8,7 +8,7 @@ import {
   speakJapanese,
 } from "@/features/extension/browserApi";
 import type { IPlatform, TTSVoice, VersionInfo } from "../types";
-import Config, { type StoredConfiguration } from "@/features/config";
+import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import {
   migrateConfigObject,
@@ -16,15 +16,9 @@ import {
 } from "@/features/compat";
 import { LazyAsync } from "@/features/utils";
 import { deleteSavedDictionary } from "./dictionary";
-import { DesktopAnkiApi } from "./anki";
-import { DesktopBackend } from "./backend";
 
-export * from "../types";
-
-export class _DesktopPlatform implements IPlatform {
+export class DesktopPlatform implements IPlatform {
   readonly type = "desktop";
-  readonly anki: DesktopAnkiApi;
-  readonly backend = new DesktopBackend();
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(
@@ -32,10 +26,6 @@ export class _DesktopPlatform implements IPlatform {
       return await this.migrateConfigInner();
     },
   );
-
-  constructor(private lazyConfig: LazyAsync<Config>) {
-    this.anki = new DesktopAnkiApi(this.lazyConfig);
-  }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
     return await getStorage("config", {});
@@ -100,13 +90,3 @@ export class _DesktopPlatform implements IPlatform {
     return deleteSavedDictionary();
   }
 }
-
-export const DesktopPlatform = new _DesktopPlatform(
-  new LazyAsync(() => Config.instance.get()),
-);
-export const Platform = DesktopPlatform;
-export const ExtensionPlatform = Platform;
-export const PagePlatform = Platform;
-
-export type DesktopPlatform = typeof DesktopPlatform;
-export type Platform = DesktopPlatform;

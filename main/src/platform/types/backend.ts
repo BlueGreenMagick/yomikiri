@@ -32,7 +32,4 @@ export interface IBackend extends IPlatformConsts {
   getDictMetadata(): Promise<DictionaryMetadata>;
 }
 
-export declare const Backend:
-  | typeof DesktopBackend
-  | typeof IosBackend
-  | typeof IosAppBackend;
+export type AnyBackend = DesktopBackend | IosBackend | IosAppBackend;

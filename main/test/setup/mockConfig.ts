@@ -11,17 +11,17 @@ let storedConfig: StoredConfiguration = {
 
 const subscribers: ConfigSubscriber[] = [];
 
-DesktopPlatform.getConfig = () => {
+DesktopPlatform.prototype.getConfig = () => {
   return Promise.resolve(storedConfig);
 };
-DesktopPlatform.saveConfig = (conf) => {
+DesktopPlatform.prototype.saveConfig = (conf) => {
   storedConfig = conf;
   for (const subscriber of subscribers) {
     subscriber(storedConfig);
   }
   return Promise.resolve();
 };
-DesktopPlatform.subscribeConfig = (subscriber: ConfigSubscriber) => {
+DesktopPlatform.prototype.subscribeConfig = (subscriber: ConfigSubscriber) => {
   subscribers.push(subscriber);
 };
 

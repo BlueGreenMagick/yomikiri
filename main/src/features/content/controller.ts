@@ -19,11 +19,10 @@ import type { AndroidCtx, DesktopCtx, IosCtx } from "../ctx";
 export class ContentScriptController {
   highlighter: Highlighter;
   lazyTooltip: LazyAsync<Tooltip>;
+  lazyConfig: LazyAsync<Config>;
 
-  constructor(
-    private ctx: DesktopCtx | IosCtx | AndroidCtx,
-    private lazyConfig: LazyAsync<Config>,
-  ) {
+  constructor(private ctx: DesktopCtx | IosCtx | AndroidCtx) {
+    this.lazyConfig = ctx.lazyConfig;
     this.highlighter = this.createHighlighter();
     this.lazyTooltip = new LazyAsync(() => this.createTooltip());
 
@@ -156,7 +155,7 @@ export class ContentScriptController {
       return false;
     }
 
-    const result = await this.ctx.platform.backend.tokenize({
+    const result = await this.ctx.backend.tokenize({
       text: scannedSentence.text,
       charAt: scannedSentence.charAt,
     });

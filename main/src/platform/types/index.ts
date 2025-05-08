@@ -1,17 +1,17 @@
 import type { StoredConfiguration } from "@/features/config";
 import type { TranslateResult } from "../shared/translate";
-import type { Platform as DesktopPlatform } from "../desktop";
-import type { Platform as IosPlatform } from "../ios";
-import type { Platform as IosAppPlatform } from "../iosapp";
+import type { DesktopPlatform } from "../desktop";
+import type { IosPlatform } from "../ios";
+import type { IosAppPlatform } from "../iosapp";
 import type { PromiseOrValue } from "@/features/utils";
 import type { StoredCompatConfiguration } from "@/features/compat";
 import type { AndroidPlatform } from "../android";
 
 export type { TranslateResult } from "../shared/translate";
-export type { Platform as DesktopPlatform } from "../desktop";
-export type { Platform as IosPlatform } from "../ios";
-export type { Platform as IosAppPlatform } from "../iosapp";
-export type { Platform as AndroidPlatform } from "../android";
+export type { DesktopPlatform } from "../desktop";
+export type { IosPlatform } from "../ios";
+export type { IosAppPlatform } from "../iosapp";
+export type { AndroidPlatform } from "../android";
 
 export interface IPlatformConsts {
   readonly type: "desktop" | "ios" | "iosapp" | "android";
@@ -59,19 +59,8 @@ export interface TTSRequest {
   voice: TTSVoice | null;
 }
 
-export declare const Platform:
-  | typeof DesktopPlatform
-  | typeof IosPlatform
-  | typeof IosAppPlatform
-  | typeof AndroidPlatform;
-
-export declare const ExtensionPlatform:
-  | typeof DesktopPlatform
-  | typeof IosPlatform;
-
-/** Platform accessed from options page */
-export declare const PagePlatform:
-  | typeof DesktopPlatform
-  | typeof IosAppPlatform;
-
-export type Platform = typeof Platform;
+export type AnyPlatform =
+  | DesktopPlatform
+  | IosPlatform
+  | IosAppPlatform
+  | AndroidPlatform;

@@ -4,7 +4,7 @@
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 
-  const ankiInfoP = ctx.platform.anki.getAnkiInfo();
+  const ankiInfoP = ctx.anki.getAnkiInfo();
 </script>
 
 {#await ankiInfoP}

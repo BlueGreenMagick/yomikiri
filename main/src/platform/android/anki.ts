@@ -1,8 +1,5 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
-import type { IAnkiAddNotes } from "./anki";
-import type { IAnkiOptions } from "./anki";
-
-export * from "../types/anki";
+import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 
 export class AndroidAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   readonly type = "android";

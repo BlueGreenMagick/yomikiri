@@ -1,8 +1,6 @@
 import { TOOLTIP_IFRAME_ID } from "@/consts";
-import Config from "@/features/config";
 import { ContentScriptController } from "@/features/content";
-import type { AndroidCtx } from "@/features/ctx";
-import { AndroidPlatform } from "@/platform/android";
+import { createAndroidCtx } from "@/platform/android/ctx";
 
 function initialize() {
   // don't run inside yomikiri tooltip iframe
@@ -10,15 +8,9 @@ function initialize() {
     return;
   }
 
-  const platform = AndroidPlatform;
-  const lazyConfig = Config.instance;
+  const ctx = createAndroidCtx();
 
-  const ctx: AndroidCtx = {
-    platform,
-    platformType: platform.type,
-  };
-
-  const _controller = new ContentScriptController(ctx, lazyConfig);
+  const _controller = new ContentScriptController(ctx);
 }
 
 initialize();

@@ -1,27 +1,26 @@
 import { OptionsPage } from "@/features/options";
-import { IosAppPlatform } from "@/platform/iosapp";
-import Utils, { exposeGlobals, LazyAsync } from "@/features/utils";
-import Config from "@/features/config";
-import { Backend } from "@/platform/iosapp/backend";
+import Utils, { exposeGlobals } from "@/features/utils";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
+import { createIosAppCtx } from "@/platform/iosapp/ctx";
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
-  const config = await Config.instance.get();
-  const platform = IosAppPlatform;
-  const toast = new Toast(new LazyAsync(() => config));
-  return { config, platform, platformType: platform.type, toast };
+  const ctx = createIosAppCtx();
+  const config = await ctx.lazyConfig.get();
+  const toast = new Toast(ctx.lazyConfig);
+
+  exposeGlobals({
+    Platform: ctx.platform,
+    Utils,
+    Backend: ctx.backend,
+    config,
+    page,
+  });
+
+  return { ...ctx, config, toast };
 }
 
 const page = new OptionsPage({
   target: document.body,
   props: { initialize },
-});
-
-exposeGlobals({
-  Platform: IosAppPlatform,
-  Utils,
-  Backend,
-  config: Config.instance,
-  page,
 });

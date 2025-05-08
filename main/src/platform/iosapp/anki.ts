@@ -4,8 +4,6 @@ import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
 import { sendMessage } from "./messaging";
 
-export * from "../types/anki";
-
 export interface Named {
   name: string;
 }

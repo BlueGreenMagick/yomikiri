@@ -29,7 +29,7 @@
   const search = Utils.SingleQueued(_search);
   async function _search(searchText: string, charAt: number) {
     charAt = Math.min(charAt, searchText.length - 1);
-    tokenizeResult = await ctx.platform.backend.search({
+    tokenizeResult = await ctx.backend.search({
       term: searchText,
       charAt,
     });

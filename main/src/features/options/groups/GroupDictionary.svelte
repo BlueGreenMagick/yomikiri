@@ -13,13 +13,11 @@
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 
-  const Backend = ctx.platform.backend;
-
   let state: DictState = "loading";
   let dictDescription = "Loading...";
 
   async function initialize() {
-    const metadata = await Backend.getDictMetadata();
+    const metadata = await ctx.backend.getDictMetadata();
     const date = metadata.jmdict_creation_date ?? "Unknown date";
     dictDescription = `Dictionary created on: ${date}`;
     state = "loaded";
@@ -30,7 +28,7 @@
 
     try {
       state = "downloading";
-      const updating = Backend.updateDictionary();
+      const updating = ctx.backend.updateDictionary();
       updating.progress.subscribe((value) => {
         dictDescription = value;
       });

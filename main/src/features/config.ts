@@ -1,10 +1,9 @@
-import { Platform, type TTSVoice } from "#platform";
+import type { AnyPlatform, TTSVoice } from "@/platform/types";
 import { VERSION } from "consts";
 import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { writable, type Writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
-import { Disposable, LazyAsync, log } from "./utils";
-import { YomikiriError } from "./error";
+import { Disposable, log } from "./utils";
 
 /**
  * Incremented each time Config has to be migrated.
@@ -77,12 +76,8 @@ export class Config {
   subscribers: (() => void)[] = [];
   documents: WeakRef<Document | DocumentFragment>[] = [];
 
-  static instance: LazyAsync<Config> = new LazyAsync(() =>
-    Config.initialize(Platform),
-  );
-
   private constructor(
-    private platform: Platform,
+    private platform: AnyPlatform,
     private storage: StoredConfiguration,
   ) {
     this.stores = new Map();
@@ -96,29 +91,12 @@ export class Config {
     this.runSubscribers();
   }
 
-  private static async initialize(platform: Platform): Promise<Config> {
+  static async initialize(platform: AnyPlatform): Promise<Config> {
     const stored = await platform.getConfig();
     const storage = await migrateIfNeeded(platform, stored);
     const config = new Config(platform, storage);
     await config.updateVersion();
     return config;
-  }
-
-  /**
-   * Assumes config is already initialized, and returns instance.
-   *
-   * Throws an error if config was not initialized.
-   *
-   * This method should only be used in svelte components,
-   * where we *know* config was initialized in `Page.svelte`
-   */
-  static using(): Config {
-    const config = Config.instance.getIfInitialized();
-    if (config !== undefined) {
-      return config;
-    } else {
-      throw new YomikiriError("Fatal: Config was not initialized");
-    }
   }
 
   get<K extends keyof Configuration>(key: K): Configuration[K] {
@@ -305,7 +283,7 @@ export class Config {
 }
 
 export async function migrateIfNeeded(
-  platform: Platform,
+  platform: AnyPlatform,
   configObject: StoredCompatConfiguration,
 ): Promise<StoredConfiguration> {
   if (configObject.config_version === CONFIG_VERSION) {

@@ -47,7 +47,7 @@
     let ankiNote = await resolveAnkiNote(noteData);
     let added: boolean;
     try {
-      added = await ctx.platform.anki.addNote(ankiNote);
+      added = await ctx.anki.addNote(ankiNote);
       if (added) {
         ctx.toast.success("Note added to Anki");
       } else {

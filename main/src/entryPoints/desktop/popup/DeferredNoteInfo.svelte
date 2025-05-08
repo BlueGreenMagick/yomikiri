@@ -7,7 +7,7 @@
 
   export let ctx: AppCtx<DesktopCtx>;
 
-  const AnkiApi = ctx.platform.anki;
+  const AnkiApi = ctx.anki;
   const confDeferredNoteCount = ctx.config.store(
     "state.anki.deferred_note_count",
   );

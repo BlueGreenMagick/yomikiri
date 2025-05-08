@@ -14,11 +14,8 @@ import {
 } from "@/features/compat";
 import { YomikiriError } from "@/features/error";
 import type { RunMessageMap } from "@/platform/shared/backend";
-import { IosAppAnkiApi, type RawAnkiInfo } from "./anki";
-import { IosAppBackend } from "./backend";
+import type { RawAnkiInfo } from "./anki";
 import { sendMessage } from "./messaging";
-
-export * from "../types";
 
 declare global {
   interface Window {
@@ -54,10 +51,8 @@ export type WebviewRequest<K extends keyof MessageWebviewMap> =
 export type WebviewResponse<K extends keyof MessageWebviewMap> =
   MessageWebviewMap[K][1];
 
-export class _IosAppPlatform implements IPlatform {
+export class IosAppPlatform implements IPlatform {
   readonly type = "iosapp";
-  readonly anki = new IosAppAnkiApi();
-  readonly backend = new IosAppBackend();
 
   private readonly _configSubscribers: ((
     config: StoredConfiguration,
@@ -151,10 +146,3 @@ export class _IosAppPlatform implements IPlatform {
     return sendMessage("close", null);
   }
 }
-
-export const IosAppPlatform = new _IosAppPlatform();
-export const Platform = IosAppPlatform;
-export const PagePlatform = Platform;
-
-export type IosAppPlatform = typeof IosAppPlatform;
-export type Platform = IosAppPlatform;

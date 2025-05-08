@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
-  import type { TokenizeResult } from "@/platform/iosapp/backend";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import {
     type LoadingAnkiNote,
     type AnkiBuilderData,

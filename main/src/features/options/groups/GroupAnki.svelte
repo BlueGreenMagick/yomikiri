@@ -12,7 +12,7 @@
 
   const ANKIMOBILE_URL =
     "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
-  const AnkiApi = ctx.platform.anki;
+  const AnkiApi = ctx.anki;
 
   const config = ctx.config;
   const ankiConnectPortConfig = config.store("anki.connect_port");

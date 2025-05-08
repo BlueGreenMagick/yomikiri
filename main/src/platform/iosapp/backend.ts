@@ -14,8 +14,6 @@ import {
 } from "@/platform/shared/backend";
 import { sendMessage } from "./messaging";
 
-export * from "../types/backend";
-
 export class IosAppBackend implements IBackend {
   readonly type = "iosapp";
 

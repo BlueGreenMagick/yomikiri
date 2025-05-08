@@ -11,8 +11,6 @@ import { iosAnkiMobileURL } from "../shared/anki";
 import { type IAnkiAddNotes } from "../types/anki";
 import { LazyAsync } from "@/features/utils";
 
-export * from "../types/anki";
-
 export class IosAnkiApi implements IAnkiAddNotes {
   readonly type = "ios";
   readonly lazyConfig: LazyAsync<Config>;

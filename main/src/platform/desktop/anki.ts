@@ -17,8 +17,6 @@ import {
   type Second,
 } from "@/features/utils";
 
-export * from "../types/anki";
-
 const ANKI_CONNECT_VER = 6;
 
 interface AnkiConnectSuccess<T> {

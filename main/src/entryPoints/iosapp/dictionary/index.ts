@@ -1,23 +1,23 @@
 import DictionaryPage from "./DictionaryPage.svelte";
-import Config from "@/features/config";
-import Utils, { exposeGlobals, LazyAsync } from "@/features/utils";
-import { IosAppPlatform } from "@/platform/iosapp";
+import Utils, { exposeGlobals } from "@/features/utils";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
+import { createIosAppCtx } from "@/platform/iosapp/ctx";
 
 const _page = createSvelte();
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
-  const platform = IosAppPlatform;
-  const config = await Config.instance.get();
-  const toast = new Toast(new LazyAsync(() => config));
+  const ctx = createIosAppCtx();
+  const config = await ctx.lazyConfig.get();
+  const toast = new Toast(ctx.lazyConfig);
 
-  return {
+  exposeGlobals({
+    Platform: ctx.platform,
+    Utils,
     config,
-    platform,
-    platformType: platform.type,
-    toast,
-  };
+  });
+
+  return { ...ctx, config, toast };
 }
 
 function createSvelte(): DictionaryPage {
@@ -29,9 +29,3 @@ function createSvelte(): DictionaryPage {
     props: { initialize, context, searchText },
   });
 }
-
-exposeGlobals({
-  Platform: IosAppPlatform,
-  Utils,
-  config: Config.instance,
-});

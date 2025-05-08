@@ -6,7 +6,7 @@ import type {
 import Config from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
-import type { Platform } from "@/platform/types";
+import type { AnyPlatform } from "@/platform/types";
 import Utils, { escapeHTML } from "@/features/utils";
 import type {
   AnkiTemplateField,
@@ -39,7 +39,7 @@ export interface LoadingField {
 
 export interface AnkiBuilderContext {
   config: Config;
-  platform: Platform;
+  platform: AnyPlatform;
 }
 
 /** This data is saved in the history */

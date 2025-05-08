@@ -10,7 +10,7 @@
   let entryP = loadEntry();
 
   async function loadEntry() {
-    const result = await ctx.platform.backend.search({ term: "読む" });
+    const result = await ctx.backend.search({ term: "読む" });
     return result.entries[0];
   }
 

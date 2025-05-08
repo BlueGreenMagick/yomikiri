@@ -8,12 +8,7 @@
 */
 
 import { test, expect, describe } from "vitest";
-import {
-  buildAnkiField,
-  type AnkiBuilderContext,
-  type AnkiBuilderData,
-} from "./ankiBuilder";
-import { Config } from "../config";
+import { buildAnkiField, type AnkiBuilderData } from "./ankiBuilder";
 import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
 import type { TokenizeResult } from "@yomikiri/backend-bindings";
 import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
@@ -22,7 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
 import type { WordEntry } from "@yomikiri/backend-bindings";
-import { DesktopPlatform } from "@/platform/desktop";
+import { createDesktopCtx } from "@/platform/desktop/ctx";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
@@ -30,10 +25,11 @@ import { DesktopPlatform } from "@/platform/desktop";
 // by running the test with `UPDATE=1 pnpm vitest --run ankiBuilder`
 const REGENERATE_JSON = !!process.env.UPDATE;
 
-const config = await Config.instance.get();
-const ctx: AnkiBuilderContext = {
+const desktopCtx = createDesktopCtx();
+const config = await desktopCtx.lazyConfig.get();
+const ctx = {
+  ...desktopCtx,
   config,
-  platform: DesktopPlatform,
 };
 
 interface TestCase {
@@ -126,7 +122,7 @@ test.skipIf(!REGENERATE_JSON)("Re-generate tokenize() result", async () => {
 
   const results: { [label: string]: TokenizeResult } = {};
   for (const test of tests) {
-    const tokenizeResult = await DesktopPlatform.backend.tokenize({
+    const tokenizeResult = await ctx.backend.tokenize({
       text: test.sentence,
       charAt: test.idx,
     });

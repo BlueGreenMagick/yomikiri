@@ -1,9 +1,7 @@
 import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
-import { DesktopPlatform } from "@/platform/desktop";
-import { Config } from "@/features/config";
 import { ContentScriptController } from "@/features/content";
-import type { DesktopCtx } from "@/features/ctx";
+import { createDesktopCtx } from "@/platform/desktop/ctx";
 
 declare global {
   interface Window {
@@ -28,18 +26,16 @@ function maybeInitialize() {
 }
 
 function initialize() {
-  const platform = DesktopPlatform;
-  const ctx: DesktopCtx = {
-    platform,
-    platformType: platform.type,
-  };
+  const ctx = createDesktopCtx();
 
   exposeGlobals({
-    Platform: DesktopPlatform,
+    Platform: ctx.platform,
+    AnkiApi: ctx.anki,
+    Backend: ctx.backend,
     Utils,
-    config: Config.instance,
+    config: ctx.lazyConfig,
     contentScriptController: ContentScriptController,
   });
 
-  return new ContentScriptController(ctx, Config.instance);
+  return new ContentScriptController(ctx);
 }
