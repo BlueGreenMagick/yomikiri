@@ -7,11 +7,11 @@
   } from "@/features/anki";
   import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
   import { AddToAnki } from "@/features/anki";
-  import ActionButtons from "./ActionButtons.svelte";
+  import { ActionButtons } from "@/features/popup";
   import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
-  import type { AppCtx, DesktopCtx, IosCtx } from "@/features/ctx";
+  import type { AppCtx, DesktopCtx } from "@/features/ctx";
 
-  export let ctx: AppCtx<DesktopCtx | IosCtx>;
+  export let ctx: AppCtx<DesktopCtx>;
 
   let previewIsVisible = false;
   let previewNoteData: LoadingAnkiNote;
@@ -46,9 +46,7 @@
   <div class="tokenize-container" class:previewIsVisible>
     <Tokenize {ctx} {onShowAnkiPreview}>
       <ActionButtons {ctx} />
-      {#if ctx.platformType === "desktop"}
-        <DeferredNoteInfo {ctx} />
-      {/if}
+      <DeferredNoteInfo {ctx} />
     </Tokenize>
   </div>
   {#if previewIsVisible}

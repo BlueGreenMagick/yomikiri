@@ -11,11 +11,7 @@ import {
   setBadge,
   type MessageSender,
 } from "@/features/extension/browserApi";
-import {
-  ExtensionPlatform as Platform,
-  type DesktopPlatform,
-  type IosPlatform,
-} from "#platform";
+import { DesktopPlatform } from "@/platform/desktop";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { Config } from "@/features/config";
 import DefaultIcon from "@/assets/static/images/icon128.png";
@@ -25,7 +21,7 @@ import { derived } from "svelte/store";
 const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
-  const platform = Platform;
+  const platform = DesktopPlatform;
   const config = await Config.instance.get();
   updateStateEnabledIcon(config);
   updateDeferredNoteCountBadge(config);
@@ -60,15 +56,11 @@ function updateDeferredNoteCountBadge(config: Config) {
 /**
  * Check and add Anki notes every 30 seconds in desktop.
  */
-function runAddDeferredNoteTaskInBackground(
-  platform: DesktopPlatform | IosPlatform,
-) {
-  if (platform.type === "desktop") {
-    const ankiApi = platform.anki;
-    setInterval(() => {
-      void ankiApi.addDeferredNotes();
-    }, 1000 * 30);
-  }
+function runAddDeferredNoteTaskInBackground(platform: DesktopPlatform) {
+  const ankiApi = platform.anki;
+  setInterval(() => {
+    void ankiApi.addDeferredNotes();
+  }, 1000 * 30);
 }
 
 handleMessage("tabId", tabId);
@@ -78,7 +70,7 @@ handleBrowserLoad(() => {
 });
 
 exposeGlobals({
-  Platform,
+  Platform: DesktopPlatform,
   Utils,
   config: Config.instance,
 });

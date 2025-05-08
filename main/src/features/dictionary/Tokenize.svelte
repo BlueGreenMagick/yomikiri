@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type TokenizeResult } from "@yomikiri/backend-bindings";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import Utils from "@/features/utils";
   import IconSearch from "#icons/search.svg";
   import IconCloseCircle from "#icons/close-circle.svg";

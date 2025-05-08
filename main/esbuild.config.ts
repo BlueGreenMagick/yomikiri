@@ -44,7 +44,8 @@ const FOR_ANDROID = TARGET === "android";
 const VERSION = Package.version;
 
 interface EntryPoints {
-  extension: EntryPointGroup;
+  desktop: EntryPointGroup;
+  ios: EntryPointGroup;
   iosapp: EntryPointGroup;
   android: EntryPointGroup;
 }
@@ -66,20 +67,23 @@ interface EntryPointConfig {
 type EntryPointId = [keyof EntryPoints, string];
 
 const ENTRY_POINTS: EntryPoints = {
-  extension: {
+  desktop: {
+    background: { context: "background" },
+    content: {
+      context: "contentScript",
+    },
+    options: {},
+    popup: {},
+  },
+  ios: {
     background: {
       context: "background",
     },
     content: {
       context: "contentScript",
     },
-    options: {
-      ios: false,
-    },
     popup: {},
-    "x-callback": {
-      desktop: false,
-    },
+    "x-callback": {},
   },
   iosapp: {
     dictionary: {},
@@ -94,20 +98,14 @@ const ENTRY_POINTS: EntryPoints = {
 function entryPointsForTarget(): EntryPointId[] {
   const entryPoints: [keyof EntryPoints, string][] = [];
   if (FOR_DESKTOP) {
-    const grp = ENTRY_POINTS["extension"];
+    const grp = ENTRY_POINTS["desktop"];
     for (const name in grp) {
-      const opts = grp[name];
-      if (opts.desktop ?? true) {
-        entryPoints.push(["extension", name]);
-      }
+      entryPoints.push(["desktop", name]);
     }
   } else if (FOR_IOS) {
-    const grp = ENTRY_POINTS["extension"];
+    const grp = ENTRY_POINTS["ios"];
     for (const name in grp) {
-      const opts = grp[name];
-      if (opts.ios ?? true) {
-        entryPoints.push(["extension", name]);
-      }
+      entryPoints.push(["ios", name]);
     }
   } else if (FOR_IOSAPP) {
     const grp = ENTRY_POINTS["iosapp"];
