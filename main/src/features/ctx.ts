@@ -4,9 +4,9 @@ import type {
   IosAppPlatform,
   IosPlatform,
   Platform,
-} from "#platform";
+  AndroidPlatform,
+} from "@/platform/types";
 import type { Toast } from "./toast/toast";
-import type { AndroidPlatform } from "@/platform/android";
 
 export interface ConfigCtx {
   config: Config;

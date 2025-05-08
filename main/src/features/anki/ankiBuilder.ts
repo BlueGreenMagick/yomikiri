@@ -6,7 +6,7 @@ import type {
 import Config from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
-import type { Platform } from "#platform";
+import type { Platform } from "@/platform/types";
 import Utils, { escapeHTML } from "@/features/utils";
 import type {
   AnkiTemplateField,

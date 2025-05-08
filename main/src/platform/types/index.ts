@@ -11,6 +11,7 @@ export type { TranslateResult } from "../shared/translate";
 export type { Platform as DesktopPlatform } from "../desktop";
 export type { Platform as IosPlatform } from "../ios";
 export type { Platform as IosAppPlatform } from "../iosapp";
+export type { Platform as AndroidPlatform } from "../android";
 
 export interface IPlatformConsts {
   readonly type: "desktop" | "ios" | "iosapp" | "android";

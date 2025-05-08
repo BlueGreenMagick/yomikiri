@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { TranslateResult } from "#platform";
+  import type { TranslateResult } from "@/platform/types";
   import Utils from "@/features/utils";
   import type { AppCtx } from "../ctx";
 
