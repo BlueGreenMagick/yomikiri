@@ -1,5 +1,3 @@
-import type { DesktopPlatform, IosPlatform } from "#platform";
-import type { AndroidPlatform } from "@/platform/android";
 import Config from "../config";
 import { containsJapaneseContent } from "../japanese";
 import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
@@ -16,14 +14,14 @@ import {
 } from "./scanner";
 import { Tooltip } from "./tooltip";
 import { Toast } from "../toast";
-import type { AndroidCtx, AppCtx, DesktopCtx, IosCtx } from "../ctx";
+import type { AndroidCtx, DesktopCtx, IosCtx } from "../ctx";
 
 export class ContentScriptController {
   highlighter: Highlighter;
   lazyTooltip: LazyAsync<Tooltip>;
 
   constructor(
-    private platform: DesktopPlatform | IosPlatform | AndroidPlatform,
+    private ctx: DesktopCtx | IosCtx | AndroidCtx,
     private lazyConfig: LazyAsync<Config>,
   ) {
     this.highlighter = this.createHighlighter();
@@ -41,7 +39,7 @@ export class ContentScriptController {
   }
 
   private createHighlighter(): Highlighter {
-    if (this.platform.type === "desktop") {
+    if (this.ctx.platformType === "desktop") {
       return new SelectionHighlighter();
     } else {
       return new WrapHighlighter();
@@ -49,7 +47,13 @@ export class ContentScriptController {
   }
 
   private async createTooltip() {
-    const ctx = await this.createCtx();
+    const config = await this.lazyConfig.get();
+    const toast = new Toast(this.lazyConfig);
+    const ctx = {
+      ...this.ctx,
+      config,
+      toast,
+    };
     const tooltip = new Tooltip(ctx);
 
     tooltip.onCloseClicked.listen(() => {
@@ -71,34 +75,6 @@ export class ContentScriptController {
     resizeObserver.observe(document.documentElement);
 
     return tooltip;
-  }
-
-  private async createCtx(): Promise<AppCtx<DesktopCtx | IosCtx | AndroidCtx>> {
-    const config = await this.lazyConfig.get();
-    const toast = new Toast(this.lazyConfig);
-    const platform = this.platform;
-    if (platform.type === "desktop") {
-      return {
-        platformType: platform.type,
-        platform: platform,
-        config,
-        toast,
-      };
-    } else if (platform.type === "ios") {
-      return {
-        platformType: platform.type,
-        platform: platform,
-        config,
-        toast,
-      };
-    } else {
-      return {
-        platformType: platform.type,
-        platform: platform,
-        config,
-        toast,
-      };
-    }
   }
 
   private handleStateEnabledChange(config: Config) {
@@ -180,7 +156,7 @@ export class ContentScriptController {
       return false;
     }
 
-    const result = await this.platform.backend.tokenize({
+    const result = await this.ctx.platform.backend.tokenize({
       text: scannedSentence.text,
       charAt: scannedSentence.charAt,
     });

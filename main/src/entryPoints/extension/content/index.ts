@@ -3,6 +3,7 @@ import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { Platform, type DesktopPlatform, type IosPlatform } from "#platform";
 import { Config } from "@/features/config";
 import { ContentScriptController } from "@/features/content";
+import type { DesktopCtx, IosCtx } from "@/features/ctx";
 
 declare global {
   interface Window {
@@ -27,7 +28,8 @@ function maybeInitialize() {
 }
 
 function initialize() {
-  const platform = Platform as DesktopPlatform | IosPlatform;
+  const ctx = createCtx();
+
   exposeGlobals({
     Platform,
     Utils,
@@ -35,5 +37,20 @@ function initialize() {
     contentScriptController: ContentScriptController,
   });
 
-  return new ContentScriptController(platform, Config.instance);
+  return new ContentScriptController(ctx, Config.instance);
+}
+
+function createCtx(): DesktopCtx | IosCtx {
+  const platform = Platform as DesktopPlatform | IosPlatform;
+  if (platform.type === "desktop") {
+    return {
+      platform,
+      platformType: platform.type,
+    };
+  } else {
+    return {
+      platform,
+      platformType: platform.type,
+    };
+  }
 }
