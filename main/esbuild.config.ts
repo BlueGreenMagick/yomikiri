@@ -121,32 +121,6 @@ function entryPointsForTarget(): EntryPointId[] {
   return entryPoints;
 }
 
-const platformAliasPlugin: Plugin = {
-  name: "platformAliasPlugin",
-  setup(build) {
-    build.onResolve({ filter: /.*/ }, (args) => {
-      let replacement;
-      if (FOR_IOS) {
-        replacement = "@/platform/ios$1";
-      } else if (FOR_IOSAPP) {
-        replacement = "@/platform/iosapp$1";
-      } else if (FOR_DESKTOP) {
-        replacement = "@/platform/desktop$1";
-      } else if (FOR_ANDROID) {
-        replacement = "@/platform/android$1";
-      } else {
-        throw new Error("Unknown platform");
-      }
-      const replaced = args.path.replace(/^#platform($|\/)/, replacement);
-      if (args.path === replaced) {
-        return;
-      }
-      const { path: _, ...opts } = { ...args };
-      return build.resolve(replaced, opts);
-    });
-  },
-};
-
 const svelteConfiguredPlugin: Plugin = sveltePlugin({
   preprocess: sveltePreprocess({
     postcss: {
@@ -443,7 +417,6 @@ async function main() {
     },
     plugins: [
       entryPointEnvPlugin,
-      platformAliasPlugin,
       svelteConfiguredPlugin,
       additionalAssets({
         assets: staticAssets,
