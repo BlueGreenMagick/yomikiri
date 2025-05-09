@@ -18,7 +18,7 @@
     "ejs": "^3.1.10",
     "esbuild": "^0.25.4",
     "esbuild-svelte": "^0.8.0",
-    "ionicons": "^7.3.1",
+    "ionicons": "^8.0.8",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.38",
     "postcss-import": "^16.1.0",
