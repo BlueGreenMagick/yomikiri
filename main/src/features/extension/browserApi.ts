@@ -190,7 +190,7 @@ export async function speakJapanese(
   voice: TTSVoice | null,
 ): Promise<void> {
   const [promise, resolve] = createPromise<void>();
-  let options: chrome.tts.SpeakOptions = { lang: "ja-jp" };
+  let options: chrome.tts.TtsOptions = { lang: "ja-jp" };
   if (voice !== null) {
     const voices = await japaneseTtsVoices();
     if (
