@@ -59,7 +59,7 @@ async function main() {
     if (lastTabId !== null) {
       await goToTab(lastTabId);
     }
-  } catch (e) {
+  } catch (_e) {
     // empty
   }
 

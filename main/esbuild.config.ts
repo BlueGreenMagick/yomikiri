@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import esbuild, { type BuildOptions, type Plugin } from "esbuild";
 import sveltePlugin from "esbuild-svelte";
-import sveltePreprocess from "svelte-preprocess";
+import { sveltePreprocess } from "svelte-preprocess";
 import ejs from "ejs";
 import postCssImport from "postcss-import";
 import Package from "../package.json" with { type: "json" };

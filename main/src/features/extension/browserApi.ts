@@ -486,7 +486,7 @@ export async function setStorage<K extends keyof StorageValues>(
   return promise;
 }
 
-export async function removeStorage<K extends keyof StorageValues>(key: K) {
+export async function removeStorage(key: keyof StorageValues) {
   const [promise, resolve] = createPromise<void>();
   browserStorage().remove(key, resolve);
   return promise;

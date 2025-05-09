@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config";
-import sveltePreprocess from "svelte-preprocess";
+import { sveltePreprocess } from "svelte-preprocess";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import path from "node:path";
 import postCssImport from "postcss-import";

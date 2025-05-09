@@ -130,7 +130,7 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
           params,
         }),
       });
-    } catch (e) {
+    } catch (_e) {
       throw new AnkiConnectionError();
     }
 

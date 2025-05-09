@@ -2,13 +2,9 @@ import { deleteDB, openDB, type DBSchema, type IDBPDatabase } from "idb";
 
 const DB_NAME = "yomikiri";
 const DB_FILES_STORE = "files";
-const FILENAMES = [
-  "yomikiri-dictionary",
-  "JMdict_e.gz",
-  "JMnedict.xml.gz",
-] as const;
+type FILENAMES = ["yomikiri-dictionary", "JMdict_e.gz", "JMnedict.xml.gz"];
 
-export type FileName = (typeof FILENAMES)[number];
+export type FileName = FILENAMES[number];
 
 interface YomikiriDBSchema extends DBSchema {
   files: {
