@@ -16,7 +16,7 @@
     "chokidar": "^4.0.3",
     "cross-env": "^7.0.3",
     "ejs": "^3.1.10",
-    "esbuild": "^0.20.2",
+    "esbuild": "^0.25.4",
     "esbuild-svelte": "^0.8.0",
     "ionicons": "^7.3.1",
     "jsdom": "^24.0.0",
