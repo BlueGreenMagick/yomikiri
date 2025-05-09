@@ -2,14 +2,11 @@ import type {
   DictionaryMetadata,
   TokenizeResult,
 } from "@yomikiri/backend-bindings";
-import type { DesktopBackend } from "../desktop/backend";
-import type { IosBackend } from "../ios/backend";
-import type { IosAppBackend } from "../iosapp/backend";
-import type { IPlatformConsts } from "@/platform/ios";
+import type { DesktopBackend } from "../desktop";
+import type { IosBackend } from "../ios";
+import type { IosAppBackend } from "../iosapp";
+import type { IPlatformConsts } from ".";
 
-export type { DesktopBackend } from "../desktop/backend";
-export type { IosBackend } from "../ios/backend";
-export type { IosAppBackend } from "../iosapp/backend";
 export type * from "@yomikiri/backend-bindings";
 
 export interface TokenizeRequest {

@@ -14,7 +14,7 @@ import Utils, { exposeGlobals } from "@/features/utils";
 import { Config } from "@/features/config";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import DisabledIcon from "@/assets/icon128-20a.png";
-import { createIosCtx } from "@/platform/ios/ctx";
+import { createIosCtx } from "@/platform/ios";
 
 const _initialized: Promise<void> = initialize();
 

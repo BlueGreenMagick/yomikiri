@@ -1,6 +1,6 @@
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { ContentScriptController } from "@/features/content";
-import { createAndroidCtx } from "@/platform/android/ctx";
+import { createAndroidCtx } from "@/platform/android";
 
 function initialize() {
   // don't run inside yomikiri tooltip iframe

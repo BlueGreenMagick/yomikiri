@@ -6,7 +6,7 @@
   import OptionToggle from "../items/OptionToggle.svelte";
   import Utils, { SingleQueued } from "@/features/utils";
   import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
-  import type { DesktopAnkiApi } from "@/platform/types/anki";
+  import type { DesktopAnkiApi } from "@/platform/desktop";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 

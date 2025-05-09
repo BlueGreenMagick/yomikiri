@@ -17,7 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
 import type { WordEntry } from "@yomikiri/backend-bindings";
-import { createDesktopCtx } from "@/platform/desktop/ctx";
+import { createDesktopCtx } from "@/platform/desktop";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //

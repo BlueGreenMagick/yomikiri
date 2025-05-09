@@ -2,7 +2,7 @@ import { OptionsPage } from "@/features/options";
 import Utils, { exposeGlobals } from "@/features/utils";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
-import { createIosAppCtx } from "@/platform/iosapp/ctx";
+import { createIosAppCtx } from "@/platform/iosapp";
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const ctx = createIosAppCtx();

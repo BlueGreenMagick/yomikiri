@@ -16,8 +16,7 @@ import { Config } from "@/features/config";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import DisabledIcon from "@/assets/icon128-20a.png";
 import { derived } from "svelte/store";
-import { DesktopAnkiApi } from "@/platform/desktop/anki";
-import { createDesktopCtx } from "@/platform/desktop/ctx";
+import { type DesktopAnkiApi, createDesktopCtx } from "@/platform/desktop";
 
 const _initialized: Promise<void> = initialize();
 

@@ -1,5 +1,5 @@
 import type { IosCtx } from "@/features/ctx";
-import { IosPlatform } from ".";
+import { IosPlatform } from "./platform";
 import { IosBackend } from "./backend";
 import { IosAnkiApi } from "./anki";
 import Config from "@/features/config";

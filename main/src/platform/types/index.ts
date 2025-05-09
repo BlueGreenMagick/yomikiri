@@ -8,10 +8,6 @@ import type { StoredCompatConfiguration } from "@/features/compat";
 import type { AndroidPlatform } from "../android";
 
 export type { TranslateResult } from "../shared/translate";
-export type { DesktopPlatform } from "../desktop";
-export type { IosPlatform } from "../ios";
-export type { IosAppPlatform } from "../iosapp";
-export type { AndroidPlatform } from "../android";
 
 export interface IPlatformConsts {
   readonly type: "desktop" | "ios" | "iosapp" | "android";

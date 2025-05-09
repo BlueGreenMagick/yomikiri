@@ -1,7 +1,7 @@
 import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { ContentScriptController } from "@/features/content";
-import { createIosCtx } from "@/platform/ios/ctx";
+import { createIosCtx } from "@/platform/ios";
 
 declare global {
   interface Window {
