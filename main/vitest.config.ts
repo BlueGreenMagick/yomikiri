@@ -45,7 +45,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "#icons": fullpath("../node_modules/ionicons/dist/svg"),
-      "#": fullpath("."),
     },
   },
   build: {
