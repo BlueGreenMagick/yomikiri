@@ -1,5 +1,5 @@
 import { IosAppPlatform } from ".";
-import Config from "@/features/config";
+import { Config } from "@/features/config";
 import type { IosAppCtx } from "@/features/ctx";
 import { LazyAsync } from "@/features/utils";
 import { IosAppAnkiApi } from "./anki";

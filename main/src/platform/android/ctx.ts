@@ -3,7 +3,7 @@ import type { AndroidCtx } from "@/features/ctx";
 import { AndroidBackend } from "./backend";
 import { AndroidAnkiApi } from "./anki";
 import { LazyAsync } from "@/features/utils";
-import Config from "@/features/config";
+import { Config } from "@/features/config";
 
 export function createAndroidCtx(): AndroidCtx {
   const platform = new AndroidPlatform();

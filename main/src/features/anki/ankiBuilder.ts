@@ -3,7 +3,7 @@ import type {
   TokenizeResult,
   WordEntry,
 } from "@yomikiri/backend-bindings";
-import Config from "../config";
+import type { Config } from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
 import type { AnyPlatform } from "@/platform/types";

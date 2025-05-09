@@ -1,4 +1,4 @@
-import Config from "./config";
+import type { Config } from "./config";
 import type { Toast } from "./toast/toast";
 import type {
   DesktopPlatform,

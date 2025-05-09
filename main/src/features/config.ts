@@ -292,5 +292,3 @@ export async function migrateIfNeeded(
 
   return await platform.migrateConfig();
 }
-
-export default Config;

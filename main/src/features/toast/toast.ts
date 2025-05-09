@@ -3,7 +3,7 @@ import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
 import DetailedToast from "./DetailedToast.svelte";
 import { YomikiriError } from "../error";
 import { TOASTER_ZINDEX } from "consts";
-import Config from "../config";
+import type { Config } from "../config";
 import type { LazyAsync } from "../utils";
 
 type ToastType = "success" | "error" | "loading";

@@ -1,4 +1,4 @@
-import Config from "@/features/config";
+import { Config } from "@/features/config";
 import { DesktopPlatform } from ".";
 import { DesktopAnkiApi } from "./anki";
 import type { DesktopCtx } from "@/features/ctx";

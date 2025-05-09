@@ -1,4 +1,4 @@
-import Config from "../config";
+import type { Config } from "../config";
 import { containsJapaneseContent } from "../japanese";
 import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
 import {
