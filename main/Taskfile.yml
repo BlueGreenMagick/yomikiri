@@ -120,7 +120,8 @@ tasks:
 
   lint:
     cmds:
-      - 'pnpm eslint .'
+      # package root's eslint version may differ from this package's
+      - 'pnpm -w eslint "$PWD"'
 
   format:
     aliases: ['fmt']

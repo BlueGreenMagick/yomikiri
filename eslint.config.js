@@ -16,11 +16,7 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        project: [
-          "tsconfig.json",
-          "main/tsconfig.json",
-          "extra/generate-license/tsconfig.json",
-        ],
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: [".svelte"],
       },
