@@ -4,8 +4,6 @@
 
 <Toaster />
 
-<style lang="scss">
-  :global {
-    @import "../../global";
-  }
+<style global>
+  @import "../../global";
 </style>

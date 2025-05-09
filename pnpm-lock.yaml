@@ -171,9 +171,6 @@ importers:
       postcss-load-config:
         specifier: ^5.1.0
         version: 5.1.0(jiti@1.21.0)(postcss@8.5.3)(tsx@4.11.2)
-      sass:
-        specifier: ^1.87.0
-        version: 1.87.0
       svelte-check:
         specifier: ^3.6.9
         version: 3.8.0(postcss-load-config@5.1.0(jiti@1.21.0)(postcss@8.5.3)(tsx@4.11.2))(postcss@8.5.3)(sass@1.87.0)(svelte@4.2.17)
@@ -6604,7 +6601,8 @@ snapshots:
 
   immediate@3.0.6: {}
 
-  immutable@5.1.2: {}
+  immutable@5.1.2:
+    optional: true
 
   import-fresh@3.3.0:
     dependencies:
@@ -7715,6 +7713,7 @@ snapshots:
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.1
+    optional: true
 
   sax@1.4.1: {}
 
