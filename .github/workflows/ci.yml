@@ -78,7 +78,7 @@ jobs:
             ${{ runner.os }}-dprint-
 
       - name: Formatting
-        run: task check-format
+        run: task --verbose check-format
 
       - name: Install wasm-pack
         run: pnpm add -g wasm-pack
@@ -90,10 +90,10 @@ jobs:
           key: generated
 
       - name: Build
-        run: task build:all
+        run: task --verbose build:all
 
       - name: Lint
-        run: task lint
+        run: task --verbose lint
 
       - name: Test
-        run: task test
+        run: task --verbose test
