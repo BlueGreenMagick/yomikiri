@@ -16,11 +16,11 @@ vars:
 
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
-  IOS_TARGETS: >
+  IOS_TARGETS: >-
     aarch64-apple-ios
     aarch64-apple-ios-sim
 
-  ANDROID_TARGETS: >
+  ANDROID_TARGETS: >-
     aarch64-linux-android
     armv7-linux-androideabi
     i686-linux-android
