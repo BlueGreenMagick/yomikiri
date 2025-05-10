@@ -61,7 +61,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .task/
-          key: task-checksum
+          key: ${{runner.os}}-task-checksum
+      
+      - name: Cache generated directory
+        uses: actions/cache@v4
+        with:
+          path: generated/
+          key: ${{runner.os}}-generated-dir
 
       - name: Cache dprint
         uses: actions/cache@v4
