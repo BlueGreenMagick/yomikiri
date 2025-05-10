@@ -1,10 +1,19 @@
 packages:
-  - 'main'
-  - 'generated'
-  - 'generated/backend-bindings'
-  - 'generated/yomikiri-backend-wasm'
-  - 'extra/generate-license'
+  - main
+  - generated
+  - generated/backend-bindings
+  - generated/yomikiri-backend-wasm
+  - extra/generate-license
 
 catalog:
   typescript: ^5.8.3
   tsx: ^4.19.4
+
+onlyBuiltDependencies:
+  - '@go-task/cli'
+  - '@parcel/watcher'
+  - '@swc/core'
+  - dprint
+  - esbuild
+  - spawn-sync
+  - svelte-preprocess
