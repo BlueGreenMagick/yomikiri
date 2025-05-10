@@ -12,8 +12,8 @@
     "import": "^0.0.6",
     "promisify-child-process": "^4.1.2",
     "toml": "^3.0.0",
-    "tsx": "^4.19.4",
-    "typescript": "^5.4.5",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
     "which": "^4.0.0"
   }
 }
