@@ -27,7 +27,7 @@ vars:
     x86_64-linux-android
 
   INSTALLED_TARGETS:
-    sh: rustup show
+    sh: rustup target list --installed
 
 tasks:
   build:ios:
