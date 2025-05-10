@@ -88,7 +88,7 @@ export class WrapHighlighter implements IHighlighter {
     if (existing !== null) return;
 
     const style = document.createElement("style");
-    style.id;
+    style.id = STYLE_ID;
     style.textContent = HIGHLIGHT_CSS;
     document.head.appendChild(style);
   }
