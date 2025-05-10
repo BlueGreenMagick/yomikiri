@@ -11,7 +11,7 @@ tasks:
     desc: 'Format files'
     cmds:
       - 'cargo fmt'
-      - 'pnpm dprint format'
+      - 'pnpm dprint fmt'
 
   check:
     desc: 'Check files'

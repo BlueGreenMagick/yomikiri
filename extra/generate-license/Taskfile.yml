@@ -46,7 +46,7 @@ tasks:
   format:
     aliases: ['fmt']
     cmds:
-      - 'pnpm dprint format'
+      - 'pnpm dprint fmt'
       - task: 'format:rust'
 
   format:rust:

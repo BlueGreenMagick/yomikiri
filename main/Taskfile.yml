@@ -126,4 +126,4 @@ tasks:
   format:
     aliases: ['fmt']
     cmds:
-      - 'pnpm dprint format'
+      - 'pnpm dprint fmt'

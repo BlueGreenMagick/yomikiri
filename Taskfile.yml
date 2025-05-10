@@ -105,7 +105,7 @@ tasks:
     aliases: ['fmt:dprint']
     desc: 'Format files using dprint'
     cmds:
-      - 'pnpm dprint format'
+      - 'pnpm dprint fmt'
 
   format:rust:
     aliases: ['fmt:rust']
