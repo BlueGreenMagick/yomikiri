@@ -12,6 +12,7 @@
     "@eslint/js": "^9.26.0",
     "@go-task/cli": "^3.43.3",
     "@typescript-eslint/parser": "^8.32.0",
+    "dprint": "^0.49.1",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-regexp": "^2.7.0",
