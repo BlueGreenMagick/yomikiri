@@ -109,8 +109,7 @@ tasks:
       - '
         cargo run --features "uniffi/cli uniffi-bindgen"
         --bin uniffi-bindgen generate --language "{{.LANGUAGE}}"
-        --library "{{.LIB_PATH}}" --out-dir "{{.OUT_DIR}}"
-'
+        --library "{{.LIB_PATH}}" --out-dir "{{.OUT_DIR}}"'
 
   # Cleans dir if `{{.RELEASE}}` is set
   # Cleans dir if `{{.RELEASE}}` is set
