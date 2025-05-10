@@ -23,9 +23,9 @@
     "/android/",
     "/crates/yomikiri-backend-wasm/pkg",
     "/crates/yomikiri-backend/bindings",
+    "/.*",
     "**/pnpm-lock.yaml",
     "**/Cargo.lock",
-    ".git/",
     "**/node_modules/",
     "**/*-lock.json",
     "**/target/*"
