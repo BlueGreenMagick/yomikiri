@@ -193,11 +193,7 @@ export async function speakJapanese(
   let options: chrome.tts.TtsOptions = { lang: "ja-jp" };
   if (voice !== null) {
     const voices = await japaneseTtsVoices();
-    if (
-      voices.find((value) => {
-        value.name === voice.name;
-      }) !== undefined
-    ) {
+    if (voices.find((value) => value.name === voice.name) !== undefined) {
       options = { voiceName: voice.name };
     }
   }

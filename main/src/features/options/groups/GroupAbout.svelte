@@ -26,7 +26,7 @@
   </OptionBase>
   <OptionClick
     title="Third party licenses"
-    buttonText={"View"}
+    buttonText="View"
     onClick={() => {
       modalThirdPartyVisible = true;
     }}
@@ -35,7 +35,7 @@
   </OptionClick>
   <OptionClick
     title="View source code"
-    buttonText={"GitHub"}
+    buttonText="GitHub"
     onClick={() => {
       ctx.platform.openExternalLink(
         "https://github.com/bluegreenmagick/yomikiri",
