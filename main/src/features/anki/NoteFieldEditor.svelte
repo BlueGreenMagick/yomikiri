@@ -11,11 +11,11 @@
 <script lang="ts">
   import type { LoadingField } from "@/features/anki";
   import {
+    ChangeTracker,
     PromiseWithProgress,
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
-    newChangeTracker,
   } from "@/features/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
@@ -28,7 +28,7 @@
   let initialContent: string | null = null;
   let element: HTMLDivElement | null = null;
   let unsubscriber: Unsubscriber | null = null;
-  const fieldChangeTracker = newChangeTracker<typeof field>();
+  const fieldChangeTracker = new ChangeTracker<typeof field>();
   let fieldChanged: number = 0;
 
   function initializeField() {
@@ -157,7 +157,7 @@
     };
   });
 
-  $: fieldChanged = fieldChangeTracker(field);
+  $: fieldChanged = fieldChangeTracker.track(field);
   $: fieldChanged, initializeField();
   $: element, initialContent, onContentInitialized();
 </script>

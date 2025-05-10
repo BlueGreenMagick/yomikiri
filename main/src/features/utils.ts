@@ -462,27 +462,31 @@ export function isElementNode(node: Node): node is Element {
 }
 
 /**
- * Creates a function that takes in a single argument,
- * returns a tick that tracks if passed argument has changed with `Object.is()`.
+ * This class is used to track changes to some value.
+ * `.track()` returns a tick value that changes only when passed argument has changed.
+ *  It uses `Object.is()` for comparison.
+ *
+ * In Svelte, `$:` statements can run when using an object property that hasn't changed
+ * if another property of the object has changed.
  *
  * ### Usage in Svelte
  *
  * ```svelte
- * const stateChangeTracker = newChangeTracker();
- * $: stateChanged = stateChangeTracker(state)
+ * const stateChangeTracker = new ChangeTracker<T>()
+ * $: stateChanged = stateChangeTracker.track(state)
  * ```
  */
-export function newChangeTracker<T>(): (obj: T) => number {
-  let prev: T | undefined;
-  let tick = 0;
+export class ChangeTracker<T> {
+  prev?: T = undefined;
+  tick = 0;
 
-  return (obj: T) => {
-    if (!Object.is(obj, prev)) {
-      prev = obj;
-      tick += 1;
+  track(obj: T): number {
+    if (!Object.is(obj, this.prev)) {
+      this.prev = obj;
+      this.tick += 1;
     }
-    return tick;
-  };
+    return this.tick;
+  }
 }
 
 export class Disposable {

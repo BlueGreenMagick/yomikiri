@@ -11,7 +11,7 @@
   } from "./ankiBuilder";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
   import TextButton from "@/features/components/TextButton.svelte";
-  import { newChangeTracker, SingleQueued } from "@/features/utils";
+  import { ChangeTracker, SingleQueued } from "@/features/utils";
   import { HourglassToastIcon } from "@/features/toast";
   import { YomikiriError } from "@/features/error";
   import type { AppCtx } from "../ctx";
@@ -41,7 +41,7 @@
   let anyErrored = false;
   let allLoaded = false;
   let noteDataChanged: number;
-  let noteDataChangeTracker = newChangeTracker<typeof noteData>();
+  let noteDataChangeTracker = new ChangeTracker<typeof noteData>();
 
   async function onAdd() {
     let ankiNote = await resolveAnkiNote(noteData);
@@ -70,7 +70,7 @@
     allLoaded = true;
   });
 
-  $: noteDataChanged = noteDataChangeTracker(noteData);
+  $: noteDataChanged = noteDataChangeTracker.track(noteData);
   $: noteDataChanged, void loadNote();
   $: anyErrored = errored.includes(true);
 </script>
