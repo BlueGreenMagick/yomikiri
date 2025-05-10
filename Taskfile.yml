@@ -134,6 +134,7 @@ tasks:
       - task: 'build:chrome'
       - task: 'build:firefox'
       - task: 'build:ios'
+      - task: 'build:android'
 
   build:extensions:
     desc: 'Build Chrome and Firefox web extensions'
