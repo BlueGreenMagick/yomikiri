@@ -8,7 +8,7 @@
   "devDependencies": {
     "@types/node": "^20.12.7",
     "@types/which": "^3.0.3",
-    "generate-license-file": "^3.3.0",
+    "generate-license-file": "^4.0.0",
     "import": "^0.0.6",
     "promisify-child-process": "^4.1.2",
     "toml": "^3.0.0",
