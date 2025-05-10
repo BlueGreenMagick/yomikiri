@@ -1,6 +1,6 @@
 <script lang="ts">
-  import OptionBase from "./OptionBase.svelte";
   import IconChevronForward from "#icons/chevron-forward.svg";
+  import OptionBase from "./OptionBase.svelte";
 
   export let title: string;
   export let buttonText: string;

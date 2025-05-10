@@ -1,9 +1,9 @@
-import { AndroidPlatform } from ".";
-import type { AndroidCtx } from "@/features/ctx";
-import { AndroidBackend } from "./backend";
-import { AndroidAnkiApi } from "./anki";
-import { LazyAsync } from "@/features/utils";
 import { Config } from "@/features/config";
+import type { AndroidCtx } from "@/features/ctx";
+import { LazyAsync } from "@/features/utils";
+import { AndroidPlatform } from ".";
+import { AndroidAnkiApi } from "./anki";
+import { AndroidBackend } from "./backend";
 
 export function createAndroidCtx(): AndroidCtx {
   const platform = new AndroidPlatform();

@@ -1,17 +1,13 @@
+import type { PromiseWithProgress } from "@/features/utils";
 import type {
   DictionaryMetadata,
   SearchArgs,
   TokenizeArgs,
   TokenizeResult,
 } from "@yomikiri/backend-bindings";
-import type {
-  IBackend,
-  SearchRequest,
-  TokenizeRequest,
-} from "../types/backend";
 import { cleanTokenizeResult, emptyTokenizeResult } from "../shared/backend";
+import type { IBackend, SearchRequest, TokenizeRequest } from "../types/backend";
 import { sendMessage } from "./messaging";
-import type { PromiseWithProgress } from "@/features/utils";
 
 export class AndroidBackend implements IBackend {
   readonly type = "android";

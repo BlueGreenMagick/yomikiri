@@ -1,11 +1,10 @@
-
 [package]
 name = "yomikiri-backend-uniffi"
 version = "0.1.0"
 authors = ["BlueGreenMagick <bluegreenmagick@gmail.com>"]
 edition = "2021"
-description = "Yomikiri Backend with uniffi bindings"
 license = "MIT"
+description = "Yomikiri Backend with uniffi bindings"
 
 [lib]
 crate-type = ["cdylib", "rlib", "staticlib"]
@@ -21,17 +20,17 @@ path = "uniffi-bindgen.rs"
 uniffi-bindgen = []
 
 [dependencies]
-yomikiri-dictionary = { workspace = true }
-log = { workspace = true }
-serde_json = { workspace = true }
-flate2 = { workspace = true }
 anyhow = { workspace = true }
-yomikiri-rs = { workspace = true }
-uniffi = { workspace = true }
-ureq = { workspace = true }
+flate2 = { workspace = true }
 fs-err = { workspace = true }
+log = { workspace = true }
 memmap2 = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
+uniffi = { workspace = true }
+ureq = { workspace = true }
+yomikiri-dictionary = { workspace = true }
+yomikiri-rs = { workspace = true }
 
 [target.'cfg(any(target_os="macos", target_os="ios"))'.dependencies]
 oslog = { version = "0.2" }

@@ -14,10 +14,12 @@
         {#each otherForms.writings as writingForm, i (writingForm)}
           <div class="other-writing {writingForm.rarity}">
             {writingForm.writing}<!--
-       -->{#if writingForm.rarity !== "normal"}<span
-                class="rarity-tag">({writingForm.rarity})</span
-              >{/if}<!--
-       -->{#if i < otherForms.writings.length - 1}、{/if}
+       -->
+            {#if writingForm.rarity !== "normal"}<span class="rarity-tag"
+              >({writingForm.rarity})</span>{/if}
+            <!--
+       -->
+            {#if i < otherForms.writings.length - 1}、{/if}
           </div>
         {/each}
       </div>
@@ -27,10 +29,11 @@
         {#each otherForms.readings as reading, i (reading)}
           <div class="other-reading {reading.rarity}">
             {reading.reading}<!--
-         -->{#if reading.rarity !== "normal"}<span
-                class="rarity-tag">({reading.rarity})</span
-              >{/if}<!--
-         -->{#if i < otherForms.readings.length - 1}、{/if}
+         -->
+            {#if reading.rarity !== "normal"}<span class="rarity-tag">({reading.rarity})</span>{/if}
+            <!--
+         -->
+            {#if i < otherForms.readings.length - 1}、{/if}
           </div>
         {/each}
       </div>

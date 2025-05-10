@@ -35,7 +35,8 @@ export async function getTranslation(text: string): Promise<TranslateResult> {
   const targetLang = "en";
   const encodedText = encodeURIComponent(text);
 
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=${targetLang}&dt=t&dt=bd&dj=1&q=${encodedText}`;
+  const url =
+    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl=${targetLang}&dt=t&dt=bd&dj=1&q=${encodedText}`;
   const response = await fetch(url);
   const respBody = await response.json(); // eslint-disable-line
 

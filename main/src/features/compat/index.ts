@@ -14,8 +14,4 @@ Instead, a new key is always created.
 And if needed, value is transformed and moved from existing key.
 */
 export { migrateConfigObject } from "./migrate";
-export type {
-  CompatConfiguration,
-  StoredCompatConfiguration,
-  StoredConfig,
-} from "./shared";
+export type { CompatConfiguration, StoredCompatConfiguration, StoredConfig } from "./shared";

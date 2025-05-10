@@ -1,35 +1,33 @@
-
 [package]
 name = "yomikiri-rs"
 version = "0.1.0"
 authors = ["BlueGreenMagick <bluegreenmagick@gmail.com>"]
 edition = "2021"
-description = "Rust library used in Yomikiri"
 license = "MIT"
-
+description = "Rust library used in Yomikiri"
 
 [[bin]]
 name = "schemars"
 path = "bin/schemars.rs"
 
 [dependencies]
-lindera-tokenizer = { workspace = true }
-lindera-core = { workspace = true }
-yomikiri-dictionary = { workspace = true }
-yomikiri-unidic-types = { workspace = true }
-unicode-normalization = { workspace = true }
-unicode-segmentation = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
 anyhow = { workspace = true }
 japanese-utils = { workspace = true }
+lindera-core = { workspace = true }
+lindera-tokenizer = { workspace = true }
 schemars = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+unicode-normalization = { workspace = true }
+unicode-segmentation = { workspace = true }
+yomikiri-dictionary = { workspace = true }
+yomikiri-unidic-types = { workspace = true }
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3"
+fs-err = { workspace = true }
 insta = { workspace = true }
 memmap2 = { workspace = true }
-fs-err = { workspace = true }
+wasm-bindgen-test = "0.3"
 
 [lints.clippy]
 needless_borrows_for_generic_args = "allow"

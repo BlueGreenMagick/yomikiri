@@ -1,16 +1,7 @@
-import {
-  migrateConfigObject,
-  type StoredCompatConfiguration,
-} from "@/features/compat";
-import type {
-  IPlatform,
-  TranslateResult,
-  TTSRequest,
-  TTSVoice,
-  VersionInfo,
-} from "../types";
+import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import { getTranslation } from "../shared/translate";
+import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
 
 export class AndroidPlatform implements IPlatform {

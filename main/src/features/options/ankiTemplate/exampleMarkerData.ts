@@ -166,5 +166,4 @@ export const exampleMarkerData: AnkiBuilderData = {
   pageTitle: "Yomikiri Examples",
 };
 
-export const exampleTranslatedSentence =
-  "I want to watch an interesting movie.";
+export const exampleTranslatedSentence = "I want to watch an interesting movie.";

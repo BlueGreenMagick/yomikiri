@@ -4,19 +4,19 @@
  * loaded on desktop / ios
  */
 
+import DisabledIcon from "@/assets/icon128-20a.png";
+import DefaultIcon from "@/assets/static/images/icon128.png";
+import { Config } from "@/features/config";
 import {
   handleBrowserLoad,
   handleMessage,
+  type MessageSender,
   setActionIcon,
   setBadge,
-  type MessageSender,
 } from "@/features/extension/browserApi";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { Config } from "@/features/config";
-import DefaultIcon from "@/assets/static/images/icon128.png";
-import DisabledIcon from "@/assets/icon128-20a.png";
+import { createDesktopCtx, type DesktopAnkiApi } from "@/platform/desktop";
 import { derived } from "svelte/store";
-import { type DesktopAnkiApi, createDesktopCtx } from "@/platform/desktop";
 
 const _initialized: Promise<void> = initialize();
 

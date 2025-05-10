@@ -1,10 +1,6 @@
-import type {
-  RunArgTypes,
-  RunReturnTypes,
-  TokenizeResult,
-} from "@yomikiri/backend-bindings";
 import { getValidEntriesForSurface } from "@/features/dicEntry";
 import { toHiragana } from "@/features/japanese";
+import type { RunArgTypes, RunReturnTypes, TokenizeResult } from "@yomikiri/backend-bindings";
 
 export type RunMessageMap = {
   [K in keyof RunArgTypes]: [RunArgTypes[K], RunReturnTypes[K]];

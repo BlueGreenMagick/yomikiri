@@ -1,10 +1,10 @@
-import Toasts from "./Toasts.svelte";
-import toast, { type ToastOptions, type Renderable } from "svelte-french-toast";
-import DetailedToast from "./DetailedToast.svelte";
-import { YomikiriError } from "../error";
 import { TOASTER_ZINDEX } from "consts";
+import toast, { type Renderable, type ToastOptions } from "svelte-french-toast";
 import type { Config } from "../config";
+import { YomikiriError } from "../error";
 import type { LazyAsync } from "../utils";
+import DetailedToast from "./DetailedToast.svelte";
+import Toasts from "./Toasts.svelte";
 
 type ToastType = "success" | "error" | "loading";
 

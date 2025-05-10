@@ -1,9 +1,9 @@
 <script lang="ts">
-  import GroupAppearance from "./groups/GroupAppearance.svelte";
-  import GroupAnki from "./groups/GroupAnki.svelte";
-  import GroupAbout from "./groups/GroupAbout.svelte";
-  import GroupDictionary from "./groups/GroupDictionary.svelte";
   import type { AppCtx, DesktopCtx, IosAppCtx } from "../ctx";
+  import GroupAbout from "./groups/GroupAbout.svelte";
+  import GroupAnki from "./groups/GroupAnki.svelte";
+  import GroupAppearance from "./groups/GroupAppearance.svelte";
+  import GroupDictionary from "./groups/GroupDictionary.svelte";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 </script>

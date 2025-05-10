@@ -1,7 +1,7 @@
-import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
-import type { TTSVoice, VersionInfo, TTSRequest } from "../types";
 import type { StoredConfiguration } from "@/features/config";
+import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
+import type { TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 
 declare global {
@@ -42,10 +42,8 @@ export interface MessageWebviewMap extends RunMessageMap {
   close: [null, void];
 }
 
-export type WebviewRequest<K extends keyof MessageWebviewMap> =
-  MessageWebviewMap[K][0];
-export type WebviewResponse<K extends keyof MessageWebviewMap> =
-  MessageWebviewMap[K][1];
+export type WebviewRequest<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][0];
+export type WebviewResponse<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][1];
 
 /** Message to app inside app's WKWebview */
 export async function sendMessage<K extends keyof MessageWebviewMap>(
@@ -56,8 +54,7 @@ export async function sendMessage<K extends keyof MessageWebviewMap>(
     key,
     request: JSON.stringify(request),
   };
-  const response =
-    await window.webkit.messageHandlers.yomikiri.postMessage(message);
+  const response = await window.webkit.messageHandlers.yomikiri.postMessage(message);
   const jsonResponse = handleResponseMessage(response);
   return JSON.parse(jsonResponse) as WebviewResponse<K>;
 }

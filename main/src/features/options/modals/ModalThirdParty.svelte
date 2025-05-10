@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Modal from "../Modal.svelte";
   import licensesDisclaimer from "@yomikiri/generated/license/THIRD_PARTY.txt";
+  import Modal from "../Modal.svelte";
 
   export let onClose: () => void;
 </script>
@@ -15,9 +15,8 @@
       <br />
       <div>
         The JMDict/JMneDict dictionary files are the property of the
-        <a href="https://www.edrdg.org/"
-          >Electronic Dictionary Research and Development Group</a
-        >, and are used in conformance with the Group's
+        <a href="https://www.edrdg.org/">Electronic Dictionary Research and Development Group</a>,
+        and are used in conformance with the Group's
         <a href="https://www.edrdg.org/edrdg/licence.html">license</a>.
       </div>
     </div>

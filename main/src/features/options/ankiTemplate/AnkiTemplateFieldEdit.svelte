@@ -2,22 +2,22 @@
   import IconEye from "#icons/eye.svg";
   import IconOptions from "#icons/options.svg";
   import {
-    type AnkiTemplateFieldContent,
     ANKI_TEMPLATE_FIELD_TYPES,
+    type AnkiTemplateField,
+    type AnkiTemplateFieldContent,
     ankiTemplateFieldLabel,
-    newAnkiTemplateField,
+    buildAnkiField,
     type Field,
     type LoadingField,
-    buildAnkiField,
-    type AnkiTemplateField,
+    newAnkiTemplateField,
     NoteFieldEditor,
   } from "@/features/anki";
 
-  import Select from "@/features/components/Select.svelte";
   import IconedButton from "@/features/components/IconedButton.svelte";
+  import Select from "@/features/components/Select.svelte";
+  import type { AppCtx } from "@/features/ctx";
   import AnkiTemplateFieldOptionsEdit from "./AnkiTemplateFieldOptionsEdit.svelte";
   import { exampleMarkerData } from "./exampleMarkerData";
-  import type { AppCtx } from "@/features/ctx";
 
   export let ctx: AppCtx;
   export let fieldTemplate: AnkiTemplateField;
@@ -34,8 +34,7 @@
 
   function generateFieldOptions(): [AnkiTemplateFieldContent, string][] {
     return ANKI_TEMPLATE_FIELD_TYPES.map((type) => {
-      const cached =
-        fieldTemplates.get(type) ??
+      const cached = fieldTemplates.get(type) ??
         newAnkiTemplateField(fieldTemplate.name, type);
       const label = ankiTemplateFieldLabel(cached);
       return [type, label] as [AnkiTemplateFieldContent, string];

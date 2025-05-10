@@ -1,13 +1,13 @@
 /// For IOS
 
+import { YomikiriError } from "@/features/error";
 import {
-  goToTab,
-  removeTab,
-  getTabs,
   currentTab,
   getStorage,
+  getTabs,
+  goToTab,
+  removeTab,
 } from "@/features/extension/browserApi";
-import { YomikiriError } from "@/features/error";
 
 /**
  * Used for x-callback-url as x-success value to return back to current page.

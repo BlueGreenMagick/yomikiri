@@ -1,7 +1,7 @@
-import { OptionsPage } from "@/features/options";
-import Utils, { exposeGlobals } from "@/features/utils";
 import type { AppCtx, DesktopCtx } from "@/features/ctx";
+import { OptionsPage } from "@/features/options";
 import { Toast } from "@/features/toast";
+import Utils, { exposeGlobals } from "@/features/utils";
 import { createDesktopCtx } from "@/platform/desktop";
 
 async function initialize(): Promise<AppCtx<DesktopCtx>> {

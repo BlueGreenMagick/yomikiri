@@ -1,8 +1,8 @@
-import DictionaryPage from "./DictionaryPage.svelte";
-import Utils, { exposeGlobals } from "@/features/utils";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
+import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosAppCtx } from "@/platform/iosapp";
+import DictionaryPage from "./DictionaryPage.svelte";
 
 const _page = createSvelte();
 

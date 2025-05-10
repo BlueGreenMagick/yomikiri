@@ -1,17 +1,14 @@
 import { PromiseWithProgress } from "@/features/utils";
+import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type {
+  DictionaryMetadata,
   IBackend,
+  SearchArgs,
+  SearchRequest,
+  TokenizeArgs,
   TokenizeRequest,
   TokenizeResult,
-  SearchRequest,
-  DictionaryMetadata,
-  SearchArgs,
-  TokenizeArgs,
 } from "../types/backend";
-import {
-  cleanTokenizeResult,
-  emptyTokenizeResult,
-} from "@/platform/shared/backend";
 import { sendMessage } from "./messaging";
 
 export class IosAppBackend implements IBackend {

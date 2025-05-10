@@ -1,14 +1,6 @@
 import { NonContentScriptFunction } from "@/features/extension/browserApi";
-import type {
-  TokenizeResult,
-  IBackend,
-  TokenizeArgs,
-  SearchArgs,
-} from "../types/backend";
-import {
-  cleanTokenizeResult,
-  emptyTokenizeResult,
-} from "@/platform/shared/backend";
+import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
+import type { IBackend, SearchArgs, TokenizeArgs, TokenizeResult } from "../types/backend";
 import { sendMessage } from "./messaging";
 
 export class IosBackend implements IBackend {

@@ -1,7 +1,7 @@
 <script lang="ts">
+  import type { AppCtx, DesktopCtx, IosAppCtx } from "../ctx";
   import MainColumn from "./MainColumn.svelte";
   import PreviewColumn from "./PreviewColumn.svelte";
-  import type { AppCtx, DesktopCtx, IosAppCtx } from "../ctx";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 </script>

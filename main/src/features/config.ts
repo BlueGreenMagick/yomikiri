@@ -1,8 +1,8 @@
 import type { AnyPlatform, TTSVoice } from "@/platform/types";
 import { VERSION } from "consts";
-import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
-import { writable, type Writable } from "svelte/store";
+import { type Writable, writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
+import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { Disposable, log } from "./utils";
 
 /**
@@ -102,8 +102,8 @@ export class Config {
   get<K extends keyof Configuration>(key: K): Configuration[K] {
     const value = this.storage[key];
     return value !== undefined ?
-        (value as Configuration[K])
-      : defaultOptions[key];
+      (value as Configuration[K]) :
+      defaultOptions[key];
   }
 
   /**
@@ -261,7 +261,7 @@ export class Config {
         unsubscribeFont();
         return;
       }
-      const escapedFont = font.replace('"', '\\"').replace("\\", "\\\\");
+      const escapedFont = font.replace("\"", "\\\"").replace("\\", "\\\\");
       el.style.setProperty("--japanese-font", `"${escapedFont}"`);
     });
   }

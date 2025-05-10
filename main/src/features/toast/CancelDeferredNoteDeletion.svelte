@@ -7,8 +7,10 @@
 <button
   on:click={() => {
     onCancel();
-  }}>Cancel</button
+  }}
 >
+  Cancel
+</button>
 
 <style>
   button {

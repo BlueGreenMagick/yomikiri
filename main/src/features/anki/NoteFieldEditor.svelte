@@ -12,10 +12,10 @@
   import type { LoadingField } from "@/features/anki";
   import {
     ChangeTracker,
-    PromiseWithProgress,
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
+    PromiseWithProgress,
   } from "@/features/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";

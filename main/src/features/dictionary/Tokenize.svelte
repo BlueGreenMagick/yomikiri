@@ -1,15 +1,15 @@
 <script lang="ts">
-  import type { TokenizeResult } from "@yomikiri/backend-bindings";
-  import Utils from "@/features/utils";
-  import IconSearch from "#icons/search.svg";
   import IconCloseCircle from "#icons/close-circle.svg";
-  import SentenceView from "./SentenceView.svelte";
-  import DicEntriesView from "./DicEntriesView.svelte";
-  import TextButton from "../../features/components/TextButton.svelte";
-  import ToolbarWithPane from "./ToolbarWithPane.svelte";
-  import type { Tools, SelectedEntryForAnki } from "./types";
+  import IconSearch from "#icons/search.svg";
+  import Utils from "@/features/utils";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
+  import TextButton from "../../features/components/TextButton.svelte";
   import type { AppCtx } from "../ctx";
+  import DicEntriesView from "./DicEntriesView.svelte";
+  import SentenceView from "./SentenceView.svelte";
+  import ToolbarWithPane from "./ToolbarWithPane.svelte";
+  import type { SelectedEntryForAnki, Tools } from "./types";
 
   export let ctx: AppCtx;
   export let searchText = "";

@@ -1,9 +1,9 @@
 import type { AnkiNote } from "@/features/anki";
+import type { AnkiInfo } from "@/features/anki/ankiInfo";
 import type { DesktopAnkiApi } from "../desktop";
 import type { IosAnkiApi } from "../ios";
 import type { IosAppAnkiApi } from "../iosapp";
 import type { IPlatformConsts } from ".";
-import type { AnkiInfo } from "@/features/anki/ankiInfo";
 
 export interface IAnkiOptions extends IPlatformConsts {
   /**

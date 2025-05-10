@@ -1,8 +1,8 @@
 <script lang="ts">
+  import type { AppCtx } from "@/features/ctx";
+  import GroupedOptions from "../GroupedOptions.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
   import OptionText from "../items/OptionText.svelte";
-  import GroupedOptions from "../GroupedOptions.svelte";
-  import type { AppCtx } from "@/features/ctx";
 
   export let ctx: AppCtx;
 

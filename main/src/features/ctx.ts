@@ -1,21 +1,9 @@
+import type { AndroidAnkiApi, AndroidBackend, AndroidPlatform } from "@/platform/android";
+import type { DesktopAnkiApi, DesktopBackend, DesktopPlatform } from "@/platform/desktop";
+import type { IosAnkiApi, IosBackend, IosPlatform } from "@/platform/ios";
+import type { IosAppAnkiApi, IosAppBackend, IosAppPlatform } from "@/platform/iosapp";
 import type { Config } from "./config";
 import type { Toast } from "./toast/toast";
-import type {
-  DesktopPlatform,
-  DesktopAnkiApi,
-  DesktopBackend,
-} from "@/platform/desktop";
-import type { IosPlatform, IosAnkiApi, IosBackend } from "@/platform/ios";
-import type {
-  IosAppPlatform,
-  IosAppAnkiApi,
-  IosAppBackend,
-} from "@/platform/iosapp";
-import type {
-  AndroidPlatform,
-  AndroidAnkiApi,
-  AndroidBackend,
-} from "@/platform/android";
 import type { LazyAsync } from "./utils";
 
 export interface LazyConfigCtx {

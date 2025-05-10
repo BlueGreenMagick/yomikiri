@@ -1,7 +1,7 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
-import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { iosAnkiMobileURL } from "../shared/anki";
+import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { sendMessage } from "./messaging";
 
 export interface Named {

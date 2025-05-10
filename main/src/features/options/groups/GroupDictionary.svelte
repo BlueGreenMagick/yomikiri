@@ -1,8 +1,8 @@
 <script lang="ts">
+  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
+  import { YomikiriError } from "@/features/error";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionButton from "../items/OptionButton.svelte";
-  import { YomikiriError } from "@/features/error";
-  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
 
   type DictState =
     | "loading"

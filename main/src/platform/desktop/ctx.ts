@@ -1,9 +1,9 @@
 import { Config } from "@/features/config";
+import type { DesktopCtx } from "@/features/ctx";
+import { LazyAsync } from "@/features/utils";
 import { DesktopPlatform } from ".";
 import { DesktopAnkiApi } from "./anki";
-import type { DesktopCtx } from "@/features/ctx";
 import { DesktopBackend } from "./backend";
-import { LazyAsync } from "@/features/utils";
 
 export function createDesktopCtx(): DesktopCtx {
   const platform = new DesktopPlatform();

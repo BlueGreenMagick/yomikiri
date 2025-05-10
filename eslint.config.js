@@ -1,11 +1,11 @@
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
+import tseslintParser from "@typescript-eslint/parser";
+import eslintPrettier from "eslint-config-prettier";
 import eslintRegexp from "eslint-plugin-regexp";
 import eslintSvelte from "eslint-plugin-svelte";
-import eslintSvelteParser from "svelte-eslint-parser";
-import eslintPrettier from "eslint-config-prettier";
-import tseslintParser from "@typescript-eslint/parser";
 import globals from "globals";
+import eslintSvelteParser from "svelte-eslint-parser";
+import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   eslint.configs.recommended,

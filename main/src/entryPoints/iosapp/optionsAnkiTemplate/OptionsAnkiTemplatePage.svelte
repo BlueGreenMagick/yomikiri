@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { LoadAnkiTemplate } from "@/features/options";
-  import type { AppCtx, IosAppCtx } from "@/features/ctx";
-  import PageSetup from "@/features/components/PageSetup.svelte";
   import LoadingPage from "@/features/components/LoadingPage.svelte";
+  import PageSetup from "@/features/components/PageSetup.svelte";
+  import type { AppCtx, IosAppCtx } from "@/features/ctx";
+  import { LoadAnkiTemplate } from "@/features/options";
 
   export let initialize: () => Promise<AppCtx<IosAppCtx>>;
 </script>

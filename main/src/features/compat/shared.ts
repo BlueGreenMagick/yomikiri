@@ -1,7 +1,7 @@
+import type { AnkiNote } from "@/features/anki";
 import { type Configuration } from "@/features/config";
 import type { Configuration_1 } from "./v1";
 import type { Configuration_2 } from "./v2";
-import type { AnkiNote } from "@/features/anki";
 
 export interface DeprecatedConfiguration {
   /** Deprecated in conf v3+ */
@@ -10,11 +10,9 @@ export interface DeprecatedConfiguration {
 
 /* Ensure that no keys overlap between Configuration and Deprecated Configuration */
 type OverlappingKeys<A, B> = keyof A & keyof B;
-type NoOverlappingKeys<A, B> =
-  OverlappingKeys<A, B> extends never ? object
-  : { overlap: OverlappingKeys<A, B> };
-const _checkOverlap: NoOverlappingKeys<Configuration, DeprecatedConfiguration> =
-  {};
+type NoOverlappingKeys<A, B> = OverlappingKeys<A, B> extends never ? object :
+  { overlap: OverlappingKeys<A, B> };
+const _checkOverlap: NoOverlappingKeys<Configuration, DeprecatedConfiguration> = {};
 
 interface ConfigBase {
   config_version?: number | undefined;
@@ -26,8 +24,9 @@ interface Configuration_New extends ConfigBase {
   version?: undefined;
 }
 
-export type StoredConfig<C extends ConfigBase> = Partial<C> &
-  Pick<C, "config_version" | "version">;
+export type StoredConfig<C extends ConfigBase> =
+  & Partial<C>
+  & Pick<C, "config_version" | "version">;
 
 interface Configurations {
   0: Configuration_New;

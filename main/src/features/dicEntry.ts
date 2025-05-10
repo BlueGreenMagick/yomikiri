@@ -1,6 +1,3 @@
-import { hasOwnProperty } from "./utils";
-import ENTITIES from "../assets/dicEntities.json";
-import { extractKanjis } from "./japanese";
 import type {
   Entry,
   JMSenseMisc,
@@ -9,14 +6,17 @@ import type {
   Reading,
   WordEntry,
 } from "@yomikiri/backend-bindings";
+import ENTITIES from "../assets/dicEntities.json";
 import { YomikiriError } from "./error";
+import { extractKanjis } from "./japanese";
+import { hasOwnProperty } from "./utils";
 export type {
-  WordEntry,
   Entry,
+  NameEntry,
+  PartOfSpeech,
   Reading,
   Sense,
-  PartOfSpeech,
-  NameEntry,
+  WordEntry,
 } from "@yomikiri/backend-bindings";
 
 export type DictionaryResult = WordEntry[];

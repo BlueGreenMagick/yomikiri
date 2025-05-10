@@ -1,13 +1,12 @@
-import { vi } from "vitest";
 import type { TranslateResult } from "@/platform/shared/translate";
+import { vi } from "vitest";
 
 vi.mock(
   "@/platform/shared/translate.ts",
   async (
     importOriginal,
   ): Promise<typeof import("@/platform/shared/translate.ts")> => {
-    const module: typeof import("@/platform/shared/translate.ts") =
-      await importOriginal();
+    const module: typeof import("@/platform/shared/translate.ts") = await importOriginal();
     return {
       ...module,
       getTranslation,

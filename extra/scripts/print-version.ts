@@ -1,4 +1,4 @@
-import { fs, echo } from "zx";
+import { echo, fs } from "zx";
 
 const packageJson = fs.readFileSync("./package.json", { encoding: "utf-8" });
 const pack = JSON.parse(packageJson) as { version: string };

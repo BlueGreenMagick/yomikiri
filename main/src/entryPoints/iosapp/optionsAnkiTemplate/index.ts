@@ -1,8 +1,8 @@
-import Utils, { exposeGlobals } from "@/features/utils";
-import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast/toast";
+import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosAppCtx } from "@/platform/iosapp";
+import OptionsAnkiTemplatePage from "./OptionsAnkiTemplatePage.svelte";
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const ctx = createIosAppCtx();

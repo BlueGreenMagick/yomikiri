@@ -1,15 +1,12 @@
-import fs from "node:fs";
-import path from "node:path";
+import { type Matcher as ChokidarMatcher, watch as chokidarWatch } from "chokidar";
+import ejs from "ejs";
 import esbuild, { type BuildOptions, type Plugin } from "esbuild";
 import sveltePlugin from "esbuild-svelte";
-import { sveltePreprocess } from "svelte-preprocess";
-import ejs from "ejs";
+import fs from "node:fs";
+import path from "node:path";
 import postCssImport from "postcss-import";
+import { sveltePreprocess } from "svelte-preprocess";
 import Package from "../package.json" with { type: "json" };
-import {
-  watch as chokidarWatch,
-  type Matcher as ChokidarMatcher,
-} from "chokidar";
 
 const PRODUCTION = process.env.NODE_ENV?.toLowerCase() === "production";
 const WATCH = !!process.env.WATCH;

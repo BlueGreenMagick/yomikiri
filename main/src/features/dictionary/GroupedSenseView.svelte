@@ -1,13 +1,9 @@
 <script lang="ts">
-  import {
-    miscDisplayText,
-    type PartOfSpeech,
-    type Sense,
-  } from "@/features/dicEntry";
+  import { miscDisplayText, type PartOfSpeech, type Sense } from "@/features/dicEntry";
 
-  import type { DicEntriesModel } from "./dicEntriesModel";
   import type { GroupedSense } from "@yomikiri/backend-bindings";
   import type { AppCtx } from "../ctx";
+  import type { DicEntriesModel } from "./dicEntriesModel";
 
   export let ctx: AppCtx;
   export let model: DicEntriesModel;
@@ -35,10 +31,9 @@
           onSelectSense(sense, group.pos);
         }}
       >
-        {idx + 1}. {sense.meanings.join(", ")}{#if sense.misc.length > 0}<span
-            class="misc"
-            >{sense.misc.map((m) => miscDisplayText(m)).join(", ")}</span
-          >{/if}
+        {idx + 1}. {sense.meanings.join(", ")}{#if sense.misc.length > 0}<span class="misc">{
+            sense.misc.map((m) => miscDisplayText(m)).join(", ")
+          }</span>{/if}
       </div>
     {/each}
   </div>

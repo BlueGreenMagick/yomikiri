@@ -1,16 +1,11 @@
-export {
-  buildAnkiNote,
-  buildAnkiField,
-  resolveAnkiNote,
-  waitForNoteToLoad,
-} from "./ankiBuilder";
+export { buildAnkiField, buildAnkiNote, resolveAnkiNote, waitForNoteToLoad } from "./ankiBuilder";
 export type {
   AnkiBuilderContext,
   AnkiBuilderData,
   AnkiNote,
+  Field,
   LoadingAnkiNote,
   LoadingField,
-  Field,
 } from "./ankiBuilder";
 export type { AnkiInfo, NotetypeInfo } from "./ankiInfo";
 export * from "./template";

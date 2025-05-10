@@ -4,16 +4,16 @@
  * loaded on desktop / ios
  */
 
+import DisabledIcon from "@/assets/icon128-20a.png";
+import DefaultIcon from "@/assets/static/images/icon128.png";
+import { Config } from "@/features/config";
 import {
   handleBrowserLoad,
   handleMessage,
-  setActionIcon,
   type MessageSender,
+  setActionIcon,
 } from "@/features/extension/browserApi";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { Config } from "@/features/config";
-import DefaultIcon from "@/assets/static/images/icon128.png";
-import DisabledIcon from "@/assets/icon128-20a.png";
 import { createIosCtx } from "@/platform/ios";
 
 const _initialized: Promise<void> = initialize();

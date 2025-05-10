@@ -1,15 +1,15 @@
+import type { AnkiNote } from "@/features/anki";
+import type { Config } from "@/features/config";
+import { YomikiriError } from "@/features/error";
 import {
   currentTab,
   NonContentScriptFunction,
   setStorage,
   updateTab,
 } from "@/features/extension/browserApi";
-import type { AnkiNote } from "@/features/anki";
-import type { Config } from "@/features/config";
-import { YomikiriError } from "@/features/error";
+import { LazyAsync } from "@/features/utils";
 import { iosAnkiMobileURL } from "../shared/anki";
 import { type IAnkiAddNotes } from "../types/anki";
-import { LazyAsync } from "@/features/utils";
 
 export class IosAnkiApi implements IAnkiAddNotes {
   readonly type = "ios";

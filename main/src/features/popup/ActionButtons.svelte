@@ -1,6 +1,6 @@
 <script lang="ts">
-  import IconSettings from "#icons/settings.svg";
   import IconPower from "#icons/power.svg";
+  import IconSettings from "#icons/settings.svg";
   import type { AppCtx } from "@/features/ctx";
 
   export let ctx: AppCtx;

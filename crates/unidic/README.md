@@ -6,16 +6,16 @@
 
 source: https://github.com/polm/unidic-py
 
-0.  surface
-1.  Left id
-2.  Right id
-3.  Cost
-4.  part-of-speech 1
-5.  part-of-speech 2
-6.  part-of-speech 3
-7.  part-of-speech 4
-8.  conjugation type (活用型)
-9.  conjugation form (活用形)
+0. surface
+1. Left id
+2. Right id
+3. Cost
+4. part-of-speech 1
+5. part-of-speech 2
+6. part-of-speech 3
+7. part-of-speech 4
+8. conjugation type (活用型)
+9. conjugation form (活用形)
 10. lemma reading (語彙素読み)
 11. lemma (語彙素（語彙素表記 + 語彙素細分類）)
 12. orth (書字形出現形)

@@ -2,18 +2,17 @@
 name = "yomikiri-jmdict"
 version = "0.1.0"
 edition = "2021"
-description = "JMDict XML Types"
 license = "MIT"
-
+description = "JMDict XML Types"
 
 [dependencies]
-thiserror = { workspace = true }
-quick-xml = { workspace = true }
-serde = { workspace = true }
+lazy-regex = { workspace = true }
 log = { workspace = true }
 polonius-the-crab = { workspace = true }
-lazy-regex = { workspace = true }
+quick-xml = { workspace = true }
 schemars = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 insta = { workspace = true }

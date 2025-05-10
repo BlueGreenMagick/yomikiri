@@ -8,6 +8,5 @@ license = "MIT"
 
 [dependencies]
 
-
 [lints]
 workspace = true

@@ -1,4 +1,4 @@
-export { DesktopPlatform } from "./platform";
-export { DesktopBackend } from "./backend";
 export { DesktopAnkiApi } from "./anki";
+export { DesktopBackend } from "./backend";
 export { createDesktopCtx } from "./ctx";
+export { DesktopPlatform } from "./platform";

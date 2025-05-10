@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { type Entry, getMainForm, getMainReading } from "@/features/dicEntry";
   import IconAddCircleOutline from "#icons/add-circle-outline.svg";
+  import IconedButton from "@/features/components/IconedButton.svelte";
+  import { type Entry, getMainForm, getMainReading } from "@/features/dicEntry";
   import { RubyString } from "@/features/japanese";
+  import RubyText from "../../features/components/RubyText.svelte";
+  import type { AppCtx } from "../ctx";
   import Badges from "./Badges.svelte";
   import type { DicEntriesModel } from "./dicEntriesModel";
-  import RubyText from "../../features/components/RubyText.svelte";
-  import IconedButton from "@/features/components/IconedButton.svelte";
-  import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import DicNameEntryContent from "./DicNameEntryContent.svelte";
+  import DicWordEntryContent from "./DicWordEntryContent.svelte";
   import type { SelectedEntryForAnki } from "./types";
-  import type { AppCtx } from "../ctx";
 
   export let ctx: AppCtx;
   export let entry: Entry;

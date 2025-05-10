@@ -1,6 +1,6 @@
-import Utils, { exposeGlobals } from "@/features/utils";
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { ContentScriptController } from "@/features/content";
+import Utils, { exposeGlobals } from "@/features/utils";
 import { createDesktopCtx } from "@/platform/desktop";
 
 declare global {

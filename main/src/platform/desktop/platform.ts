@@ -1,20 +1,17 @@
+import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
+import type { StoredConfiguration } from "@/features/config";
 import {
-  NonContentScriptFunction,
   extensionManifest,
   getStorage,
   handleStorageChange,
   japaneseTtsVoices,
+  NonContentScriptFunction,
   setStorage,
   speakJapanese,
 } from "@/features/extension/browserApi";
-import type { IPlatform, TTSVoice, VersionInfo } from "../types";
-import type { StoredConfiguration } from "@/features/config";
-import { getTranslation } from "../shared/translate";
-import {
-  migrateConfigObject,
-  type StoredCompatConfiguration,
-} from "@/features/compat";
 import { LazyAsync } from "@/features/utils";
+import { getTranslation } from "../shared/translate";
+import type { IPlatform, TTSVoice, VersionInfo } from "../types";
 import { deleteSavedDictionary } from "./dictionary";
 
 export class DesktopPlatform implements IPlatform {

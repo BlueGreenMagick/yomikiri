@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import { migrateConfiguration_2, type Configuration_2 } from "./v2";
 import type { StoredConfig } from "./shared";
+import { type Configuration_2, migrateConfiguration_2 } from "./v2";
 
 const v2Config: StoredConfig<Configuration_2> = {
   version: "0.1.3",

@@ -3,6 +3,11 @@
   passed-in noteData object is modified live when user changes field value
 -->
 <script lang="ts">
+  import TextButton from "@/features/components/TextButton.svelte";
+  import { YomikiriError } from "@/features/error";
+  import { HourglassToastIcon } from "@/features/toast";
+  import { ChangeTracker, SingleQueued } from "@/features/utils";
+  import type { AppCtx } from "../ctx";
   import {
     type Field,
     type LoadingAnkiNote,
@@ -10,11 +15,6 @@
     waitForNoteToLoad,
   } from "./ankiBuilder";
   import NoteFieldEditor from "./NoteFieldEditor.svelte";
-  import TextButton from "@/features/components/TextButton.svelte";
-  import { ChangeTracker, SingleQueued } from "@/features/utils";
-  import { HourglassToastIcon } from "@/features/toast";
-  import { YomikiriError } from "@/features/error";
-  import type { AppCtx } from "../ctx";
 
   interface FieldWatch extends Field {
     _value: string;

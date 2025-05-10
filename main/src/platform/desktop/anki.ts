@@ -1,6 +1,5 @@
-import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
-import { Config } from "@/features/config";
 import type { AnkiInfo, AnkiNote, NotetypeInfo } from "@/features/anki";
+import { Config } from "@/features/config";
 import {
   getStorage,
   NonContentScriptFunction,
@@ -8,14 +7,15 @@ import {
   setStorage,
 } from "@/features/extension/browserApi";
 import {
+  createPromise,
+  type First,
+  getErrorMessage,
   LazyAsync,
   PromiseWithProgress,
-  SingleQueued,
-  createPromise,
-  getErrorMessage,
-  type First,
   type Second,
+  SingleQueued,
 } from "@/features/utils";
+import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 
 const ANKI_CONNECT_VER = 6;
 
@@ -274,8 +274,8 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
     AddDeferredNotesProgress
   > {
     const [innerPromise, resolve, reject] = createPromise<void>();
-    const promise: PromiseWithProgress<void, AddDeferredNotesProgress> =
-      PromiseWithProgress.fromPromise(innerPromise, "loading");
+    const promise: PromiseWithProgress<void, AddDeferredNotesProgress> = PromiseWithProgress
+      .fromPromise(innerPromise, "loading");
 
     (async () => {
       const config = await this.lazyConfig.get();

@@ -5,28 +5,28 @@ Terminology for messaging:
 */
 
 import type { AnkiNote } from "@/features/anki";
+import type { StoredCompatConfiguration } from "@/features/compat";
+import type { StoredConfiguration } from "@/features/config";
+import { YomikiriError } from "@/features/error";
+import {
+  createPromise,
+  type First,
+  handleResponseMessage,
+  type PromiseResolver,
+  type ResponseMessage,
+  type Satisfies,
+  type Second,
+  type Thennable,
+} from "@/features/utils";
+import type { TranslateResult } from "@/platform/shared/translate";
+import type { TTSRequest, TTSVoice } from "@/platform/types";
 import type {
   DictionaryMetadata,
   SearchRequest,
   TokenizeRequest,
   TokenizeResult,
 } from "@/platform/types/backend";
-import type { StoredConfiguration } from "@/features/config";
-import type { TranslateResult } from "@/platform/shared/translate";
-import type { TTSRequest, TTSVoice } from "@/platform/types";
-import {
-  createPromise,
-  handleResponseMessage,
-  type ResponseMessage,
-  type Satisfies,
-  type Thennable,
-  type PromiseResolver,
-  type First,
-  type Second,
-} from "@/features/utils";
 import { EXTENSION_CONTEXT } from "consts";
-import { YomikiriError } from "@/features/error";
-import type { StoredCompatConfiguration } from "@/features/compat";
 
 /**
  * Type map for messages between extension processes
@@ -121,7 +121,8 @@ let _tabId: number | undefined;
 /** returns chrome.action on manifest v3, and chrome.browserAction on manifest v2 */
 export function browserAction():
   | typeof chrome.action
-  | typeof chrome.browserAction {
+  | typeof chrome.browserAction
+{
   return chrome.action ?? chrome.browserAction;
 }
 
@@ -279,8 +280,9 @@ export async function messageToAllTabs<K extends keyof MessageMap>(
   key: K,
   request: MessageRequest<K>,
 ): Promise<(MessageResponse<K> | undefined)[]> {
-  const [outerPromise, outerResolve, outerReject] =
-    createPromise<(MessageResponse<K> | undefined)[]>();
+  const [outerPromise, outerResolve, outerReject] = createPromise<
+    (MessageResponse<K> | undefined)[]
+  >();
   const message = {
     key,
     request,

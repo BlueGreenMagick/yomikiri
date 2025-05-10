@@ -1,6 +1,6 @@
-import { test, expect, describe, beforeAll } from "vitest";
-import { sentenceAtCharLocation, nodesOfToken } from "./scanner";
 import { YomikiriError } from "@/features/error";
+import { beforeAll, describe, expect, test } from "vitest";
+import { nodesOfToken, sentenceAtCharLocation } from "./scanner";
 
 beforeAll(() => {
   const styles = document.createElement("style");

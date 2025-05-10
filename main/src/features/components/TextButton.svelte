@@ -63,8 +63,10 @@
   on:touchstart={onTouchStart}
   on:touchcancel={onTouchEnd}
   on:touchend={onTouchEnd}
-  on:touchmove={onTouchMove}>{label}</button
+  on:touchmove={onTouchMove}
 >
+  {label}
+</button>
 
 <style>
   button {

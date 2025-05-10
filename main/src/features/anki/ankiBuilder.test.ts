@@ -7,17 +7,17 @@
 
 */
 
-import { test, expect, describe } from "vitest";
-import { buildAnkiField, type AnkiBuilderData } from "./ankiBuilder";
-import { ankiTemplateFieldLabel, type AnkiTemplateField } from "./template";
 import type { TokenizeResult } from "@yomikiri/backend-bindings";
+import { describe, expect, test } from "vitest";
+import { type AnkiBuilderData, buildAnkiField } from "./ankiBuilder";
 import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
+import { type AnkiTemplateField, ankiTemplateFieldLabel } from "./template";
 
+import { createDesktopCtx } from "@/platform/desktop";
+import type { WordEntry } from "@yomikiri/backend-bindings";
 import fs from "node:fs";
 import path from "node:path";
 import * as prettier from "prettier";
-import type { WordEntry } from "@yomikiri/backend-bindings";
-import { createDesktopCtx } from "@/platform/desktop";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
@@ -159,12 +159,14 @@ function generateAllFieldTemplateOptions(): TemplateFieldAndLabel[] {
 
   // content: "word"
   for (const form of ["as-is", "dict-form", "main-dict-form"] as const) {
-    for (const style of [
-      "basic",
-      "furigana-anki",
-      "furigana-html",
-      "kana-only",
-    ] as const) {
+    for (
+      const style of [
+        "basic",
+        "furigana-anki",
+        "furigana-html",
+        "kana-only",
+      ] as const
+    ) {
       templates.push({
         name: "field",
         content: "word",
@@ -175,12 +177,14 @@ function generateAllFieldTemplateOptions(): TemplateFieldAndLabel[] {
   }
   // content: "sentence"
   for (const word of ["none", "cloze", "bold", "span"] as const) {
-    for (const style of [
-      "basic",
-      "furigana-anki",
-      "furigana-html",
-      "kana-only",
-    ] as const) {
+    for (
+      const style of [
+        "basic",
+        "furigana-anki",
+        "furigana-html",
+        "kana-only",
+      ] as const
+    ) {
       templates.push({
         name: "field",
         content: "sentence",
@@ -191,13 +195,15 @@ function generateAllFieldTemplateOptions(): TemplateFieldAndLabel[] {
   }
 
   // content: "meaning" (full)
-  for (const full_format of [
-    "numbered",
-    "unnumbered",
-    "line",
-    "div",
-    "yomichan",
-  ] as const) {
+  for (
+    const full_format of [
+      "numbered",
+      "unnumbered",
+      "line",
+      "div",
+      "yomichan",
+    ] as const
+  ) {
     for (const full_pos of [true, false]) {
       for (const full_max_item of [0, 2]) {
         templates.push({

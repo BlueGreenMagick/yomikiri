@@ -1,17 +1,16 @@
 <script lang="ts">
+  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
+  import Utils, { SingleQueued } from "@/features/utils";
+  import type { DesktopAnkiApi } from "@/platform/desktop";
+  import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
   import GroupedOptions from "../GroupedOptions.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import OptionNumber from "../items/OptionNumber.svelte";
-  import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
-  import Utils, { SingleQueued } from "@/features/utils";
-  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
-  import type { DesktopAnkiApi } from "@/platform/desktop";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
 
-  const ANKIMOBILE_URL =
-    "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
+  const ANKIMOBILE_URL = "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
   const AnkiApi = ctx.anki;
 
   const config = ctx.config;
@@ -141,8 +140,7 @@
       title="Add Notes Later"
       onToggle={() => onToggleAnkiDeferNotes(AnkiApi)}
     >
-      If Anki is not connected, add notes later in the background when Anki is
-      connected.
+      If Anki is not connected, add notes later in the background when Anki is connected.
     </OptionToggle>
   {/if}
 

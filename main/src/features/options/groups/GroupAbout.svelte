@@ -1,9 +1,9 @@
 <script lang="ts">
+  import type { AppCtx } from "@/features/ctx";
   import GroupedOptions from "../GroupedOptions.svelte";
+  import OptionBase from "../items/OptionBase.svelte";
   import OptionClick from "../items/OptionClick.svelte";
   import ModalThirdParty from "../modals/ModalThirdParty.svelte";
-  import OptionBase from "../items/OptionBase.svelte";
-  import type { AppCtx } from "@/features/ctx";
 
   export let ctx: AppCtx;
 

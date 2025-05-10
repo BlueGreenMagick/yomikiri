@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { ActionButtons } from "@/features/popup";
+  import LoadingPage from "@/features/components/LoadingPage.svelte";
   import PageSetup from "@/features/components/PageSetup.svelte";
   import type { AppCtx, IosCtx } from "@/features/ctx";
-  import LoadingPage from "@/features/components/LoadingPage.svelte";
+  import { ActionButtons } from "@/features/popup";
 
   export let initialize: () => Promise<AppCtx<IosCtx>>;
 </script>

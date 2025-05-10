@@ -24,8 +24,7 @@ export interface AnkiTemplateFieldTypes {
   link: FieldBase<"link">;
 }
 
-export type AnkiTemplateField =
-  AnkiTemplateFieldTypes[keyof AnkiTemplateFieldTypes];
+export type AnkiTemplateField = AnkiTemplateFieldTypes[keyof AnkiTemplateFieldTypes];
 
 /* Field Options */
 export interface AnkiTemplateFieldWordOptions {

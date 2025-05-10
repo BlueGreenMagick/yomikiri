@@ -1,4 +1,4 @@
-import { deleteDB, openDB, type DBSchema, type IDBPDatabase } from "idb";
+import { type DBSchema, deleteDB, type IDBPDatabase, openDB } from "idb";
 
 const DB_NAME = "yomikiri";
 const DB_FILES_STORE = "files";

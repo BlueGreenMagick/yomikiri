@@ -1,7 +1,4 @@
-import type {
-  DictionaryMetadata,
-  TokenizeResult,
-} from "@yomikiri/backend-bindings";
+import type { DictionaryMetadata, TokenizeResult } from "@yomikiri/backend-bindings";
 import type { DesktopBackend } from "../desktop";
 import type { IosBackend } from "../ios";
 import type { IosAppBackend } from "../iosapp";

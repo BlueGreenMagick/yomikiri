@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { handleErrors, platformClass, setStyle } from "./actions";
   import type { AppCtx } from "../ctx";
+  import { handleErrors, platformClass, setStyle } from "./actions";
 
   export let ctx: AppCtx;
 </script>
@@ -9,7 +9,7 @@
   use:platformClass={ctx}
   use:setStyle={ctx}
   use:handleErrors={ctx}
-  style="display: none;"
+  style="display: none"
 />
 
 <style global>

@@ -1,15 +1,16 @@
 <script lang="ts">
+  import IconAddCircleOutline from "#icons/add-circle-outline.svg";
+  import type { AnkiTemplateField } from "@/features/anki";
   import OptionNumber from "../items/OptionNumber.svelte";
   import OptionSelect from "../items/OptionSelect.svelte";
   import OptionToggle from "../items/OptionToggle.svelte";
-  import type { AnkiTemplateField } from "@/features/anki";
-  import IconAddCircleOutline from "#icons/add-circle-outline.svg";
 
   export let template: AnkiTemplateField;
 </script>
 
 <div class="anki-template-field-options-edit grouped">
-  {#if template.content === "" || template.content === "translated-sentence" || template.content === "url" || template.content === "link"}
+  {#if template.content === "" || template.content === "translated-sentence" ||
+      template.content === "url" || template.content === "link"}
     <div class="gray">No configurable options</div>
   {/if}
   {#if template.content === "word"}
@@ -48,8 +49,7 @@
       Whether to use furigana, or convert word to kana.<br />
       'furigana-anki' outputs
       <a href="https://docs.ankiweb.net/templates/fields.html#ruby-characters"
-        >Anki-format furigana</a
-      >.
+      >Anki-format furigana</a>.
     </OptionSelect>
   {/if}
   {#if template.content === "meaning"}
@@ -85,13 +85,12 @@
       <h4 class="second">Selected Meaning</h4>
       <p>
         When you select a meaning in the dictionary entry,
-        <span class="hidden">'+' button</span><IconAddCircleOutline /> button turns
-        orange.
+        <span class="hidden">'+' button</span>
+        <IconAddCircleOutline /> button turns orange.
         <br />
         Clicking
-        <span class="orange-icon"
-          ><span class="hidden">'+' button</span><IconAddCircleOutline /></span
-        >
+        <span class="orange-icon"><span class="hidden">'+' button</span><IconAddCircleOutline
+          /></span>
         will let you add only that meaning of the word to Anki.
         <br />
       </p>

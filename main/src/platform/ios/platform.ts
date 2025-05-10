@@ -1,20 +1,20 @@
+import { migrateConfigObject } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
-import { LazyAsync, log } from "@/features/utils";
+import { YomikiriError } from "@/features/error";
 import {
-  NonContentScriptFunction,
   currentTab,
   extensionManifest,
   getStorage,
   handleStorageChange,
+  NonContentScriptFunction,
   setStorage,
   updateTab,
 } from "@/features/extension/browserApi";
-import type { IPlatform, TTSVoice, VersionInfo, TTSRequest } from "../types";
-import { getTranslation } from "@/platform/shared/translate";
-import { migrateConfigObject } from "@/features/compat";
-import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import { YomikiriError } from "@/features/error";
+import { LazyAsync, log } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
+import { getTranslation } from "@/platform/shared/translate";
+import { EXTENSION_CONTEXT, PLATFORM } from "consts";
+import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
 
 /** Type map for messages sent with `requestToApp()`*/

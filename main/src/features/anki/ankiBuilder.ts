@@ -1,20 +1,16 @@
-import type {
-  Token,
-  TokenizeResult,
-  WordEntry,
-} from "@yomikiri/backend-bindings";
+import type { SelectedMeaning } from "@/features/dictionary";
+import { YomikiriError } from "@/features/error";
+import Utils, { escapeHTML } from "@/features/utils";
+import type { AnyPlatform } from "@/platform/types";
+import type { Token, TokenizeResult, WordEntry } from "@yomikiri/backend-bindings";
 import type { Config } from "../config";
 import { getReadingForForm, getWordEntryMainForm } from "../dicEntry";
 import { RubyString } from "../japanese";
-import type { AnyPlatform } from "@/platform/types";
-import Utils, { escapeHTML } from "@/features/utils";
 import type {
   AnkiTemplateField,
   AnkiTemplateFieldContent,
   AnkiTemplateFieldTypes,
 } from "./template";
-import { YomikiriError } from "@/features/error";
-import type { SelectedMeaning } from "@/features/dictionary";
 
 export interface LoadingAnkiNote {
   deck: string;
@@ -108,9 +104,11 @@ type FieldBuilder<T extends AnkiTemplateFieldContent> = (
   ctx: AnkiBuilderContext,
 ) => string | Utils.PromiseWithProgress<string, string>;
 
-const fieldBuilders: Partial<{
-  [K in AnkiTemplateFieldContent]: FieldBuilder<K>;
-}> = {};
+const fieldBuilders: Partial<
+  {
+    [K in AnkiTemplateFieldContent]: FieldBuilder<K>;
+  }
+> = {};
 
 export function buildAnkiField(
   ctx: AnkiBuilderContext,
@@ -200,10 +198,10 @@ addBuilder("meaning", (opts, data) => {
     };
 
     if (format === "div") {
-      addLine('<div class="yomi-entry">');
+      addLine("<div class=\"yomi-entry\">");
       indent += 1;
     } else if (format === "yomichan") {
-      addLine('<div style="text-align: left;">');
+      addLine("<div style=\"text-align: left;\">");
       indent += 1;
       addLine("<ol>");
       indent += 1;
@@ -211,7 +209,7 @@ addBuilder("meaning", (opts, data) => {
 
     for (const group of data.entry.groupedSenses) {
       if (format === "div") {
-        addLine('<div class="yomi-group">');
+        addLine("<div class=\"yomi-group\">");
         indent += 1;
       } else if (format === "yomichan") {
         addLine("<li>");
@@ -239,7 +237,7 @@ addBuilder("meaning", (opts, data) => {
         addLine("<ul>");
         indent += 1;
       } else if (format === "div") {
-        addLine('<div class="yomi-meanings">');
+        addLine("<div class=\"yomi-meanings\">");
         indent += 1;
       }
 

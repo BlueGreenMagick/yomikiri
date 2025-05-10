@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
-  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import {
-    type LoadingAnkiNote,
+    AddToAnki,
     type AnkiBuilderData,
     buildAnkiNote,
-    AddToAnki,
+    type LoadingAnkiNote,
   } from "@/features/anki";
   import type { AppCtx, IosAppCtx } from "@/features/ctx";
+  import { type SelectedEntryForAnki, Tokenize } from "@/features/dictionary";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
 
   export let ctx: AppCtx<IosAppCtx>;
   export let context: "app" | "action";

@@ -1,15 +1,11 @@
 <script lang="ts">
-  import type { TokenizeResult } from "@/platform/types/backend";
-  import {
-    type LoadingAnkiNote,
-    type AnkiBuilderData,
-    buildAnkiNote,
-  } from "@/features/anki";
-  import { Tokenize, type SelectedEntryForAnki } from "@/features/dictionary";
+  import { type AnkiBuilderData, buildAnkiNote, type LoadingAnkiNote } from "@/features/anki";
   import { AddToAnki } from "@/features/anki";
-  import { ActionButtons } from "@/features/popup";
-  import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
   import type { AppCtx, DesktopCtx } from "@/features/ctx";
+  import { type SelectedEntryForAnki, Tokenize } from "@/features/dictionary";
+  import { ActionButtons } from "@/features/popup";
+  import type { TokenizeResult } from "@/platform/types/backend";
+  import DeferredNoteInfo from "./DeferredNoteInfo.svelte";
 
   export let ctx: AppCtx<DesktopCtx>;
 

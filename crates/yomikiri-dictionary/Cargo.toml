@@ -7,25 +7,25 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-yomikiri-jmdict = { workspace = true }
-yomikiri-unidic-types = { workspace = true }
+byteorder = { workspace = true }
+chrono = { workspace = true, features = ["wasmbind"] }
+fst = { workspace = true }
+itertools = { workspace = true }
+memchr = { workspace = true }
+ouroboros = { workspace = true }
+postcard = { workspace = true }
+schemars = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-byteorder = { workspace = true }
-itertools = { workspace = true }
-fst = { workspace = true }
-ouroboros = { workspace = true }
-postcard = { workspace = true }
 unicode-normalization = { workspace = true }
-memchr = { workspace = true }
-schemars = { workspace = true }
-chrono = { workspace = true, features = ["wasmbind"] }
+yomikiri-jmdict = { workspace = true }
+yomikiri-unidic-types = { workspace = true }
 
 [dev-dependencies]
-insta = { workspace = true }
 anyhow = { workspace = true }
 fs-err = { workspace = true }
+insta = { workspace = true }
 
 [lints]
 workspace = true

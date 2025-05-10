@@ -4,13 +4,11 @@
   This module must be imported before any other imports.
 */
 
-import { vi } from "vitest";
-import initWasm, {
-  Backend as BackendWasm,
-} from "@yomikiri/yomikiri-backend-wasm";
-import fs from "node:fs/promises";
-import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
 import ENYomikiridict from "@yomikiri/generated/dictionary-files/english.yomikiridict";
+import initWasm, { Backend as BackendWasm } from "@yomikiri/yomikiri-backend-wasm";
+import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
+import fs from "node:fs/promises";
+import { vi } from "vitest";
 
 /* Mock load process of backend wasm */
 
@@ -19,8 +17,7 @@ vi.mock(
   async (
     importOriginal,
   ): Promise<typeof import("@/platform/desktop/fetch.ts")> => {
-    const module: typeof import("@/platform/desktop/fetch.ts") =
-      await importOriginal();
+    const module: typeof import("@/platform/desktop/fetch.ts") = await importOriginal();
     return {
       ...module,
       loadWasm,

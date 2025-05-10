@@ -1,15 +1,15 @@
 <script lang="ts">
   import {
-    getOtherFormsInEntry,
     type EntryOtherForms,
+    getOtherFormsInEntry,
     type PartOfSpeech,
     type Sense,
   } from "@/features/dicEntry";
-  import GroupedSenseView from "./GroupedSenseView.svelte";
-  import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
-  import type { DicEntriesModel } from "./dicEntriesModel";
   import type { WordEntry } from "@yomikiri/backend-bindings";
   import type { AppCtx } from "../ctx";
+  import type { DicEntriesModel } from "./dicEntriesModel";
+  import DicEntryOtherForms from "./DicEntryOtherForms.svelte";
+  import GroupedSenseView from "./GroupedSenseView.svelte";
 
   export let ctx: AppCtx;
   export let entry: WordEntry;

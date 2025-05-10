@@ -9,6 +9,5 @@ edition = "2021"
 cargo-bundle-licenses = { git = "https://github.com/BlueGreenMagick/cargo-bundle-licenses.git", branch = "yomikiri" }
 clap.workspace = true
 
-
 [lints]
 workspace = true

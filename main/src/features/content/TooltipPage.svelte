@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Tooltip from "./Tooltip.svelte";
-  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { emptyTokenizeResult } from "@/platform/shared/backend";
-  import type { AppCtx } from "../ctx";
-  import PageSetup from "../components/PageSetup.svelte";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import LoadingPage from "../components/LoadingPage.svelte";
+  import PageSetup from "../components/PageSetup.svelte";
+  import type { AppCtx } from "../ctx";
+  import Tooltip from "./Tooltip.svelte";
 
   export let initialize: () => Promise<AppCtx> | AppCtx;
   export let onClose: () => void;

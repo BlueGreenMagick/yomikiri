@@ -1,9 +1,9 @@
-import { defineConfig } from "vitest/config";
-import { sveltePreprocess } from "svelte-preprocess";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import path from "node:path";
 import postCssImport from "postcss-import";
+import { sveltePreprocess } from "svelte-preprocess";
 import tsconfigPathsPlugin from "vite-tsconfig-paths";
+import { defineConfig } from "vitest/config";
 import Package from "../package.json" with { type: "json" };
 
 const svelteConfiguredPlugin = svelte({

@@ -1,13 +1,3 @@
-import type {
-  IBackend,
-  RunArgTypes,
-  RunReturnTypes,
-  TokenizeResult,
-} from "../types/backend";
-import {
-  Backend as BackendWasm,
-  dict_schema_ver,
-} from "@yomikiri/yomikiri-backend-wasm";
 import {
   BackgroundFunction,
   createConnection,
@@ -16,27 +6,15 @@ import {
   removeStorage,
   setStorage,
 } from "@/features/extension/browserApi";
+import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-backend-wasm";
+import type { IBackend, RunArgTypes, RunReturnTypes, TokenizeResult } from "../types/backend";
 
-import Utils, {
-  LazyAsync,
-  PromiseWithProgress,
-  createPromise,
-  nextTask,
-} from "@/features/utils";
-import { loadDictionary, loadWasm } from "./fetch";
-import { EXTENSION_CONTEXT } from "consts";
 import { YomikiriError } from "@/features/error";
-import {
-  cleanTokenizeResult,
-  emptyTokenizeResult,
-} from "@/platform/shared/backend";
-import {
-  idbHasFile,
-  idbReadFile,
-  idbWriteFile,
-  idbWriteFiles,
-  type FileName,
-} from "./idb";
+import Utils, { createPromise, LazyAsync, nextTask, PromiseWithProgress } from "@/features/utils";
+import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
+import { EXTENSION_CONTEXT } from "consts";
+import { loadDictionary, loadWasm } from "./fetch";
+import { type FileName, idbHasFile, idbReadFile, idbWriteFile, idbWriteFiles } from "./idb";
 
 export class DesktopBackend implements IBackend {
   readonly type = "desktop";

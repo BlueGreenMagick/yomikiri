@@ -1,7 +1,7 @@
 <script lang="ts">
-  import IconSchool from "#icons/school.svg";
-  import IconLanguage from "#icons/language.svg";
   import IconClose from "#icons/close.svg";
+  import IconLanguage from "#icons/language.svg";
+  import IconSchool from "#icons/school.svg";
   import type { Tools } from "./types";
 
   export let onClose: () => void;
@@ -99,12 +99,8 @@
     cursor: pointer;
   }
 
-  :global(html.desktop)
-    .tooltip
-    .tool-button:not(:disabled):not(.selected):hover,
-  :global(html.desktop)
-    .tooltip
-    .tool-button:not(:disabled):not(.selected):focus-visible {
+  :global(html.desktop) .tooltip .tool-button:not(:disabled):not(.selected):hover,
+  :global(html.desktop) .tooltip .tool-button:not(:disabled):not(.selected):focus-visible {
     filter: brightness(1.1);
     outline: none;
   }

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Toolbar from "./Toolbar.svelte";
-  import GrammarPane from "./GrammarPane.svelte";
-  import TranslatePane from "./TranslatePane.svelte";
   import type { GrammarInfo } from "@yomikiri/backend-bindings";
-  import type { Tools } from "./types";
   import type { AppCtx } from "../ctx";
+  import GrammarPane from "./GrammarPane.svelte";
+  import Toolbar from "./Toolbar.svelte";
+  import TranslatePane from "./TranslatePane.svelte";
+  import type { Tools } from "./types";
 
   export let ctx: AppCtx;
   export let onClose: () => void;
@@ -19,11 +19,11 @@
 <div
   class="toolbar-with-pane"
   style:--toolbar-foreground={tooltipMode ?
-    "var(--background-alt)"
-  : "var(--background-dark)"}
+  "var(--background-alt)" :
+  "var(--background-dark)"}
   style:--toolbar-background={tooltipMode ?
-    "var(--background-dark)"
-  : "var(--background-alt)"}
+  "var(--background-dark)" :
+  "var(--background-alt)"}
 >
   <Toolbar
     {onClose}

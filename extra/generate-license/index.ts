@@ -1,11 +1,11 @@
-import * as child_process from "promisify-child-process";
-import process from "node:process";
+import { getProjectLicenses } from "generate-license-file";
+import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import which from "which";
+import process from "node:process";
+import * as child_process from "promisify-child-process";
 import toml from "toml";
-import fs from "node:fs";
-import { getProjectLicenses } from "generate-license-file";
+import which from "which";
 
 type LicensesMap = Map<string, string[]>;
 

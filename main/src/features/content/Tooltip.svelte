@@ -1,19 +1,19 @@
 <script lang="ts">
   import {
-    type LoadingAnkiNote,
+    AddToAnki,
     type AnkiBuilderData,
     buildAnkiNote,
-    AddToAnki,
+    type LoadingAnkiNote,
   } from "@/features/anki";
-  import { tick } from "svelte";
   import {
-    type Tools,
+    DicEntriesView,
     type SelectedEntryForAnki,
     ToolbarWithPane,
-    DicEntriesView,
+    type Tools,
   } from "@/features/dictionary";
-  import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { YomikiriError } from "@/features/error";
+  import type { TokenizeResult } from "@yomikiri/backend-bindings";
+  import { tick } from "svelte";
   import type { AppCtx } from "../ctx";
 
   export let ctx: AppCtx;

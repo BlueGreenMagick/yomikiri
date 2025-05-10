@@ -1,20 +1,11 @@
 import type { Config } from "../config";
-import { containsJapaneseContent } from "../japanese";
-import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
-import {
-  type Highlighter,
-  SelectionHighlighter,
-  WrapHighlighter,
-} from "./highlight";
-import {
-  charLocationAtPos,
-  nodesOfToken,
-  sentenceAtCharLocation,
-  textNodeAtPos,
-} from "./scanner";
-import { Tooltip } from "./tooltip";
-import { Toast } from "../toast";
 import type { AndroidCtx, DesktopCtx, IosCtx } from "../ctx";
+import { containsJapaneseContent } from "../japanese";
+import { Toast } from "../toast";
+import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
+import { type Highlighter, SelectionHighlighter, WrapHighlighter } from "./highlight";
+import { charLocationAtPos, nodesOfToken, sentenceAtCharLocation, textNodeAtPos } from "./scanner";
+import { Tooltip } from "./tooltip";
 
 export class ContentScriptController {
   highlighter: Highlighter;

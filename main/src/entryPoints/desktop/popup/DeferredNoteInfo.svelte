@@ -1,9 +1,9 @@
 <script lang="ts">
-  import IconedButton from "@/features/components/IconedButton.svelte";
   import IconRefreshOutline from "#icons/refresh-outline.svg";
   import IconTrash from "#icons/trash.svg";
-  import { TrashToastIcon, CancelDeferredNoteDeletion } from "@/features/toast";
+  import IconedButton from "@/features/components/IconedButton.svelte";
   import type { AppCtx, DesktopCtx } from "@/features/ctx";
+  import { CancelDeferredNoteDeletion, TrashToastIcon } from "@/features/toast";
 
   export let ctx: AppCtx<DesktopCtx>;
 
@@ -66,8 +66,7 @@
     </div>
     {#if $confDeferredNoteError}
       <div class="text-error">
-        <b>Error:</b>
-        {errorMessage}
+        <b>Error:</b> {errorMessage}
       </div>
     {/if}
   </div>

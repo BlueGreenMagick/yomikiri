@@ -1,19 +1,10 @@
-import Utils, { LazyAsync } from "@/features/utils";
-import type {
-  IPlatform,
-  TTSVoice,
-  TranslateResult,
-  VersionInfo,
-  TTSRequest,
-} from "../types";
+import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import { type StoredConfiguration } from "@/features/config";
-import { getTranslation } from "../shared/translate";
-import {
-  migrateConfigObject,
-  type StoredCompatConfiguration,
-} from "@/features/compat";
 import { YomikiriError } from "@/features/error";
+import Utils, { LazyAsync } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
+import { getTranslation } from "../shared/translate";
+import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 import { sendMessage } from "./messaging";
 
@@ -46,10 +37,8 @@ export interface MessageWebviewMap extends RunMessageMap {
   close: [null, void];
 }
 
-export type WebviewRequest<K extends keyof MessageWebviewMap> =
-  MessageWebviewMap[K][0];
-export type WebviewResponse<K extends keyof MessageWebviewMap> =
-  MessageWebviewMap[K][1];
+export type WebviewRequest<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][0];
+export type WebviewResponse<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][1];
 
 export class IosAppPlatform implements IPlatform {
   readonly type = "iosapp";

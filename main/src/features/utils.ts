@@ -1,4 +1,4 @@
-import { writable, type Writable } from "svelte/store";
+import { type Writable, writable } from "svelte/store";
 import { YomikiriError } from "./error";
 
 export interface Rect {
@@ -19,13 +19,12 @@ export type Satisfies<T extends U, U> = T;
  *
  * const a : Promise<{}> | {} = Promise.resolve(5)
  */
-export type PromiseOrValue<T> =
-  Promise<unknown> extends T ? never : Promise<T> | Exclude<T, Thennable>;
+export type PromiseOrValue<T> = Promise<unknown> extends T ? never :
+  Promise<T> | Exclude<T, Thennable>;
 
-export type First<T extends unknown[]> =
-  T extends [infer FIRST, ...unknown[]] ? FIRST : never;
-export type Second<T extends unknown[]> =
-  T extends [unknown, infer SECOND, ...unknown[]] ? SECOND : never;
+export type First<T extends unknown[]> = T extends [infer FIRST, ...unknown[]] ? FIRST : never;
+export type Second<T extends unknown[]> = T extends [unknown, infer SECOND, ...unknown[]] ? SECOND :
+  never;
 export type PromiseResolver<K> = (value: K | PromiseLike<K>) => void;
 export type PromiseRejector = (reason?: unknown) => void;
 
@@ -224,8 +223,7 @@ export function escapeRegex(text: string): string {
 export function generateUrlParams(params: Record<string, string>): string {
   return Object.entries(params)
     .map(
-      ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      ([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
     )
     .join("&");
 }

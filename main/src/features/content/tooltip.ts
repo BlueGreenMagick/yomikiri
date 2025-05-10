@@ -1,8 +1,8 @@
 import Utils, { Hook, type Rect } from "@/features/utils";
 import type { TokenizeResult } from "@yomikiri/backend-bindings";
-import TooltipPage from "./TooltipPage.svelte";
 import { TOOLTIP_IFRAME_ID, TOOLTIP_ZINDEX } from "consts";
 import type { AndroidCtx, AppCtx, DesktopCtx, IosCtx } from "../ctx";
+import TooltipPage from "./TooltipPage.svelte";
 
 export class Tooltip {
   ctx: AppCtx<DesktopCtx | IosCtx | AndroidCtx>;
@@ -80,8 +80,7 @@ export class Tooltip {
       const tooltipPage = this.setupEntriesPage(iframe);
       return [iframe, tooltipPage];
     } else {
-      const [promise, resolve] =
-        Utils.createPromise<[HTMLIFrameElement, TooltipPage]>();
+      const [promise, resolve] = Utils.createPromise<[HTMLIFrameElement, TooltipPage]>();
       iframe.addEventListener("load", () => {
         const tooltipPage = this.setupEntriesPage(iframe);
         resolve([iframe, tooltipPage]);

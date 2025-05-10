@@ -1,22 +1,22 @@
 [package]
 name = "yomikiri-unidic"
-description = "Customize unidic tokenizer dictionary for Yomikiri"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+description = "Customize unidic tokenizer dictionary for Yomikiri"
 
 [dependencies]
-lindera-unidic-builder = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+csv = { workspace = true }
+fs-err = { workspace = true }
 lindera-core = { workspace = true }
+lindera-unidic-builder = { workspace = true }
+tempfile = { workspace = true }
+ureq = { workspace = true }
 yomikiri-dictionary = { workspace = true }
 yomikiri-unidic-types = { workspace = true }
-csv = { workspace = true }
-ureq = { workspace = true }
-tempfile = { workspace = true }
 zip = { workspace = true }
-anyhow = { workspace = true }
-fs-err = { workspace = true }
-clap = { workspace = true }
 
 [lints]
 workspace = true

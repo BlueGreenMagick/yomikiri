@@ -1,8 +1,8 @@
 <script lang="ts">
-  import PopupView from "./PopupView.svelte";
+  import LoadingPage from "@/features/components/LoadingPage.svelte";
   import PageSetup from "@/features/components/PageSetup.svelte";
   import type { AppCtx, DesktopCtx } from "@/features/ctx";
-  import LoadingPage from "@/features/components/LoadingPage.svelte";
+  import PopupView from "./PopupView.svelte";
 
   export let initialize: () => Promise<AppCtx<DesktopCtx>>;
 </script>

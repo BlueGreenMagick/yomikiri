@@ -1,8 +1,8 @@
-import PopupPage from "./PopupPage.svelte";
-import Utils, { exposeGlobals } from "@/features/utils";
 import type { AppCtx, IosCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
+import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosCtx } from "@/platform/ios";
+import PopupPage from "./PopupPage.svelte";
 
 async function initialize(): Promise<AppCtx<IosCtx>> {
   const ctx = createIosCtx();

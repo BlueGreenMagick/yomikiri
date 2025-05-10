@@ -1,4 +1,4 @@
-import { test, expect, describe } from "vitest";
+import { describe, expect, test } from "vitest";
 import { RubyString, toHiragana, toKatakana } from "../features/japanese";
 
 describe("RubyString", () => {

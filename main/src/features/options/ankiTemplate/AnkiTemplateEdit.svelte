@@ -1,12 +1,12 @@
 <script lang="ts">
   import {
-    newAnkiTemplateField,
     type AnkiTemplate,
     type AnkiTemplateField,
+    newAnkiTemplateField,
   } from "@/features/anki";
   import type { AnkiInfo } from "@/features/anki";
-  import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
   import type { AppCtx } from "@/features/ctx";
+  import AnkiTemplateFieldEdit from "./AnkiTemplateFieldEdit.svelte";
 
   export let ctx: AppCtx;
   export let ankiInfo: AnkiInfo;
@@ -81,11 +81,7 @@
 
   $: ankiInfo, initialize();
   $: loadFields(selectedNotetype);
-  $: selectedDeck,
-    selectedNotetype,
-    fieldTemplates,
-    ankiTags,
-    void saveTemplate();
+  $: selectedDeck, selectedNotetype, fieldTemplates, ankiTags, void saveTemplate();
 
   $: invalidDeck = !deckNames.includes(selectedDeck);
   $: invalidNotetype = !notetypeNames.includes(selectedNotetype);
@@ -125,8 +121,7 @@
       target="_blank"
       title="Get Anki note types designed to work well with Yomikiri"
       href="https://github.com/BlueGreenMagick/yomikiri/blob/main/Anki_Template.md"
-      >Get Yomikiri Note Types</a
-    >
+    >Get Yomikiri Note Types</a>
   </div>
   <div class="fields group">
     {#each fieldNames as fieldName (fieldName)}
