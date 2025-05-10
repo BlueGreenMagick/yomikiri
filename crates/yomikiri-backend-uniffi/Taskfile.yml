@@ -16,15 +16,15 @@ vars:
 
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
-  IOS_TARGETS:
-    - aarch64-apple-ios
-    - aarch64-apple-ios-sim
+  IOS_TARGETS: >
+    aarch64-apple-ios
+    aarch64-apple-ios-sim
 
-  ANDROID_TARGETS:
-    - aarch64-linux-android
-    - armv7-linux-androideabi
-    - i686-linux-android
-    - x86_64-linux-android
+  ANDROID_TARGETS: >
+    aarch64-linux-android
+    armv7-linux-androideabi
+    i686-linux-android
+    x86_64-linux-android
 
   INSTALLED_TARGETS:
     sh: rustup show
@@ -41,15 +41,15 @@ tasks:
       - 'cp -r {{.SWIFT_DIR}}/* "{{.APPLE_PROJECT_RUST_DIR}}/"'
       - task: _rustup_install_targets
         vars:
-          TARGETS_VAR: IOS_TARGETS
+          TARGETS_VAR: '{{.IOS_TARGETS}}'
       - task: _build:lib
         vars:
-          FLAG_TARGET: '{{range $i, $val := .IOS_TARGETS}}--target {{$val}} {{end}}'
+          FLAG_TARGET: '{{range $i, $val := splitList " " .IOS_TARGETS}}--target {{$val}} {{end}}'
 
   build:android:
     deps: [_clean-if-release]
     vars:
-      FLAG_TARGET: '{{range $i, $val := .ANDROID_TARGETS}}--target {{$val}} {{end}}'
+      FLAG_TARGET: '{{range $i, $val := splitList " " .ANDROID_TARGETS}}--target {{$val}} {{end}}'
     cmds:
       - task: generate:uniffi
         vars:
@@ -57,7 +57,7 @@ tasks:
           OUT_DIR: '{{.KOTLIN_DIR}}'
       - task: _rustup_install_targets
         vars:
-          TARGETS_VAR: ANDROID_TARGETS
+          TARGETS_VAR: '{{.ANDROID_TARGETS}}'
       - 'cargo ndk -o "{{.ANDROID_LIB_DIR}}" --manifest-path ./Cargo.toml {{.FLAG_TARGET}} build {{.FLAG_RELEASE}}'
 
   # Rust lib build skip is delegated to cargo
@@ -128,7 +128,7 @@ tasks:
       vars: [TARGETS_VAR]
     cmds:
       - for:
-          var: '{{.TARGETS_VAR}}'
+          var: TARGETS_VAR
         task: '{{if contains .ITEM .INSTALLED_TARGETS}}_void{{else}}_rustup_install{{end}}'
         vars:
           TARGET: '{{.ITEM}}'
@@ -138,4 +138,5 @@ tasks:
     requires:
       vars: [TARGET]
     cmds:
+      - echo "Installing target {{.TARGET}}"
       - 'rustup target add {{.TARGET}}'
