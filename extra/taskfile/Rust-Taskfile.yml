@@ -28,6 +28,13 @@ tasks:
     cmds:
       - 'cargo test'
 
+  _rustup_install:
+    internal: true
+    requires:
+      vars: [TARGET]
+    cmds:
+      - 'rustup target add {{.TARGET}}'
+
   # Empty task used for `task:{{if}}some_task{{else}}_void{{end}}`
   _void:
     internal: true

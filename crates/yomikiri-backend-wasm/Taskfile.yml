@@ -17,6 +17,10 @@ vars:
   WASM_OUT_DIR: '{{.PROJECT_ROOT}}/generated/yomikiri-backend-wasm'
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
+  WASM_TARGET: 'wasm32-unknown-unknown'
+  INSTALLED_TARGETS:
+    sh: rustup target list --installed
+
 tasks:
   generate:
     desc: Build wasm backend
@@ -38,6 +42,9 @@ tasks:
 
   _build:dev:
     cmds:
+      - task: '{{if contains .WASM_TARGET .INSTALLED_TARGETS}}_void{{else}}_rustup_install{{end}}'
+        vars:
+          TARGET: '{{.WASM_TARGET}}'
       - 'cargo build --target wasm32-unknown-unknown'
       - task: _build:wasm:dev
 

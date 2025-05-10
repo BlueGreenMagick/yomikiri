@@ -132,11 +132,3 @@ tasks:
         task: '{{if contains .ITEM .INSTALLED_TARGETS}}_void{{else}}_rustup_install{{end}}'
         vars:
           TARGET: '{{.ITEM}}'
-
-  _rustup_install:
-    internal: true
-    requires:
-      vars: [TARGET]
-    cmds:
-      - echo "Installing target {{.TARGET}}"
-      - 'rustup target add {{.TARGET}}'
