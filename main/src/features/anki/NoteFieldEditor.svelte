@@ -148,6 +148,7 @@
   function onContentInitialized() {
     if (element === null || initialContent === null) return;
 
+    // eslint-disable-next-line svelte/no-dom-manipulating
     element.textContent = initialContent;
   }
 
