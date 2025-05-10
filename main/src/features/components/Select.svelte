@@ -10,7 +10,7 @@
 </script>
 
 <select bind:value={selected} on:change>
-  {#each options as option}
+  {#each options as option (option)}
     {#if typeof option === "string"}
       <option value={option}>{option}</option>
     {:else}

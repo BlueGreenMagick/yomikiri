@@ -7,7 +7,7 @@
 
 <div class="entry-content">
   <div class="groups">
-    {#each entry.groups as group}
+    {#each entry.groups as group (group)}
       <DicNameGroupedSense {group} />
     {/each}
   </div>

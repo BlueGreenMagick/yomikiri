@@ -11,7 +11,7 @@
   <div class="other-forms-values Japanese">
     {#if otherForms.writings.length > 0}
       <div class="other-writings">
-        {#each otherForms.writings as writingForm, i}
+        {#each otherForms.writings as writingForm, i (writingForm)}
           <div class="other-writing {writingForm.rarity}">
             {writingForm.writing}<!--
        -->{#if writingForm.rarity !== "normal"}<span
@@ -24,7 +24,7 @@
     {/if}
     {#if otherForms.readings.length > 0}
       <div class="other-readings">
-        {#each otherForms.readings as reading, i}
+        {#each otherForms.readings as reading, i (reading)}
           <div class="other-reading {reading.rarity}">
             {reading.reading}<!--
          -->{#if reading.rarity !== "normal"}<span

@@ -8,7 +8,7 @@
 <div class="grammar-pane" class:shown>
   <div class="title">Grammar</div>
   <div class="grammars">
-    {#each grammars as grammar}
+    {#each grammars as grammar (grammar)}
       <div class="grammar">
         <div class="name Japanese">{grammar.name}:</div>
         <div class="short">{grammar.short}</div>

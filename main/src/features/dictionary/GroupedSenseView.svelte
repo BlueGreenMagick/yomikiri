@@ -27,7 +27,7 @@
     {posText}
   </div>
   <div>
-    {#each group.senses as sense, idx}
+    {#each group.senses as sense, idx (sense)}
       <div
         class="meaning"
         class:selected={$selectedSense?.sense === sense}

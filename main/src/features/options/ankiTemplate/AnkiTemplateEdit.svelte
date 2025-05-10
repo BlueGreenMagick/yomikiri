@@ -99,7 +99,7 @@
       bind:value={selectedDeck}
       class:invalid={invalidDeck}
     >
-      {#each deckNames as name}
+      {#each deckNames as name (name)}
         <option value={name}>{name}</option>
       {/each}
       {#if prevDeck !== null && !deckNames.includes(prevDeck)}
@@ -112,7 +112,7 @@
       bind:value={selectedNotetype}
       class:invalid={invalidNotetype}
     >
-      {#each notetypeNames as name}
+      {#each notetypeNames as name (name)}
         <option value={name}>{name}</option>
       {/each}
       {#if prevNotetype !== null && !notetypeNames.includes(prevNotetype)}

@@ -13,7 +13,7 @@
     {categoryText}
   </div>
   <div class="readings">
-    {#each group.items as item, idx}
+    {#each group.items as item, idx (item)}
       <div class="reading Japanese">
         {idx + 1}. {item.reading}
       </div>

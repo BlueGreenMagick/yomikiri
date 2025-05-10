@@ -26,7 +26,7 @@
 
 <div class="entry-content">
   <div class="groups">
-    {#each entry.groupedSenses as group}
+    {#each entry.groupedSenses as group (group)}
       <GroupedSenseView {ctx} {group} {model} {onSelectSense} />
     {/each}
   </div>

@@ -32,7 +32,7 @@
 </script>
 
 <div class="sentence-view Japanese">
-  {#each tokens as token, idx}
+  {#each tokens as token, idx (idx)}
     <div
       class="token"
       class:selected={idx == selectedTokenIdx}

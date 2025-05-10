@@ -5,7 +5,7 @@
 </script>
 
 {#key text}
-  {#each text as unit}
+  {#each text as unit (unit)}
     {#if unit.ruby === undefined}
       {unit.base}
     {:else}

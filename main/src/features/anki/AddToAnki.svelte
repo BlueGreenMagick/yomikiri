@@ -90,7 +90,7 @@
   </div>
   <div class="scrollable">
     <div class="fields-container">
-      {#each noteData.fields as field, i}
+      {#each noteData.fields as field, i (field)}
         <div class="anki-preview-field">
           <div class="field-name">{field.name}</div>
           <NoteFieldEditor {field} bind:errored={errored[i]} />
