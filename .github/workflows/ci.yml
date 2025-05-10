@@ -34,6 +34,9 @@ jobs:
           toolchain: 1.85.0
           targets: aarch64-apple-ios, wasm32-unknown-unknown
           components: clippy, rustfmt
+      
+      - name: Install Cargo ndk
+        run: cargo install cargo-ndk
 
       - name: Install Task
         uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 # v2
