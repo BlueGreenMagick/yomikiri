@@ -38,8 +38,7 @@
       class:selected={idx == selectedTokenIdx}
       class:invalid={invalidTokens[idx]}
     >
-      <a
-        href={"#"}
+      <button
         draggable="false"
         on:click={() => {
           if (!invalidTokens[idx]) {
@@ -48,7 +47,7 @@
         }}
       >
         <RubyText text={RubyString.fromToken(token)} />
-      </a>
+      </button>
     </div>
   {/each}
 </div>
@@ -73,22 +72,22 @@
     user-select: none;
     -webkit-user-select: none;
   }
-  .token.selected:not(.invalid) a {
+  .token.selected:not(.invalid) button {
     color: var(--accent);
   }
-  .token a {
+  .token button {
     text-decoration: none;
     color: var(--text);
   }
 
-  .token.invalid a {
+  .token.invalid button {
     cursor: default;
   }
-  .token:not(.invalid) a {
+  .token:not(.invalid) button {
     cursor: pointer;
     border-bottom: 1px solid var(--text);
   }
-  .token.selected:not(.invalid) a {
+  .token.selected:not(.invalid) button {
     border-bottom: 1px solid var(--accent);
   }
 </style>
