@@ -17,7 +17,6 @@ import { createDesktopCtx } from "@/platform/desktop";
 import type { WordEntry } from "@yomikiri/backend-bindings";
 import fs from "node:fs";
 import path from "node:path";
-import * as prettier from "prettier";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
@@ -129,14 +128,10 @@ test.skipIf(!REGENERATE_JSON)("Re-generate tokenize() result", async () => {
     results[test.label] = tokenizeResult;
   }
 
-  const resultsJson = JSON.stringify(results);
-  const formatted = await prettier.format(resultsJson, {
-    experimentalTernaries: true,
-    parser: "json",
-  });
+  const resultsJson = JSON.stringify(results, null, 2);
   await fs.promises.writeFile(
     path.resolve(filePath, "../ankiBuilder.test.json"),
-    formatted,
+    resultsJson,
     { encoding: "utf-8" },
   );
   // expect(1).toEqual(1)

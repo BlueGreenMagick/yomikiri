@@ -11,7 +11,7 @@ tasks:
     desc: 'Format files'
     cmds:
       - 'cargo fmt'
-      - 'pnpm -w prettier --write --list-different $PWD'
+      - 'pnpm dprint format'
 
   check:
     desc: 'Check files'

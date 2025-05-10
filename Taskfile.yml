@@ -99,13 +99,13 @@ tasks:
   format:
     aliases: ['fmt']
     desc: 'Format all files'
-    deps: ['format:prettier', 'format:rust']
+    deps: ['format:dprint', 'format:rust']
 
-  format:prettier:
-    aliases: ['fmt:prettier']
-    desc: 'Format files using prettier'
+  format:dprint:
+    aliases: ['fmt:dprint']
+    desc: 'Format files using dprint'
     cmds:
-      - 'pnpm prettier --write --list-different .'
+      - 'pnpm dprint format'
 
   format:rust:
     aliases: ['fmt:rust']
@@ -113,10 +113,10 @@ tasks:
     cmds:
       - 'cargo fmt'
 
-  check-format:prettier:
-    aliases: ['check-fmt:prettier']
+  check-format:dprint:
+    aliases: ['check-fmt:dprint']
     cmds:
-      - pnpm prettier --check .
+      - pnpm dprint check
 
   check-format:rust:
     aliases: ['check-fmt:rust']
@@ -126,7 +126,7 @@ tasks:
   check-format:
     aliases: ['check-fmt']
     desc: 'Check if files are formatted'
-    deps: [check-format:prettier, check-format:rust]
+    deps: [check-format:dprint, check-format:rust]
 
   build:all:
     run: once

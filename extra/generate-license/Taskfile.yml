@@ -46,7 +46,7 @@ tasks:
   format:
     aliases: ['fmt']
     cmds:
-      - 'pnpm -w prettier --write --list-different "$PWD"'
+      - 'pnpm dprint format'
       - task: 'format:rust'
 
   format:rust:
