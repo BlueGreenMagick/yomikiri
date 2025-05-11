@@ -38,6 +38,15 @@ declare module "*.chunk" {
 }
 
 declare const __APP_VERSION__: string;
+/**
+ * Used to write code that only runs in development env.
+ *
+ * Code like `if (__DEV) { ... }` is stripped in production build
+ * by esbuild dead-code elimination.
+ *
+ * This includes functions only used within the dev-mode if block.
+ */
+declare const __DEV: boolean;
 
 interface YomikiriEnv {
   EXTENSION_CONTEXT: "page" | "contentScript" | "popup" | "background";

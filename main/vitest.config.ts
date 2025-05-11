@@ -34,6 +34,8 @@ export default defineConfig({
   plugins: [tsconfigPathsPlugin(), svelteConfiguredPlugin],
   define: {
     __APP_VERSION__: `"${Package.version}"`,
+    // run test as production build
+    __DEV: "false",
   },
   assetsInclude: [
     "**/*.wasm",

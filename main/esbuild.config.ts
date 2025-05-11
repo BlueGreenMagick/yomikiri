@@ -389,6 +389,8 @@ async function main() {
     ],
     format: "iife",
     bundle: true,
+    minifyWhitespace: PRODUCTION,
+    minifySyntax: PRODUCTION,
     logLevel: "info",
     // minify: PRODUCTION,
     // keepNames: PRODUCTION,
@@ -400,6 +402,7 @@ async function main() {
     publicPath: "/",
     define: {
       __APP_VERSION__: `"${VERSION}"`,
+      __DEV: PRODUCTION ? "false" : "true",
       "import.meta.vitest": "undefined",
     },
     loader: {
