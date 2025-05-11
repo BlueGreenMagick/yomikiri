@@ -1,7 +1,5 @@
 version: '3'
 
-run: 'when_changed'
-
 includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml

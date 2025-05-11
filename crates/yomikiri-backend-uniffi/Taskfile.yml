@@ -1,7 +1,5 @@
 version: '3'
 
-run: when_changed
-
 includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
@@ -62,6 +60,7 @@ tasks:
 
   # Rust lib build skip is delegated to cargo
   _build:lib:
+    run: when_changed
     internal: true
     requires:
       vars: [FLAG_TARGET]

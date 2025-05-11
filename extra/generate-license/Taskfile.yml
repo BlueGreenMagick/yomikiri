@@ -1,7 +1,5 @@
 version: '3'
 
-run: when_changed
-
 vars:
   PROJECT_ROOT: '../..'
   GENERATED_DIR: '{{.PROJECT_ROOT}}/generated'

@@ -5,8 +5,6 @@ includes:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
 
-run: when_changed
-
 vars:
   ROOT: '../..'
   DICTIONARY_FILES_DIR: '{{.ROOT}}/generated/dictionary-files'
@@ -22,6 +20,7 @@ tasks:
       - task: _generate
 
   _build:
+    run: when_changed
     cmds:
       - 'cargo build --release'
 

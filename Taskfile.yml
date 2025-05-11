@@ -40,8 +40,6 @@ includes:
     taskfile: './extra/generate-license/Taskfile.yml'
     dir: './extra/generate-license'
 
-run: when_changed
-
 vars:
   # All Taskfiles should have 'check', 'lint', 'test' commands
   INCLUDES:
