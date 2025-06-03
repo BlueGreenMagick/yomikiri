@@ -230,11 +230,11 @@ extension YomikiriWebView {
         private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
             case "loadConfig":
-                let configJson = try Storage.config.get()
+                let configJson = try backend.get().db.getRawStorage(key: "web_config")
                 return configJson
             case "saveConfig":
                 let configJson = request
-                try Storage.config.set(configJson)
+                try backend.get().db.setRawStorage(key: "web_config", value: configJson)
                 triggerConfigUpdateHook(messageHandler: self, configJSON: configJson)
                 return nil
             case "migrateConfig":
@@ -251,7 +251,8 @@ extension YomikiriWebView {
                 ]
                 return try jsonSerialize(obj: versionInfo)
             case "updateDict":
-                let resp = try await Backend.updateDictionary()
+                var backendInstance = try backend.get()
+                let resp = try await backendInstance.updateDictionary()
                 return try jsonSerialize(obj: resp)
             case "openLink":
                 let urlString: String = try jsonDeserialize(json: request)
@@ -271,7 +272,9 @@ extension YomikiriWebView {
                 try ttsSpeak(voice: req.voice, text: req.text)
                 return nil
             default:
-                return try Backend.get().run(command: key, args: request)
+                var backendInstance = try backend.get()
+                var innerBackend = try backendInstance.backend.get()
+                return try innerBackend.run(command: key, args: request)
             }
         }
     }

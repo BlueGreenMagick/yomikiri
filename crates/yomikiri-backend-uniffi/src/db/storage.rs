@@ -61,11 +61,17 @@ pub mod KEYS {
 
 #[uniffi::export]
 impl RustDatabase {
-    pub fn get_web_storage(&self, key: String) -> FFIResult<Option<String>> {
+    /// Retrieves raw json storage value
+    ///
+    /// Should only be used from web
+    pub fn get_raw_storage(&self, key: String) -> FFIResult<Option<String>> {
         get_raw_storage(&self.conn(), &key).uniffi()
     }
 
-    pub fn set_web_storage(&self, key: String, value: Option<String>) -> FFIResult<()> {
+    /// Stores raw json storage value
+    ///
+    /// Should only be used from web
+    pub fn set_raw_storage(&self, key: String, value: Option<String>) -> FFIResult<()> {
         set_raw_storage_optional(&self.conn(), &key, value).uniffi()
     }
 

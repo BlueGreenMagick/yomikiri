@@ -25,17 +25,17 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         let completionHandler = context.completeRequest
         Task {
             let realResponse: [String: Any]
-            var jsonResponse = "null"
+            var jsonResponse: String? = nil
             do {
                 switch key {
                 case "addNote":
                     break
                 case "loadConfig":
                     // already stored in json
-                    jsonResponse = try Storage.config.get()
+                    jsonResponse = try backend.get().db.getRawStorage(key: "web_config")
                 case "saveConfig":
                     let configJson = request
-                    try Storage.config.set(request)
+                    try backend.get().db.setRawStorage(key: "web_config", value: configJson)
                 case "tts":
                     let req: TTSRequest = try jsonDeserialize(json: request)
                     try ttsSpeak(voice: req.voice, text: req.text)
@@ -44,8 +44,8 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
                     jsonResponse = try jsonSerialize(obj: iosVersion)
                 default:
-                    jsonResponse = try Backend.get().run(command: key, args: request)
-                    
+                    var backendInstance = try backend.get()
+                    jsonResponse = try backendInstance.backend.get().run(command: key, args: request)
                 }
                 realResponse = ["success": true, "resp": jsonResponse]
             } catch let error as BackendError {
