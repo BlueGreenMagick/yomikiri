@@ -61,6 +61,14 @@ pub mod KEYS {
 
 #[uniffi::export]
 impl RustDatabase {
+    pub fn get_web_storage(&self, key: String) -> FFIResult<Option<String>> {
+        get_raw_storage(&self.conn(), &key).uniffi()
+    }
+
+    pub fn set_web_storage(&self, key: String, value: Option<String>) -> FFIResult<()> {
+        set_raw_storage_optional(&self.conn(), &key, value).uniffi()
+    }
+
     pub fn get_dict_schema_ver(&self) -> FFIResult<Option<u16>> {
         KEYS::dict_schema_ver().get(&self.conn()).uniffi()
     }
@@ -93,6 +101,19 @@ pub fn set_raw_storage(db: &Connection, key: &str, value: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn set_raw_storage_optional<T: Borrow<str>>(
+    db: &Connection,
+    key: &str,
+    value: Option<T>,
+) -> Result<()> {
+    if let Some(value) = value {
+        set_raw_storage(db, key, value.borrow())
+    } else {
+        remove_storage(db, key)?;
+        Ok(())
+    }
+}
+
 /// Save to DB after JSON stringifying the value.
 pub fn set_storage<T: Serialize>(db: &Connection, key: &str, value: &T) -> Result<()> {
     let json_value = serde_json::to_string(value)?;
@@ -105,13 +126,10 @@ where
     R: Borrow<T>,
     T: Serialize,
 {
-    if let Some(value) = value {
-        let json_value = serde_json::to_string(value.borrow())?;
-        set_raw_storage(db, key, &json_value)
-    } else {
-        remove_storage(db, key)?;
-        Ok(())
-    }
+    let optional_json = value
+        .map(|val| serde_json::to_string(val.borrow()))
+        .transpose()?;
+    set_raw_storage_optional(db, key, optional_json)
 }
 
 pub fn get_raw_storage(db: &Connection, key: &str) -> Result<Option<String>> {
