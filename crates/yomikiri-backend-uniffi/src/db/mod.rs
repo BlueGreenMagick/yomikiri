@@ -1,8 +1,11 @@
-use std::sync::{Arc, Mutex};
+mod migrate;
+mod storage;
 
-use anyhow::Context;
+use std::sync::{Arc, Mutex, MutexGuard};
+
+use anyhow::{Context, Result};
 use rusqlite::trace::{TraceEvent, TraceEventCodes};
-use rusqlite::Connection;
+use rusqlite::{CachedStatement, Connection};
 
 use crate::error::{FFIResult, ToUniFFIResult};
 
@@ -33,6 +36,23 @@ impl RustDatabase {
         let locked = Mutex::new(db);
         let this = RustDatabase { db: locked };
         Ok(Arc::new(this))
+    }
+}
+
+impl RustDatabase {
+    fn conn(&self) -> MutexGuard<'_, Connection> {
+        self.db.lock().unwrap()
+    }
+}
+
+trait ConnectionTrait {
+    fn sql(&self, sql: &str) -> Result<CachedStatement<'_>>;
+}
+
+impl ConnectionTrait for Connection {
+    fn sql(&self, sql: &str) -> Result<CachedStatement<'_>> {
+        self.prepare_cached(sql)
+            .context("Failed to prepare SQL statement")
     }
 }
 
