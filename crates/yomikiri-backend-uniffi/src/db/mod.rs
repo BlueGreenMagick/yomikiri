@@ -37,6 +37,10 @@ impl RustDatabase {
         let this = RustDatabase { db: locked };
         Ok(Arc::new(this))
     }
+
+    pub fn get_version(&self) -> FFIResult<u32> {
+        get_version(&self.conn()).uniffi()
+    }
 }
 
 impl RustDatabase {
@@ -54,6 +58,12 @@ impl ConnectionTrait for Connection {
         self.prepare_cached(sql)
             .context("Failed to prepare SQL statement")
     }
+}
+
+fn get_version(db: &Connection) -> Result<u32> {
+    db.sql("SELECT user_version FROM pragma_user_version")?
+        .query_row([], |r| r.get(0))
+        .map_err(Into::into)
 }
 
 fn log_trace<'s>(ev: TraceEvent<'s>) {

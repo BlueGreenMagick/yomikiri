@@ -3,7 +3,7 @@ use anyhow::Result;
 use crate::error::{FFIResult, ToUniFFIResult};
 
 use super::storage::{set_storage, KEYS};
-use super::RustDatabase;
+use super::{ConnectionTrait, RustDatabase};
 
 #[uniffi::export]
 impl RustDatabase {
@@ -13,6 +13,7 @@ impl RustDatabase {
 }
 
 impl RustDatabase {
+    /// Migrate from db version 0 to 1
     fn _migrate_from_0(&self, data: MigrateFromV0Data) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
@@ -29,6 +30,7 @@ impl RustDatabase {
         if let Some(val) = data.dict_schema_ver {
             KEYS::dict_schema_ver().set(&tx, Some(val))?;
         }
+        tx.sql("PRAGMA user_version = 1")?.execute([])?;
         tx.commit()?;
         Ok(())
     }
