@@ -57,6 +57,11 @@ pub mod KEYS {
     pub fn jmnedict_etag() -> StorageKey<String> {
         StorageKey::new("jmnedict_etag")
     }
+
+    /// added(v1)
+    pub fn saved_url() -> StorageKey<String> {
+        StorageKey::new("saved_url")
+    }
 }
 
 #[uniffi::export]
@@ -97,6 +102,13 @@ impl RustDatabase {
 
     pub fn set_jmnedict_etag(&self, value: Option<String>) -> FFIResult<()> {
         KEYS::jmnedict_etag().set(&self.conn(), value).uniffi()
+    }
+
+    pub fn get_saved_url(&self) -> FFIResult<Option<String>> {
+        KEYS::saved_url().get(&self.conn()).uniffi()
+    }
+    pub fn set_saved_url(&self, value: Option<String>) -> FFIResult<()> {
+        KEYS::saved_url().set(&self.conn(), value).uniffi()
     }
 }
 
