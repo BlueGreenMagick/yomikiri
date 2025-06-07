@@ -1,3 +1,6 @@
+mod db;
+mod error;
+
 use crate::error::{FFIResult, ToUniFFIResult};
 
 use yomikiri_rs::dictionary::Dictionary;
@@ -17,8 +20,6 @@ use fs_err::{self as fs, File};
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
-
-mod error;
 
 /// `cfg_apple! { ... }` to compile only for apple platforms
 ///

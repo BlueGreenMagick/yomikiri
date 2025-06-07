@@ -4,9 +4,12 @@ import Foundation
 
 private let defaults = getSharedDefaults()
 
+/// @deprecated: Use rust backend DB instead.
+/// This struct is only used for migration purposes
+///
 /// Wrapper for shared storage between app and extensions
 /// Each value saved in Storage has its own getter and setter
-public enum Storage {
+public enum LegacyStorage {
     public static let config = StoragePropertyWithDefault<String>(key: "config", other: "{}")
     public static let jmdictEtag = StorageProperty<String>(key: "dict.jmdict.etag")
     public static let jmnedictEtag = StorageProperty<String>(key: "dict.jmnedict.etag")

@@ -1,7 +1,6 @@
 package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.ViewGroup
@@ -27,13 +26,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import uniffi.yomikiri_backend_uniffi.BackendException
-import uniffi.yomikiri_backend_uniffi.RustBackend
-import java.io.File
 
 private const val TAG = "YomikiriWebViewLog"
 
 @Composable
-fun YomikiriWebView(storage: Storage, modifier: Modifier = Modifier) {
+fun YomikiriWebView(modifier: Modifier = Modifier) {
     var webView: WebView? = remember { null }
 
     Log.d(TAG, "render")
@@ -93,6 +90,11 @@ fun YomikiriWebView(storage: Storage, modifier: Modifier = Modifier) {
                 Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
             }
 
+
+
+            val backend = Backend(context)
+            Log.d("MessageDelegate", "Initialized Backend")
+
             webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
@@ -103,17 +105,11 @@ fun YomikiriWebView(storage: Storage, modifier: Modifier = Modifier) {
 
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     if (url != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            storage.savedURL.set(url)
-                        }
+                        backend.db.setSavedUrl(url)
                     }
                     super.onPageStarted(view, url, favicon)
                 }
             }
-
-            val backend = initializeBackend(context)
-            Log.d("MessageDelegate", "Initialized Backend")
-
 
             suspend fun handleWebMessage(jsonMessage: String): String {
                 val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
@@ -126,15 +122,16 @@ fun YomikiriWebView(storage: Storage, modifier: Modifier = Modifier) {
                             builder.success(value)
                         }
                         "loadConfig" -> {
-                            val value = storage.config.getJson()
+                            val value = backend.db.getRawStorage("config") ?: "{}"
                             builder.success(value)
                         }
                         "saveConfig" -> {
-                            storage.config.setJson(msg.request)
+                            backend.db.setRawStorage("config", msg.request)
                             builder.success(Unit)
                         }
                         else -> {
-                            val value = backend.run(msg.key, msg.request)
+                            val rustBackend = backend.rust.getOrThrow()
+                            val value = rustBackend.run(msg.key, msg.request)
                             builder.jsonSuccess(value)
                         }
                     }
@@ -163,7 +160,7 @@ fun YomikiriWebView(storage: Storage, modifier: Modifier = Modifier) {
             }
 
             CoroutineScope(Dispatchers.Main).launch {
-                val storedUrl = storage.savedURL.get()
+                val storedUrl = backend.db.getSavedUrl() ?: "https://syosetu.com"
                 wv.loadUrl(storedUrl)
             }
         }
@@ -213,27 +210,5 @@ class ResponseBuilder(val id: Int) {
     inline fun <reified T> fail(err: T): String {
         val msg = FailedResponseMessage(id, Json.encodeToString(err))
         return Json.encodeToString(msg)
-    }
-}
-
-fun initializeBackend(context: Context): RustBackend {
-    val assetManager = context.assets
-    val inputStream = assetManager.open("dictionary/english.yomikiridict")
-    val dictDir = File(context.filesDir, "dict").apply { mkdirs() }
-    val outputFile = File(dictDir, "english.yomikiridict")
-
-    // TODO Copy only when needed!
-    inputStream.use { input ->
-        outputFile.outputStream().use { output ->
-            input.copyTo(output)
-        }
-    }
-    Log.d(TAG, "Copied file to directory")
-
-    try {
-        return RustBackend(outputFile.path)
-    }  catch (e: BackendException) {
-        Log.e(TAG, "Failed to initialize backend: ${e.json()}")
-        throw e
     }
 }

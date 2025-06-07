@@ -41,8 +41,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainView(modifier: Modifier = Modifier) {
-    val storage = Storage(context= LocalContext.current)
-    YomikiriWebView(storage, modifier = modifier)
+    YomikiriWebView(modifier = modifier)
 }
 
 @Preview(showBackground = true)

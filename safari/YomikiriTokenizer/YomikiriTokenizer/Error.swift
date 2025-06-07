@@ -14,6 +14,7 @@ enum YomikiriTokenizerError: Error {
     case BaseResourceNotFound
     case CouldNotRetrieveUserDefaults
     case IsNotValidUtf8(context: String)
+    case Database(_ context: String)
     /// Cannot access backend as dictionary is being updated
     case UpdatingDictionary
     /// `fatalError()`, but with error message that is shown to user.
@@ -36,6 +37,8 @@ extension YomikiriTokenizerError: LocalizedError {
             return "Could not retrieve user defaults"
         case let .IsNotValidUtf8(ctx):
             return "Not a valid utf-8: \(ctx)"
+        case let .Database(ctx):
+            return "Failed to query database: \(ctx)"
         case .UpdatingDictionary:
             return "Dictionary is being updated. Please try again after update is finished."
         case let .Fatal(msg):
