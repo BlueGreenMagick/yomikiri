@@ -91,8 +91,7 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
             }
 
 
-
-            val backend = Backend(appEnv)
+            val db = appEnv.getDb()
             Log.d("MessageDelegate", "Initialized Backend")
 
             webViewClient = object : WebViewClient() {
@@ -105,7 +104,7 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
 
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     if (url != null) {
-                        backend.db.setSavedUrl(url)
+                        db.setSavedUrl(url)
                     }
                     super.onPageStarted(view, url, favicon)
                 }
@@ -122,16 +121,16 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
                             builder.success(value)
                         }
                         "loadConfig" -> {
-                            val value = backend.db.getRawStorage("config") ?: "{}"
+                            val value = db.getRawStorage("config") ?: "{}"
                             builder.success(value)
                         }
                         "saveConfig" -> {
-                            backend.db.setRawStorage("config", msg.request)
+                            db.setRawStorage("config", msg.request)
                             builder.success(Unit)
                         }
                         else -> {
-                            val rustBackend = backend.rust.getOrThrow()
-                            val value = rustBackend.run(msg.key, msg.request)
+                            val backend = appEnv.getBackend()
+                            val value = backend.run(msg.key, msg.request)
                             builder.jsonSuccess(value)
                         }
                     }
@@ -160,7 +159,7 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
             }
 
             CoroutineScope(Dispatchers.Main).launch {
-                val storedUrl = backend.db.getSavedUrl() ?: "https://syosetu.com"
+                val storedUrl = db.getSavedUrl() ?: "https://syosetu.com"
                 wv.loadUrl(storedUrl)
             }
         }

@@ -1,34 +1,20 @@
 package com.yoonchae.yomikiri
 
-import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import uniffi.yomikiri_backend_uniffi.*
+import uniffi.yomikiri_backend_uniffi.DownloadDictionaryResult
+import uniffi.yomikiri_backend_uniffi.createDictionary
+import uniffi.yomikiri_backend_uniffi.dictSchemaVer
+import uniffi.yomikiri_backend_uniffi.downloadJmdict
+import uniffi.yomikiri_backend_uniffi.downloadJmnedict
 import java.io.File
 
-private const val TAG = "YomikiriBackend"
 
+private const val TAG = "Yomikiri::DictionaryManager"
 
-class Backend(private val appEnv: AppEnvironment) {
-    val db: RustDatabase = this.appEnv.getDb()
-    val rust by lazy { runCatching { this.createRustBackend() } }
-
-    /**
-     * Creates RustBackend instance using the dictionary file
-     */
-    private fun createRustBackend(): RustBackend {
-        val dictFile = getDictFile()
-        val backend = RustBackend(dictFile.absolutePath)
-        Log.d(TAG, "Finished creating backend")
-        return backend
-    }
-
-
-    /**
-     * Gets the dictionary file path, copying from assets if needed
-     */
-    private fun getDictFile(): File {
+class DictionaryManager(val appEnv: AppEnvironment) {
+    private fun getFile(): File {
         val context = appEnv.context
         val dictDir = File(context.filesDir, "dict").apply { mkdirs() }
         val dictFile = File(dictDir, "english.yomikiridict")
@@ -50,25 +36,23 @@ class Backend(private val appEnv: AppEnvironment) {
         Log.d(TAG, "Copied dictionary file to: ${dictFile.absolutePath}")
         return dictFile
     }
-    
-    /**
-     * Update dictionary with ETag-based conditional downloads
-     */
-    suspend fun updateDictionary(): Boolean = withContext(Dispatchers.IO) {
+
+    private fun updateDictionary(): Boolean {
         val dir = getFilesDirectory()
-        
+        val db = appEnv.getDb()
+
         // Download JMDict with ETag check
         val jmdictResult = downloadJmdict(dir.absolutePath, db.getJmdictEtag())
         if (jmdictResult is DownloadDictionaryResult.Replace) {
             db.setJmdictEtag(jmdictResult.etag)
         }
-        
+
         // Download JMNedict with ETag check
         val jmnedictResult = downloadJmnedict(dir.absolutePath, db.getJmnedictEtag())
         if (jmnedictResult is DownloadDictionaryResult.Replace) {
             db.setJmnedictEtag(jmnedictResult.etag)
         }
-        
+
         var error: Exception? = null
         try {
             createDictionary(dir.absolutePath)
@@ -76,12 +60,26 @@ class Backend(private val appEnv: AppEnvironment) {
         } catch (e: Exception) {
             error = e
         }
-        
+
         error?.let { throw it }
-        true
+        return true
     }
-    
+
+
     private fun getFilesDirectory(): File {
         return File(appEnv.context.filesDir, "yomikiri").apply { mkdirs() }
+    }
+    
+    companion object {
+        suspend fun getFile(appEnv: AppEnvironment): File = withContext(Dispatchers.IO) {
+            DictionaryManager(appEnv).getFile()
+        }
+
+        /**
+         * Update dictionary with ETag-based conditional downloads
+         */
+        suspend fun update(appEnv: AppEnvironment): Boolean = withContext(Dispatchers.IO) {
+            DictionaryManager(appEnv).updateDictionary()
+        }
     }
 }
