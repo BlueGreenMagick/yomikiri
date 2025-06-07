@@ -23,7 +23,7 @@ public struct Backend {
             if let rust = try? RustBackend(dictPath: userDict.path) {
                 return rust
             } else {
-                os_log(.error, "Failed to create rust backend using user downlaoded dictionary. Using bundled dictionary instead.")
+                os_log(.error, "Failed to create rust backend using user downloaded dictionary. Using bundled dictionary instead.")
             }
         }
         let bundledDict = try getBundledDictUrl()
