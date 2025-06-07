@@ -20,6 +20,9 @@ import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val appEnv = AppEnvironment(this)
+
         enableEdgeToEdge()
         setContent {
             YomikiriTheme {
@@ -31,6 +34,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     MainView(
+                        appEnv=appEnv,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -40,14 +44,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainView(modifier: Modifier = Modifier) {
-    YomikiriWebView(modifier = modifier)
+fun MainView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
+    YomikiriWebView(appEnv=appEnv,modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingMainView() {
     YomikiriTheme {
-        MainView()
+        MainView(appEnv= AppEnvironment(context= LocalContext.current))
     }
 }

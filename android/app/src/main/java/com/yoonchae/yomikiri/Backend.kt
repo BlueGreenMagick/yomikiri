@@ -10,13 +10,9 @@ import java.io.File
 private const val TAG = "YomikiriBackend"
 
 
-class Backend(private val context: Context) {
-    val db: RustDatabase
+class Backend(private val appEnv: AppEnvironment) {
+    val db: RustDatabase = this.appEnv.getDb()
     val rust by lazy { runCatching { this.createRustBackend() } }
-    
-    init {
-        db = createRustDatabase(context)
-    }
 
     /**
      * Creates RustBackend instance using the dictionary file
@@ -33,6 +29,7 @@ class Backend(private val context: Context) {
      * Gets the dictionary file path, copying from assets if needed
      */
     private fun getDictFile(): File {
+        val context = appEnv.context
         val dictDir = File(context.filesDir, "dict").apply { mkdirs() }
         val dictFile = File(dictDir, "english.yomikiridict")
 
@@ -85,55 +82,6 @@ class Backend(private val context: Context) {
     }
     
     private fun getFilesDirectory(): File {
-        return File(context.filesDir, "yomikiri").apply { mkdirs() }
-    }
-}
-
-/**
- * Creates RustDatabase instance with proper Android storage paths
- */
-private fun createRustDatabase(context: Context): RustDatabase {
-    Log.d(TAG, "Creating database start")
-    
-    val filesDir = File(context.filesDir, "yomikiri").apply { mkdirs() }
-    val dbPath = File(filesDir, "db.sql")
-    
-    val database = RustDatabase.open(dbPath.absolutePath)
-    val dbVer = database.getVersion()
-    
-    if (dbVer == 0u) {
-        migrateDatabaseFrom0(database, context)
-    }
-    
-    Log.d(TAG, "Creating database end")
-    return database
-}
-
-private fun migrateDatabaseFrom0(db: RustDatabase, context: Context) {
-    Log.d(TAG, "Migrate database v0 start")
-    
-    val data = MigrateFromV0Data(
-        webConfig = null,
-        jmdictEtag = null,
-        jmnedictEtag = null,
-        dictSchemaVer = null
-    )
-    
-    db.migrateFrom0(data)
-    Log.d(TAG, "Migrate database v0 end")
-}
-
-/**
- * Application context provider for global access
- */
-object ApplicationContext {
-    private lateinit var appContext: Context
-    
-    fun initialize(context: Context) {
-        appContext = context.applicationContext
-    }
-    
-    fun get(): Context {
-        return appContext
+        return File(appEnv.context.filesDir, "yomikiri").apply { mkdirs() }
     }
 }

@@ -30,7 +30,7 @@ import uniffi.yomikiri_backend_uniffi.BackendException
 private const val TAG = "YomikiriWebViewLog"
 
 @Composable
-fun YomikiriWebView(modifier: Modifier = Modifier) {
+fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
     var webView: WebView? = remember { null }
 
     Log.d(TAG, "render")
@@ -92,7 +92,7 @@ fun YomikiriWebView(modifier: Modifier = Modifier) {
 
 
 
-            val backend = Backend(context)
+            val backend = Backend(appEnv)
             Log.d("MessageDelegate", "Initialized Backend")
 
             webViewClient = object : WebViewClient() {
