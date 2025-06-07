@@ -66,7 +66,7 @@ fn get_version(db: &Connection) -> Result<u32> {
         .map_err(Into::into)
 }
 
-fn log_trace<'s>(ev: TraceEvent<'s>) {
+fn log_trace(ev: TraceEvent<'_>) {
     match ev {
         TraceEvent::Stmt(s, text) => {
             log::debug!("[SQL] STMT: {} ; {}", s.sql(), text)
