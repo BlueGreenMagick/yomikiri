@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         lifecycleScope.launch(NonCancellable) {
-                appEnv.close()
+            appEnv.close()
         }
     }
 }
