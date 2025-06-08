@@ -3,7 +3,9 @@ package com.yoonchae.yomikiri
 import android.content.Context
 import uniffi.yomikiri_backend_uniffi.RustDatabase
 
-class AppEnvironment(val context: Context) {
-    val db: RustDatabase = createRustDatabase(context)
-    val backendManager: BackendManager = BackendManager(context)
+class AppEnvironment(context: Context) {
+    val context: Context = context.applicationContext
+
+    val db: RustDatabase = createRustDatabase(this.context)
+    val backendManager: BackendManager = BackendManager(this.context)
 }
