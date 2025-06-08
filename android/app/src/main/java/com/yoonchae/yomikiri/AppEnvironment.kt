@@ -16,7 +16,7 @@ class AppEnvironment(val context: Context) {
 
     suspend fun getBackend(): BackendManager {
         return backendManager ?: backendMutex.withLock {
-            backendManager ?: BackendManager.new(this).also { backendManager = it }
+            backendManager ?: BackendManager.new(context).also { backendManager = it }
         }
     }
 }

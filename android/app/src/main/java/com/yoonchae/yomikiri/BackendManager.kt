@@ -1,11 +1,12 @@
 package com.yoonchae.yomikiri
 
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import uniffi.yomikiri_backend_uniffi.RustBackend
 
-private const val TAG = "Yomikiri::Backend"
+private const val TAG = "Yomikiri::BackendManager"
 
 
 class BackendManager(val rustBackend: RustBackend) {
@@ -15,8 +16,8 @@ class BackendManager(val rustBackend: RustBackend) {
     }
 
     companion object {
-        suspend fun new(appEnv: AppEnvironment): BackendManager {
-            val dictFile = DictionaryManager.getFile(appEnv)
+        suspend fun new(context: Context): BackendManager {
+            val dictFile = DictionaryManager.getFile(context)
             return withContext(Dispatchers.Default) {
                 val rustBackend = RustBackend(dictFile.absolutePath)
                 Log.d(TAG, "Finished creating backend")

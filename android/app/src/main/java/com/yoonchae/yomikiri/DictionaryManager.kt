@@ -1,5 +1,6 @@
 package com.yoonchae.yomikiri
 
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,9 +14,8 @@ import java.io.File
 
 private const val TAG = "Yomikiri::DictionaryManager"
 
-class DictionaryManager(val appEnv: AppEnvironment) {
+class DictionaryManager(val context: Context) {
     private fun getFile(): File {
-        val context = appEnv.context
         val dictDir = File(context.filesDir, "dict").apply { mkdirs() }
         val dictFile = File(dictDir, "english.yomikiridict")
 
@@ -39,8 +39,8 @@ class DictionaryManager(val appEnv: AppEnvironment) {
     
     companion object {
         /** Runs on the IO thread */
-        suspend fun getFile(appEnv: AppEnvironment): File = withContext(Dispatchers.IO) {
-            DictionaryManager(appEnv).getFile()
+        suspend fun getFile(context: Context): File = withContext(Dispatchers.IO) {
+            DictionaryManager(context).getFile()
         }
     }
 }
