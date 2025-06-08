@@ -3,26 +3,38 @@ package com.yoonchae.yomikiri
 import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import uniffi.yomikiri_backend_uniffi.RustBackend
 
 private const val TAG = "Yomikiri::BackendManager"
 
 
-class BackendManager(val rustBackend: RustBackend) {
-    // Operate on rust backend in the main thread
-    suspend inline fun <reified T>withBackend(crossinline block: (backend: RustBackend) -> T) = withContext(Dispatchers.Default) {
-        block(rustBackend)
-    }
+class BackendManager(val context: Context) {
+    private var backendCache: RustBackend? = null
+    private val backendMutex = Mutex()
 
-    companion object {
-        suspend fun new(context: Context): BackendManager {
-            val dictFile = DictionaryManager.getFile(context)
-            return withContext(Dispatchers.Default) {
-                val rustBackend = RustBackend(dictFile.absolutePath)
-                Log.d(TAG, "Finished creating backend")
-                BackendManager(rustBackend)
-            }
+    // Get backend instance, or create it if it doesn't exist yet.
+    // If instance is already being created, it waits for the previous invocation then returns the result
+    private suspend fun getBackend(): RustBackend {
+        return backendCache ?: backendMutex.withLock {
+            backendCache ?: createBackend(context).also { backendCache = it }
         }
     }
+
+    // Operate on rust backend in the main thread
+    suspend fun<T> withBackend(block: (backend: RustBackend) -> T) = withContext(Dispatchers.Default) {
+        val backend = getBackend()
+        block(backend)
+    }
+}
+
+
+private suspend fun createBackend(context: Context): RustBackend {
+    Log.d(TAG, "Create backend start")
+    val dictFile = DictionaryManager.getFile(context)
+    val backend = RustBackend(dictFile.absolutePath)
+    Log.d(TAG, "Create backend finish")
+    return backend
 }

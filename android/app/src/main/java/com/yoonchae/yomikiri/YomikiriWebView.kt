@@ -129,8 +129,7 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
                             builder.success(Unit)
                         }
                         else -> {
-                            val backendManager = appEnv.getBackend()
-                            val value = backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
+                            val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
                             builder.jsonSuccess(value)
                         }
                     }
