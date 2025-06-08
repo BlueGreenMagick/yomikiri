@@ -38,7 +38,8 @@ class DictionaryManager(val appEnv: AppEnvironment) {
     }
     
     companion object {
-        suspend fun getFile(appEnv: AppEnvironment): File = withContext(Dispatchers.Default) {
+        /** Runs on the IO thread */
+        suspend fun getFile(appEnv: AppEnvironment): File = withContext(Dispatchers.IO) {
             DictionaryManager(appEnv).getFile()
         }
     }
