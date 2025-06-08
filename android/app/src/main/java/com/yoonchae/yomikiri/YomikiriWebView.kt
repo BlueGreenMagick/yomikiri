@@ -91,7 +91,7 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
             }
 
 
-            val db = appEnv.getDb()
+            val db = appEnv.db
             Log.d("MessageDelegate", "Initialized Backend")
 
             webViewClient = object : WebViewClient() {
