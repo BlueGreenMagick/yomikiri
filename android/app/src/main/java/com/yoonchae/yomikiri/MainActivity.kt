@@ -14,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -48,10 +50,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        runBlocking {
-            appEnv.close()
+        lifecycleScope.launch(NonCancellable) {
+                appEnv.close()
         }
-
     }
 }
 
