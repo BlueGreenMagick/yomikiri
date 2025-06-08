@@ -25,6 +25,20 @@ class BackendManager(val context: Context) {
         block(backend)
     }
 
+    /**
+     * Closes and clears the backend instance if it exists or is being created.
+     *
+     * This method acquires the backend mutex to ensure thread safety,
+     * preventing concurrent creation or access to the backend during closure.
+     * After calling this method, the backend will be set to null.
+     */
+    suspend fun close() {
+        backendMutex.withLock {
+            backendCache?.close()
+            backendCache = null
+        }
+    }
+
     // Get backend instance, or create it if it doesn't exist yet.
     // If instance is already being created, it waits for the previous invocation then returns the result
     private suspend fun getBackend(): RustBackend {

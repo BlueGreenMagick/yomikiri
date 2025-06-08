@@ -15,13 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
+import kotlinx.coroutines.runBlocking
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var appEnv: AppEnvironment
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appEnv = AppEnvironment(this)
+        appEnv = AppEnvironment(this)
 
         enableEdgeToEdge()
         setContent {
@@ -40,6 +44,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        runBlocking {
+            appEnv.close()
+        }
+
     }
 }
 
