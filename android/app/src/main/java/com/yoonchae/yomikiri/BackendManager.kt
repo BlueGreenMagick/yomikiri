@@ -15,18 +15,22 @@ class BackendManager(val context: Context) {
     private var backendCache: RustBackend? = null
     private val backendMutex = Mutex()
 
+    /**
+     * Operate on backend instance.
+     *
+     * Passed lambda runs in Dispatchers.Default coroutine.
+     */
+    suspend fun<T> withBackend(block: (backend: RustBackend) -> T) = withContext(Dispatchers.Default) {
+        val backend = getBackend()
+        block(backend)
+    }
+
     // Get backend instance, or create it if it doesn't exist yet.
     // If instance is already being created, it waits for the previous invocation then returns the result
     private suspend fun getBackend(): RustBackend {
         return backendCache ?: backendMutex.withLock {
             backendCache ?: createBackend(context).also { backendCache = it }
         }
-    }
-
-    // Operate on rust backend in the main thread
-    suspend fun<T> withBackend(block: (backend: RustBackend) -> T) = withContext(Dispatchers.Default) {
-        val backend = getBackend()
-        block(backend)
     }
 }
 
