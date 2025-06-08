@@ -14,12 +14,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var appEnv: AppEnvironment
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        appEnv = AppEnvironment(this)
+
         enableEdgeToEdge()
         setContent {
             YomikiriTheme {
@@ -31,23 +40,31 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     MainView(
+                        appEnv=appEnv,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycleScope.launch(NonCancellable) {
+            appEnv.close()
+        }
+    }
 }
 
 @Composable
-fun MainView(modifier: Modifier = Modifier) {
-    YomikiriWebView(modifier = modifier)
+fun MainView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
+    YomikiriWebView(appEnv=appEnv,modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingMainView() {
     YomikiriTheme {
-        MainView()
+        MainView(appEnv= AppEnvironment(context= LocalContext.current))
     }
 }
