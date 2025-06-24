@@ -4,13 +4,15 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
+  consts:
+    taskfile: '../../extra/taskfile/Consts-Taskfile.yml'
 
 vars:
   ROOT: '../..'
-  DICTIONARY_FILES_DIR: '{{.ROOT}}/generated/dictionary-files'
-  ORIGINAL_DIR: '{{.ROOT}}/generated/unidic-original'
-  TRANSFORM_DIR: '{{.ROOT}}/generated/unidic-transformed'
-  OUTPUT_DIR: '{{.ROOT}}/generated/unidic-output'
+  DICTIONARY_FILES_DIR: '{{.ROOT}}/{{.__YOMIKIRIDICT_DIR}}'
+  ORIGINAL_DIR: '{{.ROOT}}/{{.__UNIDIC_ORIGINAL_DIR}}'
+  TRANSFORM_DIR: '{{.ROOT}}/{{.__UNIDIC_TRANSFORMED_DIR}}'
+  OUTPUT_DIR: '{{.ROOT}}/{{.__UNIDIC_OUTPUT_DIR}}'
   CRATE_BINARY: '{{.ROOT}}/target/release/yomikiri-unidic'
 
 tasks:

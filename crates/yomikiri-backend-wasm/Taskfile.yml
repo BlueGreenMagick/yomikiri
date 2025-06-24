@@ -4,6 +4,8 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
+  consts:
+    taskfile: '../../extra/taskfile/Consts-Taskfile.yml'
 
 vars:
   PROJECT_ROOT: '../../'
@@ -12,7 +14,7 @@ vars:
   WASM_DEBUG_TARGET_DIR: '{{.PROJECT_ROOT}}/target/wasm32-unknown-unknown/debug'
   WASM_DEBUG_RLIB: '{{.WASM_DEBUG_TARGET_DIR}}/libyomikiri_backend_wasm.rlib'
   WASM_DEBUG_D: '{{.WASM_DEBUG_TARGET_DIR}}/libyomikiri_backend_wasm.d'
-  WASM_OUT_DIR: '{{.PROJECT_ROOT}}/generated/yomikiri-backend-wasm'
+  WASM_OUT_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_WASM_DIR}}'
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
   WASM_TARGET: 'wasm32-unknown-unknown'

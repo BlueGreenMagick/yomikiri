@@ -4,6 +4,8 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
+  consts:
+    taskfile: '../../extra/taskfile/Consts-Taskfile.yml'
 
 vars:
   PROJECT_ROOT: '../..'
@@ -13,7 +15,7 @@ vars:
   SCHEMARS_BINARY: '{{.PROJECT_ROOT}}/target/debug/schemars'
 
   PACKAGE_JSON_SRC: './bin/bindings-package.json'
-  OUTPUT_DIR: '{{.PROJECT_ROOT}}/generated/backend-bindings'
+  OUTPUT_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_BINDINGS_DIR}}'
   SCHEMA_JSON: '{{.OUTPUT_DIR}}/generated.schema.json'
   TS_BINDING: '{{.OUTPUT_DIR}}/generated.d.ts'
   PACKAGE_JSON_DEST: '{{.OUTPUT_DIR}}/package.json'
