@@ -49,6 +49,9 @@ tasks:
       - task: _build:wasm:dev
 
   _build:wasm:dev:
+    # Used to include variables for checksum key
+    # c.f. https://github.com/go-task/task/issues/548
+    label: '_build_wasm_dev--release_{{.RELEASE}}'
     sources:
       - '{{.WASM_DEBUG_RLIB}}'
       - '{{.WASM_DEBUG_D}}'

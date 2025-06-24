@@ -101,6 +101,9 @@ tasks:
           else
             echo "{{.LIB_DIR}}/__ERROR_COULD_NOT_FIND_BUILT_LIB_FILE"
           fi
+    # Used to include variables for checksum key
+    # c.f. https://github.com/go-task/task/issues/548
+    label: '_generate-uniffi--{{.LANGUAGE}}--{{.RELEASE_SEG}}'
     sources:
       - '{{.LIB_PATH}}'
       - './Cargo.toml'
