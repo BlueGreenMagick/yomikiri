@@ -78,5 +78,5 @@ tasks.register<Exec>("task_build") {
     // Runs shell command indirectly in /bin/bash because...
     // Android Studio launched from MacOS Dock does not source PATH variable
     // https://issuetracker.google.com/issues/216364005
-    commandLine("/bin/bash", "-c", "task build:android")
+    commandLine("/bin/bash", "-c", "task prepare:android")
 }

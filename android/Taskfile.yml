@@ -1,0 +1,51 @@
+version: '3'
+
+includes:
+  consts:
+    taskfile: '../extra/taskfile/Consts-Taskfile.yml'
+
+vars:
+  ROOT: '..'
+
+  ANDROID_MAIN_DEST_DIR: './app/src/main/assets/main'
+  ANDROID_BACKEND_LIB_DEST_DIR: './app/src/main/jniLibs'
+  ANDROID_BACKEND_KOTLIN_DEST_DIR: './app/src/main/java/com/yoonchae/yomikiri/backend'
+  ANDROID_YOMIKIRIDICT_DEST_DIR: './app/src/main/assets/dictionary'
+  ANDROID_MAIN_SRC_DIR: '../main/build/android'
+
+  IS_MAC:
+    sh: '[ "$(uname)" = "Darwin" ] && echo 1 || echo ""'
+  # Used for cp command COW (Clone-on-write)
+  FLAG_CP: '{{if .IS_MAC}}-c{{else}}--reflink=auto{{end}}'
+
+
+
+tasks:
+  # Copy over generated files to android project
+  prepare:
+    cmds:
+      # Use clone-on-write copy if available
+      - 'mkdir -p "{{.ANDROID_MAIN_DEST_DIR}}"'
+      - 'cp -r {{.FLAG_CP}} "{{.ANDROID_MAIN_SRC_DIR}}/" "{{.ANDROID_MAIN_DEST_DIR}}/"'
+      - 'mkdir -p "{{.ANDROID_BACKEND_LIB_DEST_DIR}}"'
+      - 'cp -r {{.FLAG_CP}} "{{.ROOT}}/{{.__BACKEND_ANDROID_LIB_DIR}}/" "{{.ANDROID_BACKEND_LIB_DEST_DIR}}/"'
+      - 'mkdir -p "{{.ANDROID_BACKEND_KOTLIN_DEST_DIR}}"'
+      - 'cp -r {{.FLAG_CP}} "{{.ROOT}}/{{.__BACKEND_KOTLIN_BINDINGS_DIR}}/" "{{.ANDROID_BACKEND_KOTLIN_DEST_DIR}}/"'
+      - 'mkdir -p "{{.ANDROID_YOMIKIRIDICT_DEST_DIR}}"'
+      - 'cp -r {{.FLAG_CP}} "{{.ROOT}}/{{.__YOMIKIRIDICT_DIR}}/" "{{.ANDROID_YOMIKIRIDICT_DEST_DIR}}/"'
+
+  build:
+    cmds:
+      - ./gradlew build
+
+  lint:
+    cmds:
+      - ./gradlew lint
+
+  check:
+    cmds:
+      - ./gradlew check
+  
+  test:
+    cmds:
+      - ./gradlew test
