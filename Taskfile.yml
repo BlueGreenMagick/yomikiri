@@ -157,6 +157,10 @@ tasks:
       - task: 'main:build:ios'
       - task: 'main:build:iosapp'
 
+  build:android:
+    cmds:
+      - task: android:build
+
   # Called from Android Studio gradle script
   prepare:android:
     cmds:
