@@ -1,0 +1,6 @@
+[bindings.kotlin]
+android = true
+kotlin_target_version = "2.0.0"
+
+[bindings.swift]
+generate_codable_conformance = true
