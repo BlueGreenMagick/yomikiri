@@ -1,0 +1,18 @@
+# Shared taskfile for defining constants
+#
+# includes:
+#  consts:
+#    taskfile: '{{.ROOT}}/extra/taskfile/Consts-Taskfile.yml'
+version: '3'
+
+vars:
+  __BACKEND_ANDROID_LIB_DIR: 'generated/backend-android-lib'
+  __BACKEND_KOTLIN_BINDINGS_DIR: 'generated/backend-kotlin-bindings'
+  __BACKEND_BINDINGS_DIR: 'generated/backend-bindings'
+  __YOMIKIRIDICT_DIR: 'generated/dictionary-files/'
+  __YOMIKIRIDICT_FILE_PATH: '{{.__YOMIKIRIDICT_DIR}}/english.yomikiridict'
+  __UNIDIC_ORIGINAL_DIR: 'generated/unidic-original'
+  __UNIDIC_TRANSFORMED_DIR: 'generated/unidic-transformed'
+  __UNIDIC_OUTPUT_DIR: 'generated/unidic-output'
+  __BACKEND_WASM_DIR: 'generated/yomikiri-backend-wasm'
+  __JMDICT_DIR: 'generated/jmdict'

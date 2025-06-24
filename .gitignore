@@ -1,5 +1,8 @@
 # Project specific
 /main/src/generated.ts
+/generated/*
+!/generated/package.json
+
 
 
 # General

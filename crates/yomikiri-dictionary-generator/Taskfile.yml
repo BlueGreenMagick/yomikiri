@@ -4,11 +4,13 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
+  consts:
+    taskfile: '../../extra/taskfile/Consts-Taskfile.yml'
 
 vars:
   PROJECT_ROOT: '../..'
-  JMDICT_DIR: '{{.PROJECT_ROOT}}/generated/jmdict'
-  YOMIKIRIDICT_PATH: '{{.PROJECT_ROOT}}/generated/dictionary-files/english.yomikiridict'
+  JMDICT_DIR: '{{.PROJECT_ROOT}}/{{.__JMDICT_DIR}}'
+  YOMIKIRIDICT_PATH: '{{.PROJECT_ROOT}}/{{.__YOMIKIRIDICT_FILE_PATH}}'
   CRATE_BINARY: '{{.PROJECT_ROOT}}/target/release/yomikiri-dictionary-generator'
 
 tasks:

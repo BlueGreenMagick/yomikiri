@@ -4,13 +4,15 @@ includes:
   rust-shared:
     taskfile: ../../extra/taskfile/Rust-Taskfile.yml
     flatten: true
+  consts:
+    taskfile: '../../extra/taskfile/Consts-Taskfile.yml'
 
 vars:
   PROJECT_ROOT: ../../
   SWIFT_DIR: ./swift
   APPLE_PROJECT_RUST_DIR: ../../safari/YomikiriTokenizer/rust
-  KOTLIN_DIR: '{{.PROJECT_ROOT}}/generated/backend-kotlin-bindings'
-  ANDROID_LIB_DIR: '{{.PROJECT_ROOT}}/generated/backend-android-lib'
+  KOTLIN_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_KOTLIN_BINDINGS_DIR}}'
+  ANDROID_LIB_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_ANDROID_LIB_DIR}}'
 
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
