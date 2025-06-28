@@ -54,19 +54,7 @@ fun InternetView(
     appEnv: AppEnvironment,
     onMenuClick: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            NavigationHeader(
-                title = "Internet",
-                actions =
-                    arrayOf(
-                        NavigationAction(Icons.Filled.Public, "Bookmark", {}),
-                        NavigationAction(Icons.Filled.MusicNote, "More", {}),
-                    ),
-                onMenuClick = onMenuClick,
-            )
-        },
-    ) { innerPadding ->
+    InternetViewLayout(onMenuClick = onMenuClick) { innerPadding ->
         YomikiriWebView(appEnv = appEnv, modifier = Modifier.padding(innerPadding)) { webview ->
             webview.apply {
                 webViewClient =
