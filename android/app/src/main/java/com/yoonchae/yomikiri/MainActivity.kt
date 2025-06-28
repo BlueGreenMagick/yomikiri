@@ -4,13 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -77,37 +72,17 @@ fun AppContent(
         },
         modifier = modifier
     ) {
-        Scaffold(
-            topBar = { 
-                NavigationHeader(
-                    title = "Internet", 
-                    actions = arrayOf(
-                        NavigationAction(Icons.Filled.Public, "Bookmark", {}),
-                        NavigationAction(Icons.Filled.MusicNote, "More", {})
-                    ),
-                    onMenuClick = { 
-                        scope.launch { drawerState.open() }
-                    }
-                ) 
-            }
-        ) { innerPadding ->
-            MainView(
-                appEnv = appEnv,
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
+        InternetView(appEnv=appEnv, onMenuClick = {
+            scope.launch { drawerState.open() }
+        })
     }
 }
 
-@Composable
-fun MainView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
-    YomikiriWebView(appEnv=appEnv,modifier = modifier)
-}
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingMainView() {
+fun AppContentPreview() {
     YomikiriTheme {
-        MainView(appEnv= AppEnvironment(context= LocalContext.current))
+        AppContent(appEnv= AppEnvironment(context= LocalContext.current))
     }
 }
