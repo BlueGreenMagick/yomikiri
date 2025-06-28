@@ -1,14 +1,11 @@
 package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
-import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +30,7 @@ private const val TAG = "YomikiriWebViewLog"
 fun YomikiriWebView(
     appEnv: AppEnvironment,
     modifier: Modifier = Modifier,
+    setup: (webview: WebView) -> Unit,
 ) {
     var webView: WebView? = remember { null }
 
@@ -82,45 +80,10 @@ fun YomikiriWebView(
                     setAcceptThirdPartyCookies(wv, true)
                 }
 
-                if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
-                    val textContent =
-                        context.assets.open("main/res/content.js").bufferedReader().use {
-                            it.readText()
-                        }
-                    WebViewCompat.addDocumentStartJavaScript(
-                        this,
-                        textContent,
-                        setOf("*"),
-                    )
-                } else {
-                    Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
-                }
-
-                val db = appEnv.db
-                Log.d("MessageDelegate", "Initialized Backend")
-
-                webViewClient =
-                    object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(
-                            view: WebView?,
-                            request: WebResourceRequest?,
-                        ): Boolean = false
-
-                        override fun onPageStarted(
-                            view: WebView?,
-                            url: String?,
-                            favicon: Bitmap?,
-                        ) {
-                            if (url != null) {
-                                db.setSavedUrl(url)
-                            }
-                            super.onPageStarted(view, url, favicon)
-                        }
-                    }
-
                 suspend fun handleWebMessage(jsonMessage: String): String {
                     val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
                     val builder = ResponseBuilder(msg.id)
+                    val db = appEnv.db
 
                     return try {
                         when (msg.key) {
@@ -164,10 +127,7 @@ fun YomikiriWebView(
                     })
                 }
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    val storedUrl = db.getSavedUrl() ?: "https://syosetu.com"
-                    wv.loadUrl(storedUrl)
-                }
+                setup(wv)
             }
         },
         update = {
