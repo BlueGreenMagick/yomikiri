@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,10 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,18 +37,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             YomikiriTheme {
-                Scaffold(
-                    topBar = { NavigationHeader("Internet", arrayOf(
-                        NavigationAction(Icons.Outlined.Star, "Bookmark", {}),
-                        NavigationAction(Icons.Filled.MoreVert, "More", {})
-                    )) },
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    MainView(
-                        appEnv=appEnv,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppContent(appEnv = appEnv)
             }
         }
     }
@@ -53,6 +47,45 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch(NonCancellable) {
             appEnv.close()
         }
+    }
+}
+
+@Composable
+fun AppContent(appEnv: AppEnvironment) {
+    var isSidebarVisible by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = { 
+                NavigationHeader(
+                    title = "Internet", 
+                    actions = arrayOf(
+                        NavigationAction(Icons.Outlined.Star, "Bookmark", {}),
+                        NavigationAction(Icons.Filled.MoreVert, "More", {})
+                    ),
+                    onMenuClick = { isSidebarVisible = true }
+                ) 
+            },
+            modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
+            MainView(
+                appEnv = appEnv,
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
+
+        NavigationSidebar(
+            isVisible = isSidebarVisible,
+            onDismiss = { isSidebarVisible = false },
+            onSettingsClick = { 
+                // TODO: Handle settings click
+                isSidebarVisible = false
+            },
+            onHelpClick = { 
+                // TODO: Handle help click
+                isSidebarVisible = false
+            }
+        )
     }
 }
 

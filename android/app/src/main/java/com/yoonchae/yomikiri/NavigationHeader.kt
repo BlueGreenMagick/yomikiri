@@ -26,6 +26,7 @@ data class NavigationAction(
 fun NavigationHeader(
     title: String,
     actions: Array<NavigationAction>,
+    onMenuClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -33,10 +34,10 @@ fun NavigationHeader(
             Text(title)
         },
         navigationIcon = {
-            IconButton(onClick = { /* TODO: Handle navigation icon click */ }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = "Back"
+                    contentDescription = "Menu"
                 )
             }
         },
