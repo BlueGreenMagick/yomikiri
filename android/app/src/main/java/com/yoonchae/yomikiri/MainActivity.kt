@@ -4,18 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,42 +48,54 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun AppContent(appEnv: AppEnvironment) {
-    var isSidebarVisible by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+@Composable
+fun AppContent(
+    appEnv: AppEnvironment,
+    modifier: Modifier = Modifier
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            NavigationSidebar(
+                onSettingsClick = { 
+                    // TODO: Handle settings click
+                    scope.launch { drawerState.close() }
+                },
+                onHelpClick = { 
+                    // TODO: Handle help click
+                    scope.launch { drawerState.close() }
+                },
+                onDrawerItemClick = { item ->
+                    // TODO: Handle navigation item click
+                    scope.launch { drawerState.close() }
+                }
+            )
+        },
+        modifier = modifier
+    ) {
         Scaffold(
             topBar = { 
                 NavigationHeader(
                     title = "Internet", 
                     actions = arrayOf(
-                        NavigationAction(Icons.Outlined.Star, "Bookmark", {}),
-                        NavigationAction(Icons.Filled.MoreVert, "More", {})
+                        NavigationAction(Icons.Filled.Public, "Bookmark", {}),
+                        NavigationAction(Icons.Filled.MusicNote, "More", {})
                     ),
-                    onMenuClick = { isSidebarVisible = true }
+                    onMenuClick = { 
+                        scope.launch { drawerState.open() }
+                    }
                 ) 
-            },
-            modifier = Modifier.fillMaxSize()
+            }
         ) { innerPadding ->
             MainView(
                 appEnv = appEnv,
                 modifier = Modifier.padding(innerPadding)
             )
         }
-
-        NavigationSidebar(
-            isVisible = isSidebarVisible,
-            onDismiss = { isSidebarVisible = false },
-            onSettingsClick = { 
-                // TODO: Handle settings click
-                isSidebarVisible = false
-            },
-            onHelpClick = { 
-                // TODO: Handle help click
-                isSidebarVisible = false
-            }
-        )
     }
 }
 
