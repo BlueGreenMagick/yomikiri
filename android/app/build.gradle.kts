@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ktlint.gradle.plugin)
 }
 
 android {
@@ -26,7 +27,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -72,6 +73,24 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set(libs.versions.ktlint)
+    outputToConsole = true
+    outputColorName = "RED"
+    ignoreFailures = true
+}
+
+// Custom tasks for formatting
+tasks.register("format") {
+    dependsOn("ktlintFormat")
+    description = "Format Kotlin code using ktlint"
+}
+
+tasks.register("check-format") {
+    dependsOn("ktlintCheck")
+    description = "Check Kotlin code formatting using ktlint"
 }
 
 tasks.register<Exec>("task_build") {

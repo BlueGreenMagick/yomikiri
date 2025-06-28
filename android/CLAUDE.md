@@ -37,6 +37,7 @@ From the android directory:
 - `task lint`: Run Android linting (`./gradlew lint`)
 - `task check`: Run checks (`./gradlew check`)
 - `task test`: Run unit tests (`./gradlew test`)
+- `task format`: Format code
 
 From project root:
 - `task build:android`: Full Android build including dependencies

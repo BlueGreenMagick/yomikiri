@@ -89,7 +89,7 @@ tasks:
   format:
     aliases: ['fmt']
     desc: 'Format all files'
-    deps: ['format:dprint', 'format:rust']
+    deps: ['format:dprint', 'format:rust', 'android:format']
 
   format:dprint:
     aliases: ['fmt:dprint']
@@ -116,7 +116,7 @@ tasks:
   check-format:
     aliases: ['check-fmt']
     desc: 'Check if files are formatted'
-    deps: [check-format:dprint, check-format:rust]
+    deps: [check-format:dprint, check-format:rust, 'android:check-format']
 
   build:all:
     run: once

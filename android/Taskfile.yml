@@ -49,3 +49,11 @@ tasks:
   test:
     cmds:
       - ./gradlew test
+
+  format:
+    cmds:
+      - ./gradlew format
+
+  check-format:
+    cmds:
+      - ./gradlew check-format
