@@ -28,15 +28,19 @@ fun createRustDatabase(context: Context): RustDatabase {
     return database
 }
 
-private fun migrateDatabaseFrom0(db: RustDatabase, context: Context) {
+private fun migrateDatabaseFrom0(
+    db: RustDatabase,
+    context: Context,
+) {
     Log.d(TAG, "Migrate database v0 start")
 
-    val data = MigrateFromV0Data(
-        webConfig = null,
-        jmdictEtag = null,
-        jmnedictEtag = null,
-        dictSchemaVer = null
-    )
+    val data =
+        MigrateFromV0Data(
+            webConfig = null,
+            jmdictEtag = null,
+            jmnedictEtag = null,
+            dictSchemaVer = null,
+        )
 
     db.migrateFrom0(data)
     Log.d(TAG, "Migrate database v0 end")

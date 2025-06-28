@@ -4,17 +4,13 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import uniffi.yomikiri_backend_uniffi.DownloadDictionaryResult
-import uniffi.yomikiri_backend_uniffi.createDictionary
-import uniffi.yomikiri_backend_uniffi.dictSchemaVer
-import uniffi.yomikiri_backend_uniffi.downloadJmdict
-import uniffi.yomikiri_backend_uniffi.downloadJmnedict
 import java.io.File
-
 
 private const val TAG = "Yomikiri::DictionaryManager"
 
-class DictionaryManager(val context: Context) {
+class DictionaryManager(
+    val context: Context,
+) {
     private fun getFile(): File {
         val dictDir = File(context.filesDir, "dict").apply { mkdirs() }
         val dictFile = File(dictDir, "english.yomikiridict")
@@ -36,11 +32,12 @@ class DictionaryManager(val context: Context) {
         Log.d(TAG, "Copied dictionary file to: ${dictFile.absolutePath}")
         return dictFile
     }
-    
+
     companion object {
         /** Runs on the IO thread */
-        suspend fun getFile(context: Context): File = withContext(Dispatchers.IO) {
-            DictionaryManager(context).getFile()
-        }
+        suspend fun getFile(context: Context): File =
+            withContext(Dispatchers.IO) {
+                DictionaryManager(context).getFile()
+            }
     }
 }

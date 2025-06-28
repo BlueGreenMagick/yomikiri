@@ -30,7 +30,10 @@ import uniffi.yomikiri_backend_uniffi.BackendException
 private const val TAG = "YomikiriWebViewLog"
 
 @Composable
-fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
+fun YomikiriWebView(
+    appEnv: AppEnvironment,
+    modifier: Modifier = Modifier,
+) {
     var webView: WebView? = remember { null }
 
     Log.d(TAG, "render")
@@ -45,142 +48,154 @@ fun YomikiriWebView(appEnv: AppEnvironment, modifier: Modifier = Modifier) {
         }
     }
 
-    AndroidView(factory = {
-        WebView(it).apply {
-            val wv = this
-            webView = wv
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-            )
+    AndroidView(
+        factory = {
+            WebView(it).apply {
+                val wv = this
+                webView = wv
+                layoutParams =
+                    ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    )
 
-            settings.apply {
-                useWideViewPort = true
-                @SuppressLint("SetJavaScriptEnabled")
-                javaScriptEnabled = true
-                allowFileAccess = true
-                allowContentAccess = true
-                loadWithOverviewMode = true
-                builtInZoomControls = true
-                displayZoomControls = false
-                setSupportZoom(true)
-                domStorageEnabled = true
-                cacheMode = WebSettings.LOAD_DEFAULT
-                mediaPlaybackRequiresUserGesture = false
-                setGeolocationEnabled(true)
-                offscreenPreRaster = true // should only be true if this webview is visible
-                supportMultipleWindows()
-            }
-
-            CookieManager.getInstance().apply {
-                setAcceptCookie(true)
-                setAcceptThirdPartyCookies(wv, true)
-            }
-
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
-                val textContent = context.assets.open("main/res/content.js").bufferedReader().use {
-                    it.readText()
-                }
-                WebViewCompat.addDocumentStartJavaScript(
-                    this,
-                    textContent,
-                    setOf("*")
-                )
-            } else {
-                Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
-            }
-
-
-            val db = appEnv.db
-            Log.d("MessageDelegate", "Initialized Backend")
-
-            webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): Boolean {
-                    return false
+                settings.apply {
+                    useWideViewPort = true
+                    @SuppressLint("SetJavaScriptEnabled")
+                    javaScriptEnabled = true
+                    allowFileAccess = true
+                    allowContentAccess = true
+                    loadWithOverviewMode = true
+                    builtInZoomControls = true
+                    displayZoomControls = false
+                    setSupportZoom(true)
+                    domStorageEnabled = true
+                    cacheMode = WebSettings.LOAD_DEFAULT
+                    mediaPlaybackRequiresUserGesture = false
+                    setGeolocationEnabled(true)
+                    offscreenPreRaster = true // should only be true if this webview is visible
+                    supportMultipleWindows()
                 }
 
-                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                    if (url != null) {
-                        db.setSavedUrl(url)
-                    }
-                    super.onPageStarted(view, url, favicon)
+                CookieManager.getInstance().apply {
+                    setAcceptCookie(true)
+                    setAcceptThirdPartyCookies(wv, true)
                 }
-            }
 
-            suspend fun handleWebMessage(jsonMessage: String): String {
-                val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
-                val builder = ResponseBuilder(msg.id)
+                if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+                    val textContent =
+                        context.assets.open("main/res/content.js").bufferedReader().use {
+                            it.readText()
+                        }
+                    WebViewCompat.addDocumentStartJavaScript(
+                        this,
+                        textContent,
+                        setOf("*"),
+                    )
+                } else {
+                    Log.e(TAG, "WebViewFeature.DOCUMENT_START_SCRIPT not supported")
+                }
 
-                return try {
-                    when (msg.key) {
-                        "versionInfo" -> {
-                            val value = BuildConfig.VERSION_NAME
-                            builder.success(value)
-                        }
-                        "loadConfig" -> {
-                            val value = db.getRawStorage("config") ?: "{}"
-                            builder.success(value)
-                        }
-                        "saveConfig" -> {
-                            db.setRawStorage("config", msg.request)
-                            builder.success(Unit)
-                        }
-                        else -> {
-                            val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
-                            builder.jsonSuccess(value)
+                val db = appEnv.db
+                Log.d("MessageDelegate", "Initialized Backend")
+
+                webViewClient =
+                    object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                        ): Boolean = false
+
+                        override fun onPageStarted(
+                            view: WebView?,
+                            url: String?,
+                            favicon: Bitmap?,
+                        ) {
+                            if (url != null) {
+                                db.setSavedUrl(url)
+                            }
+                            super.onPageStarted(view, url, favicon)
                         }
                     }
-                } catch (e: BackendException) {
-                    builder.fail(e.json())
-                } catch (e: Exception){
-                    builder.fail(e.message ?: "Unknown error")
+
+                suspend fun handleWebMessage(jsonMessage: String): String {
+                    val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
+                    val builder = ResponseBuilder(msg.id)
+
+                    return try {
+                        when (msg.key) {
+                            "versionInfo" -> {
+                                val value = BuildConfig.VERSION_NAME
+                                builder.success(value)
+                            }
+                            "loadConfig" -> {
+                                val value = db.getRawStorage("config") ?: "{}"
+                                builder.success(value)
+                            }
+                            "saveConfig" -> {
+                                db.setRawStorage("config", msg.request)
+                                builder.success(Unit)
+                            }
+                            else -> {
+                                val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
+                                builder.jsonSuccess(value)
+                            }
+                        }
+                    } catch (e: BackendException) {
+                        builder.fail(e.json())
+                    } catch (e: Exception) {
+                        builder.fail(e.message ?: "Unknown error")
+                    }
+                }
+
+                if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                    WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), { _, message, _, _, replyProxy ->
+                        Log.d(TAG, "Received message: ${message.data}")
+                        val jsonMessage = message.data
+                        if (jsonMessage == null) {
+                            Log.e(TAG, "No message was passed from webview")
+                        } else {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                val response = handleWebMessage(jsonMessage)
+                                Log.d(TAG, "Sent: $response")
+                                replyProxy.postMessage(response)
+                            }
+                        }
+                    })
+                }
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    val storedUrl = db.getSavedUrl() ?: "https://syosetu.com"
+                    wv.loadUrl(storedUrl)
                 }
             }
-
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
-                WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), {
-                    _, message, _, _, replyProxy ->
-                    Log.d(TAG, "Received message: ${message.data}")
-                    val jsonMessage = message.data
-                    if (jsonMessage == null) {
-                        Log.e(TAG, "No message was passed from webview")
-                    } else {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val response = handleWebMessage(jsonMessage)
-                            Log.d(TAG, "Sent: $response")
-                            replyProxy.postMessage(response)
-                        }
-                    }
-                })
-            }
-
-            CoroutineScope(Dispatchers.Main).launch {
-                val storedUrl = db.getSavedUrl() ?: "https://syosetu.com"
-                wv.loadUrl(storedUrl)
-            }
-        }
-    }, update = {
-    }, onRelease = {
-        webView = null
-    },
-        modifier = modifier.fillMaxSize()
+        },
+        update = {
+        },
+        onRelease = {
+            webView = null
+        },
+        modifier = modifier.fillMaxSize(),
     )
 }
 
 @Serializable
-data class RequestMessage(val id: Int, val key: String, val request: String)
+data class RequestMessage(
+    val id: Int,
+    val key: String,
+    val request: String,
+)
 
-class ResponseBuilder(val id: Int) {
+class ResponseBuilder(
+    val id: Int,
+) {
     @Serializable
     @ExperimentalSerializationApi
     data class SuccessfulResponseMessage(
         val id: Int,
         val resp: String,
         @EncodeDefault
-        val success: Boolean = true
+        val success: Boolean = true,
     )
 
     @Serializable
@@ -189,7 +204,7 @@ class ResponseBuilder(val id: Int) {
         val id: Int,
         val error: String,
         @EncodeDefault
-        val success: Boolean = false
+        val success: Boolean = false,
     )
 
     @OptIn(ExperimentalSerializationApi::class)

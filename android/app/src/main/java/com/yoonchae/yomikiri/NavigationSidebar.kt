@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.LibraryBooks
@@ -24,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 data class SidebarItem(
     val icon: ImageVector,
     val title: String,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 )
 
 @Composable
@@ -39,50 +39,52 @@ fun NavigationSidebar(
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
     onDrawerItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val sidebarItems = listOf(
-        SidebarItem(Icons.Filled.LibraryBooks, "Dictionary") { onDrawerItemClick("Dictionary") },
-        SidebarItem(Icons.Filled.Public, "Internet") { onDrawerItemClick("Internet") },
-        SidebarItem(Icons.Filled.MusicNote, "Music") { onDrawerItemClick("Music") }
-    )
+    val sidebarItems =
+        listOf(
+            SidebarItem(Icons.Filled.LibraryBooks, "Dictionary") { onDrawerItemClick("Dictionary") },
+            SidebarItem(Icons.Filled.Public, "Internet") { onDrawerItemClick("Internet") },
+            SidebarItem(Icons.Filled.MusicNote, "Music") { onDrawerItemClick("Music") },
+        )
 
     ModalDrawerSheet(
         modifier = modifier.width(280.dp),
-        drawerShape = RectangleShape
+        drawerShape = RectangleShape,
     ) {
         // Header section with settings and help icons
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(4.dp))
-            
+
             IconButton(onClick = onHelpClick) {
                 Icon(
                     imageVector = Icons.Filled.Help,
                     contentDescription = "Help",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
-            
+
             Spacer(modifier = Modifier.weight(1f))
         }
-        
+
         // Gray separator
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -90,11 +92,11 @@ fun NavigationSidebar(
         // Navigation items
         sidebarItems.forEach { item ->
             NavigationDrawerItem(
-                icon = { 
+                icon = {
                     Icon(
-                        imageVector = item.icon, 
-                        contentDescription = null
-                    ) 
+                        imageVector = item.icon,
+                        contentDescription = null,
+                    )
                 },
                 label = { Text(item.title) },
                 selected = false,
@@ -105,7 +107,6 @@ fun NavigationSidebar(
     }
 }
 
-
 @Preview
 @Composable
 fun NavigationDrawerPreview() {
@@ -113,7 +114,7 @@ fun NavigationDrawerPreview() {
         NavigationSidebar(
             onSettingsClick = { },
             onHelpClick = { },
-            onDrawerItemClick = { }
+            onDrawerItemClick = { },
         )
     }
 }

@@ -17,10 +17,8 @@ import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 
-
 class MainActivity : ComponentActivity() {
     private lateinit var appEnv: AppEnvironment
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +41,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun AppContent(
     appEnv: AppEnvironment,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -56,33 +53,32 @@ fun AppContent(
         drawerState = drawerState,
         drawerContent = {
             NavigationSidebar(
-                onSettingsClick = { 
+                onSettingsClick = {
                     // TODO: Handle settings click
                     scope.launch { drawerState.close() }
                 },
-                onHelpClick = { 
+                onHelpClick = {
                     // TODO: Handle help click
                     scope.launch { drawerState.close() }
                 },
                 onDrawerItemClick = { item ->
                     // TODO: Handle navigation item click
                     scope.launch { drawerState.close() }
-                }
+                },
             )
         },
-        modifier = modifier
+        modifier = modifier,
     ) {
-        InternetView(appEnv=appEnv, onMenuClick = {
+        InternetView(appEnv = appEnv, onMenuClick = {
             scope.launch { drawerState.open() }
         })
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun AppContentPreview() {
     YomikiriTheme {
-        AppContent(appEnv= AppEnvironment(context= LocalContext.current))
+        AppContent(appEnv = AppEnvironment(context = LocalContext.current))
     }
 }

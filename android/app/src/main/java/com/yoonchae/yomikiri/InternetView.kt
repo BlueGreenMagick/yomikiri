@@ -16,42 +16,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
 
 @Composable
-fun InternetViewLayout(onMenuClick: () -> Unit, content: @Composable (PaddingValues) -> Unit) {
-    Scaffold(
-        topBar = {
-            NavigationHeader(
-                title = "Internet",
-                actions = arrayOf(
-                    NavigationAction(Icons.Filled.Public, "Bookmark", {}),
-                    NavigationAction(Icons.Filled.MusicNote, "More", {})
-                ),
-                onMenuClick = onMenuClick
-            )
-        }
-    ) { innerPadding ->
-        content(innerPadding)
-    }
-}
-
-
-@Composable
-fun InternetView(
-    appEnv: AppEnvironment,
-    onMenuClick: () -> Unit
+fun InternetViewLayout(
+    onMenuClick: () -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         topBar = {
             NavigationHeader(
                 title = "Internet",
-                actions = arrayOf(
-                    NavigationAction(Icons.Filled.Public, "Bookmark", {}),
-                    NavigationAction(Icons.Filled.MusicNote, "More", {})
-                ),
-                onMenuClick = onMenuClick
+                actions =
+                    arrayOf(
+                        NavigationAction(Icons.Filled.Public, "Bookmark", {}),
+                        NavigationAction(Icons.Filled.MusicNote, "More", {}),
+                    ),
+                onMenuClick = onMenuClick,
             )
-        }
+        },
     ) { innerPadding ->
-        YomikiriWebView(appEnv=appEnv, modifier = Modifier.padding(innerPadding))
+        content(innerPadding)
+    }
+}
+
+@Composable
+fun InternetView(
+    appEnv: AppEnvironment,
+    onMenuClick: () -> Unit,
+) {
+    Scaffold(
+        topBar = {
+            NavigationHeader(
+                title = "Internet",
+                actions =
+                    arrayOf(
+                        NavigationAction(Icons.Filled.Public, "Bookmark", {}),
+                        NavigationAction(Icons.Filled.MusicNote, "More", {}),
+                    ),
+                onMenuClick = onMenuClick,
+            )
+        },
+    ) { innerPadding ->
+        YomikiriWebView(appEnv = appEnv, modifier = Modifier.padding(innerPadding))
     }
 }
 
@@ -61,10 +65,11 @@ fun InternetViewLayoutPreview() {
     YomikiriTheme {
         InternetViewLayout(onMenuClick = {}) { paddingValues ->
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(Color(0xFFD8D8D8))
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(Color(0xFFD8D8D8)),
             )
         }
     }

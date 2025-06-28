@@ -17,9 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 data class NavigationAction(
     val icon: ImageVector,
     val description: String,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 )
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +26,7 @@ fun NavigationHeader(
     title: String,
     actions: Array<NavigationAction>,
     onMenuClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     TopAppBar(
         title = {
@@ -37,7 +36,7 @@ fun NavigationHeader(
             IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = "Menu"
+                    contentDescription = "Menu",
                 )
             }
         },
@@ -46,12 +45,12 @@ fun NavigationHeader(
                 IconButton(onClick = item.onClick) {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.description
+                        contentDescription = item.description,
                     )
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -60,9 +59,10 @@ fun NavigationHeader(
 fun NavigationHeaderPreview() {
     NavigationHeader(
         title = "Title",
-        actions = arrayOf(
-            NavigationAction(Icons.Outlined.Star, "Bookmark", {}),
-            NavigationAction(Icons.Filled.MoreVert, "More", {})
-        )
+        actions =
+            arrayOf(
+                NavigationAction(Icons.Outlined.Star, "Bookmark", {}),
+                NavigationAction(Icons.Filled.MoreVert, "More", {}),
+            ),
     )
 }
