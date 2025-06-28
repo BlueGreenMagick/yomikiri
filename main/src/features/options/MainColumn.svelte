@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { AppCtx, DesktopCtx, IosAppCtx } from "../ctx";
+  import type { AndroidCtx, AppCtx, DesktopCtx, IosAppCtx } from "../ctx";
   import GroupAbout from "./groups/GroupAbout.svelte";
   import GroupAnki from "./groups/GroupAnki.svelte";
   import GroupAppearance from "./groups/GroupAppearance.svelte";
   import GroupDictionary from "./groups/GroupDictionary.svelte";
 
-  export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
+  export let ctx: AppCtx<DesktopCtx | IosAppCtx | AndroidCtx>;
 </script>
 
 <div>
