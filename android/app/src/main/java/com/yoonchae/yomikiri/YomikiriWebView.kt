@@ -80,37 +80,6 @@ fun YomikiriWebView(
                     setAcceptThirdPartyCookies(wv, true)
                 }
 
-                suspend fun handleWebMessage(jsonMessage: String): String {
-                    val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
-                    val builder = ResponseBuilder(msg.id)
-                    val db = appEnv.db
-
-                    return try {
-                        when (msg.key) {
-                            "versionInfo" -> {
-                                val value = BuildConfig.VERSION_NAME
-                                builder.success(value)
-                            }
-                            "loadConfig" -> {
-                                val value = db.getRawStorage("config") ?: "{}"
-                                builder.success(value)
-                            }
-                            "saveConfig" -> {
-                                db.setRawStorage("config", msg.request)
-                                builder.success(Unit)
-                            }
-                            else -> {
-                                val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
-                                builder.jsonSuccess(value)
-                            }
-                        }
-                    } catch (e: BackendException) {
-                        builder.fail(e.json())
-                    } catch (e: Exception) {
-                        builder.fail(e.message ?: "Unknown error")
-                    }
-                }
-
                 if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
                     WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), { _, message, _, _, replyProxy ->
                         Log.d(TAG, "Received message: ${message.data}")
@@ -119,7 +88,7 @@ fun YomikiriWebView(
                             Log.e(TAG, "No message was passed from webview")
                         } else {
                             CoroutineScope(Dispatchers.Main).launch {
-                                val response = handleWebMessage(jsonMessage)
+                                val response = handleWebMessage(appEnv, jsonMessage)
                                 Log.d(TAG, "Sent: $response")
                                 replyProxy.postMessage(response)
                             }
@@ -137,6 +106,40 @@ fun YomikiriWebView(
         },
         modifier = modifier.fillMaxSize(),
     )
+}
+
+private suspend fun handleWebMessage(
+    appEnv: AppEnvironment,
+    jsonMessage: String,
+): String {
+    val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
+    val builder = ResponseBuilder(msg.id)
+    val db = appEnv.db
+
+    return try {
+        when (msg.key) {
+            "versionInfo" -> {
+                val value = BuildConfig.VERSION_NAME
+                builder.success(value)
+            }
+            "loadConfig" -> {
+                val value = db.getRawStorage("config") ?: "{}"
+                builder.success(value)
+            }
+            "saveConfig" -> {
+                db.setRawStorage("config", msg.request)
+                builder.success(Unit)
+            }
+            else -> {
+                val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
+                builder.jsonSuccess(value)
+            }
+        }
+    } catch (e: BackendException) {
+        builder.fail(e.json())
+    } catch (e: Exception) {
+        builder.fail(e.message ?: "Unknown error")
+    }
 }
 
 @Serializable
