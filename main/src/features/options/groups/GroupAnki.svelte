@@ -1,10 +1,5 @@
 <script lang="ts">
-  import type {
-    AndroidCtx,
-    AppCtx,
-    DesktopCtx,
-    IosAppCtx,
-  } from "@/features/ctx";
+  import type { AndroidCtx, AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
   import Utils, { SingleQueued } from "@/features/utils";
   import type { DesktopAnkiApi } from "@/platform/desktop";
   import ModalAnkiTemplate from "../ankiTemplate/ModalAnkiTemplate.svelte";
@@ -15,8 +10,7 @@
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx | AndroidCtx>;
 
-  const ANKIMOBILE_URL =
-    "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
+  const ANKIMOBILE_URL = "https://itunes.apple.com/us/app/ankimobile-flashcards/id373493387";
   const AnkiApi = ctx.anki;
 
   const config = ctx.config;
@@ -84,7 +78,7 @@
       return true;
     }
     const response = confirm(
-      `This will discard ${deferredNoteCount} Anki notes that are waiting to be added. Proceed?`
+      `This will discard ${deferredNoteCount} Anki notes that are waiting to be added. Proceed?`,
     );
     if (response) {
       void AnkiApi.clearDeferredNotes();
@@ -146,8 +140,7 @@
       title="Add Notes Later"
       onToggle={() => onToggleAnkiDeferNotes(AnkiApi)}
     >
-      If Anki is not connected, add notes later in the background when Anki is
-      connected.
+      If Anki is not connected, add notes later in the background when Anki is connected.
     </OptionToggle>
   {/if}
 

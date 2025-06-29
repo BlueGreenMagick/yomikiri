@@ -1,10 +1,5 @@
 <script lang="ts">
-  import type {
-    AndroidCtx,
-    AppCtx,
-    DesktopCtx,
-    IosAppCtx,
-  } from "@/features/ctx";
+  import type { AndroidCtx, AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
   import AnkiTemplateEdit from "./AnkiTemplateEdit.svelte";
 
   export let ctx: AppCtx<DesktopCtx | IosAppCtx | AndroidCtx>;

@@ -1,10 +1,5 @@
 <script lang="ts">
-  import type {
-    AndroidCtx,
-    AppCtx,
-    DesktopCtx,
-    IosAppCtx,
-  } from "@/features/ctx";
+  import type { AndroidCtx, AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
   import Modal from "../Modal.svelte";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
 
