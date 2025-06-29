@@ -85,6 +85,7 @@ fun AppContent(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             NavigationSidebar(
                 onSettingsClick = {
