@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.LibraryBooks
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +25,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
+
+enum class NavigationView {
+    INTERNET,
+    OPTIONS,
+}
 
 data class SidebarItem(
     val icon: ImageVector,
@@ -38,14 +42,13 @@ data class SidebarItem(
 fun NavigationSidebar(
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onDrawerItemClick: (String) -> Unit,
+    onDrawerItemClick: (NavigationView) -> Unit,
     modifier: Modifier = Modifier,
+    selectedView: NavigationView? = null,
 ) {
     val sidebarItems =
         listOf(
-            SidebarItem(Icons.Filled.LibraryBooks, "Dictionary") { onDrawerItemClick("Dictionary") },
-            SidebarItem(Icons.Filled.Public, "Internet") { onDrawerItemClick("Internet") },
-            SidebarItem(Icons.Filled.MusicNote, "Music") { onDrawerItemClick("Music") },
+            SidebarItem(Icons.Filled.Public, "Internet") { onDrawerItemClick(NavigationView.INTERNET) },
         )
 
     ModalDrawerSheet(
@@ -65,6 +68,14 @@ fun NavigationSidebar(
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings",
                     modifier = Modifier.size(24.dp),
+                    tint =
+                        if (selectedView ==
+                            NavigationView.OPTIONS
+                        ) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                 )
             }
 
@@ -75,6 +86,7 @@ fun NavigationSidebar(
                     imageVector = Icons.Filled.Help,
                     contentDescription = "Help",
                     modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -99,7 +111,7 @@ fun NavigationSidebar(
                     )
                 },
                 label = { Text(item.title) },
-                selected = false,
+                selected = selectedView == NavigationView.INTERNET && item.title == "Internet",
                 onClick = item.onClick,
                 shape = RectangleShape,
             )
@@ -110,11 +122,12 @@ fun NavigationSidebar(
 @Preview
 @Composable
 fun NavigationDrawerPreview() {
-    MaterialTheme {
+    YomikiriTheme {
         NavigationSidebar(
             onSettingsClick = { },
             onHelpClick = { },
             onDrawerItemClick = { },
+            selectedView = NavigationView.INTERNET,
         )
     }
 }

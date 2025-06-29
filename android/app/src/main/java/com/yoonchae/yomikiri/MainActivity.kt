@@ -48,11 +48,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-enum class NavigationView {
-    INTERNET,
-    OPTIONS,
-}
-
 @Composable
 fun AppContent(
     appEnv: AppEnvironment,
@@ -96,15 +91,11 @@ fun AppContent(
                     // TODO: Handle help click
                     scope.launch { drawerState.close() }
                 },
-                onDrawerItemClick = { item ->
-                    when (item) {
-                        "Internet" -> currentView = NavigationView.INTERNET
-                        else -> {
-                            // TODO: Handle other navigation items
-                        }
-                    }
+                onDrawerItemClick = { view ->
+                    currentView = view
                     scope.launch { drawerState.close() }
                 },
+                selectedView = currentView,
             )
         },
         modifier = modifier,
