@@ -40,6 +40,7 @@ where
 }
 
 /// Used as namespace to hold static methods for all typed properties
+#[allow(clippy::upper_case_acronyms)]
 pub struct KEYS {}
 
 macro_rules! storage_key {
