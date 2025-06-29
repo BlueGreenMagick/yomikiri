@@ -55,7 +55,7 @@ fun InternetView(
     onMenuClick: () -> Unit,
 ) {
     InternetViewLayout(onMenuClick = onMenuClick) { innerPadding ->
-        YomikiriWebView(appEnv = appEnv, modifier = Modifier.padding(innerPadding)) { webview ->
+        YomikiriWebView(appEnv = appEnv, modifier = Modifier.padding(innerPadding), webViewKey = "internet") { webview ->
             webview.apply {
                 webViewClient =
                     object : WebViewClient() {

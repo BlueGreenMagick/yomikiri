@@ -26,13 +26,20 @@ import uniffi.yomikiri_backend_uniffi.BackendException
 
 private const val TAG = "YomikiriWebViewLog"
 
+// Cache for webview instances to avoid recreation
+private val webViewCache = mutableMapOf<String, WebView>()
+
 @Composable
 fun YomikiriWebView(
     appEnv: AppEnvironment,
     modifier: Modifier = Modifier,
+    webViewKey: String = "default",
     setup: (webview: WebView) -> Unit,
 ) {
-    var webView: WebView? = remember { null }
+    var webView: WebView? =
+        remember(webViewKey) {
+            webViewCache[webViewKey]
+        }
 
     Log.d(TAG, "render")
 
@@ -48,61 +55,66 @@ fun YomikiriWebView(
 
     AndroidView(
         factory = {
-            WebView(it).apply {
-                val wv = this
-                webView = wv
-                layoutParams =
-                    ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                    )
+            webViewCache.getOrPut(webViewKey) {
+                WebView(it).apply {
+                    val wv = this
+                    webView = wv
+                    layoutParams =
+                        ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                        )
 
-                settings.apply {
-                    useWideViewPort = true
-                    @SuppressLint("SetJavaScriptEnabled")
-                    javaScriptEnabled = true
-                    allowFileAccess = true
-                    allowContentAccess = true
-                    loadWithOverviewMode = true
-                    builtInZoomControls = true
-                    displayZoomControls = false
-                    setSupportZoom(true)
-                    domStorageEnabled = true
-                    cacheMode = WebSettings.LOAD_DEFAULT
-                    mediaPlaybackRequiresUserGesture = false
-                    setGeolocationEnabled(true)
-                    offscreenPreRaster = true // should only be true if this webview is visible
-                    supportMultipleWindows()
-                }
+                    settings.apply {
+                        useWideViewPort = true
+                        @SuppressLint("SetJavaScriptEnabled")
+                        javaScriptEnabled = true
+                        allowFileAccess = true
+                        allowContentAccess = true
+                        loadWithOverviewMode = true
+                        builtInZoomControls = true
+                        displayZoomControls = false
+                        setSupportZoom(true)
+                        domStorageEnabled = true
+                        cacheMode = WebSettings.LOAD_DEFAULT
+                        mediaPlaybackRequiresUserGesture = false
+                        setGeolocationEnabled(true)
+                        offscreenPreRaster = true // should only be true if this webview is visible
+                        supportMultipleWindows()
+                    }
 
-                CookieManager.getInstance().apply {
-                    setAcceptCookie(true)
-                    setAcceptThirdPartyCookies(wv, true)
-                }
+                    CookieManager.getInstance().apply {
+                        setAcceptCookie(true)
+                        setAcceptThirdPartyCookies(wv, true)
+                    }
 
-                if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
-                    WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*"), { _, message, _, _, replyProxy ->
-                        Log.d(TAG, "Received message: ${message.data}")
-                        val jsonMessage = message.data
-                        if (jsonMessage == null) {
-                            Log.e(TAG, "No message was passed from webview")
-                        } else {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                val response = handleWebMessage(appEnv, jsonMessage)
-                                Log.d(TAG, "Sent: $response")
-                                replyProxy.postMessage(response)
+                    if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) {
+                        WebViewCompat.addWebMessageListener(this, "__yomikiriInterface", setOf("*")) { _, message, _, _, replyProxy ->
+                            Log.d(TAG, "Received message: ${message.data}")
+                            val jsonMessage = message.data
+                            if (jsonMessage == null) {
+                                Log.e(TAG, "No message was passed from webview")
+                            } else {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    val response = handleWebMessage(appEnv, jsonMessage)
+                                    Log.d(TAG, "Sent: $response")
+                                    replyProxy.postMessage(response)
+                                }
                             }
                         }
-                    })
-                }
+                    }
 
-                setup(wv)
+                    setup(wv)
+                }
             }
         },
-        update = {
+        update = { cachedWebView ->
+            webView = cachedWebView
+            // Update setup when view is reused
+            setup(cachedWebView)
         },
         onRelease = {
-            webView = null
+            // Don't destroy the webview, keep it in cache
         },
         modifier = modifier.fillMaxSize(),
     )
