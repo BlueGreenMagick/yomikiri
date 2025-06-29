@@ -44,20 +44,21 @@ fun OptionsView(
         YomikiriWebView(appEnv = appEnv, modifier = Modifier.padding(innerPadding), webViewKey = "options") { webview ->
             webview.apply {
                 // Create WebViewAssetLoader to serve assets via HTTPS
-                val assetLoader = WebViewAssetLoader.Builder()
-                    .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
-                    .build()
+                val assetLoader =
+                    WebViewAssetLoader
+                        .Builder()
+                        .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+                        .build()
 
                 // Set custom WebViewClient to handle asset loading
-                webViewClient = object : WebViewClient() {
-                    override fun shouldInterceptRequest(
-                        view: WebView?,
-                        request: WebResourceRequest?
-                    ): WebResourceResponse? {
-                        return assetLoader.shouldInterceptRequest(request?.url)
+                webViewClient =
+                    object : WebViewClient() {
+                        override fun shouldInterceptRequest(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                        ): WebResourceResponse? = assetLoader.shouldInterceptRequest(request?.url)
                     }
-                }
-                
+
                 // Load options page via HTTPS domain to avoid CORS issues
                 val optionsHtmlPath = "https://appassets.androidplatform.net/assets/main/res/options.html"
                 webview.loadUrl(optionsHtmlPath)

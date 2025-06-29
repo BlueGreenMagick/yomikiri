@@ -1,9 +1,14 @@
 <script lang="ts">
-  import type { AppCtx, DesktopCtx, IosAppCtx } from "@/features/ctx";
+  import type {
+    AndroidCtx,
+    AppCtx,
+    DesktopCtx,
+    IosAppCtx,
+  } from "@/features/ctx";
   import Modal from "../Modal.svelte";
   import LoadAnkiTemplate from "./LoadAnkiTemplate.svelte";
 
-  export let ctx: AppCtx<DesktopCtx | IosAppCtx>;
+  export let ctx: AppCtx<DesktopCtx | IosAppCtx | AndroidCtx>;
   export let onClose: () => void;
 </script>
 

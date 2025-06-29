@@ -1,6 +1,7 @@
 package com.yoonchae.yomikiri
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
@@ -43,6 +45,7 @@ fun YomikiriWebView(
 
     Log.d(TAG, "render")
 
+    val context = LocalContext.current
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     BackHandler {
@@ -96,7 +99,7 @@ fun YomikiriWebView(
                                 Log.e(TAG, "No message was passed from webview")
                             } else {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    val response = handleWebMessage(appEnv, jsonMessage)
+                                    val response = handleWebMessage(context, appEnv, jsonMessage)
                                     Log.d(TAG, "Sent: $response")
                                     replyProxy.postMessage(response)
                                 }
@@ -121,6 +124,7 @@ fun YomikiriWebView(
 }
 
 private suspend fun handleWebMessage(
+    context: Context,
     appEnv: AppEnvironment,
     jsonMessage: String,
 ): String {
@@ -141,6 +145,19 @@ private suspend fun handleWebMessage(
             "saveConfig" -> {
                 db.setRawStorage("config", msg.request)
                 builder.success(Unit)
+            }
+            "ankiGetInfo" -> {
+                val result = AnkiApi.getInfo(context)
+                builder.success(result)
+            }
+            "ankiCheckConnection" -> {
+                val result = AnkiApi.checkConnection(context)
+                builder.success(result)
+            }
+            "ankiAddNote" -> {
+                val note = Json.decodeFromString<AnkiNote>(msg.request)
+                val result = AnkiApi.addNote(context, note)
+                builder.success(result)
             }
             else -> {
                 val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }

@@ -1,30 +1,26 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
+import { sendMessage } from "./messaging";
 
 export class AndroidAnkiApi implements IAnkiAddNotes, IAnkiOptions {
   readonly type = "android";
 
-  setAnkiInfo(_ankiInfoJson: string): void {
-    throw new Error("Unimplemented");
-  }
-
-  async requestAnkiInfo(): Promise<void> {
-    await Promise.resolve();
-    throw new Error("Unimplemented");
-  }
+  async requestAnkiInfo(): Promise<void> {}
 
   async getAnkiInfo(): Promise<AnkiInfo> {
-    await Promise.resolve();
-    throw new Error("Unimplemented");
+    return await sendMessage("ankiGetInfo", null);
   }
 
   async checkConnection(): Promise<void> {
-    await Promise.resolve();
-    throw new Error("Unimplemented");
+    await sendMessage("ankiCheckConnection", null);
   }
 
-  async addNote(_note: AnkiNote): Promise<boolean> {
-    await Promise.resolve();
-    throw new Error("Unimplemented");
+  async addNote(note: AnkiNote): Promise<boolean> {
+    return await sendMessage("ankiAddNote", {
+      deck: note.deck,
+      notetype: note.notetype,
+      fields: note.fields,
+      tags: note.tags,
+    });
   }
 }

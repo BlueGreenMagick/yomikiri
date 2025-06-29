@@ -162,7 +162,7 @@
     </OptionToggle>
   {/if}
 </GroupedOptions>
-{#if !ankiTemplateModalHidden && ctx.platformType === "desktop"}
+{#if !ankiTemplateModalHidden && (ctx.platformType === "desktop" || ctx.platformType === "android")}
   <ModalAnkiTemplate
     {ctx}
     onClose={() => {

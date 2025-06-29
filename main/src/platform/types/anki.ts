@@ -7,8 +7,8 @@ import type { IPlatformConsts } from ".";
 
 export interface IAnkiOptions extends IPlatformConsts {
   /**
-   * On desktop, throws an error if anki is not installed or not running
-   * On ios app, returns false if ankimobile is not installed.
+   * Throws an error if Anki (AnkiDroid, AnkiMobile) is not installed.
+   * On desktop, also throws an error if anki or ankiconnect isn't running
    */
   requestAnkiInfo: () => Promise<void>;
   /** May not resolve on ios */

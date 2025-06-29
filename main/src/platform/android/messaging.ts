@@ -1,3 +1,4 @@
+import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import type { StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
@@ -35,6 +36,9 @@ export interface AndroidMessageMap extends RunMessageMap {
   saveConfig: [StoredConfiguration, null];
   loadConfig: [null, StoredCompatConfiguration];
   versionInfo: [null, string];
+  ankiGetInfo: [null, AnkiInfo];
+  ankiCheckConnection: [null, null];
+  ankiAddNote: [AnkiNote, boolean];
 }
 
 export type MessageRequest<K extends keyof AndroidMessageMap> = AndroidMessageMap[K][0];
