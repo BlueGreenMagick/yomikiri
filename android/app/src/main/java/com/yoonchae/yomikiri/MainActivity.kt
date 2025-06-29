@@ -83,15 +83,7 @@ fun AppContent(
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             NavigationSidebar(
-                onSettingsClick = {
-                    currentView = NavigationView.OPTIONS
-                    scope.launch { drawerState.close() }
-                },
-                onHelpClick = {
-                    // TODO: Handle help click
-                    scope.launch { drawerState.close() }
-                },
-                onDrawerItemClick = { view ->
+                onNavigate = { view ->
                     currentView = view
                     scope.launch { drawerState.close() }
                 },
@@ -110,6 +102,9 @@ fun AppContent(
                 OptionsView(appEnv = appEnv, onMenuClick = {
                     scope.launch { drawerState.open() }
                 })
+            }
+            NavigationView.HELP -> {
+                // TODO: Implement help view
             }
         }
     }

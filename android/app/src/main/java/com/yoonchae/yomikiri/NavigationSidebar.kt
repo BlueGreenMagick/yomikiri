@@ -30,6 +30,7 @@ import com.yoonchae.yomikiri.ui.theme.YomikiriTheme
 enum class NavigationView {
     INTERNET,
     OPTIONS,
+    HELP,
 }
 
 data class SidebarItem(
@@ -40,15 +41,13 @@ data class SidebarItem(
 
 @Composable
 fun NavigationSidebar(
-    onSettingsClick: () -> Unit,
-    onHelpClick: () -> Unit,
-    onDrawerItemClick: (NavigationView) -> Unit,
+    onNavigate: (NavigationView) -> Unit,
     modifier: Modifier = Modifier,
     selectedView: NavigationView? = null,
 ) {
     val sidebarItems =
         listOf(
-            SidebarItem(Icons.Filled.Public, "Internet") { onDrawerItemClick(NavigationView.INTERNET) },
+            SidebarItem(Icons.Filled.Public, "Internet") { onNavigate(NavigationView.INTERNET) },
         )
 
     ModalDrawerSheet(
@@ -63,7 +62,7 @@ fun NavigationSidebar(
                     .padding(vertical = 4.dp, horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = onSettingsClick) {
+            IconButton(onClick = { onNavigate(NavigationView.OPTIONS) }) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings",
@@ -81,7 +80,7 @@ fun NavigationSidebar(
 
             Spacer(modifier = Modifier.width(4.dp))
 
-            IconButton(onClick = onHelpClick) {
+            IconButton(onClick = { onNavigate(NavigationView.HELP) }) {
                 Icon(
                     imageVector = Icons.Filled.Help,
                     contentDescription = "Help",
@@ -124,9 +123,7 @@ fun NavigationSidebar(
 fun NavigationDrawerPreview() {
     YomikiriTheme {
         NavigationSidebar(
-            onSettingsClick = { },
-            onHelpClick = { },
-            onDrawerItemClick = { },
+            onNavigate = { },
             selectedView = NavigationView.INTERNET,
         )
     }
