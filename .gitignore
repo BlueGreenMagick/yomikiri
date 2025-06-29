@@ -4,13 +4,15 @@
 !/generated/package.json
 
 
-
 # General
 .DS_Store
 Thumbs.db
 
 # Taskfile
 .task/
+
+# AI Tools
+.claude/*.local.*
 
 # IDEs and editors
 .idea/
