@@ -3094,6 +3094,7 @@ dependencies = [
  "log",
  "memmap2",
  "oslog",
+ "paste",
  "rusqlite",
  "serde",
  "serde_json",

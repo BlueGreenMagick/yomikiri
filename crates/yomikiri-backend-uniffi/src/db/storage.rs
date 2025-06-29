@@ -39,35 +39,37 @@ where
     }
 }
 
-#[allow(non_snake_case)]
-pub mod KEYS {
-    use super::StorageKey;
+/// Used as namespace to hold static methods for all typed properties
+pub struct KEYS {}
 
-    /// added(v1)
-    pub fn dict_schema_ver() -> StorageKey<u16> {
-        StorageKey::new("dict_schema_ver")
-    }
+macro_rules! storage_key {
+    ($name:ident, $type:ty) => {
+        paste::paste! {
+            impl KEYS {
+                pub fn $name() -> StorageKey<$type> {
+                    StorageKey::new(stringify!($name))
+                }
+            }
 
-    /// added(v1)
-    pub fn jmdict_etag() -> StorageKey<String> {
-        StorageKey::new("jmdict_etag")
-    }
+            #[uniffi::export]
+            impl RustDatabase {
+                pub fn [<get_ $name>](&self) -> FFIResult<Option<$type>> {
+                    KEYS::$name().get(&self.conn()).uniffi()
+                }
 
-    /// added(v1)
-    pub fn jmnedict_etag() -> StorageKey<String> {
-        StorageKey::new("jmnedict_etag")
-    }
-
-    /// added(v1)
-    pub fn saved_url() -> StorageKey<String> {
-        StorageKey::new("saved_url")
-    }
-
-    /// added(v1)
-    pub fn android_current_view() -> StorageKey<String> {
-        StorageKey::new("android_current_view")
-    }
+                pub fn [<set_ $name>](&self, value: Option<$type>) -> FFIResult<()> {
+                    KEYS::$name().set(&self.conn(), value).uniffi()
+                }
+            }
+        }
+    };
 }
+
+storage_key!(dict_schema_ver, u16);
+storage_key!(jmdict_etag, String);
+storage_key!(jmnedict_etag, String);
+storage_key!(saved_url, String);
+storage_key!(android_current_view, String);
 
 #[uniffi::export]
 impl RustDatabase {
@@ -83,46 +85,6 @@ impl RustDatabase {
     /// Should only be used from web
     pub fn set_raw_storage(&self, key: String, value: Option<String>) -> FFIResult<()> {
         set_raw_storage_optional(&self.conn(), &key, value).uniffi()
-    }
-
-    pub fn get_dict_schema_ver(&self) -> FFIResult<Option<u16>> {
-        KEYS::dict_schema_ver().get(&self.conn()).uniffi()
-    }
-
-    pub fn set_dict_schema_ver(&self, value: Option<u16>) -> FFIResult<()> {
-        KEYS::dict_schema_ver().set(&self.conn(), value).uniffi()
-    }
-
-    pub fn get_jmdict_etag(&self) -> FFIResult<Option<String>> {
-        KEYS::jmdict_etag().get(&self.conn()).uniffi()
-    }
-
-    pub fn set_jmdict_etag(&self, value: Option<String>) -> FFIResult<()> {
-        KEYS::jmdict_etag().set(&self.conn(), value).uniffi()
-    }
-
-    pub fn get_jmnedict_etag(&self) -> FFIResult<Option<String>> {
-        KEYS::jmnedict_etag().get(&self.conn()).uniffi()
-    }
-
-    pub fn set_jmnedict_etag(&self, value: Option<String>) -> FFIResult<()> {
-        KEYS::jmnedict_etag().set(&self.conn(), value).uniffi()
-    }
-
-    pub fn get_saved_url(&self) -> FFIResult<Option<String>> {
-        KEYS::saved_url().get(&self.conn()).uniffi()
-    }
-    pub fn set_saved_url(&self, value: Option<String>) -> FFIResult<()> {
-        KEYS::saved_url().set(&self.conn(), value).uniffi()
-    }
-
-    pub fn get_android_current_view(&self) -> FFIResult<Option<String>> {
-        KEYS::android_current_view().get(&self.conn()).uniffi()
-    }
-    pub fn set_android_current_view(&self, value: Option<String>) -> FFIResult<()> {
-        KEYS::android_current_view()
-            .set(&self.conn(), value)
-            .uniffi()
     }
 }
 

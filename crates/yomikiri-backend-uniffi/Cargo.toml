@@ -25,6 +25,7 @@ flate2 = { workspace = true }
 fs-err = { workspace = true }
 log = { workspace = true }
 memmap2 = { workspace = true }
+paste.workspace = true
 rusqlite.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
