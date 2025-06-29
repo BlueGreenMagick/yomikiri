@@ -62,6 +62,11 @@ pub mod KEYS {
     pub fn saved_url() -> StorageKey<String> {
         StorageKey::new("saved_url")
     }
+
+    /// added(v1)
+    pub fn android_current_view() -> StorageKey<String> {
+        StorageKey::new("android_current_view")
+    }
 }
 
 #[uniffi::export]
@@ -109,6 +114,15 @@ impl RustDatabase {
     }
     pub fn set_saved_url(&self, value: Option<String>) -> FFIResult<()> {
         KEYS::saved_url().set(&self.conn(), value).uniffi()
+    }
+
+    pub fn get_android_current_view(&self) -> FFIResult<Option<String>> {
+        KEYS::android_current_view().get(&self.conn()).uniffi()
+    }
+    pub fn set_android_current_view(&self, value: Option<String>) -> FFIResult<()> {
+        KEYS::android_current_view()
+            .set(&self.conn(), value)
+            .uniffi()
     }
 }
 
