@@ -1,14 +1,60 @@
 import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
+import type { NullPartial } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
 
 export class AndroidPlatform implements IPlatform {
   readonly type = "android";
-  /** TODO */
+
+  async getStorageBatch<T extends Record<string, unknown>>(
+    keys: (keyof T)[],
+  ): Promise<NullPartial<T>> {
+    const result = await sendMessage("getStorageBatch", keys as string[]);
+
+    return Object.fromEntries(
+      Object.entries(result).map((
+        [key, value],
+      ) => [key, value === null ? null : JSON.parse(value)]),
+    ) as NullPartial<T>;
+  }
+
+  /**
+   * If value is `null`, deletes the storage.
+   *
+   * Keys with value 'undefined' is ignored.
+   */
+  async setStorageBatch(map: Record<string, unknown>): Promise<void> {
+    const jsonMap = Object.fromEntries(
+      Object.entries(map).map((
+        [key, value],
+      ) => [key, value === null ? null : JSON.stringify(value)]),
+    );
+    await sendMessage("setStorageBatch", jsonMap);
+  }
+
+  async getStorage<T>(key: string): Promise<T | null> {
+    const result = await sendMessage("getStorageBatch", [key]);
+    const value = result[key];
+    if (value === null) return value;
+    return JSON.parse(value) as T;
+  }
+
+  /**
+   * If value is `null`, deletes the storage.
+   *
+   * Keys with value 'undefined' is ignored.
+   */
+  async setStorage(key: string, value: unknown) {
+    const jsonMap = {
+      [key]: (value === null) ? null : JSON.stringify(value),
+    };
+    await sendMessage("setStorageBatch", jsonMap);
+  }
+
   async getConfig(): Promise<StoredCompatConfiguration> {
-    return await sendMessage("loadConfig", null);
+    return await this.getStorage<StoredCompatConfiguration>("config") ?? {};
   }
 
   /** TODO */
@@ -21,7 +67,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration): Promise<void> {
-    await sendMessage("saveConfig", config);
+    await this.setStorage("config", config);
   }
 
   openOptionsPage(): void {

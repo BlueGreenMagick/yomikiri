@@ -1,9 +1,8 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
-import type { StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
 import type { RunMessageMap } from "../shared/backend";
+import type { JSONStorageValues } from "../types";
 
 /** Secret key used in android message handler */
 declare const __ANDROID_MESSAGE_SECRET_KEY: string;
@@ -33,8 +32,8 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
 }
 
 export interface AndroidMessageMap extends RunMessageMap {
-  saveConfig: [StoredConfiguration, null];
-  loadConfig: [null, StoredCompatConfiguration];
+  setStorageBatch: [JSONStorageValues, null];
+  getStorageBatch: [string[], JSONStorageValues];
   versionInfo: [null, string];
   ankiGetInfo: [null, AnkiInfo];
   ankiCheckConnection: [null, null];

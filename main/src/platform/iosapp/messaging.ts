@@ -1,7 +1,6 @@
-import type { StoredConfiguration } from "@/features/config";
 import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
-import type { TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { JSONStorageValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 
 declare global {
@@ -25,8 +24,10 @@ export interface MessageWebviewMap extends RunMessageMap {
   ankiInfo: [null, boolean];
   // Can only be requested in anki template options page.
   ankiInfoData: [null, RawAnkiInfo];
-  loadConfig: [null, StoredConfiguration];
-  saveConfig: [StoredConfiguration, void];
+
+  setStorageBatch: [JSONStorageValues, null];
+  getStorageBatch: [string[], JSONStorageValues];
+
   /**
    * Returns true if migrated config is 'ok' to save.
    * If config was already migrated elsewhere, returns false.

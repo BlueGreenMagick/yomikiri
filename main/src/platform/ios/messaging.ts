@@ -1,12 +1,11 @@
-import type { StoredConfiguration } from "@/features/config";
 import { handleResponseMessage } from "@/features/utils";
 import type { RunMessageMap } from "../shared/backend";
-import type { TTSRequest, TTSVoice } from "../types";
+import type { JSONStorageValues, TTSRequest, TTSVoice } from "../types";
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap extends RunMessageMap {
-  loadConfig: [null, StoredConfiguration];
-  saveConfig: [StoredConfiguration, null];
+  setStorageBatch: [JSONStorageValues, null];
+  getStorageBatch: [string[], JSONStorageValues];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];

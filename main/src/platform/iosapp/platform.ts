@@ -1,7 +1,7 @@
 import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import { type StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
-import Utils, { LazyAsync } from "@/features/utils";
+import Utils, { LazyAsync, type NullPartial } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
@@ -63,8 +63,54 @@ export class IosAppPlatform implements IPlatform {
     };
   }
 
+  async getStorageBatch<T extends Record<string, unknown>>(
+    keys: (keyof T)[],
+  ): Promise<NullPartial<T>> {
+    const result = await sendMessage("getStorageBatch", keys as string[]);
+
+    return Object.fromEntries(
+      Object.entries(result).map((
+        [key, value],
+      ) => [key, value === null ? null : JSON.parse(value)]),
+    ) as NullPartial<T>;
+  }
+
+  /**
+   * If value is `null`, deletes the storage.
+   *
+   * Keys with value 'undefined' is ignored.
+   */
+  async setStorageBatch(map: Record<string, unknown>) {
+    const jsonMap = Object.fromEntries(
+      Object.entries(map).map((
+        [key, value],
+      ) => [key, value === null ? null : JSON.stringify(value)]),
+    );
+
+    await sendMessage("setStorageBatch", jsonMap);
+  }
+
+  async getStorage<T>(key: string): Promise<T | null> {
+    const result = await sendMessage("getStorageBatch", [key]);
+    const value = result[key];
+    if (value === null) return value;
+    return JSON.parse(value) as T;
+  }
+
+  /**
+   * If value is `null`, deletes the storage.
+   *
+   * Keys with value 'undefined' is ignored.
+   */
+  async setStorage(key: string, value: unknown) {
+    const jsonMap = {
+      [key]: (value === null) ? null : JSON.stringify(value),
+    };
+    await sendMessage("setStorageBatch", jsonMap);
+  }
+
   async getConfig(): Promise<StoredCompatConfiguration> {
-    const config = await sendMessage("loadConfig", null);
+    const config = await this.getStorage<StoredCompatConfiguration>("web_config") ?? {};
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
@@ -81,7 +127,7 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration) {
-    await sendMessage("saveConfig", config);
+    await this.setStorage("web_config", config);
 
     // trigger update for this execution context
     for (const subscriber of this._configSubscribers) {

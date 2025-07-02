@@ -55,6 +55,8 @@ export interface TTSRequest {
   voice: TTSVoice | null;
 }
 
+export type JSONStorageValues = { [key: string]: string | null };
+
 export type AnyPlatform =
   | DesktopPlatform
   | IosPlatform

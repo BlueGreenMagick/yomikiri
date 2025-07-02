@@ -1,4 +1,4 @@
-import { migrateConfigObject } from "@/features/compat";
+import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import {
@@ -10,7 +10,7 @@ import {
   setStorage,
   updateTab,
 } from "@/features/extension/browserApi";
-import { LazyAsync, log } from "@/features/utils";
+import { LazyAsync, log, type NullPartial } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "@/platform/shared/translate";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
@@ -55,6 +55,66 @@ export class IosPlatform implements IPlatform {
     }
   }
 
+  async getStorageBatch<T extends Record<string, unknown>>(
+    keys: (keyof T)[],
+  ): Promise<NullPartial<T>> {
+    const result = await this._getStorageBatch(keys as string[]);
+
+    return Object.fromEntries(
+      Object.entries(result).map((
+        [key, value],
+      ) => [key, value === null ? null : JSON.parse(value)]),
+    ) as NullPartial<T>;
+  }
+
+  async getStorage<T>(key: string): Promise<T | null> {
+    const result = await this._getStorageBatch([key]);
+    const value = result[key];
+    if (value === null) return value;
+    return JSON.parse(value) as T;
+  }
+
+  private readonly _getStorageBatch = NonContentScriptFunction(
+    "getStorageBatch",
+    async (keysJson) => {
+      return await sendMessage("getStorageBatch", keysJson);
+    },
+  );
+
+  /**
+   * If value is `null`, deletes the storage.
+   *
+   * Keys with value 'undefined' is ignored.
+   */
+  async setStorageBatch(map: Record<string, unknown>) {
+    const jsonMap = Object.fromEntries(
+      Object.entries(map).map((
+        [key, value],
+      ) => [key, value === null ? null : JSON.stringify(value)]),
+    );
+
+    await this._setStorageBatch(jsonMap);
+  }
+
+  /**
+   * If value is `null`, deletes the storage.
+   *
+   * Keys with value 'undefined' is ignored.
+   */
+  async setStorage(key: string, value: unknown) {
+    const jsonMap = {
+      [key]: (value === null) ? null : JSON.stringify(value),
+    };
+    await this._setStorageBatch(jsonMap);
+  }
+
+  private readonly _setStorageBatch = NonContentScriptFunction(
+    "setStorageBatch",
+    async (jsonMap) => {
+      await sendMessage("setStorageBatch", jsonMap);
+    },
+  );
+
   readonly getConfig = NonContentScriptFunction("loadConfig", () => {
     return this.updateConfig();
   });
@@ -70,9 +130,12 @@ export class IosPlatform implements IPlatform {
   }
 
   // App config is the source of truth
-  async updateConfig(): Promise<StoredConfiguration> {
+  async updateConfig(): Promise<StoredCompatConfiguration> {
     const webConfigP = getStorage("config", {});
-    const appConfigP = sendMessage("loadConfig", null);
+
+    const appConfigP: Promise<StoredCompatConfiguration> = this.getStorage<
+      StoredCompatConfiguration
+    >("web_config").then((value) => value ?? {});
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
       await setStorage("config", appConfig);
@@ -83,7 +146,7 @@ export class IosPlatform implements IPlatform {
   readonly saveConfig = NonContentScriptFunction(
     "saveConfig",
     async (config) => {
-      await sendMessage("saveConfig", config);
+      await this.setStorage("web_config", config);
       await setStorage("config", config);
     },
   );

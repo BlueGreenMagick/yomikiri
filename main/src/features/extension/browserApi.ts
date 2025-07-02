@@ -19,7 +19,7 @@ import {
   type Thennable,
 } from "@/features/utils";
 import type { TranslateResult } from "@/platform/shared/translate";
-import type { TTSRequest, TTSVoice } from "@/platform/types";
+import type { JSONStorageValues, TTSRequest, TTSVoice } from "@/platform/types";
 import type {
   DictionaryMetadata,
   SearchRequest,
@@ -34,6 +34,8 @@ import { EXTENSION_CONTEXT } from "consts";
  * Response type must not have Promise
  */
 export interface MessageMap {
+  setStorageBatch: [JSONStorageValues, void];
+  getStorageBatch: [string[], JSONStorageValues];
   searchTerm: [SearchRequest, TokenizeResult];
   tokenize: [TokenizeRequest, TokenizeResult];
   addAnkiNote: [AnkiNote, boolean];
@@ -43,7 +45,7 @@ export interface MessageMap {
   migrateConfig: [void, StoredConfiguration];
   getDictMetadata: [void, DictionaryMetadata];
   // ios
-  loadConfig: [void, StoredConfiguration];
+  loadConfig: [void, StoredCompatConfiguration];
   saveConfig: [StoredConfiguration, void];
 }
 

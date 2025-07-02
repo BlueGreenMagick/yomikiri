@@ -31,6 +31,9 @@ export type PromiseRejector = (reason?: unknown) => void;
 /* eslint-disable-next-line -- {} is any object except undefined or null */
 export type NonUndefined = {} | null;
 
+/** Similar to `Partial<T>`, but `NullPartial<T>` turns value into `T[key] | null` instead of `T[key] | undefined` */
+export type NullPartial<T> = { [key in keyof T]: T[key] | null };
+
 export const isTouchScreen: boolean = navigator.maxTouchPoints > 0;
 
 export function createPromise<V>(): [

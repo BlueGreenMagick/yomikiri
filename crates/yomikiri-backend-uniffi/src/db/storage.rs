@@ -1,4 +1,5 @@
 use std::borrow::Borrow;
+use std::collections::HashMap;
 use std::marker::PhantomData;
 
 use anyhow::{Context, Result};
@@ -78,14 +79,82 @@ impl RustDatabase {
     ///
     /// Should only be used from web
     pub fn get_raw_storage(&self, key: String) -> FFIResult<Option<String>> {
-        get_raw_storage(&self.conn(), &key).uniffi()
+        self._get_raw_storage(key).uniffi()
+    }
+
+    /// Retrieves multiple raw json storage value
+    ///
+    /// keys: JSON serialized array of keys
+    ///
+    /// returns JSON serialized {[key: string]: string | null}
+    /// where the string value is itself a JSON serialized value
+    pub fn get_raw_storage_batch(&self, keys: String) -> FFIResult<String> {
+        self._get_raw_storage_batch(keys).uniffi()
     }
 
     /// Stores raw json storage value
     ///
     /// Should only be used from web
     pub fn set_raw_storage(&self, key: String, value: Option<String>) -> FFIResult<()> {
-        set_raw_storage_optional(&self.conn(), &key, value).uniffi()
+        self._set_raw_storage(key, value).uniffi()
+    }
+
+    /// Stores multiple raw json storage values
+    ///
+    /// data: JSON serialized {[key: string]: string | null}
+    /// If value is null, the key is deleted. Otherwise, the value is set.
+    ///
+    /// Should only be used from web
+    pub fn set_raw_storage_batch(&self, data: String) -> FFIResult<()> {
+        self._set_raw_storage_batch(data).uniffi()
+    }
+}
+
+impl RustDatabase {
+    fn _get_raw_storage(&self, key: String) -> Result<Option<String>> {
+        let mut conn = self.conn();
+        let tx = conn.transaction()?;
+        let result = get_raw_storage(&tx, &key)?;
+        tx.commit()?;
+        Ok(result)
+    }
+
+    fn _get_raw_storage_batch(&self, keys: String) -> Result<String> {
+        let keys_vec: Vec<String> =
+            serde_json::from_str(&keys).context("Failed to deserialize keys as array of string")?;
+
+        let mut conn = self.conn();
+        let tx = conn.transaction()?;
+        let mut result: HashMap<String, Option<String>> = HashMap::new();
+
+        for key in keys_vec {
+            let value = get_raw_storage(&tx, &key)?;
+            result.insert(key, value);
+        }
+
+        tx.commit()?;
+        Ok(serde_json::to_string(&result)?)
+    }
+
+    fn _set_raw_storage(&self, key: String, value: Option<String>) -> Result<()> {
+        let mut conn = self.conn();
+        let tx = conn.transaction()?;
+        set_raw_storage_optional(&tx, &key, value)?;
+        tx.commit()?;
+        Ok(())
+    }
+
+    fn _set_raw_storage_batch(&self, data: String) -> Result<()> {
+        let data_map: HashMap<String, Option<String>> = serde_json::from_str(&data).context(
+            "Failed to deserialize data as object with string keys and optional string values",
+        )?;
+        let mut conn = self.conn();
+        let tx = conn.transaction()?;
+        for (key, value) in data_map {
+            set_raw_storage_optional(&tx, &key, value)?;
+        }
+        tx.commit()?;
+        Ok(())
     }
 }
 

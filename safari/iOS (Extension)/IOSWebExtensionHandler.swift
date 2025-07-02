@@ -30,12 +30,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 switch key {
                 case "addNote":
                     break
-                case "loadConfig":
-                    // already stored in json
-                    jsonResponse = try backend.get().db.getRawStorage(key: "web_config")
-                case "saveConfig":
-                    let configJson = request
-                    try backend.get().db.setRawStorage(key: "web_config", value: configJson)
+                case "setStorageBatch":
+                    try backend.get().db.setRawStorageBatch(data: request)
+                case "getStorageBatch":
+                    jsonResponse = try backend.get().db.getRawStorageBatch(keys: request)
                 case "tts":
                     let req: TTSRequest = try jsonDeserialize(json: request)
                     try ttsSpeak(voice: req.voice, text: req.text)
