@@ -22,8 +22,8 @@ import type {
 import { YomikiriError } from "@/features/error";
 import Utils, { createPromise, LazyAsync, nextTask, PromiseWithProgress } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
-import { loadDictionary, loadWasm } from "./fetch";
-import { type FileName, idbHasFile, idbReadFile, idbWriteFile, idbWriteFiles } from "./idb";
+import { fetchDictionary, loadWasm } from "./fetch";
+import { Database, type FileName } from "./idb";
 
 export type DesktopBackend = ForegroundDesktopBackend | BackgroundDesktopBackend;
 
@@ -83,6 +83,7 @@ export class BackgroundDesktopBackend implements IBackend {
   readonly type = "desktop";
 
   private _wasm: LazyAsync<BackendWasm>;
+  private db = new LazyAsync<Database>(() => Database.init());
 
   constructor() {
     this._wasm = new LazyAsync(() => this.initializeWasm());
@@ -100,7 +101,7 @@ export class BackgroundDesktopBackend implements IBackend {
     const BackendWasmConstructor = await loadWasm();
     // Must be called after loadWasm()
     const schema_ver = dict_schema_ver();
-    const dictBytes = await loadDictionary(schema_ver);
+    const dictBytes = await this.loadDictionary(schema_ver);
     Utils.bench("loaded");
     const wasm = new BackendWasmConstructor(dictBytes);
     Utils.bench("backend created");
@@ -211,13 +212,13 @@ export class BackgroundDesktopBackend implements IBackend {
   ): Promise<boolean> {
     const wasm = await this._wasm.get();
     progressFn("Downloading JMdict file...");
-    const jmdict_bytes = await fetchDictionaryFile(
+    const jmdict_bytes = await this.fetchDictionaryFile(
       "JMdict_e.gz",
       JMDICT_URL,
       "dict.jmdict.etag",
     );
     progressFn("Downloading JMnedict file...");
-    const jmnedict_bytes = await fetchDictionaryFile(
+    const jmnedict_bytes = await this.fetchDictionaryFile(
       "JMnedict.xml.gz",
       JMNEDICT_URL,
       "dict.jmnedict.etag",
@@ -227,10 +228,80 @@ export class BackgroundDesktopBackend implements IBackend {
     await nextTask();
     const { dict_bytes } = wasm.update_dictionary(jmdict_bytes, jmnedict_bytes);
     progressFn("Saving dictionary file...");
-    await saveDictionaryFile(dict_bytes);
+    await this.saveDictionaryFile(dict_bytes);
     const dictSchemaVer = dict_schema_ver();
     await setStorage("dict.schema_ver", dictSchemaVer);
     return true;
+  }
+
+  private async fetchDictionaryFile(
+    filename: FileName,
+    url: string,
+    etag_key: "dict.jmdict.etag" | "dict.jmnedict.etag",
+  ): Promise<Uint8Array> {
+    const db = await this.db.get();
+
+    console.log(`Fetching ${filename} at ${url}`);
+    const file_exists = await db.hasFile(filename);
+    const prevEtag = file_exists ? await getStorage(etag_key) : undefined;
+    const resp = await fetch(url, {
+      headers: prevEtag ? { "If-None-Match": prevEtag } : {},
+    });
+
+    if (resp.status === 304) {
+      console.log("Will use existing file as it is already up to date");
+      const file = await db.readFile(filename);
+      if (file !== undefined) return file;
+      console.log("Existing dictionary file has disappeared.");
+    }
+
+    console.log("Saving downloaded file");
+    const etag = resp.headers.get("ETag");
+    // remove previous etag until file is written to idb
+    await removeStorage("dict.jmdict.etag");
+    const buffer = await resp.arrayBuffer();
+    const content = new Uint8Array(buffer);
+    await db.writeFile(filename, content);
+    if (etag !== null) {
+      await setStorage("dict.jmdict.etag", etag);
+    }
+    return content;
+  }
+
+  private async saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
+    const db = await this.db.get();
+    await db.writeFiles([["yomikiri-dictionary", dict_bytes]]);
+  }
+
+  private async loadDictionary(schemaVer: number): Promise<Uint8Array> {
+    const saved = await this.loadSavedDictionary(schemaVer);
+    if (saved !== null) {
+      return saved;
+    }
+
+    return fetchDictionary();
+  }
+
+  private async loadSavedDictionary(schemaVer: number): Promise<Uint8Array | null> {
+    const user_dict_schema_ver = await getStorage("dict.schema_ver");
+    if (user_dict_schema_ver === undefined) {
+      return null;
+    } else if (user_dict_schema_ver !== schemaVer) {
+      await this.deleteSavedDictionary();
+      return null;
+    } else {
+      const db = await this.db.get();
+      return await db.readFile("yomikiri-dictionary") ?? null;
+    }
+  }
+
+  async deleteSavedDictionary() {
+    console.info("Will delete user-installed dictionary");
+    const db = await this.db.get();
+    await db.deleteFiles(["yomikiri-dictionary"]);
+    await removeStorage("dict.schema_ver");
+    await removeStorage("dict.jmdict.etag");
+    console.info("Deleted user-installed dictionary");
   }
 }
 
@@ -256,37 +327,3 @@ interface ConnectionMessageError {
 
 const JMDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
 const JMNEDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz";
-
-async function fetchDictionaryFile(
-  filename: FileName,
-  url: string,
-  etag_key: "dict.jmdict.etag" | "dict.jmnedict.etag",
-): Promise<Uint8Array> {
-  console.log(`Fetching ${filename} at ${url}`);
-  const file_exists = await idbHasFile(filename);
-  const etag = file_exists ? await getStorage(etag_key) : undefined;
-  const resp = await fetch(url, {
-    headers: etag ? { "If-None-Match": etag } : {},
-  });
-
-  if (resp.status === 304) {
-    console.log("Will use existing file as it is already up to date");
-    return (await idbReadFile(filename)) as Uint8Array;
-  } else {
-    console.log("Saving downloaded file");
-    const etag = resp.headers.get("ETag");
-    // remove previous etag until file is written to idb
-    await removeStorage("dict.jmdict.etag");
-    const buffer = await resp.arrayBuffer();
-    const content = new Uint8Array(buffer);
-    await idbWriteFile(filename, content);
-    if (etag !== null) {
-      await setStorage("dict.jmdict.etag", etag);
-    }
-    return content;
-  }
-}
-
-async function saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
-  await idbWriteFiles([["yomikiri-dictionary", dict_bytes]]);
-}

@@ -21,7 +21,7 @@ vi.mock(
     return {
       ...module,
       loadWasm,
-      loadDictionary,
+      fetchDictionary,
     };
   },
 );
@@ -33,7 +33,7 @@ async function loadWasm(): Promise<typeof BackendWasm> {
   return BackendWasm;
 }
 
-async function loadDictionary(_schemaVer: number): Promise<Uint8Array> {
+async function fetchDictionary(): Promise<Uint8Array> {
   return await fs.readFile(vitePath(ENYomikiridict));
 }
 

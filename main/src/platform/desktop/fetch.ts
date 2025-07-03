@@ -8,7 +8,6 @@ import ENYomikiridict from "@yomikiri/generated/dictionary-files/english.yomikir
 import initWasm from "@yomikiri/yomikiri-backend-wasm";
 import { Backend as BackendWasm } from "@yomikiri/yomikiri-backend-wasm";
 import wasm from "@yomikiri/yomikiri-backend-wasm/yomikiri_backend_wasm_bg.wasm";
-import { loadSavedDictionary } from "./dictionary";
 
 export async function loadWasm(): Promise<typeof BackendWasm> {
   const resp = await fetch(wasm);
@@ -17,14 +16,7 @@ export async function loadWasm(): Promise<typeof BackendWasm> {
   return BackendWasm;
 }
 
-export async function loadDictionary(
-  dictSchemaVer: number,
-): Promise<Uint8Array> {
-  const saved = await loadSavedDictionary(dictSchemaVer);
-  if (saved !== null) {
-    return saved;
-  }
-
+export async function fetchDictionary(): Promise<Uint8Array> {
   return await fetchBytes(ENYomikiridict);
 }
 

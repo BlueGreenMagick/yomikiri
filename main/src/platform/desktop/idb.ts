@@ -13,6 +13,77 @@ interface YomikiriDBSchema extends DBSchema {
   };
 }
 
+export class Database {
+  private constructor(private db: IDBPDatabase<YomikiriDBSchema>) {}
+
+  static async init(): Promise<Database> {
+    const db = await openFilesDB();
+    return new Database(db);
+  }
+
+  readFile(file: FileName): Promise<Uint8Array | undefined> {
+    const db = this.db;
+    const files = db.get(DB_FILES_STORE, file);
+    return files;
+  }
+
+  async readFiles(
+    files: FileName[],
+  ): Promise<[FileName, Uint8Array | undefined][]> {
+    const tx = this.db.transaction(DB_FILES_STORE, "readonly");
+    const results: [FileName, Uint8Array | undefined][] = [];
+    for (const file of files) {
+      const content = await tx.store.get(file);
+      results.push([file, content]);
+    }
+    await tx.done;
+    return results;
+  }
+
+  async writeFile(
+    file: FileName,
+    content: Uint8Array,
+  ): Promise<void> {
+    await this.db.put(DB_FILES_STORE, content, file);
+  }
+
+  async writeFiles(
+    files: [FileName, Uint8Array][],
+  ): Promise<void> {
+    const tx = this.db.transaction(DB_FILES_STORE, "readwrite");
+    for (const [file, content] of files) {
+      await tx.store.put(content, file);
+    }
+    await tx.done;
+  }
+
+  async deleteFiles(filenames: FileName[]): Promise<void> {
+    const tx = this.db.transaction(DB_FILES_STORE, "readwrite");
+    for (const file of filenames) {
+      await tx.store.delete(file);
+    }
+    await tx.done;
+  }
+
+  async hasFile(filename: FileName): Promise<boolean> {
+    const results = await this.hasFiles([filename]);
+    return results[0];
+  }
+
+  async hasFiles(filenames: FileName[]): Promise<boolean[]> {
+    const tx = this.db.transaction(DB_FILES_STORE, "readonly");
+    const results: boolean[] = [];
+    for (const file of filenames) {
+      const count = await tx.store.count(file);
+      if (count > 0) {
+        results.push(true);
+      }
+    }
+    await tx.done;
+    return results;
+  }
+}
+
 async function openFilesDB(): Promise<IDBPDatabase<YomikiriDBSchema>> {
   return await openDB<YomikiriDBSchema>(DB_NAME, 1, {
     upgrade(db) {
@@ -31,80 +102,6 @@ async function openFilesDB(): Promise<IDBPDatabase<YomikiriDBSchema>> {
       void deleteUnusedDBs();
     },
   });
-}
-
-/** Returns undefined if file does not exist */
-export async function idbReadFile(
-  file: FileName,
-): Promise<Uint8Array | undefined> {
-  const db = await openFilesDB();
-  const files = db.get(DB_FILES_STORE, file);
-  db.close();
-  return files;
-}
-
-export async function idbReadFiles(
-  files: FileName[],
-): Promise<[FileName, Uint8Array | undefined][]> {
-  const db = await openFilesDB();
-  const tx = db.transaction(DB_FILES_STORE, "readonly");
-  const results: [FileName, Uint8Array | undefined][] = [];
-  for (const file of files) {
-    const content = await tx.store.get(file);
-    results.push([file, content]);
-  }
-  await tx.done;
-  db.close();
-  return results;
-}
-
-export async function idbWriteFile(
-  file: FileName,
-  content: Uint8Array,
-): Promise<void> {
-  const db = await openFilesDB();
-  await db.put(DB_FILES_STORE, content, file);
-  db.close();
-}
-
-export async function idbWriteFiles(
-  files: [FileName, Uint8Array][],
-): Promise<void> {
-  const db = await openFilesDB();
-  const tx = db.transaction(DB_FILES_STORE, "readwrite");
-  for (const [file, content] of files) {
-    await tx.store.put(content, file);
-  }
-  await tx.done;
-  db.close();
-}
-
-export async function idbDeleteFiles(filenames: FileName[]): Promise<void> {
-  const db = await openFilesDB();
-  const tx = db.transaction(DB_FILES_STORE, "readwrite");
-  for (const file of filenames) {
-    await tx.store.delete(file);
-  }
-  db.close();
-  await tx.done;
-}
-
-export async function idbHasFile(filename: FileName): Promise<boolean> {
-  const results = await idbHasFiles([filename]);
-  return results[0];
-}
-
-export async function idbHasFiles(filenames: FileName[]): Promise<boolean[]> {
-  const db = await openFilesDB();
-  const tx = db.transaction(DB_FILES_STORE, "readonly");
-  const results: boolean[] = [];
-  for (const file of filenames) {
-    const count = await tx.store.count(file);
-    if (count > 0) {
-      results.push(true);
-    }
-  }
-  return results;
 }
 
 /** Deletes unused idb databases */

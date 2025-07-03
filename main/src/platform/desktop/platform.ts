@@ -12,7 +12,6 @@ import {
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TTSVoice, VersionInfo } from "../types";
-import { deleteSavedDictionary } from "./dictionary";
 
 export class DesktopPlatform implements IPlatform {
   readonly type = "desktop";
@@ -81,9 +80,5 @@ export class DesktopPlatform implements IPlatform {
     const migrated = migrateConfigObject(configObject);
     await this.saveConfig(migrated);
     return migrated;
-  }
-
-  async deleteDictionary() {
-    return deleteSavedDictionary();
   }
 }
