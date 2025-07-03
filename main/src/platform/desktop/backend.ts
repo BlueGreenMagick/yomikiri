@@ -22,8 +22,8 @@ import type {
 import { YomikiriError } from "@/features/error";
 import Utils, { createPromise, LazyAsync, nextTask, PromiseWithProgress } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
+import { Database, type FileName } from "./db";
 import { fetchDictionary, loadWasm } from "./fetch";
-import { Database, type FileName } from "./idb";
 
 export type DesktopBackend = ForegroundDesktopBackend | BackgroundDesktopBackend;
 
@@ -242,7 +242,7 @@ export class BackgroundDesktopBackend implements IBackend {
     const db = await this.db.get();
 
     console.log(`Fetching ${filename} at ${url}`);
-    const file_exists = await db.hasFile(filename);
+    const file_exists = await db.files.hasFile(filename);
     const prevEtag = file_exists ? await getStorage(etag_key) : undefined;
     const resp = await fetch(url, {
       headers: prevEtag ? { "If-None-Match": prevEtag } : {},
@@ -250,7 +250,7 @@ export class BackgroundDesktopBackend implements IBackend {
 
     if (resp.status === 304) {
       console.log("Will use existing file as it is already up to date");
-      const file = await db.readFile(filename);
+      const file = await db.files.readFile(filename);
       if (file !== undefined) return file;
       console.log("Existing dictionary file has disappeared.");
     }
@@ -261,7 +261,7 @@ export class BackgroundDesktopBackend implements IBackend {
     await removeStorage("dict.jmdict.etag");
     const buffer = await resp.arrayBuffer();
     const content = new Uint8Array(buffer);
-    await db.writeFile(filename, content);
+    await db.files.writeFile(filename, content);
     if (etag !== null) {
       await setStorage("dict.jmdict.etag", etag);
     }
@@ -270,7 +270,7 @@ export class BackgroundDesktopBackend implements IBackend {
 
   private async saveDictionaryFile(dict_bytes: Uint8Array): Promise<void> {
     const db = await this.db.get();
-    await db.writeFiles([["yomikiri-dictionary", dict_bytes]]);
+    await db.files.writeFiles([["yomikiri-dictionary", dict_bytes]]);
   }
 
   private async loadDictionary(schemaVer: number): Promise<Uint8Array> {
@@ -291,14 +291,14 @@ export class BackgroundDesktopBackend implements IBackend {
       return null;
     } else {
       const db = await this.db.get();
-      return await db.readFile("yomikiri-dictionary") ?? null;
+      return await db.files.readFile("yomikiri-dictionary") ?? null;
     }
   }
 
   async deleteSavedDictionary() {
     console.info("Will delete user-installed dictionary");
     const db = await this.db.get();
-    await db.deleteFiles(["yomikiri-dictionary"]);
+    await db.files.deleteFiles(["yomikiri-dictionary"]);
     await removeStorage("dict.schema_ver");
     await removeStorage("dict.jmdict.etag");
     console.info("Deleted user-installed dictionary");
