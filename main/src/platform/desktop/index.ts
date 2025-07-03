@@ -1,4 +1,4 @@
 export { DesktopAnkiApi } from "./anki";
-export { DesktopBackend } from "./backend";
-export { createDesktopCtx } from "./ctx";
+export { BackgroundDesktopBackend, type DesktopBackend, ForegroundDesktopBackend } from "./backend";
+export { createDesktopCtxWithoutBackend } from "./ctx";
 export { DesktopPlatform } from "./platform";
