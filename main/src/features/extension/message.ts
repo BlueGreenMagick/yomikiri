@@ -189,11 +189,11 @@ export async function messageToAllTabs<K extends keyof MessageMap>(
 }
 
 /** It is assumed that request does return a response. */
-function createMessageResponseHandler<K extends keyof MessageMap>(
-  resolve: PromiseResolver<MessageResponse<K>>,
+function createMessageResponseHandler<Resp>(
+  resolve: PromiseResolver<Resp>,
   reject: (reason: Error) => void,
-): (resp: ResponseMessage<MessageResponse<K>>) => void {
-  return (resp: ResponseMessage<MessageResponse<K>>) => {
+): (resp: ResponseMessage<Resp>) => void {
+  return (resp: ResponseMessage<Resp>) => {
     try {
       const response = handleResponseMessage(resp);
       resolve(response);
