@@ -7,16 +7,15 @@
 
 */
 
+import { createBackgroundDesktopCtx } from "@/platform/desktop";
 import type { TokenizeResult } from "@yomikiri/backend-bindings";
+import type { WordEntry } from "@yomikiri/backend-bindings";
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { type AnkiBuilderData, buildAnkiField } from "./ankiBuilder";
 import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
 import { type AnkiTemplateField, ankiTemplateFieldLabel } from "./template";
-
-import { BackgroundDesktopBackend, createDesktopCtxWithoutBackend } from "@/platform/desktop";
-import type { WordEntry } from "@yomikiri/backend-bindings";
-import fs from "node:fs";
-import path from "node:path";
 
 // ankiBuilder.test.json is used so that an update to JMDict will not invalidate the test.
 //
@@ -27,14 +26,12 @@ const REGENERATE_JSON = !!process.env.UPDATE;
 const ctx = await createDesktopCtx();
 
 async function createDesktopCtx() {
-  const ctx = createDesktopCtxWithoutBackend();
-  const backend = new BackgroundDesktopBackend();
+  const ctx = createBackgroundDesktopCtx();
   const config = await ctx.lazyConfig.get();
 
   return {
     ...ctx,
     config,
-    backend,
   };
 }
 

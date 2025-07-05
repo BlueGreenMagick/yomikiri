@@ -1,9 +1,6 @@
 import type { AndroidAnkiApi, AndroidBackend, AndroidPlatform } from "@/platform/android";
 import type { DesktopAnkiApi, DesktopPlatform } from "@/platform/desktop";
-import type {
-  BackgroundDesktopBackend,
-  ForegroundDesktopBackend,
-} from "@/platform/desktop/backend";
+import type { DesktopBackend } from "@/platform/desktop/backend";
 import type { IosAnkiApi, IosBackend, IosPlatform } from "@/platform/ios";
 import type { IosAppAnkiApi, IosAppBackend, IosAppPlatform } from "@/platform/iosapp";
 import type { Config } from "./config";
@@ -16,21 +13,12 @@ export interface LazyConfigCtx {
 
 type BasePlatformCtx = LazyConfigCtx;
 
-export interface DesktopCtxWithoutBackend extends BasePlatformCtx {
+export interface DesktopCtx extends BasePlatformCtx {
   platformType: "desktop";
   platform: DesktopPlatform;
   anki: DesktopAnkiApi;
+  backend: DesktopBackend;
 }
-
-export interface ForegroundDesktopCtx extends DesktopCtxWithoutBackend {
-  backend: ForegroundDesktopBackend;
-}
-
-export interface BackgroundDesktopCtx extends DesktopCtxWithoutBackend {
-  backend: BackgroundDesktopBackend;
-}
-
-export type DesktopCtx = ForegroundDesktopCtx | BackgroundDesktopCtx;
 
 export interface IosCtx extends BasePlatformCtx {
   platformType: "ios";

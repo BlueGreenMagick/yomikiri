@@ -15,18 +15,13 @@ import {
   setBadge,
 } from "@/features/extension/browserApi";
 import Utils, { exposeGlobals } from "@/features/utils";
-import {
-  BackgroundDesktopBackend,
-  createDesktopCtxWithoutBackend,
-  type DesktopAnkiApi,
-} from "@/platform/desktop";
+import { createBackgroundDesktopCtx, type DesktopAnkiApi } from "@/platform/desktop";
 import { derived } from "svelte/store";
 
 const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
-  const ctx = createDesktopCtxWithoutBackend();
-  const backend = new BackgroundDesktopBackend();
+  const ctx = createBackgroundDesktopCtx();
   const config = await ctx.lazyConfig.get();
   updateStateEnabledIcon(config);
   updateDeferredNoteCountBadge(config);
@@ -35,7 +30,7 @@ async function initialize(): Promise<void> {
   exposeGlobals({
     Platform: ctx.platform,
     AnkiApi: ctx.anki,
-    Backend: backend,
+    Backend: ctx.backend,
     Utils,
     config,
   });

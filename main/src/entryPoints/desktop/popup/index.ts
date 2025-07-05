@@ -1,24 +1,23 @@
 import type { AppCtx, DesktopCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createDesktopCtxWithoutBackend, ForegroundDesktopBackend } from "@/platform/desktop";
+import { createForegroundDesktopCtx } from "@/platform/desktop";
 import PopupPage from "./PopupPage.svelte";
 
 async function initialize(): Promise<AppCtx<DesktopCtx>> {
-  const ctx = createDesktopCtxWithoutBackend();
-  const backend = new ForegroundDesktopBackend();
+  const ctx = createForegroundDesktopCtx();
   const config = await ctx.lazyConfig.get();
   const toast = new Toast(ctx.lazyConfig);
 
   exposeGlobals({
     Platform: ctx.platform,
-    Backend: backend,
+    Backend: ctx.backend,
     Utils,
     config,
     page,
   });
 
-  return { ...ctx, config, toast, backend };
+  return { ...ctx, config, toast };
 }
 
 const page = new PopupPage({

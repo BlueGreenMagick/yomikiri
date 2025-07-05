@@ -1,24 +1,23 @@
-import type { AppCtx, ForegroundDesktopCtx } from "@/features/ctx";
+import type { AppCtx, DesktopCtx } from "@/features/ctx";
 import { OptionsPage } from "@/features/options";
 import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createDesktopCtxWithoutBackend, ForegroundDesktopBackend } from "@/platform/desktop";
+import { createForegroundDesktopCtx } from "@/platform/desktop";
 
-async function initialize(): Promise<AppCtx<ForegroundDesktopCtx>> {
-  const ctx = createDesktopCtxWithoutBackend();
-  const backend = new ForegroundDesktopBackend();
+async function initialize(): Promise<AppCtx<DesktopCtx>> {
+  const ctx = createForegroundDesktopCtx();
 
   const config = await ctx.lazyConfig.get();
   const toast = new Toast(ctx.lazyConfig);
 
   exposeGlobals({
     Platform: ctx.platform,
-    Backend: backend,
+    Backend: ctx.backend,
     Utils,
     config,
   });
 
-  return { ...ctx, toast, config, backend };
+  return { ...ctx, toast, config };
 }
 
 const _page = new OptionsPage({

@@ -1,9 +1,8 @@
 import {
+  BackgroundFunction,
   createConnection,
   getStorage,
   handleConnection,
-  handleMessage,
-  message,
   type Port,
   removeStorage,
   setStorage,
@@ -25,22 +24,29 @@ import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/back
 import { Database, type FileName } from "./db";
 import { fetchDictionary, loadWasm } from "./fetch";
 
-export type DesktopBackend = ForegroundDesktopBackend | BackgroundDesktopBackend;
-
-export class ForegroundDesktopBackend implements IBackend {
+export class DesktopBackend implements IBackend {
   readonly type = "desktop";
 
-  async tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
-    return message("tokenize", req);
+  private constructor(
+    private background: DesktopBackendBackground | null,
+  ) {}
+
+  static foreground(): DesktopBackend {
+    return new DesktopBackend(null);
   }
 
-  async search(req: SearchRequest): Promise<TokenizeResult> {
-    return message("searchTerm", req);
+  static background(background: DesktopBackendBackground): DesktopBackend {
+    return new DesktopBackend(background);
   }
 
-  async getDictMetadata(): Promise<DictionaryMetadata> {
-    return message("getDictMetadata", undefined);
-  }
+  readonly tokenize = BackgroundFunction("tokenize", (req) => this.background!.tokenize(req));
+
+  readonly search = BackgroundFunction("searchTerm", (req) => this.background!.search(req));
+
+  readonly getDictMetadata = BackgroundFunction(
+    "getDictMetadata",
+    () => this.background!.getDictMetadata(),
+  );
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
   updateDictionary(): PromiseWithProgress<boolean, string> {
@@ -79,21 +85,13 @@ export class ForegroundDesktopBackend implements IBackend {
  * Must be initialized synchronously on background page load,
  * in order for message and connection handlers to be attached
  */
-export class BackgroundDesktopBackend implements IBackend {
-  readonly type = "desktop";
+export class DesktopBackendBackground {
+  private _wasm: LazyAsync<BackendWasm> = new LazyAsync(() => this.initializeWasm());
 
-  private _wasm: LazyAsync<BackendWasm>;
-  private db = new LazyAsync<Database>(() => Database.init());
-
-  constructor() {
-    this._wasm = new LazyAsync(() => this.initializeWasm());
-
+  constructor(private db: LazyAsync<Database>) {
     handleConnection("updateDictionary", (port) => {
       this.updateDictionaryConnection(port);
     });
-    handleMessage("tokenize", (req) => this.tokenize(req));
-    handleMessage("searchTerm", (req) => this.search(req));
-    handleMessage("getDictMetadata", () => this.getDictMetadata());
   }
 
   private async initializeWasm(): Promise<BackendWasm> {
@@ -296,8 +294,8 @@ export class BackgroundDesktopBackend implements IBackend {
   }
 
   async deleteSavedDictionary() {
-    console.info("Will delete user-installed dictionary");
     const db = await this.db.get();
+    console.info("Will delete user-installed dictionary");
     await db.files.deleteFiles(["yomikiri-dictionary"]);
     await removeStorage("dict.schema_ver");
     await removeStorage("dict.jmdict.etag");

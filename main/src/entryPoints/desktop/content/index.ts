@@ -1,7 +1,7 @@
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { ContentScriptController } from "@/features/content";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createDesktopCtxWithoutBackend, ForegroundDesktopBackend } from "@/platform/desktop";
+import { createForegroundDesktopCtx } from "@/platform/desktop";
 
 declare global {
   interface Window {
@@ -26,17 +26,16 @@ function maybeInitialize() {
 }
 
 function initialize() {
-  const ctx = createDesktopCtxWithoutBackend();
-  const backend = new ForegroundDesktopBackend();
+  const ctx = createForegroundDesktopCtx();
 
   exposeGlobals({
     Platform: ctx.platform,
     AnkiApi: ctx.anki,
-    Backend: backend,
+    Backend: ctx.backend,
     Utils,
     config: ctx.lazyConfig,
     contentScriptController: ContentScriptController,
   });
 
-  return new ContentScriptController({ ...ctx, backend });
+  return new ContentScriptController(ctx);
 }
