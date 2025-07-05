@@ -1,4 +1,4 @@
-import { NonContentScriptFunction } from "@/features/extension/browserApi";
+import { NonContentScriptFunction } from "@/features/extension";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type { IBackend, SearchArgs, TokenizeArgs, TokenizeResult } from "../types/backend";
 import { sendMessage } from "./messaging";

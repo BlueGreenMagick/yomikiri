@@ -8,7 +8,7 @@ import {
   NonContentScriptFunction,
   setStorage,
   speakJapanese,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TTSVoice, VersionInfo } from "../types";

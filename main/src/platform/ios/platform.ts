@@ -9,7 +9,7 @@ import {
   NonContentScriptFunction,
   setStorage,
   updateTab,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import { LazyAsync, log, type NullPartial } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "@/platform/shared/translate";

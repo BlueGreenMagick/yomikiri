@@ -7,7 +7,7 @@ import {
   getTabs,
   goToTab,
   removeTab,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 
 /**
  * Used for x-callback-url as x-success value to return back to current page.

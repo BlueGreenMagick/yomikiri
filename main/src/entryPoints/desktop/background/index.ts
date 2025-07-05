@@ -13,7 +13,7 @@ import {
   type MessageSender,
   setActionIcon,
   setBadge,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createBackgroundDesktopCtx, type DesktopAnkiApi } from "@/platform/desktop";
 import { derived } from "svelte/store";

@@ -5,7 +5,7 @@ import {
   NonContentScriptFunction,
   removeStorage,
   setStorage,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import {
   createPromise,
   type First,

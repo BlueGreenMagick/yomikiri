@@ -12,7 +12,7 @@ import {
   handleMessage,
   type MessageSender,
   setActionIcon,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosCtx } from "@/platform/ios";
 

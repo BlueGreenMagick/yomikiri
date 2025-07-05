@@ -6,7 +6,7 @@ import {
   NonContentScriptFunction,
   setStorage,
   updateTab,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { iosAnkiMobileURL } from "../shared/anki";
 import { type IAnkiAddNotes } from "../types/anki";

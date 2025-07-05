@@ -6,7 +6,7 @@ import {
   type Port,
   removeStorage,
   setStorage,
-} from "@/features/extension/browserApi";
+} from "@/features/extension";
 import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-backend-wasm";
 import type {
   DictionaryMetadata,
