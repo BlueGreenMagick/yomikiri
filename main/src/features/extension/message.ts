@@ -150,21 +150,21 @@ function createMessageResponseHandler<Resp>(
  *
  * If in background, it attaches a message handler that executes `fn`.
  */
-export function BackgroundFunction<Req = void, Resp = void>(
+export function BackgroundFunction<Args extends unknown[] = [], Resp = void>(
   key: string,
-  fn: (req: Req) => Promise<Resp>,
-): (arg: Req) => Promise<Resp> {
-  const messaging = new ExtensionMessaging<Req, Resp>(key);
+  fn: (...arg: Args) => Promise<Resp>,
+): (...arg: Args) => Promise<Resp> {
+  const messaging = new ExtensionMessaging<Args, Resp>(key);
 
   if (EXTENSION_CONTEXT === "background") {
-    messaging.handle(fn);
+    messaging.handle((req) => fn(...req));
   }
 
-  return function inner(arg: Req): Promise<Resp> {
+  return function inner(...args: Args): Promise<Resp> {
     if (EXTENSION_CONTEXT !== "background") {
-      return messaging.send(arg);
+      return messaging.send(args);
     } else {
-      return fn(arg);
+      return fn(...args);
     }
   };
 }
@@ -176,20 +176,20 @@ export function BackgroundFunction<Req = void, Resp = void>(
  *
  * If in background, it attaches a message handler that executes `fn`.
  */
-export function NonContentScriptFunction<Req = void, Resp = void>(
+export function NonContentScriptFunction<Args extends unknown[] = [], Resp = void>(
   key: string,
-  fn: (req: Req) => Promise<Resp>,
-): (arg: Req) => Promise<Resp> {
-  const messaging = new ExtensionMessaging<Req, Resp>(key);
+  fn: (...args: Args) => Promise<Resp>,
+): (...args: Args) => Promise<Resp> {
+  const messaging = new ExtensionMessaging<Args, Resp>(key);
   if (EXTENSION_CONTEXT === "background") {
-    messaging.handle(fn);
+    messaging.handle((req) => fn(...req));
   }
 
-  return function inner(arg: Req): Promise<Resp> {
+  return function inner(...args: Args): Promise<Resp> {
     if (EXTENSION_CONTEXT === "contentScript") {
-      return messaging.send(arg);
+      return messaging.send(args);
     } else {
-      return fn(arg);
+      return fn(...args);
     }
   };
 }
