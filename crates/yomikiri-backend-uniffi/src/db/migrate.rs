@@ -2,7 +2,7 @@ use anyhow::Result;
 
 use crate::error::{FFIResult, ToUniFFIResult};
 
-use super::storage::{set_storage, KEYS};
+use super::store::{set_store, KEYS};
 use super::{ConnectionTrait, RustDatabase};
 
 #[uniffi::export]
@@ -19,7 +19,7 @@ impl RustDatabase {
         let tx = conn.transaction()?;
         tx.execute_batch(include_str!("sql/0_to_1.sql"))?;
         if let Some(val) = data.web_config {
-            set_storage(&tx, "web_config", &val)?;
+            set_store(&tx, "web_config", &val)?;
         }
         if let Some(val) = data.jmdict_etag {
             KEYS::jmdict_etag().set(&tx, Some(val))?;

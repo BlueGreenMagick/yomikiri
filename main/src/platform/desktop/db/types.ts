@@ -5,7 +5,7 @@ export interface YomikiriDBSchema extends DBSchema {
     key: "yomikiri-dictionary" | "JMdict_e.gz" | "JMnedict.xml.gz";
     value: Uint8Array;
   };
-  storage: {
+  store: {
     key: string;
     value: unknown;
   };

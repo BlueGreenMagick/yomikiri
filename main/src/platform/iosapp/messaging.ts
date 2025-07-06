@@ -1,6 +1,6 @@
 import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
-import type { JSONStorageValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { JSONStoreValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 
 declare global {
@@ -25,8 +25,8 @@ export interface MessageWebviewMap extends RunMessageMap {
   // Can only be requested in anki template options page.
   ankiInfoData: [null, RawAnkiInfo];
 
-  setStorageBatch: [JSONStorageValues, null];
-  getStorageBatch: [string[], JSONStorageValues];
+  setStoreBatch: [JSONStoreValues, null];
+  getStoreBatch: [string[], JSONStoreValues];
 
   /**
    * Returns true if migrated config is 'ok' to save.

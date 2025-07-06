@@ -1,7 +1,7 @@
 import { type IDBPDatabase, openDB } from "idb";
 import { migrateDB } from "./compat";
 import { FilesDB } from "./filesDB";
-import { StorageDB } from "./storageDB";
+import { StoreDB } from "./storeDB";
 import type { YomikiriDBSchema } from "./types";
 
 const DB_NAME = "yomikiri";
@@ -12,7 +12,7 @@ export class Database {
   private constructor(
     private db: IDBPDatabase<YomikiriDBSchema>,
     public files = new FilesDB(this.db),
-    public storage = new StorageDB(this.db),
+    public store = new StoreDB(this.db),
   ) {}
 
   static async init(): Promise<Database> {

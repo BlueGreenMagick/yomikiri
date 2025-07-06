@@ -2,19 +2,19 @@ import type { NullPartial } from "@/features/utils";
 import type { IDBPDatabase } from "idb";
 import type { YomikiriDBSchema } from "./types";
 
-const STORE_NAME = "storage";
+const STORE_NAME = "store";
 
-/** Database wrapper for key-value storage operations. */
-export class StorageDB {
+/** Database wrapper for key-value store operations. */
+export class StoreDB {
   constructor(private db: IDBPDatabase<YomikiriDBSchema>) {}
 
-  /** Get a single value from storage. Returns null if key doesn't exist. */
-  async getStorage<T>(key: string): Promise<T | null> {
+  /** Get a single value from store. Returns null if key doesn't exist. */
+  async getStore<T>(key: string): Promise<T | null> {
     return (await this.db.get(STORE_NAME, key) ?? null) as T | null;
   }
 
-  /** Get multiple values from storage in a single transaction. Missing keys return null. */
-  async getStorageBatch<T extends Record<string, unknown>>(
+  /** Get multiple values from store in a single transaction. Missing keys return null. */
+  async getStoreBatch<T extends Record<string, unknown>>(
     keys: (Extract<keyof T, string>)[],
   ): Promise<NullPartial<T>> {
     const tx = this.db.transaction(STORE_NAME, "readonly");
@@ -36,7 +36,7 @@ export class StorageDB {
    *
    * `null` or `undefined` deletes record.
    */
-  async setStorage(key: string, value: unknown) {
+  async setStore(key: string, value: unknown) {
     if (value === null || value === undefined) {
       await this.db.delete(STORE_NAME, key);
     } else {
@@ -49,7 +49,7 @@ export class StorageDB {
    *
    * `null` or `undefined` deletes record.
    */
-  async setStorageBatch(map: Record<string, unknown>): Promise<void> {
+  async setStoreBatch(map: Record<string, unknown>): Promise<void> {
     const tx = this.db.transaction(STORE_NAME, "readwrite");
     for (const [key, value] of Object.entries(map)) {
       if (value === null || value === undefined) {

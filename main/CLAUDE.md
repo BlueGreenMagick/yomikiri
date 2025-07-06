@@ -42,7 +42,7 @@
 - **Config**: Global app configuration managed in `main/src/features/config.ts`
 - **Context**: Platform-specific context via `ctx.ts` files in each platform directory
 - **Reactive state**: Svelte stores for component state management
-- **Persistence**: Platform-specific storage (IndexedDB for desktop, native storage for mobile)
+- **Persistence**: Platform-specific store (IndexedDB for desktop, rust DB store(yomikiri-backend-uniffi/db) for mobile)
 
 ### Component Patterns
 

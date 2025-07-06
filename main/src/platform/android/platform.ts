@@ -8,10 +8,10 @@ import { sendMessage } from "./messaging";
 export class AndroidPlatform implements IPlatform {
   readonly type = "android";
 
-  async getStorageBatch<T extends Record<string, unknown>>(
+  async getStoreBatch<T extends Record<string, unknown>>(
     keys: (keyof T)[],
   ): Promise<NullPartial<T>> {
-    const result = await sendMessage("getStorageBatch", keys as string[]);
+    const result = await sendMessage("getStoreBatch", keys as string[]);
 
     return Object.fromEntries(
       Object.entries(result).map((
@@ -21,37 +21,37 @@ export class AndroidPlatform implements IPlatform {
   }
 
   /**
-   * If value is `null` or `undefined`, deletes from storage.
+   * If value is `null` or `undefined`, deletes from store.
    */
-  async setStorageBatch(map: Record<string, unknown>): Promise<void> {
+  async setStoreBatch(map: Record<string, unknown>): Promise<void> {
     const jsonMap: Record<string, string | null> = {};
     for (const [key, value] of Object.entries(map)) {
       jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
     }
-    await sendMessage("setStorageBatch", jsonMap);
+    await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getStorage<T>(key: string): Promise<T | null> {
-    const result = await sendMessage("getStorageBatch", [key]);
+  async getStore<T>(key: string): Promise<T | null> {
+    const result = await sendMessage("getStoreBatch", [key]);
     const value = result[key];
     if (value === null) return value;
     return JSON.parse(value) as T;
   }
 
   /**
-   * If value is `null` or `undefined`, deletes from storage.
+   * If value is `null` or `undefined`, deletes from store.
    *
    * Keys with value 'undefined' is ignored.
    */
-  async setStorage(key: string, value: unknown) {
+  async setStore(key: string, value: unknown) {
     const jsonMap = {
       [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
     };
-    await sendMessage("setStorageBatch", jsonMap);
+    await sendMessage("setStoreBatch", jsonMap);
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
-    return await this.getStorage<StoredCompatConfiguration>("config") ?? {};
+    return await this.getStore<StoredCompatConfiguration>("config") ?? {};
   }
 
   /** TODO */
@@ -64,7 +64,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration): Promise<void> {
-    await this.setStorage("config", config);
+    await this.setStore("config", config);
   }
 
   openOptionsPage(): void {

@@ -229,11 +229,11 @@ extension YomikiriWebView {
         /// Returns JSON string or nil
         private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
-            case "setStorageBatch":
-                try backend.get().db.setRawStorageBatch(data: request)
+            case "setStoreBatch":
+                try backend.get().db.setRawStoreBatch(data: request)
                 return nil
-            case "getStorageBatch":
-                return try backend.get().db.getRawStorageBatch(keys: request)
+            case "getStoreBatch":
+                return try backend.get().db.getRawStoreBatch(keys: request)
             case "migrateConfig":
                 if configMigrated {
                     return "false"

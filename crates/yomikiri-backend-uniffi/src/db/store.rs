@@ -11,24 +11,24 @@ use crate::error::{FFIResult, ToUniFFIResult};
 use super::{ConnectionTrait, RustDatabase};
 
 #[derive(Clone, Copy, Debug)]
-pub struct StorageKey<T> {
+pub struct StoreKey<T> {
     key: &'static str,
     _value: PhantomData<T>,
 }
 
-impl<T> StorageKey<T>
+impl<T> StoreKey<T>
 where
     T: Serialize + for<'de> Deserialize<'de>,
 {
-    pub fn new(key: &'static str) -> StorageKey<T> {
-        StorageKey {
+    pub fn new(key: &'static str) -> StoreKey<T> {
+        StoreKey {
             key,
             _value: PhantomData,
         }
     }
 
     pub fn get(&self, db: &Connection) -> Result<Option<T>> {
-        get_storage(db, self.key)
+        get_store(db, self.key)
     }
 
     pub fn set<R>(&self, db: &Connection, value: Option<R>) -> Result<()>
@@ -36,7 +36,7 @@ where
         R: Borrow<T>,
         T: Serialize,
     {
-        set_storage_optional(db, self.key, value)
+        set_store_optional(db, self.key, value)
     }
 }
 
@@ -44,12 +44,12 @@ where
 #[allow(clippy::upper_case_acronyms)]
 pub struct KEYS {}
 
-macro_rules! storage_key {
+macro_rules! store_key {
     ($name:ident, $type:ty) => {
         paste::paste! {
             impl KEYS {
-                pub fn $name() -> StorageKey<$type> {
-                    StorageKey::new(stringify!($name))
+                pub fn $name() -> StoreKey<$type> {
+                    StoreKey::new(stringify!($name))
                 }
             }
 
@@ -67,59 +67,59 @@ macro_rules! storage_key {
     };
 }
 
-storage_key!(dict_schema_ver, u16);
-storage_key!(jmdict_etag, String);
-storage_key!(jmnedict_etag, String);
-storage_key!(saved_url, String);
-storage_key!(android_current_view, String);
+store_key!(dict_schema_ver, u16);
+store_key!(jmdict_etag, String);
+store_key!(jmnedict_etag, String);
+store_key!(saved_url, String);
+store_key!(android_current_view, String);
 
 #[uniffi::export]
 impl RustDatabase {
-    /// Retrieves raw json storage value
+    /// Retrieves raw json store value
     ///
     /// Should only be used from web
-    pub fn get_raw_storage(&self, key: String) -> FFIResult<Option<String>> {
-        self._get_raw_storage(key).uniffi()
+    pub fn get_raw_store(&self, key: String) -> FFIResult<Option<String>> {
+        self._get_raw_store(key).uniffi()
     }
 
-    /// Retrieves multiple raw json storage value
+    /// Retrieves multiple raw json store value
     ///
     /// keys: JSON serialized array of keys
     ///
     /// returns JSON serialized {[key: string]: string | null}
     /// where the string value is itself a JSON serialized value
-    pub fn get_raw_storage_batch(&self, keys: String) -> FFIResult<String> {
-        self._get_raw_storage_batch(keys).uniffi()
+    pub fn get_raw_store_batch(&self, keys: String) -> FFIResult<String> {
+        self._get_raw_store_batch(keys).uniffi()
     }
 
-    /// Stores raw json storage value
+    /// Stores raw json store value
     ///
     /// Should only be used from web
-    pub fn set_raw_storage(&self, key: String, value: Option<String>) -> FFIResult<()> {
-        self._set_raw_storage(key, value).uniffi()
+    pub fn set_raw_store(&self, key: String, value: Option<String>) -> FFIResult<()> {
+        self._set_raw_store(key, value).uniffi()
     }
 
-    /// Stores multiple raw json storage values
+    /// Stores multiple raw json store values
     ///
     /// data: JSON serialized {[key: string]: string | null}
     /// If value is null, the key is deleted. Otherwise, the value is set.
     ///
     /// Should only be used from web
-    pub fn set_raw_storage_batch(&self, data: String) -> FFIResult<()> {
-        self._set_raw_storage_batch(data).uniffi()
+    pub fn set_raw_store_batch(&self, data: String) -> FFIResult<()> {
+        self._set_raw_store_batch(data).uniffi()
     }
 }
 
 impl RustDatabase {
-    fn _get_raw_storage(&self, key: String) -> Result<Option<String>> {
+    fn _get_raw_store(&self, key: String) -> Result<Option<String>> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
-        let result = get_raw_storage(&tx, &key)?;
+        let result = get_raw_store(&tx, &key)?;
         tx.commit()?;
         Ok(result)
     }
 
-    fn _get_raw_storage_batch(&self, keys: String) -> Result<String> {
+    fn _get_raw_store_batch(&self, keys: String) -> Result<String> {
         let keys_vec: Vec<String> =
             serde_json::from_str(&keys).context("Failed to deserialize keys as array of string")?;
 
@@ -128,7 +128,7 @@ impl RustDatabase {
         let mut result: HashMap<String, Option<String>> = HashMap::new();
 
         for key in keys_vec {
-            let value = get_raw_storage(&tx, &key)?;
+            let value = get_raw_store(&tx, &key)?;
             result.insert(key, value);
         }
 
@@ -136,56 +136,56 @@ impl RustDatabase {
         Ok(serde_json::to_string(&result)?)
     }
 
-    fn _set_raw_storage(&self, key: String, value: Option<String>) -> Result<()> {
+    fn _set_raw_store(&self, key: String, value: Option<String>) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
-        set_raw_storage_optional(&tx, &key, value)?;
+        set_raw_store_optional(&tx, &key, value)?;
         tx.commit()?;
         Ok(())
     }
 
-    fn _set_raw_storage_batch(&self, data: String) -> Result<()> {
+    fn _set_raw_store_batch(&self, data: String) -> Result<()> {
         let data_map: HashMap<String, Option<String>> = serde_json::from_str(&data).context(
             "Failed to deserialize data as object with string keys and optional string values",
         )?;
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         for (key, value) in data_map {
-            set_raw_storage_optional(&tx, &key, value)?;
+            set_raw_store_optional(&tx, &key, value)?;
         }
         tx.commit()?;
         Ok(())
     }
 }
 
-pub fn set_raw_storage(db: &Connection, key: &str, value: &str) -> Result<()> {
-    db.sql("INSERT OR REPLACE INTO storage(key, value) VALUES(?, ?)")?
+pub fn set_raw_store(db: &Connection, key: &str, value: &str) -> Result<()> {
+    db.sql("INSERT OR REPLACE INTO store(key, value) VALUES(?, ?)")?
         .execute(params![key, value])
-        .context("Failed to insert value into DB storage")?;
+        .context("Failed to insert value into DB store")?;
     Ok(())
 }
 
-pub fn set_raw_storage_optional<T: Borrow<str>>(
+pub fn set_raw_store_optional<T: Borrow<str>>(
     db: &Connection,
     key: &str,
     value: Option<T>,
 ) -> Result<()> {
     if let Some(value) = value {
-        set_raw_storage(db, key, value.borrow())
+        set_raw_store(db, key, value.borrow())
     } else {
-        remove_storage(db, key)?;
+        remove_store(db, key)?;
         Ok(())
     }
 }
 
 /// Save to DB after JSON stringifying the value.
-pub fn set_storage<T: Serialize>(db: &Connection, key: &str, value: &T) -> Result<()> {
+pub fn set_store<T: Serialize>(db: &Connection, key: &str, value: &T) -> Result<()> {
     let json_value = serde_json::to_string(value)?;
-    set_raw_storage(db, key, &json_value)
+    set_raw_store(db, key, &json_value)
 }
 
 /// Save to DB after JSON stringifying the value.
-pub fn set_storage_optional<T, R>(db: &Connection, key: &str, value: Option<R>) -> Result<()>
+pub fn set_store_optional<T, R>(db: &Connection, key: &str, value: Option<R>) -> Result<()>
 where
     R: Borrow<T>,
     T: Serialize,
@@ -193,32 +193,32 @@ where
     let optional_json = value
         .map(|val| serde_json::to_string(val.borrow()))
         .transpose()?;
-    set_raw_storage_optional(db, key, optional_json)
+    set_raw_store_optional(db, key, optional_json)
 }
 
-pub fn get_raw_storage(db: &Connection, key: &str) -> Result<Option<String>> {
-    db.sql("SELECT value FROM storage WHERE key = ?")?
+pub fn get_raw_store(db: &Connection, key: &str) -> Result<Option<String>> {
+    db.sql("SELECT value FROM store WHERE key = ?")?
         .query_row([key], |row| row.get(0))
         .optional()
-        .context("Failed to get value from DB storage")
+        .context("Failed to get value from DB store")
 }
 
-/// Retrieve and deserialize a JSON value from storage.
-pub fn get_storage<T: for<'de> Deserialize<'de>>(db: &Connection, key: &str) -> Result<Option<T>> {
-    get_raw_storage(db, key)?
+/// Retrieve and deserialize a JSON value from store.
+pub fn get_store<T: for<'de> Deserialize<'de>>(db: &Connection, key: &str) -> Result<Option<T>> {
+    get_raw_store(db, key)?
         .map(|val| {
             serde_json::from_str(&val).context("Failed to deserialize value to desired type")
         })
         .transpose()
 }
 
-/// Removes a storage entry by key.
+/// Removes a store entry by key.
 ///
 /// Returns `true` if the key existed and was removed, `false` if the key didn't exist.
-pub fn remove_storage(db: &Connection, key: &str) -> Result<bool> {
+pub fn remove_store(db: &Connection, key: &str) -> Result<bool> {
     let rows_affected = db
-        .sql("DELETE FROM storage WHERE key = ?")?
+        .sql("DELETE FROM store WHERE key = ?")?
         .execute([key])
-        .context("Failed to remove value from DB storage")?;
+        .context("Failed to remove value from DB store")?;
     Ok(rows_affected > 0)
 }

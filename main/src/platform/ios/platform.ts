@@ -14,7 +14,7 @@ import { LazyAsync, log } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "@/platform/shared/translate";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import type { IPlatform, JSONStorageValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { IPlatform, JSONStoreValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
 
 /** Type map for messages sent with `requestToApp()`*/
@@ -55,10 +55,10 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  async getStorageBatch(
+  async getStoreBatch(
     keys: string[],
   ): Promise<Record<string, unknown>> {
-    const result = await this._getStorageBatch(keys);
+    const result = await this._getStoreBatch(keys);
 
     return Object.fromEntries(
       Object.entries(result).map((
@@ -67,46 +67,46 @@ export class IosPlatform implements IPlatform {
     );
   }
 
-  async getStorage<T>(key: string): Promise<T | null> {
-    const result = await this._getStorageBatch([key]);
+  async getStore<T>(key: string): Promise<T | null> {
+    const result = await this._getStoreBatch([key]);
     const value = result[key];
     if (value === null) return value;
     return JSON.parse(value) as T;
   }
 
-  private readonly _getStorageBatch = NonContentScriptFunction(
-    "IosPlatform.getStorageBatch",
+  private readonly _getStoreBatch = NonContentScriptFunction(
+    "IosPlatform.getStoreBatch",
     async (keysJson: string[]) => {
-      return await sendMessage("getStorageBatch", keysJson);
+      return await sendMessage("getStoreBatch", keysJson);
     },
   );
 
   /**
-   * If value is `null` or `undefined`, deletes the storage.
+   * If value is `null` or `undefined`, deletes the store.
    */
-  async setStorageBatch(map: Record<string, unknown>) {
+  async setStoreBatch(map: Record<string, unknown>) {
     const jsonMap: Record<string, string | null> = {};
     for (const [key, value] of Object.entries(map)) {
       jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
     }
 
-    await this._setStorageBatch(jsonMap);
+    await this._setStoreBatch(jsonMap);
   }
 
   /**
-   * If value is `null` or `undefined`, deletes the storage.
+   * If value is `null` or `undefined`, deletes the store.
    */
-  async setStorage(key: string, value: unknown) {
+  async setStore(key: string, value: unknown) {
     const jsonMap = {
       [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
     };
-    await this._setStorageBatch(jsonMap);
+    await this._setStoreBatch(jsonMap);
   }
 
-  private readonly _setStorageBatch = NonContentScriptFunction(
-    "IosPlatform.setStorageBatch",
-    async (jsonMap: JSONStorageValues) => {
-      await sendMessage("setStorageBatch", jsonMap);
+  private readonly _setStoreBatch = NonContentScriptFunction(
+    "IosPlatform.setStoreBatch",
+    async (jsonMap: JSONStoreValues) => {
+      await sendMessage("setStoreBatch", jsonMap);
     },
   );
 
@@ -128,7 +128,7 @@ export class IosPlatform implements IPlatform {
   async updateConfig(): Promise<StoredCompatConfiguration> {
     const webConfigP = getStorage("config", {});
 
-    const appConfigP: Promise<StoredCompatConfiguration> = this.getStorage<
+    const appConfigP: Promise<StoredCompatConfiguration> = this.getStore<
       StoredCompatConfiguration
     >("web_config").then((value) => value ?? {});
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
@@ -141,7 +141,7 @@ export class IosPlatform implements IPlatform {
   readonly saveConfig = NonContentScriptFunction(
     "IosPlatform.saveConfig",
     async (config: StoredConfiguration) => {
-      await this.setStorage("web_config", config);
+      await this.setStore("web_config", config);
       await setStorage("config", config);
     },
   );

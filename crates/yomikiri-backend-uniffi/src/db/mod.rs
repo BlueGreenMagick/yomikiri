@@ -1,5 +1,5 @@
 mod migrate;
-mod storage;
+mod store;
 
 use std::sync::{Arc, Mutex, MutexGuard};
 

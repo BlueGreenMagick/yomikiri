@@ -23,9 +23,9 @@ export function migrateDB(
     db.createObjectStore("files");
   }
   if (oldVersion <= 1) {
-    if (db.objectStoreNames.contains("storage")) {
-      db.deleteObjectStore("storage");
+    if (db.objectStoreNames.contains("store")) {
+      db.deleteObjectStore("store");
     }
-    db.createObjectStore("storage");
+    db.createObjectStore("store");
   }
 }

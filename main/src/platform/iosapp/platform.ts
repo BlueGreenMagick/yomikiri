@@ -63,10 +63,10 @@ export class IosAppPlatform implements IPlatform {
     };
   }
 
-  async getStorageBatch<T extends Record<string, unknown>>(
+  async getStoreBatch<T extends Record<string, unknown>>(
     keys: (keyof T)[],
   ): Promise<NullPartial<T>> {
-    const result = await sendMessage("getStorageBatch", keys as string[]);
+    const result = await sendMessage("getStoreBatch", keys as string[]);
 
     return Object.fromEntries(
       Object.entries(result).map((
@@ -76,36 +76,36 @@ export class IosAppPlatform implements IPlatform {
   }
 
   /**
-   * If value is `null` or `undefined`, deletes from storage.
+   * If value is `null` or `undefined`, deletes from store.
    */
-  async setStorageBatch(map: Record<string, unknown>) {
+  async setStoreBatch(map: Record<string, unknown>) {
     const jsonMap: Record<string, string | null> = {};
     for (const [key, value] of Object.entries(map)) {
       jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
     }
 
-    await sendMessage("setStorageBatch", jsonMap);
+    await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getStorage<T>(key: string): Promise<T | null> {
-    const result = await sendMessage("getStorageBatch", [key]);
+  async getStore<T>(key: string): Promise<T | null> {
+    const result = await sendMessage("getStoreBatch", [key]);
     const value = result[key];
     if (value === null) return value;
     return JSON.parse(value) as T;
   }
 
   /**
-   * If value is `null` or `undefined`, deletes from storage.
+   * If value is `null` or `undefined`, deletes from store.
    */
-  async setStorage(key: string, value: unknown) {
+  async setStore(key: string, value: unknown) {
     const jsonMap = {
       [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
     };
-    await sendMessage("setStorageBatch", jsonMap);
+    await sendMessage("setStoreBatch", jsonMap);
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
-    const config = await this.getStorage<StoredCompatConfiguration>("web_config") ?? {};
+    const config = await this.getStore<StoredCompatConfiguration>("web_config") ?? {};
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
@@ -122,7 +122,7 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfiguration) {
-    await this.setStorage("web_config", config);
+    await this.setStore("web_config", config);
 
     // trigger update for this execution context
     for (const subscriber of this._configSubscribers) {

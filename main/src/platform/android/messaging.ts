@@ -2,7 +2,7 @@ import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
 import type { RunMessageMap } from "../shared/backend";
-import type { JSONStorageValues } from "../types";
+import type { JSONStoreValues } from "../types";
 
 /** Secret key used in android message handler */
 declare const __ANDROID_MESSAGE_SECRET_KEY: string;
@@ -32,8 +32,8 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
 }
 
 export interface AndroidMessageMap extends RunMessageMap {
-  setStorageBatch: [JSONStorageValues, null];
-  getStorageBatch: [string[], JSONStorageValues];
+  setStoreBatch: [JSONStoreValues, null];
+  getStoreBatch: [string[], JSONStoreValues];
   versionInfo: [null, string];
   ankiGetInfo: [null, AnkiInfo];
   ankiCheckConnection: [null, null];

@@ -27,18 +27,18 @@ export interface IPlatform extends IPlatformConsts {
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
 
-  /** value is null if key doesn't exist in storage */
-  getStorageBatch(keys: string[]): Promise<Record<string, unknown>>;
+  /** value is null if key doesn't exist in store */
+  getStoreBatch(keys: string[]): Promise<Record<string, unknown>>;
   /**
-   * If value is `null` or `undefined`, deletes from storage.
+   * If value is `null` or `undefined`, deletes from store.
    */
-  setStorageBatch(valueMap: Record<string, unknown>): Promise<void>;
-  /** Returns null if key doesn't exist in storage */
-  getStorage(key: string): Promise<unknown>;
+  setStoreBatch(valueMap: Record<string, unknown>): Promise<void>;
+  /** Returns null if key doesn't exist in store */
+  getStore(key: string): Promise<unknown>;
   /**
-   * If value is `null` or `undefined`, deletes from storage.
+   * If value is `null` or `undefined`, deletes from store.
    */
-  setStorage(key: string, value: unknown): Promise<void>;
+  setStore(key: string, value: unknown): Promise<void>;
 }
 
 export interface VersionInfo {
@@ -68,7 +68,7 @@ export interface TTSRequest {
   voice: TTSVoice | null;
 }
 
-export type JSONStorageValues = { [key: string]: string | null };
+export type JSONStoreValues = { [key: string]: string | null };
 
 export type AnyPlatform =
   | DesktopPlatform

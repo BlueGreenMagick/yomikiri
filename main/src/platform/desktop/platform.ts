@@ -96,31 +96,31 @@ export class DesktopPlatform implements IPlatform {
     return migrated;
   }
 
-  readonly setStorageBatch = BackgroundFunction(
-    "DesktopPlatform.setStorageBatch",
+  readonly setStoreBatch = BackgroundFunction(
+    "DesktopPlatform.setStoreBatch",
     async (req: Record<string, unknown>): Promise<void> => {
-      return this.background!.db.get().then((db) => db.storage.setStorageBatch(req));
+      return this.background!.db.get().then((db) => db.store.setStoreBatch(req));
     },
   );
 
-  readonly getStorageBatch = BackgroundFunction(
-    "DesktopPlatform.getStorageBatch",
+  readonly getStoreBatch = BackgroundFunction(
+    "DesktopPlatform.getStoreBatch",
     async (keys: string[]): Promise<Record<string, unknown>> => {
-      return this.background!.db.get().then((db) => db.storage.getStorageBatch(keys));
+      return this.background!.db.get().then((db) => db.store.getStoreBatch(keys));
     },
   );
 
-  readonly setStorage = BackgroundFunction(
-    "DesktopPlatform.setStorage",
+  readonly setStore = BackgroundFunction(
+    "DesktopPlatform.setStore",
     async (key: string, value: unknown) => {
-      return this.background!.db.get().then((db) => db.storage.setStorage(key, value));
+      return this.background!.db.get().then((db) => db.store.setStore(key, value));
     },
   );
 
-  readonly getStorage = BackgroundFunction(
-    "DesktopPlatform.getStorage",
+  readonly getStore = BackgroundFunction(
+    "DesktopPlatform.getStore",
     async (key: string) => {
-      return this.background!.db.get().then((db) => db.storage.getStorage(key));
+      return this.background!.db.get().then((db) => db.store.getStore(key));
     },
   );
 }

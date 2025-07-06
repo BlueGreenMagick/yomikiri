@@ -138,12 +138,12 @@ private suspend fun handleWebMessage(
                 val value = BuildConfig.VERSION_NAME
                 builder.success(value)
             }
-            "setStorageBatch" -> {
-                db.setRawStorageBatch(msg.request)
+            "setStoreBatch" -> {
+                db.setRawStoreBatch(msg.request)
                 builder.success(Unit)
             }
-            "getStorageBatch" -> {
-                val value = db.getRawStorageBatch(msg.request)
+            "getStoreBatch" -> {
+                val value = db.getRawStoreBatch(msg.request)
                 builder.jsonSuccess(value)
             }
             "ankiGetInfo" -> {
