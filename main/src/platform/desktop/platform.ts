@@ -109,6 +109,20 @@ export class DesktopPlatform implements IPlatform {
       return this.background!.db.get().then((db) => db.storage.getStorageBatch(keys));
     },
   );
+
+  readonly setStorage = BackgroundFunction(
+    "DesktopPlatform.setStorage",
+    async (key: string, value: unknown) => {
+      return this.background!.db.get().then((db) => db.storage.setStorage(key, value));
+    },
+  );
+
+  readonly getStorage = BackgroundFunction(
+    "DesktopPlatform.getStorage",
+    async (key: string) => {
+      return this.background!.db.get().then((db) => db.storage.getStorage(key));
+    },
+  );
 }
 
 export class DesktopPlatformBackground {

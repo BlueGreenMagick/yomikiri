@@ -26,6 +26,11 @@ export interface IPlatform extends IPlatformConsts {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
+
+  getStorageBatch(keys: string[]): Promise<Record<string, unknown>>;
+  setStorageBatch(valueMap: Record<string, unknown>): Promise<void>;
+  getStorage(key: string): Promise<unknown>;
+  setStorage(key: string, value: unknown): Promise<void>;
 }
 
 export interface VersionInfo {
