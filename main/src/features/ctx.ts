@@ -4,11 +4,13 @@ import type { DesktopBackend } from "@/platform/desktop/backend";
 import type { IosAnkiApi, IosBackend, IosPlatform } from "@/platform/ios";
 import type { IosAppAnkiApi, IosAppBackend, IosAppPlatform } from "@/platform/iosapp";
 import type { Config } from "./config";
+import type { Store } from "./store";
 import type { Toast } from "./toast/toast";
 import type { LazyAsync } from "./utils";
 
 export interface LazyConfigCtx {
   lazyConfig: LazyAsync<Config>;
+  store: Store;
 }
 
 type BasePlatformCtx = LazyConfigCtx;
