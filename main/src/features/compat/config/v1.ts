@@ -1,4 +1,4 @@
-import type { StoredConfig } from "./shared";
+import type { StoredConfig } from "./types";
 import type { Configuration_2 } from "./v2";
 
 export interface TTSVoice_1 {

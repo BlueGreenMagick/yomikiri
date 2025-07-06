@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import type { StoredConfig } from "./shared";
+import type { StoredConfig } from "./types";
 import { type Configuration_2, migrateConfiguration_2 } from "./v2";
 
 const v2Config: StoredConfig<Configuration_2> = {

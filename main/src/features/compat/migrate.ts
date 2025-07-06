@@ -1,8 +1,10 @@
 import { CONFIG_VERSION, type StoredConfiguration } from "@/features/config";
 import { VERSION } from "consts";
-import type { StoredCompatConfiguration } from "./shared";
-import { migrateConfiguration_1 } from "./v1";
-import { migrateConfiguration_2 } from "./v2";
+import {
+  migrateConfiguration_1,
+  migrateConfiguration_2,
+  type StoredCompatConfiguration,
+} from "./config";
 
 /**
  * Don't call this function directly. Instead, call `migrateIfNeeded()`.

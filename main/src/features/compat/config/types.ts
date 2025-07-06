@@ -1,18 +1,6 @@
-import type { AnkiNote } from "@/features/anki";
 import { type Configuration } from "@/features/config";
 import type { Configuration_1 } from "./v1";
 import type { Configuration_2 } from "./v2";
-
-export interface DeprecatedConfiguration {
-  /** Deprecated in conf v3+ */
-  "anki.template": AnkiNote | null;
-}
-
-/* Ensure that no keys overlap between Configuration and Deprecated Configuration */
-type OverlappingKeys<A, B> = keyof A & keyof B;
-type NoOverlappingKeys<A, B> = OverlappingKeys<A, B> extends never ? object :
-  { overlap: OverlappingKeys<A, B> };
-const _checkOverlap: NoOverlappingKeys<Configuration, DeprecatedConfiguration> = {};
 
 interface ConfigBase {
   config_version?: number | undefined;

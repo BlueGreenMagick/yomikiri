@@ -13,5 +13,5 @@ Existing keys are not re-used for different meaning, or deleted.
 Instead, a new key is always created.
 And if needed, value is transformed and moved from existing key.
 */
+export type { CompatConfiguration, StoredCompatConfiguration, StoredConfig } from "./config";
 export { migrateConfigObject } from "./migrate";
-export type { CompatConfiguration, StoredCompatConfiguration, StoredConfig } from "./shared";

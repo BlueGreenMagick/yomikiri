@@ -9,7 +9,7 @@ import {
 } from "@/features/anki";
 import type { Configuration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
-import type { StoredConfig } from "./shared";
+import type { StoredConfig } from "./types";
 import type { Configuration_1_Conf } from "./v1";
 
 /** v0.2.0-dev ~ v0.2.0-dev */
