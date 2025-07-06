@@ -19,7 +19,7 @@ export interface IAnkiOptions extends IPlatformConsts {
 
 export interface IAnkiAddNotes extends IPlatformConsts {
   /** Returns false if note is deferred */
-  addNote: (note: AnkiNote, tabId?: number) => Promise<boolean>;
+  addNote: (note: AnkiNote, deferrable?: boolean) => Promise<boolean>;
 }
 
 export type ExtensionAnkiApi = DesktopAnkiApi | IosAnkiApi;
