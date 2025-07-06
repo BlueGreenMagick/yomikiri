@@ -1,16 +1,10 @@
 // Re-export all messaging functions and types
 export {
   BackgroundFunction,
-  handleMessage,
-  type MessageHandlerForKey as MessageHandler,
-  type MessageMap,
-  type MessageRequest,
-  type MessageResponse,
+  ExtensionMessaging,
+  type MessageHandler,
   type MessageSender,
-  messageToAllTabs,
-  messageToTab,
   NonContentScriptFunction,
-  sendMessage,
 } from "./message";
 
 // Re-export all browser API functions and types
@@ -44,6 +38,3 @@ export {
   type StorageKey,
   updateTab,
 } from "./browserApi";
-
-// For backward compatibility, also export message as 'message'
-export { sendMessage as message } from "./message";

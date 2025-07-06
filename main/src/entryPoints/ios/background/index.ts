@@ -8,8 +8,8 @@ import DisabledIcon from "@/assets/icon128-20a.png";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import { Config } from "@/features/config";
 import {
+  ExtensionMessaging,
   handleBrowserLoad,
-  handleMessage,
   type MessageSender,
   setActionIcon,
 } from "@/features/extension";
@@ -44,7 +44,8 @@ function updateStateEnabledIcon(config: Config) {
   });
 }
 
-handleMessage("tabId", tabId);
+const tabIdMessaging = new ExtensionMessaging<void, number | undefined>("ios.background.tabId");
+tabIdMessaging.handle(tabId);
 
 handleBrowserLoad(() => {
   void initialize();
