@@ -34,21 +34,29 @@ export class StorageDB {
   /**
    * Store a single key-value pair. Overwrites existing value.
    *
-   * `null` deletes record.
+   * `null` or `undefined` deletes record.
    */
   async setStorage(key: string, value: unknown) {
-    await this.db.put(STORE_NAME, value, key);
+    if (value === null || value === undefined) {
+      await this.db.delete(STORE_NAME, key);
+    } else {
+      await this.db.put(STORE_NAME, value, key);
+    }
   }
 
   /**
    * Store multiple key-value pairs in a single transaction.
    *
-   * `null` deletes record.
+   * `null` or `undefined` deletes record.
    */
   async setStorageBatch(map: Record<string, unknown>): Promise<void> {
     const tx = this.db.transaction(STORE_NAME, "readwrite");
     for (const [key, value] of Object.entries(map)) {
-      await tx.store.put(value, key);
+      if (value === null || value === undefined) {
+        await tx.store.delete(key);
+      } else {
+        await tx.store.put(value, key);
+      }
     }
 
     await tx.done;

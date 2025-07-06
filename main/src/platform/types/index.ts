@@ -27,9 +27,17 @@ export interface IPlatform extends IPlatformConsts {
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfiguration>;
 
+  /** value is null if key doesn't exist in storage */
   getStorageBatch(keys: string[]): Promise<Record<string, unknown>>;
+  /**
+   * If value is `null` or `undefined`, deletes from storage.
+   */
   setStorageBatch(valueMap: Record<string, unknown>): Promise<void>;
+  /** Returns null if key doesn't exist in storage */
   getStorage(key: string): Promise<unknown>;
+  /**
+   * If value is `null` or `undefined`, deletes from storage.
+   */
   setStorage(key: string, value: unknown): Promise<void>;
 }
 

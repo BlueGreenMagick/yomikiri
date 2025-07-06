@@ -21,16 +21,13 @@ export class AndroidPlatform implements IPlatform {
   }
 
   /**
-   * If value is `null`, deletes the storage.
-   *
-   * Keys with value 'undefined' is ignored.
+   * If value is `null` or `undefined`, deletes from storage.
    */
   async setStorageBatch(map: Record<string, unknown>): Promise<void> {
-    const jsonMap = Object.fromEntries(
-      Object.entries(map).map((
-        [key, value],
-      ) => [key, value === null ? null : JSON.stringify(value)]),
-    );
+    const jsonMap: Record<string, string | null> = {};
+    for (const [key, value] of Object.entries(map)) {
+      jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
+    }
     await sendMessage("setStorageBatch", jsonMap);
   }
 
@@ -42,13 +39,13 @@ export class AndroidPlatform implements IPlatform {
   }
 
   /**
-   * If value is `null`, deletes the storage.
+   * If value is `null` or `undefined`, deletes from storage.
    *
    * Keys with value 'undefined' is ignored.
    */
   async setStorage(key: string, value: unknown) {
     const jsonMap = {
-      [key]: (value === null) ? null : JSON.stringify(value),
+      [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
     };
     await sendMessage("setStorageBatch", jsonMap);
   }

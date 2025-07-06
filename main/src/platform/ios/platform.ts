@@ -10,7 +10,7 @@ import {
   setStorage,
   updateTab,
 } from "@/features/extension";
-import { LazyAsync, log, type NullPartial } from "@/features/utils";
+import { LazyAsync, log } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "@/platform/shared/translate";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
@@ -55,16 +55,16 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  async getStorageBatch<T extends Record<string, unknown>>(
-    keys: (keyof T)[],
-  ): Promise<NullPartial<T>> {
-    const result = await this._getStorageBatch(keys as string[]);
+  async getStorageBatch(
+    keys: string[],
+  ): Promise<Record<string, unknown>> {
+    const result = await this._getStorageBatch(keys);
 
     return Object.fromEntries(
       Object.entries(result).map((
         [key, value],
       ) => [key, value === null ? null : JSON.parse(value)]),
-    ) as NullPartial<T>;
+    );
   }
 
   async getStorage<T>(key: string): Promise<T | null> {
@@ -82,28 +82,23 @@ export class IosPlatform implements IPlatform {
   );
 
   /**
-   * If value is `null`, deletes the storage.
-   *
-   * Keys with value 'undefined' is ignored.
+   * If value is `null` or `undefined`, deletes the storage.
    */
   async setStorageBatch(map: Record<string, unknown>) {
-    const jsonMap = Object.fromEntries(
-      Object.entries(map).map((
-        [key, value],
-      ) => [key, value === null ? null : JSON.stringify(value)]),
-    );
+    const jsonMap: Record<string, string | null> = {};
+    for (const [key, value] of Object.entries(map)) {
+      jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
+    }
 
     await this._setStorageBatch(jsonMap);
   }
 
   /**
-   * If value is `null`, deletes the storage.
-   *
-   * Keys with value 'undefined' is ignored.
+   * If value is `null` or `undefined`, deletes the storage.
    */
   async setStorage(key: string, value: unknown) {
     const jsonMap = {
-      [key]: (value === null) ? null : JSON.stringify(value),
+      [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
     };
     await this._setStorageBatch(jsonMap);
   }
