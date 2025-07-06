@@ -1,14 +1,21 @@
 import { NonContentScriptFunction } from "@/features/extension";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
-import type { IBackend, SearchArgs, TokenizeArgs, TokenizeResult } from "../types/backend";
+import type {
+  IBackend,
+  SearchArgs,
+  SearchRequest,
+  TokenizeArgs,
+  TokenizeRequest,
+  TokenizeResult,
+} from "../types/backend";
 import { sendMessage } from "./messaging";
 
 export class IosBackend implements IBackend {
   readonly type = "ios";
 
   readonly tokenize = NonContentScriptFunction(
-    "tokenize",
-    ({ text, charAt }) => {
+    "IosBackend.tokenize",
+    ({ text, charAt }: TokenizeRequest) => {
       return this._tokenize(text, charAt);
     },
   );
@@ -33,8 +40,8 @@ export class IosBackend implements IBackend {
   }
 
   readonly search = NonContentScriptFunction(
-    "searchTerm",
-    ({ term, charAt }) => {
+    "IosBackend.search",
+    ({ term, charAt }: SearchRequest) => {
       return this._search(term, charAt);
     },
   );
@@ -58,7 +65,10 @@ export class IosBackend implements IBackend {
     return result;
   }
 
-  readonly getDictMetadata = NonContentScriptFunction("getDictMetadata", () => {
-    return sendMessage("metadata", null);
-  });
+  readonly getDictMetadata = NonContentScriptFunction(
+    "IosBackend.getDictMetadata",
+    () => {
+      return sendMessage("metadata", null);
+    },
+  );
 }

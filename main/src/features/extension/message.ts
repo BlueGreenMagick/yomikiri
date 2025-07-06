@@ -69,48 +69,50 @@ interface RequestMessage<K extends keyof MessageMap> {
 
 export type MessageSender = chrome.runtime.MessageSender;
 
-export type MessageHandler<K extends keyof MessageMap> = (
-  request: MessageRequest<K>,
+export type MessageHandler<Req, Resp> = (
+  request: Req,
   sender: MessageSender,
-) => MessageResponse<K> | Promise<MessageResponse<K>>;
+) => Resp | Promise<Resp>;
 
-type SimpleMessageHandlers = {
-  [K in keyof MessageMap]: (
-    request: MessageRequest<K>,
-  ) => MessageResponse<K> | Promise<MessageResponse<K>>;
-};
+export type MessageHandlerForKey<K extends keyof MessageMap> = MessageHandler<
+  MessageRequest<K>,
+  MessageResponse<K>
+>;
 
-const _messageHandlers: {
-  [K in keyof MessageMap]?: MessageHandler<K>;
-} = {};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _messageHandlers: Map<string, MessageHandler<any, unknown>> = new Map();
 
 /// Handle message by front-end for `key`. Return response in handler.
 /// If there is an existing handler for `key`, replaces it.
 export function handleMessage<K extends keyof MessageMap>(
   key: K,
-  handler: (typeof _messageHandlers)[K],
+  handler: MessageHandlerForKey<K>,
 ) {
-  _messageHandlers[key] = handler;
+  if (_messageHandlers.has(key)) {
+    console.error("Attaching duplicate message handler for: ", key);
+  }
+  _messageHandlers.set(key, handler);
 }
 
-/**
- * Send message to all extension pages.
- * Returns the return value of the message handler.
- *
- * Message is not sent to content scripts. Use `messageToTab()` instead.
- */
-export async function sendMessage<K extends keyof MessageMap>(
-  key: K,
-  request: MessageRequest<K>,
-): Promise<MessageResponse<K>> {
-  const [promise, resolve, reject] = createPromise<MessageResponse<K>>();
+export function handleMessageRaw<Req, Resp>(
+  key: string,
+  handler: MessageHandler<Req, Resp>,
+) {
+  if (_messageHandlers.has(key)) {
+    console.error("Attaching duplicate message handler for: ", key);
+  }
+  _messageHandlers.set(key, handler);
+}
+
+async function sendMessageRaw<Resp>(key: string, request: unknown): Promise<Resp> {
+  const [promise, resolve, reject] = createPromise<Resp>();
   const message = {
     key,
     request,
   };
   const handler = createMessageResponseHandler(resolve, reject);
   const initialHandler = (
-    resp: ResponseMessage<Second<MessageMap[K]>> | undefined,
+    resp: ResponseMessage<Resp> | undefined,
   ) => {
     // background not set up yet. try request again.
     if (resp === undefined) {
@@ -125,6 +127,19 @@ export async function sendMessage<K extends keyof MessageMap>(
 
   chrome.runtime.sendMessage(message, initialHandler);
   return promise;
+}
+
+/**
+ * Send message to all extension pages.
+ * Returns the return value of the message handler.
+ *
+ * Message is not sent to content scripts. Use `messageToTab()` instead.
+ */
+export async function sendMessage<K extends keyof MessageMap>(
+  key: K,
+  request: MessageRequest<K>,
+): Promise<MessageResponse<K>> {
+  return sendMessageRaw(key, request);
 }
 
 /** Send message to page and content script in tab. */
@@ -210,17 +225,17 @@ function createMessageResponseHandler<Resp>(
  *
  * If in background, it attaches a message handler that executes `fn`.
  */
-export function BackgroundFunction<K extends keyof MessageMap>(
-  messageKey: K,
-  fn: SimpleMessageHandlers[K],
-) {
+export function BackgroundFunction<Req = void, Resp = void>(
+  messageKey: string,
+  fn: (req: Req) => Promise<Resp>,
+): (arg: Req) => Promise<Resp> {
   if (EXTENSION_CONTEXT === "background") {
-    handleMessage(messageKey, fn);
+    handleMessageRaw(messageKey, fn);
   }
 
-  return async function inner(arg: MessageRequest<K>) {
+  return async function inner(arg: Req): Promise<Resp> {
     if (EXTENSION_CONTEXT !== "background") {
-      return await sendMessage(messageKey, arg);
+      return await sendMessageRaw(messageKey, arg) as Resp;
     } else {
       return fn(arg);
     }
@@ -234,17 +249,17 @@ export function BackgroundFunction<K extends keyof MessageMap>(
  *
  * If in background, it attaches a message handler that executes `fn`.
  */
-export function NonContentScriptFunction<K extends keyof MessageMap>(
-  messageKey: K,
-  fn: SimpleMessageHandlers[K],
-) {
+export function NonContentScriptFunction<Req = void, Resp = void>(
+  messageKey: string,
+  fn: (req: Req) => Promise<Resp>,
+): (arg: Req) => Promise<Resp> {
   if (EXTENSION_CONTEXT === "background") {
-    handleMessage(messageKey, fn);
+    handleMessageRaw(messageKey, fn);
   }
 
-  return async function inner(arg: MessageRequest<K>) {
+  return async function inner(arg: Req): Promise<Resp> {
     if (EXTENSION_CONTEXT === "contentScript") {
-      return await sendMessage(messageKey, arg);
+      return await sendMessageRaw(messageKey, arg);
     } else {
       return fn(arg);
     }
@@ -260,15 +275,14 @@ chrome.runtime.onMessage.addListener(
     ) => void,
   ): boolean => {
     console.debug(message.key, message);
-    const handler = _messageHandlers[message.key];
+    const handler = _messageHandlers.get(message.key);
     if (handler) {
       void (async () => {
         try {
-          // @ts-expect-error complex types
           const resp = await handler(message.request, sender);
           sendResponse({
             success: true,
-            resp,
+            resp: resp as MessageResponse<keyof MessageMap>,
           });
         } catch (e) {
           const err = YomikiriError.from(e);

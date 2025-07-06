@@ -1,19 +1,8 @@
 import type { AnkiNote } from "@/features/anki";
 import type { StoredCompatConfiguration } from "@/features/compat";
 import { YomikiriError } from "@/features/error";
-import {
-  createPromise,
-} from "@/features/utils";
+import { createPromise } from "@/features/utils";
 import type { TTSVoice } from "@/platform/types";
-
-// Re-export messaging types from message.ts
-export type {
-  MessageMap,
-  MessageRequest,
-  MessageResponse,
-  MessageSender,
-  MessageHandler,
-} from "./message";
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
@@ -52,7 +41,6 @@ export type StorageKey = keyof StorageValues;
 /** list of keys that is used for connection */
 type ConnectionKey = "updateDictionary";
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
-
 
 const _storageHandlers: Record<string, StorageHandler[]> = {};
 
@@ -152,14 +140,6 @@ export async function currentTabId(): Promise<number> {
   }
   return _tabId;
 }
-
-
-
-
-
-
-
-
 
 /** Must not be called from a content script. */
 export async function activeTab(): Promise<chrome.tabs.Tab> {
@@ -293,7 +273,6 @@ export function handleInstall(
 ) {
   chrome.runtime.onInstalled.addListener(handler);
 }
-
 
 browserStorage().onChanged.addListener((changes) => {
   for (const key in changes) {

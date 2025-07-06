@@ -14,7 +14,7 @@ import { LazyAsync, log, type NullPartial } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "@/platform/shared/translate";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { IPlatform, JSONStorageValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
 
 /** Type map for messages sent with `requestToApp()`*/
@@ -75,8 +75,8 @@ export class IosPlatform implements IPlatform {
   }
 
   private readonly _getStorageBatch = NonContentScriptFunction(
-    "getStorageBatch",
-    async (keysJson) => {
+    "IosPlatform.getStorageBatch",
+    async (keysJson: string[]) => {
       return await sendMessage("getStorageBatch", keysJson);
     },
   );
@@ -109,13 +109,13 @@ export class IosPlatform implements IPlatform {
   }
 
   private readonly _setStorageBatch = NonContentScriptFunction(
-    "setStorageBatch",
-    async (jsonMap) => {
+    "IosPlatform.setStorageBatch",
+    async (jsonMap: JSONStorageValues) => {
       await sendMessage("setStorageBatch", jsonMap);
     },
   );
 
-  readonly getConfig = NonContentScriptFunction("loadConfig", () => {
+  readonly getConfig = NonContentScriptFunction("IosPlatform.loadConfig", () => {
     return this.updateConfig();
   });
 
@@ -144,8 +144,8 @@ export class IosPlatform implements IPlatform {
   }
 
   readonly saveConfig = NonContentScriptFunction(
-    "saveConfig",
-    async (config) => {
+    "IosPlatform.saveConfig",
+    async (config: StoredConfiguration) => {
       await this.setStorage("web_config", config);
       await setStorage("config", config);
     },
@@ -176,18 +176,18 @@ export class IosPlatform implements IPlatform {
     return await sendMessage("ttsVoices", null);
   }
 
-  readonly playTTS = NonContentScriptFunction("tts", async (req) => {
+  readonly playTTS = NonContentScriptFunction("IosPlatform.tts", async (req: TTSRequest) => {
     await sendMessage("tts", req);
   });
 
-  readonly translate = NonContentScriptFunction("translate", getTranslation);
+  readonly translate = NonContentScriptFunction("IosPlatform.translate", getTranslation);
 
   openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
   readonly migrateConfig = NonContentScriptFunction(
-    "migrateConfig",
+    "IosPlatform.migrateConfig",
     async () => {
       return await this.configMigration.get();
     },

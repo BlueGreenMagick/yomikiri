@@ -11,7 +11,7 @@ import {
 } from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
-import type { IPlatform, TTSVoice, VersionInfo } from "../types";
+import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
 
 export class DesktopPlatform implements IPlatform {
   readonly type = "desktop";
@@ -56,20 +56,20 @@ export class DesktopPlatform implements IPlatform {
   }
 
   readonly playTTS = NonContentScriptFunction(
-    "tts",
-    async ({ text, voice }) => {
+    "DesktopPlatform.playTTS",
+    async ({ text, voice }: TTSRequest) => {
       await speakJapanese(text, voice);
     },
   );
 
-  readonly translate = NonContentScriptFunction("translate", getTranslation);
+  readonly translate = NonContentScriptFunction("DesktopPlatform.translate", getTranslation);
 
   openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
   readonly migrateConfig = NonContentScriptFunction(
-    "migrateConfig",
+    "DesktopPlatform.migrateConfig",
     async () => {
       return await this.configMigration.get();
     },

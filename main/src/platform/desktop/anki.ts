@@ -197,7 +197,7 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   }
 
   readonly addNote = NonContentScriptFunction(
-    "addAnkiNote",
+    "DesktopAnkiApi.addNote",
     this._addNote.bind(this),
   );
 

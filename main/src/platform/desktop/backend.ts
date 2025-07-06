@@ -39,12 +39,18 @@ export class DesktopBackend implements IBackend {
     return new DesktopBackend(background);
   }
 
-  readonly tokenize = BackgroundFunction("tokenize", (req) => this.background!.tokenize(req));
+  readonly tokenize = BackgroundFunction(
+    "DesktopBackend.tokenize",
+    (req: TokenizeRequest) => this.background!.tokenize(req),
+  );
 
-  readonly search = BackgroundFunction("searchTerm", (req) => this.background!.search(req));
+  readonly search = BackgroundFunction(
+    "DesktopBackend.searchTerm",
+    (req: SearchRequest) => this.background!.search(req),
+  );
 
   readonly getDictMetadata = BackgroundFunction(
-    "getDictMetadata",
+    "DesktopBackend.getDictMetadata",
     () => this.background!.getDictMetadata(),
   );
 
