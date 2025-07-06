@@ -1,6 +1,7 @@
 import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import {
+  BackgroundFunction,
   extensionManifest,
   getStorage,
   handleStorageChange,
@@ -12,9 +13,22 @@ import {
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { Database } from "./db";
 
 export class DesktopPlatform implements IPlatform {
   readonly type = "desktop";
+
+  private constructor(
+    private background: DesktopPlatformBackground | null,
+  ) {}
+
+  static foreground(): DesktopPlatform {
+    return new DesktopPlatform(null);
+  }
+
+  static background(background: DesktopPlatformBackground): DesktopPlatform {
+    return new DesktopPlatform(background);
+  }
 
   // config migration is done only once even if requested multiple times
   private readonly configMigration = new LazyAsync<StoredConfiguration>(
@@ -81,4 +95,22 @@ export class DesktopPlatform implements IPlatform {
     await this.saveConfig(migrated);
     return migrated;
   }
+
+  readonly setStorageBatch = BackgroundFunction(
+    "DesktopPlatform.setStorageBatch",
+    async (req: Record<string, unknown>): Promise<void> => {
+      return this.background!.db.get().then((db) => db.storage.setStorageBatch(req));
+    },
+  );
+
+  readonly getStorageBatch = BackgroundFunction(
+    "DesktopPlatform.getStorageBatch",
+    async (keys: string[]): Promise<Record<string, unknown>> => {
+      return this.background!.db.get().then((db) => db.storage.getStorageBatch(keys));
+    },
+  );
+}
+
+export class DesktopPlatformBackground {
+  constructor(public db: LazyAsync<Database>) {}
 }

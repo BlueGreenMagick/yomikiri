@@ -5,9 +5,10 @@ import { DesktopBackend, DesktopPlatform } from ".";
 import { DesktopAnkiApi } from "./anki";
 import { DesktopBackendBackground } from "./backend";
 import { Database } from "./db";
+import { DesktopPlatformBackground } from "./platform";
 
 export function createForegroundDesktopCtx(): DesktopCtx {
-  const platform = new DesktopPlatform();
+  const platform = DesktopPlatform.foreground();
   const backend = DesktopBackend.foreground();
   const lazyConfig = new LazyAsync(() => Config.initialize(platform));
   const anki = new DesktopAnkiApi(lazyConfig);
@@ -22,8 +23,9 @@ export function createForegroundDesktopCtx(): DesktopCtx {
 }
 
 export function createBackgroundDesktopCtx(): DesktopCtx {
-  const platform = new DesktopPlatform();
   const db = new LazyAsync(() => Database.init());
+  const platformBackground = new DesktopPlatformBackground(db);
+  const platform = DesktopPlatform.background(platformBackground);
   const backendBackground = new DesktopBackendBackground(db);
   const backend = DesktopBackend.background(backendBackground);
   const lazyConfig = new LazyAsync(() => Config.initialize(platform));
