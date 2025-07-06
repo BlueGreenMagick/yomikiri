@@ -10,6 +10,7 @@ type ToastType = "success" | "error" | "loading";
 
 export class Toast {
   toasts?: Toasts;
+  private recentErrorToasts = new Map<string, number>();
 
   constructor(private lazyConfig: LazyAsync<Config>) {}
 
@@ -50,7 +51,21 @@ export class Toast {
     });
   }
 
-  error(message: string, details?: string, opts: ToastOptions = {}): ToastItem {
+  /** Error toasts with identical message and details are throttled to show every 1 second. */
+  error(message: string, details?: string, opts: ToastOptions = {}): ToastItem | null {
+    const key = `${message} |\u001F| ${details || ""}`;
+    const now = Date.now();
+    const lastToast = this.recentErrorToasts.get(key);
+
+    if (lastToast && now - lastToast < 1000) {
+      return null;
+    }
+
+    this.recentErrorToasts.set(key, now);
+    setTimeout(() => {
+      this.recentErrorToasts.delete(key);
+    }, 1000);
+
     this.maybeSetupToaster();
     return new ToastItem("error", DetailedToast, {
       ...opts,
@@ -70,11 +85,8 @@ export class Toast {
     });
   }
 
-  yomikiriError(err: YomikiriError) {
-    this.maybeSetupToaster();
-    return new ToastItem("error", DetailedToast, {
-      props: { message: err.message, details: err.details.slice(1).join("\n") },
-    });
+  yomikiriError(err: YomikiriError): ToastItem | null {
+    return this.error(err.message, err.details.slice(1).join("\n"));
   }
 
   custom<T extends Record<string, unknown> = Record<string, unknown>>(
@@ -86,6 +98,7 @@ export class Toast {
     return new ToastItem(type, message, opts);
   }
 }
+
 /** Do not directly call the constructor. Toasts should be created from ToastFactory instead. */
 export class ToastItem<
   T extends Record<string, unknown> = Record<string, unknown>,
