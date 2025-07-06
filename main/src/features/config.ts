@@ -5,6 +5,7 @@ import type { AnkiTemplate } from "./anki";
 import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { Disposable, log } from "./utils";
 
+// v0.2.0 ~
 /**
  * Incremented each time Config has to be migrated.
  *

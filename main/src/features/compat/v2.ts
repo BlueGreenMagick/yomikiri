@@ -12,9 +12,12 @@ import { YomikiriError } from "@/features/error";
 import type { StoredConfig } from "./shared";
 import type { Configuration_1_Conf } from "./v1";
 
-/** v0.2.0-dev */
+/** v0.2.0-dev ~ v0.2.0-dev */
 export type Configuration_2_Conf = Configuration_1_Conf;
-export type Configuration_2 = Configuration_2_Conf & { config_version: 2 };
+
+export interface Configuration_2 extends Configuration_2_Conf {
+  config_version: 2;
+}
 
 export function migrateConfiguration_2(
   config: StoredConfig<Configuration_2>,
