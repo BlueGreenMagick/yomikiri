@@ -15,7 +15,7 @@
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
-    PromiseWithProgress,
+    DeferredWithProgress,
   } from "@/features/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
@@ -36,7 +36,7 @@
     unsubscribe();
     const value = field.value;
 
-    if (value instanceof PromiseWithProgress) {
+    if (value instanceof DeferredWithProgress) {
       loading = true;
       unsubscriber = value.progress.subscribe((val) => {
         initialContent = val;

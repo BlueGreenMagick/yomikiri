@@ -30,7 +30,7 @@ export interface Field {
 
 export interface LoadingField {
   name: string;
-  value: string | Utils.PromiseWithProgress<string, string>;
+  value: string | Utils.DeferredWithProgress<string, string>;
 }
 
 export interface AnkiBuilderContext {
@@ -54,7 +54,7 @@ export interface AnkiBuilderData {
 export type AnkiFieldBuilder = (
   ctx: AnkiBuilderContext,
   data: AnkiBuilderData,
-) => string | Utils.PromiseWithProgress<string, string>;
+) => string | Utils.DeferredWithProgress<string, string>;
 
 export async function waitForNoteToLoad(note: LoadingAnkiNote): Promise<void> {
   const promises = [];
@@ -102,7 +102,7 @@ type FieldBuilder<T extends AnkiTemplateFieldContent> = (
   template: AnkiTemplateFieldTypes[T],
   data: AnkiBuilderData,
   ctx: AnkiBuilderContext,
-) => string | Utils.PromiseWithProgress<string, string>;
+) => string | Utils.DeferredWithProgress<string, string>;
 
 const fieldBuilders: Partial<
   {
@@ -395,11 +395,11 @@ addBuilder("sentence", (opts, data) => {
 
 addBuilder("translated-sentence", (_opts, data, ctx) => {
   const translatePromise = ctx.platform.translate(data.sentence);
-  const promise = Utils.PromiseWithProgress.fromPromise(
+  const deferred = Utils.DeferredWithProgress.fromPromise(
     translatePromise.then((result) => result.translated.trim()),
     "Translating Sentence...",
   );
-  return promise;
+  return deferred;
 });
 
 addBuilder("url", (_opts, data) => {

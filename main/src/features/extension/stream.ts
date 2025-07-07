@@ -1,6 +1,6 @@
 import { YomikiriError } from "@/features/error";
 import { EXTENSION_CONTEXT } from "consts";
-import { PromiseWithProgress } from "../utils";
+import { DeferredWithProgress } from "../utils";
 
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
@@ -45,7 +45,7 @@ export class ExtensionStream<TResult, TProgress> {
    * The handler should return a PromiseWithProgress that will be used to stream
    * progress updates and the final result back to the requester.
    */
-  handle(handler: () => PromiseWithProgress<TResult, TProgress>) {
+  handle(handler: () => DeferredWithProgress<TResult, TProgress>) {
     handleConnection(this.key, (port) => {
       const progressPromise = handler();
 
@@ -79,9 +79,9 @@ export class ExtensionStream<TResult, TProgress> {
    * Send a connection request and return a PromiseWithProgress.
    * The progress will be streamed from the handler, and the promise will resolve with the final result.
    */
-  start(initialProgress: TProgress): PromiseWithProgress<TResult, TProgress> {
+  start(initialProgress: TProgress): DeferredWithProgress<TResult, TProgress> {
     const port = chrome.runtime.connect({ name: this.key });
-    const prom = new PromiseWithProgress<TResult, TProgress>(initialProgress);
+    const prom = DeferredWithProgress.create<TResult, TProgress>(initialProgress);
 
     let completed = false;
 
@@ -123,16 +123,16 @@ export class ExtensionStream<TResult, TProgress> {
  */
 export function BackgroundStreamFunction<TResult, TProgress>(
   key: string,
-  fn: () => PromiseWithProgress<TResult, TProgress>,
+  fn: () => DeferredWithProgress<TResult, TProgress>,
   initialProgress: TProgress,
-): () => PromiseWithProgress<TResult, TProgress> {
+): () => DeferredWithProgress<TResult, TProgress> {
   const stream = new ExtensionStream<TResult, TProgress>(key);
 
   if (EXTENSION_CONTEXT === "background") {
     stream.handle(fn);
   }
 
-  return function inner(): PromiseWithProgress<TResult, TProgress> {
+  return function inner(): DeferredWithProgress<TResult, TProgress> {
     if (EXTENSION_CONTEXT !== "background") {
       return stream.start(initialProgress);
     } else {
@@ -152,16 +152,16 @@ export function BackgroundStreamFunction<TResult, TProgress>(
  */
 export function NonContentScriptStreamFunction<TResult, TProgress>(
   key: string,
-  fn: () => PromiseWithProgress<TResult, TProgress>,
+  fn: () => DeferredWithProgress<TResult, TProgress>,
   initialProgress: TProgress,
-): () => PromiseWithProgress<TResult, TProgress> {
+): () => DeferredWithProgress<TResult, TProgress> {
   const stream = new ExtensionStream<TResult, TProgress>(key);
 
   if (EXTENSION_CONTEXT === "background") {
     stream.handle(fn);
   }
 
-  return function inner(): PromiseWithProgress<TResult, TProgress> {
+  return function inner(): DeferredWithProgress<TResult, TProgress> {
     if (EXTENSION_CONTEXT === "contentScript") {
       return stream.start(initialProgress);
     } else {

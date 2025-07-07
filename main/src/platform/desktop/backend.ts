@@ -16,7 +16,7 @@ import type {
   TokenizeResult,
 } from "../types/backend";
 
-import Utils, { LazyAsync, nextTask, PromiseWithProgress } from "@/features/utils";
+import Utils, { DeferredWithProgress, LazyAsync, nextTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import { Database, type FileName } from "./db";
 import { fetchDictionary, loadWasm } from "./fetch";
@@ -137,17 +137,17 @@ export class DesktopBackendBackground {
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
-  updateDictionary(): PromiseWithProgress<boolean, string> {
-    const progress = PromiseWithProgress.fromPromise(
+  updateDictionary(): DeferredWithProgress<boolean, string> {
+    const deferred = DeferredWithProgress.fromPromise(
       this._updateDictionary(progressFn),
       "Updating dictionary...",
     );
 
     async function progressFn(msg: string) {
-      await progress.setProgress(msg);
+      await deferred.setProgress(msg);
     }
 
-    return progress;
+    return deferred;
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */

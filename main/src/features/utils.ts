@@ -50,40 +50,52 @@ export function createPromise<V>(): [
   return [promise, resolve, reject];
 }
 
-export class PromiseWithProgress<V, P> extends Promise<V> {
-  readonly progress: Writable<P>;
+export class DeferredWithProgress<V, P> extends Promise<V> {
+  readonly progress!: Writable<P>;
   private _resolve: PromiseResolver<V>;
   private _reject: PromiseRejector;
 
-  constructor(initialProgress: P) {
+  /// The constructor of a subclass of Promise *must* have a callback as argument
+  /// and the callback *must* be called in super()
+  /// or an error is thrown.
+  ///
+  /// https://github.com/nodejs/node/issues/13678
+  private constructor(cb: (..._args: unknown[]) => void) {
     let resolve: PromiseResolver<V>;
     let reject: PromiseRejector;
 
     super((res, rej) => {
       resolve = res;
       reject = rej;
+      cb(resolve, reject);
     });
 
     // ! needed because super() executor runs synchronously but TypeScript can't verify this
     this._resolve = resolve!;
     this._reject = reject!;
-    this.progress = writable(initialProgress);
+  }
+
+  static create<V, P>(initialProgress: P): DeferredWithProgress<V, P> {
+    const deferred = new DeferredWithProgress<V, P>((..._args) => {});
+    // @ts-expect-error initial writing to readonly outside constructor
+    deferred.progress = writable(initialProgress);
+    return deferred;
   }
 
   static fromPromise<V, P>(
     promise: Promise<V>,
     initialProgress: P,
-  ): PromiseWithProgress<V, P> {
-    const promiseWithProgress = new PromiseWithProgress<V, P>(initialProgress);
+  ): DeferredWithProgress<V, P> {
+    const deferred = DeferredWithProgress.create<V, P>(initialProgress);
     promise.then(
       (value) => {
-        promiseWithProgress.resolve(value);
+        deferred.resolve(value);
       },
       (error: unknown) => {
-        promiseWithProgress.reject(YomikiriError.from(error));
+        deferred.reject(YomikiriError.from(error));
       },
     );
-    return promiseWithProgress;
+    return deferred;
   }
 
   resolve(value: V | PromiseLike<V>): void {

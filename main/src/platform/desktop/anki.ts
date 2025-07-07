@@ -8,10 +8,10 @@ import {
   setStorage,
 } from "@/features/extension";
 import {
+  DeferredWithProgress,
   type First,
   getErrorMessage,
   LazyAsync,
-  PromiseWithProgress,
   type Second,
   SingleQueued,
 } from "@/features/utils";
@@ -269,11 +269,11 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
    */
   readonly addDeferredNotes = SingleQueued(this._addDeferredNotes.bind(this));
 
-  private _addDeferredNotes(): PromiseWithProgress<
+  private _addDeferredNotes(): DeferredWithProgress<
     void,
     AddDeferredNotesProgress
   > {
-    const promise: PromiseWithProgress<void, AddDeferredNotesProgress> = new PromiseWithProgress(
+    const promise = DeferredWithProgress.create<void, AddDeferredNotesProgress>(
       "loading",
     );
 
