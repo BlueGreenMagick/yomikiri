@@ -1,9 +1,7 @@
 import {
   BackgroundFunction,
-  createConnection,
+  BackgroundStreamFunction,
   getStorage,
-  handleConnection,
-  type Port,
   removeStorage,
   setStorage,
 } from "@/features/extension";
@@ -18,8 +16,7 @@ import type {
   TokenizeResult,
 } from "../types/backend";
 
-import { YomikiriError } from "@/features/error";
-import Utils, { createPromise, LazyAsync, nextTask, PromiseWithProgress } from "@/features/utils";
+import Utils, { LazyAsync, nextTask, PromiseWithProgress } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import { Database, type FileName } from "./db";
 import { fetchDictionary, loadWasm } from "./fetch";
@@ -55,37 +52,11 @@ export class DesktopBackend implements IBackend {
   );
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
-  updateDictionary(): PromiseWithProgress<boolean, string> {
-    const _port = createConnection("updateDictionary");
-    const [prom, resolve, reject] = createPromise<boolean>();
-    const promWithProgress = PromiseWithProgress.fromPromise<boolean, string>(
-      prom,
-      "Updating dictionary...",
-    );
-    let completed = false;
-    _port.onMessage.addListener(async (msg: ConnectionMessage<boolean>) => {
-      if (msg.status === "progress") {
-        await promWithProgress.setProgress(msg.message);
-      } else if (msg.status === "success") {
-        completed = true;
-        resolve(msg.message);
-      } else {
-        completed = true;
-        reject(YomikiriError.from(msg.message));
-      }
-    });
-    _port.onDisconnect.addListener(() => {
-      if (!completed) {
-        completed = true;
-        reject(
-          new YomikiriError(
-            "Unexpectedly disconnected from background script",
-          ),
-        );
-      }
-    });
-    return promWithProgress;
-  }
+  readonly updateDictionary = BackgroundStreamFunction<boolean, string>(
+    "DesktopBackend.updateDictionary",
+    () => this.background!.updateDictionary(),
+    "Updating dictionary...",
+  );
 }
 
 /**
@@ -95,11 +66,7 @@ export class DesktopBackend implements IBackend {
 export class DesktopBackendBackground {
   private _wasm: LazyAsync<BackendWasm> = new LazyAsync(() => this.initializeWasm());
 
-  constructor(private db: LazyAsync<Database>) {
-    handleConnection("updateDictionary", (port) => {
-      this.updateDictionaryConnection(port);
-    });
-  }
+  constructor(private db: LazyAsync<Database>) {}
 
   private async initializeWasm(): Promise<BackendWasm> {
     Utils.bench("start");
@@ -167,34 +134,6 @@ export class DesktopBackendBackground {
   async getDictMetadata(): Promise<DictionaryMetadata> {
     const wasm = await this._wasm.get();
     return this.run(wasm, "metadata", null);
-  }
-
-  private updateDictionaryConnection(port: Port) {
-    const progress = this.updateDictionary();
-
-    progress.progress.subscribe((prg) => {
-      const message: ConnectionMessageProgress = {
-        status: "progress",
-        message: prg,
-      };
-      port.postMessage(message);
-    });
-
-    progress
-      .then((data) => {
-        const message: ConnectionMessageSuccess<boolean> = {
-          status: "success",
-          message: data,
-        };
-        port.postMessage(message);
-      })
-      .catch((error: unknown) => {
-        const message: ConnectionMessageError = {
-          status: "error",
-          message: YomikiriError.from(error),
-        };
-        port.postMessage(message);
-      });
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
@@ -308,26 +247,6 @@ export class DesktopBackendBackground {
     await removeStorage("dict.jmdict.etag");
     console.info("Deleted user-installed dictionary");
   }
-}
-
-type ConnectionMessage<T> =
-  | ConnectionMessageProgress
-  | ConnectionMessageSuccess<T>
-  | ConnectionMessageError;
-
-interface ConnectionMessageProgress {
-  status: "progress";
-  message: string;
-}
-
-interface ConnectionMessageSuccess<T> {
-  status: "success";
-  message: T;
-}
-
-interface ConnectionMessageError {
-  status: "error";
-  message: YomikiriError;
 }
 
 const JMDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";

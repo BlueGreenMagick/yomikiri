@@ -37,4 +37,8 @@ export {
   updateTab,
 } from "./browserApi";
 
-export { ExtensionStream } from "./stream";
+export {
+  BackgroundStreamFunction,
+  ExtensionStream,
+  NonContentScriptStreamFunction,
+} from "./stream";

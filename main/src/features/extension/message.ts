@@ -31,7 +31,7 @@ const _messageHandlers: Map<string, MessageHandler<any, unknown>> = new Map();
 /**
  * Used to receive and send message to other extension execution contexts.
  *
- * `key` must be unique.
+ * `key` must be unique across API in `@/features/extension/message.ts`
  */
 export class ExtensionMessaging<Req, Resp> {
   constructor(public readonly key: string) {}
@@ -149,6 +149,8 @@ function createMessageResponseHandler<Resp>(
  * - Else: Sends a message to background to run `fn`.
  *
  * If in background, it attaches a message handler that executes `fn`.
+ *
+ * `key` must be unique across API in `@/features/extension/message.ts`
  */
 export function BackgroundFunction<Args extends unknown[] = [], Resp = void>(
   key: string,
@@ -175,6 +177,8 @@ export function BackgroundFunction<Args extends unknown[] = [], Resp = void>(
  * - Else: runs `fn` as-is.
  *
  * If in background, it attaches a message handler that executes `fn`.
+ *
+ * `key` must be unique across API in `@/features/extension/message.ts`
  */
 export function NonContentScriptFunction<Args extends unknown[] = [], Resp = void>(
   key: string,
