@@ -13,7 +13,6 @@ export {
   type ApiInitializeOptions,
   browserAction,
   browserStorage,
-  createConnection,
   currentTab,
   currentTabId,
   type ExecutionContext,
@@ -23,7 +22,6 @@ export {
   goToTab,
   handleActionClicked,
   handleBrowserLoad,
-  handleConnection,
   handleInstall,
   handleStorageChange,
   japaneseTtsVoices,
@@ -38,3 +36,5 @@ export {
   type StorageKey,
   updateTab,
 } from "./browserApi";
+
+export { createConnection, handleConnection } from "./connection";

@@ -38,10 +38,6 @@ interface StorageValues {
 
 export type StorageKey = keyof StorageValues;
 
-/** list of keys that is used for connection */
-type ConnectionKey = "updateDictionary";
-type ConnectionHandler = (port: chrome.runtime.Port) => void;
-
 const _storageHandlers: Record<string, StorageHandler[]> = {};
 
 let _tabId: number | undefined;
@@ -252,20 +248,6 @@ export function handleStorageChange(key: string, handler: StorageHandler) {
   } else {
     _storageHandlers[key] = [handler];
   }
-}
-
-export function createConnection(name: ConnectionKey) {
-  return chrome.runtime.connect({ name });
-}
-
-export function handleConnection(
-  name: ConnectionKey,
-  handler: ConnectionHandler,
-) {
-  chrome.runtime.onConnect.addListener((port) => {
-    if (port.name !== name) return;
-    handler(port);
-  });
 }
 
 export function handleInstall(
