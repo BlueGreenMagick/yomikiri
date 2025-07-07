@@ -37,4 +37,4 @@ export {
   updateTab,
 } from "./browserApi";
 
-export { createConnection, handleConnection } from "./connection";
+export { ExtensionStream } from "./stream";

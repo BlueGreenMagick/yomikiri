@@ -51,31 +51,61 @@ export function createPromise<V>(): [
 }
 
 export class PromiseWithProgress<V, P> extends Promise<V> {
-  progress: Writable<P>;
+  readonly progress: Writable<P>;
+  private _resolve: PromiseResolver<V>;
+  private _reject: PromiseRejector;
 
-  constructor(
-    executor: (resolve: PromiseResolver<V>, reject: PromiseRejector) => void,
-    initialProgress?: P,
-  ) {
-    super(executor);
+  constructor(initialProgress: P) {
+    let resolve: PromiseResolver<V>;
+    let reject: PromiseRejector;
 
-    if (initialProgress != undefined) {
-      this.progress = writable(initialProgress);
-    } else {
-      this.progress = writable();
-    }
+    super((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+
+    // ! needed because super() executor runs synchronously but TypeScript can't verify this
+    this._resolve = resolve!;
+    this._reject = reject!;
+    this.progress = writable(initialProgress);
   }
 
   static fromPromise<V, P>(
     promise: Promise<V>,
-    initialProgress?: P,
+    initialProgress: P,
   ): PromiseWithProgress<V, P> {
-    return new PromiseWithProgress((res, rej) => {
-      promise.then(res, rej);
-    }, initialProgress);
+    const promiseWithProgress = new PromiseWithProgress<V, P>(initialProgress);
+    promise.then(
+      (value) => {
+        promiseWithProgress.resolve(value);
+      },
+      (error: unknown) => {
+        promiseWithProgress.reject(YomikiriError.from(error));
+      },
+    );
+    return promiseWithProgress;
   }
 
-  setProgress(progress: P) {
+  resolve(value: V | PromiseLike<V>): void {
+    this._resolve(value);
+  }
+
+  reject(reason?: YomikiriError): void {
+    this._reject(reason);
+  }
+
+  /** Async to await next macrotask, allowing Svelte UI to update before continuing  */
+  async setProgress(progress: P): Promise<void> {
+    this.progress.set(progress);
+    await nextTask();
+  }
+
+  /**
+   * Set progress message synchronously.
+   * Note that any subscribers may not respond to progress update because the thread is blocked.
+   * Use async `setProgress()` instead for safety.
+   */
+  setProgressSync(progress: P): void {
     this.progress.set(progress);
   }
 }

@@ -1,5 +1,6 @@
 import type { AnkiInfo, AnkiNote, NotetypeInfo } from "@/features/anki";
 import { Config } from "@/features/config";
+import { YomikiriError } from "@/features/error";
 import {
   getStorage,
   NonContentScriptFunction,
@@ -7,7 +8,6 @@ import {
   setStorage,
 } from "@/features/extension";
 import {
-  createPromise,
   type First,
   getErrorMessage,
   LazyAsync,
@@ -273,20 +273,20 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
     void,
     AddDeferredNotesProgress
   > {
-    const [innerPromise, resolve, reject] = createPromise<void>();
-    const promise: PromiseWithProgress<void, AddDeferredNotesProgress> = PromiseWithProgress
-      .fromPromise(innerPromise, "loading");
+    const promise: PromiseWithProgress<void, AddDeferredNotesProgress> = new PromiseWithProgress(
+      "loading",
+    );
 
     (async () => {
       const config = await this.lazyConfig.get();
       const noteCount = config.get("state.anki.deferred_note_count");
 
       if (noteCount === 0) {
-        resolve();
+        promise.resolve();
         return;
       }
 
-      promise.setProgress(noteCount);
+      await promise.setProgress(noteCount);
       await setStorage("deferred-anki-note-errors", []);
       await config.set("state.anki.deferred_note_error", false);
 
@@ -311,15 +311,15 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
             break;
           }
         } finally {
-          promise.setProgress(deferredNotes.length - i);
+          await promise.setProgress(deferredNotes.length - i);
         }
       }
     })()
       .then(() => {
-        resolve();
+        promise.resolve();
       })
       .catch((err: unknown) => {
-        reject(err);
+        promise.reject(YomikiriError.from(err));
       });
     return promise;
   }

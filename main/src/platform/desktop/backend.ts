@@ -60,11 +60,12 @@ export class DesktopBackend implements IBackend {
     const [prom, resolve, reject] = createPromise<boolean>();
     const promWithProgress = PromiseWithProgress.fromPromise<boolean, string>(
       prom,
+      "Updating dictionary...",
     );
     let completed = false;
-    _port.onMessage.addListener((msg: ConnectionMessage<boolean>) => {
+    _port.onMessage.addListener(async (msg: ConnectionMessage<boolean>) => {
       if (msg.status === "progress") {
-        promWithProgress.setProgress(msg.message);
+        await promWithProgress.setProgress(msg.message);
       } else if (msg.status === "success") {
         completed = true;
         resolve(msg.message);
@@ -203,8 +204,8 @@ export class DesktopBackendBackground {
       "Updating dictionary...",
     );
 
-    function progressFn(msg: string) {
-      progress.setProgress(msg);
+    async function progressFn(msg: string) {
+      await progress.setProgress(msg);
     }
 
     return progress;
@@ -212,26 +213,26 @@ export class DesktopBackendBackground {
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
   private async _updateDictionary(
-    progressFn: (msg: string) => unknown,
+    progressFn: (msg: string) => Promise<void>,
   ): Promise<boolean> {
     const wasm = await this._wasm.get();
-    progressFn("Downloading JMdict file...");
+    await progressFn("Downloading JMdict file...");
     const jmdict_bytes = await this.fetchDictionaryFile(
       "JMdict_e.gz",
       JMDICT_URL,
       "dict.jmdict.etag",
     );
-    progressFn("Downloading JMnedict file...");
+    await progressFn("Downloading JMnedict file...");
     const jmnedict_bytes = await this.fetchDictionaryFile(
       "JMnedict.xml.gz",
       JMNEDICT_URL,
       "dict.jmnedict.etag",
     );
 
-    progressFn("Creating dictionary file...");
+    await progressFn("Creating dictionary file...");
     await nextTask();
     const { dict_bytes } = wasm.update_dictionary(jmdict_bytes, jmnedict_bytes);
-    progressFn("Saving dictionary file...");
+    await progressFn("Saving dictionary file...");
     await this.saveDictionaryFile(dict_bytes);
     const dictSchemaVer = dict_schema_ver();
     await setStorage("dict.schema_ver", dictSchemaVer);
