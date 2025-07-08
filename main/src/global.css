@@ -45,13 +45,13 @@ body {
 }
 
 /**
-css variables set using Config.generateCSS()
+css variables that are overridden using Config.setUpdatedStyle()
+*/
 
 :root {
-  --font-size: 8px;
-  --japanese-font: "Noto Sans";
+  --font-size: 14px;
+  --japanese-font: "";
 }
-*/
 
 button {
   background-color: unset;
