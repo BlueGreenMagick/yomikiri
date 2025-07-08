@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import Utils from "./utils";
+import Utils, { Deferred } from "./utils";
 
 describe("Utils", () => {
   test("generateUrlParams", () => {
@@ -14,15 +14,15 @@ describe("Utils", () => {
     };
     const fn = Utils.SingleQueued(inner);
 
-    const [prom1, res1] = Utils.createPromise<void>();
-    const [prom2, res2] = Utils.createPromise<void>();
-    const [prom3, res3] = Utils.createPromise<void>();
-    const ret1 = fn("1", prom1);
-    const ret2 = fn("2", prom2);
-    const ret3 = fn("3", prom3);
-    res1();
-    res2();
-    res3();
+    const def1 = Deferred.create<void>();
+    const def2 = Deferred.create<void>();
+    const def3 = Deferred.create<void>();
+    const ret1 = fn("1", def1);
+    const ret2 = fn("2", def2);
+    const ret3 = fn("3", def3);
+    def1.resolve();
+    def2.resolve();
+    def3.resolve();
     expect(await ret1).toBe("1");
     expect(await ret2).toBe(null);
     expect(await ret3).toBe("3");

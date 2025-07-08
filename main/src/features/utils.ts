@@ -50,6 +50,43 @@ export function createPromise<V>(): [
   return [promise, resolve, reject];
 }
 
+export class Deferred<V> extends Promise<V> {
+  private _resolve: PromiseResolver<V>;
+  private _reject: PromiseRejector;
+
+  /// The constructor of a subclass of Promise *must* have a callback as argument
+  /// and the callback *must* be called in super()
+  /// or an error is thrown.
+  ///
+  /// https://github.com/nodejs/node/issues/13678
+  private constructor(cb: (..._args: unknown[]) => void) {
+    let resolve: PromiseResolver<V>;
+    let reject: PromiseRejector;
+
+    super((res, rej) => {
+      resolve = res;
+      reject = rej;
+      cb(res, rej);
+    });
+
+    // ! needed because super() executor runs synchronously but TypeScript can't verify this
+    this._resolve = resolve!;
+    this._reject = reject!;
+  }
+
+  static create<V>(): Deferred<V> {
+    return new Deferred<V>((..._args) => {});
+  }
+
+  resolve(value: V | PromiseLike<V>): void {
+    this._resolve(value);
+  }
+
+  reject(reason?: YomikiriError): void {
+    this._reject(reason);
+  }
+}
+
 export class DeferredWithProgress<V, P> extends Promise<V> {
   readonly progress!: Writable<P>;
   private _resolve: PromiseResolver<V>;
@@ -287,8 +324,7 @@ export function getErrorMessage(
 
 interface QueueItem<I extends unknown[], R> {
   inp: I;
-  resolve: PromiseResolver<R>;
-  reject: PromiseRejector;
+  deferred: Deferred<R>;
 }
 
 /**
@@ -310,36 +346,34 @@ export function SingleQueued<I extends unknown[], R>(
       return;
     }
     const inp = queue.inp;
-    const resolve = queue.resolve;
-    const reject = queue.reject;
+    const deferred = queue.deferred;
     running = true;
     queue = null;
     fn(...inp)
       .then((result) => {
         running = false;
-        resolve(result);
+        deferred.resolve(result);
         run();
       })
       .catch((e: unknown) => {
         running = false;
-        reject(e);
+        deferred.reject(YomikiriError.from(e));
       });
   };
 
   return (...inp: I) => {
     if (queue !== null) {
-      queue.resolve(null);
+      queue.deferred.resolve(null);
     }
-    const [promise, resolve, reject] = createPromise<R | null>();
+    const deferred = Deferred.create<R | null>();
     queue = {
       inp,
-      resolve,
-      reject,
+      deferred,
     };
     if (!running) {
       run();
     }
-    return promise;
+    return deferred;
   };
 }
 
