@@ -102,6 +102,7 @@ export class AnkiConnectError extends AnkiError {}
 
 type AddDeferredNotesProgress = "loading" | number;
 
+/** Must be initialized synchronously on page load */
 export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
   readonly type = "desktop";
   readonly lazyConfig: LazyAsync<Config>;

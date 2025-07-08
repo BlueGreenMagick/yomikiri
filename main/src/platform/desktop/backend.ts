@@ -21,6 +21,7 @@ import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/back
 import { Database, type FileName } from "./db";
 import { fetchDictionary, loadWasm } from "./fetch";
 
+/** Must be initialized synchronously on page load */
 export class DesktopBackend implements IBackend {
   readonly type = "desktop";
 

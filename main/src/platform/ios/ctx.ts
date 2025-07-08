@@ -6,6 +6,7 @@ import { IosAnkiApi } from "./anki";
 import { IosBackend } from "./backend";
 import { IosPlatform } from "./platform";
 
+/** Must be executed synchronously on page load */
 export function createIosCtx(): IosCtx {
   const platform = new IosPlatform();
   const store = new Store(platform);

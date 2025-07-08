@@ -15,6 +15,7 @@ import { getTranslation } from "../shared/translate";
 import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { Database } from "./db";
 
+/** Must be initialized synchronously on page load */
 export class DesktopPlatform implements IPlatform {
   readonly type = "desktop";
 

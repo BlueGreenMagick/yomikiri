@@ -8,6 +8,7 @@ import { DesktopBackendBackground } from "./backend";
 import { Database } from "./db";
 import { DesktopPlatformBackground } from "./platform";
 
+/** Must be executed synchronously on page load */
 export function createForegroundDesktopCtx(): DesktopCtx {
   const platform = DesktopPlatform.foreground();
   const backend = DesktopBackend.foreground();
