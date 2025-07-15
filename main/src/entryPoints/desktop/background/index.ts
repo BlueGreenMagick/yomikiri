@@ -70,7 +70,7 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
   }, 1000 * 30);
 }
 
-const tabIdMessaging = new ExtensionMessaging<void, number | undefined>("desktop.background.");
+const tabIdMessaging = new ExtensionMessaging<void, number | undefined>("desktop.background.tabId");
 tabIdMessaging.handle(tabId);
 
 handleBrowserLoad(() => {
