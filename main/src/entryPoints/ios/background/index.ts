@@ -10,6 +10,8 @@ import { Config } from "@/features/config";
 import {
   ExtensionMessaging,
   handleBrowserLoad,
+  handleExtensionMessage,
+  listenExtensionMessage,
   type MessageSender,
   setActionIcon,
 } from "@/features/extension";
@@ -49,4 +51,11 @@ tabIdMessaging.handle(tabId);
 
 handleBrowserLoad(() => {
   void initialize();
+});
+
+listenExtensionMessage(async (message, sender, sendResponse) => {
+  const resp = await handleExtensionMessage(message, sender);
+  if (resp !== null) {
+    sendResponse(resp);
+  }
 });

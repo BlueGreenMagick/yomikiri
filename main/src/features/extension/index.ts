@@ -2,6 +2,8 @@
 export {
   BackgroundFunction,
   ExtensionMessaging,
+  handleExtensionMessage,
+  listenExtensionMessage,
   type MessageHandler,
   type MessageSender,
   NonContentScriptFunction,

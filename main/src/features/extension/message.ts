@@ -198,36 +198,38 @@ export function NonContentScriptFunction<Args extends unknown[] = [], Resp = voi
   };
 }
 
-chrome.runtime.onMessage.addListener(
-  (
+export async function handleExtensionMessage(
+  message: RequestMessage<unknown>,
+  sender: MessageSender,
+): Promise<ResponseMessage<unknown> | null> {
+  const handler = _messageHandlers.get(message.key);
+  if (handler) {
+    try {
+      const resp = await handler(message.request, sender);
+      return {
+        success: true,
+        resp: resp,
+      };
+    } catch (e) {
+      const err = YomikiriError.from(e);
+      return {
+        success: false,
+        error: err,
+      };
+    }
+  } else {
+    return null;
+  }
+}
+
+export function listenExtensionMessage(
+  handler: (
     message: RequestMessage<unknown>,
     sender: MessageSender,
     sendResponse: (
       response?: ResponseMessage<unknown>,
     ) => void,
-  ): boolean => {
-    console.debug(message.key, message);
-    const handler = _messageHandlers.get(message.key);
-    if (handler) {
-      void (async () => {
-        try {
-          const resp = await handler(message.request, sender);
-          sendResponse({
-            success: true,
-            resp: resp,
-          });
-        } catch (e) {
-          const err = YomikiriError.from(e);
-          sendResponse({
-            success: false,
-            error: err,
-          });
-          console.error(e);
-        }
-      })();
-      return true;
-    } else {
-      return false;
-    }
-  },
-);
+  ) => void,
+) {
+  chrome.runtime.onMessage.addListener(handler);
+}
