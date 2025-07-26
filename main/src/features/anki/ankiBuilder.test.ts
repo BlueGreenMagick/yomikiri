@@ -7,7 +7,7 @@
 
 */
 
-import { createBackgroundDesktopCtx } from "@/platform/desktop";
+import { createBackgroundDesktopCtx } from "@/platform/desktop/background/ctx";
 import type { TokenizeResult } from "@yomikiri/backend-bindings";
 import type { WordEntry } from "@yomikiri/backend-bindings";
 import fs from "node:fs";

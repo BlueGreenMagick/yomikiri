@@ -1,7 +1,7 @@
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { ContentScriptController } from "@/features/content";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createContentDesktopCtx } from "@/platform/desktop";
+import { createContentDesktopCtx } from "@/platform/desktop/content/ctx";
 
 declare global {
   interface Window {

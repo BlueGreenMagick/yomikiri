@@ -17,7 +17,8 @@ import {
   setBadge,
 } from "@/features/extension";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createBackgroundDesktopCtx, type DesktopAnkiApi } from "@/platform/desktop";
+import type { DesktopAnkiApi } from "@/platform/desktop";
+import { createBackgroundDesktopCtx } from "@/platform/desktop/background/ctx";
 import { derived } from "svelte/store";
 
 const _initialized: Promise<void> = initialize();
