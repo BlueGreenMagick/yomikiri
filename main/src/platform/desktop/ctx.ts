@@ -4,17 +4,37 @@ import { Store } from "@/features/store";
 import { LazyAsync } from "@/features/utils";
 import { DesktopBackend, DesktopPlatform } from ".";
 import { DesktopAnkiApi } from "./anki";
-import { DesktopBackendBackground } from "./backend";
+import { DesktopBackendBackground } from "./background/backend";
 import { Database } from "./db";
+import { DesktopAnkiApiPage } from "./page/anki";
 import { DesktopPlatformBackground } from "./platform";
 
 /** Must be executed synchronously on page load */
-export function createForegroundDesktopCtx(): DesktopCtx {
+export function createContentDesktopCtx(): DesktopCtx {
   const platform = DesktopPlatform.foreground();
   const backend = DesktopBackend.foreground();
   const store = new Store(platform);
   const lazyConfig = new LazyAsync(() => Config.initialize(platform));
-  const anki = new DesktopAnkiApi(lazyConfig);
+  const anki = DesktopAnkiApi.content(lazyConfig);
+
+  return {
+    platformType: "desktop",
+    platform,
+    store,
+    lazyConfig,
+    backend,
+    anki,
+  };
+}
+
+/** Must be executed synchronously on page load */
+export function createPageDesktopCtx(): DesktopCtx {
+  const platform = DesktopPlatform.foreground();
+  const backend = DesktopBackend.foreground();
+  const store = new Store(platform);
+  const lazyConfig = new LazyAsync(() => Config.initialize(platform));
+  const ankiApiPage = new DesktopAnkiApiPage(lazyConfig);
+  const anki = DesktopAnkiApi.page(lazyConfig, ankiApiPage);
 
   return {
     platformType: "desktop",
@@ -34,7 +54,8 @@ export function createBackgroundDesktopCtx(): DesktopCtx {
   const backend = DesktopBackend.background(backendBackground);
   const store = new Store(platform);
   const lazyConfig = new LazyAsync(() => Config.initialize(platform));
-  const anki = new DesktopAnkiApi(lazyConfig);
+  const ankiApiPage = new DesktopAnkiApiPage(lazyConfig);
+  const anki = DesktopAnkiApi.page(lazyConfig, ankiApiPage);
 
   return {
     platformType: "desktop",
