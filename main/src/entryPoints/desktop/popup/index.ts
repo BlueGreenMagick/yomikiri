@@ -1,7 +1,7 @@
 import type { AppCtx, DesktopCtx } from "@/features/ctx";
 import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createPageDesktopCtx } from "@/platform/desktop";
+import { createPageDesktopCtx } from "@/platform/desktop/page/ctx";
 import PopupPage from "./PopupPage.svelte";
 
 async function initialize(): Promise<AppCtx<DesktopCtx>> {

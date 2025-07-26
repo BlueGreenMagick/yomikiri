@@ -13,7 +13,7 @@ import {
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
-import type { Database } from "./db";
+import type { DesktopPlatformBackground } from "./background/platform";
 
 /** Must be initialized synchronously on page load */
 export class DesktopPlatform implements IPlatform {
@@ -124,8 +124,4 @@ export class DesktopPlatform implements IPlatform {
       return this.background!.db.get().then((db) => db.store.getStore(key));
     },
   );
-}
-
-export class DesktopPlatformBackground {
-  constructor(public db: LazyAsync<Database>) {}
 }
