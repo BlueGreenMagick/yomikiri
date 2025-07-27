@@ -16,12 +16,12 @@ import {
   setActionIcon,
 } from "@/features/extension";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createIosCtx } from "@/platform/ios";
+import { createIosBackgroundCtx } from "@/platform/ios/background/ctx";
 
 const _initialized: Promise<void> = initialize();
 
 async function initialize(): Promise<void> {
-  const { lazyConfig, ...ctx } = createIosCtx();
+  const { lazyConfig, ...ctx } = createIosBackgroundCtx();
   const config = await lazyConfig.get();
   updateStateEnabledIcon(config);
 

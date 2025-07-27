@@ -1,58 +1,38 @@
-import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import {
   currentTab,
   extensionManifest,
-  getStorage,
   handleStorageChange,
   NonContentScriptFunction,
-  setStorage,
   updateTab,
 } from "@/features/extension";
-import { LazyAsync, log } from "@/features/utils";
-import type { RunMessageMap } from "@/platform/shared/backend";
-import { getTranslation } from "@/platform/shared/translate";
+import { log } from "@/features/utils";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import type { IPlatform, JSONStoreValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
-import { sendMessage } from "./messaging";
-
-/** Type map for messages sent with `requestToApp()`*/
-export interface AppMessageMap extends RunMessageMap {
-  loadConfig: [null, StoredConfiguration];
-  saveConfig: [StoredConfiguration, null];
-  ttsVoices: [null, TTSVoice[]];
-  tts: [TTSRequest, null];
-  iosVersion: [null, IosVersion];
-}
-
-export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
-export type AppResponse<K extends keyof AppMessageMap> = AppMessageMap[K][1];
-
-interface IosVersion {
-  major: number;
-  minor: number;
-  patch: number;
-}
+import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { IosPlatformPage } from "./page/platform";
 
 export class IosPlatform implements IPlatform {
   readonly type = "ios";
 
-  // config migration is done only once even if requested multiple times
-  private readonly configMigration = new LazyAsync<StoredConfiguration>(
-    async () => {
-      return await this.migrateConfigInner();
-    },
-  );
-
   private iosVersion = getIosVersion();
 
-  constructor() {
+  private constructor(private readonly page: IosPlatformPage | null) {
     log("ios version: ", this.iosVersion);
+  }
 
-    if (EXTENSION_CONTEXT === "background") {
-      this.setupIosPeriodicReload();
-    }
+  static background(platformPage: IosPlatformPage): IosPlatform {
+    const platform = new IosPlatform(platformPage);
+    platform.setupIosPeriodicReload();
+    return platform;
+  }
+
+  static page(platformPage: IosPlatformPage): IosPlatform {
+    return new IosPlatform(platformPage);
+  }
+
+  static content(): IosPlatform {
+    return new IosPlatform(null);
   }
 
   async getStoreBatch(
@@ -77,7 +57,7 @@ export class IosPlatform implements IPlatform {
   private readonly _getStoreBatch = NonContentScriptFunction(
     "IosPlatform.getStoreBatch",
     async (keysJson: string[]) => {
-      return await sendMessage("getStoreBatch", keysJson);
+      return await this.page!.messaging.send("getStoreBatch", keysJson);
     },
   );
 
@@ -96,23 +76,20 @@ export class IosPlatform implements IPlatform {
   /**
    * If value is `null` or `undefined`, deletes the store.
    */
-  async setStore(key: string, value: unknown) {
-    const jsonMap = {
-      [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
-    };
-    await this._setStoreBatch(jsonMap);
-  }
+  readonly setStore = NonContentScriptFunction(
+    "IosPlatform.setStore",
+    this.page!.setStore.bind(this.page),
+  );
 
   private readonly _setStoreBatch = NonContentScriptFunction(
     "IosPlatform.setStoreBatch",
-    async (jsonMap: JSONStoreValues) => {
-      await sendMessage("setStoreBatch", jsonMap);
-    },
+    this.page!._setStoreBatch.bind(this.page),
   );
 
-  readonly getConfig = NonContentScriptFunction("IosPlatform.loadConfig", () => {
-    return this.updateConfig();
-  });
+  readonly getConfig = NonContentScriptFunction(
+    "IosPlatform.loadConfig",
+    this.page!.getConfig.bind(this.page),
+  );
 
   /**
    * Listens to web config changes,
@@ -124,26 +101,9 @@ export class IosPlatform implements IPlatform {
     });
   }
 
-  // App config is the source of truth
-  async updateConfig(): Promise<StoredCompatConfiguration> {
-    const webConfigP = getStorage("config", {});
-
-    const appConfigP: Promise<StoredCompatConfiguration> = this.getStore<
-      StoredCompatConfiguration
-    >("web_config").then((value) => value ?? {});
-    const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
-    if (webConfig != appConfig) {
-      await setStorage("config", appConfig);
-    }
-    return appConfig;
-  }
-
   readonly saveConfig = NonContentScriptFunction(
     "IosPlatform.saveConfig",
-    async (config: StoredConfiguration) => {
-      await this.setStore("web_config", config);
-      await setStorage("config", config);
-    },
+    this.page!.saveConfig.bind(this.page),
   );
 
   async openOptionsPage() {
@@ -168,14 +128,17 @@ export class IosPlatform implements IPlatform {
   }
 
   async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await sendMessage("ttsVoices", null);
+    return await this.page!.messaging.send("ttsVoices", null);
   }
 
   readonly playTTS = NonContentScriptFunction("IosPlatform.tts", async (req: TTSRequest) => {
-    await sendMessage("tts", req);
+    await this.page!.messaging.send("tts", req);
   });
 
-  readonly translate = NonContentScriptFunction("IosPlatform.translate", getTranslation);
+  readonly translate = NonContentScriptFunction(
+    "IosPlatform.translate",
+    this.page!.translate.bind(this.page),
+  );
 
   openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
@@ -183,21 +146,12 @@ export class IosPlatform implements IPlatform {
 
   readonly migrateConfig = NonContentScriptFunction(
     "IosPlatform.migrateConfig",
-    async () => {
-      return await this.configMigration.get();
-    },
+    this.page!.migrateConfig.bind(this.page),
   );
-
-  private async migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await this.getConfig();
-    const migrated = migrateConfigObject(configObject);
-    await this.saveConfig(migrated);
-    return migrated;
-  }
 
   // workaround to ios 17.5+ bug where background script freezes after ~30s of non-stop activity
   // https://github.com/alexkates/content-script-non-responsive-bug/issues/1
-  setupIosPeriodicReload() {
+  private setupIosPeriodicReload() {
     if (PLATFORM !== "ios" || EXTENSION_CONTEXT !== "background") return;
     if (this.iosVersion === null) return;
     if (this.iosVersion[0] !== 17 || this.iosVersion[1] < 5) return;
