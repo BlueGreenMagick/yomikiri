@@ -6,14 +6,16 @@ import { DesktopAnkiApi } from "../anki";
 import { DesktopBackend } from "../backend";
 import { Database } from "../db";
 import { DesktopAnkiApiPage } from "../page/anki";
+import { DesktopPlatformPage } from "../page/platform";
 import { DesktopPlatform } from "../platform";
 import { DesktopBackendBackground } from "./backend";
 import { DesktopPlatformBackground } from "./platform";
 
 export function createBackgroundDesktopCtx(): DesktopCtx {
   const db = new LazyAsync(() => Database.init());
+  const platformPage = new DesktopPlatformPage();
   const platformBackground = new DesktopPlatformBackground(db);
-  const platform = DesktopPlatform.background(platformBackground);
+  const platform = DesktopPlatform.background(platformPage, platformBackground);
   const backendBackground = new DesktopBackendBackground(db);
   const backend = DesktopBackend.background(backendBackground);
   const store = new Store(platform);

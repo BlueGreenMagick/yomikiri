@@ -8,7 +8,7 @@ import { DesktopPlatform } from "../platform";
 
 /** Must be executed synchronously on page load */
 export function createContentDesktopCtx(): DesktopCtx {
-  const platform = DesktopPlatform.foreground();
+  const platform = DesktopPlatform.content();
   const backend = DesktopBackend.foreground();
   const store = new Store(platform);
   const lazyConfig = new LazyAsync(() => Config.initialize(platform));
