@@ -6,10 +6,12 @@ import { DesktopAnkiApi } from "../anki";
 import { DesktopBackend } from "../backend";
 import { DesktopPlatform } from "../platform";
 import { DesktopAnkiApiPage } from "./anki";
+import { DesktopPlatformPage } from "./platform";
 
 /** Must be executed synchronously on page load */
 export function createPageDesktopCtx(): DesktopCtx {
-  const platform = DesktopPlatform.foreground();
+  const platformPage = new DesktopPlatformPage();
+  const platform = DesktopPlatform.page(platformPage);
   const backend = DesktopBackend.foreground();
   const store = new Store(platform);
   const lazyConfig = new LazyAsync(() => Config.initialize(platform));

@@ -1,4 +1,4 @@
-import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
+import type { StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import {
   BackgroundFunction,
@@ -8,35 +8,34 @@ import {
   japaneseTtsVoices,
   NonContentScriptFunction,
   setStorage,
-  speakJapanese,
 } from "@/features/extension";
-import { LazyAsync } from "@/features/utils";
-import { getTranslation } from "../shared/translate";
 import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { DesktopPlatformBackground } from "./background/platform";
+import type { DesktopPlatformPage } from "./page/platform";
 
 /** Must be initialized synchronously on page load */
 export class DesktopPlatform implements IPlatform {
   readonly type = "desktop";
 
   private constructor(
+    private page: DesktopPlatformPage | null,
     private background: DesktopPlatformBackground | null,
   ) {}
 
-  static foreground(): DesktopPlatform {
-    return new DesktopPlatform(null);
+  static content(): DesktopPlatform {
+    return new DesktopPlatform(null, null);
   }
 
-  static background(background: DesktopPlatformBackground): DesktopPlatform {
-    return new DesktopPlatform(background);
+  static page(page: DesktopPlatformPage): DesktopPlatform {
+    return new DesktopPlatform(page, null);
   }
 
-  // config migration is done only once even if requested multiple times
-  private readonly configMigration = new LazyAsync<StoredConfiguration>(
-    async () => {
-      return await this.migrateConfigInner();
-    },
-  );
+  static background(
+    page: DesktopPlatformPage,
+    background: DesktopPlatformBackground,
+  ): DesktopPlatform {
+    return new DesktopPlatform(page, background);
+  }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
     return await getStorage("config", {});
@@ -72,12 +71,14 @@ export class DesktopPlatform implements IPlatform {
 
   readonly playTTS = NonContentScriptFunction(
     "DesktopPlatform.playTTS",
-    async ({ text, voice }: TTSRequest) => {
-      await speakJapanese(text, voice);
+    async (req: TTSRequest) => {
+      await this.page!.playTTS(req);
     },
   );
 
-  readonly translate = NonContentScriptFunction("DesktopPlatform.translate", getTranslation);
+  readonly translate = NonContentScriptFunction("DesktopPlatform.translate", (text: string) => {
+    return this.page!.translate(text);
+  });
 
   openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
@@ -86,16 +87,9 @@ export class DesktopPlatform implements IPlatform {
   readonly migrateConfig = NonContentScriptFunction(
     "DesktopPlatform.migrateConfig",
     async () => {
-      return await this.configMigration.get();
+      return this.page!.migrateConfig();
     },
   );
-
-  async migrateConfigInner(): Promise<StoredConfiguration> {
-    const configObject = await this.getConfig();
-    const migrated = migrateConfigObject(configObject);
-    await this.saveConfig(migrated);
-    return migrated;
-  }
 
   readonly setStoreBatch = BackgroundFunction(
     "DesktopPlatform.setStoreBatch",
