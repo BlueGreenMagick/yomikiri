@@ -7,23 +7,18 @@
 import DisabledIcon from "@/assets/icon128-20a.png";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import { Config } from "@/features/config";
-import {
-  ExtensionMessaging,
-  handleBrowserLoad,
-  handleExtensionMessage,
-  listenExtensionMessage,
-  type MessageSender,
-  setActionIcon,
-  setBadge,
-} from "@/features/extension";
-import Utils, { exposeGlobals } from "@/features/utils";
+import type { DesktopCtx } from "@/features/ctx";
+import { handleBrowserLoad, setActionIcon, setBadge } from "@/features/extension";
+import { ExtensionMessageListener } from "@/features/extension/message";
+import Utils, { exposeGlobals, LazyAsync } from "@/features/utils";
 import type { DesktopAnkiApi } from "@/platform/desktop";
 import { createBackgroundDesktopCtx } from "@/platform/desktop/background/ctx";
+import type { DesktopExtensionMessage } from "@/platform/desktop/message";
 import { derived } from "svelte/store";
 
-const _initialized: Promise<void> = initialize();
+const lazyInitialize = new LazyAsync(() => initialize());
 
-async function initialize(): Promise<void> {
+async function initialize(): Promise<DesktopCtx> {
   const ctx = createBackgroundDesktopCtx();
   const config = await ctx.lazyConfig.get();
   updateStateEnabledIcon(config);
@@ -37,10 +32,7 @@ async function initialize(): Promise<void> {
     Utils,
     config,
   });
-}
-
-function tabId(_req: void, sender: MessageSender): number | undefined {
-  return sender.tab?.id;
+  return ctx;
 }
 
 function updateStateEnabledIcon(config: Config) {
@@ -73,16 +65,66 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
   }, 1000 * 30);
 }
 
-const tabIdMessaging = new ExtensionMessaging<void, number | undefined>("desktop.background.tabId");
-tabIdMessaging.handle(tabId);
+ExtensionMessageListener.init<DesktopExtensionMessage>()
+  .on("DesktopPlatform.setStore", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.setStore(req.key, req.value);
+  })
+  .on("DesktopPlatform.setStoreBatch", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.setStoreBatch(req);
+  })
+  .on("DesktopPlatform.getStore", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.getStore(req);
+  })
+  .on("DesktopPlatform.getStoreBatch", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.getStoreBatch(req);
+  })
+  .on("DesktopPlatform.migrateConfig", async () => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.migrateConfig();
+  })
+  .on("DesktopPlatform.playTTS", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.playTTS(req);
+  })
+  .on("DesktopPlatform.translate", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.platform.translate(req);
+  })
+  .on("DesktopAnkiApi.addNote", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.anki.addNote(req);
+  })
+  .on("DesktopAnkiApi.ankiInfo", async () => {
+    const ctx = await lazyInitialize.get();
+    return ctx.anki.getAnkiInfo();
+  })
+  .on("DesktopAnkiApi.checkConnection", async () => {
+    const ctx = await lazyInitialize.get();
+    return ctx.anki.checkConnection();
+  })
+  .on("DesktopAnkiApi.requestAnkiInfo", async () => {
+    const ctx = await lazyInitialize.get();
+    return ctx.anki.requestAnkiInfo();
+  })
+  .on("DesktopBackend.getDictMetadata", async () => {
+    const ctx = await lazyInitialize.get();
+    return ctx.backend.getDictMetadata();
+  })
+  .on("DesktopBackend.search", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.backend.search(req);
+  })
+  .on("DesktopBackend.tokenize", async (req) => {
+    const ctx = await lazyInitialize.get();
+    return ctx.backend.tokenize(req);
+  })
+  .done()
+  .verify();
 
 handleBrowserLoad(() => {
   void initialize();
-});
-
-listenExtensionMessage(async (message, sender, sendResponse) => {
-  const resp = await handleExtensionMessage(message, sender);
-  if (resp !== null) {
-    sendResponse(resp);
-  }
 });

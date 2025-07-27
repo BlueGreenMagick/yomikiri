@@ -7,22 +7,18 @@
 import DisabledIcon from "@/assets/icon128-20a.png";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import { Config } from "@/features/config";
-import {
-  ExtensionMessaging,
-  handleBrowserLoad,
-  handleExtensionMessage,
-  listenExtensionMessage,
-  type MessageSender,
-  setActionIcon,
-} from "@/features/extension";
-import Utils, { exposeGlobals } from "@/features/utils";
+import type { ConfigCtx, IosCtx } from "@/features/ctx";
+import { handleBrowserLoad, setActionIcon } from "@/features/extension";
+import { ExtensionMessageListener } from "@/features/extension/message";
+import Utils, { exposeGlobals, LazyAsync } from "@/features/utils";
+import type { IosExtensionMessage } from "@/platform/ios";
 import { createIosBackgroundCtx } from "@/platform/ios/background/ctx";
 
-const _initialized: Promise<void> = initialize();
+const lazyCtx = new LazyAsync(() => initializeCtx());
 
-async function initialize(): Promise<void> {
-  const { lazyConfig, ...ctx } = createIosBackgroundCtx();
-  const config = await lazyConfig.get();
+async function initializeCtx(): Promise<IosCtx & ConfigCtx> {
+  const ctx = createIosBackgroundCtx();
+  const config = await ctx.lazyConfig.get();
   updateStateEnabledIcon(config);
 
   exposeGlobals({
@@ -32,10 +28,11 @@ async function initialize(): Promise<void> {
     Utils,
     config,
   });
-}
 
-function tabId(_req: void, sender: MessageSender): number | undefined {
-  return sender.tab?.id;
+  return {
+    ...ctx,
+    config,
+  };
 }
 
 function updateStateEnabledIcon(config: Config) {
@@ -46,16 +43,62 @@ function updateStateEnabledIcon(config: Config) {
   });
 }
 
-const tabIdMessaging = new ExtensionMessaging<void, number | undefined>("ios.background.tabId");
-tabIdMessaging.handle(tabId);
+ExtensionMessageListener.init<IosExtensionMessage>()
+  .on("IosPlatform.getConfig", async () => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.getConfig();
+  })
+  .on("IosPlatform.getStore", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.getStore(req);
+  })
+  .on("IosPlatform.getStoreBatch", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.getStoreBatch(req);
+  })
+  .on("IosPlatform.migrateConfig", async () => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.migrateConfig();
+  })
+  .on("IosPlatform.playTTS", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.playTTS(req);
+  })
+  .on("IosPlatform.saveConfig", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.saveConfig(req);
+  })
+  .on("IosPlatform.setStore", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.setStore(req.key, req.value);
+  })
+  .on("IosPlatform.setStoreBatch", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.setStoreBatch(req);
+  })
+  .on("IosPlatform.translate", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.translate(req);
+  })
+  .on("IosAnkiApi.addNote", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.anki.addNote(req);
+  })
+  .on("IosBackend.getDictMetadata", async () => {
+    const ctx = await lazyCtx.get();
+    return ctx.backend.getDictMetadata();
+  })
+  .on("IosBackend.search", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.backend.search(req);
+  })
+  .on("IosBackend.tokenize", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.backend.tokenize(req);
+  })
+  .done()
+  .verify();
 
 handleBrowserLoad(() => {
-  void initialize();
-});
-
-listenExtensionMessage(async (message, sender, sendResponse) => {
-  const resp = await handleExtensionMessage(message, sender);
-  if (resp !== null) {
-    sendResponse(resp);
-  }
+  void initializeCtx();
 });
