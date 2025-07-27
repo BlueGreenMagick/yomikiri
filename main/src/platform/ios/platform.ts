@@ -1,15 +1,16 @@
+import type { StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import {
   currentTab,
   extensionManifest,
   handleStorageChange,
-  NonContentScriptFunction,
   updateTab,
 } from "@/features/extension";
 import { log } from "@/features/utils";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import { sendIosExtensionMessage } from "./extensionMessage";
 import type { IosPlatformPage } from "./page/platform";
 
 export class IosPlatform implements IPlatform {
@@ -35,61 +36,51 @@ export class IosPlatform implements IPlatform {
     return new IosPlatform(null);
   }
 
-  async getStoreBatch(
-    keys: string[],
-  ): Promise<Record<string, unknown>> {
-    const result = await this._getStoreBatch(keys);
-
-    return Object.fromEntries(
-      Object.entries(result).map((
-        [key, value],
-      ) => [key, value === null ? null : JSON.parse(value)]),
-    );
-  }
-
-  async getStore<T>(key: string): Promise<T | null> {
-    const result = await this._getStoreBatch([key]);
-    const value = result[key];
-    if (value === null) return value;
-    return JSON.parse(value) as T;
-  }
-
-  private readonly _getStoreBatch = NonContentScriptFunction(
-    "IosPlatform.getStoreBatch",
-    async (keysJson: string[]) => {
-      return await this.page!.messaging.send("getStoreBatch", keysJson);
-    },
-  );
-
-  /**
-   * If value is `null` or `undefined`, deletes the store.
-   */
-  async setStoreBatch(map: Record<string, unknown>) {
-    const jsonMap: Record<string, string | null> = {};
-    for (const [key, value] of Object.entries(map)) {
-      jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
+  async getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
+    if (this.page) {
+      return this.page.getStoreBatch(keys);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.getStoreBatch", keys);
     }
+  }
 
-    await this._setStoreBatch(jsonMap);
+  async getStore(key: string): Promise<unknown> {
+    if (this.page) {
+      return this.page.getStore(key);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.getStore", key);
+    }
   }
 
   /**
    * If value is `null` or `undefined`, deletes the store.
    */
-  readonly setStore = NonContentScriptFunction(
-    "IosPlatform.setStore",
-    this.page!.setStore.bind(this.page),
-  );
+  setStoreBatch(map: Record<string, unknown>) {
+    if (this.page) {
+      return this.page.setStoreBatch(map);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.setStoreBatch", map);
+    }
+  }
 
-  private readonly _setStoreBatch = NonContentScriptFunction(
-    "IosPlatform.setStoreBatch",
-    this.page!._setStoreBatch.bind(this.page),
-  );
+  /**
+   * If value is `null` or `undefined`, deletes the store.
+   */
+  setStore(key: string, value: unknown): Promise<void> {
+    if (this.page) {
+      return this.page.setStore(key, value);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.setStore", { key, value });
+    }
+  }
 
-  readonly getConfig = NonContentScriptFunction(
-    "IosPlatform.loadConfig",
-    this.page!.getConfig.bind(this.page),
-  );
+  getConfig(): Promise<StoredCompatConfiguration> {
+    if (this.page) {
+      return this.page.getConfig();
+    } else {
+      return sendIosExtensionMessage("IosPlatform.getConfig", undefined);
+    }
+  }
 
   /**
    * Listens to web config changes,
@@ -101,10 +92,13 @@ export class IosPlatform implements IPlatform {
     });
   }
 
-  readonly saveConfig = NonContentScriptFunction(
-    "IosPlatform.saveConfig",
-    this.page!.saveConfig.bind(this.page),
-  );
+  saveConfig(config: StoredConfiguration): Promise<void> {
+    if (this.page) {
+      return this.page.saveConfig(config);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.saveConfig", config);
+    }
+  }
 
   async openOptionsPage() {
     const OPTIONS_URL = "yomikiri://options";
@@ -131,23 +125,33 @@ export class IosPlatform implements IPlatform {
     return await this.page!.messaging.send("ttsVoices", null);
   }
 
-  readonly playTTS = NonContentScriptFunction("IosPlatform.tts", async (req: TTSRequest) => {
-    await this.page!.messaging.send("tts", req);
-  });
+  async playTTS(req: TTSRequest): Promise<void> {
+    if (this.page) {
+      await this.page.messaging.send("tts", req);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.playTTS", req);
+    }
+  }
 
-  readonly translate = NonContentScriptFunction(
-    "IosPlatform.translate",
-    this.page!.translate.bind(this.page),
-  );
+  translate(text: string): Promise<TranslateResult> {
+    if (this.page) {
+      return this.page.translate(text);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.translate", text);
+    }
+  }
 
   openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  readonly migrateConfig = NonContentScriptFunction(
-    "IosPlatform.migrateConfig",
-    this.page!.migrateConfig.bind(this.page),
-  );
+  migrateConfig(): Promise<StoredConfiguration> {
+    if (this.page) {
+      return this.page.migrateConfig();
+    } else {
+      return sendIosExtensionMessage("IosPlatform.migrateConfig", undefined);
+    }
+  }
 
   // workaround to ios 17.5+ bug where background script freezes after ~30s of non-stop activity
   // https://github.com/alexkates/content-script-non-responsive-bug/issues/1

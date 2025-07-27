@@ -1,7 +1,7 @@
-import type { AnkiInfo, AnkiNote } from "@/features/anki";
+import type { AnkiInfo } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
 import { iosAnkiMobileURL } from "../shared/anki";
-import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
+import type { AnkiAddNoteReq, IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { sendMessage } from "./messaging";
 
 export interface Named {
@@ -52,8 +52,8 @@ export class IosAppAnkiApi implements IAnkiAddNotes, IAnkiOptions {
     }
   }
 
-  async addNote(note: AnkiNote): Promise<boolean> {
-    const url = iosAnkiMobileURL(note);
+  async addNote(req: AnkiAddNoteReq): Promise<boolean> {
+    const url = iosAnkiMobileURL(req.note);
     await sendMessage("openLink", url);
     return true;
   }

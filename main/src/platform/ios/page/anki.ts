@@ -1,14 +1,14 @@
-import type { AnkiNote } from "@/features/anki";
 import type { Config } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { currentTab, setStorage, updateTab } from "@/features/extension";
 import type { LazyAsync } from "@/features/utils";
 import { iosAnkiMobileURL } from "@/platform/shared/anki";
+import type { AnkiAddNoteReq } from "@/platform/types/anki";
 
 export class IosAnkiApiPage {
   constructor(private readonly lazyConfig: LazyAsync<Config>) {}
 
-  async addNote(note: AnkiNote): Promise<boolean> {
+  async addNote({ note }: AnkiAddNoteReq): Promise<boolean> {
     const cTab = await currentTab();
     const config = await this.lazyConfig.get();
     const willAutoRedirect = config.get("anki.ios_auto_redirect");

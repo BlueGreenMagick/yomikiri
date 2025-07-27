@@ -1,5 +1,11 @@
-import { NonContentScriptFunction } from "@/features/extension";
-import type { IBackend, SearchRequest, TokenizeRequest } from "../types/backend";
+import type {
+  DictionaryMetadata,
+  IBackend,
+  SearchRequest,
+  TokenizeRequest,
+  TokenizeResult,
+} from "../types/backend";
+import { sendIosExtensionMessage } from "./extensionMessage";
 import type { IosBackendPage } from "./page/backend";
 
 export class IosBackend implements IBackend {
@@ -19,24 +25,27 @@ export class IosBackend implements IBackend {
     return new IosBackend(null);
   }
 
-  readonly tokenize = NonContentScriptFunction(
-    "IosBackend.tokenize",
-    ({ text, charAt }: TokenizeRequest) => {
-      return this.page!.tokenize(text, charAt);
-    },
-  );
+  tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+    if (this.page) {
+      return this.page.tokenize(req.text, req.charAt);
+    } else {
+      return sendIosExtensionMessage("IosBackend.tokenize", req);
+    }
+  }
 
-  readonly search = NonContentScriptFunction(
-    "IosBackend.search",
-    ({ term, charAt }: SearchRequest) => {
-      return this.page!.search(term, charAt);
-    },
-  );
+  search(req: SearchRequest): Promise<TokenizeResult> {
+    if (this.page) {
+      return this.page.search(req.term, req.charAt);
+    } else {
+      return sendIosExtensionMessage("IosBackend.search", req);
+    }
+  }
 
-  readonly getDictMetadata = NonContentScriptFunction(
-    "IosBackend.getDictMetadata",
-    () => {
-      return this.page!.getDictMetadata();
-    },
-  );
+  getDictMetadata(): Promise<DictionaryMetadata> {
+    if (this.page) {
+      return this.page.getDictMetadata();
+    } else {
+      return sendIosExtensionMessage("IosBackend.getDictMetadata", undefined);
+    }
+  }
 }

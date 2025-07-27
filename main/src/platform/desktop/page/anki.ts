@@ -9,6 +9,7 @@ import {
   type LazyAsync,
   type Second,
 } from "@/features/utils";
+import type { AnkiAddNoteReq } from "@/platform/types/anki";
 
 const ANKI_CONNECT_VER = 6;
 
@@ -188,8 +189,7 @@ export class DesktopAnkiApiPage {
   }
 
   async addNote(
-    note: AnkiNote,
-    deferrable: boolean = true,
+    { note, deferrable = true }: AnkiAddNoteReq,
   ): Promise<boolean> {
     const fields: Record<string, string> = {};
     for (const field of note.fields) {
@@ -262,7 +262,7 @@ export class DesktopAnkiApiPage {
       while (i < deferredNotes.length) {
         const note = deferredNotes[i];
         try {
-          await this.addNote(note, false);
+          await this.addNote({ note, deferrable: false });
           deferredNotes.splice(i, 1);
           await this.setDeferredNotes(deferredNotes, config);
         } catch (err: unknown) {

@@ -1,13 +1,5 @@
 // Re-export all messaging functions and types
-export {
-  BackgroundFunction,
-  ExtensionMessaging,
-  handleExtensionMessage,
-  listenExtensionMessage,
-  type MessageHandler,
-  type MessageSender,
-  NonContentScriptFunction,
-} from "./message";
+export type { MessageHandler, MessageSender } from "./message";
 
 // Re-export all browser API functions and types
 export {

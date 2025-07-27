@@ -1,13 +1,9 @@
-import type { AnkiNote } from "@/features/anki";
+import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { Config } from "@/features/config";
-import {
-  getStorage,
-  NonContentScriptFunction,
-  removeStorage,
-  setStorage,
-} from "@/features/extension";
+import { getStorage, removeStorage, setStorage } from "@/features/extension";
 import { LazyAsync, SingleQueued } from "@/features/utils";
-import type { IAnkiAddNotes, IAnkiOptions } from "../types/anki";
+import type { AnkiAddNoteReq, IAnkiAddNotes, IAnkiOptions } from "../types/anki";
+import { sendDesktopExtensionMessage } from "./message";
 import type { DesktopAnkiApiPage } from "./page/anki";
 
 /** Must be initialized synchronously on page load */
@@ -27,25 +23,37 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
     return new DesktopAnkiApi(lazyConfig, page);
   }
 
-  readonly getAnkiInfo = NonContentScriptFunction(
-    "DesktopAnkiApi.getAnkiNote",
-    () => this.page!.getAnkiInfo(),
-  );
+  getAnkiInfo(): Promise<AnkiInfo> {
+    if (this.page) {
+      return this.page.getAnkiInfo();
+    } else {
+      return sendDesktopExtensionMessage("DesktopAnkiApi.ankiInfo", undefined);
+    }
+  }
 
-  readonly requestAnkiInfo = NonContentScriptFunction(
-    "DesktopAnkiApi.requestAnkiInfo",
-    () => this.page!.checkConnection(),
-  );
+  requestAnkiInfo(): Promise<void> {
+    if (this.page) {
+      return this.page.checkConnection();
+    } else {
+      return sendDesktopExtensionMessage("DesktopAnkiApi.requestAnkiInfo", undefined);
+    }
+  }
 
-  readonly checkConnection = NonContentScriptFunction(
-    "DesktopAnkiApi.checkConnection",
-    () => this.page!.checkConnection(),
-  );
+  checkConnection(): Promise<void> {
+    if (this.page) {
+      return this.page.checkConnection();
+    } else {
+      return sendDesktopExtensionMessage("DesktopAnkiApi.checkConnection", undefined);
+    }
+  }
 
-  readonly addNote = NonContentScriptFunction(
-    "DesktopAnkiApi.addNote",
-    this.page!.addNote.bind(this.page),
-  );
+  addNote(req: AnkiAddNoteReq): Promise<boolean> {
+    if (this.page) {
+      return this.page.addNote(req);
+    } else {
+      return sendDesktopExtensionMessage("DesktopAnkiApi.addNote", req);
+    }
+  }
 
   /**
    * If there are deferred notes, add to Anki.

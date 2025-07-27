@@ -5,6 +5,11 @@ import type { IosAnkiApi } from "../ios";
 import type { IosAppAnkiApi } from "../iosapp";
 import type { IPlatformConsts } from ".";
 
+export interface AnkiAddNoteReq {
+  note: AnkiNote;
+  deferrable?: boolean;
+}
+
 export interface IAnkiOptions extends IPlatformConsts {
   /**
    * Throws an error if Anki (AnkiDroid, AnkiMobile) is not installed.
@@ -19,7 +24,7 @@ export interface IAnkiOptions extends IPlatformConsts {
 
 export interface IAnkiAddNotes extends IPlatformConsts {
   /** Returns false if note is deferred */
-  addNote: (note: AnkiNote, deferrable?: boolean) => Promise<boolean>;
+  addNote: (arg: AnkiAddNoteReq) => Promise<boolean>;
 }
 
 export type ExtensionAnkiApi = DesktopAnkiApi | IosAnkiApi;

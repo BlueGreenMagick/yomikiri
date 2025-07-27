@@ -1,16 +1,15 @@
 import type { StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
 import {
-  BackgroundFunction,
   extensionManifest,
   getStorage,
   handleStorageChange,
   japaneseTtsVoices,
-  NonContentScriptFunction,
   setStorage,
 } from "@/features/extension";
 import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { DesktopPlatformBackground } from "./background/platform";
+import { sendDesktopExtensionMessage } from "./message";
 import type { DesktopPlatformPage } from "./page/platform";
 
 /** Must be initialized synchronously on page load */
@@ -69,53 +68,63 @@ export class DesktopPlatform implements IPlatform {
     return japaneseTtsVoices();
   }
 
-  readonly playTTS = NonContentScriptFunction(
-    "DesktopPlatform.playTTS",
-    async (req: TTSRequest) => {
-      await this.page!.playTTS(req);
-    },
-  );
+  playTTS(req: TTSRequest) {
+    if (this.page) {
+      return this.page.playTTS(req);
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.playTTS", req);
+    }
+  }
 
-  readonly translate = NonContentScriptFunction("DesktopPlatform.translate", (text: string) => {
-    return this.page!.translate(text);
-  });
+  translate(text: string) {
+    if (this.page) {
+      return this.page.translate(text);
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.translate", text);
+    }
+  }
 
   openExternalLink(url: string): void {
     window.open(url, "_blank")?.focus();
   }
 
-  readonly migrateConfig = NonContentScriptFunction(
-    "DesktopPlatform.migrateConfig",
-    async () => {
-      return this.page!.migrateConfig();
-    },
-  );
+  migrateConfig(): Promise<StoredConfiguration> {
+    if (this.page) {
+      return this.page.migrateConfig();
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.migrateConfig", undefined);
+    }
+  }
 
-  readonly setStoreBatch = BackgroundFunction(
-    "DesktopPlatform.setStoreBatch",
-    async (req: Record<string, unknown>): Promise<void> => {
-      return this.background!.db.get().then((db) => db.store.setStoreBatch(req));
-    },
-  );
+  setStoreBatch(req: Record<string, unknown>): Promise<void> {
+    if (this.background) {
+      return this.background.db.get().then((db) => db.store.setStoreBatch(req));
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.setStoreBatch", req);
+    }
+  }
 
-  readonly getStoreBatch = BackgroundFunction(
-    "DesktopPlatform.getStoreBatch",
-    async (keys: string[]): Promise<Record<string, unknown>> => {
-      return this.background!.db.get().then((db) => db.store.getStoreBatch(keys));
-    },
-  );
+  getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
+    if (this.background) {
+      return this.background.db.get().then((db) => db.store.getStoreBatch(keys));
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.getStoreBatch", keys);
+    }
+  }
 
-  readonly setStore = BackgroundFunction(
-    "DesktopPlatform.setStore",
-    async (key: string, value: unknown) => {
-      return this.background!.db.get().then((db) => db.store.setStore(key, value));
-    },
-  );
+  setStore(key: string, value: unknown): Promise<void> {
+    if (this.background) {
+      return this.background.db.get().then((db) => db.store.setStore(key, value));
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.setStore", { key, value });
+    }
+  }
 
-  readonly getStore = BackgroundFunction(
-    "DesktopPlatform.getStore",
-    async (key: string) => {
-      return this.background!.db.get().then((db) => db.store.getStore(key));
-    },
-  );
+  getStore(key: string): Promise<unknown> {
+    if (this.background) {
+      return this.background.db.get().then((db) => db.store.getStore(key));
+    } else {
+      return sendDesktopExtensionMessage("DesktopPlatform.getStore", key);
+    }
+  }
 }

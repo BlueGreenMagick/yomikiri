@@ -70,6 +70,7 @@ Outside the directory, you may only use code that is exported from `@/platform/{
 There is ane exception for Desktop and iOS platforms, where for tree shaking purposes, different `ctx.ts` are imported based on extension execution context (background, page, content script).
 
 #### Web Extension
+
 For web extension platforms(`desktop`, `ios`), the platform directory has the following sub-directories: `background`, `page`, `content`.
 
 - `content/` contains code that may only be used in content scripts.
@@ -78,7 +79,6 @@ For web extension platforms(`desktop`, `ios`), the platform directory has the fo
 
 The dependency order is as follows: `content` < `page` < `background`.
 Code in `page` may use code in `content`, and `background` can use all code. (unless otherwise specified.)
-
 
 ### Import Conventions
 

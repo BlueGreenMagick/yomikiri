@@ -1,6 +1,13 @@
-import { BackgroundFunction, BackgroundStreamFunction } from "@/features/extension";
-import type { IBackend, SearchRequest, TokenizeRequest } from "../types/backend";
+import { BackgroundStreamFunction } from "@/features/extension";
+import type {
+  DictionaryMetadata,
+  IBackend,
+  SearchRequest,
+  TokenizeRequest,
+  TokenizeResult,
+} from "../types/backend";
 import type { DesktopBackendBackground } from "./background/backend";
+import { sendDesktopExtensionMessage } from "./message";
 
 /** Must be initialized synchronously on page load */
 export class DesktopBackend implements IBackend {
@@ -18,21 +25,29 @@ export class DesktopBackend implements IBackend {
     return new DesktopBackend(background);
   }
 
-  readonly tokenize = BackgroundFunction(
-    "DesktopBackend.tokenize",
-    (req: TokenizeRequest) => this.background!.tokenize(req),
-  );
+  tokenize(req: TokenizeRequest): Promise<TokenizeResult> {
+    if (this.background) {
+      return this.background.tokenize(req);
+    } else {
+      return sendDesktopExtensionMessage("DesktopBackend.tokenize", req);
+    }
+  }
 
-  readonly search = BackgroundFunction(
-    "DesktopBackend.searchTerm",
-    (req: SearchRequest) => this.background!.search(req),
-  );
+  search(req: SearchRequest): Promise<TokenizeResult> {
+    if (this.background) {
+      return this.background.search(req);
+    } else {
+      return sendDesktopExtensionMessage("DesktopBackend.search", req);
+    }
+  }
 
-  readonly getDictMetadata = BackgroundFunction(
-    "DesktopBackend.getDictMetadata",
-    () => this.background!.getDictMetadata(),
-  );
-
+  getDictMetadata(): Promise<DictionaryMetadata> {
+    if (this.background) {
+      return this.background.getDictMetadata();
+    } else {
+      return sendDesktopExtensionMessage("DesktopBackend.getDictMetadata", undefined);
+    }
+  }
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
   readonly updateDictionary = BackgroundStreamFunction<boolean, string>(
     "DesktopBackend.updateDictionary",
