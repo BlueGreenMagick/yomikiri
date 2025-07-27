@@ -1,5 +1,3 @@
-import { BackendError } from "@yomikiri/yomikiri-backend-wasm";
-
 /**
  * Immutable error type with chain of cause.
  */
@@ -21,10 +19,6 @@ export class YomikiriError extends Error {
    */
   static from(err: unknown): YomikiriError {
     if (err instanceof YomikiriError) return err;
-
-    if (err instanceof BackendError) {
-      return new YomikiriError(err.message, err.details);
-    }
 
     if (err === undefined || err === null) {
       const err = new YomikiriError("Undefined error");
