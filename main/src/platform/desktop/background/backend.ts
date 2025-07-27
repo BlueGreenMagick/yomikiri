@@ -10,8 +10,8 @@ import type {
   TokenizeRequest,
   TokenizeResult,
 } from "../../types/backend";
-import { Database, type FileName } from "../db";
 import { fetchDictionary, loadWasm } from "../fetch";
+import { Database, type FileName } from "./db";
 
 const JMDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz";
 const JMNEDICT_URL = "http://ftp.edrdg.org/pub/Nihongo/JMnedict.xml.gz";
