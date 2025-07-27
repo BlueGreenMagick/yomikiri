@@ -4,11 +4,11 @@ import { Store } from "@/features/store";
 import { LazyAsync } from "@/features/utils";
 import { DesktopAnkiApi } from "../anki";
 import { DesktopBackend } from "../backend";
-import { Database } from "../db";
 import { DesktopAnkiApiPage } from "../page/anki";
 import { DesktopPlatformPage } from "../page/platform";
 import { DesktopPlatform } from "../platform";
 import { DesktopBackendBackground } from "./backend";
+import { Database } from "./db";
 import { DesktopPlatformBackground } from "./platform";
 
 export function createBackgroundDesktopCtx(): DesktopCtx {
