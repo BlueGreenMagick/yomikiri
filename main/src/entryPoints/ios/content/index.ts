@@ -1,7 +1,7 @@
 import { TOOLTIP_IFRAME_ID } from "@/consts";
 import { ContentScriptController } from "@/features/content";
 import Utils, { exposeGlobals } from "@/features/utils";
-import { createIosCtx } from "@/platform/ios";
+import { createIosContentCtx } from "@/platform/ios/content/ctx";
 
 declare global {
   interface Window {
@@ -26,7 +26,7 @@ function maybeInitialize() {
 }
 
 function initialize() {
-  const ctx = createIosCtx();
+  const ctx = createIosContentCtx();
 
   exposeGlobals({
     Platform: ctx.platform,

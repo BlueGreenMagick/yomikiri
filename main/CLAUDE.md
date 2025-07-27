@@ -58,10 +58,27 @@
 
 ### Platform-Specific Code
 
+Platform specific code live in `src/platform/{platform_name}/`.
+
 - **Desktop**: Browser extension APIs, content scripts, background scripts
 - **iOS**: Native messaging, Safari extension APIs, app URL schemes
 - **Android**: WebView integration, native method calls
 - **Shared logic**: Common functionality abstracted in `main/src/platform/shared/`
+- **types**: Common types shared between all platforms.
+
+Outside the directory, you may only use code that is exported from `@/platform/{platform_name}` (`index.ts`).
+There is ane exception for Desktop and iOS platforms, where for tree shaking purposes, different `ctx.ts` are imported based on extension execution context (background, page, content script).
+
+#### Web Extension
+For web extension platforms(`desktop`, `ios`), the platform directory has the following sub-directories: `background`, `page`, `content`.
+
+- `content/` contains code that may only be used in content scripts.
+- `page/` contains code that may be used in extension page context.
+- `background/` contains code that may be used in background script context.
+
+The dependency order is as follows: `content` < `page` < `background`.
+Code in `page` may use code in `content`, and `background` can use all code. (unless otherwise specified.)
+
 
 ### Import Conventions
 
