@@ -80,6 +80,10 @@ ExtensionMessageListener.init<IosExtensionMessage>()
     const ctx = await lazyCtx.get();
     return ctx.platform.translate(req);
   })
+  .on("IosPlatform.japaneseTTSVoices", async () => {
+    const ctx = await lazyCtx.get();
+    return ctx.platform.japaneseTTSVoices();
+  })
   .on("IosAnkiApi.addNote", async (req) => {
     const ctx = await lazyCtx.get();
     return ctx.anki.addNote(req);

@@ -1,7 +1,7 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { Config } from "@/features/config";
 import { getStorage, removeStorage, setStorage } from "@/features/extension";
-import { LazyAsync, SingleQueued } from "@/features/utils";
+import { LazyAsync } from "@/features/utils";
 import type { AnkiAddNoteReq, IAnkiAddNotes, IAnkiOptions } from "../types/anki";
 import { sendDesktopExtensionMessage } from "./message";
 import type { DesktopAnkiApiPage } from "./page/anki";
@@ -65,7 +65,13 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
    *
    * Returns null if deferred notes are currently being added, and another request is queued.
    */
-  readonly addDeferredNotes = SingleQueued(this.page!.addDeferredNotes.bind(this.page));
+  addDeferredNotes(): Promise<void | null> {
+    if (this.page) {
+      return this.page.addDeferredNotes();
+    } else {
+      return sendDesktopExtensionMessage("DesktopAnkiApi.addDeferredNotes", undefined);
+    }
+  }
 
   /**
    * Deletes all deferred notes and error messages from storage.

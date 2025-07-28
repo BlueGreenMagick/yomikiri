@@ -8,6 +8,7 @@ import {
   getErrorMessage,
   type LazyAsync,
   type Second,
+  SingleQueued,
 } from "@/features/utils";
 import type { AnkiAddNoteReq } from "@/platform/types/anki";
 
@@ -233,7 +234,9 @@ export class DesktopAnkiApiPage {
     await this.setDeferredNotes(existingNotes);
   }
 
-  addDeferredNotes(): DeferredWithProgress<
+  readonly addDeferredNotes = SingleQueued(this._addDeferredNotes.bind(this));
+
+  private _addDeferredNotes(): DeferredWithProgress<
     void,
     AddDeferredNotesProgress
   > {

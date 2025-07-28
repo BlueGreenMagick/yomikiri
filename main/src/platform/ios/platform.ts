@@ -122,7 +122,11 @@ export class IosPlatform implements IPlatform {
   }
 
   async japaneseTTSVoices(): Promise<TTSVoice[]> {
-    return await this.page!.messaging.send("ttsVoices", null);
+    if (this.page) {
+      return this.page.messaging.send("ttsVoices", null);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.japaneseTTSVoices", undefined);
+    }
   }
 
   async playTTS(req: TTSRequest): Promise<void> {
