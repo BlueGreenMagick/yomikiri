@@ -119,6 +119,10 @@ ExtensionMessageListener.init<DesktopExtensionMessage>()
     const ctx = await lazyInitialize.get();
     return ctx.anki.requestAnkiInfo();
   })
+  .on("DesktopAnkiApi.addDeferredNotes", async () => {
+    const ctx = await lazyInitialize.get();
+    return ctx.anki.addDeferredNotes();
+  })
   .on("DesktopBackend.getDictMetadata", async () => {
     const ctx = await lazyInitialize.get();
     return ctx.backend.getDictMetadata();

@@ -33,7 +33,8 @@ export type DesktopExtensionMessage =
   | ExtensionMessage<"DesktopAnkiApi.ankiInfo", void, AnkiInfo>
   | ExtensionMessage<"DesktopAnkiApi.requestAnkiInfo", void, void>
   | ExtensionMessage<"DesktopAnkiApi.checkConnection", void, void>
-  | ExtensionMessage<"DesktopAnkiApi.addNote", AnkiAddNoteReq, boolean>;
+  | ExtensionMessage<"DesktopAnkiApi.addNote", AnkiAddNoteReq, boolean>
+  | ExtensionMessage<"DesktopAnkiApi.addDeferredNotes", void, void | null>;
 
 type Keys = DesktopExtensionMessage["key"];
 

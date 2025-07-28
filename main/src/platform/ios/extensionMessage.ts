@@ -5,7 +5,7 @@ import {
   type MessageByKey,
   sendExtensionMessage,
 } from "@/features/extension/message";
-import type { TranslateResult, TTSRequest } from "../types";
+import type { TranslateResult, TTSRequest, TTSVoice } from "../types";
 import type { AnkiAddNoteReq } from "../types/anki";
 import type {
   DictionaryMetadata,
@@ -29,6 +29,7 @@ export type IosExtensionMessage =
   | ExtensionMessage<"IosPlatform.playTTS", TTSRequest, void>
   | ExtensionMessage<"IosPlatform.translate", string, TranslateResult>
   | ExtensionMessage<"IosPlatform.migrateConfig", void, StoredConfiguration>
+  | ExtensionMessage<"IosPlatform.japaneseTTSVoices", void, TTSVoice[]>
   | ExtensionMessage<"IosAnkiApi.addNote", AnkiAddNoteReq, boolean>
   | ExtensionMessage<"IosBackend.tokenize", TokenizeRequest, TokenizeResult>
   | ExtensionMessage<"IosBackend.search", SearchRequest, TokenizeResult>
