@@ -105,11 +105,21 @@ export class ExtensionMessageListener<M extends AnyExtensionMessage> {
     return this as unknown as ExtensionMessageListener<Exclude<M, MessageByKey<M, K>>>;
   }
 
+  /**
+   * Used for typechecking that all message keys have been handled with `.done().verify()`
+   *
+   * If all message keys were handled, `.done()` return type evaluates to `this`,
+   * allowing `.verify()` call to compile.
+   *
+   * If not all message keys are handled, `.done()` return type evaluates to `never`,
+   * thus calling `.verify() throws a type error.
+   */
   done(): [M] extends [never] ? this : never;
   done(): this {
     return this;
   }
 
+  /** Used for typechecking. See `.done()` for more details.  */
   verify(): void {}
 }
 
