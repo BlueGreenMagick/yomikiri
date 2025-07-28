@@ -237,7 +237,7 @@ export class DesktopAnkiApiPage {
     void,
     AddDeferredNotesProgress
   > {
-    const promise = DeferredWithProgress.create<void, AddDeferredNotesProgress>(
+    const promise = DeferredWithProgress.withProgress<void, AddDeferredNotesProgress>(
       "loading",
     );
 

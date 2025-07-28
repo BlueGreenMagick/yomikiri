@@ -8,10 +8,10 @@ import DisabledIcon from "@/assets/icon128-20a.png";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import { Config } from "@/features/config";
 import type { ConfigCtx, IosCtx } from "@/features/ctx";
-import { handleBrowserLoad, setActionIcon } from "@/features/extension";
+import { ExtensionStreamListener, handleBrowserLoad, setActionIcon } from "@/features/extension";
 import { ExtensionMessageListener } from "@/features/extension/message";
 import Utils, { exposeGlobals, LazyAsync } from "@/features/utils";
-import type { IosExtensionMessage } from "@/platform/ios";
+import type { IosExtensionMessage, IosExtensionStream } from "@/platform/ios";
 import { createIosBackgroundCtx } from "@/platform/ios/background/ctx";
 
 const lazyCtx = new LazyAsync(() => initializeCtx());
@@ -102,3 +102,5 @@ ExtensionMessageListener.init<IosExtensionMessage>()
 handleBrowserLoad(() => {
   void initializeCtx();
 });
+
+ExtensionStreamListener.init<IosExtensionStream>().done().verify();

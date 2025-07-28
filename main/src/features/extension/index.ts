@@ -1,5 +1,10 @@
 // Re-export all messaging functions and types
-export type { MessageHandler, MessageSender } from "./message";
+export {
+  type ExtensionMessage,
+  ExtensionMessageListener,
+  type MessageHandler,
+  type MessageSender,
+} from "./message";
 
 // Re-export all browser API functions and types
 export {
@@ -31,8 +36,4 @@ export {
   updateTab,
 } from "./browserApi";
 
-export {
-  BackgroundStreamFunction,
-  ExtensionStream,
-  NonContentScriptStreamFunction,
-} from "./stream";
+export { type ExtensionStream, ExtensionStreamListener, type StreamByKey } from "./stream";

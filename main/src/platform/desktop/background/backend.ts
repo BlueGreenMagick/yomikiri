@@ -95,16 +95,9 @@ export class DesktopBackendBackground {
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
   updateDictionary(): DeferredWithProgress<boolean, string> {
-    const deferred = DeferredWithProgress.fromPromise(
-      this._updateDictionary(progressFn),
-      "Updating dictionary...",
-    );
-
-    async function progressFn(msg: string) {
-      await deferred.setProgress(msg);
-    }
-
-    return deferred;
+    return DeferredWithProgress.execute("Updating dictionary...", (setProgress) => {
+      return this._updateDictionary(setProgress);
+    });
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
