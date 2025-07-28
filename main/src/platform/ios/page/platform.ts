@@ -42,14 +42,12 @@ export class IosPlatformPage {
     await this.messaging.send("setStoreBatch", jsonMap);
   }
 
-  async getStore<T>(key: string): Promise<T | null> {
+  async getStore(key: string): Promise<unknown> {
     const result = await this.getStoreBatch([key]);
-    const value = result[key];
-    if (value === null) return value;
-    return JSON.parse(value) as T;
+    return result[key];
   }
 
-  async getStoreBatch(keys: string[]): Promise<JSONStoreValues> {
+  async getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
     const result = await this.messaging.send("getStoreBatch", keys);
 
     return Object.fromEntries(
@@ -83,9 +81,9 @@ export class IosPlatformPage {
   async updateConfig(): Promise<StoredCompatConfiguration> {
     const webConfigP = getStorage("config", {});
 
-    const appConfigP: Promise<StoredCompatConfiguration> = this.getStore<
-      StoredCompatConfiguration
-    >("web_config").then((value) => value ?? {});
+    const appConfigP: Promise<StoredCompatConfiguration> = this.getStore("web_config").then((
+      value,
+    ) => value ?? {});
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
     if (webConfig != appConfig) {
       await setStorage("config", appConfig);

@@ -1,7 +1,7 @@
 import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import { type StoredConfiguration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
-import Utils, { LazyAsync, type NullPartial } from "@/features/utils";
+import Utils, { LazyAsync } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
@@ -63,16 +63,16 @@ export class IosAppPlatform implements IPlatform {
     };
   }
 
-  async getStoreBatch<T extends Record<string, unknown>>(
-    keys: (keyof T)[],
-  ): Promise<NullPartial<T>> {
-    const result = await sendMessage("getStoreBatch", keys as string[]);
+  async getStoreBatch(
+    keys: string[],
+  ): Promise<Record<string, unknown>> {
+    const result = await sendMessage("getStoreBatch", keys);
 
     return Object.fromEntries(
       Object.entries(result).map((
         [key, value],
       ) => [key, value === null ? null : JSON.parse(value)]),
-    ) as NullPartial<T>;
+    );
   }
 
   /**
@@ -87,11 +87,11 @@ export class IosAppPlatform implements IPlatform {
     await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getStore<T>(key: string): Promise<T | null> {
+  async getStore(key: string): Promise<unknown> {
     const result = await sendMessage("getStoreBatch", [key]);
     const value = result[key];
     if (value === null) return value;
-    return JSON.parse(value) as T;
+    return JSON.parse(value);
   }
 
   /**
@@ -105,7 +105,7 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
-    const config = await this.getStore<StoredCompatConfiguration>("web_config") ?? {};
+    const config: StoredCompatConfiguration = await this.getStore("web_config") ?? {};
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
