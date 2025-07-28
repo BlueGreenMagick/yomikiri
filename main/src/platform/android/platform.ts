@@ -1,6 +1,5 @@
 import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
 import type { StoredConfiguration } from "@/features/config";
-import type { NullPartial } from "@/features/utils";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
@@ -8,16 +7,16 @@ import { sendMessage } from "./messaging";
 export class AndroidPlatform implements IPlatform {
   readonly type = "android";
 
-  async getStoreBatch<T extends Record<string, unknown>>(
-    keys: (keyof T)[],
-  ): Promise<NullPartial<T>> {
-    const result = await sendMessage("getStoreBatch", keys as string[]);
+  async getStoreBatch(
+    keys: string[],
+  ): Promise<Record<string, unknown>> {
+    const result = await sendMessage("getStoreBatch", keys);
 
     return Object.fromEntries(
       Object.entries(result).map((
         [key, value],
       ) => [key, value === null ? null : JSON.parse(value)]),
-    ) as NullPartial<T>;
+    );
   }
 
   /**
@@ -31,11 +30,12 @@ export class AndroidPlatform implements IPlatform {
     await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getStore<T>(key: string): Promise<T | null> {
+  /** Returns null if it doesn't exist */
+  async getStore(key: string): Promise<unknown> {
     const result = await sendMessage("getStoreBatch", [key]);
     const value = result[key];
     if (value === null) return value;
-    return JSON.parse(value) as T;
+    return JSON.parse(value);
   }
 
   /**
@@ -51,7 +51,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredCompatConfiguration> {
-    return await this.getStore<StoredCompatConfiguration>("config") ?? {};
+    return await this.getStore("config") ?? {};
   }
 
   /** TODO */
