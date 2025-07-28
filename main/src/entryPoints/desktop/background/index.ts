@@ -8,10 +8,15 @@ import DisabledIcon from "@/assets/icon128-20a.png";
 import DefaultIcon from "@/assets/static/images/icon128.png";
 import { Config } from "@/features/config";
 import type { DesktopCtx } from "@/features/ctx";
-import { handleBrowserLoad, setActionIcon, setBadge } from "@/features/extension";
+import {
+  ExtensionStreamListener,
+  handleBrowserLoad,
+  setActionIcon,
+  setBadge,
+} from "@/features/extension";
 import { ExtensionMessageListener } from "@/features/extension/message";
-import Utils, { exposeGlobals, LazyAsync } from "@/features/utils";
-import type { DesktopAnkiApi } from "@/platform/desktop";
+import Utils, { DeferredWithProgress, exposeGlobals, LazyAsync } from "@/features/utils";
+import { type DesktopAnkiApi, type DesktopExtensionStream } from "@/platform/desktop";
 import { createBackgroundDesktopCtx } from "@/platform/desktop/background/ctx";
 import type { DesktopExtensionMessage } from "@/platform/desktop/message";
 import { derived } from "svelte/store";
@@ -64,6 +69,10 @@ function runAddDeferredNoteTaskInBackground(ankiApi: DesktopAnkiApi) {
     void ankiApi.addDeferredNotes();
   }, 1000 * 30);
 }
+
+handleBrowserLoad(() => {
+  void initialize();
+});
 
 ExtensionMessageListener.init<DesktopExtensionMessage>()
   .on("DesktopPlatform.setStore", async (req) => {
@@ -125,6 +134,13 @@ ExtensionMessageListener.init<DesktopExtensionMessage>()
   .done()
   .verify();
 
-handleBrowserLoad(() => {
-  void initialize();
-});
+ExtensionStreamListener.init<DesktopExtensionStream>()
+  .on("DesktopBackend.updateDictionary", () => {
+    return DeferredWithProgress.execute<boolean, string>(
+      "Initializing background script...",
+      async (setProgress) => {
+        const ctx = await lazyInitialize.get();
+        return await ctx.backend.updateDictionary().await(setProgress);
+      },
+    );
+  });

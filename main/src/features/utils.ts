@@ -87,6 +87,20 @@ export class Deferred<V> extends Promise<V> {
   }
 }
 
+/*
+
+Working on API...
+
+PromiseWithProgress.create("Initial Progress...")
+  .chain(doSomething())
+  .setProgress((value) => "Progressing...")
+  .catch((err) => ...)
+  .chain(doAsync2())
+  .setProgress((value) => Progressing2...)
+  .catch((err) => ...)
+  .chain(doFinal())
+ */
+
 export class DeferredWithProgress<V, P> extends Promise<V> {
   readonly progress!: Writable<P>;
   private _resolve: PromiseResolver<V>;
@@ -112,7 +126,7 @@ export class DeferredWithProgress<V, P> extends Promise<V> {
     this._reject = reject!;
   }
 
-  static create<V, P>(initialProgress: P): DeferredWithProgress<V, P> {
+  static withProgress<V, P>(initialProgress: P): DeferredWithProgress<V, P> {
     const deferred = new DeferredWithProgress<V, P>((..._args) => {});
     // @ts-expect-error initial writing to readonly outside constructor
     deferred.progress = writable(initialProgress);
@@ -123,7 +137,7 @@ export class DeferredWithProgress<V, P> extends Promise<V> {
     promise: Promise<V>,
     initialProgress: P,
   ): DeferredWithProgress<V, P> {
-    const deferred = DeferredWithProgress.create<V, P>(initialProgress);
+    const deferred = DeferredWithProgress.withProgress<V, P>(initialProgress);
     promise.then(
       (value) => {
         deferred.resolve(value);
@@ -133,6 +147,27 @@ export class DeferredWithProgress<V, P> extends Promise<V> {
       },
     );
     return deferred;
+  }
+
+  static execute<V, P>(
+    initialProgress: P,
+    handler: (setProgress: (progress: P) => Promise<void>) => Promise<V>,
+  ): DeferredWithProgress<V, P> {
+    const deferred = DeferredWithProgress.withProgress<V, P>(initialProgress);
+    handler(deferred.setProgress.bind(deferred))
+      .then((ret) => {
+        deferred.resolve(ret);
+      }).catch((err: unknown) => {
+        deferred.reject(YomikiriError.from(err));
+      });
+    return deferred;
+  }
+
+  async await(setProgress: (progress: P) => void): Promise<V> {
+    const unsubscribe = this.progress.subscribe(setProgress);
+    const result = await this;
+    unsubscribe();
+    return result;
   }
 
   resolve(value: V | PromiseLike<V>): void {

@@ -1,18 +1,12 @@
+/**
+ * Abstraction for Chrome extension port-based connections that support streaming responses.
+ * Provides a clean API for long-running operations with progress updates.
+ */
+
 import { YomikiriError } from "@/features/error";
-import { EXTENSION_CONTEXT } from "consts";
 import { DeferredWithProgress } from "../utils";
 
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
-
-function handleConnection(
-  name: string,
-  handler: ConnectionHandler,
-) {
-  chrome.runtime.onConnect.addListener((port) => {
-    if (port.name !== name) return;
-    handler(port);
-  });
-}
 
 type StreamMessage<S, P> = StreamProgressMessage<P> | StreamSuccessMessage<S> | StreamErrorMessage;
 
@@ -31,26 +25,40 @@ interface StreamErrorMessage {
   message: YomikiriError;
 }
 
-/**
- * Abstraction for Chrome extension port-based connections that support streaming responses.
- * Provides a clean API for long-running operations with progress updates.
- *
- * `key` must be unique across API in `@/features/extension/stream.ts`
- */
-export class ExtensionStream<TResult, TProgress> {
-  constructor(public readonly key: string) {}
+export type ExtensionStream<Key extends string, Success, Progress> = {
+  key: Key;
+  success: Success;
+  progress: Progress;
+};
+
+type AnyExtensionStream = ExtensionStream<string, unknown, unknown>;
+
+export type StreamByKey<S extends AnyExtensionStream, K extends S["key"]> = Extract<S, { key: K }>;
+
+export class ExtensionStreamListener<S extends AnyExtensionStream> {
+  private constructor() {}
+
+  static init<S extends AnyExtensionStream>(): ExtensionStreamListener<S> {
+    return new ExtensionStreamListener();
+  }
 
   /**
    * Handle incoming connections for this key.
    * The handler should return a PromiseWithProgress that will be used to stream
    * progress updates and the final result back to the requester.
    */
-  handle(handler: () => DeferredWithProgress<TResult, TProgress>) {
-    handleConnection(this.key, (port) => {
+  on<K extends S["key"]>(
+    key: K,
+    handler: () => DeferredWithProgress<
+      StreamByKey<S, K>["success"],
+      StreamByKey<S, K>["progress"]
+    >,
+  ): this {
+    handleConnection(key, (port) => {
       const progressPromise = handler();
 
       progressPromise.progress.subscribe((progress) => {
-        const message: StreamProgressMessage<TProgress> = {
+        const message: StreamProgressMessage<StreamByKey<S, K>["progress"]> = {
           status: "progress",
           message: progress,
         };
@@ -59,7 +67,7 @@ export class ExtensionStream<TResult, TProgress> {
 
       progressPromise
         .then((result) => {
-          const message: StreamSuccessMessage<TResult> = {
+          const message: StreamSuccessMessage<StreamByKey<S, K>["success"]> = {
             status: "success",
             message: result,
           };
@@ -73,99 +81,62 @@ export class ExtensionStream<TResult, TProgress> {
           port.postMessage(message);
         });
     });
+    return this;
   }
 
-  /**
-   * Send a connection request and return a PromiseWithProgress.
-   * The progress will be streamed from the handler, and the promise will resolve with the final result.
-   */
-  start(initialProgress: TProgress): DeferredWithProgress<TResult, TProgress> {
-    const port = chrome.runtime.connect({ name: this.key });
-    const prom = DeferredWithProgress.create<TResult, TProgress>(initialProgress);
-
-    let completed = false;
-
-    port.onMessage.addListener(async (msg: StreamMessage<TResult, TProgress>) => {
-      if (msg.status === "progress") {
-        await prom.setProgress(msg.message);
-      } else if (msg.status === "success") {
-        completed = true;
-        prom.resolve(msg.message);
-      } else {
-        completed = true;
-        prom.reject(YomikiriError.from(msg.message));
-      }
-    });
-
-    port.onDisconnect.addListener(() => {
-      if (!completed) {
-        completed = true;
-        prom.reject(
-          new YomikiriError(
-            "Unexpectedly disconnected from background script",
-          ),
-        );
-      }
-    });
-
-    return prom;
+  done(): [S] extends [never] ? this : never;
+  done(): this {
+    return this;
   }
+
+  verify(): void {}
 }
 
 /**
- * Returns a function that:
- * - If in background context: runs `fn`
- * - Else: Sends a stream connection to background to run `fn`.
- *
- * If in background, it attaches a stream handler that executes `fn`.
- *
- * `key` must be unique across API in `@/features/extension/stream.ts`
+ * Send a connection request and return a PromiseWithProgress.
+ * The progress will be streamed from the handler, and the promise will resolve with the final result.
  */
-export function BackgroundStreamFunction<TResult, TProgress>(
-  key: string,
-  fn: () => DeferredWithProgress<TResult, TProgress>,
-  initialProgress: TProgress,
-): () => DeferredWithProgress<TResult, TProgress> {
-  const stream = new ExtensionStream<TResult, TProgress>(key);
+export function startExtensionStream<S extends AnyExtensionStream>(
+  key: S["key"],
+  initialProgress: S["progress"],
+): DeferredWithProgress<S["success"], S["progress"]> {
+  const port = chrome.runtime.connect({ name: key });
+  const prom = DeferredWithProgress.withProgress<S["success"], S["progress"]>(initialProgress);
 
-  if (EXTENSION_CONTEXT === "background") {
-    stream.handle(fn);
-  }
+  let completed = false;
 
-  return function inner(): DeferredWithProgress<TResult, TProgress> {
-    if (EXTENSION_CONTEXT !== "background") {
-      return stream.start(initialProgress);
+  port.onMessage.addListener(async (msg: StreamMessage<S["success"], S["progress"]>) => {
+    if (msg.status === "progress") {
+      await prom.setProgress(msg.message);
+    } else if (msg.status === "success") {
+      completed = true;
+      prom.resolve(msg.message);
     } else {
-      return fn();
+      completed = true;
+      prom.reject(YomikiriError.from(msg.message));
     }
-  };
+  });
+
+  port.onDisconnect.addListener(() => {
+    if (!completed) {
+      completed = true;
+      prom.reject(
+        new YomikiriError(
+          "Unexpectedly disconnected from background script",
+        ),
+      );
+    }
+  });
+
+  return prom;
 }
 
-/**
- * Returns a function that:
- * - If in content script: sends a stream connection to background to run `fn`
- * - Else: runs `fn` as-is.
- *
- * If in background, it attaches a stream handler that executes `fn`.
- *
- * `key` must be unique across API in `@/features/extension/stream.ts`
- */
-export function NonContentScriptStreamFunction<TResult, TProgress>(
-  key: string,
-  fn: () => DeferredWithProgress<TResult, TProgress>,
-  initialProgress: TProgress,
-): () => DeferredWithProgress<TResult, TProgress> {
-  const stream = new ExtensionStream<TResult, TProgress>(key);
-
-  if (EXTENSION_CONTEXT === "background") {
-    stream.handle(fn);
-  }
-
-  return function inner(): DeferredWithProgress<TResult, TProgress> {
-    if (EXTENSION_CONTEXT === "contentScript") {
-      return stream.start(initialProgress);
-    } else {
-      return fn();
-    }
-  };
+function handleConnection(
+  name: string,
+  handler: ConnectionHandler,
+) {
+  chrome.runtime.onConnect.addListener((port) => {
+    if (port.name !== name) return;
+    handler(port);
+  });
 }

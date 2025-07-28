@@ -1,4 +1,4 @@
-import { BackgroundStreamFunction } from "@/features/extension";
+import type { DeferredWithProgress } from "@/features/utils";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -7,6 +7,7 @@ import type {
   TokenizeResult,
 } from "../types/backend";
 import type { DesktopBackendBackground } from "./background/backend";
+import { startDesktopExtensionStream } from "./extensionStream";
 import { sendDesktopExtensionMessage } from "./message";
 
 /** Must be initialized synchronously on page load */
@@ -48,10 +49,15 @@ export class DesktopBackend implements IBackend {
       return sendDesktopExtensionMessage("DesktopBackend.getDictMetadata", undefined);
     }
   }
-  /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
-  readonly updateDictionary = BackgroundStreamFunction<boolean, string>(
-    "DesktopBackend.updateDictionary",
-    () => this.background!.updateDictionary(),
-    "Updating dictionary...",
-  );
+
+  updateDictionary(): DeferredWithProgress<boolean, string> {
+    if (this.background) {
+      return this.background.updateDictionary();
+    } else {
+      return startDesktopExtensionStream(
+        "DesktopBackend.updateDictionary",
+        "Updating dictionary...",
+      );
+    }
+  }
 }

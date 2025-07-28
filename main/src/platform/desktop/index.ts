@@ -1,5 +1,6 @@
 export { DesktopAnkiApi } from "./anki";
 export { DesktopBackend } from "./backend";
+export type { DesktopExtensionStream } from "./extensionStream";
 export { DesktopPlatform } from "./platform";
 
 /*
