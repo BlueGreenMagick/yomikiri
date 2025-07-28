@@ -58,26 +58,39 @@ export class ExtensionMessageListener<M extends AnyExtensionMessage> {
   _messageHandlers: Map<M["key"], MessageHandler<M["request"], M["response"]>> = new Map();
 
   private constructor() {
-    chrome.runtime.onMessage.addListener(async (message: RequestMessage<M>, sender) => {
-      const handler = this._messageHandlers.get(message.key);
-      if (handler) {
-        try {
-          const resp = await handler(message.request, sender);
-          return {
-            success: true,
-            resp: resp,
-          };
-        } catch (e) {
-          const err = YomikiriError.from(e);
-          return {
-            success: false,
-            error: err,
-          };
+    chrome.runtime.onMessage.addListener(
+      (
+        message: RequestMessage<M>,
+        sender: MessageSender,
+        sendResponse: (
+          response?: ResponseMessage<unknown>,
+        ) => void,
+      ): boolean => {
+        const handler = this._messageHandlers.get(message.key);
+        if (handler) {
+          // Must return true synchronously to wait for response instead of closing message port immediately
+          void (async () => {
+            try {
+              const resp = await handler(message.request, sender);
+              sendResponse({
+                success: true,
+                resp: resp,
+              });
+            } catch (e) {
+              const err = YomikiriError.from(e);
+              sendResponse({
+                success: false,
+                error: err,
+              });
+            }
+          })();
+
+          return true;
+        } else {
+          return false;
         }
-      } else {
-        return null;
-      }
-    });
+      },
+    );
   }
 
   static init<T extends AnyExtensionMessage>(): ExtensionMessageListener<T> {
