@@ -1,4 +1,4 @@
-import { type Writable, writable } from "svelte/store";
+import type { Readable } from "svelte/store";
 import { YomikiriError } from "./error";
 
 export interface Rect {
@@ -87,18 +87,36 @@ export class Deferred<V> extends Promise<V> {
   }
 }
 
-
-export class ProgressTask<R, P> {
-  readonly progress: Writable<P>;
+export class ProgressTask<R, P> implements Readable<P> {
+  private _value: P;
+  private readonly _subscribers: Set<(value: P) => void> = new Set();
   private readonly _promise: Promise<R>;
 
-  constructor(initial: P, run: (setProgress: (progress: P) => Promise<void>) => Promise<R>) {
-    this.progress = writable(initial);
+  constructor(start: P, run: (setProgress: (progress: P) => Promise<void>) => Promise<R>) {
+    this._value = start;
 
-    this._promise = run(async (progress) => {
-      this.progress.set(progress);
-      await nextTask();
-    });
+    this._promise = run((progress) => this.setProgress(progress))
+      .then((value) => {
+        this._subscribers.clear();
+        return value;
+      });
+  }
+
+  private async setProgress(progress: P): Promise<void> {
+    this._value = progress;
+    for (const subscriber of this._subscribers) {
+      subscriber(progress);
+    }
+    await nextTask();
+  }
+
+  subscribe(run: (value: P) => void): () => void {
+    run(this._value);
+    this._subscribers.add(run);
+
+    return () => {
+      this._subscribers.delete(run);
+    };
   }
 
   promise(): Promise<R> {

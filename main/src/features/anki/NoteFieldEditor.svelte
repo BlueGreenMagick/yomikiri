@@ -38,7 +38,7 @@
 
     if (value instanceof ProgressTask) {
       loading = true;
-      unsubscriber = value.progress.subscribe((val) => {
+      unsubscriber = value.subscribe((val) => {
         initialContent = val;
       });
       value.promise()
