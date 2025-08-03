@@ -57,7 +57,7 @@ export class ExtensionStreamListener<S extends AnyExtensionStream> {
     handleConnection(key, (port) => {
       const progressTask = handler();
 
-      progressTask.progress.subscribe((progress) => {
+      progressTask.subscribe((progress) => {
         const message: StreamProgressMessage<StreamByKey<S, K>["progress"]> = {
           status: "progress",
           message: progress,

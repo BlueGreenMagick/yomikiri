@@ -15,7 +15,7 @@ import {
   setBadge,
 } from "@/features/extension";
 import { ExtensionMessageListener } from "@/features/extension/message";
-import Utils, { ProgressTask, exposeGlobals, LazyAsync } from "@/features/utils";
+import Utils, { exposeGlobals, LazyAsync, ProgressTask } from "@/features/utils";
 import { type DesktopAnkiApi, type DesktopExtensionStream } from "@/platform/desktop";
 import { createBackgroundDesktopCtx } from "@/platform/desktop/background/ctx";
 import type { DesktopExtensionMessage } from "@/platform/desktop/message";
@@ -145,7 +145,7 @@ ExtensionStreamListener.init<DesktopExtensionStream>()
       async (setProgress) => {
         const ctx = await lazyInitialize.get();
         const updateTask = ctx.backend.updateDictionary();
-        const unsubscribe = updateTask.progress.subscribe(setProgress);
+        const unsubscribe = updateTask.subscribe(setProgress);
         const result = await updateTask.promise();
         unsubscribe();
         return result;

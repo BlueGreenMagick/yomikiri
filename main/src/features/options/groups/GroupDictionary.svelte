@@ -29,8 +29,8 @@
     try {
       state = "downloading";
       const updating = ctx.backend.updateDictionary();
-      updating.progress.subscribe((value) => {
-        dictDescription = value;
+      updating.subscribe((progress) => {
+        dictDescription = progress;
       });
       const updated = await updating.promise();
       if (updated) {
