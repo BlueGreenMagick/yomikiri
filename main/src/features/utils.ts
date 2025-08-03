@@ -87,20 +87,6 @@ export class Deferred<V> extends Promise<V> {
   }
 }
 
-/*
-
-Working on API...
-
-PromiseWithProgress.create("Initial Progress...")
-  .chain(doSomething())
-  .setProgress((value) => "Progressing...")
-  .catch((err) => ...)
-  .chain(doAsync2())
-  .setProgress((value) => Progressing2...)
-  .catch((err) => ...)
-  .chain(doFinal())
- */
-
 export class DeferredWithProgress<V, P> extends Promise<V> {
   readonly progress!: Writable<P>;
   private _resolve: PromiseResolver<V>;
@@ -191,6 +177,24 @@ export class DeferredWithProgress<V, P> extends Promise<V> {
    */
   setProgressSync(progress: P): void {
     this.progress.set(progress);
+  }
+}
+
+export class ProgressTask<R, P> {
+  readonly progress: Writable<P>;
+  private readonly _promise: Promise<R>;
+
+  constructor(initial: P, run: (setProgress: (progress: P) => Promise<void>) => Promise<R>) {
+    this.progress = writable(initial);
+
+    this._promise = run(async (progress) => {
+      this.progress.set(progress);
+      await nextTask();
+    });
+  }
+
+  promise(): Promise<R> {
+    return this._promise;
   }
 }
 
