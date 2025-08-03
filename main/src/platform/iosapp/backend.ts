@@ -1,4 +1,4 @@
-import { DeferredWithProgress } from "@/features/utils";
+import { ProgressTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type {
   DictionaryMetadata,
@@ -46,10 +46,12 @@ export class IosAppBackend implements IBackend {
     return result;
   }
 
-  updateDictionary(): DeferredWithProgress<boolean, string> {
-    return DeferredWithProgress.fromPromise(
-      sendMessage("updateDict", null),
+  updateDictionary(): ProgressTask<boolean, string> {
+    return new ProgressTask(
       "Updating dictionary... This may take up to a minute.",
+      async () => {
+        return await sendMessage("updateDict", null);
+      }
     );
   }
 

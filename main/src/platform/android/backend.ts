@@ -1,4 +1,4 @@
-import type { DeferredWithProgress } from "@/features/utils";
+import type { ProgressTask } from "@/features/utils";
 import type {
   DictionaryMetadata,
   SearchArgs,
@@ -49,7 +49,7 @@ export class AndroidBackend implements IBackend {
   }
 
   /** TODO */
-  updateDictionary(): DeferredWithProgress<boolean, string> {
+  updateDictionary(): ProgressTask<boolean, string> {
     throw new Error("Unimplemented");
   }
 }

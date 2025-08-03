@@ -65,9 +65,9 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
    *
    * Returns null if deferred notes are currently being added, and another request is queued.
    */
-  addDeferredNotes(): Promise<void | null> {
+  async addDeferredNotes(): Promise<void | null> {
     if (this.page) {
-      return this.page.addDeferredNotes();
+      await this.page.addDeferredNotes().promise();
     } else {
       return sendDesktopExtensionMessage("DesktopAnkiApi.addDeferredNotes", undefined);
     }

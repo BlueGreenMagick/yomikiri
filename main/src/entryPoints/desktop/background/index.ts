@@ -15,7 +15,7 @@ import {
   setBadge,
 } from "@/features/extension";
 import { ExtensionMessageListener } from "@/features/extension/message";
-import Utils, { DeferredWithProgress, exposeGlobals, LazyAsync } from "@/features/utils";
+import Utils, { ProgressTask, exposeGlobals, LazyAsync } from "@/features/utils";
 import { type DesktopAnkiApi, type DesktopExtensionStream } from "@/platform/desktop";
 import { createBackgroundDesktopCtx } from "@/platform/desktop/background/ctx";
 import type { DesktopExtensionMessage } from "@/platform/desktop/message";
@@ -140,11 +140,15 @@ ExtensionMessageListener.init<DesktopExtensionMessage>()
 
 ExtensionStreamListener.init<DesktopExtensionStream>()
   .on("DesktopBackend.updateDictionary", () => {
-    return DeferredWithProgress.execute<boolean, string>(
+    return new ProgressTask<boolean, string>(
       "Initializing background script...",
       async (setProgress) => {
         const ctx = await lazyInitialize.get();
-        return await ctx.backend.updateDictionary().await(setProgress);
+        const updateTask = ctx.backend.updateDictionary();
+        const unsubscribe = updateTask.progress.subscribe(setProgress);
+        const result = await updateTask.promise();
+        unsubscribe();
+        return result;
       },
     );
   });

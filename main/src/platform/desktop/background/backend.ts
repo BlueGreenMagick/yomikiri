@@ -1,5 +1,5 @@
 import { getStorage, removeStorage, setStorage } from "@/features/extension";
-import Utils, { DeferredWithProgress, LazyAsync, nextTask } from "@/features/utils";
+import Utils, { ProgressTask, LazyAsync, nextTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-backend-wasm";
 import type {
@@ -94,8 +94,8 @@ export class DesktopBackendBackground {
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */
-  updateDictionary(): DeferredWithProgress<boolean, string> {
-    return DeferredWithProgress.execute("Updating dictionary...", (setProgress) => {
+  updateDictionary(): ProgressTask<boolean, string> {
+    return new ProgressTask("Updating dictionary...", (setProgress) => {
       return this._updateDictionary(setProgress);
     });
   }

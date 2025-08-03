@@ -13,6 +13,7 @@ import type { WordEntry } from "@yomikiri/backend-bindings";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, test } from "vitest";
+import { ProgressTask } from "../utils";
 import { type AnkiBuilderData, buildAnkiField } from "./ankiBuilder";
 import tokenizeResults from "./ankiBuilder.test.json" with { type: "json" };
 import { type AnkiTemplateField, ankiTemplateFieldLabel } from "./template";
@@ -95,7 +96,7 @@ Missing label: ${label}`);
     const options = generateAllFieldTemplateOptions();
     test.each(options)("$label", async ({ template }) => {
       const field = buildAnkiField(ctx, data, template);
-      const value = await field.value;
+      const value = field.value instanceof ProgressTask ? await field.value.promise() : field.value;
       expect(value).toMatchSnapshot();
     });
 
@@ -111,7 +112,7 @@ Missing label: ${label}`);
     };
     test.each(singleTemplateFields)("(single) $label", async ({ template }) => {
       const field = buildAnkiField(ctx, singleData, template);
-      const value = await field.value;
+      const value = field.value instanceof ProgressTask ? await field.value.promise() : field.value;
       expect(value).toMatchSnapshot();
     });
   },

@@ -30,7 +30,7 @@ export interface Field {
 
 export interface LoadingField {
   name: string;
-  value: string | Utils.DeferredWithProgress<string, string>;
+  value: string | Utils.ProgressTask<string, string>;
 }
 
 export interface AnkiBuilderContext {
@@ -54,13 +54,13 @@ export interface AnkiBuilderData {
 export type AnkiFieldBuilder = (
   ctx: AnkiBuilderContext,
   data: AnkiBuilderData,
-) => string | Utils.DeferredWithProgress<string, string>;
+) => string | Utils.ProgressTask<string, string>;
 
 export async function waitForNoteToLoad(note: LoadingAnkiNote): Promise<void> {
   const promises = [];
   for (const field of note.fields) {
-    if (field.value instanceof Promise) {
-      promises.push(field.value);
+    if (field.value instanceof Utils.ProgressTask) {
+      promises.push(field.value.promise());
     }
   }
   await Promise.allSettled(promises);
@@ -71,7 +71,9 @@ export async function resolveAnkiNote(
   note: LoadingAnkiNote,
 ): Promise<AnkiNote> {
   for (const field of note.fields) {
-    field.value = await field.value;
+    if (field.value instanceof Utils.ProgressTask) {
+      field.value = await field.value.promise();
+    }
   }
   return note as AnkiNote;
 }
@@ -102,7 +104,7 @@ type FieldBuilder<T extends AnkiTemplateFieldContent> = (
   template: AnkiTemplateFieldTypes[T],
   data: AnkiBuilderData,
   ctx: AnkiBuilderContext,
-) => string | Utils.DeferredWithProgress<string, string>;
+) => string | Utils.ProgressTask<string, string>;
 
 const fieldBuilders: Partial<
   {
@@ -395,11 +397,13 @@ addBuilder("sentence", (opts, data) => {
 
 addBuilder("translated-sentence", (_opts, data, ctx) => {
   const translatePromise = ctx.platform.translate(data.sentence);
-  const deferred = Utils.DeferredWithProgress.fromPromise(
-    translatePromise.then((result) => result.translated.trim()),
+  return new Utils.ProgressTask(
     "Translating Sentence...",
+    async () => {
+      const result = await translatePromise;
+      return result.translated.trim();
+    }
   );
-  return deferred;
 });
 
 addBuilder("url", (_opts, data) => {

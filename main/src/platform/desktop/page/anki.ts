@@ -1,20 +1,23 @@
 import type { AnkiInfo, AnkiNote, NotetypeInfo } from "@/features/anki";
 import type { Config } from "@/features/config";
-import { YomikiriError } from "@/features/error";
 import { getStorage, setStorage } from "@/features/extension";
 import {
-  DeferredWithProgress,
   type First,
   getErrorMessage,
   type LazyAsync,
+  ProgressTask,
   type Second,
-  SingleQueued,
 } from "@/features/utils";
 import type { AnkiAddNoteReq } from "@/platform/types/anki";
 
 const ANKI_CONNECT_VER = 6;
 
 type AddDeferredNotesProgress = "loading" | number;
+
+type AddDeferredNotesProgressTask = ProgressTask<
+  void,
+  AddDeferredNotesProgress
+>;
 
 interface AnkiConnectSuccess<T> {
   result: T;
@@ -234,61 +237,62 @@ export class DesktopAnkiApiPage {
     await this.setDeferredNotes(existingNotes);
   }
 
-  readonly addDeferredNotes = SingleQueued(this._addDeferredNotes.bind(this));
+  private _addDeferredNotesInProgress: AddDeferredNotesProgressTask | null = null;
 
-  private _addDeferredNotes(): DeferredWithProgress<
+  addDeferredNotes() {
+    if (this._addDeferredNotesInProgress === null) {
+      this._addDeferredNotesInProgress = this._addDeferredNotes();
+      void this._addDeferredNotesInProgress.promise().then(() => {
+        this._addDeferredNotesInProgress = null;
+      });
+    }
+    return this._addDeferredNotesInProgress;
+  }
+
+  private _addDeferredNotes(): ProgressTask<
     void,
     AddDeferredNotesProgress
   > {
-    const promise = DeferredWithProgress.withProgress<void, AddDeferredNotesProgress>(
+    return new ProgressTask<void, AddDeferredNotesProgress>(
       "loading",
-    );
+      async (setProgress) => {
+        const config = await this.lazyConfig.get();
+        const noteCount = config.get("state.anki.deferred_note_count");
 
-    (async () => {
-      const config = await this.lazyConfig.get();
-      const noteCount = config.get("state.anki.deferred_note_count");
-
-      if (noteCount === 0) {
-        promise.resolve();
-        return;
-      }
-
-      await promise.setProgress(noteCount);
-      await setStorage("deferred-anki-note-errors", []);
-      await config.set("state.anki.deferred_note_error", false);
-
-      const deferredNotes = await getStorage("deferred-anki-note", []);
-      const errorMessages: string[] = [];
-
-      // don't remove notes that failed to be added to Anki.
-      let i = 0;
-      while (i < deferredNotes.length) {
-        const note = deferredNotes[i];
-        try {
-          await this.addNote({ note, deferrable: false });
-          deferredNotes.splice(i, 1);
-          await this.setDeferredNotes(deferredNotes, config);
-        } catch (err: unknown) {
-          if (err instanceof AnkiConnectError) {
-            errorMessages.push(getErrorMessage(err));
-            await setStorage("deferred-anki-note-errors", errorMessages);
-            await config.set("state.anki.deferred_note_error", true);
-            i += 1;
-          } else {
-            break;
-          }
-        } finally {
-          await promise.setProgress(deferredNotes.length - i);
+        if (noteCount === 0) {
+          return;
         }
-      }
-    })()
-      .then(() => {
-        promise.resolve();
-      })
-      .catch((err: unknown) => {
-        promise.reject(YomikiriError.from(err));
-      });
-    return promise;
+
+        await setProgress(noteCount);
+        await setStorage("deferred-anki-note-errors", []);
+        await config.set("state.anki.deferred_note_error", false);
+
+        const deferredNotes = await getStorage("deferred-anki-note", []);
+        const errorMessages: string[] = [];
+
+        // don't remove notes that failed to be added to Anki.
+        let i = 0;
+        while (i < deferredNotes.length) {
+          const note = deferredNotes[i];
+          try {
+            await this.addNote({ note, deferrable: false });
+            deferredNotes.splice(i, 1);
+            await this.setDeferredNotes(deferredNotes, config);
+          } catch (err: unknown) {
+            if (err instanceof AnkiConnectError) {
+              errorMessages.push(getErrorMessage(err));
+              await setStorage("deferred-anki-note-errors", errorMessages);
+              await config.set("state.anki.deferred_note_error", true);
+              i += 1;
+            } else {
+              break;
+            }
+          } finally {
+            await setProgress(deferredNotes.length - i);
+          }
+        }
+      },
+    );
   }
 
   private async setDeferredNotes(notes: AnkiNote[], config?: Config) {
