@@ -4,7 +4,7 @@
  */
 
 import { YomikiriError } from "@/features/error";
-import { DeferredWithProgress } from "../utils";
+import { createPromise, ProgressTask } from "../utils";
 
 type ConnectionHandler = (port: chrome.runtime.Port) => void;
 
@@ -44,20 +44,20 @@ export class ExtensionStreamListener<S extends AnyExtensionStream> {
 
   /**
    * Handle incoming connections for this key.
-   * The handler should return a PromiseWithProgress that will be used to stream
+   * The handler should return a ProgressTask that will be used to stream
    * progress updates and the final result back to the requester.
    */
   on<K extends S["key"]>(
     key: K,
-    handler: () => DeferredWithProgress<
+    handler: () => ProgressTask<
       StreamByKey<S, K>["success"],
       StreamByKey<S, K>["progress"]
     >,
   ): this {
     handleConnection(key, (port) => {
-      const progressPromise = handler();
+      const progressTask = handler();
 
-      progressPromise.progress.subscribe((progress) => {
+      progressTask.progress.subscribe((progress) => {
         const message: StreamProgressMessage<StreamByKey<S, K>["progress"]> = {
           status: "progress",
           message: progress,
@@ -65,7 +65,7 @@ export class ExtensionStreamListener<S extends AnyExtensionStream> {
         port.postMessage(message);
       });
 
-      progressPromise
+      progressTask.promise()
         .then((result) => {
           const message: StreamSuccessMessage<StreamByKey<S, K>["success"]> = {
             status: "success",
@@ -93,42 +93,44 @@ export class ExtensionStreamListener<S extends AnyExtensionStream> {
 }
 
 /**
- * Send a connection request and return a PromiseWithProgress.
+ * Send a connection request and return a ProgressTask.
  * The progress will be streamed from the handler, and the promise will resolve with the final result.
  */
 export function startExtensionStream<S extends AnyExtensionStream>(
   key: S["key"],
   initialProgress: S["progress"],
-): DeferredWithProgress<S["success"], S["progress"]> {
+): ProgressTask<S["success"], S["progress"]> {
   const port = chrome.runtime.connect({ name: key });
-  const prom = DeferredWithProgress.withProgress<S["success"], S["progress"]>(initialProgress);
 
-  let completed = false;
+  return new ProgressTask<S["success"], S["progress"]>(initialProgress, async (setProgress) => {
+    let completed = false;
+    const [promise, resolve, reject] = createPromise<S["success"]>();
 
-  port.onMessage.addListener(async (msg: StreamMessage<S["success"], S["progress"]>) => {
-    if (msg.status === "progress") {
-      await prom.setProgress(msg.message);
-    } else if (msg.status === "success") {
-      completed = true;
-      prom.resolve(msg.message);
-    } else {
-      completed = true;
-      prom.reject(YomikiriError.from(msg.message));
-    }
+    port.onMessage.addListener(async (msg: StreamMessage<S["success"], S["progress"]>) => {
+      if (msg.status === "progress") {
+        await setProgress(msg.message);
+      } else if (msg.status === "success") {
+        completed = true;
+        resolve(msg.message);
+      } else {
+        completed = true;
+        reject(YomikiriError.from(msg.message));
+      }
+    });
+
+    port.onDisconnect.addListener(() => {
+      if (!completed) {
+        completed = true;
+        reject(
+          new YomikiriError(
+            "Unexpectedly disconnected from background script",
+          ),
+        );
+      }
+    });
+
+    return promise;
   });
-
-  port.onDisconnect.addListener(() => {
-    if (!completed) {
-      completed = true;
-      prom.reject(
-        new YomikiriError(
-          "Unexpectedly disconnected from background script",
-        ),
-      );
-    }
-  });
-
-  return prom;
 }
 
 function handleConnection(

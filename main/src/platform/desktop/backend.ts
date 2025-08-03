@@ -1,4 +1,4 @@
-import type { DeferredWithProgress } from "@/features/utils";
+import type { ProgressTask } from "@/features/utils";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -50,7 +50,7 @@ export class DesktopBackend implements IBackend {
     }
   }
 
-  updateDictionary(): DeferredWithProgress<boolean, string> {
+  updateDictionary(): ProgressTask<boolean, string> {
     if (this.background) {
       return this.background.updateDictionary();
     } else {

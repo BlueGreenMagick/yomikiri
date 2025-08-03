@@ -32,7 +32,7 @@
       updating.progress.subscribe((value) => {
         dictDescription = value;
       });
-      const updated = await updating;
+      const updated = await updating.promise();
       if (updated) {
         dictDescription = "Successfully updated dictionary!";
       } else {

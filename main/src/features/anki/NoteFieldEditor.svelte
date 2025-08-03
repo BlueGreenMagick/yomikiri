@@ -12,7 +12,7 @@
   import type { LoadingField } from "@/features/anki";
   import {
     ChangeTracker,
-    DeferredWithProgress,
+    ProgressTask,
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
@@ -36,12 +36,12 @@
     unsubscribe();
     const value = field.value;
 
-    if (value instanceof DeferredWithProgress) {
+    if (value instanceof ProgressTask) {
       loading = true;
       unsubscriber = value.progress.subscribe((val) => {
         initialContent = val;
       });
-      value
+      value.promise()
         .then((v) => {
           field.value = v;
           initialContent = v;
