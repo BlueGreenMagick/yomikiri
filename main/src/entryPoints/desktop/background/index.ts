@@ -144,10 +144,7 @@ ExtensionStreamListener.init<DesktopExtensionStream>()
       "Initializing background script...",
       async (setProgress) => {
         const ctx = await lazyInitialize.get();
-        const updateTask = ctx.backend.updateDictionary();
-        const unsubscribe = updateTask.subscribe(setProgress);
-        const result = await updateTask.promise;
-        unsubscribe();
+        const result = ctx.backend.updateDictionary().pipe(setProgress);
         return result;
       },
     );
