@@ -118,6 +118,13 @@ export class ProgressTask<R, P> implements Readable<P> {
       this._subscribers.delete(run);
     };
   }
+
+  async pipe(setProgress: (progress: P) => Promise<void>): Promise<R> {
+    const unsubscribe = this.subscribe(setProgress);
+    const value = await this.promise;
+    unsubscribe();
+    return value;
+  }
 }
 
 export class Lazy<T extends NonUndefined> {
