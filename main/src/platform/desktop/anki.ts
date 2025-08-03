@@ -67,7 +67,7 @@ export class DesktopAnkiApi implements IAnkiOptions, IAnkiAddNotes {
    */
   async addDeferredNotes(): Promise<void | null> {
     if (this.page) {
-      await this.page.addDeferredNotes().promise();
+      await this.page.addDeferredNotes().promise;
     } else {
       return sendDesktopExtensionMessage("DesktopAnkiApi.addDeferredNotes", undefined);
     }

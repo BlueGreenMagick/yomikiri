@@ -90,12 +90,12 @@ export class Deferred<V> extends Promise<V> {
 export class ProgressTask<R, P> implements Readable<P> {
   private _value: P;
   private readonly _subscribers: Set<(value: P) => void> = new Set();
-  private readonly _promise: Promise<R>;
+  readonly promise: Promise<R>;
 
   constructor(start: P, run: (setProgress: (progress: P) => Promise<void>) => Promise<R>) {
     this._value = start;
 
-    this._promise = run((progress) => this.setProgress(progress))
+    this.promise = run((progress) => this.setProgress(progress))
       .then((value) => {
         this._subscribers.clear();
         return value;
@@ -117,10 +117,6 @@ export class ProgressTask<R, P> implements Readable<P> {
     return () => {
       this._subscribers.delete(run);
     };
-  }
-
-  promise(): Promise<R> {
-    return this._promise;
   }
 }
 

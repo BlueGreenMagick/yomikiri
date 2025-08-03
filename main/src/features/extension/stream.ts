@@ -65,7 +65,7 @@ export class ExtensionStreamListener<S extends AnyExtensionStream> {
         port.postMessage(message);
       });
 
-      progressTask.promise()
+      progressTask.promise
         .then((result) => {
           const message: StreamSuccessMessage<StreamByKey<S, K>["success"]> = {
             status: "success",

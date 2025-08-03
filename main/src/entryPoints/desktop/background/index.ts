@@ -146,7 +146,7 @@ ExtensionStreamListener.init<DesktopExtensionStream>()
         const ctx = await lazyInitialize.get();
         const updateTask = ctx.backend.updateDictionary();
         const unsubscribe = updateTask.subscribe(setProgress);
-        const result = await updateTask.promise();
+        const result = await updateTask.promise;
         unsubscribe();
         return result;
       },

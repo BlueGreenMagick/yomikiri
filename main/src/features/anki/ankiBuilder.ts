@@ -60,7 +60,7 @@ export async function waitForNoteToLoad(note: LoadingAnkiNote): Promise<void> {
   const promises = [];
   for (const field of note.fields) {
     if (field.value instanceof Utils.ProgressTask) {
-      promises.push(field.value.promise());
+      promises.push(field.value.promise);
     }
   }
   await Promise.allSettled(promises);
@@ -72,7 +72,7 @@ export async function resolveAnkiNote(
 ): Promise<AnkiNote> {
   for (const field of note.fields) {
     if (field.value instanceof Utils.ProgressTask) {
-      field.value = await field.value.promise();
+      field.value = await field.value.promise;
     }
   }
   return note as AnkiNote;
@@ -402,7 +402,7 @@ addBuilder("translated-sentence", (_opts, data, ctx) => {
     async () => {
       const result = await translatePromise;
       return result.translated.trim();
-    }
+    },
   );
 });
 
