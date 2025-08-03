@@ -87,10 +87,15 @@ export class Deferred<V> extends Promise<V> {
   }
 }
 
+/**
+ * An asynchronous task that tracks progress updates.
+ * Implements Svelte `Readable` store interface for its progress.
+ */
 export class ProgressTask<R, P> implements Readable<P> {
+  readonly promise: Promise<R>;
+
   private _value: P;
   private readonly _subscribers: Set<(value: P) => void> = new Set();
-  readonly promise: Promise<R>;
 
   constructor(start: P, run: (setProgress: (progress: P) => Promise<void>) => Promise<R>) {
     this._value = start;
@@ -119,6 +124,10 @@ export class ProgressTask<R, P> implements Readable<P> {
     };
   }
 
+  /**
+   * Used to pipe progress update to parent ProgressTask.
+   * Pass `setProgress` callback in parent ProgressTask constructor.
+   */
   async pipe(setProgress: (progress: P) => Promise<void>): Promise<R> {
     const unsubscribe = this.subscribe(setProgress);
     const value = await this.promise;
