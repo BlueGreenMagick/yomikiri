@@ -242,7 +242,7 @@ export class DesktopAnkiApiPage {
   addDeferredNotes() {
     if (this._addDeferredNotesInProgress === null) {
       this._addDeferredNotesInProgress = this._addDeferredNotes();
-      void this._addDeferredNotesInProgress.promise().then(() => {
+      void this._addDeferredNotesInProgress.promise.then(() => {
         this._addDeferredNotesInProgress = null;
       });
     }

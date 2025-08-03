@@ -41,7 +41,7 @@
       unsubscriber = value.subscribe((val) => {
         initialContent = val;
       });
-      value.promise()
+      value.promise
         .then((v) => {
           field.value = v;
           initialContent = v;
@@ -98,7 +98,7 @@
     element.ownerDocument.execCommand(
       "inserthtml",
       false,
-      escapeHTML(prefix) + text + escapeHTML(postfix),
+      escapeHTML(prefix) + text + escapeHTML(postfix)
     );
   }
 

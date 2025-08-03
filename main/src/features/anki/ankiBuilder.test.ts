@@ -96,7 +96,7 @@ Missing label: ${label}`);
     const options = generateAllFieldTemplateOptions();
     test.each(options)("$label", async ({ template }) => {
       const field = buildAnkiField(ctx, data, template);
-      const value = field.value instanceof ProgressTask ? await field.value.promise() : field.value;
+      const value = field.value instanceof ProgressTask ? await field.value.promise : field.value;
       expect(value).toMatchSnapshot();
     });
 
@@ -112,7 +112,7 @@ Missing label: ${label}`);
     };
     test.each(singleTemplateFields)("(single) $label", async ({ template }) => {
       const field = buildAnkiField(ctx, singleData, template);
-      const value = field.value instanceof ProgressTask ? await field.value.promise() : field.value;
+      const value = field.value instanceof ProgressTask ? await field.value.promise : field.value;
       expect(value).toMatchSnapshot();
     });
   },
