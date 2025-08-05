@@ -39,12 +39,6 @@ jobs:
       - name: Install cargo binstall
         uses: cargo-bins/cargo-binstall@c5b9ad0629490ed87096ffcb99f215ef349b9cdb
       
-      - name: Install Cargo ndk
-        run: cargo binstall cargo-ndk --no-confirm
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
       - name: Install Task
         uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 # v2
         with:
@@ -88,17 +82,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dprint-
 
-      - name: Formatting
-        run: task --verbose check-format
-
-      - name: Install wasm-pack
-        run: pnpm add -g wasm-pack
-
       - name: Cache generated/
         uses: actions/cache@v4
         with:
           path: generated/
           key: generated
+
+      - name: Formatting
+        run: task --verbose check-format
+
+      - name: Install Cargo ndk
+        run: cargo binstall cargo-ndk --no-confirm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install wasm-pack
+        run: pnpm add -g wasm-pack
 
       - name: Build
         run: task --verbose build:all
