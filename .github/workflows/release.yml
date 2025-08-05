@@ -40,10 +40,12 @@ jobs:
         with:
           toolchain: 1.85.0
           components: clippy, rustfmt
-      
+
+      - name: Install cargo binstall
+        uses: cargo-bins/cargo-binstall@c5b9ad0629490ed87096ffcb99f215ef349b9cdb
       
       - name: Install Cargo ndk
-        run: cargo install cargo-ndk
+        run: cargo binstall cargo-ndk --no-confirm
 
       - name: Install Task
         uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 # v2
