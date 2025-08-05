@@ -12,10 +12,10 @@
   import type { LoadingField } from "@/features/anki";
   import {
     ChangeTracker,
-    ProgressTask,
     escapeHTML,
     getErrorMessage,
     isAppleDevice,
+    ProgressTask,
   } from "@/features/utils";
   import { onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
@@ -98,7 +98,7 @@
     element.ownerDocument.execCommand(
       "inserthtml",
       false,
-      escapeHTML(prefix) + text + escapeHTML(postfix)
+      escapeHTML(prefix) + text + escapeHTML(postfix),
     );
   }
 

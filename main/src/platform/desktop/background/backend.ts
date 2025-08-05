@@ -1,5 +1,5 @@
 import { getStorage, removeStorage, setStorage } from "@/features/extension";
-import Utils, { ProgressTask, LazyAsync, nextTask } from "@/features/utils";
+import Utils, { LazyAsync, nextTask, ProgressTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-backend-wasm";
 import type {

@@ -51,7 +51,7 @@ export class IosAppBackend implements IBackend {
       "Updating dictionary... This may take up to a minute.",
       async () => {
         return await sendMessage("updateDict", null);
-      }
+      },
     );
   }
 
