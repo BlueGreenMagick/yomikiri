@@ -1,6 +1,6 @@
-import { type Configuration } from "@/features/config";
-import type { Configuration_1 } from "./v1";
-import type { Configuration_2 } from "./v2";
+import type { Configuration_V1 } from "./v1";
+import type { Configuration_V2 } from "./v2";
+import type { Configuration_V3 } from "./v3";
 
 interface ConfigBase {
   config_version?: number | undefined;
@@ -18,9 +18,9 @@ export type StoredConfig<C extends ConfigBase> =
 
 interface Configurations {
   0: Configuration_New;
-  1: Configuration_1;
-  2: Configuration_2;
-  3: Configuration;
+  1: Configuration_V1.Configuration;
+  2: Configuration_V2.Configuration;
+  3: Configuration_V3.Configuration;
 }
 
 export type CompatConfiguration = Configurations[keyof Configurations];
