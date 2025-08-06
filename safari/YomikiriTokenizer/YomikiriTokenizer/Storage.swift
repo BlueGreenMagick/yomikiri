@@ -10,13 +10,13 @@ private let defaults = getSharedDefaults()
 /// Wrapper for shared storage between app and extensions
 /// Each value saved in Storage has its own getter and setter
 public enum LegacyStorage {
-    public static let config = StoragePropertyWithDefault<String>(key: "config", other: "{}")
-    public static let jmdictEtag = StorageProperty<String>(key: "dict.jmdict.etag")
-    public static let jmnedictEtag = StorageProperty<String>(key: "dict.jmnedict.etag")
-    public static let dictSchemaVer = StorageProperty<Int>(key: "dict.schema_ver")
+    public static let config = LegacyStoragePropertyWithDefault<String>(key: "config", other: "{}")
+    public static let jmdictEtag = LegacyStorageProperty<String>(key: "dict.jmdict.etag")
+    public static let jmnedictEtag = LegacyStorageProperty<String>(key: "dict.jmnedict.etag")
+    public static let dictSchemaVer = LegacyStorageProperty<Int>(key: "dict.schema_ver")
 }
 
-public struct StorageProperty<T> {
+public struct LegacyStorageProperty<T> {
     let key: String
 
     public func get() throws -> T? {
@@ -28,7 +28,7 @@ public struct StorageProperty<T> {
     }
 }
 
-public struct StoragePropertyWithDefault<T> {
+public struct LegacyStoragePropertyWithDefault<T> {
     let key: String
     let other: T
 
