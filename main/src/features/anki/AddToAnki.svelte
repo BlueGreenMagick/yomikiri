@@ -5,7 +5,7 @@
 <script lang="ts">
   import TextButton from "@/features/components/TextButton.svelte";
   import { YomikiriError } from "@/features/error";
-  import { HourglassToastIcon } from "@/features/toast";
+  import { HourglassToastIcon, Toast } from "@/features/toast";
   import { ChangeTracker, SingleQueued } from "@/features/utils";
   import type { AppCtx } from "../ctx";
   import {
@@ -49,16 +49,16 @@
     try {
       added = await ctx.anki.addNote({ note: ankiNote });
       if (added) {
-        ctx.toast.success("Note added to Anki");
+        Toast.success("Note added to Anki");
       } else {
-        ctx.toast.success("Note will be added when Anki is connected", "", {
+        Toast.success("Note will be added when Anki is connected", "", {
           icon: HourglassToastIcon,
           duration: 3000,
         });
       }
       noteAdded();
     } catch (err) {
-      ctx.toast.yomikiriError(YomikiriError.from(err));
+      Toast.yomikiriError(YomikiriError.from(err));
     }
   }
 

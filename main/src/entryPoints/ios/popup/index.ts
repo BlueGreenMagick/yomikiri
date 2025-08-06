@@ -1,12 +1,10 @@
 import type { AppCtx, IosCtx } from "@/features/ctx";
-import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosPageCtx } from "@/platform/ios/page/ctx";
 import PopupPage from "./PopupPage.svelte";
 
 async function initialize(): Promise<AppCtx<IosCtx>> {
   const ctx = createIosPageCtx();
-  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
 
   exposeGlobals({
@@ -16,7 +14,7 @@ async function initialize(): Promise<AppCtx<IosCtx>> {
     page,
   });
 
-  return { ...ctx, config, toast };
+  return { ...ctx, config };
 }
 
 const page = new PopupPage({

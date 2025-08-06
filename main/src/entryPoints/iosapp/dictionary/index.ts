@@ -1,5 +1,4 @@
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
-import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosAppCtx } from "@/platform/iosapp";
 import DictionaryPage from "./DictionaryPage.svelte";
@@ -8,7 +7,6 @@ const _page = createSvelte();
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const ctx = createIosAppCtx();
-  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
 
   exposeGlobals({
@@ -17,7 +15,7 @@ async function initialize(): Promise<AppCtx<IosAppCtx>> {
     config,
   });
 
-  return { ...ctx, config, toast };
+  return { ...ctx, config };
 }
 
 function createSvelte(): DictionaryPage {

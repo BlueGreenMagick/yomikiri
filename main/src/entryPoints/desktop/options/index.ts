@@ -1,12 +1,10 @@
 import type { AppCtx, DesktopCtx } from "@/features/ctx";
 import { OptionsPage } from "@/features/options";
-import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createPageDesktopCtx } from "@/platform/desktop/page/ctx";
 
 async function initialize(): Promise<AppCtx<DesktopCtx>> {
   const ctx = createPageDesktopCtx();
-  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
 
   exposeGlobals({
@@ -16,7 +14,7 @@ async function initialize(): Promise<AppCtx<DesktopCtx>> {
     config,
   });
 
-  return { ...ctx, toast, config };
+  return { ...ctx, config };
 }
 
 const _page = new OptionsPage({

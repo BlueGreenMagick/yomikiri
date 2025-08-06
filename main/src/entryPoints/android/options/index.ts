@@ -1,12 +1,10 @@
 import type { AndroidCtx, AppCtx } from "@/features/ctx";
 import { OptionsPage } from "@/features/options";
-import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createAndroidCtx } from "@/platform/android";
 
 async function initialize(): Promise<AppCtx<AndroidCtx>> {
   const ctx = createAndroidCtx();
-  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
 
   exposeGlobals({
@@ -17,7 +15,7 @@ async function initialize(): Promise<AppCtx<AndroidCtx>> {
     page,
   });
 
-  return { ...ctx, config, toast };
+  return { ...ctx, config };
 }
 
 const page = new OptionsPage({

@@ -1,5 +1,6 @@
 import { YomikiriError } from "@/features/error";
 import type { AppCtx } from "../ctx";
+import { Toast } from "../toast";
 
 declare global {
   interface Window {
@@ -73,5 +74,5 @@ export function handleErrors(attached: HTMLElement, ctx: AppCtx) {
 function showError(ctx: AppCtx, err: unknown) {
   const error = YomikiriError.from(err);
   console.error(error);
-  ctx.toast.yomikiriError(error);
+  Toast.yomikiriError(error);
 }

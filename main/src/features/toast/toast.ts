@@ -7,8 +7,18 @@ import Toasts from "./Toasts.svelte";
 type ToastType = "success" | "error" | "loading";
 
 export class Toast {
-  toasts?: Toasts;
+  private static instance: Toast;
+  private toasts?: Toasts;
   private recentErrorToasts = new Map<string, number>();
+
+  private constructor() {}
+
+  private static getInstance(): Toast {
+    if (!Toast.instance) {
+      Toast.instance = new Toast();
+    }
+    return Toast.instance;
+  }
 
   private maybeSetupToaster() {
     if (this.toasts === undefined) {
@@ -32,12 +42,13 @@ export class Toast {
     document.body.appendChild(container);
   }
 
-  success(
+  static success(
     message: string,
     details?: string,
     opts: ToastOptions = {},
   ): ToastItem {
-    this.maybeSetupToaster();
+    const instance = Toast.getInstance();
+    instance.maybeSetupToaster();
     return new ToastItem("success", DetailedToast, {
       ...opts,
       props: { message, details, ...opts.props },
@@ -45,49 +56,52 @@ export class Toast {
   }
 
   /** Error toasts with identical message and details are throttled to show every 1 second. */
-  error(message: string, details?: string, opts: ToastOptions = {}): ToastItem | null {
+  static error(message: string, details?: string, opts: ToastOptions = {}): ToastItem | null {
+    const instance = Toast.getInstance();
     const key = `${message} |\u001F| ${details || ""}`;
     const now = Date.now();
-    const lastToast = this.recentErrorToasts.get(key);
+    const lastToast = instance.recentErrorToasts.get(key);
 
     if (lastToast && now - lastToast < 1000) {
       return null;
     }
 
-    this.recentErrorToasts.set(key, now);
+    instance.recentErrorToasts.set(key, now);
     setTimeout(() => {
-      this.recentErrorToasts.delete(key);
+      instance.recentErrorToasts.delete(key);
     }, 1000);
 
-    this.maybeSetupToaster();
+    instance.maybeSetupToaster();
     return new ToastItem("error", DetailedToast, {
       ...opts,
       props: { message, details, ...opts.props },
     });
   }
 
-  loading(
+  static loading(
     message: string,
     details?: string,
     opts: ToastOptions = {},
   ): ToastItem {
-    this.maybeSetupToaster();
-    return new ToastItem("error", DetailedToast, {
+    const instance = Toast.getInstance();
+    instance.maybeSetupToaster();
+    return new ToastItem("loading", DetailedToast, {
       ...opts,
       props: { message, details, ...opts.props },
     });
   }
 
-  yomikiriError(err: YomikiriError): ToastItem | null {
-    return this.error(err.message, err.details.slice(1).join("\n"));
+  static yomikiriError(err: YomikiriError): ToastItem | null {
+    return Toast.error(err.message, err.details.slice(1).join("\n"));
   }
 
-  custom<T extends Record<string, unknown> = Record<string, unknown>>(
+  static custom<T extends Record<string, unknown> = Record<string, unknown>>(
     type: ToastType,
     message: Renderable<T>,
     opts: Partial<ToastOptions> = {},
   ) {
-    this.maybeSetupToaster();
+    const instance = Toast.getInstance();
+    instance.maybeSetupToaster();
     return new ToastItem(type, message, opts);
   }
 }

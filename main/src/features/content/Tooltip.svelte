@@ -12,6 +12,7 @@
     type Tools,
   } from "@/features/dictionary";
   import { YomikiriError } from "@/features/error";
+  import { Toast } from "@/features/toast";
   import type { TokenizeResult } from "@yomikiri/backend-bindings";
   import { tick } from "svelte";
   import type { AppCtx } from "../ctx";
@@ -45,7 +46,7 @@
     try {
       await _selectedEntryForAnki(request);
     } catch (err) {
-      ctx.toast.yomikiriError(YomikiriError.from(err));
+      Toast.yomikiriError(YomikiriError.from(err));
     }
   }
   async function _selectedEntryForAnki(request: SelectedEntryForAnki) {

@@ -1,12 +1,10 @@
 import type { AppCtx, IosAppCtx } from "@/features/ctx";
 import { OptionsPage } from "@/features/options";
-import { Toast } from "@/features/toast";
 import Utils, { exposeGlobals } from "@/features/utils";
 import { createIosAppCtx } from "@/platform/iosapp";
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const ctx = createIosAppCtx();
-  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
 
   exposeGlobals({
@@ -17,7 +15,7 @@ async function initialize(): Promise<AppCtx<IosAppCtx>> {
     page,
   });
 
-  return { ...ctx, config, toast };
+  return { ...ctx, config };
 }
 
 const page = new OptionsPage({

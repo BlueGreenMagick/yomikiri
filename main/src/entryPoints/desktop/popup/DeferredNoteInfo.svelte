@@ -3,7 +3,7 @@
   import IconTrash from "#icons/trash.svg";
   import IconedButton from "@/features/components/IconedButton.svelte";
   import type { AppCtx, DesktopCtx } from "@/features/ctx";
-  import { CancelDeferredNoteDeletion, TrashToastIcon } from "@/features/toast";
+  import { CancelDeferredNoteDeletion, Toast, TrashToastIcon } from "@/features/toast";
 
   export let ctx: AppCtx<DesktopCtx>;
 
@@ -39,7 +39,7 @@
   async function discardDeferredNotes() {
     const clearJob = await AnkiApi.clearDeferredNotes();
 
-    const toast = ctx.toast.custom("success", CancelDeferredNoteDeletion, {
+    const toast = Toast.custom("success", CancelDeferredNoteDeletion, {
       duration: 4000,
       icon: TrashToastIcon,
       props: {

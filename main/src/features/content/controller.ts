@@ -1,7 +1,6 @@
 import type { Config } from "../config";
 import type { AndroidCtx, DesktopCtx, IosCtx } from "../ctx";
 import { containsJapaneseContent } from "../japanese";
-import { Toast } from "../toast";
 import { isTouchScreen, LazyAsync, SingleQueued } from "../utils";
 import { type Highlighter, SelectionHighlighter, WrapHighlighter } from "./highlight";
 import { charLocationAtPos, nodesOfToken, sentenceAtCharLocation, textNodeAtPos } from "./scanner";
@@ -37,12 +36,10 @@ export class ContentScriptController {
   }
 
   private async createTooltip() {
-    const toast = new Toast();
     const config = await this.lazyConfig.get();
     const ctx = {
       ...this.ctx,
       config,
-      toast,
     };
     const tooltip = new Tooltip(ctx);
 

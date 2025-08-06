@@ -5,7 +5,6 @@ import type { IosAnkiApi, IosBackend, IosPlatform } from "@/platform/ios";
 import type { IosAppAnkiApi, IosAppBackend, IosAppPlatform } from "@/platform/iosapp";
 import type { Config } from "./config";
 import type { Store } from "./store";
-import type { Toast } from "./toast/toast";
 import type { LazyAsync } from "./utils";
 
 export interface LazyConfigCtx {
@@ -49,10 +48,6 @@ export interface ConfigCtx {
   config: Config;
 }
 
-export interface ToastCtx {
-  toast: Toast;
-}
-
 export type EmptyCtx = Record<never, never>;
 
-export type AppCtx<T = EmptyCtx> = ConfigCtx & AnyPlatformCtx & ToastCtx & T;
+export type AppCtx<T = EmptyCtx> = ConfigCtx & AnyPlatformCtx & T;
