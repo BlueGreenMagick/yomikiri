@@ -1,6 +1,6 @@
 <script lang="ts">
   import TextButton from "@/features/components/TextButton.svelte";
-  import { ToastItem } from "./toast";
+  import type { ToastItem } from "./toast";
 
   export let message: string;
   export let details: string | undefined;

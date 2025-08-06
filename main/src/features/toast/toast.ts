@@ -93,7 +93,7 @@ export class Toast {
 }
 
 /** Do not directly call the constructor. Toasts should be created from ToastFactory instead. */
-export class ToastItem<
+class ToastItem<
   T extends Record<string, unknown> = Record<string, unknown>,
 > {
   id: string;
@@ -142,6 +142,8 @@ export class ToastItem<
     toast.dismiss(this.id);
   }
 }
+
+export type { ToastItem };
 
 /**
  * Creates toast, and returns its id.
