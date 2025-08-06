@@ -8,8 +8,8 @@ const _page = createSvelte();
 
 async function initialize(): Promise<AppCtx<IosAppCtx>> {
   const ctx = createIosAppCtx();
+  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
-  const toast = new Toast(ctx.lazyConfig);
 
   exposeGlobals({
     Platform: ctx.platform,

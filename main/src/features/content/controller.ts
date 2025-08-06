@@ -37,8 +37,8 @@ export class ContentScriptController {
   }
 
   private async createTooltip() {
+    const toast = new Toast();
     const config = await this.lazyConfig.get();
-    const toast = new Toast(this.lazyConfig);
     const ctx = {
       ...this.ctx,
       config,

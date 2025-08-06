@@ -6,8 +6,8 @@ import PopupPage from "./PopupPage.svelte";
 
 async function initialize(): Promise<AppCtx<DesktopCtx>> {
   const ctx = createPageDesktopCtx();
+  const toast = new Toast();
   const config = await ctx.lazyConfig.get();
-  const toast = new Toast(ctx.lazyConfig);
 
   exposeGlobals({
     Platform: ctx.platform,

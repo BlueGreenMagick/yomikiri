@@ -1,8 +1,6 @@
 import { TOASTER_ZINDEX } from "consts";
 import toast, { type Renderable, type ToastOptions } from "svelte-french-toast";
-import type { Config } from "../config";
 import { YomikiriError } from "../error";
-import type { LazyAsync } from "../utils";
 import DetailedToast from "./DetailedToast.svelte";
 import Toasts from "./Toasts.svelte";
 
@@ -11,8 +9,6 @@ type ToastType = "success" | "error" | "loading";
 export class Toast {
   toasts?: Toasts;
   private recentErrorToasts = new Map<string, number>();
-
-  constructor(private lazyConfig: LazyAsync<Config>) {}
 
   private maybeSetupToaster() {
     if (this.toasts === undefined) {
@@ -32,9 +28,6 @@ export class Toast {
     if (root === null) throw Error("Could not access shadow DOM of toaster");
     const innerContainer = document.createElement("div");
     root.appendChild(innerContainer);
-    void this.lazyConfig.get().then((c) => {
-      c.setUpdatedStyle(innerContainer);
-    });
     this.toasts = new Toasts({ target: innerContainer, props: {} });
     document.body.appendChild(container);
   }
