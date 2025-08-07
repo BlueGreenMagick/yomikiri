@@ -1,6 +1,3 @@
-import type { StoredConfig } from "./types";
-import type { Configuration_V2 } from "./v2";
-
 export namespace Configuration_V1 {
   export interface TTSVoice {
     id: string;
@@ -48,13 +45,4 @@ export namespace Configuration_V1 {
     "anki.template": AnkiNote | null;
     config_version?: undefined;
   }
-}
-
-export function migrateConfiguration_1(
-  config: StoredConfig<Configuration_V1.Configuration>,
-): StoredConfig<Configuration_V2.Configuration> {
-  return {
-    ...config,
-    config_version: 2,
-  };
 }
