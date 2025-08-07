@@ -53,13 +53,7 @@ export interface AnkiTemplateFieldMeaningOptions {
   single_max_item: number;
 }
 
-export interface AnkiNote {
-  deck: string;
-  notetype: string;
-  fields: Field[];
-  tags: string;
-}
-
+export type AnkiNote = V2.AnkiNote;
 export type Field = V2.Field;
 
 export interface TTSVoice {
