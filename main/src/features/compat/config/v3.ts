@@ -1,114 +1,112 @@
-import {
-  type AnkiNote,
-  type AnkiTemplate,
-  type AnkiTemplateField,
-  type AnkiTemplateFieldSentenceOptions,
-  type AnkiTemplateFieldWordOptions,
-  type Field,
-  newAnkiTemplateField,
-} from "@/features/anki";
-
-import type { Configuration } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import type { StoredConfig } from "./types";
-import type { Configuration_V2 } from "./v2";
+import type * as V2 from "./v2";
 
-export namespace Configuration_V3 {
-  export interface AnkiTemplate {
-    deck: string;
-    notetype: string;
-    tags: string;
-    fields: AnkiTemplateField[];
-  }
+export interface AnkiTemplate {
+  deck: string;
+  notetype: string;
+  tags: string;
+  fields: AnkiTemplateField[];
+}
 
-  interface FieldBase<C extends keyof AnkiTemplateFieldTypes> {
-    name: string;
-    content: C;
-  }
+interface FieldBase<C extends keyof AnkiTemplateFieldTypes> {
+  name: string;
+  content: C;
+}
 
-  export interface AnkiTemplateFieldTypes {
-    "": FieldBase<"">;
-    word: FieldBase<"word"> & AnkiTemplateFieldWordOptions;
-    sentence: FieldBase<"sentence"> & AnkiTemplateFieldSentenceOptions;
-    "translated-sentence": FieldBase<"translated-sentence">;
-    meaning: FieldBase<"meaning"> & AnkiTemplateFieldMeaningOptions;
-    url: FieldBase<"url">;
-    link: FieldBase<"link">;
-  }
+export type AnkiTemplateFieldContent = keyof AnkiTemplateFieldTypes;
 
-  export type AnkiTemplateField = AnkiTemplateFieldTypes[keyof AnkiTemplateFieldTypes];
+export interface AnkiTemplateFieldTypes {
+  "": FieldBase<"">;
+  word: FieldBase<"word"> & AnkiTemplateFieldWordOptions;
+  sentence: FieldBase<"sentence"> & AnkiTemplateFieldSentenceOptions;
+  "translated-sentence": FieldBase<"translated-sentence">;
+  meaning: FieldBase<"meaning"> & AnkiTemplateFieldMeaningOptions;
+  url: FieldBase<"url">;
+  link: FieldBase<"link">;
+}
 
-  /* Field Options */
-  export interface AnkiTemplateFieldWordOptions {
-    form: "as-is" | "dict-form" | "main-dict-form";
-    style: "basic" | "furigana-anki" | "furigana-html" | "kana-only";
-  }
+export type AnkiTemplateField = AnkiTemplateFieldTypes[keyof AnkiTemplateFieldTypes];
 
-  export interface AnkiTemplateFieldSentenceOptions {
-    word: "none" | "cloze" | "bold" | "span";
-    style: "basic" | "furigana-anki" | "furigana-html" | "kana-only";
-  }
+/* Field Options */
+export interface AnkiTemplateFieldWordOptions {
+  form: "as-is" | "dict-form" | "main-dict-form";
+  style: "basic" | "furigana-anki" | "furigana-html" | "kana-only";
+}
 
-  export interface AnkiTemplateFieldMeaningOptions {
-    full_format: "numbered" | "unnumbered" | "line" | "div" | "yomichan";
-    full_pos: boolean;
-    /** Use the first N glossaries per meaning. 0 to set if off. */
-    full_max_item: number;
-    /** TODO: Use the first N meanings evenly across each pos group. 0 to set it off. */
-    // Contain at least 1 meaning from each pos group, then by order
-    // full_max_meaning: number
-    // short_max_meaning: number
+export interface AnkiTemplateFieldSentenceOptions {
+  word: "none" | "cloze" | "bold" | "span";
+  style: "basic" | "furigana-anki" | "furigana-html" | "kana-only";
+}
 
-    /* Options for single selected meaning */
-    single_pos: boolean;
-    single_max_item: number;
-  }
+export interface AnkiTemplateFieldMeaningOptions {
+  full_format: "numbered" | "unnumbered" | "line" | "div" | "yomichan";
+  full_pos: boolean;
+  /** Use the first N glossaries per meaning. 0 to set if off. */
+  full_max_item: number;
+  /** TODO: Use the first N meanings evenly across each pos group. 0 to set it off. */
+  // Contain at least 1 meaning from each pos group, then by order
+  // full_max_meaning: number
+  // short_max_meaning: number
 
-  export interface TTSVoice {
-    id: string;
-    name: string;
-    /**
-     * Higher is better.
-     *
-     * For desktop:
-     * - remote: 100
-     * - non-remote: 200
-     *
-     * For ios:
-     * - default: 100
-     * - enhanced: 200
-     * - premium: 300
-     */
-    quality: number;
-  }
+  /* Options for single selected meaning */
+  single_pos: boolean;
+  single_max_item: number;
+}
 
-  export interface Configuration {
-    "state.enabled": boolean;
-    /** Only for desktop */
-    "state.anki.deferred_note_count": number;
-    /** Only for desktop */
-    "state.anki.deferred_note_error": boolean;
-    "general.font_size": number;
-    "general.font": string;
-    "general.tooltip_max_height": number;
-    "anki.connect_port": number;
-    "anki.connect_url": string;
-    "anki.anki_template": AnkiTemplate | null;
-    "anki.enabled": boolean;
-    /** Defer adding notes if Anki cannot be connected. */
-    "anki.defer_notes": boolean;
-    /** On ios, if auto redirect back to safari */
-    "anki.ios_auto_redirect": boolean;
-    /** set to null if voice is not available */
-    "tts.voice": TTSVoice | null;
-    /** Yomikiri semantic version on last config save */
-    version: string;
-    config_version: 3;
-  }
+export interface AnkiNote {
+  deck: string;
+  notetype: string;
+  fields: Field[];
+  tags: string;
+}
+
+export type Field = V2.Field;
+
+export interface TTSVoice {
+  id: string;
+  name: string;
+  /**
+   * Higher is better.
+   *
+   * For desktop:
+   * - remote: 100
+   * - non-remote: 200
+   *
+   * For ios:
+   * - default: 100
+   * - enhanced: 200
+   * - premium: 300
+   */
+  quality: number;
+}
+
+export interface Configuration {
+  "state.enabled": boolean;
+  /** Only for desktop */
+  "state.anki.deferred_note_count": number;
+  /** Only for desktop */
+  "state.anki.deferred_note_error": boolean;
+  "general.font_size": number;
+  "general.font": string;
+  "general.tooltip_max_height": number;
+  "anki.connect_port": number;
+  "anki.connect_url": string;
+  "anki.anki_template": AnkiTemplate | null;
+  "anki.enabled": boolean;
+  /** Defer adding notes if Anki cannot be connected. */
+  "anki.defer_notes": boolean;
+  /** On ios, if auto redirect back to safari */
+  "anki.ios_auto_redirect": boolean;
+  /** set to null if voice is not available */
+  "tts.voice": TTSVoice | null;
+  /** Yomikiri semantic version on last config save */
+  version: string;
+  config_version: 3;
 }
 
 export function migrateConfiguration_2(
-  config: StoredConfig<Configuration_V2.Configuration>,
+  config: StoredConfig<V2.Configuration>,
 ): StoredConfig<Configuration> {
   const newConfig = {
     ...config,
@@ -227,5 +225,52 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     throw new YomikiriError(
       `Invalid Anki field template type '${type}' encountered for field: '${name}'`,
     );
+  }
+}
+
+export function newAnkiTemplateField<C extends AnkiTemplateFieldContent>(
+  name: string,
+  content: C,
+): AnkiTemplateFieldTypes[C];
+export function newAnkiTemplateField(
+  name: string,
+  content: AnkiTemplateFieldContent,
+): AnkiTemplateField {
+  if (
+    content === "" ||
+    content === "translated-sentence" ||
+    content === "url" ||
+    content === "link"
+  ) {
+    return {
+      name,
+      content: content,
+    };
+  } else if (content === "word") {
+    return {
+      name,
+      content: content,
+      form: "as-is",
+      style: "basic",
+    };
+  } else if (content === "sentence") {
+    return {
+      name,
+      content: content,
+      style: "basic",
+      word: "none",
+    };
+  } else if (content === "meaning") {
+    return {
+      name,
+      content: content,
+      full_format: "numbered",
+      full_pos: false,
+      full_max_item: 0,
+      single_pos: false,
+      single_max_item: 0,
+    };
+  } else {
+    throw new YomikiriError(`Invalid Anki template field type '${content}'`);
   }
 }
