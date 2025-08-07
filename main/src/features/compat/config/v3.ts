@@ -1,4 +1,3 @@
-import { YomikiriError } from "@/features/error";
 import type { StoredConfig } from "./types";
 import type * as V2 from "./v2";
 
@@ -222,9 +221,11 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
       content: type,
     };
   } else {
-    throw new YomikiriError(
-      `Invalid Anki field template type '${type}' encountered for field: '${name}'`,
-    );
+    console.error(`Invalid Anki field template type '${type}' encountered for field: '${name}'`);
+    return {
+      name,
+      content: "",
+    };
   }
 }
 
@@ -271,6 +272,10 @@ export function newAnkiTemplateField(
       single_max_item: 0,
     };
   } else {
-    throw new YomikiriError(`Invalid Anki template field type '${content}'`);
+    console.error(`Invalid Anki template field type '${content}'`);
+    return {
+      name,
+      content: "",
+    };
   }
 }
