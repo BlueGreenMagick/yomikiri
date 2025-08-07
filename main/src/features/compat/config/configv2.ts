@@ -1,9 +1,9 @@
+import * as ConfigV1 from "./configv1";
 import type { StoredConfig } from "./types";
-import * as V1 from "./v1";
 
-export type TTSVoice = V1.TTSVoice;
-export type AnkiNote = V1.AnkiNote;
-export type Field = V1.Field;
+export type TTSVoice = ConfigV1.TTSVoice;
+export type AnkiNote = ConfigV1.AnkiNote;
+export type Field = ConfigV1.Field;
 
 /** v0.2.0-dev ~ v0.2.0-dev */
 export interface Configuration {
@@ -21,7 +21,7 @@ export interface Configuration {
 }
 
 export function migrateConfiguration_1(
-  config: StoredConfig<V1.Configuration>,
+  config: StoredConfig<ConfigV1.Configuration>,
 ): StoredConfig<Configuration> {
   return {
     ...config,

@@ -1,5 +1,5 @@
+import type * as ConfigV2 from "./configv2";
 import type { StoredConfig } from "./types";
-import type * as V2 from "./v2";
 
 export interface AnkiTemplate {
   deck: string;
@@ -53,8 +53,8 @@ export interface AnkiTemplateFieldMeaningOptions {
   single_max_item: number;
 }
 
-export type AnkiNote = V2.AnkiNote;
-export type Field = V2.Field;
+export type AnkiNote = ConfigV2.AnkiNote;
+export type Field = ConfigV2.Field;
 
 export interface TTSVoice {
   id: string;
@@ -99,7 +99,7 @@ export interface Configuration {
 }
 
 export function migrateConfiguration_2(
-  config: StoredConfig<V2.Configuration>,
+  config: StoredConfig<ConfigV2.Configuration>,
 ): StoredConfig<Configuration> {
   const newConfig = {
     ...config,
