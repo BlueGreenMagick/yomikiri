@@ -2,7 +2,6 @@ import type { AnyPlatform, TTSVoice } from "@/platform/types";
 import { VERSION } from "consts";
 import { type Writable, writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
-import { type StoredCompatConfiguration, type StoredConfig } from "./compat";
 import { Disposable, log } from "./utils";
 
 // v0.2.0 ~
@@ -12,6 +11,10 @@ import { Disposable, log } from "./utils";
  * It does not have to be incremented for simple property addition.
  */
 export const CONFIG_VERSION = 3;
+
+export type StoredConfig =
+  & Partial<Configuration>
+  & Pick<Configuration, "config_version" | "version">;
 
 /** Must not be undefined */
 export interface Configuration {
@@ -58,8 +61,6 @@ export const defaultOptions: Configuration = {
 
 export type ConfigKey = keyof Configuration;
 
-export type StoredConfiguration = StoredConfig<Configuration>;
-
 /** Get union of config keys that extends type T. */
 export type ConfigKeysOfType<T> = {
   [K in keyof Configuration]: Configuration[K] extends T ? K : never;
@@ -79,7 +80,7 @@ export class Config {
 
   private constructor(
     private platform: AnyPlatform,
-    private storage: StoredConfiguration,
+    private storage: StoredConfig,
   ) {
     this.stores = new Map();
 
