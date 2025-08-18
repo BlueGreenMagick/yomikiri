@@ -1,110 +1,24 @@
-import type * as ConfigV2 from "./configv2";
+import type { ConfigurationV2 } from "../types/typesV2";
+import type {
+  AnkiNoteV3,
+  AnkiTemplateFieldContentV3,
+  AnkiTemplateFieldSentenceOptionsV3,
+  AnkiTemplateFieldTypesV3,
+  AnkiTemplateFieldV3,
+  AnkiTemplateFieldWordOptionsV3,
+  AnkiTemplateV3,
+  ConfigurationV3,
+  FieldV3,
+} from "../types/typesV3";
 import type { StoredConfig } from "./types";
 
-export interface AnkiTemplate {
-  deck: string;
-  notetype: string;
-  tags: string;
-  fields: AnkiTemplateField[];
-}
-
-interface FieldBase<C extends keyof AnkiTemplateFieldTypes> {
-  name: string;
-  content: C;
-}
-
-export type AnkiTemplateFieldContent = keyof AnkiTemplateFieldTypes;
-
-export interface AnkiTemplateFieldTypes {
-  "": FieldBase<"">;
-  word: FieldBase<"word"> & AnkiTemplateFieldWordOptions;
-  sentence: FieldBase<"sentence"> & AnkiTemplateFieldSentenceOptions;
-  "translated-sentence": FieldBase<"translated-sentence">;
-  meaning: FieldBase<"meaning"> & AnkiTemplateFieldMeaningOptions;
-  url: FieldBase<"url">;
-  link: FieldBase<"link">;
-}
-
-export type AnkiTemplateField = AnkiTemplateFieldTypes[keyof AnkiTemplateFieldTypes];
-
-/* Field Options */
-export interface AnkiTemplateFieldWordOptions {
-  form: "as-is" | "dict-form" | "main-dict-form";
-  style: "basic" | "furigana-anki" | "furigana-html" | "kana-only";
-}
-
-export interface AnkiTemplateFieldSentenceOptions {
-  word: "none" | "cloze" | "bold" | "span";
-  style: "basic" | "furigana-anki" | "furigana-html" | "kana-only";
-}
-
-export interface AnkiTemplateFieldMeaningOptions {
-  full_format: "numbered" | "unnumbered" | "line" | "div" | "yomichan";
-  full_pos: boolean;
-  /** Use the first N glossaries per meaning. 0 to set if off. */
-  full_max_item: number;
-  /** TODO: Use the first N meanings evenly across each pos group. 0 to set it off. */
-  // Contain at least 1 meaning from each pos group, then by order
-  // full_max_meaning: number
-  // short_max_meaning: number
-
-  /* Options for single selected meaning */
-  single_pos: boolean;
-  single_max_item: number;
-}
-
-export type AnkiNote = ConfigV2.AnkiNote;
-export type Field = ConfigV2.Field;
-
-export interface TTSVoice {
-  id: string;
-  name: string;
-  /**
-   * Higher is better.
-   *
-   * For desktop:
-   * - remote: 100
-   * - non-remote: 200
-   *
-   * For ios:
-   * - default: 100
-   * - enhanced: 200
-   * - premium: 300
-   */
-  quality: number;
-}
-
-export interface Configuration {
-  "state.enabled": boolean;
-  /** Only for desktop */
-  "state.anki.deferred_note_count": number;
-  /** Only for desktop */
-  "state.anki.deferred_note_error": boolean;
-  "general.font_size": number;
-  "general.font": string;
-  "general.tooltip_max_height": number;
-  "anki.connect_port": number;
-  "anki.connect_url": string;
-  "anki.anki_template": AnkiTemplate | null;
-  "anki.enabled": boolean;
-  /** Defer adding notes if Anki cannot be connected. */
-  "anki.defer_notes": boolean;
-  /** On ios, if auto redirect back to safari */
-  "anki.ios_auto_redirect": boolean;
-  /** set to null if voice is not available */
-  "tts.voice": TTSVoice | null;
-  /** Yomikiri semantic version on last config save */
-  version: string;
-  config_version: 3;
-}
-
 export function migrateConfiguration_2(
-  config: StoredConfig<ConfigV2.Configuration>,
-): StoredConfig<Configuration> {
+  config: StoredConfig<ConfigurationV2>,
+): StoredConfig<ConfigurationV3> {
   const newConfig = {
     ...config,
     config_version: 3,
-  } as StoredConfig<Configuration>;
+  } as StoredConfig<ConfigurationV3>;
 
   const ankiTemplate = config["anki.template"];
   if (ankiTemplate !== undefined && ankiTemplate !== null) {
@@ -114,14 +28,14 @@ export function migrateConfiguration_2(
   return newConfig;
 }
 
-function migrateAnkiTemplate_2(template: AnkiNote): AnkiTemplate {
+function migrateAnkiTemplate_2(template: AnkiNoteV3): AnkiTemplateV3 {
   return {
     ...template,
     fields: template.fields.map(fieldTemplateToAnyFieldTemplate),
   };
 }
 
-export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
+export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateFieldV3 {
   const type = fld.value;
   const name = fld.name;
   if (type === "") {
@@ -130,7 +44,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
       content: type,
     };
   } else if (["word", "word-furigana", "word-kana"].includes(type)) {
-    const options: AnkiTemplateFieldWordOptions = {
+    const options: AnkiTemplateFieldWordOptionsV3 = {
       form: "as-is",
       style: type === "word-furigana" ?
         "furigana-anki" :
@@ -148,7 +62,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     type === "dict-furigana" ||
     type === "dict-kana"
   ) {
-    const options: AnkiTemplateFieldWordOptions = {
+    const options: AnkiTemplateFieldWordOptionsV3 = {
       form: "dict-form",
       style: type === "dict-furigana" ?
         "furigana-anki" :
@@ -162,7 +76,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     type === "main-dict-furigana" ||
     type === "main-dict-kana"
   ) {
-    const options: AnkiTemplateFieldWordOptions = {
+    const options: AnkiTemplateFieldWordOptionsV3 = {
       form: "main-dict-form",
       style: type === "main-dict-furigana" ?
         "furigana-anki" :
@@ -183,7 +97,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
     type === "sentence-cloze-furigana"
   ) {
     const isCloze = type === "sentence-cloze" || type === "sentence-cloze-furigana";
-    const options: AnkiTemplateFieldSentenceOptions = {
+    const options: AnkiTemplateFieldSentenceOptionsV3 = {
       style: type === "sentence-furigana" || type === "sentence-cloze-furigana" ?
         "furigana-anki" :
         type === "sentence-kana" ?
@@ -223,14 +137,14 @@ export function fieldTemplateToAnyFieldTemplate(fld: Field): AnkiTemplateField {
   }
 }
 
-export function newAnkiTemplateField<C extends AnkiTemplateFieldContent>(
+export function newAnkiTemplateField<C extends AnkiTemplateFieldContentV3>(
   name: string,
   content: C,
-): AnkiTemplateFieldTypes[C];
+): AnkiTemplateFieldTypesV3[C];
 export function newAnkiTemplateField(
   name: string,
-  content: AnkiTemplateFieldContent,
-): AnkiTemplateField {
+  content: AnkiTemplateFieldContentV3,
+): AnkiTemplateFieldV3 {
   if (
     content === "" ||
     content === "translated-sentence" ||

@@ -1,9 +1,9 @@
 import { expect, test } from "vitest";
-import * as ConfigV2 from "./configv2";
+import type { ConfigurationV2 } from "../types/typesV2";
 import { migrateConfiguration_2 } from "./configv3";
 import type { StoredConfig } from "./types";
 
-const v2Config: StoredConfig<ConfigV2.Configuration> = {
+const v2Config: StoredConfig<ConfigurationV2> = {
   version: "0.1.3",
   "anki.enabled": true,
   "anki.connect_port": 8766,

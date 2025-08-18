@@ -1,10 +1,11 @@
 import { VERSION } from "@/consts";
+import type { ConfigurationV3 } from "../types/typesV3";
 import * as ConfigV2 from "./configv2";
 import * as ConfigV3 from "./configv3";
 import type { StoredCompatConfiguration, StoredConfig } from "./types";
 
 export type StoredConfigV0 = StoredCompatConfiguration;
-export type StoredConfigV3 = StoredConfig<ConfigV3.Configuration>;
+export type StoredConfigV3 = StoredConfig<ConfigurationV3>;
 
 export interface Props {
   config: StoredConfigV0;
