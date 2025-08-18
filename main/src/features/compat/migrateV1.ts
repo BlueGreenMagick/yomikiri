@@ -1,24 +1,75 @@
-import type { ConfigurationV2 } from "../types/typesV2";
+import { VERSION } from "@/consts";
 import type {
-  AnkiNoteV3,
-  AnkiTemplateFieldContentV3,
-  AnkiTemplateFieldSentenceOptionsV3,
-  AnkiTemplateFieldTypesV3,
-  AnkiTemplateFieldV3,
-  AnkiTemplateFieldWordOptionsV3,
-  AnkiTemplateV3,
-  ConfigurationV3,
-  FieldV3,
-} from "../types/typesV3";
-import type { StoredConfig } from "./types";
+  AnkiNoteV1,
+  AnkiTemplateFieldContentV1,
+  AnkiTemplateFieldSentenceOptionsV1,
+  AnkiTemplateFieldTypesV1,
+  AnkiTemplateFieldV1,
+  AnkiTemplateFieldWordOptionsV1,
+  AnkiTemplateV1,
+  FieldV1,
+  StoredConfiguration1V1,
+  StoredConfiguration2V1,
+  StoredConfiguration3V1,
+  StoredConfigurationV1,
+} from "./types/typesV1";
+import type { StoredConfigurationV2 } from "./types/typesV2";
 
-export function migrateConfiguration_2(
-  config: StoredConfig<ConfigurationV2>,
-): StoredConfig<ConfigurationV3> {
+export interface MigrateV1Props {
+  config: StoredConfigurationV1;
+}
+
+export interface MigrateV1Result {
+  config: StoredConfigurationV2;
+}
+
+export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
+  if (
+    config.config_version !== undefined &&
+    config.config_version > 3
+  ) {
+    throw new Error(
+      `Expected config_version to be less than 3, but received: ${config.config_version}`,
+    );
+  } else if (config.config_version === 3) {
+    return { config };
+  } else if (
+    config.config_version === undefined &&
+    config.version === undefined
+  ) {
+    const config = {
+      config_version: 3,
+      version: VERSION,
+    } as const;
+    return { config };
+  }
+
+  if (config.config_version === undefined) {
+    console.debug(`Migrating config object from v1 to v2`);
+    config = migrateConfig1(config);
+  }
+  if (config.config_version === 2) {
+    console.debug(`Migrating config object from v2 to v3`);
+    config = migrateConfig2(config);
+  }
+
+  return { config };
+}
+
+function migrateConfig1(config: StoredConfiguration1V1): StoredConfiguration2V1 {
+  return {
+    ...config,
+    config_version: 2,
+  };
+}
+
+function migrateConfig2(
+  config: StoredConfiguration2V1,
+): StoredConfiguration3V1 {
   const newConfig = {
     ...config,
     config_version: 3,
-  } as StoredConfig<ConfigurationV3>;
+  } as StoredConfiguration3V1;
 
   const ankiTemplate = config["anki.template"];
   if (ankiTemplate !== undefined && ankiTemplate !== null) {
@@ -28,14 +79,14 @@ export function migrateConfiguration_2(
   return newConfig;
 }
 
-function migrateAnkiTemplate_2(template: AnkiNoteV3): AnkiTemplateV3 {
+function migrateAnkiTemplate_2(template: AnkiNoteV1): AnkiTemplateV1 {
   return {
     ...template,
     fields: template.fields.map(fieldTemplateToAnyFieldTemplate),
   };
 }
 
-export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateFieldV3 {
+export function fieldTemplateToAnyFieldTemplate(fld: FieldV1): AnkiTemplateFieldV1 {
   const type = fld.value;
   const name = fld.name;
   if (type === "") {
@@ -44,7 +95,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateField
       content: type,
     };
   } else if (["word", "word-furigana", "word-kana"].includes(type)) {
-    const options: AnkiTemplateFieldWordOptionsV3 = {
+    const options: AnkiTemplateFieldWordOptionsV1 = {
       form: "as-is",
       style: type === "word-furigana" ?
         "furigana-anki" :
@@ -62,7 +113,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateField
     type === "dict-furigana" ||
     type === "dict-kana"
   ) {
-    const options: AnkiTemplateFieldWordOptionsV3 = {
+    const options: AnkiTemplateFieldWordOptionsV1 = {
       form: "dict-form",
       style: type === "dict-furigana" ?
         "furigana-anki" :
@@ -76,7 +127,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateField
     type === "main-dict-furigana" ||
     type === "main-dict-kana"
   ) {
-    const options: AnkiTemplateFieldWordOptionsV3 = {
+    const options: AnkiTemplateFieldWordOptionsV1 = {
       form: "main-dict-form",
       style: type === "main-dict-furigana" ?
         "furigana-anki" :
@@ -97,7 +148,7 @@ export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateField
     type === "sentence-cloze-furigana"
   ) {
     const isCloze = type === "sentence-cloze" || type === "sentence-cloze-furigana";
-    const options: AnkiTemplateFieldSentenceOptionsV3 = {
+    const options: AnkiTemplateFieldSentenceOptionsV1 = {
       style: type === "sentence-furigana" || type === "sentence-cloze-furigana" ?
         "furigana-anki" :
         type === "sentence-kana" ?
@@ -137,14 +188,14 @@ export function fieldTemplateToAnyFieldTemplate(fld: FieldV3): AnkiTemplateField
   }
 }
 
-export function newAnkiTemplateField<C extends AnkiTemplateFieldContentV3>(
+export function newAnkiTemplateField<C extends AnkiTemplateFieldContentV1>(
   name: string,
   content: C,
-): AnkiTemplateFieldTypesV3[C];
+): AnkiTemplateFieldTypesV1[C];
 export function newAnkiTemplateField(
   name: string,
-  content: AnkiTemplateFieldContentV3,
-): AnkiTemplateFieldV3 {
+  content: AnkiTemplateFieldContentV1,
+): AnkiTemplateFieldV1 {
   if (
     content === "" ||
     content === "translated-sentence" ||

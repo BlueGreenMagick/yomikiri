@@ -1,9 +1,8 @@
 import { expect, test } from "vitest";
-import type { ConfigurationV2 } from "../types/typesV2";
-import { migrateConfiguration_2 } from "./configv3";
-import type { StoredConfig } from "./types";
+import { migrateV1 } from "./migrateV1";
+import type { StoredConfiguration2V1 } from "./types/typesV1";
 
-const v2Config: StoredConfig<ConfigurationV2> = {
+const config2: StoredConfiguration2V1 = {
   version: "0.1.3",
   "anki.enabled": true,
   "anki.connect_port": 8766,
@@ -98,6 +97,6 @@ const v2Config: StoredConfig<ConfigurationV2> = {
   config_version: 2,
 };
 
-test("migrate v2 config to v3", () => {
-  expect(migrateConfiguration_2(v2Config)).toMatchSnapshot();
+test("migrate config_version=2 to v2", () => {
+  expect(migrateV1({ config: config2 })).toMatchSnapshot();
 });
