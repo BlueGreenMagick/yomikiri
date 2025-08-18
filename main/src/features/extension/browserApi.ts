@@ -1,8 +1,8 @@
 import type { AnkiNote } from "@/features/anki";
-import type { StoredCompatConfiguration } from "@/features/compat";
 import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
 import type { TTSVoice } from "@/platform/types";
+import type { StoredConfigurationV1 } from "../compat/types/typesV1";
 
 export type StorageHandler = (change: chrome.storage.StorageChange) => void;
 
@@ -23,7 +23,7 @@ export interface ApiInitializeOptions {
 
 /// Must not contain 'undefined'
 interface StorageValues {
-  config: StoredCompatConfiguration;
+  config: StoredConfigurationV1;
   // desktop
   "deferred-anki-note": AnkiNote[];
   "deferred-anki-note-errors": string[];

@@ -1,5 +1,5 @@
-import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
+import { migrateConfigObject, type StoredConfigurationV1 } from "@/features/compat";
+import type { StoredConfig } from "@/features/config";
 import { getStorage, setStorage } from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "@/platform/shared/translate";
@@ -8,7 +8,7 @@ import type { IosMessagingPage } from "./messaging";
 
 export class IosPlatformPage {
   // config migration is done only once even if requested multiple times
-  private readonly configMigration = new LazyAsync<StoredConfiguration>(
+  private readonly configMigration = new LazyAsync<StoredConfig>(
     async () => {
       return await this.migrateConfigInner();
     },
@@ -57,31 +57,31 @@ export class IosPlatformPage {
     );
   }
 
-  migrateConfig(): Promise<StoredConfiguration> {
+  migrateConfig(): Promise<StoredConfig> {
     return this.configMigration.get();
   }
 
-  private async migrateConfigInner(): Promise<StoredConfiguration> {
+  private async migrateConfigInner(): Promise<StoredConfig> {
     const configObject = await this.getConfig();
     const migrated = migrateConfigObject(configObject);
     await this.saveConfig(migrated);
     return migrated;
   }
 
-  async getConfig() {
+  async getConfig(): Promise<StoredConfigurationV1> {
     return this.updateConfig();
   }
 
-  async saveConfig(config: StoredConfiguration) {
+  async saveConfig(config: StoredConfig) {
     await this.setStore("web_config", config);
     await setStorage("config", config);
   }
 
   // App config is the source of truth
-  async updateConfig(): Promise<StoredCompatConfiguration> {
+  async updateConfig(): Promise<StoredConfigurationV1> {
     const webConfigP = getStorage("config", {});
 
-    const appConfigP: Promise<StoredCompatConfiguration> = this.getStore("web_config").then((
+    const appConfigP: Promise<StoredConfigurationV1> = this.getStore("web_config").then((
       value,
     ) => value ?? {});
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);

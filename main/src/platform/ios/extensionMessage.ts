@@ -1,5 +1,5 @@
-import type { StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
+import type { StoredConfigurationV1 } from "@/features/compat";
+import type { StoredConfig } from "@/features/config";
 import {
   type ExtensionMessage,
   type MessageByKey,
@@ -24,11 +24,11 @@ export type IosExtensionMessage =
   | ExtensionMessage<"IosPlatform.getStoreBatch", string[], Record<string, unknown>>
   | ExtensionMessage<"IosPlatform.setStore", SetStoreRequest, void>
   | ExtensionMessage<"IosPlatform.setStoreBatch", Record<string, unknown>, void>
-  | ExtensionMessage<"IosPlatform.getConfig", void, StoredCompatConfiguration>
-  | ExtensionMessage<"IosPlatform.saveConfig", StoredConfiguration, void>
+  | ExtensionMessage<"IosPlatform.getConfig", void, StoredConfigurationV1>
+  | ExtensionMessage<"IosPlatform.saveConfig", StoredConfig, void>
   | ExtensionMessage<"IosPlatform.playTTS", TTSRequest, void>
   | ExtensionMessage<"IosPlatform.translate", string, TranslateResult>
-  | ExtensionMessage<"IosPlatform.migrateConfig", void, StoredConfiguration>
+  | ExtensionMessage<"IosPlatform.migrateConfig", void, StoredConfig>
   | ExtensionMessage<"IosPlatform.japaneseTTSVoices", void, TTSVoice[]>
   | ExtensionMessage<"IosAnkiApi.addNote", AnkiAddNoteReq, boolean>
   | ExtensionMessage<"IosBackend.tokenize", TokenizeRequest, TokenizeResult>

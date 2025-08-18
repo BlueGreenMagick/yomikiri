@@ -1,5 +1,5 @@
-import type { StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
+import type { StoredConfigurationV1 } from "@/features/compat";
+import type { StoredConfig } from "@/features/config";
 import {
   extensionManifest,
   getStorage,
@@ -36,18 +36,18 @@ export class DesktopPlatform implements IPlatform {
     return new DesktopPlatform(page, background);
   }
 
-  async getConfig(): Promise<StoredCompatConfiguration> {
+  async getConfig(): Promise<StoredConfigurationV1> {
     return await getStorage("config", {});
   }
 
   /** subscriber is called when config is changed. */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+  subscribeConfig(subscriber: (config: StoredConfig) => void): void {
     handleStorageChange("config", (change) => {
-      subscriber(change.newValue as StoredConfiguration);
+      subscriber(change.newValue as StoredConfig);
     });
   }
 
-  saveConfig(config: StoredConfiguration): Promise<void> {
+  saveConfig(config: StoredConfig): Promise<void> {
     console.debug("config saved");
     return setStorage("config", config);
   }
@@ -88,7 +88,7 @@ export class DesktopPlatform implements IPlatform {
     window.open(url, "_blank")?.focus();
   }
 
-  migrateConfig(): Promise<StoredConfiguration> {
+  migrateConfig(): Promise<StoredConfig> {
     if (this.page) {
       return this.page.migrateConfig();
     } else {

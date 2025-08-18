@@ -1,8 +1,8 @@
 import type { AnyPlatform } from "@/platform/types";
-import type { Configuration } from "./config";
+import type { StoredConfig } from "./config";
 
 export interface StoreValues {
-  "web.config.v4": Configuration;
+  "web.config.v3": StoredConfig;
 }
 
 type PartialStoreValues<Keys extends keyof StoreValues> = {

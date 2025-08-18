@@ -1,5 +1,5 @@
-import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
-import { type StoredConfiguration } from "@/features/config";
+import { migrateConfigObject, type StoredConfigurationV1 } from "@/features/compat";
+import { type StoredConfig } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import Utils, { LazyAsync } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
@@ -20,8 +20,8 @@ export interface MessageWebviewMap extends RunMessageMap {
   ankiInfo: [null, boolean];
   // Can only be requested in anki template options page.
   ankiInfoData: [null, RawAnkiInfo];
-  loadConfig: [null, StoredConfiguration];
-  saveConfig: [StoredConfiguration, void];
+  loadConfig: [null, StoredConfig];
+  saveConfig: [StoredConfig, void];
   /**
    * Returns true if migrated config is 'ok' to save.
    * If config was already migrated elsewhere, returns false.
@@ -44,10 +44,10 @@ export class IosAppPlatform implements IPlatform {
   readonly type = "iosapp";
 
   private readonly _configSubscribers: ((
-    config: StoredConfiguration,
+    config: StoredConfig,
   ) => void)[] = [];
 
-  private readonly configMigration = new LazyAsync<StoredConfiguration>(
+  private readonly configMigration = new LazyAsync<StoredConfig>(
     async () => {
       return await this.migrateConfigInner();
     },
@@ -55,7 +55,7 @@ export class IosAppPlatform implements IPlatform {
 
   constructor() {
     window.iosConfigUpdated = async () => {
-      const config = (await this.getConfig()) as StoredConfiguration;
+      const config = (await this.getConfig()) as StoredConfig;
       for (const subscriber of this._configSubscribers) {
         // TODO: migrate config for iosapp
         subscriber(config);
@@ -104,8 +104,8 @@ export class IosAppPlatform implements IPlatform {
     await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getConfig(): Promise<StoredCompatConfiguration> {
-    const config: StoredCompatConfiguration = await this.getStore("web_config") ?? {};
+  async getConfig(): Promise<StoredConfigurationV1> {
+    const config: StoredConfigurationV1 = await this.getStore("web_config") ?? {};
     if (typeof config !== "object") {
       Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
       Utils.log(config);
@@ -117,11 +117,11 @@ export class IosAppPlatform implements IPlatform {
   }
 
   /** Does nothiing in iosapp */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+  subscribeConfig(subscriber: (config: StoredConfig) => void): void {
     this._configSubscribers.push(subscriber);
   }
 
-  async saveConfig(config: StoredConfiguration) {
+  async saveConfig(config: StoredConfig) {
     await this.setStore("web_config", config);
 
     // trigger update for this execution context
@@ -158,11 +158,11 @@ export class IosAppPlatform implements IPlatform {
     });
   }
 
-  async migrateConfig(): Promise<StoredConfiguration> {
+  async migrateConfig(): Promise<StoredConfig> {
     return await this.configMigration.get();
   }
 
-  private async migrateConfigInner(): Promise<StoredConfiguration> {
+  private async migrateConfigInner(): Promise<StoredConfig> {
     const configObject = await this.getConfig();
     const migrated = migrateConfigObject(configObject);
     const continueMigration = await sendMessage("migrateConfig", null);

@@ -1,17 +1,10 @@
-/*
-Migrate config objects created in previous versions.
+import { migrateV1 } from "./migrateV1";
+import type { StoredConfigurationV1 } from "./types/typesV1";
+import type { StoredConfigurationV2 } from "./types/typesV2";
 
-The migration is initiated by `Platform`.
-In extension, the migration runs only once in background context.
-In iosapp, migration may run multiple times in each page,
-but it is commited only once.
+export type { StoredConfigurationV1 } from "./types/typesV1";
 
-When `Configuration` structure is modified, `config_version` is incremented.
-
-Configurations are backwards-compatible to best efforts.
-Existing keys are not re-used for different meaning, or deleted.
-Instead, a new key is always created.
-And if needed, value is transformed and moved from existing key.
-*/
-export type { CompatConfiguration, StoredCompatConfiguration, StoredConfig } from "./config";
-export { migrateConfigObject } from "./migrate";
+export function migrateConfigObject(config: StoredConfigurationV1): StoredConfigurationV2 {
+  const result = migrateV1({ config });
+  return result.config;
+}
