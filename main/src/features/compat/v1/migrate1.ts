@@ -1,3 +1,4 @@
+import { VERSION } from "@/consts";
 import * as ConfigV2 from "./configv2";
 import * as ConfigV3 from "./configv3";
 import type { StoredCompatConfiguration, StoredConfig } from "./types";
@@ -7,15 +8,13 @@ export type StoredConfigV3 = StoredConfig<ConfigV3.Configuration>;
 
 export interface Props {
   config: StoredConfigV0;
-  // current app version
-  currentVersion: string;
 }
 
 export interface MigrateV1Result {
   config: StoredConfigV3;
 }
 
-export function migrateV1({ config, currentVersion }: Props): MigrateV1Result {
+export function migrateV1({ config }: Props): MigrateV1Result {
   if (
     config.config_version !== undefined &&
     config.config_version > 3
@@ -31,7 +30,7 @@ export function migrateV1({ config, currentVersion }: Props): MigrateV1Result {
   ) {
     const config = {
       config_version: 3,
-      version: currentVersion,
+      version: VERSION,
     } as const;
     return { config };
   }

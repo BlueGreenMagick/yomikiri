@@ -1,4 +1,3 @@
-import { VERSION } from "@/consts";
 import type { AnyPlatformCtx } from "../ctx";
 import { migrateV1, type StoredConfigV0 } from "./v1";
 
@@ -22,7 +21,7 @@ export async function migrate(ctx: AnyPlatformCtx, version: number) {
   if (version === 0) {
     const storedConfig = await ctx.platform.getStore("web.config.v0") as StoredConfigV0 | null;
     const config = storedConfig ?? {};
-    const result = migrateV1({ config, currentVersion: VERSION });
+    const result = migrateV1({ config });
     await ctx.store.set("web.config.v3", result.config);
   }
 }
