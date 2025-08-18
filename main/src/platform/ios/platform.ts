@@ -1,5 +1,5 @@
-import type { StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
+import type { StoredConfigurationV1 } from "@/features/compat";
+import type { StoredConfig } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import {
   currentTab,
@@ -74,7 +74,7 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  getConfig(): Promise<StoredCompatConfiguration> {
+  getConfig(): Promise<StoredConfigurationV1> {
     if (this.page) {
       return this.page.getConfig();
     } else {
@@ -86,13 +86,13 @@ export class IosPlatform implements IPlatform {
    * Listens to web config changes,
    * which may occur when a new script loads and app config is fetched
    */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => void): void {
+  subscribeConfig(subscriber: (config: StoredConfig) => void): void {
     handleStorageChange("config", (change) => {
-      subscriber(change.newValue as StoredConfiguration);
+      subscriber(change.newValue as StoredConfig);
     });
   }
 
-  saveConfig(config: StoredConfiguration): Promise<void> {
+  saveConfig(config: StoredConfig): Promise<void> {
     if (this.page) {
       return this.page.saveConfig(config);
     } else {
@@ -149,7 +149,7 @@ export class IosPlatform implements IPlatform {
     window.open(url, "_blank")?.focus();
   }
 
-  migrateConfig(): Promise<StoredConfiguration> {
+  migrateConfig(): Promise<StoredConfig> {
     if (this.page) {
       return this.page.migrateConfig();
     } else {

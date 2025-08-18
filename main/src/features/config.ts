@@ -2,6 +2,7 @@ import type { AnyPlatform, TTSVoice } from "@/platform/types";
 import { VERSION } from "consts";
 import { type Writable, writable } from "svelte/store";
 import type { AnkiTemplate } from "./anki";
+import type { StoredConfigurationV1 } from "./compat";
 import { Disposable, log } from "./utils";
 
 // v0.2.0 ~
@@ -40,7 +41,6 @@ export interface Configuration {
   version: string;
   config_version: typeof CONFIG_VERSION;
 }
-
 export const defaultOptions: Configuration = {
   "state.enabled": true,
   "state.anki.deferred_note_count": 0,
@@ -286,10 +286,10 @@ export class Config {
 
 export async function migrateIfNeeded(
   platform: AnyPlatform,
-  configObject: StoredCompatConfiguration,
-): Promise<StoredConfiguration> {
+  configObject: StoredConfigurationV1,
+): Promise<StoredConfig> {
   if (configObject.config_version === CONFIG_VERSION) {
-    return configObject as StoredConfiguration;
+    return configObject as StoredConfig;
   }
 
   return await platform.migrateConfig();

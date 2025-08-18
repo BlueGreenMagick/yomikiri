@@ -1,10 +1,10 @@
-import { CONFIG_VERSION, type StoredConfiguration } from "@/features/config";
+import { CONFIG_VERSION, type StoredConfig } from "@/features/config";
 import { DesktopPlatform } from "@/platform/desktop";
 
-type ConfigSubscriber = (config: StoredConfiguration) => void;
+type ConfigSubscriber = (config: StoredConfig) => void;
 
 /* Mock config */
-let storedConfig: StoredConfiguration = {
+let storedConfig: StoredConfig = {
   version: "0.0.1",
   config_version: CONFIG_VERSION,
 };
@@ -25,6 +25,6 @@ DesktopPlatform.prototype.subscribeConfig = (subscriber: ConfigSubscriber) => {
   subscribers.push(subscriber);
 };
 
-export function setStoredConfig(conf: StoredConfiguration) {
+export function setStoredConfig(conf: StoredConfig) {
   storedConfig = conf;
 }

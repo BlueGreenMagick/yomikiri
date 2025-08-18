@@ -1,5 +1,6 @@
-import { migrateConfigObject, type StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
+import { migrateConfigObject } from "@/features/compat";
+import type { StoredConfigurationV1 } from "@/features/compat/types/typesV1";
+import type { StoredConfig } from "@/features/config";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
@@ -50,20 +51,20 @@ export class AndroidPlatform implements IPlatform {
     await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getConfig(): Promise<StoredCompatConfiguration> {
+  async getConfig(): Promise<StoredConfigurationV1> {
     return await this.getStore("config") ?? {};
   }
 
   /** TODO */
-  subscribeConfig(_subscriber: (config: StoredConfiguration) => void): void {}
+  subscribeConfig(_subscriber: (config: StoredConfig) => void): void {}
 
   /** TODO */
-  async migrateConfig(): Promise<StoredConfiguration> {
+  async migrateConfig(): Promise<StoredConfig> {
     await Promise.resolve();
     return migrateConfigObject({});
   }
 
-  async saveConfig(config: StoredConfiguration): Promise<void> {
+  async saveConfig(config: StoredConfig): Promise<void> {
     await this.setStore("config", config);
   }
 
