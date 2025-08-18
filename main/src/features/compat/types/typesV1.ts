@@ -88,7 +88,7 @@ interface ConfigurationNewV1 extends ConfigBase {
  * v0.1.0 - 0.1.3
  * In these versions, 'config_version' did not exist yet.
  */
-interface Configuration1V1 extends ConfigBase {
+interface Configuration1 extends ConfigBase {
   "state.enabled": boolean;
   "general.font_size": number;
   "general.font": string;
@@ -103,12 +103,12 @@ interface Configuration1V1 extends ConfigBase {
 }
 
 /** v0.2.0-dev ~ v0.2.0-dev */
-interface Configuration2V1 extends Omit<Configuration1V1, "config_version"> {
+interface Configuration2 extends Omit<Configuration1, "config_version"> {
   config_version: 2;
 }
 
 /** v0.2.0 ~ v0.3.5 */
-interface Configuration3V1 extends ConfigBase {
+interface Configuration3 extends ConfigBase {
   "state.enabled": boolean;
   /** Only for desktop */
   "state.anki.deferred_note_count": number;
@@ -143,14 +143,10 @@ type StoredConfig<C extends ConfigBase> =
 
 interface Configurations {
   0: ConfigurationNewV1;
-  1: Configuration1V1;
-  2: Configuration2V1;
-  3: Configuration3V1;
+  1: Configuration1;
+  2: Configuration2;
+  3: Configuration3;
 }
-
-export type StoredConfiguration1V1 = StoredConfig<Configuration1V1>;
-export type StoredConfiguration2V1 = StoredConfig<Configuration2V1>;
-export type StoredConfiguration3V1 = StoredConfig<Configuration3V1>;
 
 export type ConfigurationV1 = Configurations[keyof Configurations];
 export type StoredConfigurationV1 = {

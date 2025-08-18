@@ -8,9 +8,6 @@ import type {
   AnkiTemplateFieldWordOptionsV1,
   AnkiTemplateV1,
   FieldV1,
-  StoredConfiguration1V1,
-  StoredConfiguration2V1,
-  StoredConfiguration3V1,
   StoredConfigurationV1,
 } from "./types/typesV1";
 import type { StoredConfigurationV2 } from "./types/typesV2";
@@ -28,11 +25,10 @@ export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
     config.config_version !== undefined &&
     config.config_version > 3
   ) {
-    throw new Error(
-      `Expected config_version to be less than 3, but received: ${config.config_version}`,
+    console.error(
+      `Expected config_version to be less than 3, but received: ${config.config_version}. Resetting config version`,
     );
-  } else if (config.config_version === 3) {
-    return { config };
+    return { config: { config_version: 3, version: VERSION } as const };
   } else if (
     config.config_version === undefined &&
     config.version === undefined
@@ -44,19 +40,34 @@ export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
     return { config };
   }
 
+  let configV2Plus: StoredConfigurationVersion2 | StoredConfigurationVersion3;
   if (config.config_version === undefined) {
     console.debug(`Migrating config object from v1 to v2`);
-    config = migrateConfig1(config);
-  }
-  if (config.config_version === 2) {
-    console.debug(`Migrating config object from v2 to v3`);
-    config = migrateConfig2(config);
+    configV2Plus = migrateConfig1(config);
+  } else {
+    configV2Plus = config;
   }
 
-  return { config };
+  let configV3: StoredConfigurationVersion3;
+  if (configV2Plus.config_version === 2) {
+    console.debug(`Migrating config object from v2 to v3`);
+    configV3 = migrateConfig2(configV2Plus);
+  } else {
+    configV3 = configV2Plus;
+  }
+
+  return { config: configV3 };
 }
 
-function migrateConfig1(config: StoredConfiguration1V1): StoredConfiguration2V1 {
+type _StoredConfigurationNew = StoredConfigurationV1 & { version?: undefined };
+type StoredConfigurationVersion1 = StoredConfigurationV1 & {
+  config_version?: undefined;
+  version: string;
+};
+type StoredConfigurationVersion2 = StoredConfigurationV1 & { config_version: 2 };
+type StoredConfigurationVersion3 = StoredConfigurationV1 & { config_version: 3 };
+
+function migrateConfig1(config: StoredConfigurationVersion1): StoredConfigurationVersion2 {
   return {
     ...config,
     config_version: 2,
@@ -64,12 +75,12 @@ function migrateConfig1(config: StoredConfiguration1V1): StoredConfiguration2V1 
 }
 
 function migrateConfig2(
-  config: StoredConfiguration2V1,
-): StoredConfiguration3V1 {
-  const newConfig = {
+  config: StoredConfigurationVersion2,
+): StoredConfigurationVersion3 {
+  const newConfig: StoredConfigurationVersion3 = {
     ...config,
     config_version: 3,
-  } as StoredConfiguration3V1;
+  };
 
   const ankiTemplate = config["anki.template"];
   if (ankiTemplate !== undefined && ankiTemplate !== null) {
