@@ -9,6 +9,7 @@ vars:
   __BACKEND_ANDROID_LIB_DIR: 'generated/backend-android-lib'
   __BACKEND_KOTLIN_BINDINGS_DIR: 'generated/backend-kotlin-bindings'
   __BACKEND_BINDINGS_DIR: 'generated/backend-bindings'
+  __BACKEND_UNIFFI_BINDINGS_DIR: 'generated/backend-uniffi-bindings-ts'
   __YOMIKIRIDICT_DIR: 'generated/dictionary-files/'
   __YOMIKIRIDICT_FILE_PATH: '{{.__YOMIKIRIDICT_DIR}}/english.yomikiridict'
   __UNIDIC_ORIGINAL_DIR: 'generated/unidic-original'

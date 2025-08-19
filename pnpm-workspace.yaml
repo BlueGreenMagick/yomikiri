@@ -2,6 +2,7 @@ packages:
   - main
   - generated
   - generated/backend-bindings
+  - generated/backend-uniffi-bindings-ts
   - generated/yomikiri-backend-wasm
   - extra/generate-license
 

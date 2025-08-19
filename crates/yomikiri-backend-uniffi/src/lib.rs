@@ -1,5 +1,6 @@
 mod db;
 mod error;
+pub mod run;
 
 use crate::db::RustDatabase;
 use crate::error::{FFIResult, ToUniFFIResult};
