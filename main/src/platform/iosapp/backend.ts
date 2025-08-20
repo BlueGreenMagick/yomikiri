@@ -1,5 +1,6 @@
 import { ProgressTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
+import type { RunAppArgType, RunAppCommandKeys, RunAppReturnType } from "../shared/runApp";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -57,5 +58,13 @@ export class IosAppBackend implements IBackend {
 
   getDictMetadata(): Promise<DictionaryMetadata> {
     return sendMessage("metadata", null);
+  }
+
+  async runApp<C extends RunAppCommandKeys>(
+    cmd: C,
+    args: RunAppArgType<C>,
+  ): Promise<RunAppReturnType<C>> {
+    const result = await sendMessage("runApp", { cmd, args });
+    return result as RunAppReturnType<C>;
   }
 }

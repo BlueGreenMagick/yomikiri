@@ -6,12 +6,14 @@ use crate::error::{FFIResult, ToUniFFIResult};
 use crate::RustBackend;
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
+#[serde(tag = "cmd", content = "args")]
 pub enum RunAppCommand {
     GetConfig(GetConfigArgs),
     SetConfig(SetConfigArgs),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
+#[serde(tag = "cmd", content = "value")]
 pub enum RunAppReturn {
     GetConfig(GetConfigReturn),
     SetConfig(SetConfigReturn),

@@ -5,6 +5,7 @@ import {
   type MessageByKey,
   sendExtensionMessage,
 } from "@/features/extension/message";
+import type { RunAppCommand, RunAppReturn } from "@yomikiri/backend-uniffi-bindings";
 import type { TranslateResult, TTSRequest, TTSVoice } from "../types";
 import type { AnkiAddNoteReq } from "../types/anki";
 import type {
@@ -33,7 +34,8 @@ export type IosExtensionMessage =
   | ExtensionMessage<"IosAnkiApi.addNote", AnkiAddNoteReq, boolean>
   | ExtensionMessage<"IosBackend.tokenize", TokenizeRequest, TokenizeResult>
   | ExtensionMessage<"IosBackend.search", SearchRequest, TokenizeResult>
-  | ExtensionMessage<"IosBackend.getDictMetadata", void, DictionaryMetadata>;
+  | ExtensionMessage<"IosBackend.getDictMetadata", void, DictionaryMetadata>
+  | ExtensionMessage<"IosBackend.runApp", RunAppCommand, RunAppReturn["value"]>;
 
 type Keys = IosExtensionMessage["key"];
 

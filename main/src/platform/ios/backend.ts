@@ -1,3 +1,4 @@
+import type { RunAppCommandKeys, RunAppCommandOf, RunAppReturnType } from "../shared/runApp";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -46,6 +47,16 @@ export class IosBackend implements IBackend {
       return this.page.getDictMetadata();
     } else {
       return sendIosExtensionMessage("IosBackend.getDictMetadata", undefined);
+    }
+  }
+
+  async runApp<C extends RunAppCommandKeys>(req: RunAppCommandOf<C>): Promise<RunAppReturnType<C>> {
+    if (this.page) {
+      return await this.page.runApp(req);
+    } else {
+      return await sendIosExtensionMessage("IosBackend.runApp", req) as RunAppReturnType<
+        C
+      >;
     }
   }
 }

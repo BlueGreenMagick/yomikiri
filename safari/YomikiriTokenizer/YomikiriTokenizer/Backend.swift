@@ -20,7 +20,7 @@ public struct Backend {
 
     private func createRustBackend() throws -> RustBackend {
         if let userDict = try? validateAndGetUserDict() {
-            if let rust = try? RustBackend(dictPath: userDict.path) {
+            if let rust = try? RustBackend(dictPath: userDict.path, db: db) {
                 return rust
             } else {
                 os_log(.error, "Failed to create rust backend using user downloaded dictionary. Using bundled dictionary instead.")

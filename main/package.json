@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@yomikiri/backend-bindings": "workspace:*",
+    "@yomikiri/backend-uniffi-bindings": "workspace:*",
     "@yomikiri/generated": "workspace:*",
     "@yomikiri/yomikiri-backend-wasm": "workspace:*",
     "idb": "^8.0.3",

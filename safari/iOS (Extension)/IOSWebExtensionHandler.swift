@@ -41,6 +41,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     let ver = ProcessInfo.processInfo.operatingSystemVersion
                     let iosVersion = IosVersion(major: ver.majorVersion, minor: ver.minorVersion, patch: ver.patchVersion)
                     jsonResponse = try jsonSerialize(obj: iosVersion)
+                case "runApp":
+                    var backendInstance = try backend.get()
+                    jsonResponse = try backendInstance.backend.get().runApp(command: request)
                 default:
                     var backendInstance = try backend.get()
                     jsonResponse = try backendInstance.backend.get().run(command: key, args: request)

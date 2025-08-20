@@ -1,5 +1,10 @@
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type {
+  RunAppCommandKeys,
+  RunAppCommandOf,
+  RunAppReturnType,
+} from "@/platform/shared/runApp";
+import type {
   DictionaryMetadata,
   SearchArgs,
   TokenizeArgs,
@@ -44,5 +49,11 @@ export class IosBackendPage {
 
   async getDictMetadata(): Promise<DictionaryMetadata> {
     return this.messaging.send("metadata", null);
+  }
+
+  async runApp<C extends RunAppCommandKeys>(
+    req: RunAppCommandOf<C>,
+  ): Promise<RunAppReturnType<C>> {
+    return await this.messaging.send("runApp", req) as RunAppReturnType<C>;
   }
 }
