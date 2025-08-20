@@ -5,25 +5,17 @@ use serde::{Deserialize, Serialize};
 use crate::error::{FFIResult, ToUniFFIResult};
 use crate::RustBackend;
 
-#[derive(Debug, Serialize, JsonSchema)]
-pub struct RunArgAndReturnTypes {
-    example: String,
-}
-
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub enum RunAppCommand {
-    StartMigration(StartMigrationArgs),
+    GetConfig(GetConfigArgs),
+    SetConfig(SetConfigArgs),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
 pub enum RunAppReturnValues {
-    StartMigration(StartMigrationReturn),
+    GetConfig(GetConfigReturn),
+    SetConfig(SetConfigReturn),
 }
-
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-pub struct StartMigrationArgs {}
-
-pub type StartMigrationReturn = ();
 
 #[uniffi::export]
 impl RustBackend {
@@ -39,13 +31,30 @@ impl RustBackend {
         let cmd: RunAppCommand = serde_json::from_str(command)?;
 
         let json = match cmd {
-            StartMigration(args) => serde_json::to_string(&self._run_start_migration(args)?)?,
+            GetConfig(args) => serde_json::to_string(&self._get_config(args)?)?,
+            SetConfig(args) => serde_json::to_string(&self._set_config(args)?)?,
         };
 
         Ok(json)
     }
 
-    pub fn _run_start_migration(&self, args: StartMigrationArgs) -> Result<StartMigrationReturn> {
-        unimplemented!()
+    pub fn _get_config(&self, _args: GetConfigArgs) -> Result<GetConfigReturn> {
+        self.db._get_web_config_v3()
+    }
+
+    pub fn _set_config(&self, args: SetConfigArgs) -> Result<SetConfigReturn> {
+        self.db._set_web_config_v3(args.config.as_ref())
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+pub struct GetConfigArgs {}
+
+pub type GetConfigReturn = Option<String>;
+
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+pub struct SetConfigArgs {
+    config: Option<String>,
+}
+
+pub type SetConfigReturn = ();
