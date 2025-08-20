@@ -27,7 +27,7 @@ public struct Backend {
             }
         }
         let bundledDict = try getBundledDictUrl()
-        let backend = try RustBackend(dictPath: bundledDict.path)
+        let backend = try RustBackend(dictPath: bundledDict.path, db: db)
         os_log(.debug, "finish creating backend")
         return backend
     }

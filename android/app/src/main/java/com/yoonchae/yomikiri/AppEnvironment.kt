@@ -9,7 +9,7 @@ class AppEnvironment(
     val context: Context = context.applicationContext
 
     val db: RustDatabase = createRustDatabase(this.context)
-    val backendManager: BackendManager = BackendManager(this.context)
+    val backendManager: BackendManager = BackendManager(this.context, db)
 
     suspend fun close() {
         db.close()

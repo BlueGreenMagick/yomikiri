@@ -7,11 +7,13 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import uniffi.yomikiri_backend_uniffi.RustBackend
+import uniffi.yomikiri_backend_uniffi.RustDatabase
 
 private const val TAG = "Yomikiri::BackendManager"
 
 class BackendManager(
     val context: Context,
+    val db: RustDatabase,
 ) {
     private var backendCache: RustBackend? = null
     private val backendMutex = Mutex()
@@ -45,14 +47,17 @@ class BackendManager(
     // If instance is already being created, it waits for the previous invocation then returns the result
     private suspend fun getBackend(): RustBackend =
         backendCache ?: backendMutex.withLock {
-            backendCache ?: createBackend(context).also { backendCache = it }
+            backendCache ?: createBackend(context, db).also { backendCache = it }
         }
 }
 
-private suspend fun createBackend(context: Context): RustBackend {
+private suspend fun createBackend(
+    context: Context,
+    db: RustDatabase,
+): RustBackend {
     Log.d(TAG, "Create backend start")
     val dictFile = DictionaryManager.getFile(context)
-    val backend = RustBackend(dictFile.absolutePath)
+    val backend = RustBackend(dictFile.absolutePath, db)
     Log.d(TAG, "Create backend finish")
     return backend
 }

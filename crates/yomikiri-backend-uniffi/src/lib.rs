@@ -1,6 +1,7 @@
 mod db;
 mod error;
 
+use crate::db::RustDatabase;
 use crate::error::{FFIResult, ToUniFFIResult};
 
 use yomikiri_rs::dictionary::Dictionary;
@@ -43,10 +44,14 @@ macro_rules! cfg_apple {
 #[derive(uniffi::Object)]
 pub struct RustBackend {
     inner: Mutex<SharedBackend<Mmap>>,
+    db: Arc<RustDatabase>,
 }
 
 impl RustBackend {
-    pub(crate) fn try_from_paths<P: AsRef<Path>>(dict_path: P) -> Result<Arc<RustBackend>> {
+    pub(crate) fn try_from_paths<P: AsRef<Path>>(
+        dict_path: P,
+        db: Arc<RustDatabase>,
+    ) -> Result<Arc<RustBackend>> {
         setup_logger();
         let tokenizer = create_tokenizer();
         let dictionary = create_dictionary_from_path(dict_path)?;
@@ -55,7 +60,7 @@ impl RustBackend {
             dictionary,
         };
         let inner = Mutex::new(inner);
-        let backend = RustBackend { inner };
+        let backend = RustBackend { inner, db };
         Ok(Arc::new(backend))
     }
 }
@@ -63,8 +68,8 @@ impl RustBackend {
 #[uniffi::export]
 impl RustBackend {
     #[uniffi::constructor]
-    pub fn new(dict_path: String) -> FFIResult<Arc<RustBackend>> {
-        Self::_new(dict_path).uniffi()
+    pub fn new(dict_path: String, db: Arc<RustDatabase>) -> FFIResult<Arc<RustBackend>> {
+        Self::_new(dict_path, db).uniffi()
     }
 
     pub fn run(&self, command: String, args: String) -> FFIResult<String> {
@@ -87,8 +92,8 @@ impl RustBackend {
 }
 
 impl RustBackend {
-    fn _new(dict_path: String) -> Result<Arc<RustBackend>> {
-        Self::try_from_paths(&dict_path)
+    fn _new(dict_path: String, db: Arc<RustDatabase>) -> Result<Arc<RustBackend>> {
+        Self::try_from_paths(&dict_path, db)
     }
 
     fn _tokenize(&self, sentence: String, char_at: u32) -> Result<String> {
