@@ -159,6 +159,10 @@ private suspend fun handleWebMessage(
                 val result = AnkiApi.addNote(context, note)
                 builder.success(result)
             }
+            "runApp" -> {
+                val value = appEnv.backendManager.withBackend { backend -> backend.runApp(msg.request) }
+                builder.jsonSuccess(value)
+            }
             else -> {
                 val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
                 builder.jsonSuccess(value)

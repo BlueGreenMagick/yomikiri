@@ -50,7 +50,9 @@ export class IosBackend implements IBackend {
     }
   }
 
-  async runApp<C extends RunAppCommandKeys>(req: RunAppCommandOf<C>): Promise<RunAppReturnType<C>> {
+  private async runApp<C extends RunAppCommandKeys>(
+    req: RunAppCommandOf<C>,
+  ): Promise<RunAppReturnType<C>> {
     if (this.page) {
       return await this.page.runApp(req);
     } else {

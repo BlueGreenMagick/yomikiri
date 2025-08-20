@@ -1,6 +1,7 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
+import type { RunAppCommand, RunAppReturn } from "@yomikiri/backend-uniffi-bindings";
 import type { RunMessageMap } from "../shared/backend";
 import type { JSONStoreValues } from "../types";
 
@@ -38,6 +39,7 @@ export interface AndroidMessageMap extends RunMessageMap {
   ankiGetInfo: [null, AnkiInfo];
   ankiCheckConnection: [null, null];
   ankiAddNote: [AnkiNote, boolean];
+  runApp: [RunAppCommand, RunAppReturn["value"]];
 }
 
 export type MessageRequest<K extends keyof AndroidMessageMap> = AndroidMessageMap[K][0];

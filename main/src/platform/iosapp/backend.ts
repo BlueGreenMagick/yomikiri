@@ -60,7 +60,7 @@ export class IosAppBackend implements IBackend {
     return sendMessage("metadata", null);
   }
 
-  async runApp<C extends RunAppCommandKeys>(
+  private async runApp<C extends RunAppCommandKeys>(
     cmd: C,
     args: RunAppArgType<C>,
   ): Promise<RunAppReturnType<C>> {
