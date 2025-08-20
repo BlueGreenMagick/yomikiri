@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use schemars::schema_for;
-use yomikiri_backend_uniffi::run::RunArgAndReturnTypes;
+use yomikiri_backend_uniffi::TypeBindingExports;
 
 fn main() {
     let args: Vec<_> = env::args().collect();
@@ -15,7 +15,7 @@ fn main() {
         fs::create_dir_all(parent).unwrap();
     }
 
-    let schema = schema_for!(RunArgAndReturnTypes);
+    let schema = schema_for!(TypeBindingExports);
     let schema_string = serde_json::to_string_pretty(&schema).unwrap();
     fs::write(&output_path, &schema_string).unwrap();
 }

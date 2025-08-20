@@ -4,7 +4,10 @@ pub mod run;
 
 use crate::db::RustDatabase;
 use crate::error::{FFIResult, ToUniFFIResult};
+use crate::run::{RunAppCommand, RunAppReturn};
 
+use schemars::JsonSchema;
+use serde::Serialize;
 use yomikiri_rs::dictionary::Dictionary;
 use yomikiri_rs::tokenize::create_tokenizer;
 use yomikiri_rs::SharedBackend;
@@ -40,6 +43,12 @@ macro_rules! cfg_apple {
       $item
     )*
   };
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+pub struct TypeBindingExports {
+    run_app_command: RunAppCommand,
+    run_app_return: RunAppReturn,
 }
 
 #[derive(uniffi::Object)]

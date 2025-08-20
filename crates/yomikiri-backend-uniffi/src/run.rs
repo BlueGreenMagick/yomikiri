@@ -12,7 +12,7 @@ pub enum RunAppCommand {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub enum RunAppReturnValues {
+pub enum RunAppReturn {
     GetConfig(GetConfigReturn),
     SetConfig(SetConfigReturn),
 }
