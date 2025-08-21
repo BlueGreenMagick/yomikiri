@@ -54,6 +54,8 @@ export class IosBackendPage {
   async runApp<C extends RunAppCommandKeys>(
     req: RunAppCommandOf<C>,
   ): Promise<RunAppReturnType<C>> {
-    return await this.messaging.send("runApp", req) as RunAppReturnType<C>;
+    const jsonCommand = JSON.stringify(req);
+    const jsonResult = await this.messaging.send("runApp", jsonCommand);
+    return JSON.parse(jsonResult) as RunAppReturnType<C>;
   }
 }

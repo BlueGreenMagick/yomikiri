@@ -1,5 +1,4 @@
 import { handleResponseMessage } from "@/features/utils";
-import type { RunAppCommand, RunAppReturn } from "@yomikiri/backend-uniffi-bindings";
 import type { RunMessageMap } from "../../shared/backend";
 import type { JSONStoreValues, TTSRequest, TTSVoice } from "../../types";
 
@@ -11,7 +10,8 @@ export interface AppMessageMap extends RunMessageMap {
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];
 
-  runApp: [RunAppCommand, RunAppReturn["value"]];
+  /** both are JSON string */
+  runApp: [string, string];
 }
 
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
