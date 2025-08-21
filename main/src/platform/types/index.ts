@@ -1,5 +1,5 @@
-import type { StoredCompatConfiguration } from "@/features/compat";
-import type { StoredConfiguration } from "@/features/config";
+import type { StoredConfigurationV1 } from "@/features/compat";
+import type { StoredConfig } from "@/features/config";
 import type { PromiseOrValue } from "@/features/utils";
 import type { AndroidPlatform } from "../android";
 import type { DesktopPlatform } from "../desktop";
@@ -14,10 +14,10 @@ export interface IPlatformConsts {
 }
 
 export interface IPlatform extends IPlatformConsts {
-  getConfig(): Promise<StoredCompatConfiguration>;
+  getConfig(): Promise<StoredConfigurationV1>;
   /** Triggers when config is changed (regardless of whether changed in current tab or not) */
-  subscribeConfig(subscriber: (config: StoredConfiguration) => unknown): void;
-  saveConfig: (config: StoredConfiguration) => Promise<void>;
+  subscribeConfig(subscriber: (config: StoredConfig) => unknown): void;
+  saveConfig: (config: StoredConfig) => Promise<void>;
   openOptionsPage: () => PromiseOrValue<void>;
   versionInfo: () => PromiseOrValue<VersionInfo>;
   japaneseTTSVoices(): Promise<TTSVoice[]>;
@@ -25,7 +25,7 @@ export interface IPlatform extends IPlatformConsts {
   translate: (text: string) => Promise<TranslateResult>;
   /** Opens url in new tab */
   openExternalLink(url: string): void;
-  migrateConfig(): Promise<StoredConfiguration>;
+  migrateConfig(): Promise<StoredConfig>;
 
   /** value is null if key doesn't exist in store */
   getStoreBatch(keys: string[]): Promise<Record<string, unknown>>;
