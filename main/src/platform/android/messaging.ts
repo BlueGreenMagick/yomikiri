@@ -1,8 +1,9 @@
 import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
-import type { RunAppCommand, RunAppReturn } from "@yomikiri/backend-uniffi-bindings";
+import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
 import type { RunMessageMap } from "../shared/backend";
+import type { AppCommandResult } from "../shared/invokeApp";
 import type { JSONStoreValues } from "../types";
 
 /** Secret key used in android message handler */
@@ -39,7 +40,7 @@ export interface AndroidMessageMap extends RunMessageMap {
   ankiGetInfo: [null, AnkiInfo];
   ankiCheckConnection: [null, null];
   ankiAddNote: [AnkiNote, boolean];
-  runApp: [RunAppCommand, RunAppReturn["value"]];
+  invokeApp: [AppCommand, AppCommandResult];
 }
 
 export type MessageRequest<K extends keyof AndroidMessageMap> = AndroidMessageMap[K][0];

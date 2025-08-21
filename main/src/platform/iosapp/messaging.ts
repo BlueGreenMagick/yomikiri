@@ -1,5 +1,6 @@
 import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
+import type { AppCommand, AppCommandResult } from "../shared/invokeApp";
 import type { JSONStoreValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 
@@ -39,7 +40,7 @@ export interface MessageWebviewMap extends RunMessageMap {
   openLink: [string, null];
   tts: [TTSRequest, null];
 
-  runApp: [string, string];
+  invokeApp: [AppCommand, AppCommandResult];
 
   // action extension
   close: [null, void];

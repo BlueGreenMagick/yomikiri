@@ -100,6 +100,10 @@ ExtensionMessageListener.init<IosExtensionMessage>()
     const ctx = await lazyCtx.get();
     return ctx.backend.tokenize(req);
   })
+  .on("IosBackend.invokeApp", async (req) => {
+    const ctx = await lazyCtx.get();
+    return ctx.backend.invokeApp(req);
+  })
   .done()
   .verify();
 

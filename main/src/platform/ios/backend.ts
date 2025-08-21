@@ -1,4 +1,4 @@
-import type { RunAppCommandKeys, RunAppCommandOf, RunAppReturnType } from "../shared/runApp";
+import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -50,13 +50,13 @@ export class IosBackend implements IBackend {
     }
   }
 
-  private async runApp<C extends RunAppCommandKeys>(
-    req: RunAppCommandOf<C>,
-  ): Promise<RunAppReturnType<C>> {
+  async invokeApp<C extends AppCommandTypes>(
+    req: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
     if (this.page) {
-      return await this.page.runApp(req);
+      return await this.page.invokeApp(req);
     } else {
-      return await sendIosExtensionMessage("IosBackend.runApp", req) as RunAppReturnType<
+      return await sendIosExtensionMessage("IosBackend.invokeApp", req) as AppCommandResultOf<
         C
       >;
     }

@@ -1,7 +1,6 @@
 import { ProgressTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
-import type { RunAppCommand } from "@yomikiri/backend-uniffi-bindings";
-import type { RunAppArgType, RunAppCommandKeys, RunAppReturnType } from "../shared/runApp";
+import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -61,13 +60,10 @@ export class IosAppBackend implements IBackend {
     return sendMessage("metadata", null);
   }
 
-  private async runApp<C extends RunAppCommandKeys>(
-    cmd: C,
-    args: RunAppArgType<C>,
-  ): Promise<RunAppReturnType<C>> {
-    const cmdArgs: RunAppCommand = { cmd, args };
-    const jsonCommand = JSON.stringify(cmdArgs);
-    const jsonResult = await sendMessage("runApp", jsonCommand);
-    return JSON.parse(jsonResult) as RunAppReturnType<C>;
+  private async invokeApp<C extends AppCommandTypes>(
+    command: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
+    const result = await sendMessage("invokeApp", command);
+    return result as AppCommandResultOf<C>;
   }
 }

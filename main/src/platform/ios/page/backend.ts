@@ -1,9 +1,9 @@
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type {
-  RunAppCommandKeys,
-  RunAppCommandOf,
-  RunAppReturnType,
-} from "@/platform/shared/runApp";
+  AppCommandOf,
+  AppCommandResultOf,
+  AppCommandTypes,
+} from "@/platform/shared/invokeApp";
 import type {
   DictionaryMetadata,
   SearchArgs,
@@ -51,11 +51,10 @@ export class IosBackendPage {
     return this.messaging.send("metadata", null);
   }
 
-  async runApp<C extends RunAppCommandKeys>(
-    req: RunAppCommandOf<C>,
-  ): Promise<RunAppReturnType<C>> {
-    const jsonCommand = JSON.stringify(req);
-    const jsonResult = await this.messaging.send("runApp", jsonCommand);
-    return JSON.parse(jsonResult) as RunAppReturnType<C>;
+  async invokeApp<C extends AppCommandTypes>(
+    req: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
+    const result = await this.messaging.send("invokeApp", req);
+    return result as AppCommandResultOf<C>;
   }
 }

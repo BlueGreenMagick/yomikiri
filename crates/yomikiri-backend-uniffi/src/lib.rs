@@ -1,10 +1,10 @@
 mod db;
 mod error;
-pub mod run;
+pub mod invoke;
 
 use crate::db::RustDatabase;
 use crate::error::{FFIResult, ToUniFFIResult};
-use crate::run::{RunAppCommand, RunAppReturn};
+use crate::invoke::{AppCommand, AppCommandResultSpec};
 
 use schemars::JsonSchema;
 use serde::Serialize;
@@ -47,8 +47,8 @@ macro_rules! cfg_apple {
 
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct TypeBindingExports {
-    run_app_command: RunAppCommand,
-    run_app_return: RunAppReturn,
+    run_app_command: AppCommand,
+    run_app_return: AppCommandResultSpec,
 }
 
 #[derive(uniffi::Object)]
