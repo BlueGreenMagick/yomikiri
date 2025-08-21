@@ -1,6 +1,7 @@
 import { migrateConfigObject } from "@/features/compat";
 import type { StoredConfigurationV1 } from "@/features/compat/types/typesV1";
 import type { StoredConfig } from "@/features/config";
+import type { RunAppArgType, RunAppCommandKeys, RunAppReturnType } from "../shared/runApp";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
@@ -52,7 +53,12 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredConfigurationV1> {
-    return await this.getStore("config") ?? {};
+    const result = await this.runApp("GetConfig", {});
+    if (result === null) {
+      return {};
+    } else {
+      return JSON.parse(result) as StoredConfigurationV1;
+    }
   }
 
   /** TODO */
@@ -65,7 +71,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfig): Promise<void> {
-    await this.setStore("config", config);
+    await this.runApp("SetConfig", { config: JSON.stringify(config) });
   }
 
   openOptionsPage(): void {
@@ -93,5 +99,13 @@ export class AndroidPlatform implements IPlatform {
 
   openExternalLink(_url: string): void {
     throw new Error("Unimplemented");
+  }
+
+  private async runApp<C extends RunAppCommandKeys>(
+    cmd: C,
+    args: RunAppArgType<C>,
+  ): Promise<RunAppReturnType<C>> {
+    const jsonResult = await sendMessage("runApp", { cmd, args });
+    return jsonResult as RunAppReturnType<C>;
   }
 }

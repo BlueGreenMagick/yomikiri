@@ -5,9 +5,7 @@ import type {
   TokenizeArgs,
   TokenizeResult,
 } from "@yomikiri/backend-bindings";
-import type { RunAppCommand } from "@yomikiri/backend-uniffi-bindings";
 import { cleanTokenizeResult, emptyTokenizeResult } from "../shared/backend";
-import type { RunAppArgType, RunAppCommandKeys, RunAppReturnType } from "../shared/runApp";
 import type { IBackend, SearchRequest, TokenizeRequest } from "../types/backend";
 import { sendMessage } from "./messaging";
 
@@ -53,15 +51,5 @@ export class AndroidBackend implements IBackend {
   /** TODO */
   updateDictionary(): ProgressTask<boolean, string> {
     throw new Error("Unimplemented");
-  }
-
-  private async runApp<C extends RunAppCommandKeys>(
-    cmd: C,
-    args: RunAppArgType<C>,
-  ): Promise<RunAppReturnType<C>> {
-    const cmdArgs: RunAppCommand = { cmd, args };
-    const jsonCommand = JSON.stringify(cmdArgs);
-    const jsonResult = await sendMessage("runApp", jsonCommand);
-    return JSON.parse(jsonResult) as RunAppReturnType<C>;
   }
 }
