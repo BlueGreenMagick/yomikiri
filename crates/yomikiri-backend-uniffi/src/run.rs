@@ -8,15 +8,15 @@ use crate::RustBackend;
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "cmd", content = "args")]
 pub enum RunAppCommand {
-    GetConfig(GetConfigArgs),
-    SetConfig(SetConfigArgs),
+    GetConfig(()),
+    SetConfig(Option<String>),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
 #[serde(tag = "cmd", content = "value")]
 pub enum RunAppReturn {
-    GetConfig(GetConfigReturn),
-    SetConfig(SetConfigReturn),
+    GetConfig(Option<String>),
+    SetConfig(()),
 }
 
 #[uniffi::export]
@@ -33,30 +33,18 @@ impl RustBackend {
         let cmd: RunAppCommand = serde_json::from_str(command)?;
 
         let json = match cmd {
-            GetConfig(args) => serde_json::to_string(&self._get_config(args)?)?,
+            GetConfig(_) => serde_json::to_string(&self._get_config()?)?,
             SetConfig(args) => serde_json::to_string(&self._set_config(args)?)?,
         };
 
         Ok(json)
     }
 
-    pub fn _get_config(&self, _args: GetConfigArgs) -> Result<GetConfigReturn> {
+    pub fn _get_config(&self) -> Result<Option<String>> {
         self.db._get_web_config_v3()
     }
 
-    pub fn _set_config(&self, args: SetConfigArgs) -> Result<SetConfigReturn> {
-        self.db._set_web_config_v3(args.config.as_ref())
+    pub fn _set_config(&self, args: Option<String>) -> Result<()> {
+        self.db._set_web_config_v3(args.as_ref())
     }
 }
-
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-pub struct GetConfigArgs {}
-
-pub type GetConfigReturn = Option<String>;
-
-#[derive(Debug, Serialize, Deserialize, JsonSchema)]
-pub struct SetConfigArgs {
-    config: Option<String>,
-}
-
-pub type SetConfigReturn = ();

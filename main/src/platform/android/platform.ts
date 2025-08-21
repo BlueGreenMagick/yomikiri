@@ -1,7 +1,7 @@
 import { migrateConfigObject } from "@/features/compat";
 import type { StoredConfigurationV1 } from "@/features/compat/types/typesV1";
 import type { StoredConfig } from "@/features/config";
-import type { RunAppArgType, RunAppCommandKeys, RunAppReturnType } from "../shared/runApp";
+import type { RunAppCommandKeys, RunAppCommandOf, RunAppReturnType } from "../shared/runApp";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
@@ -53,7 +53,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredConfigurationV1> {
-    const result = await this.runApp("GetConfig", {});
+    const result = await this.runApp({ cmd: "GetConfig", args: null });
     if (result === null) {
       return {};
     } else {
@@ -71,7 +71,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfig): Promise<void> {
-    await this.runApp("SetConfig", { config: JSON.stringify(config) });
+    await this.runApp({ cmd: "SetConfig", args: JSON.stringify(config) });
   }
 
   openOptionsPage(): void {
@@ -102,10 +102,9 @@ export class AndroidPlatform implements IPlatform {
   }
 
   private async runApp<C extends RunAppCommandKeys>(
-    cmd: C,
-    args: RunAppArgType<C>,
+    req: RunAppCommandOf<C>,
   ): Promise<RunAppReturnType<C>> {
-    const jsonResult = await sendMessage("runApp", { cmd, args });
+    const jsonResult = await sendMessage("runApp", req);
     return jsonResult as RunAppReturnType<C>;
   }
 }
