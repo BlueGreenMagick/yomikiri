@@ -54,6 +54,7 @@ pub struct TypeBindingExports {
 #[derive(uniffi::Object)]
 pub struct RustBackend {
     inner: Mutex<SharedBackend<Mmap>>,
+    #[allow(dead_code)]
     db: Arc<RustDatabase>,
 }
 

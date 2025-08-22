@@ -92,7 +92,7 @@ jobs:
         run: task --verbose check-format
 
       - name: Install Cargo ndk
-        run: cargo binstall cargo-ndk --no-confirm
+        run: cargo binstall cargo-ndk --no-confirm --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
