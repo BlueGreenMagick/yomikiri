@@ -11,6 +11,6 @@ export type AppCommandArgOf<C extends AppCommandTypes> = AppCommandOf<C>["args"]
 export type AppCommandResult = AppCommandResultSpec["result"];
 
 export type AppCommandResultOf<C extends AppCommandTypes> = Extract<
-  AppCommandResult,
+  AppCommandResultSpec,
   { type: C }
 >["result"];

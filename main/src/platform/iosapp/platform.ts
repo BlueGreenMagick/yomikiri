@@ -106,7 +106,7 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredConfigurationV1> {
-    const jsonConfig: StoredConfigurationV1 = await this.invokeApp({
+    const jsonConfig = await this.invokeApp({
       type: "GetConfig",
       args: null,
     });
