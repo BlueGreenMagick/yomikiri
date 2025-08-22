@@ -1,5 +1,5 @@
 import type { AnkiInfo } from "@/features/anki";
-import type { StoredConfiguration } from "@/features/config";
+import type { StoredConfig } from "@/features/config";
 import {
   type ExtensionMessage,
   type MessageByKey,
@@ -26,7 +26,7 @@ export type DesktopExtensionMessage =
   | ExtensionMessage<"DesktopPlatform.getStore", string, unknown>
   | ExtensionMessage<"DesktopPlatform.playTTS", TTSRequest, void>
   | ExtensionMessage<"DesktopPlatform.translate", string, TranslateResult>
-  | ExtensionMessage<"DesktopPlatform.migrateConfig", void, StoredConfiguration>
+  | ExtensionMessage<"DesktopPlatform.migrateConfig", void, StoredConfig>
   | ExtensionMessage<"DesktopBackend.tokenize", TokenizeRequest, TokenizeResult>
   | ExtensionMessage<"DesktopBackend.search", SearchRequest, TokenizeResult>
   | ExtensionMessage<"DesktopBackend.getDictMetadata", void, DictionaryMetadata>

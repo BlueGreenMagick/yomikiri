@@ -1,9 +1,13 @@
 mod db;
 mod error;
+pub mod invoke;
 
 use crate::db::RustDatabase;
 use crate::error::{FFIResult, ToUniFFIResult};
+use crate::invoke::{AppCommand, AppCommandResultSpec};
 
+use schemars::JsonSchema;
+use serde::Serialize;
 use yomikiri_rs::dictionary::Dictionary;
 use yomikiri_rs::tokenize::create_tokenizer;
 use yomikiri_rs::SharedBackend;
@@ -39,6 +43,12 @@ macro_rules! cfg_apple {
       $item
     )*
   };
+}
+
+#[derive(Debug, Serialize, JsonSchema)]
+pub struct TypeBindingExports {
+    run_app_command: AppCommand,
+    run_app_return: AppCommandResultSpec,
 }
 
 #[derive(uniffi::Object)]

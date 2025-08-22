@@ -2,6 +2,11 @@ import { migrateConfigObject, type StoredConfigurationV1 } from "@/features/comp
 import type { StoredConfig } from "@/features/config";
 import { getStorage, setStorage } from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
+import type {
+  AppCommandOf,
+  AppCommandResultOf,
+  AppCommandTypes,
+} from "@/platform/shared/invokeApp";
 import { getTranslation } from "@/platform/shared/translate";
 import type { JSONStoreValues, TranslateResult } from "@/platform/types";
 import type { IosMessagingPage } from "./messaging";
@@ -73,7 +78,7 @@ export class IosPlatformPage {
   }
 
   async saveConfig(config: StoredConfig) {
-    await this.setStore("web_config", config);
+    await this.invokeApp({ type: "SetConfig", args: JSON.stringify(config) });
     await setStorage("config", config);
   }
 
@@ -81,7 +86,10 @@ export class IosPlatformPage {
   async updateConfig(): Promise<StoredConfigurationV1> {
     const webConfigP = getStorage("config", {});
 
-    const appConfigP: Promise<StoredConfigurationV1> = this.getStore("web_config").then((
+    const appConfigP: Promise<StoredConfigurationV1> = this.invokeApp({
+      type: "GetConfig",
+      args: null,
+    }).then((
       value,
     ) => value ?? {});
     const [webConfig, appConfig] = await Promise.all([webConfigP, appConfigP]);
@@ -93,5 +101,12 @@ export class IosPlatformPage {
 
   translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
+  }
+
+  async invokeApp<C extends AppCommandTypes>(
+    command: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
+    const result = await this.messaging.send("invokeApp", command);
+    return result as AppCommandResultOf<C>;
   }
 }

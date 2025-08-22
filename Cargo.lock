@@ -3096,6 +3096,7 @@ dependencies = [
  "oslog",
  "paste",
  "rusqlite",
+ "schemars",
  "serde",
  "serde_json",
  "uniffi",

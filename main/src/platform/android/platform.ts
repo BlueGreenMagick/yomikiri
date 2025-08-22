@@ -1,6 +1,7 @@
 import { migrateConfigObject } from "@/features/compat";
 import type { StoredConfigurationV1 } from "@/features/compat/types/typesV1";
 import type { StoredConfig } from "@/features/config";
+import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendMessage } from "./messaging";
@@ -52,7 +53,12 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredConfigurationV1> {
-    return await this.getStore("config") ?? {};
+    const result = await this.invokeApp({ type: "GetConfig", args: null });
+    if (result === null) {
+      return {};
+    } else {
+      return JSON.parse(result) as StoredConfigurationV1;
+    }
   }
 
   /** TODO */
@@ -65,7 +71,7 @@ export class AndroidPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfig): Promise<void> {
-    await this.setStore("config", config);
+    await this.invokeApp({ type: "SetConfig", args: JSON.stringify(config) });
   }
 
   openOptionsPage(): void {
@@ -93,5 +99,12 @@ export class AndroidPlatform implements IPlatform {
 
   openExternalLink(_url: string): void {
     throw new Error("Unimplemented");
+  }
+
+  private async invokeApp<C extends AppCommandTypes>(
+    req: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
+    const result = await sendMessage("invokeApp", req);
+    return result as AppCommandResultOf<C>;
   }
 }

@@ -13,6 +13,10 @@ crate-type = ["cdylib", "rlib", "staticlib"]
 name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 
+[[bin]]
+name = "uniffi-schemars"
+path = "schemars/uniffi-schemars.rs"
+
 [features]
 # uniffi/cli is always enabled when calling uniffi-bindgen
 # but the the lint tool does not know that
@@ -27,6 +31,7 @@ log = { workspace = true }
 memmap2 = { workspace = true }
 paste.workspace = true
 rusqlite.workspace = true
+schemars.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }
 uniffi = { workspace = true }

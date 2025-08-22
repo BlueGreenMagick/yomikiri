@@ -8,11 +8,13 @@ includes:
     taskfile: '../../extra/taskfile/Consts-Taskfile.yml'
 
 vars:
-  PROJECT_ROOT: ../../
+  PROJECT_ROOT: ../..
   SWIFT_DIR: ./swift
   APPLE_PROJECT_RUST_DIR: ../../safari/YomikiriTokenizer/rust
   KOTLIN_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_KOTLIN_BINDINGS_DIR}}'
   ANDROID_LIB_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_ANDROID_LIB_DIR}}'
+  TS_BINDINGS_DIR: '{{.PROJECT_ROOT}}/{{.__BACKEND_UNIFFI_BINDINGS_DIR}}'
+  TS_BINDINGS_SCHEMA_JSON: '{{.TS_BINDINGS_DIR}}/generated.schema.json'
 
   FLAG_RELEASE: '{{if .RELEASE}}--release{{end}}'
 
@@ -68,6 +70,7 @@ tasks:
       vars: [FLAG_TARGET]
     cmds:
       - 'cargo build --lib {{.FLAG_RELEASE}} {{.FLAG_TARGET}}'
+      - task: tsbinding
 
   generate:uniffi:
     requires:
@@ -124,7 +127,7 @@ tasks:
       - task: '{{if .RELEASE}}clean{{else}}_void{{end}}'
 
   clean:
-    - 'rm -rf "{{.SWIFT_DIR}}" "{{.APPLE_PROJECT_RUST_DIR}}" "{{.KOTLIN_DIR}}", "{{.ANDROID_LIB_DIR}}"'
+    - 'rm -rf "{{.SWIFT_DIR}}" "{{.APPLE_PROJECT_RUST_DIR}}" "{{.KOTLIN_DIR}}" "{{.ANDROID_LIB_DIR}}" "{{.TS_BINDINGS_DIR}}"'
 
   _rustup_install_targets:
     internal: true
@@ -136,3 +139,47 @@ tasks:
         task: '{{if contains .ITEM .INSTALLED_TARGETS}}_void{{else}}_rustup_install{{end}}'
         vars:
           TARGET: '{{.ITEM}}'
+
+  tsbinding:
+    run: when_changed
+    desc: Generate Typescript bindings for rust types
+    cmds:
+      - cargo build --bin uniffi-schemars
+      - task: rs_to_schema
+      - task: schema_to_ts
+      # Must come after rs_to_schema as the dest folder must be generated first
+      - task: copy_package_json
+
+  copy_package_json:
+    vars:
+      PACKAGE_JSON_SRC: './schemars/uniffi-bindings-package.json'
+      PACKAGE_JSON_DEST: '{{.TS_BINDINGS_DIR}}/package.json'
+    sources:
+      - '{{.PACKAGE_JSON_SRC}}'
+    generates:
+      - '{{.PACKAGE_JSON_DEST}}'
+    cmds:
+      - cp -f "{{.PACKAGE_JSON_SRC}}" "{{.PACKAGE_JSON_DEST}}"
+
+  rs_to_schema:
+    vars:
+      SCHEMARS_BINARY: '{{.PROJECT_ROOT}}/target/debug/uniffi-schemars'
+    sources:
+      - '{{.SCHEMARS_BINARY}}'
+    generates:
+      - '{{.TS_BINDINGS_SCHEMA_JSON}}'
+    cmds:
+      - '{{.SCHEMARS_BINARY}} "{{.TS_BINDINGS_SCHEMA_JSON}}"'
+
+  schema_to_ts:
+    vars:
+      TS_BINDINGS: '{{.TS_BINDINGS_DIR}}/generated.d.ts'
+    sources:
+      - '{{.TS_BINDINGS_SCHEMA_JSON}}'
+      - '{{.PROJECT_ROOT}}/pnpm-lock.yaml'
+    generates:
+      - '{{.TS_BINDINGS}}'
+    cmds:
+      # --use-stderr outputs all outputs by pnpm to stderr, which is printed to terminal instead of being written to file
+      # we use piping because json2ts is executed on workspace root
+      - 'cat "{{.TS_BINDINGS_SCHEMA_JSON}}" | pnpm --use-stderr exec json2ts --additionalProperties=false > "{{.TS_BINDINGS}}"'

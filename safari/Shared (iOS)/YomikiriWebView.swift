@@ -268,6 +268,9 @@ extension YomikiriWebView {
                 let req: TTSRequest = try jsonDeserialize(json: request)
                 try ttsSpeak(voice: req.voice, text: req.text)
                 return nil
+            case "invokeApp":
+                var backendInstance = try backend.get()
+                return try backendInstance.backend.get().invokeApp(command: request)
             default:
                 var backendInstance = try backend.get()
                 var innerBackend = try backendInstance.backend.get()

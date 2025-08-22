@@ -1,8 +1,9 @@
 import { migrateConfigObject, type StoredConfigurationV1 } from "@/features/compat";
 import { type StoredConfig } from "@/features/config";
 import { YomikiriError } from "@/features/error";
-import Utils, { LazyAsync } from "@/features/utils";
+import { LazyAsync } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
+import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
@@ -105,14 +106,14 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async getConfig(): Promise<StoredConfigurationV1> {
-    const config: StoredConfigurationV1 = await this.getStore("web_config") ?? {};
-    if (typeof config !== "object") {
-      Utils.log("ERROR: Invalid configuration stored in app. Resetting.");
-      Utils.log(config);
-      console.error("Invalid configuration stored in app. Resetting.");
+    const jsonConfig = await this.invokeApp({
+      type: "GetConfig",
+      args: null,
+    });
+    if (jsonConfig === null) {
       return {};
     } else {
-      return config;
+      return JSON.parse(jsonConfig) as StoredConfigurationV1;
     }
   }
 
@@ -122,7 +123,7 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async saveConfig(config: StoredConfig) {
-    await this.setStore("web_config", config);
+    await this.invokeApp({ type: "SetConfig", args: JSON.stringify(config) });
 
     // trigger update for this execution context
     for (const subscriber of this._configSubscribers) {
@@ -174,5 +175,12 @@ export class IosAppPlatform implements IPlatform {
 
   closeWindow(): Promise<void> {
     return sendMessage("close", null);
+  }
+
+  private async invokeApp<C extends AppCommandTypes>(
+    command: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
+    const result = await sendMessage("invokeApp", command);
+    return result as AppCommandResultOf<C>;
   }
 }

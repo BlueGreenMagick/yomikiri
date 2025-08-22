@@ -56,11 +56,21 @@ macro_rules! store_key {
             #[uniffi::export]
             impl RustDatabase {
                 pub fn [<get_ $name>](&self) -> FFIResult<Option<$type>> {
-                    KEYS::$name().get(&self.conn()).uniffi()
+                    self.[<_get_ $name>]().uniffi()
                 }
 
                 pub fn [<set_ $name>](&self, value: Option<$type>) -> FFIResult<()> {
-                    KEYS::$name().set(&self.conn(), value).uniffi()
+                    self.[<_set_ $name>](value.as_ref()).uniffi()
+                }
+            }
+
+            impl RustDatabase {
+                pub fn [<_get_ $name>](&self) -> Result<Option<$type>> {
+                    KEYS::$name().get(&self.conn())
+                }
+
+                pub fn [<_set_ $name>](&self, value: Option<&$type>) -> Result<()> {
+                    KEYS::$name().set(&self.conn(), value)
                 }
             }
         }
@@ -72,6 +82,7 @@ store_key!(jmdict_etag, String);
 store_key!(jmnedict_etag, String);
 store_key!(saved_url, String);
 store_key!(android_current_view, String);
+store_key!(web_config_v3, String);
 
 #[uniffi::export]
 impl RustDatabase {

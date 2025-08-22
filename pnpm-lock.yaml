@@ -94,6 +94,8 @@ importers:
 
   generated/backend-bindings: {}
 
+  generated/backend-uniffi-bindings-ts: {}
+
   generated/yomikiri-backend-wasm: {}
 
   main:
@@ -101,6 +103,9 @@ importers:
       '@yomikiri/backend-bindings':
         specifier: workspace:*
         version: link:../generated/backend-bindings
+      '@yomikiri/backend-uniffi-bindings':
+        specifier: workspace:*
+        version: link:../generated/backend-uniffi-bindings-ts
       '@yomikiri/generated':
         specifier: workspace:*
         version: link:../generated
