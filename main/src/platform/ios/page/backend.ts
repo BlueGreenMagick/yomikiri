@@ -1,10 +1,5 @@
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type {
-  AppCommandOf,
-  AppCommandResultOf,
-  AppCommandTypes,
-} from "@/platform/shared/invokeApp";
-import type {
   DictionaryMetadata,
   SearchArgs,
   TokenizeArgs,
@@ -49,12 +44,5 @@ export class IosBackendPage {
 
   async getDictMetadata(): Promise<DictionaryMetadata> {
     return this.messaging.send("metadata", null);
-  }
-
-  async invokeApp<C extends AppCommandTypes>(
-    req: AppCommandOf<C>,
-  ): Promise<AppCommandResultOf<C>> {
-    const result = await this.messaging.send("invokeApp", req);
-    return result as AppCommandResultOf<C>;
   }
 }

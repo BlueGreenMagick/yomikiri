@@ -36,7 +36,7 @@ export type IosExtensionMessage =
   | ExtensionMessage<"IosBackend.tokenize", TokenizeRequest, TokenizeResult>
   | ExtensionMessage<"IosBackend.search", SearchRequest, TokenizeResult>
   | ExtensionMessage<"IosBackend.getDictMetadata", void, DictionaryMetadata>
-  | ExtensionMessage<"IosBackend.invokeApp", AppCommand, AppCommandResult>;
+  | ExtensionMessage<"IosPlatform.invokeApp", AppCommand, AppCommandResult>;
 
 type Keys = IosExtensionMessage["key"];
 

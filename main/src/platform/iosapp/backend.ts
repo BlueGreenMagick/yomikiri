@@ -1,6 +1,5 @@
 import { ProgressTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
-import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -58,12 +57,5 @@ export class IosAppBackend implements IBackend {
 
   getDictMetadata(): Promise<DictionaryMetadata> {
     return sendMessage("metadata", null);
-  }
-
-  private async invokeApp<C extends AppCommandTypes>(
-    command: AppCommandOf<C>,
-  ): Promise<AppCommandResultOf<C>> {
-    const result = await sendMessage("invokeApp", command);
-    return result as AppCommandResultOf<C>;
   }
 }

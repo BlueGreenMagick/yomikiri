@@ -1,4 +1,3 @@
-import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import type {
   DictionaryMetadata,
   IBackend,
@@ -47,18 +46,6 @@ export class IosBackend implements IBackend {
       return this.page.getDictMetadata();
     } else {
       return sendIosExtensionMessage("IosBackend.getDictMetadata", undefined);
-    }
-  }
-
-  async invokeApp<C extends AppCommandTypes>(
-    req: AppCommandOf<C>,
-  ): Promise<AppCommandResultOf<C>> {
-    if (this.page) {
-      return await this.page.invokeApp(req);
-    } else {
-      return await sendIosExtensionMessage("IosBackend.invokeApp", req) as AppCommandResultOf<
-        C
-      >;
     }
   }
 }
