@@ -9,7 +9,6 @@ import {
 } from "@/features/extension";
 import { log } from "@/features/utils";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
-import type { AppCommandOf, AppCommandResultOf, AppCommandTypes } from "../shared/invokeApp";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendIosExtensionMessage } from "./extensionMessage";
 import type { IosPlatformPage } from "./page/platform";
@@ -183,18 +182,6 @@ export class IosPlatform implements IPlatform {
       }
     }
     setInterval(checkReload, 1000);
-  }
-
-  async invokeApp<C extends AppCommandTypes>(
-    command: AppCommandOf<C>,
-  ): Promise<AppCommandResultOf<C>> {
-    if (this.page) {
-      return await this.page.invokeApp(command);
-    } else {
-      return await sendIosExtensionMessage("IosPlatform.invokeApp", command) as AppCommandResultOf<
-        C
-      >;
-    }
   }
 }
 

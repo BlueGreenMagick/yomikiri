@@ -3,7 +3,12 @@ import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
 import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
 import type { RunMessageMap } from "../shared/backend";
-import type { AppCommandResult } from "../shared/invokeApp";
+import type {
+  AppCommandOf,
+  AppCommandResult,
+  AppCommandResultOf,
+  AppCommandTypes,
+} from "../shared/invokeApp";
 import type { JSONStoreValues } from "../types";
 
 /** Secret key used in android message handler */
@@ -104,4 +109,11 @@ export async function sendMessage<K extends keyof AndroidMessageMap>(
   const [promise, resolve, reject] = createPromise<MessageResponse<K>>();
   responseHandlers.set(messageId, [resolve as (resp: unknown) => void, reject]);
   return promise;
+}
+
+export async function invokeApp<C extends AppCommandTypes>(
+  req: AppCommandOf<C>,
+): Promise<AppCommandResultOf<C>> {
+  const result = await sendMessage("invokeApp", req);
+  return result as AppCommandResultOf<C>;
 }

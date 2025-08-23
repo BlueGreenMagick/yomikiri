@@ -1,5 +1,10 @@
 import { handleResponseMessage } from "@/features/utils";
-import type { AppCommandResult } from "@/platform/shared/invokeApp";
+import type {
+  AppCommandOf,
+  AppCommandResult,
+  AppCommandResultOf,
+  AppCommandTypes,
+} from "@/platform/shared/invokeApp";
 import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
 import type { RunMessageMap } from "../../shared/backend";
 import type { JSONStoreValues, TTSRequest, TTSVoice } from "../../types";
@@ -38,5 +43,12 @@ export class IosMessagingPage {
     // eslint-disable-next-line
     const jsonResponse = handleResponseMessage<string>(resp);
     return JSON.parse(jsonResponse) as AppResponse<K>;
+  }
+
+  async invokeApp<C extends AppCommandTypes>(
+    command: AppCommandOf<C>,
+  ): Promise<AppCommandResultOf<C>> {
+    const result = await this.send("invokeApp", command);
+    return result as AppCommandResultOf<C>;
   }
 }

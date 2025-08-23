@@ -1,6 +1,12 @@
 import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
 import type { RunMessageMap } from "@/platform/shared/backend";
-import type { AppCommand, AppCommandResult } from "../shared/invokeApp";
+import type {
+  AppCommand,
+  AppCommandOf,
+  AppCommandResult,
+  AppCommandResultOf,
+  AppCommandTypes,
+} from "../shared/invokeApp";
 import type { JSONStoreValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 
@@ -61,4 +67,11 @@ export async function sendMessage<K extends keyof MessageWebviewMap>(
   const response = await window.webkit.messageHandlers.yomikiri.postMessage(message);
   const jsonResponse = handleResponseMessage(response);
   return JSON.parse(jsonResponse) as WebviewResponse<K>;
+}
+
+export async function invokeApp<C extends AppCommandTypes>(
+  command: AppCommandOf<C>,
+): Promise<AppCommandResultOf<C>> {
+  const result = await sendMessage("invokeApp", command);
+  return result as AppCommandResultOf<C>;
 }
