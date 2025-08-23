@@ -83,6 +83,7 @@ store_key!(jmnedict_etag, String);
 store_key!(saved_url, String);
 store_key!(android_current_view, String);
 store_key!(web_config_v3, String);
+store_key!(migration_version, u16);
 
 #[uniffi::export]
 impl RustDatabase {

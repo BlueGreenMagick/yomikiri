@@ -1,3 +1,33 @@
+//! Database migration system for Yomikiri's SQLite storage.
+//!
+//! This module handles versioned database schema evolution using SQLite's `PRAGMA user_version`.
+//! Migrations are applied incrementally with support for version skipping and optimized
+//! new installation setup.
+//!
+//! ## Migration Process
+//!
+//! **Version Detection**: Current DB version is retrieved via `uniffi_get_db_version()`
+//!
+//! **New Installation (version 0)**:
+//! - No legacy data → Complete setup in one step (without going through each migration steps) (TODO)
+//! - Has legacy data → Migrate from previous storage system
+//!
+//! **Existing Databases**: Sequential migration with version skipping capability
+//! - App calls migration functions one by one: `uniffi_db_migrate_from_3()` → `uniffi_db_migrate_from_5()`
+//! - Each function returns the new version number (may skip intermediate versions)
+//! - App uses returned version to determine next migration step
+//!
+//! Separate function calls allow apps to update progress indicators between migration steps
+//!
+//!
+//! ## Difference with User Data Migration
+//! DB migration is separate from user data migration.
+//! DB migration does the minimal job of migrating to new DB schema.
+//! Meanwhile, user data migration may run later to change the data stored within DB.
+//!
+//! db migration methods are prefixed with `db_migrate`,
+//! while user data migration methods are prefixed with just `migrate`
+
 use anyhow::Result;
 use rusqlite::Connection;
 
@@ -22,18 +52,28 @@ impl RustDatabase {
     fn db_migrate_from_0(&self, data: MigrateFromV0Data) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
-        tx.execute_batch(include_str!("sql/0_to_1.sql"))?;
+        tx.execute_batch(include_str!("sql/db_migrate_from_0_to_1.sql"))?;
+        let mut has_existing_data = false;
         if let Some(val) = data.web_config {
             set_store(&tx, "web_config", &val)?;
+            has_existing_data = true;
         }
         if let Some(val) = data.jmdict_etag {
             KEYS::jmdict_etag().set(&tx, Some(val))?;
+            has_existing_data = true;
         }
         if let Some(val) = data.jmnedict_etag {
             KEYS::jmnedict_etag().set(&tx, Some(val))?;
+            has_existing_data = true;
         }
         if let Some(val) = data.dict_schema_ver {
             KEYS::dict_schema_ver().set(&tx, Some(val))?;
+            has_existing_data = true;
+        }
+        if has_existing_data {
+            KEYS::migration_version().set(&tx, Some(1))?;
+        } else {
+            KEYS::migration_version().set(&tx, Some(0))?;
         }
         tx.sql("PRAGMA user_version = 1")?.execute([])?;
         tx.commit()?;
