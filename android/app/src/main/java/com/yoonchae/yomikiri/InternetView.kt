@@ -70,7 +70,7 @@ fun InternetView(
                             favicon: Bitmap?,
                         ) {
                             if (url != null) {
-                                appEnv.db.setSavedUrl(url)
+                                appEnv.db.uniffiSetSavedUrl(url)
                             }
                             super.onPageStarted(view, url, favicon)
                         }
@@ -91,7 +91,7 @@ fun InternetView(
                 }
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    val storedUrl = appEnv.db.getSavedUrl() ?: "https://syosetu.com"
+                    val storedUrl = appEnv.db.uniffiGetSavedUrl() ?: "https://syosetu.com"
                     webview.loadUrl(storedUrl)
                 }
             }

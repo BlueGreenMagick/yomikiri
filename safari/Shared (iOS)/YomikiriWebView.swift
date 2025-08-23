@@ -230,10 +230,10 @@ extension YomikiriWebView {
         private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
             case "setStoreBatch":
-                try backend.get().db.setRawStoreBatch(data: request)
+                try backend.get().db.uniffiSetRawStoreBatch(data: request)
                 return nil
             case "getStoreBatch":
-                return try backend.get().db.getRawStoreBatch(keys: request)
+                return try backend.get().db.uniffiGetRawStoreBatch(keys: request)
             case "migrateConfig":
                 if configMigrated {
                     return "false"
@@ -270,11 +270,12 @@ extension YomikiriWebView {
                 return nil
             case "invokeApp":
                 var backendInstance = try backend.get()
-                return try backendInstance.backend.get().invokeApp(command: request)
-            default:
+                return try backendInstance.backend.get().uniffiInvokeApp(command: request)
+            case "invoke":
                 var backendInstance = try backend.get()
-                var innerBackend = try backendInstance.backend.get()
-                return try innerBackend.run(command: key, args: request)
+                return try backendInstance.backend.get().uniffiInvoke(command: request)
+            default:
+                throw "Invalid command key: \(key)"
             }
         }
     }

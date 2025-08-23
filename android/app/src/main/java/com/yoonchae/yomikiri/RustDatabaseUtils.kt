@@ -17,8 +17,8 @@ fun createRustDatabase(context: Context): RustDatabase {
     val filesDir = File(context.filesDir, "yomikiri").apply { mkdirs() }
     val dbPath = File(filesDir, "db.sql")
 
-    val database = RustDatabase.open(dbPath.absolutePath)
-    val dbVer = database.getVersion()
+    val database = RustDatabase.uniffiOpen(dbPath.absolutePath)
+    val dbVer = database.uniffiGetVersion()
 
     if (dbVer == 0u) {
         migrateDatabaseFrom0(database, context)

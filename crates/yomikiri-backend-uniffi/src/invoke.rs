@@ -21,30 +21,30 @@ pub enum AppCommandResultSpec {
 
 #[uniffi::export]
 impl RustBackend {
-    pub fn invoke_app(&self, command: String) -> FFIResult<String> {
-        self._invoke_app(&command).uniffi()
+    pub fn uniffi_invoke_app(&self, command: String) -> FFIResult<String> {
+        self.invoke_app(&command).uniffi()
     }
 }
 
 impl RustBackend {
-    pub fn _invoke_app(&self, command: &str) -> Result<String> {
+    pub fn invoke_app(&self, command: &str) -> Result<String> {
         use AppCommand::*;
 
         let cmd: AppCommand = serde_json::from_str(command)?;
 
         let json = match cmd {
-            GetConfig(_) => serde_json::to_string(&self._get_config()?)?,
-            SetConfig(args) => serde_json::to_string(&self._set_config(args)?)?,
+            GetConfig(_) => serde_json::to_string(&self.get_config()?)?,
+            SetConfig(args) => serde_json::to_string(&self.set_config(args)?)?,
         };
 
         Ok(json)
     }
 
-    pub fn _get_config(&self) -> Result<Option<String>> {
-        self.db._get_web_config_v3()
+    pub fn get_config(&self) -> Result<Option<String>> {
+        self.db.get_web_config_v3()
     }
 
-    pub fn _set_config(&self, args: Option<String>) -> Result<()> {
-        self.db._set_web_config_v3(args.as_ref())
+    pub fn set_config(&self, args: Option<String>) -> Result<()> {
+        self.db.set_web_config_v3(args.as_ref())
     }
 }

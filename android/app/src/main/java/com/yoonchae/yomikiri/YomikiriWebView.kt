@@ -139,11 +139,11 @@ private suspend fun handleWebMessage(
                 builder.success(value)
             }
             "setStoreBatch" -> {
-                db.setRawStoreBatch(msg.request)
+                db.uniffiSetRawStoreBatch(msg.request)
                 builder.success(Unit)
             }
             "getStoreBatch" -> {
-                val value = db.getRawStoreBatch(msg.request)
+                val value = db.uniffiGetRawStoreBatch(msg.request)
                 builder.jsonSuccess(value)
             }
             "ankiGetInfo" -> {
@@ -160,11 +160,11 @@ private suspend fun handleWebMessage(
                 builder.success(result)
             }
             "invokeApp" -> {
-                val value = appEnv.backendManager.withBackend { backend -> backend.invokeApp(msg.request) }
+                val value = appEnv.backendManager.withBackend { backend -> backend.uniffiInvokeApp(msg.request) }
                 builder.jsonSuccess(value)
             }
             "invoke" -> {
-                val value = appEnv.backendManager.withBackend { backend -> backend.invoke(msg.request) }
+                val value = appEnv.backendManager.withBackend { backend -> backend.uniffiInvoke(msg.request) }
                 builder.jsonSuccess(value)
             }
             else -> {

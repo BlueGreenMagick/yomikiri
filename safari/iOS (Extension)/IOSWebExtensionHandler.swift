@@ -31,9 +31,9 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 case "addNote":
                     break
                 case "setStoreBatch":
-                    try backend.get().db.setRawStoreBatch(data: request)
+                    try backend.get().db.uniffiSetRawStoreBatch(data: request)
                 case "getStoreBatch":
-                    jsonResponse = try backend.get().db.getRawStoreBatch(keys: request)
+                    jsonResponse = try backend.get().db.uniffiGetRawStoreBatch(keys: request)
                 case "tts":
                     let req: TTSRequest = try jsonDeserialize(json: request)
                     try ttsSpeak(voice: req.voice, text: req.text)
@@ -43,10 +43,10 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                     jsonResponse = try jsonSerialize(obj: iosVersion)
                 case "invokeApp":
                     var backendInstance = try backend.get()
-                    jsonResponse = try backendInstance.backend.get().invokeApp(command: request)
+                    jsonResponse = try backendInstance.backend.get().uniffiInvokeApp(command: request)
                 case "invoke":
                     var backendInstance = try backend.get()
-                    jsonResponse = try backendInstance.backend.get().invoke(command: request)
+                    jsonResponse = try backendInstance.backend.get().uniffiInvoke(command: request)
                 default:
                     throw "Invalid command key: \(key)"
                 }

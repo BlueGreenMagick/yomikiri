@@ -80,34 +80,30 @@ impl RustBackend {
 impl RustBackend {
     #[uniffi::constructor]
     pub fn new(dict_path: String, db: Arc<RustDatabase>) -> FFIResult<Arc<RustBackend>> {
-        Self::_new(dict_path, db).uniffi()
+        Self::try_from_paths(&dict_path, db).uniffi()
     }
 
-    pub fn invoke(&self, command: String) -> FFIResult<String> {
+    pub fn uniffi_invoke(&self, command: String) -> FFIResult<String> {
         let mut backend = self.inner.lock().unwrap();
         backend.invoke(&command).uniffi()
     }
 
-    pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<String> {
-        self._tokenize(sentence, char_at).uniffi()
+    pub fn uniffi_tokenize(&self, sentence: String, char_at: u32) -> FFIResult<String> {
+        self.tokenize(sentence, char_at).uniffi()
     }
 
-    pub fn search(&self, term: String, char_at: u32) -> FFIResult<String> {
-        self._search(term, char_at).uniffi()
+    pub fn uniffi_search(&self, term: String, char_at: u32) -> FFIResult<String> {
+        self.search(term, char_at).uniffi()
     }
 
     /// Returns JSON string if DictionaryMetadata
-    pub fn metadata(&self) -> FFIResult<String> {
-        self._metadata().uniffi()
+    pub fn uniffi_metadata(&self) -> FFIResult<String> {
+        self.metadata().uniffi()
     }
 }
 
 impl RustBackend {
-    fn _new(dict_path: String, db: Arc<RustDatabase>) -> Result<Arc<RustBackend>> {
-        Self::try_from_paths(&dict_path, db)
-    }
-
-    fn _tokenize(&self, sentence: String, char_at: u32) -> Result<String> {
+    fn tokenize(&self, sentence: String, char_at: u32) -> Result<String> {
         let backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at)
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
@@ -116,7 +112,7 @@ impl RustBackend {
         Ok(json)
     }
 
-    fn _search(&self, term: String, char_at: u32) -> Result<String> {
+    fn search(&self, term: String, char_at: u32) -> Result<String> {
         let backend = self.inner.lock().unwrap();
         let char_at = usize::try_from(char_at)
             .with_context(|| format!("Failed to convert char_at '{}' to usize", char_at))?;
@@ -125,7 +121,7 @@ impl RustBackend {
         Ok(json)
     }
 
-    fn _metadata(&self) -> Result<String> {
+    fn metadata(&self) -> Result<String> {
         let backend = self.inner.lock().unwrap();
         let metadata = backend.dictionary.metadata();
         let json = serde_json::to_string(metadata)?;
@@ -140,7 +136,10 @@ pub enum DownloadDictionaryResult {
 }
 
 #[uniffi::export]
-pub fn download_jmdict(dir: String, etag: Option<String>) -> FFIResult<DownloadDictionaryResult> {
+pub fn uniffi_download_jmdict(
+    dir: String,
+    etag: Option<String>,
+) -> FFIResult<DownloadDictionaryResult> {
     let dir = PathBuf::from(dir);
     download_dictionary_xml(
         &dir,
@@ -152,7 +151,10 @@ pub fn download_jmdict(dir: String, etag: Option<String>) -> FFIResult<DownloadD
 }
 
 #[uniffi::export]
-pub fn download_jmnedict(dir: String, etag: Option<String>) -> FFIResult<DownloadDictionaryResult> {
+pub fn uniffi_download_jmnedict(
+    dir: String,
+    etag: Option<String>,
+) -> FFIResult<DownloadDictionaryResult> {
     let dir = PathBuf::from(dir);
     download_dictionary_xml(
         &dir,
@@ -198,11 +200,11 @@ pub fn download_dictionary_xml(
 
 /// Creates `english.yomikiridict` at directory
 #[uniffi::export]
-pub fn create_dictionary(dir: String) -> FFIResult<()> {
-    _create_dictionary(dir).uniffi()
+pub fn uniffi_create_dictionary(dir: String) -> FFIResult<()> {
+    create_dictionary(dir).uniffi()
 }
 
-fn _create_dictionary(dir: String) -> Result<()> {
+fn create_dictionary(dir: String) -> Result<()> {
     let dir = PathBuf::from(dir);
     let jmdict_path = dir.join("JMdict_e.gz");
     let jmnedict_path = dir.join("JMnedict.xml.gz");
@@ -241,7 +243,7 @@ fn decode_gzip_xml(path: &Path) -> Result<BufReader<GzDecoder<BufReader<File>>>>
 
 /// Downloads and writes new dictionary files into specif
 #[uniffi::export]
-pub fn dict_schema_ver() -> u16 {
+pub fn uniffi_dict_schema_ver() -> u16 {
     SCHEMA_VER
 }
 

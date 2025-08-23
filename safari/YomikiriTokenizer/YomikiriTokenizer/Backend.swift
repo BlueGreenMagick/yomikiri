@@ -35,13 +35,13 @@ public struct Backend {
     public mutating func updateDictionary() async throws -> Bool {
         let dir = try filesDirectory()
 
-        let jmdictResult = try downloadJmdict(dir: dir.path, etag: db.getJmdictEtag())
+        let jmdictResult = try uniffiDownloadJmdict(dir: dir.path, etag: db.uniffiGetJmdictEtag())
         if case let .replace(etag: etag) = jmdictResult {
-            try db.setJmdictEtag(value: etag)
+            try db.uniffiSetJmdictEtag(value: etag)
         }
-        let jmnedictResult = try downloadJmnedict(dir: dir.path, etag: db.getJmnedictEtag())
+        let jmnedictResult = try uniffiDownloadJmnedict(dir: dir.path, etag: db.uniffiGetJmnedictEtag())
         if case let .replace(etag: etag) = jmnedictResult {
-            try db.setJmnedictEtag(value: etag)
+            try db.uniffiSetJmnedictEtag(value: etag)
         }
 
         // drop backend to close mmap and open file handle
@@ -49,8 +49,8 @@ public struct Backend {
 
         var err: (any Error)? = nil
         do {
-            try createDictionary(dir: dir.path)
-            try db.setDictSchemaVer(value: dictSchemaVer())
+            try uniffiCreateDictionary(dir: dir.path)
+            try db.uniffiSetDictSchemaVer(value: uniffiDictSchemaVer())
         } catch {
             err = error
         }
@@ -71,8 +71,8 @@ private func createRustDatabase() throws -> RustDatabase {
         throw YomikiriTokenizerError.Fatal("Could not find directory to place app files")
     }
     let dbPath = sharedDir.appendingPathComponent("db.sql")
-    let database = try RustDatabase.open(path: dbPath.path)
-    let dbVer = try database.getVersion()
+    let database = try RustDatabase.uniffiOpen(path: dbPath.path)
+    let dbVer = try database.uniffiGetVersion()
     if dbVer == 0 {
         try migrateDatabaseFrom0(db: database)
     }

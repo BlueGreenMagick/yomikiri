@@ -55,21 +55,21 @@ macro_rules! store_key {
 
             #[uniffi::export]
             impl RustDatabase {
-                pub fn [<get_ $name>](&self) -> FFIResult<Option<$type>> {
-                    self.[<_get_ $name>]().uniffi()
+                pub fn [<uniffi_get_ $name>](&self) -> FFIResult<Option<$type>> {
+                    self.[<get_ $name>]().uniffi()
                 }
 
-                pub fn [<set_ $name>](&self, value: Option<$type>) -> FFIResult<()> {
-                    self.[<_set_ $name>](value.as_ref()).uniffi()
+                pub fn [<uniffi_set_ $name>](&self, value: Option<$type>) -> FFIResult<()> {
+                    self.[<set_ $name>](value.as_ref()).uniffi()
                 }
             }
 
             impl RustDatabase {
-                pub fn [<_get_ $name>](&self) -> Result<Option<$type>> {
+                pub fn [<get_ $name>](&self) -> Result<Option<$type>> {
                     KEYS::$name().get(&self.conn())
                 }
 
-                pub fn [<_set_ $name>](&self, value: Option<&$type>) -> Result<()> {
+                pub fn [<set_ $name>](&self, value: Option<&$type>) -> Result<()> {
                     KEYS::$name().set(&self.conn(), value)
                 }
             }
@@ -89,8 +89,8 @@ impl RustDatabase {
     /// Retrieves raw json store value
     ///
     /// Should only be used from web
-    pub fn get_raw_store(&self, key: String) -> FFIResult<Option<String>> {
-        self._get_raw_store(key).uniffi()
+    pub fn uniffi_get_raw_store(&self, key: String) -> FFIResult<Option<String>> {
+        self.get_raw_store(key).uniffi()
     }
 
     /// Retrieves multiple raw json store value
@@ -99,15 +99,15 @@ impl RustDatabase {
     ///
     /// returns JSON serialized {[key: string]: string | null}
     /// where the string value is itself a JSON serialized value
-    pub fn get_raw_store_batch(&self, keys: String) -> FFIResult<String> {
-        self._get_raw_store_batch(keys).uniffi()
+    pub fn uniffi_get_raw_store_batch(&self, keys: String) -> FFIResult<String> {
+        self.get_raw_store_batch(keys).uniffi()
     }
 
     /// Stores raw json store value
     ///
     /// Should only be used from web
-    pub fn set_raw_store(&self, key: String, value: Option<String>) -> FFIResult<()> {
-        self._set_raw_store(key, value).uniffi()
+    pub fn uniffi_set_raw_store(&self, key: String, value: Option<String>) -> FFIResult<()> {
+        self.set_raw_store(key, value).uniffi()
     }
 
     /// Stores multiple raw json store values
@@ -116,13 +116,13 @@ impl RustDatabase {
     /// If value is null, the key is deleted. Otherwise, the value is set.
     ///
     /// Should only be used from web
-    pub fn set_raw_store_batch(&self, data: String) -> FFIResult<()> {
-        self._set_raw_store_batch(data).uniffi()
+    pub fn uniffi_set_raw_store_batch(&self, data: String) -> FFIResult<()> {
+        self.set_raw_store_batch(data).uniffi()
     }
 }
 
 impl RustDatabase {
-    fn _get_raw_store(&self, key: String) -> Result<Option<String>> {
+    fn get_raw_store(&self, key: String) -> Result<Option<String>> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         let result = get_raw_store(&tx, &key)?;
@@ -130,7 +130,7 @@ impl RustDatabase {
         Ok(result)
     }
 
-    fn _get_raw_store_batch(&self, keys: String) -> Result<String> {
+    fn get_raw_store_batch(&self, keys: String) -> Result<String> {
         let keys_vec: Vec<String> =
             serde_json::from_str(&keys).context("Failed to deserialize keys as array of string")?;
 
@@ -147,7 +147,7 @@ impl RustDatabase {
         Ok(serde_json::to_string(&result)?)
     }
 
-    fn _set_raw_store(&self, key: String, value: Option<String>) -> Result<()> {
+    fn set_raw_store(&self, key: String, value: Option<String>) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         set_raw_store_optional(&tx, &key, value)?;
@@ -155,7 +155,7 @@ impl RustDatabase {
         Ok(())
     }
 
-    fn _set_raw_store_batch(&self, data: String) -> Result<()> {
+    fn set_raw_store_batch(&self, data: String) -> Result<()> {
         let data_map: HashMap<String, Option<String>> = serde_json::from_str(&data).context(
             "Failed to deserialize data as object with string keys and optional string values",
         )?;

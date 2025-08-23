@@ -13,7 +13,7 @@ const VERSION: u16 = 1;
 
 #[uniffi::export]
 #[allow(non_snake_case)]
-pub fn RUST_DATABASE_VERSION() -> u16 {
+pub fn UNIFFI_RUST_DATABASE_VERSION() -> u16 {
     VERSION
 }
 
@@ -25,7 +25,7 @@ pub struct RustDatabase {
 #[uniffi::export]
 impl RustDatabase {
     #[uniffi::constructor]
-    pub fn open(path: String) -> FFIResult<Arc<RustDatabase>> {
+    pub fn uniffi_open(path: String) -> FFIResult<Arc<RustDatabase>> {
         let db = Connection::open(&path)
             .context("Failed to open SQL database file")
             .uniffi()?;
@@ -38,7 +38,7 @@ impl RustDatabase {
         Ok(Arc::new(this))
     }
 
-    pub fn get_version(&self) -> FFIResult<u32> {
+    pub fn uniffi_get_version(&self) -> FFIResult<u32> {
         get_version(&self.conn()).uniffi()
     }
 }

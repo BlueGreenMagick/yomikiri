@@ -61,7 +61,7 @@ fun AppContent(
     // Load saved navigation state on startup
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val savedView = appEnv.db.getAndroidCurrentView()
+            val savedView = appEnv.db.uniffiGetAndroidCurrentView()
             currentView =
                 try {
                     NavigationView.valueOf(savedView ?: "INTERNET")
@@ -74,7 +74,7 @@ fun AppContent(
     // Save navigation state when it changes
     LaunchedEffect(currentView) {
         withContext(Dispatchers.IO) {
-            appEnv.db.setAndroidCurrentView(currentView.name)
+            appEnv.db.uniffiSetAndroidCurrentView(currentView.name)
         }
     }
 
