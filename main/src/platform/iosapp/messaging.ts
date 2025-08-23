@@ -1,5 +1,11 @@
 import { handleResponseMessage, type ResponseMessage } from "@/features/utils";
-import type { RunMessageMap } from "@/platform/shared/backend";
+import type {
+  Command,
+  CommandOf,
+  CommandResult,
+  CommandResultOf,
+  CommandTypes,
+} from "../shared/invoke";
 import type {
   AppCommand,
   AppCommandOf,
@@ -25,7 +31,7 @@ declare global {
   }
 }
 
-export interface MessageWebviewMap extends RunMessageMap {
+export interface MessageWebviewMap {
   ankiIsInstalled: [null, boolean];
   // returns false if anki is not installed
   ankiInfo: [null, boolean];
@@ -47,6 +53,7 @@ export interface MessageWebviewMap extends RunMessageMap {
   tts: [TTSRequest, null];
 
   invokeApp: [AppCommand, AppCommandResult];
+  invoke: [Command, CommandResult];
 
   // action extension
   close: [null, void];
@@ -74,4 +81,11 @@ export async function invokeApp<C extends AppCommandTypes>(
 ): Promise<AppCommandResultOf<C>> {
   const result = await sendMessage("invokeApp", command);
   return result as AppCommandResultOf<C>;
+}
+
+export async function invokeBackend<C extends CommandTypes>(
+  command: CommandOf<C>,
+): Promise<CommandResultOf<C>> {
+  const result = await sendMessage("invoke", command);
+  return result as CommandResultOf<C>;
 }

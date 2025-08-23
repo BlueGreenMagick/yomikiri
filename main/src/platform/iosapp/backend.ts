@@ -9,7 +9,7 @@ import type {
   TokenizeRequest,
   TokenizeResult,
 } from "../types/backend";
-import { sendMessage } from "./messaging";
+import { invokeBackend, sendMessage } from "./messaging";
 
 export class IosAppBackend implements IBackend {
   readonly type = "iosapp";
@@ -24,8 +24,8 @@ export class IosAppBackend implements IBackend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    const req: TokenizeArgs = { sentence: text, char_idx: charAt };
-    const result = await sendMessage("tokenize", req);
+    const args: TokenizeArgs = { sentence: text, char_idx: charAt };
+    const result = await invokeBackend({ type: "Tokenize", args });
     cleanTokenizeResult(result);
     return result;
   }
@@ -40,8 +40,8 @@ export class IosAppBackend implements IBackend {
       throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
     }
 
-    const req: SearchArgs = { query: term, char_idx: charAt };
-    const result = await sendMessage("search", req);
+    const args: SearchArgs = { query: term, char_idx: charAt };
+    const result = await invokeBackend({ type: "Search", args });
     cleanTokenizeResult(result);
     return result;
   }
@@ -56,6 +56,6 @@ export class IosAppBackend implements IBackend {
   }
 
   getDictMetadata(): Promise<DictionaryMetadata> {
-    return sendMessage("metadata", null);
+    return invokeBackend({ type: "DictionaryMetadata", args: null });
   }
 }

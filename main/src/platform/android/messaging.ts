@@ -2,7 +2,13 @@ import type { AnkiInfo, AnkiNote } from "@/features/anki";
 import { YomikiriError } from "@/features/error";
 import { createPromise } from "@/features/utils";
 import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
-import type { RunMessageMap } from "../shared/backend";
+import type {
+  Command,
+  CommandOf,
+  CommandResult,
+  CommandResultOf,
+  CommandTypes,
+} from "../shared/invoke";
 import type {
   AppCommandOf,
   AppCommandResult,
@@ -38,13 +44,14 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
   delete window["__yomikiriInterface"];
 }
 
-export interface AndroidMessageMap extends RunMessageMap {
+export interface AndroidMessageMap {
   setStoreBatch: [JSONStoreValues, null];
   getStoreBatch: [string[], JSONStoreValues];
   versionInfo: [null, string];
   ankiGetInfo: [null, AnkiInfo];
   ankiCheckConnection: [null, null];
   ankiAddNote: [AnkiNote, boolean];
+  invoke: [Command, CommandResult];
   invokeApp: [AppCommand, AppCommandResult];
 }
 
@@ -116,4 +123,11 @@ export async function invokeApp<C extends AppCommandTypes>(
 ): Promise<AppCommandResultOf<C>> {
   const result = await sendMessage("invokeApp", req);
   return result as AppCommandResultOf<C>;
+}
+
+export async function invokeBackend<C extends CommandTypes>(
+  req: CommandOf<C>,
+): Promise<CommandResultOf<C>> {
+  const result = await sendMessage("invoke", req);
+  return result as CommandResultOf<C>;
 }

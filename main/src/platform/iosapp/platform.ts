@@ -2,7 +2,6 @@ import { migrateConfigObject, type StoredConfigurationV1 } from "@/features/comp
 import { type StoredConfig } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { LazyAsync } from "@/features/utils";
-import type { RunMessageMap } from "@/platform/shared/backend";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
@@ -14,7 +13,7 @@ declare global {
   }
 }
 
-export interface MessageWebviewMap extends RunMessageMap {
+export interface MessageWebviewMap {
   ankiIsInstalled: [null, boolean];
   // returns false if anki is not installed
   ankiInfo: [null, boolean];

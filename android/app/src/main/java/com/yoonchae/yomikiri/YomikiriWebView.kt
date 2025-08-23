@@ -163,9 +163,12 @@ private suspend fun handleWebMessage(
                 val value = appEnv.backendManager.withBackend { backend -> backend.invokeApp(msg.request) }
                 builder.jsonSuccess(value)
             }
-            else -> {
-                val value = appEnv.backendManager.withBackend { backend -> backend.run(msg.key, msg.request) }
+            "invoke" -> {
+                val value = appEnv.backendManager.withBackend { backend -> backend.invoke(msg.request) }
                 builder.jsonSuccess(value)
+            }
+            else -> {
+                throw Error("Invalid command key: ${msg.key}")
             }
         }
     } catch (e: BackendException) {

@@ -20,8 +20,8 @@ export class IosBackendPage {
       throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
     }
 
-    const req: TokenizeArgs = { sentence: text, char_idx: charAt };
-    const result = await this.messaging.send("tokenize", req);
+    const args: TokenizeArgs = { sentence: text, char_idx: charAt };
+    const result = await this.messaging.invokeBackend({ type: "Tokenize", args });
     cleanTokenizeResult(result);
     return result;
   }
@@ -36,13 +36,13 @@ export class IosBackendPage {
       throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
     }
 
-    const req: SearchArgs = { query: term, char_idx: charAt };
-    const result = await this.messaging.send("search", req);
+    const args: SearchArgs = { query: term, char_idx: charAt };
+    const result = await this.messaging.invokeBackend({ type: "Search", args });
     cleanTokenizeResult(result);
     return result;
   }
 
-  async getDictMetadata(): Promise<DictionaryMetadata> {
-    return this.messaging.send("metadata", null);
+  getDictMetadata(): Promise<DictionaryMetadata> {
+    return this.messaging.invokeBackend({ type: "DictionaryMetadata", args: null });
   }
 }

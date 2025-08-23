@@ -44,8 +44,8 @@ impl Backend {
         Ok(Backend { inner })
     }
 
-    pub fn run(&mut self, command: &str, args: &str) -> WasmResult<String> {
-        let result = self.inner.run(command, args)?;
+    pub fn invoke(&mut self, command: &str) -> WasmResult<String> {
+        let result = self.inner.invoke(command)?;
         Ok(result)
     }
 

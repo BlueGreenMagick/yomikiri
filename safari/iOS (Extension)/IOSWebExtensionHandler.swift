@@ -44,9 +44,11 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 case "invokeApp":
                     var backendInstance = try backend.get()
                     jsonResponse = try backendInstance.backend.get().invokeApp(command: request)
-                default:
+                case "invoke":
                     var backendInstance = try backend.get()
-                    jsonResponse = try backendInstance.backend.get().run(command: key, args: request)
+                    jsonResponse = try backendInstance.backend.get().invoke(command: request)
+                default:
+                    throw "Invalid command key: \(key)"
                 }
                 realResponse = ["success": true, "resp": jsonResponse]
             } catch let error as BackendError {

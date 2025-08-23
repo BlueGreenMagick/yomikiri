@@ -1,6 +1,6 @@
 pub mod dictionary;
 pub mod grammar;
-pub mod run;
+pub mod invoke;
 pub mod search;
 pub mod tokenize;
 mod unidic;

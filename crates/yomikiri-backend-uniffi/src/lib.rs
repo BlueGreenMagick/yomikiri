@@ -46,9 +46,9 @@ macro_rules! cfg_apple {
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub struct TypeBindingExports {
-    run_app_command: AppCommand,
-    run_app_return: AppCommandResultSpec,
+pub struct AppTypeBindingExports {
+    app_command: AppCommand,
+    app_return: AppCommandResultSpec,
 }
 
 #[derive(uniffi::Object)]
@@ -83,9 +83,9 @@ impl RustBackend {
         Self::_new(dict_path, db).uniffi()
     }
 
-    pub fn run(&self, command: String, args: String) -> FFIResult<String> {
+    pub fn invoke(&self, command: String) -> FFIResult<String> {
         let mut backend = self.inner.lock().unwrap();
-        backend.run(&command, &args).uniffi()
+        backend.invoke(&command).uniffi()
     }
 
     pub fn tokenize(&self, sentence: String, char_at: u32) -> FFIResult<String> {

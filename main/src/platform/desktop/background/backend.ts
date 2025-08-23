@@ -1,11 +1,10 @@
 import { getStorage, removeStorage, setStorage } from "@/features/extension";
 import Utils, { LazyAsync, nextTask, ProgressTask } from "@/features/utils";
 import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
+import type { CommandOf, CommandResultOf, CommandTypes } from "@/platform/shared/invoke";
 import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-backend-wasm";
 import type {
   DictionaryMetadata,
-  RunArgTypes,
-  RunReturnTypes,
   SearchRequest,
   TokenizeRequest,
   TokenizeResult,
@@ -37,13 +36,12 @@ export class DesktopBackendBackground {
     return wasm;
   }
 
-  private run<C extends keyof RunArgTypes>(
+  private invoke<C extends CommandTypes>(
     wasm: BackendWasm,
-    cmd: C,
-    args: RunArgTypes[C],
-  ): RunReturnTypes[C] {
-    const jsonResult = wasm.run(cmd, JSON.stringify(args));
-    return JSON.parse(jsonResult) as RunReturnTypes[C];
+    command: CommandOf<C>,
+  ): CommandResultOf<C> {
+    const jsonResult = wasm.invoke(JSON.stringify(command));
+    return JSON.parse(jsonResult) as CommandResultOf<C>;
   }
 
   async tokenize({ text, charAt }: TokenizeRequest): Promise<TokenizeResult> {
@@ -63,7 +61,7 @@ export class DesktopBackendBackground {
       char_idx: codePointAt,
     };
     const wasm = await this._wasm.get();
-    const result = this.run(wasm, "tokenize", args);
+    const result = this.invoke(wasm, { type: "Tokenize", args });
     cleanTokenizeResult(result);
     return result;
   }
@@ -83,14 +81,14 @@ export class DesktopBackendBackground {
       char_idx: codePointAt,
     };
     const wasm = await this._wasm.get();
-    const result = this.run(wasm, "search", args);
+    const result = this.invoke(wasm, { type: "Search", args });
     cleanTokenizeResult(result);
     return result;
   }
 
   async getDictMetadata(): Promise<DictionaryMetadata> {
     const wasm = await this._wasm.get();
-    return this.run(wasm, "metadata", null);
+    return this.invoke(wasm, { type: "DictionaryMetadata", args: null });
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */

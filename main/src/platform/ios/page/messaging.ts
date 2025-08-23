@@ -1,23 +1,29 @@
 import { handleResponseMessage } from "@/features/utils";
 import type {
+  Command,
+  CommandOf,
+  CommandResult,
+  CommandResultOf,
+  CommandTypes,
+} from "@/platform/shared/invoke";
+import type {
   AppCommandOf,
   AppCommandResult,
   AppCommandResultOf,
   AppCommandTypes,
 } from "@/platform/shared/invokeApp";
 import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
-import type { RunMessageMap } from "../../shared/backend";
 import type { JSONStoreValues, TTSRequest, TTSVoice } from "../../types";
 
 /** Type map for messages sent with `requestToApp()`*/
-export interface AppMessageMap extends RunMessageMap {
+export interface AppMessageMap {
   setStoreBatch: [JSONStoreValues, null];
   getStoreBatch: [string[], JSONStoreValues];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];
 
-  /** both are JSON string */
+  invoke: [Command, CommandResult];
   invokeApp: [AppCommand, AppCommandResult];
 }
 
@@ -50,5 +56,12 @@ export class IosMessagingPage {
   ): Promise<AppCommandResultOf<C>> {
     const result = await this.send("invokeApp", command);
     return result as AppCommandResultOf<C>;
+  }
+
+  async invokeBackend<C extends CommandTypes>(
+    command: CommandOf<C>,
+  ): Promise<CommandResultOf<C>> {
+    const result = await this.send("invoke", command);
+    return result as CommandResultOf<C>;
   }
 }
