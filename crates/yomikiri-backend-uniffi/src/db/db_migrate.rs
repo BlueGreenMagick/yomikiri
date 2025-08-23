@@ -31,9 +31,10 @@
 use anyhow::Result;
 use rusqlite::Connection;
 
+use crate::db::store::StoreKey;
 use crate::error::{FFIResult, ToUniFFIResult};
 
-use super::store::{set_store, KEYS};
+use super::store::set_store;
 use super::{ConnectionTrait, RustDatabase};
 
 #[uniffi::export]
@@ -59,21 +60,21 @@ impl RustDatabase {
             has_existing_data = true;
         }
         if let Some(val) = data.jmdict_etag {
-            KEYS::jmdict_etag().set(&tx, Some(val))?;
+            StoreKey::jmdict_etag().set(&tx, Some(val))?;
             has_existing_data = true;
         }
         if let Some(val) = data.jmnedict_etag {
-            KEYS::jmnedict_etag().set(&tx, Some(val))?;
+            StoreKey::jmnedict_etag().set(&tx, Some(val))?;
             has_existing_data = true;
         }
         if let Some(val) = data.dict_schema_ver {
-            KEYS::dict_schema_ver().set(&tx, Some(val))?;
+            StoreKey::dict_schema_ver().set(&tx, Some(val))?;
             has_existing_data = true;
         }
         if has_existing_data {
-            KEYS::migration_version().set(&tx, Some(1))?;
+            StoreKey::migration_version().set(&tx, Some(1))?;
         } else {
-            KEYS::migration_version().set(&tx, Some(0))?;
+            StoreKey::migration_version().set(&tx, Some(0))?;
         }
         tx.sql("PRAGMA user_version = 1")?.execute([])?;
         tx.commit()?;

@@ -20,7 +20,7 @@ impl<T> StoreKey<T>
 where
     T: Serialize + for<'de> Deserialize<'de>,
 {
-    pub fn new(key: &'static str) -> StoreKey<T> {
+    fn new(key: &'static str) -> StoreKey<T> {
         StoreKey {
             key,
             _value: PhantomData,
@@ -40,16 +40,12 @@ where
     }
 }
 
-/// Used as namespace to hold static methods for all typed properties
-#[allow(clippy::upper_case_acronyms)]
-pub struct KEYS {}
-
 macro_rules! store_key {
     ($name:ident, $type:ty) => {
         paste::paste! {
-            impl KEYS {
-                pub fn $name() -> StoreKey<$type> {
-                    StoreKey::new(stringify!($name))
+            impl StoreKey<$type> {
+                pub fn $name() -> Self {
+                    Self::new(stringify!($name))
                 }
             }
 
@@ -66,11 +62,11 @@ macro_rules! store_key {
 
             impl RustDatabase {
                 pub fn [<get_ $name>](&self) -> Result<Option<$type>> {
-                    KEYS::$name().get(&self.conn())
+                    StoreKey::$name().get(&self.conn())
                 }
 
                 pub fn [<set_ $name>](&self, value: Option<&$type>) -> Result<()> {
-                    KEYS::$name().set(&self.conn(), value)
+                    StoreKey::$name().set(&self.conn(), value)
                 }
             }
         }
