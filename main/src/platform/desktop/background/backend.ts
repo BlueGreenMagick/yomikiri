@@ -1,14 +1,7 @@
 import { getStorage, removeStorage, setStorage } from "@/features/extension";
 import Utils, { LazyAsync, nextTask, ProgressTask } from "@/features/utils";
-import { cleanTokenizeResult, emptyTokenizeResult } from "@/platform/shared/backend";
 import type { CommandOf, CommandResultOf, CommandTypes } from "@/platform/shared/invoke";
 import { Backend as BackendWasm, dict_schema_ver } from "@yomikiri/yomikiri-backend-wasm";
-import type {
-  DictionaryMetadata,
-  SearchRequest,
-  TokenizeRequest,
-  TokenizeResult,
-} from "../../types/backend";
 import { fetchDictionary, loadWasm } from "../fetch";
 import { Database, type FileName } from "./db";
 
@@ -36,59 +29,12 @@ export class DesktopBackendBackground {
     return wasm;
   }
 
-  private invoke<C extends CommandTypes>(
-    wasm: BackendWasm,
+  async invoke<C extends CommandTypes>(
     command: CommandOf<C>,
-  ): CommandResultOf<C> {
+  ): Promise<CommandResultOf<C>> {
+    const wasm = await this._wasm.get();
     const jsonResult = wasm.invoke(JSON.stringify(command));
     return JSON.parse(jsonResult) as CommandResultOf<C>;
-  }
-
-  async tokenize({ text, charAt }: TokenizeRequest): Promise<TokenizeResult> {
-    charAt = charAt ?? 0;
-
-    if (text === "") {
-      return emptyTokenizeResult();
-    }
-    if (charAt < 0 || charAt >= text.length) {
-      throw new RangeError(`charAt is out of range: ${charAt}, ${text}`);
-    }
-
-    const codePointAt = Utils.toCodePointIndex(text, charAt);
-
-    const args = {
-      sentence: text,
-      char_idx: codePointAt,
-    };
-    const wasm = await this._wasm.get();
-    const result = this.invoke(wasm, { type: "Tokenize", args });
-    cleanTokenizeResult(result);
-    return result;
-  }
-
-  async search({ term, charAt }: SearchRequest): Promise<TokenizeResult> {
-    charAt = charAt ?? 0;
-    if (term === "") {
-      return emptyTokenizeResult();
-    }
-    if (charAt < 0 || charAt >= term.length) {
-      throw new RangeError(`charAt is out of range: ${charAt}, ${term}`);
-    }
-
-    const codePointAt = Utils.toCodePointIndex(term, charAt);
-    const args = {
-      query: term,
-      char_idx: codePointAt,
-    };
-    const wasm = await this._wasm.get();
-    const result = this.invoke(wasm, { type: "Search", args });
-    cleanTokenizeResult(result);
-    return result;
-  }
-
-  async getDictMetadata(): Promise<DictionaryMetadata> {
-    const wasm = await this._wasm.get();
-    return this.invoke(wasm, { type: "DictionaryMetadata", args: null });
   }
 
   /** Returns `false` if already up-to-date. Otherwise, returns `true`. */

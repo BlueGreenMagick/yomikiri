@@ -5,14 +5,9 @@ import {
   type MessageByKey,
   sendExtensionMessage,
 } from "@/features/extension/message";
+import type { Command, CommandResult } from "../shared/invoke";
 import type { TranslateResult, TTSRequest } from "../types";
 import type { AnkiAddNoteReq } from "../types/anki";
-import type {
-  DictionaryMetadata,
-  SearchRequest,
-  TokenizeRequest,
-  TokenizeResult,
-} from "../types/backend";
 
 export interface SetStoreRequest {
   key: string;
@@ -27,9 +22,7 @@ export type DesktopExtensionMessage =
   | ExtensionMessage<"DesktopPlatform.playTTS", TTSRequest, void>
   | ExtensionMessage<"DesktopPlatform.translate", string, TranslateResult>
   | ExtensionMessage<"DesktopPlatform.migrateConfig", void, StoredConfig>
-  | ExtensionMessage<"DesktopBackend.tokenize", TokenizeRequest, TokenizeResult>
-  | ExtensionMessage<"DesktopBackend.search", SearchRequest, TokenizeResult>
-  | ExtensionMessage<"DesktopBackend.getDictMetadata", void, DictionaryMetadata>
+  | ExtensionMessage<"DesktopBackend.invoke", Command, CommandResult>
   | ExtensionMessage<"DesktopAnkiApi.ankiInfo", void, AnkiInfo>
   | ExtensionMessage<"DesktopAnkiApi.requestAnkiInfo", void, void>
   | ExtensionMessage<"DesktopAnkiApi.checkConnection", void, void>

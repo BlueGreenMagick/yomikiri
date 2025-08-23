@@ -123,17 +123,9 @@ ExtensionMessageListener.init<DesktopExtensionMessage>()
     const ctx = await lazyInitialize.get();
     return ctx.anki.addDeferredNotes();
   })
-  .on("DesktopBackend.getDictMetadata", async () => {
+  .on("DesktopBackend.invoke", async (command) => {
     const ctx = await lazyInitialize.get();
-    return ctx.backend.getDictMetadata();
-  })
-  .on("DesktopBackend.search", async (req) => {
-    const ctx = await lazyInitialize.get();
-    return ctx.backend.search(req);
-  })
-  .on("DesktopBackend.tokenize", async (req) => {
-    const ctx = await lazyInitialize.get();
-    return ctx.backend.tokenize(req);
+    return ctx.backend.invoke(command);
   })
   .done()
   .verify();
