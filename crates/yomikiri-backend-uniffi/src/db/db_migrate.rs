@@ -1,4 +1,5 @@
 use anyhow::Result;
+use rusqlite::Connection;
 
 use crate::error::{FFIResult, ToUniFFIResult};
 
@@ -7,14 +8,18 @@ use super::{ConnectionTrait, RustDatabase};
 
 #[uniffi::export]
 impl RustDatabase {
-    pub fn uniffi_migrate_from_0(&self, data: MigrateFromV0Data) -> FFIResult<()> {
-        self.migrate_from_0(data).uniffi()
+    pub fn uniffi_get_db_version(&self) -> FFIResult<u32> {
+        get_db_version(&self.conn()).uniffi()
+    }
+
+    pub fn uniffi_db_migrate_from_0(&self, data: MigrateFromV0Data) -> FFIResult<()> {
+        self.db_migrate_from_0(data).uniffi()
     }
 }
 
 impl RustDatabase {
     /// Migrate from db version 0 to 1
-    fn migrate_from_0(&self, data: MigrateFromV0Data) -> Result<()> {
+    fn db_migrate_from_0(&self, data: MigrateFromV0Data) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         tx.execute_batch(include_str!("sql/0_to_1.sql"))?;
@@ -34,6 +39,12 @@ impl RustDatabase {
         tx.commit()?;
         Ok(())
     }
+}
+
+fn get_db_version(db: &Connection) -> Result<u32> {
+    db.sql("SELECT user_version FROM pragma_user_version")?
+        .query_row([], |r| r.get(0))
+        .map_err(Into::into)
 }
 
 #[derive(Debug, PartialEq, Eq, uniffi::Record)]

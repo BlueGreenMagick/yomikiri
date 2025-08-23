@@ -72,7 +72,7 @@ private func createRustDatabase() throws -> RustDatabase {
     }
     let dbPath = sharedDir.appendingPathComponent("db.sql")
     let database = try RustDatabase.uniffiOpen(path: dbPath.path)
-    let dbVer = try database.uniffiGetVersion()
+    let dbVer = try database.uniffiGetDbVersion()
     if dbVer == 0 {
         try migrateDatabaseFrom0(db: database)
     }
@@ -88,7 +88,7 @@ func migrateDatabaseFrom0(db: RustDatabase) throws {
     let jmnedictEtag = try LegacyStorage.jmnedictEtag.get()
     let dictSchemaVer = try LegacyStorage.dictSchemaVer.get().map { (val: Int) -> UInt16 in UInt16(val) }
     let data = MigrateFromV0Data(webConfig: webConfig, jmdictEtag: jmdictEtag, jmnedictEtag: jmnedictEtag, dictSchemaVer: dictSchemaVer)
-    try db.uniffiMigrateFrom0(data: data)
+    try db.uniffiDbMigrateFrom0(data: data)
     os_log(.debug, "migrate db v0 end")
 }
 

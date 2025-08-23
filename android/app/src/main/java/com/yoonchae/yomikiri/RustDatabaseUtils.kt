@@ -18,7 +18,7 @@ fun createRustDatabase(context: Context): RustDatabase {
     val dbPath = File(filesDir, "db.sql")
 
     val database = RustDatabase.uniffiOpen(dbPath.absolutePath)
-    val dbVer = database.uniffiGetVersion()
+    val dbVer = database.uniffiGetDbVersion()
 
     if (dbVer == 0u) {
         migrateDatabaseFrom0(database, context)
@@ -42,6 +42,6 @@ private fun migrateDatabaseFrom0(
             dictSchemaVer = null,
         )
 
-    db.uniffiMigrateFrom0(data)
+    db.uniffiDbMigrateFrom0(data)
     Log.d(TAG, "Migrate database v0 end")
 }
