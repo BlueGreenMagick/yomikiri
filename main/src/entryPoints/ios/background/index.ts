@@ -88,17 +88,9 @@ ExtensionMessageListener.init<IosExtensionMessage>()
     const ctx = await lazyCtx.get();
     return ctx.anki.addNote(req);
   })
-  .on("IosBackend.getDictMetadata", async () => {
+  .on("IosMessaging.send", async (req) => {
     const ctx = await lazyCtx.get();
-    return ctx.backend.getDictMetadata();
-  })
-  .on("IosBackend.search", async (req) => {
-    const ctx = await lazyCtx.get();
-    return ctx.backend.search(req);
-  })
-  .on("IosBackend.tokenize", async (req) => {
-    const ctx = await lazyCtx.get();
-    return ctx.backend.tokenize(req);
+    return ctx.backend.messaging.send(req.key, req.request);
   })
   .done()
   .verify();

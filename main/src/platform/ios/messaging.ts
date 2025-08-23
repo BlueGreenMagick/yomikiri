@@ -13,7 +13,8 @@ import type {
   AppCommandTypes,
 } from "@/platform/shared/invokeApp";
 import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
-import type { JSONStoreValues, TTSRequest, TTSVoice } from "../../types";
+import type { JSONStoreValues, TTSRequest, TTSVoice } from "../types";
+import { sendIosExtensionMessage } from "./extensionMessage";
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
@@ -30,25 +31,53 @@ export interface AppMessageMap {
 export type AppRequest<K extends keyof AppMessageMap> = AppMessageMap[K][0];
 export type AppResponse<K extends keyof AppMessageMap> = AppMessageMap[K][1];
 
+export type AnyAppResponse = AppResponse<keyof AppMessageMap>;
+
+type IosMessagingSendRequest<K extends keyof AppMessageMap> = {
+  key: K;
+  request: AppRequest<K>;
+};
+
+export type AnyIosMessagingSendRequest = IosMessagingSendRequest<keyof AppMessageMap>;
+
 interface IosVersion {
   major: number;
   minor: number;
   patch: number;
 }
 
-export class IosMessagingPage {
+export class IosMessaging {
+  private constructor(private page: boolean) {}
+
+  static background() {
+    return new IosMessaging(true);
+  }
+
+  static page() {
+    return new IosMessaging(true);
+  }
+
+  static content() {
+    return new IosMessaging(false);
+  }
+
   async send<K extends keyof AppMessageMap>(
     key: K,
     request: AppRequest<K>,
   ): Promise<AppResponse<K>> {
-    // eslint-disable-next-line
-    const resp = await browser.runtime.sendNativeMessage("_", {
-      key,
-      request: JSON.stringify(request),
-    });
-    // eslint-disable-next-line
-    const jsonResponse = handleResponseMessage<string>(resp);
-    return JSON.parse(jsonResponse) as AppResponse<K>;
+    if (this.page) {
+      // eslint-disable-next-line
+      const resp = await browser.runtime.sendNativeMessage("_", {
+        key,
+        request: JSON.stringify(request),
+      });
+      // eslint-disable-next-line
+      const jsonResponse = handleResponseMessage<string>(resp);
+      return JSON.parse(jsonResponse) as AppResponse<K>;
+    } else {
+      const req: IosMessagingSendRequest<K> = { key, request };
+      return sendIosExtensionMessage("IosMessaging.send", req);
+    }
   }
 
   async invokeApp<C extends AppCommandTypes>(

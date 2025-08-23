@@ -7,12 +7,7 @@ import {
 } from "@/features/extension/message";
 import type { TranslateResult, TTSRequest, TTSVoice } from "../types";
 import type { AnkiAddNoteReq } from "../types/anki";
-import type {
-  DictionaryMetadata,
-  SearchRequest,
-  TokenizeRequest,
-  TokenizeResult,
-} from "../types/backend";
+import type { AnyAppResponse, AnyIosMessagingSendRequest } from "./messaging";
 
 export interface SetStoreRequest {
   key: string;
@@ -31,9 +26,7 @@ export type IosExtensionMessage =
   | ExtensionMessage<"IosPlatform.migrateConfig", void, StoredConfig>
   | ExtensionMessage<"IosPlatform.japaneseTTSVoices", void, TTSVoice[]>
   | ExtensionMessage<"IosAnkiApi.addNote", AnkiAddNoteReq, boolean>
-  | ExtensionMessage<"IosBackend.tokenize", TokenizeRequest, TokenizeResult>
-  | ExtensionMessage<"IosBackend.search", SearchRequest, TokenizeResult>
-  | ExtensionMessage<"IosBackend.getDictMetadata", void, DictionaryMetadata>;
+  | ExtensionMessage<"IosMessaging.send", AnyIosMessagingSendRequest, AnyAppResponse>;
 
 type Keys = IosExtensionMessage["key"];
 

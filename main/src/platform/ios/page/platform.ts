@@ -4,7 +4,7 @@ import { getStorage, setStorage } from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "@/platform/shared/translate";
 import type { JSONStoreValues, TranslateResult } from "@/platform/types";
-import type { IosMessagingPage } from "./messaging";
+import type { IosMessaging } from "../messaging";
 
 export class IosPlatformPage {
   // config migration is done only once even if requested multiple times
@@ -14,7 +14,7 @@ export class IosPlatformPage {
     },
   );
 
-  constructor(readonly messaging: IosMessagingPage) {}
+  constructor(readonly messaging: IosMessaging) {}
 
   /**
    * If value is `null` or `undefined`, deletes the store.
