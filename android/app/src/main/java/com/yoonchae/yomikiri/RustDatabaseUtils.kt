@@ -42,6 +42,6 @@ private fun migrateDatabaseFrom0(
             dictSchemaVer = null,
         )
 
-    db.migrateFrom0(data)
+    db.uniffiMigrateFrom0(data)
     Log.d(TAG, "Migrate database v0 end")
 }

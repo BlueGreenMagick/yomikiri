@@ -7,14 +7,14 @@ use super::{ConnectionTrait, RustDatabase};
 
 #[uniffi::export]
 impl RustDatabase {
-    pub fn migrate_from_0(&self, data: MigrateFromV0Data) -> FFIResult<()> {
-        self._migrate_from_0(data).uniffi()
+    pub fn uniffi_migrate_from_0(&self, data: MigrateFromV0Data) -> FFIResult<()> {
+        self.migrate_from_0(data).uniffi()
     }
 }
 
 impl RustDatabase {
     /// Migrate from db version 0 to 1
-    fn _migrate_from_0(&self, data: MigrateFromV0Data) -> Result<()> {
+    fn migrate_from_0(&self, data: MigrateFromV0Data) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         tx.execute_batch(include_str!("sql/0_to_1.sql"))?;
