@@ -72,9 +72,9 @@ impl RustDatabase {
             has_existing_data = true;
         }
         if has_existing_data {
-            StoreKey::migration_version().set(&tx, Some(1))?;
+            StoreKey::user_migration_version().set(&tx, Some(1))?;
         } else {
-            StoreKey::migration_version().set(&tx, Some(0))?;
+            StoreKey::user_migration_version().set(&tx, Some(0))?;
         }
         tx.sql("PRAGMA user_version = 1")?.execute([])?;
         tx.commit()?;

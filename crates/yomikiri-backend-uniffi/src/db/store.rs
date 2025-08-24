@@ -73,13 +73,19 @@ macro_rules! store_key {
     };
 }
 
+store_key!(user_migration_version, u16);
+
 store_key!(dict_schema_ver, u16);
 store_key!(jmdict_etag, String);
 store_key!(jmnedict_etag, String);
 store_key!(saved_url, String);
 store_key!(android_current_view, String);
+
+// v2
+store_key!(web_config_v4, String);
+// v1
+// holds config of version 0 ~ 3, before SQLite db based migration.
 store_key!(web_config_v3, String);
-store_key!(migration_version, u16);
 
 #[uniffi::export]
 impl RustDatabase {

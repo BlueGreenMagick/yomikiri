@@ -1,4 +1,5 @@
 mod db_migrate;
+pub mod migrate;
 mod store;
 
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -40,7 +41,7 @@ impl RustDatabase {
 }
 
 impl RustDatabase {
-    fn conn(&self) -> MutexGuard<'_, Connection> {
+    pub(crate) fn conn(&self) -> MutexGuard<'_, Connection> {
         self.db.lock().unwrap()
     }
 }
