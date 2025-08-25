@@ -111,6 +111,6 @@ impl RustDatabase {
 }
 
 fn user_migration_version_is(conn: &Connection, version: u16) -> Result<bool> {
-    let current = StoreKey::user_migration_version().get(&conn)?.unwrap_or(0);
+    let current = StoreKey::user_migration_version().get(conn)?.unwrap_or(0);
     Ok(current == version)
 }
