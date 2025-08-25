@@ -62,18 +62,6 @@ export class IosAppPlatform implements IPlatform {
     };
   }
 
-  async getStoreBatch(
-    keys: string[],
-  ): Promise<Record<string, unknown>> {
-    const result = await sendMessage("getStoreBatch", keys);
-
-    return Object.fromEntries(
-      Object.entries(result).map((
-        [key, value],
-      ) => [key, value === null ? null : JSON.parse(value)]),
-    );
-  }
-
   async getConfig(): Promise<StoredConfigurationV1> {
     const jsonConfig = await invokeApp({
       type: "GetConfig",

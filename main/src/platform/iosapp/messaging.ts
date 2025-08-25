@@ -13,7 +13,7 @@ import type {
   AppCommandResultOf,
   AppCommandTypes,
 } from "../shared/invokeApp";
-import type { JSONStoreValues, TTSRequest, TTSVoice, VersionInfo } from "../types";
+import type { TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
 
 declare global {
@@ -37,8 +37,6 @@ export interface MessageWebviewMap {
   ankiInfo: [null, boolean];
   // Can only be requested in anki template options page.
   ankiInfoData: [null, RawAnkiInfo];
-
-  getStoreBatch: [string[], JSONStoreValues];
 
   /**
    * Returns true if migrated config is 'ok' to save.

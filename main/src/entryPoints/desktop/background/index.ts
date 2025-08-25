@@ -75,10 +75,6 @@ handleBrowserLoad(() => {
 });
 
 ExtensionMessageListener.init<DesktopExtensionMessage>()
-  .on("DesktopPlatform.getStoreBatch", async (req) => {
-    const ctx = await lazyInitialize.get();
-    return ctx.platform.getStoreBatch(req);
-  })
   .on("DesktopPlatform.migrateConfig", async () => {
     const ctx = await lazyInitialize.get();
     return ctx.platform.migrateConfig();

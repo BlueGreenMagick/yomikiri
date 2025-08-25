@@ -8,18 +8,6 @@ import { invokeApp, sendMessage } from "./messaging";
 export class AndroidPlatform implements IPlatform {
   readonly type = "android";
 
-  async getStoreBatch(
-    keys: string[],
-  ): Promise<Record<string, unknown>> {
-    const result = await sendMessage("getStoreBatch", keys);
-
-    return Object.fromEntries(
-      Object.entries(result).map((
-        [key, value],
-      ) => [key, value === null ? null : JSON.parse(value)]),
-    );
-  }
-
   async getConfig(): Promise<StoredConfigurationV1> {
     const result = await invokeApp({ type: "GetConfig", args: null });
     if (result === null) {

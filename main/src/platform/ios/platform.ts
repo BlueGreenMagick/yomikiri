@@ -36,14 +36,6 @@ export class IosPlatform implements IPlatform {
     return new IosPlatform(null);
   }
 
-  async getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
-    if (this.page) {
-      return this.page.getStoreBatch(keys);
-    } else {
-      return sendIosExtensionMessage("IosPlatform.getStoreBatch", keys);
-    }
-  }
-
   getConfig(): Promise<StoredConfigurationV1> {
     if (this.page) {
       return this.page.getConfig();

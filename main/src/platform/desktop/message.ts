@@ -15,7 +15,6 @@ export interface SetStoreRequest {
 }
 
 export type DesktopExtensionMessage =
-  | ExtensionMessage<"DesktopPlatform.getStoreBatch", string[], Record<string, unknown>>
   | ExtensionMessage<"DesktopPlatform.playTTS", TTSRequest, void>
   | ExtensionMessage<"DesktopPlatform.translate", string, TranslateResult>
   | ExtensionMessage<"DesktopPlatform.migrateConfig", void, StoredConfig>

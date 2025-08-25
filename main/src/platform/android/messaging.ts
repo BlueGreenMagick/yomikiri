@@ -15,7 +15,6 @@ import type {
   AppCommandResultOf,
   AppCommandTypes,
 } from "../shared/invokeApp";
-import type { JSONStoreValues } from "../types";
 
 /** Secret key used in android message handler */
 declare const __ANDROID_MESSAGE_SECRET_KEY: string;
@@ -45,7 +44,6 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
 }
 
 export interface AndroidMessageMap {
-  getStoreBatch: [string[], JSONStoreValues];
   versionInfo: [null, string];
   ankiGetInfo: [null, AnkiInfo];
   ankiCheckConnection: [null, null];

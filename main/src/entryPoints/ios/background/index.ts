@@ -48,10 +48,6 @@ ExtensionMessageListener.init<IosExtensionMessage>()
     const ctx = await lazyCtx.get();
     return ctx.platform.getConfig();
   })
-  .on("IosPlatform.getStoreBatch", async (req) => {
-    const ctx = await lazyCtx.get();
-    return ctx.platform.getStoreBatch(req);
-  })
   .on("IosPlatform.migrateConfig", async () => {
     const ctx = await lazyCtx.get();
     return ctx.platform.migrateConfig();

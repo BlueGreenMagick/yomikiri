@@ -16,16 +16,6 @@ export class IosPlatformPage {
 
   constructor(readonly messaging: IosMessaging) {}
 
-  async getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
-    const result = await this.messaging.send("getStoreBatch", keys);
-
-    return Object.fromEntries(
-      Object.entries(result).map((
-        [key, value],
-      ) => [key, value === null ? null : JSON.parse(value)]),
-    );
-  }
-
   migrateConfig(): Promise<StoredConfig> {
     return this.configMigration.get();
   }

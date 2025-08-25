@@ -138,10 +138,6 @@ private suspend fun handleWebMessage(
                 val value = BuildConfig.VERSION_NAME
                 builder.success(value)
             }
-            "getStoreBatch" -> {
-                val value = db.uniffiGetRawStoreBatch(msg.request)
-                builder.jsonSuccess(value)
-            }
             "ankiGetInfo" -> {
                 val result = AnkiApi.getInfo(context)
                 builder.success(result)

@@ -87,53 +87,6 @@ store_key!(web_config_v4, String);
 // holds config of version 0 ~ 3, before SQLite db based migration.
 store_key!(web_config_v3, String);
 
-#[uniffi::export]
-impl RustDatabase {
-    /// Retrieves raw json store value
-    ///
-    /// Should only be used from web
-    pub fn uniffi_get_raw_store(&self, key: String) -> FFIResult<Option<String>> {
-        self.get_raw_store(key).uniffi()
-    }
-
-    /// Retrieves multiple raw json store value
-    ///
-    /// keys: JSON serialized array of keys
-    ///
-    /// returns JSON serialized {[key: string]: string | null}
-    /// where the string value is itself a JSON serialized value
-    pub fn uniffi_get_raw_store_batch(&self, keys: String) -> FFIResult<String> {
-        self.get_raw_store_batch(keys).uniffi()
-    }
-}
-
-impl RustDatabase {
-    fn get_raw_store(&self, key: String) -> Result<Option<String>> {
-        let mut conn = self.conn();
-        let tx = conn.transaction()?;
-        let result = get_raw_store(&tx, &key)?;
-        tx.commit()?;
-        Ok(result)
-    }
-
-    fn get_raw_store_batch(&self, keys: String) -> Result<String> {
-        let keys_vec: Vec<String> =
-            serde_json::from_str(&keys).context("Failed to deserialize keys as array of string")?;
-
-        let mut conn = self.conn();
-        let tx = conn.transaction()?;
-        let mut result: HashMap<String, Option<String>> = HashMap::new();
-
-        for key in keys_vec {
-            let value = get_raw_store(&tx, &key)?;
-            result.insert(key, value);
-        }
-
-        tx.commit()?;
-        Ok(serde_json::to_string(&result)?)
-    }
-}
-
 pub fn set_raw_store(db: &Connection, key: &str, value: &str) -> Result<()> {
     db.sql("INSERT OR REPLACE INTO store(key, value) VALUES(?, ?)")?
         .execute(params![key, value])

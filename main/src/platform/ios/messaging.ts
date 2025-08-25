@@ -13,12 +13,11 @@ import type {
   AppCommandTypes,
 } from "@/platform/shared/invokeApp";
 import type { AppCommand } from "@yomikiri/backend-uniffi-bindings";
-import type { JSONStoreValues, TTSRequest, TTSVoice } from "../types";
+import type { TTSRequest, TTSVoice } from "../types";
 import { sendIosExtensionMessage } from "./extensionMessage";
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
-  getStoreBatch: [string[], JSONStoreValues];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];
   iosVersion: [null, IosVersion];

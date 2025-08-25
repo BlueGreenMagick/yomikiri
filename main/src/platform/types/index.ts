@@ -26,9 +26,6 @@ export interface IPlatform extends IPlatformConsts {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfig>;
-
-  /** value is null if key doesn't exist in store */
-  getStoreBatch(keys: string[]): Promise<Record<string, unknown>>;
 }
 
 export interface VersionInfo {
@@ -57,8 +54,6 @@ export interface TTSRequest {
   text: string;
   voice: TTSVoice | null;
 }
-
-export type JSONStoreValues = { [key: string]: string | null };
 
 export type AnyPlatform =
   | DesktopPlatform

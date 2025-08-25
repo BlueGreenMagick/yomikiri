@@ -95,12 +95,4 @@ export class DesktopPlatform implements IPlatform {
       return sendDesktopExtensionMessage("DesktopPlatform.migrateConfig", undefined);
     }
   }
-
-  getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
-    if (this.background) {
-      return this.background.db.get().then((db) => db.store.getStoreBatch(keys));
-    } else {
-      return sendDesktopExtensionMessage("DesktopPlatform.getStoreBatch", keys);
-    }
-  }
 }
