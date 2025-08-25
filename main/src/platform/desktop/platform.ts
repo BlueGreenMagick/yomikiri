@@ -111,12 +111,4 @@ export class DesktopPlatform implements IPlatform {
       return sendDesktopExtensionMessage("DesktopPlatform.getStoreBatch", keys);
     }
   }
-
-  setStore(key: string, value: unknown): Promise<void> {
-    if (this.background) {
-      return this.background.db.get().then((db) => db.store.setStore(key, value));
-    } else {
-      return sendDesktopExtensionMessage("DesktopPlatform.setStore", { key, value });
-    }
-  }
 }

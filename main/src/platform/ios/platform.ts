@@ -55,17 +55,6 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  /**
-   * If value is `null` or `undefined`, deletes the store.
-   */
-  setStore(key: string, value: unknown): Promise<void> {
-    if (this.page) {
-      return this.page.setStore(key, value);
-    } else {
-      return sendIosExtensionMessage("IosPlatform.setStore", { key, value });
-    }
-  }
-
   getConfig(): Promise<StoredConfigurationV1> {
     if (this.page) {
       return this.page.getConfig();

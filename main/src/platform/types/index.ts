@@ -33,10 +33,6 @@ export interface IPlatform extends IPlatformConsts {
    * If value is `null` or `undefined`, deletes from store.
    */
   setStoreBatch(valueMap: Record<string, unknown>): Promise<void>;
-  /**
-   * If value is `null` or `undefined`, deletes from store.
-   */
-  setStore(key: string, value: unknown): Promise<void>;
 }
 
 export interface VersionInfo {

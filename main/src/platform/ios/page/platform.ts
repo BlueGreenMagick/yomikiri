@@ -19,16 +19,6 @@ export class IosPlatformPage {
   /**
    * If value is `null` or `undefined`, deletes the store.
    */
-  async setStore(key: string, value: unknown): Promise<void> {
-    const jsonMap = {
-      [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
-    };
-    await this._setStoreBatch(jsonMap);
-  }
-
-  /**
-   * If value is `null` or `undefined`, deletes the store.
-   */
   async setStoreBatch(map: Record<string, unknown>) {
     const jsonMap: Record<string, string | null> = {};
     for (const [key, value] of Object.entries(map)) {

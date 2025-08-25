@@ -64,10 +64,6 @@ ExtensionMessageListener.init<IosExtensionMessage>()
     const ctx = await lazyCtx.get();
     return ctx.platform.saveConfig(req);
   })
-  .on("IosPlatform.setStore", async (req) => {
-    const ctx = await lazyCtx.get();
-    return ctx.platform.setStore(req.key, req.value);
-  })
   .on("IosPlatform.setStoreBatch", async (req) => {
     const ctx = await lazyCtx.get();
     return ctx.platform.setStoreBatch(req);

@@ -86,16 +86,6 @@ export class IosAppPlatform implements IPlatform {
     await sendMessage("setStoreBatch", jsonMap);
   }
 
-  /**
-   * If value is `null` or `undefined`, deletes from store.
-   */
-  async setStore(key: string, value: unknown) {
-    const jsonMap = {
-      [key]: (value === null || value === undefined) ? null : JSON.stringify(value),
-    };
-    await sendMessage("setStoreBatch", jsonMap);
-  }
-
   async getConfig(): Promise<StoredConfigurationV1> {
     const jsonConfig = await invokeApp({
       type: "GetConfig",

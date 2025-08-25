@@ -27,19 +27,6 @@ export class StoreDB {
   }
 
   /**
-   * Store a single key-value pair. Overwrites existing value.
-   *
-   * `null` or `undefined` deletes record.
-   */
-  async setStore(key: string, value: unknown) {
-    if (value === null || value === undefined) {
-      await this.db.delete(STORE_NAME, key);
-    } else {
-      await this.db.put(STORE_NAME, value, key);
-    }
-  }
-
-  /**
    * Store multiple key-value pairs in a single transaction.
    *
    * `null` or `undefined` deletes record.
