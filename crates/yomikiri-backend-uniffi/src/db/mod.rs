@@ -10,6 +10,8 @@ use rusqlite::{CachedStatement, Connection};
 
 use crate::error::{FFIResult, ToUniFFIResult};
 
+pub use store::JsonStoreKey;
+
 const VERSION: u16 = 1;
 
 #[uniffi::export]

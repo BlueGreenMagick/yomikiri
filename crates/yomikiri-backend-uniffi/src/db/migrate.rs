@@ -4,7 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::db::store::StoreKey;
-use crate::db::RustDatabase;
+use crate::db::{JsonStoreKey, RustDatabase};
 use crate::error::{FFIResult, ToUniFFIResult};
 
 /// Whenever user data requires migration:
@@ -104,7 +104,7 @@ impl RustDatabase {
             return Ok(());
         }
 
-        StoreKey::web_config_v4().set(&tx, Some(args.config))?;
+        JsonStoreKey::web_config_v4().set(&tx, Some(args.config))?;
         StoreKey::user_migration_version().set(&tx, Some(2))?;
         Ok(())
     }

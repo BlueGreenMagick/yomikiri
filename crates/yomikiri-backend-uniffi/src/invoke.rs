@@ -3,6 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::db::migrate::{UserMigrationArgs, UserMigrationState};
+use crate::db::JsonStoreKey;
 use crate::error::{FFIResult, ToUniFFIResult};
 use crate::RustBackend;
 
@@ -45,10 +46,10 @@ impl RustBackend {
     }
 
     pub fn get_config(&self) -> Result<Option<String>> {
-        self.db.get_web_config_v3()
+        JsonStoreKey::web_config_v3().get(&self.db.conn())
     }
 
     pub fn set_config(&self, args: Option<String>) -> Result<()> {
-        self.db.set_web_config_v3(args.as_ref())
+        JsonStoreKey::web_config_v3().set(&self.db.conn(), args)
     }
 }

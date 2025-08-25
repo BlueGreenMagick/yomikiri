@@ -32,9 +32,9 @@ use anyhow::Result;
 use rusqlite::Connection;
 
 use crate::db::store::StoreKey;
+use crate::db::JsonStoreKey;
 use crate::error::{FFIResult, ToUniFFIResult};
 
-use super::store::set_store;
 use super::{ConnectionTrait, RustDatabase};
 
 #[uniffi::export]
@@ -55,8 +55,9 @@ impl RustDatabase {
         let tx = conn.transaction()?;
         tx.execute_batch(include_str!("sql/db_migrate_from_0_to_1.sql"))?;
         let mut has_existing_data = false;
+
         if let Some(val) = data.web_config {
-            set_store(&tx, "web_config", &val)?;
+            JsonStoreKey::web_config_v3().set(&tx, Some(val))?;
             has_existing_data = true;
         }
         if let Some(val) = data.jmdict_etag {
