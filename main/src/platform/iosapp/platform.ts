@@ -74,18 +74,6 @@ export class IosAppPlatform implements IPlatform {
     );
   }
 
-  /**
-   * If value is `null` or `undefined`, deletes from store.
-   */
-  async setStoreBatch(map: Record<string, unknown>) {
-    const jsonMap: Record<string, string | null> = {};
-    for (const [key, value] of Object.entries(map)) {
-      jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
-    }
-
-    await sendMessage("setStoreBatch", jsonMap);
-  }
-
   async getConfig(): Promise<StoredConfigurationV1> {
     const jsonConfig = await invokeApp({
       type: "GetConfig",

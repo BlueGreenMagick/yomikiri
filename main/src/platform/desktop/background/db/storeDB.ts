@@ -25,22 +25,4 @@ export class StoreDB {
     await tx.done;
     return result as NullPartial<T>;
   }
-
-  /**
-   * Store multiple key-value pairs in a single transaction.
-   *
-   * `null` or `undefined` deletes record.
-   */
-  async setStoreBatch(map: Record<string, unknown>): Promise<void> {
-    const tx = this.db.transaction(STORE_NAME, "readwrite");
-    for (const [key, value] of Object.entries(map)) {
-      if (value === null || value === undefined) {
-        await tx.store.delete(key);
-      } else {
-        await tx.store.put(value, key);
-      }
-    }
-
-    await tx.done;
-  }
 }

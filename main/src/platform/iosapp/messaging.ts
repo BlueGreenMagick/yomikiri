@@ -38,7 +38,6 @@ export interface MessageWebviewMap {
   // Can only be requested in anki template options page.
   ankiInfoData: [null, RawAnkiInfo];
 
-  setStoreBatch: [JSONStoreValues, null];
   getStoreBatch: [string[], JSONStoreValues];
 
   /**

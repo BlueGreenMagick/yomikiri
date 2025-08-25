@@ -96,14 +96,6 @@ export class DesktopPlatform implements IPlatform {
     }
   }
 
-  setStoreBatch(req: Record<string, unknown>): Promise<void> {
-    if (this.background) {
-      return this.background.db.get().then((db) => db.store.setStoreBatch(req));
-    } else {
-      return sendDesktopExtensionMessage("DesktopPlatform.setStoreBatch", req);
-    }
-  }
-
   getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
     if (this.background) {
       return this.background.db.get().then((db) => db.store.getStoreBatch(keys));

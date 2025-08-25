@@ -29,10 +29,6 @@ export interface IPlatform extends IPlatformConsts {
 
   /** value is null if key doesn't exist in store */
   getStoreBatch(keys: string[]): Promise<Record<string, unknown>>;
-  /**
-   * If value is `null` or `undefined`, deletes from store.
-   */
-  setStoreBatch(valueMap: Record<string, unknown>): Promise<void>;
 }
 
 export interface VersionInfo {

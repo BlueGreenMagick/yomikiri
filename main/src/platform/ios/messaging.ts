@@ -18,7 +18,6 @@ import { sendIosExtensionMessage } from "./extensionMessage";
 
 /** Type map for messages sent with `requestToApp()`*/
 export interface AppMessageMap {
-  setStoreBatch: [JSONStoreValues, null];
   getStoreBatch: [string[], JSONStoreValues];
   ttsVoices: [null, TTSVoice[]];
   tts: [TTSRequest, null];

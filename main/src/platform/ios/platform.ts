@@ -44,17 +44,6 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  /**
-   * If value is `null` or `undefined`, deletes the store.
-   */
-  setStoreBatch(map: Record<string, unknown>) {
-    if (this.page) {
-      return this.page.setStoreBatch(map);
-    } else {
-      return sendIosExtensionMessage("IosPlatform.setStoreBatch", map);
-    }
-  }
-
   getConfig(): Promise<StoredConfigurationV1> {
     if (this.page) {
       return this.page.getConfig();

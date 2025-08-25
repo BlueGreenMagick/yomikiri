@@ -20,17 +20,6 @@ export class AndroidPlatform implements IPlatform {
     );
   }
 
-  /**
-   * If value is `null` or `undefined`, deletes from store.
-   */
-  async setStoreBatch(map: Record<string, unknown>): Promise<void> {
-    const jsonMap: Record<string, string | null> = {};
-    for (const [key, value] of Object.entries(map)) {
-      jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
-    }
-    await sendMessage("setStoreBatch", jsonMap);
-  }
-
   async getConfig(): Promise<StoredConfigurationV1> {
     const result = await invokeApp({ type: "GetConfig", args: null });
     if (result === null) {

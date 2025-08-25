@@ -229,9 +229,6 @@ extension YomikiriWebView {
         /// Returns JSON string or nil
         private func defaultMessageHandler(key: String, request: String) async throws -> String? {
             switch key {
-            case "setStoreBatch":
-                try backend.get().db.uniffiSetRawStoreBatch(data: request)
-                return nil
             case "getStoreBatch":
                 return try backend.get().db.uniffiGetRawStoreBatch(keys: request)
             case "migrateConfig":

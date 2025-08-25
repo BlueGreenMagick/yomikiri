@@ -45,7 +45,6 @@ if (Object.prototype.hasOwnProperty.call(window, "__yomikiriInterface")) {
 }
 
 export interface AndroidMessageMap {
-  setStoreBatch: [JSONStoreValues, null];
   getStoreBatch: [string[], JSONStoreValues];
   versionInfo: [null, string];
   ankiGetInfo: [null, AnkiInfo];

@@ -3,7 +3,7 @@ import type { StoredConfig } from "@/features/config";
 import { getStorage, setStorage } from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "@/platform/shared/translate";
-import type { JSONStoreValues, TranslateResult } from "@/platform/types";
+import type { TranslateResult } from "@/platform/types";
 import type { IosMessaging } from "../messaging";
 
 export class IosPlatformPage {
@@ -15,22 +15,6 @@ export class IosPlatformPage {
   );
 
   constructor(readonly messaging: IosMessaging) {}
-
-  /**
-   * If value is `null` or `undefined`, deletes the store.
-   */
-  async setStoreBatch(map: Record<string, unknown>) {
-    const jsonMap: Record<string, string | null> = {};
-    for (const [key, value] of Object.entries(map)) {
-      jsonMap[key] = value === null || value === undefined ? null : JSON.stringify(value);
-    }
-
-    await this._setStoreBatch(jsonMap);
-  }
-
-  async _setStoreBatch(jsonMap: JSONStoreValues): Promise<void> {
-    await this.messaging.send("setStoreBatch", jsonMap);
-  }
 
   async getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
     const result = await this.messaging.send("getStoreBatch", keys);

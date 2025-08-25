@@ -105,23 +105,6 @@ impl RustDatabase {
     pub fn uniffi_get_raw_store_batch(&self, keys: String) -> FFIResult<String> {
         self.get_raw_store_batch(keys).uniffi()
     }
-
-    /// Stores raw json store value
-    ///
-    /// Should only be used from web
-    pub fn uniffi_set_raw_store(&self, key: String, value: Option<String>) -> FFIResult<()> {
-        self.set_raw_store(key, value).uniffi()
-    }
-
-    /// Stores multiple raw json store values
-    ///
-    /// data: JSON serialized {[key: string]: string | null}
-    /// If value is null, the key is deleted. Otherwise, the value is set.
-    ///
-    /// Should only be used from web
-    pub fn uniffi_set_raw_store_batch(&self, data: String) -> FFIResult<()> {
-        self.set_raw_store_batch(data).uniffi()
-    }
 }
 
 impl RustDatabase {
@@ -148,27 +131,6 @@ impl RustDatabase {
 
         tx.commit()?;
         Ok(serde_json::to_string(&result)?)
-    }
-
-    fn set_raw_store(&self, key: String, value: Option<String>) -> Result<()> {
-        let mut conn = self.conn();
-        let tx = conn.transaction()?;
-        set_raw_store_optional(&tx, &key, value)?;
-        tx.commit()?;
-        Ok(())
-    }
-
-    fn set_raw_store_batch(&self, data: String) -> Result<()> {
-        let data_map: HashMap<String, Option<String>> = serde_json::from_str(&data).context(
-            "Failed to deserialize data as object with string keys and optional string values",
-        )?;
-        let mut conn = self.conn();
-        let tx = conn.transaction()?;
-        for (key, value) in data_map {
-            set_raw_store_optional(&tx, &key, value)?;
-        }
-        tx.commit()?;
-        Ok(())
     }
 }
 

@@ -30,8 +30,6 @@ class IOSWebExtensionHandler: NSObject, NSExtensionRequestHandling {
                 switch key {
                 case "addNote":
                     break
-                case "setStoreBatch":
-                    try backend.get().db.uniffiSetRawStoreBatch(data: request)
                 case "getStoreBatch":
                     jsonResponse = try backend.get().db.uniffiGetRawStoreBatch(keys: request)
                 case "tts":

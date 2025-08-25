@@ -138,10 +138,6 @@ private suspend fun handleWebMessage(
                 val value = BuildConfig.VERSION_NAME
                 builder.success(value)
             }
-            "setStoreBatch" -> {
-                db.uniffiSetRawStoreBatch(msg.request)
-                builder.success(Unit)
-            }
             "getStoreBatch" -> {
                 val value = db.uniffiGetRawStoreBatch(msg.request)
                 builder.jsonSuccess(value)
