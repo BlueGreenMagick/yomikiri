@@ -83,10 +83,6 @@ ExtensionMessageListener.init<DesktopExtensionMessage>()
     const ctx = await lazyInitialize.get();
     return ctx.platform.setStoreBatch(req);
   })
-  .on("DesktopPlatform.getStore", async (req) => {
-    const ctx = await lazyInitialize.get();
-    return ctx.platform.getStore(req);
-  })
   .on("DesktopPlatform.getStoreBatch", async (req) => {
     const ctx = await lazyInitialize.get();
     return ctx.platform.getStoreBatch(req);

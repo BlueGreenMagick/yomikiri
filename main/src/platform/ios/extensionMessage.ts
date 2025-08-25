@@ -15,7 +15,6 @@ export interface SetStoreRequest {
 }
 
 export type IosExtensionMessage =
-  | ExtensionMessage<"IosPlatform.getStore", string, unknown>
   | ExtensionMessage<"IosPlatform.getStoreBatch", string[], Record<string, unknown>>
   | ExtensionMessage<"IosPlatform.setStore", SetStoreRequest, void>
   | ExtensionMessage<"IosPlatform.setStoreBatch", Record<string, unknown>, void>

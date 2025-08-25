@@ -86,13 +86,6 @@ export class IosAppPlatform implements IPlatform {
     await sendMessage("setStoreBatch", jsonMap);
   }
 
-  async getStore(key: string): Promise<unknown> {
-    const result = await sendMessage("getStoreBatch", [key]);
-    const value = result[key];
-    if (value === null) return value;
-    return JSON.parse(value);
-  }
-
   /**
    * If value is `null` or `undefined`, deletes from store.
    */

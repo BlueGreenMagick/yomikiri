@@ -42,11 +42,6 @@ export class IosPlatformPage {
     await this.messaging.send("setStoreBatch", jsonMap);
   }
 
-  async getStore(key: string): Promise<unknown> {
-    const result = await this.getStoreBatch([key]);
-    return result[key];
-  }
-
   async getStoreBatch(keys: string[]): Promise<Record<string, unknown>> {
     const result = await this.messaging.send("getStoreBatch", keys);
 

@@ -119,12 +119,4 @@ export class DesktopPlatform implements IPlatform {
       return sendDesktopExtensionMessage("DesktopPlatform.setStore", { key, value });
     }
   }
-
-  getStore(key: string): Promise<unknown> {
-    if (this.background) {
-      return this.background.db.get().then((db) => db.store.getStore(key));
-    } else {
-      return sendDesktopExtensionMessage("DesktopPlatform.getStore", key);
-    }
-  }
 }

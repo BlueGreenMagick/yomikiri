@@ -8,11 +8,6 @@ const STORE_NAME = "store";
 export class StoreDB {
   constructor(private db: IDBPDatabase<YomikiriDBSchema>) {}
 
-  /** Get a single value from store. Returns null if key doesn't exist. */
-  async getStore<T>(key: string): Promise<T | null> {
-    return (await this.db.get(STORE_NAME, key) ?? null) as T | null;
-  }
-
   /** Get multiple values from store in a single transaction. Missing keys return null. */
   async getStoreBatch<T extends Record<string, unknown>>(
     keys: (Extract<keyof T, string>)[],

@@ -44,14 +44,6 @@ export class IosPlatform implements IPlatform {
     }
   }
 
-  async getStore(key: string): Promise<unknown> {
-    if (this.page) {
-      return this.page.getStore(key);
-    } else {
-      return sendIosExtensionMessage("IosPlatform.getStore", key);
-    }
-  }
-
   /**
    * If value is `null` or `undefined`, deletes the store.
    */
