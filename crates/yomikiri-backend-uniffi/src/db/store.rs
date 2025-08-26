@@ -149,16 +149,25 @@ fn remove_store(db: &Connection, key: &str) -> Result<bool> {
     Ok(rows_affected > 0)
 }
 
+// v1..
+// Stores the version used for user migration
 store_key!(user_migration_version, u16);
 
+// v1..
 store_key!(dict_schema_ver, u16);
+// v1..
 store_key!(jmdict_etag, String);
+// v1..
 store_key!(jmnedict_etag, String);
+// v1..
+// last open url of Internet tab
 store_key!(saved_url, String);
+// v1..
+// last used android view
 store_key!(android_current_view, String);
 
-// v2
+// v2..
 json_store_key!(web_config_v4);
-// v1
+// v1..=v1
 // holds config of version 0 ~ 3, before SQLite db based migration.
 json_store_key!(web_config_v3);
