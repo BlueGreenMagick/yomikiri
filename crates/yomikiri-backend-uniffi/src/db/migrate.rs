@@ -54,7 +54,7 @@ impl RustDatabase {
     fn requires_user_migration(&self) -> Result<bool> {
         let conn = self.conn();
         let version = StoreKey::user_migration_version().get(&conn)?;
-        Ok(version == Some(USER_MIGRATION_VERSION))
+        Ok(version != Some(USER_MIGRATION_VERSION))
     }
 
     pub fn user_migrate_step(&self, args: UserMigrationArgs) -> Result<UserMigrationState> {
