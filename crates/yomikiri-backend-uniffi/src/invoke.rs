@@ -46,10 +46,10 @@ impl RustBackend {
     }
 
     pub fn get_config(&self) -> Result<Option<String>> {
-        JsonStoreKey::web_config_v3().get(&self.db.conn())
+        JsonStoreKey::web_config_v4().get(&self.db.conn())
     }
 
     pub fn set_config(&self, args: Option<String>) -> Result<()> {
-        JsonStoreKey::web_config_v3().set(&self.db.conn(), args)
+        JsonStoreKey::web_config_v4().set(&self.db.conn(), args)
     }
 }
