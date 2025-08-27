@@ -14,32 +14,31 @@ use crate::error::{FFIResult, ToUniFFIResult};
 const USER_MIGRATION_VERSION: u16 = 2;
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub enum UserMigrationState {
-    V0(UserMigrationV0State),
-    V1(UserMigrationV1State),
-    V2(UserMigrationV1State),
+#[serde(tag = "version", content = "state")]
+pub enum UserMigrateState {
+    V0(UserMigrateV0State),
+    V1(UserMigrateV1State),
+    V2(()),
 }
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
-pub enum UserMigrationArgs {
+#[serde(tag = "version", content = "data")]
+pub enum UserMigrateRequest {
     Start(()),
-    FromV0(()),
-    FromV1(UserMigrateFromV1Args),
+    V0(()),
+    V1(UserMigrateV1Data),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub struct UserMigrationV0State {}
+pub struct UserMigrateV0State {}
 
 #[derive(Debug, Serialize, JsonSchema)]
-pub struct UserMigrationV1State {
+pub struct UserMigrateV1State {
     config: Option<String>,
 }
 
-#[derive(Debug, Serialize, JsonSchema)]
-pub struct UserMigrationV2State {}
-
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
-pub struct UserMigrateFromV1Args {
+pub struct UserMigrateV1Data {
     config: String,
 }
 
@@ -57,25 +56,25 @@ impl RustDatabase {
         Ok(version != Some(USER_MIGRATION_VERSION))
     }
 
-    pub fn user_migrate_step(&self, args: UserMigrationArgs) -> Result<UserMigrationState> {
-        use UserMigrationArgs::*;
+    pub fn do_user_migration(&self, args: UserMigrateRequest) -> Result<UserMigrateState> {
+        use UserMigrateRequest::*;
 
         match args {
             Start(_) => (),
-            FromV0(_) => self.user_migrate_v0_to_v2()?,
-            FromV1(args) => self.user_migrate_v1_to_v2(args)?,
+            V0(_) => self.user_migrate_v0_to_v2()?,
+            V1(args) => self.user_migrate_v1_to_v2(args)?,
         };
         self.get_user_migration_state()
     }
 
-    fn get_user_migration_state(&self) -> Result<UserMigrationState> {
-        use UserMigrationState::*;
+    fn get_user_migration_state(&self) -> Result<UserMigrateState> {
+        use UserMigrateState::*;
 
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         let version = StoreKey::user_migration_version().get(&tx)?.unwrap_or(0);
         let state = match version {
-            0 => V0(UserMigrationV0State {}),
+            0 => V0(UserMigrateV0State {}),
             _ => unimplemented!(),
         };
         Ok(state)
@@ -92,7 +91,7 @@ impl RustDatabase {
         Ok(())
     }
 
-    fn user_migrate_v1_to_v2(&self, args: UserMigrateFromV1Args) -> Result<()> {
+    fn user_migrate_v1_to_v2(&self, args: UserMigrateV1Data) -> Result<()> {
         let mut conn = self.conn();
         let tx = conn.transaction()?;
         if !user_migration_version_is(&tx, 1)? {

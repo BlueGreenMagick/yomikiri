@@ -2,7 +2,7 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::db::migrate::{UserMigrationArgs, UserMigrationState};
+use crate::db::migrate::{UserMigrateRequest, UserMigrateState};
 use crate::db::JsonStoreKey;
 use crate::error::{FFIResult, ToUniFFIResult};
 use crate::RustBackend;
@@ -12,7 +12,7 @@ use crate::RustBackend;
 pub enum AppCommand {
     GetConfig(()),
     SetConfig(Option<String>),
-    UserMigrateStep(UserMigrationArgs),
+    UserMigrateStep(UserMigrateRequest),
 }
 
 #[derive(Debug, Serialize, JsonSchema)]
@@ -20,7 +20,7 @@ pub enum AppCommand {
 pub enum AppCommandResultSpec {
     GetConfig(Option<String>),
     SetConfig(()),
-    UserMigrateStep(UserMigrationState),
+    UserMigrateStep(UserMigrateState),
 }
 
 #[uniffi::export]
@@ -39,7 +39,7 @@ impl RustBackend {
         let json = match cmd {
             GetConfig(_) => serde_json::to_string(&self.get_config()?)?,
             SetConfig(args) => serde_json::to_string(&self.set_config(args)?)?,
-            UserMigrateStep(args) => serde_json::to_string(&self.db.user_migrate_step(args)?)?,
+            UserMigrateStep(args) => serde_json::to_string(&self.db.do_user_migration(args)?)?,
         };
 
         Ok(json)
