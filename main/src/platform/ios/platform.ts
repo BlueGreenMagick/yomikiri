@@ -8,6 +8,7 @@ import {
   updateTab,
 } from "@/features/extension";
 import { log } from "@/features/utils";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import { EXTENSION_CONTEXT, PLATFORM } from "consts";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { sendIosExtensionMessage } from "./extensionMessage";
@@ -144,6 +145,14 @@ export class IosPlatform implements IPlatform {
       }
     }
     setInterval(checkReload, 1000);
+  }
+
+  async userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState> {
+    if (this.page) {
+      return this.page.userMigrateStep(args);
+    } else {
+      return sendIosExtensionMessage("IosPlatform.userMigrateStep", args);
+    }
   }
 }
 

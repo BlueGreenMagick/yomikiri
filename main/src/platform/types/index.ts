@@ -1,6 +1,7 @@
 import type { StoredConfigurationV1 } from "@/features/compat";
 import type { StoredConfig } from "@/features/config";
 import type { PromiseOrValue } from "@/features/utils";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import type { AndroidPlatform } from "../android";
 import type { DesktopPlatform } from "../desktop";
 import type { IosPlatform } from "../ios";
@@ -26,6 +27,8 @@ export interface IPlatform extends IPlatformConsts {
   /** Opens url in new tab */
   openExternalLink(url: string): void;
   migrateConfig(): Promise<StoredConfig>;
+
+  userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState>;
 }
 
 export interface VersionInfo {

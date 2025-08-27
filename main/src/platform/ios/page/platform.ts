@@ -4,6 +4,7 @@ import { getStorage, setStorage } from "@/features/extension";
 import { LazyAsync } from "@/features/utils";
 import { getTranslation } from "@/platform/shared/translate";
 import type { TranslateResult } from "@/platform/types";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import type { IosMessaging } from "../messaging";
 
 export class IosPlatformPage {
@@ -55,5 +56,9 @@ export class IosPlatformPage {
 
   translate(text: string): Promise<TranslateResult> {
     return getTranslation(text);
+  }
+
+  async userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState> {
+    return await this.messaging.invokeApp({ type: "UserMigrateStep", args });
   }
 }

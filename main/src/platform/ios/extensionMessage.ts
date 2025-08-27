@@ -5,6 +5,7 @@ import {
   type MessageByKey,
   sendExtensionMessage,
 } from "@/features/extension/message";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import type { TranslateResult, TTSRequest, TTSVoice } from "../types";
 import type { AnkiAddNoteReq } from "../types/anki";
 import type { AnyAppResponse, AnyIosMessagingSendRequest } from "./messaging";
@@ -21,6 +22,7 @@ export type IosExtensionMessage =
   | ExtensionMessage<"IosPlatform.translate", string, TranslateResult>
   | ExtensionMessage<"IosPlatform.migrateConfig", void, StoredConfig>
   | ExtensionMessage<"IosPlatform.japaneseTTSVoices", void, TTSVoice[]>
+  | ExtensionMessage<"IosPlatform.userMigrateStep", UserMigrateRequest, UserMigrateState>
   | ExtensionMessage<"IosAnkiApi.addNote", AnkiAddNoteReq, boolean>
   | ExtensionMessage<"IosMessaging.send", AnyIosMessagingSendRequest, AnyAppResponse>;
 

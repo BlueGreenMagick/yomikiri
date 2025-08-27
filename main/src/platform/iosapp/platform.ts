@@ -2,6 +2,7 @@ import { migrateConfigObject, type StoredConfigurationV1 } from "@/features/comp
 import { type StoredConfig } from "@/features/config";
 import { YomikiriError } from "@/features/error";
 import { LazyAsync } from "@/features/utils";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { RawAnkiInfo } from "./anki";
@@ -132,5 +133,9 @@ export class IosAppPlatform implements IPlatform {
 
   closeWindow(): Promise<void> {
     return sendMessage("close", null);
+  }
+
+  async userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState> {
+    return await invokeApp({ type: "UserMigrateStep", args });
   }
 }

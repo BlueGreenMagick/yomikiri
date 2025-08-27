@@ -1,6 +1,7 @@
 import { migrateConfigObject } from "@/features/compat";
 import type { StoredConfigurationV1 } from "@/features/compat/types/typesV1";
 import type { StoredConfig } from "@/features/config";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import { getTranslation } from "../shared/translate";
 import type { IPlatform, TranslateResult, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import { invokeApp, sendMessage } from "./messaging";
@@ -55,5 +56,9 @@ export class AndroidPlatform implements IPlatform {
 
   openExternalLink(_url: string): void {
     throw new Error("Unimplemented");
+  }
+
+  async userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState> {
+    return await invokeApp({ type: "UserMigrateStep", args });
   }
 }

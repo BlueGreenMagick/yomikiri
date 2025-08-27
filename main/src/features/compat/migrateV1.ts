@@ -1,4 +1,5 @@
 import { VERSION } from "@/consts";
+import type { UserMigrateV1Data, UserMigrateV1State } from "@yomikiri/backend-uniffi-bindings";
 import type {
   AnkiNoteV1,
   AnkiTemplateFieldContentV1,
@@ -12,15 +13,16 @@ import type {
 } from "./types/typesV1";
 import type { StoredConfigurationV2 } from "./types/typesV2";
 
-export interface MigrateV1Props {
-  config: StoredConfigurationV1;
+export type MigrateV1Props = UserMigrateV1State;
+
+export function migrateV1({ config: jsonConfig }: MigrateV1Props): UserMigrateV1Data {
+  const oldConfig = JSON.stringify(jsonConfig) as StoredConfigurationV1;
+  const newConfig = migrateConfig(oldConfig);
+  const newJsonConfig = JSON.stringify(newConfig);
+  return { config: newJsonConfig };
 }
 
-export interface MigrateV1Result {
-  config: StoredConfigurationV2;
-}
-
-export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
+function migrateConfig(config: StoredConfigurationV1): StoredConfigurationV2 {
   if (
     config.config_version !== undefined &&
     config.config_version > 3
@@ -28,7 +30,7 @@ export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
     console.error(
       `Expected config_version to be less than 3, but received: ${config.config_version}. Resetting config version`,
     );
-    return { config: { config_version: 3, version: VERSION } as const };
+    return { config_version: 3, version: VERSION };
   } else if (
     config.config_version === undefined &&
     config.version === undefined
@@ -37,7 +39,7 @@ export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
       config_version: 3,
       version: VERSION,
     } as const;
-    return { config };
+    return config;
   }
 
   let configV2Plus: StoredConfigurationVersion2 | StoredConfigurationVersion3;
@@ -56,7 +58,7 @@ export function migrateV1({ config }: MigrateV1Props): MigrateV1Result {
     configV3 = configV2Plus;
   }
 
-  return { config: configV3 };
+  return configV3;
 }
 
 type _StoredConfigurationNew = StoredConfigurationV1 & { version?: undefined };

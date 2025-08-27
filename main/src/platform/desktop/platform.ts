@@ -7,6 +7,7 @@ import {
   japaneseTtsVoices,
   setStorage,
 } from "@/features/extension";
+import type { UserMigrateRequest, UserMigrateState } from "@yomikiri/backend-uniffi-bindings";
 import type { IPlatform, TTSRequest, TTSVoice, VersionInfo } from "../types";
 import type { DesktopPlatformBackground } from "./background/platform";
 import { sendDesktopExtensionMessage } from "./message";
@@ -94,5 +95,10 @@ export class DesktopPlatform implements IPlatform {
     } else {
       return sendDesktopExtensionMessage("DesktopPlatform.migrateConfig", undefined);
     }
+  }
+
+  async userMigrateStep(_req: UserMigrateRequest): Promise<UserMigrateState> {
+    await Promise.resolve();
+    throw new Error("Unimplemented");
   }
 }
