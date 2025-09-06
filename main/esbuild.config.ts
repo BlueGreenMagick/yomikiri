@@ -90,6 +90,7 @@ const ENTRY_POINTS: EntryPoints = {
   android: {
     content: {},
     options: {},
+    migrate: {},
   },
 };
 

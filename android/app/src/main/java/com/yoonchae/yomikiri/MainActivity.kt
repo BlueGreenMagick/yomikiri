@@ -4,15 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -53,59 +49,26 @@ fun AppContent(
     appEnv: AppEnvironment,
     modifier: Modifier = Modifier,
 ) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+    var requiresMigration by remember { mutableStateOf<Boolean?>(null) }
 
-    var currentView by remember { mutableStateOf(NavigationView.INTERNET) }
-
-    // Load saved navigation state on startup
+    // Check for migration requirements on startup
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            val savedView = appEnv.db.uniffiGetAndroidCurrentView()
-            currentView =
-                try {
-                    NavigationView.valueOf(savedView ?: "INTERNET")
-                } catch (e: IllegalArgumentException) {
-                    NavigationView.INTERNET
-                }
+            val migrationRequired = appEnv.db.uniffiRequiresUserMigration()
+            requiresMigration = migrationRequired
         }
     }
 
-    // Save navigation state when it changes
-    LaunchedEffect(currentView) {
-        withContext(Dispatchers.IO) {
-            appEnv.db.uniffiSetAndroidCurrentView(currentView.name)
+    // Show migration view if migration is required
+    when (requiresMigration) {
+        true -> {
+            MigrationView(appEnv = appEnv, modifier = modifier)
         }
-    }
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        gesturesEnabled = drawerState.isOpen,
-        drawerContent = {
-            NavigationSidebar(
-                onNavigate = { view ->
-                    currentView = view
-                    scope.launch { drawerState.close() }
-                },
-                selectedView = currentView,
-            )
-        },
-        modifier = modifier,
-    ) {
-        when (currentView) {
-            NavigationView.INTERNET -> {
-                InternetView(appEnv = appEnv, onMenuClick = {
-                    scope.launch { drawerState.open() }
-                })
-            }
-            NavigationView.OPTIONS -> {
-                OptionsView(appEnv = appEnv, onMenuClick = {
-                    scope.launch { drawerState.open() }
-                })
-            }
-            NavigationView.HELP -> {
-                // TODO: Implement help view
-            }
+        false -> {
+            MainView(appEnv = appEnv, modifier = modifier)
+        }
+        null -> {
+            // Loading state - could show a loading indicator here if needed
         }
     }
 }
