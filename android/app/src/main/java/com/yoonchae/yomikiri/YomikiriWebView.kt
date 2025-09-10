@@ -31,11 +31,14 @@ private const val TAG = "YomikiriWebViewLog"
 // Cache for webview instances to avoid recreation
 private val webViewCache = mutableMapOf<String, WebView>()
 
+typealias AdditionalMessageHandler = (msg: RequestMessage, builder: ResponseBuilder) -> String?
+
 @Composable
 fun YomikiriWebView(
     appEnv: AppEnvironment,
     modifier: Modifier = Modifier,
     webViewKey: String = "default",
+    additionalMessageHandler: AdditionalMessageHandler? = null,
     setup: (webview: WebView) -> Unit,
 ) {
     var webView: WebView? =
@@ -99,7 +102,7 @@ fun YomikiriWebView(
                                 Log.e(TAG, "No message was passed from webview")
                             } else {
                                 CoroutineScope(Dispatchers.Main).launch {
-                                    val response = handleWebMessage(context, appEnv, jsonMessage)
+                                    val response = handleWebMessage(context, appEnv, jsonMessage, additionalMessageHandler)
                                     Log.d(TAG, "Sent: $response")
                                     replyProxy.postMessage(response)
                                 }
@@ -127,6 +130,7 @@ private suspend fun handleWebMessage(
     context: Context,
     appEnv: AppEnvironment,
     jsonMessage: String,
+    additionalMessageHandler: AdditionalMessageHandler?,
 ): String {
     val msg = Json.decodeFromString<RequestMessage>(jsonMessage)
     val builder = ResponseBuilder(msg.id)
@@ -160,6 +164,12 @@ private suspend fun handleWebMessage(
                 builder.jsonSuccess(value)
             }
             else -> {
+                if (additionalMessageHandler != null) {
+                    val result = additionalMessageHandler(msg, builder)
+                    if (result != null) {
+                        return result
+                    }
+                }
                 throw Error("Invalid command key: ${msg.key}")
             }
         }
