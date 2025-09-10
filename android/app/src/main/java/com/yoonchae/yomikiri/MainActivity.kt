@@ -62,10 +62,17 @@ fun AppContent(
     // Show migration view if migration is required
     when (requiresMigration) {
         true -> {
-            MigrationView(appEnv = appEnv, modifier = modifier)
+            MigrationView(
+                appEnv = appEnv,
+                onMigrationComplete = { requiresMigration = false },
+                modifier = modifier,
+            )
         }
         false -> {
-            MainView(appEnv = appEnv, modifier = modifier)
+            MainView(
+                appEnv = appEnv,
+                modifier = modifier,
+            )
         }
         null -> {
             // Loading state - could show a loading indicator here if needed

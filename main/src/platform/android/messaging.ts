@@ -50,6 +50,8 @@ export interface AndroidMessageMap {
   ankiAddNote: [AnkiNote, boolean];
   invoke: [Command, CommandResult];
   invokeApp: [AppCommand, AppCommandResult];
+  /** only supported in migration entrypoint */
+  finishMigration: [null, null];
 }
 
 export type MessageRequest<K extends keyof AndroidMessageMap> = AndroidMessageMap[K][0];

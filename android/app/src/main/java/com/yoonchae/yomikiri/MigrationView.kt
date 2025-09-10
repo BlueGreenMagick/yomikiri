@@ -12,12 +12,24 @@ import androidx.webkit.WebViewAssetLoader
 @Composable
 fun MigrationView(
     appEnv: AppEnvironment,
+    onMigrationComplete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val additionalMessageHandler: AdditionalMessageHandler =
+        { msg, builder ->
+            when (msg.key) {
+                "finishMigration" -> {
+                    onMigrationComplete()
+                    builder.success(Unit)
+                }
+                else -> null
+            }
+        }
+
     YomikiriWebView(
-        appEnv = appEnv, 
-        modifier = modifier.fillMaxSize(), 
-        webViewKey = "migration"
+        appEnv = appEnv,
+        modifier = modifier.fillMaxSize(),
+        webViewKey = "migration",
     ) { webview ->
         webview.apply {
             // Create WebViewAssetLoader to serve assets via HTTPS
