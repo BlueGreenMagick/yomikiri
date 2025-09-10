@@ -30,6 +30,7 @@ fun MigrationView(
         appEnv = appEnv,
         modifier = modifier.fillMaxSize(),
         webViewKey = "migration",
+        additionalMessageHandler = additionalMessageHandler,
     ) { webview ->
         webview.apply {
             // Create WebViewAssetLoader to serve assets via HTTPS
