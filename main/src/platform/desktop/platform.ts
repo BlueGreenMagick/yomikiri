@@ -101,4 +101,9 @@ export class DesktopPlatform implements IPlatform {
     await Promise.resolve();
     throw new Error("Unimplemented");
   }
+
+  async finishMigration(): Promise<void> {
+    await Promise.resolve();
+    throw new Error("Unimplemented");
+  }
 }

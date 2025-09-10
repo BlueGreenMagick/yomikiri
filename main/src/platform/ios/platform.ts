@@ -154,6 +154,11 @@ export class IosPlatform implements IPlatform {
       return sendIosExtensionMessage("IosPlatform.userMigrateStep", args);
     }
   }
+
+  async finishMigration(): Promise<void> {
+    await Promise.resolve();
+    throw new Error("Unimplemented");
+  }
 }
 
 /** Returns null if ios version could not be retrieved from user agent. */

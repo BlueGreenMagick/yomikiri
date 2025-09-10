@@ -28,4 +28,6 @@ export async function migrate(platform: AnyPlatform) {
       });
     }
   }
+
+  await platform.finishMigration();
 }

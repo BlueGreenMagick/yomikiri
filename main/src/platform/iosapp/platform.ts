@@ -138,4 +138,9 @@ export class IosAppPlatform implements IPlatform {
   async userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState> {
     return await invokeApp({ type: "UserMigrateStep", args });
   }
+
+  async finishMigration(): Promise<void> {
+    await Promise.resolve();
+    throw new Error("Unimplemented");
+  }
 }

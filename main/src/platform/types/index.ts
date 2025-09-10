@@ -29,6 +29,7 @@ export interface IPlatform extends IPlatformConsts {
   migrateConfig(): Promise<StoredConfig>;
 
   userMigrateStep(args: UserMigrateRequest): Promise<UserMigrateState>;
+  finishMigration(): Promise<void>;
 }
 
 export interface VersionInfo {
