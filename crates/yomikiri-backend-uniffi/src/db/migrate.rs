@@ -79,6 +79,7 @@ impl RustDatabase {
                 config: JsonStoreKey::web_config_v3().get(&tx)?,
             }),
         };
+        tx.commit()?;
         Ok(state)
     }
 
@@ -90,6 +91,7 @@ impl RustDatabase {
         }
 
         StoreKey::user_migration_version().set(&tx, Some(2))?;
+        tx.commit()?;
         Ok(())
     }
 
@@ -107,6 +109,7 @@ impl RustDatabase {
 
         JsonStoreKey::web_config_v4().set(&tx, Some(args.config))?;
         StoreKey::user_migration_version().set(&tx, Some(2))?;
+        tx.commit()?;
         Ok(())
     }
 }
