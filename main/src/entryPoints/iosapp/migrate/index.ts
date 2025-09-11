@@ -1,5 +1,5 @@
 import { migrate } from "@/features/compat/migrate";
-import { exposeGlobals, getErrorMessage } from "@/features/utils";
+import { exposeGlobals, getErrorMessage, logs } from "@/features/utils";
 import { createIosAppCtx } from "@/platform/iosapp";
 
 async function initialize(): Promise<void> {
@@ -8,6 +8,7 @@ async function initialize(): Promise<void> {
   exposeGlobals({
     Platform: ctx.platform,
     Backend: ctx.backend,
+    getLogs: logs,
   });
 
   await migrate(ctx.platform);

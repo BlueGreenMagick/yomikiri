@@ -19,6 +19,7 @@ pub enum UserMigrateState {
     V0(UserMigrateV0State),
     V1(UserMigrateV1State),
     V2(()),
+    Unknown(u16),
 }
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
@@ -75,9 +76,11 @@ impl RustDatabase {
         let version = StoreKey::user_migration_version().get(&tx)?.unwrap_or(0);
         let state = match version {
             0 => V0(UserMigrateV0State {}),
-            _ => V1(UserMigrateV1State {
+            1 => V1(UserMigrateV1State {
                 config: JsonStoreKey::web_config_v3().get(&tx)?,
             }),
+            2 => V2(()),
+            _ => Unknown(version),
         };
         tx.commit()?;
         Ok(state)

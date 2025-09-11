@@ -1,3 +1,4 @@
+import { log } from "@/features/utils";
 import type { AnyPlatform } from "@/platform/types";
 import { migrateV1 } from "./migrateV1";
 
@@ -10,6 +11,7 @@ export async function migrate(platform: AnyPlatform) {
   let repeated = 0;
 
   while (state.version !== "V2") {
+    log(state);
     if (repeated > 30) {
       throw new Error("Migration failed: exceeded maximum steps");
     }
@@ -26,6 +28,8 @@ export async function migrate(platform: AnyPlatform) {
         version: state.version,
         data,
       });
+    } else if (state.version === "Unknown") {
+      throw new Error(`Unknown version: ${state.state}`);
     }
   }
 
