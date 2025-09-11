@@ -75,7 +75,9 @@ impl RustDatabase {
         let version = StoreKey::user_migration_version().get(&tx)?.unwrap_or(0);
         let state = match version {
             0 => V0(UserMigrateV0State {}),
-            _ => unimplemented!(),
+            _ => V1(UserMigrateV1State {
+                config: JsonStoreKey::web_config_v3().get(&tx)?,
+            }),
         };
         Ok(state)
     }
