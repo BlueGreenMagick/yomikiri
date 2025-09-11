@@ -7,6 +7,7 @@
 
 import os.log
 import SwiftUI
+import YomikiriTokenizer
 
 @main
 struct YomikiriApp: App {
@@ -61,9 +62,13 @@ class ErrorHandler: ObservableObject {
 
     func handle(_ err: Error) {
         DispatchQueue.main.async {
-            os_log(.error, "%{public}s", err.localizedDescription)
+            var description = err.localizedDescription
+            if let backendErr = err as? BackendError {
+                description += "\n" + backendErr.retrieveDetails().joined(separator: "\n")
+            }
+            os_log(.error, "%{public}s", description)
             self.showError = true
-            self.errorText = err.localizedDescription
+            self.errorText = description
         }
     }
 }
