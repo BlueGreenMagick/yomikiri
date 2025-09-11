@@ -1,5 +1,5 @@
 import { migrate } from "@/features/compat/migrate";
-import { exposeGlobals } from "@/features/utils";
+import { exposeGlobals, getErrorMessage } from "@/features/utils";
 import { createIosAppCtx } from "@/platform/iosapp";
 
 async function initialize(): Promise<void> {
@@ -13,4 +13,6 @@ async function initialize(): Promise<void> {
   await migrate(ctx.platform);
 }
 
-void initialize();
+void initialize().catch((err: unknown) => {
+  document.body.innerText = getErrorMessage(err);
+});
