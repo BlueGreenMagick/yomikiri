@@ -54,6 +54,9 @@ export interface MessageWebviewMap {
 
   // action extension
   close: [null, void];
+
+  /** only in migrate entrypoint */
+  finishMigration: [null, void];
 }
 
 export type WebviewRequest<K extends keyof MessageWebviewMap> = MessageWebviewMap[K][0];

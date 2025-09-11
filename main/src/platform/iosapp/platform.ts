@@ -140,7 +140,6 @@ export class IosAppPlatform implements IPlatform {
   }
 
   async finishMigration(): Promise<void> {
-    await Promise.resolve();
-    throw new Error("Unimplemented");
+    await sendMessage("finishMigration", null);
   }
 }

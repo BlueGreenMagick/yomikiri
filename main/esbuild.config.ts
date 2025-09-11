@@ -86,6 +86,7 @@ const ENTRY_POINTS: EntryPoints = {
     dictionary: {},
     options: {},
     optionsAnkiTemplate: {},
+    migrate: {},
   },
   android: {
     content: {},
