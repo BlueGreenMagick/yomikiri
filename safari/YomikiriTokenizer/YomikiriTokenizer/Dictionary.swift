@@ -6,7 +6,7 @@ public extension Backend {
     func deleteUserDictionary(_ userDictUrl: URL) {
         os_log(.info, "Deleting user dictionary files")
         _ = try? FileManager.default.removeItem(at: userDictUrl)
-        _ = try? db.setDictSchemaVer(value: nil)
+        _ = try? db.uniffiSetDictSchemaVer(value: nil)
     }
 
     /// @return user dictionary `URL` if it exists and is valid.
@@ -20,8 +20,8 @@ public extension Backend {
             return nil
         }
 
-        let schemaVer = dictSchemaVer()
-        let userDictSchemaVer = try db.getDictSchemaVer() ?? 0
+        let schemaVer = uniffiDictSchemaVer()
+        let userDictSchemaVer = try db.uniffiGetDictSchemaVer() ?? 0
         if userDictSchemaVer == schemaVer {
             return userDict
         } else {
