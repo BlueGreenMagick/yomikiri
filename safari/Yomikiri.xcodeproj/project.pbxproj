@@ -52,6 +52,7 @@
 		69F2C28B29FA4FA80088F503 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F2C24229FA4FA80088F503 /* ViewController.swift */; };
 		69F2C28C29FA4FA80088F503 /* Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Shared.xcassets */; };
 		69F2C28D29FA4FA80088F503 /* Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 69F2C24329FA4FA80088F503 /* Shared.xcassets */; };
+		69FDE8402E730029007B403D /* MigrateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69FDE83E2E730025007B403D /* MigrateView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -167,6 +168,7 @@
 		69F2C27B29FA4FA80088F503 /* Yomikiri Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Yomikiri Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2C28029FA4FA80088F503 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69F2C28129FA4FA80088F503 /* Yomikiri.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Yomikiri.entitlements; sourceTree = "<group>"; };
+		69FDE83E2E730025007B403D /* MigrateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrateView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -343,6 +345,7 @@
 			children = (
 				69A858E72BA9E94200A4220F /* AppAssets.xcassets */,
 				69F2C26029FA4FA80088F503 /* Info.plist */,
+				69FDE83E2E730025007B403D /* MigrateView.swift */,
 				699B7DC52A52B07C00E506F2 /* OptionsView.swift */,
 				699B7DC82A52B09200E506F2 /* YomikiriApp.swift */,
 				69D839962A98D76F00618380 /* MainView.swift */,
@@ -725,6 +728,7 @@
 				699B7DC92A52B09200E506F2 /* YomikiriApp.swift in Sources */,
 				699B7E0C2A53DCE500E506F2 /* Globals.swift in Sources */,
 				6942E5192BA82EE800AB628A /* HelpView.swift in Sources */,
+				69FDE8402E730029007B403D /* MigrateView.swift in Sources */,
 				699B7DC62A52B07C00E506F2 /* OptionsView.swift in Sources */,
 				6942E51E2BA88BE000AB628A /* HelpItemView.swift in Sources */,
 			);

@@ -11,22 +11,24 @@ struct MainView: View {
     @EnvironmentObject var appState: AppState
 
     var body: some View {
-        TabView(selection: $appState.selectedTab) {
-            HelpView()
-                .tabItem {
-                    Label("Help", systemImage: "questionmark.circle")
-                }
-                .tag(Tabs.help)
-            DictionaryView()
-                .tabItem {
-                    Label("Dictionary", systemImage: "character.book.closed.fill")
-                }
-                .tag(Tabs.dictionary)
-            OptionsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
-                }
-                .tag(Tabs.settings)
+        MigrateGuardView {
+            TabView(selection: $appState.selectedTab) {
+                HelpView()
+                    .tabItem {
+                        Label("Help", systemImage: "questionmark.circle")
+                    }
+                    .tag(Tabs.help)
+                DictionaryView()
+                    .tabItem {
+                        Label("Dictionary", systemImage: "character.book.closed.fill")
+                    }
+                    .tag(Tabs.dictionary)
+                OptionsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape.fill")
+                    }
+                    .tag(Tabs.settings)
+            }
         }
     }
 
